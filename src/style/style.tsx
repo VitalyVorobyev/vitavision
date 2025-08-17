@@ -1,0 +1,119 @@
+/********************
+ * Minimal UI Kit (no Tailwind/shadcn)
+ ********************/
+
+import { useEffect } from "react";
+
+// CSS-in-file for demo purposes. In a real project, move to .css files.
+const BASE_CSS = `
+:root {
+  --bg: #0b0c10;
+  --bg-soft: #111218;
+  --bg-card: #151823;
+  --text: #e6e7eb;
+  --muted: #9aa3b2;
+  --primary: #5b8cff;
+  --primary-10: rgba(91, 140, 255, 0.12);
+  --border: #232635;
+  --ring: rgba(91, 140, 255, 0.4);
+  --radius: 16px;
+  --radius-sm: 12px;
+  --shadow: 0 1px 2px rgba(0,0,0,.2), 0 8px 24px rgba(0,0,0,.35);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.15), 0 4px 12px rgba(0,0,0,.2);
+}
+.light {
+  --bg: #f8fafc;
+  --bg-soft: #f1f5f9;
+  --bg-card: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --primary: #2952ff;
+  --primary-10: rgba(41, 82, 255, 0.10);
+  --border: #e2e8f0;
+  --ring: rgba(41, 82, 255, 0.35);
+}
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 500 16px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+.header { position: sticky; top: 0; backdrop-filter: blur(6px); border-bottom: 1px solid var(--border); z-index: 50; background: color-mix(in srgb, var(--bg) 80%, transparent); }
+.header-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-logo { height: 38px; width: 38px; display: grid; place-items: center; border-radius: 12px; background: var(--primary-10); color: var(--primary); font-weight: 800; }
+.brand-sub { font-size: 12px; color: var(--muted); line-height: 1; }
+.nav { display: none; gap: 6px; }
+.nav a { padding: 8px 10px; border-radius: 10px; color: var(--muted); border: 1px solid transparent; }
+.nav a.active { background: var(--primary-10); color: var(--primary); border-color: transparent; }
+.nav a:hover { background: var(--bg-soft); color: var(--text); }
+.actions { display: flex; align-items: center; gap: 8px; }
+.icon-btn { height: 36px; width: 36px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--text); }
+.icon-btn:hover { background: var(--bg-soft); }
+.hamburger { display: inline-grid; }
+@media (min-width: 768px) { .nav { display: inline-flex; } .hamburger { display: none; } }
+
+.main { padding: 32px 0; }
+.footer { border-top: 1px solid var(--border); margin-top: 32px; }
+.footer-inner { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding: 24px 0; flex-wrap: wrap; }
+
+/* UI primitives */
+.btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius: 12px; border:1px solid transparent; cursor:pointer; text-decoration:none; }
+.btn-primary { background: var(--primary); color: white; box-shadow: var(--shadow-sm); }
+.btn-primary:hover { filter: brightness(1.05); }
+.btn-outline { background: transparent; border-color: var(--border); color: var(--text); }
+.btn-outline:hover { background: var(--bg-soft); }
+.btn-chip { background: var(--bg-soft); border:1px solid var(--border); color: var(--text); border-radius: 999px; padding:6px 12px; }
+.btn-chip.active { background: var(--primary-10); border-color: transparent; color: var(--primary); }
+
+.card { background: var(--bg-card); border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+.card-header { padding: 18px 18px 6px; border-bottom: 1px solid var(--border); }
+.card-content { padding: 12px 18px; }
+.card-footer { padding: 12px 18px 18px; display:flex; gap:8px; flex-wrap: wrap; }
+
+.badge { display:inline-flex; align-items:center; padding:6px 10px; border-radius: 999px; font-size: 12px; border:1px solid var(--border); color: var(--muted); }
+.badge.secondary { background: var(--bg-soft); }
+.badge.outline { background: transparent; }
+
+.input { height: 38px; border-radius: 10px; border:1px solid var(--border); background: var(--bg-card); color: var(--text); padding: 0 12px 0 36px; width: 260px; }
+.input-wrap { position: relative; }
+.input-wrap .icon { position:absolute; left:10px; top:8px; color: var(--muted); }
+
+.separator { height: 1px; background: var(--border); margin: 12px 0; }
+
+.grid { display: grid; gap: 18px; }
+.grid-2 { grid-template-columns: 1fr; }
+.grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+
+.hero { display:grid; gap:24px; grid-template-columns: 1fr; align-items:center; }
+@media (min-width: 768px) { .hero { grid-template-columns: 1.1fr 1fr; } }
+.featured { aspect-ratio: 4/3; border-radius: 24px; border:1px solid var(--border); overflow:hidden; background: linear-gradient(135deg, var(--bg-soft), var(--bg-card)); display:grid; place-items:center; box-shadow: var(--shadow-sm); }
+
+.tag-cloud { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+
+.prose { line-height: 1.6; font-size: 16px; }
+.prose h1 { font-size: 28px; margin: 0 0 8px; }
+.prose p { color: var(--text); }
+.prose .meta { color: var(--muted); font-size: 13px; }
+
+/* Drawer */
+.drawer { position: fixed; inset: 0; display: grid; grid-template-columns: 1fr 280px; }
+.drawer .backdrop { background: rgba(0,0,0,.4); }
+.drawer .panel { background: var(--bg-card); border-left:1px solid var(--border); padding: 16px; display:flex; flex-direction: column; gap:8px; }
+`;
+
+
+const GlobalStyles = () => {
+  useEffect(() => {
+    const id = "app-base-css";
+    if (document.getElementById(id)) return;
+    const style = document.createElement("style");
+    style.id = id;
+    style.textContent = BASE_CSS;
+    document.head.appendChild(style);
+  }, []);
+  return null;
+}
+
+export default GlobalStyles;

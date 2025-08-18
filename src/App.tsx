@@ -1,82 +1,13 @@
-import React, { useMemo, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link, useParams } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import { ExternalLink, Search } from "lucide-react";
-
-import Card from "./components/ui/Card";
 import AppShell from "./components/layout/AppShell";
 
-/********************
- * Layout & Pages
- ********************/
-const DemosPage: React.FC = () => {
-  const [q, setQ] = useState("");
-  const tags = useMemo(() => Array.from(new Set(DEMOS.flatMap(d => d.tags))).sort(), []);
-  const [active, setActive] = useState<string | "all">("all");
-
-  const filtered = DEMOS.filter(d =>
-    (!q || d.title.toLowerCase().includes(q.toLowerCase()) || d.blurb.toLowerCase().includes(q.toLowerCase())) &&
-    (active === "all" || d.tags.includes(active))
-  );
-
-  return (
-    <div style={{ display: "grid", gap: 18 }}>
-      <div style={{ display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, margin: 0 }}>Demos</h1>
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search demos..." iconLeft={<Search size={16}/>} />
-      </div>
-
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        <button className={classNames("btn btn-chip", active === "all" && "active")} onClick={() => setActive("all")}>All</button>
-        {tags.map(t => (
-          <button key={t} className={classNames("btn btn-chip", active === t && "active")} onClick={() => setActive(t)}>{t}</button>
-        ))}
-      </div>
-
-      <div className="grid grid-3">
-        {filtered.map(d => (
-          <Card key={d.slug}>
-            <div className="card-header">
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <h3 style={{ margin: 0, fontWeight: 600 }}>{d.title}</h3>
-                <span className="badge outline">{d.tags[0]}</span>
-              </div>
-              <p style={{ color: "var(--muted)", fontSize: 14 }}>{d.blurb}</p>
-            </div>
-            <div className="card-footer">
-              <Link className="btn btn-primary" to={`/demos/${d.slug}`}>Launch</Link>
-              {d.externalUrl && (
-                <a className="btn btn-outline" href={d.externalUrl} target="_blank" rel="noreferrer">Open <ExternalLink size={16}/></a>
-              )}
-            </div>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const DemoDetailPage: React.FC = () => {
-  const { slug } = useParams();
-  const demo = DEMOS.find(d => d.slug === slug);
-  if (!demo) return <NotFound />;
-  const Comp = demo.Component;
-  return (
-    <div style={{ display: "grid", gap: 16 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>{demo.title}</h1>
-          <p style={{ color: "var(--muted)" }}>{demo.blurb}</p>
-        </div>
-        {demo.externalUrl && (
-          <a className="btn btn-outline" href={demo.externalUrl} target="_blank" rel="noreferrer">Open standalone <ExternalLink size={16}/></a>
-        )}
-      </div>
-      <Separator />
-      <Comp />
-    </div>
-  );
-};
+import HomePage from "./pages/HomePage";
+import CvPage from "./pages/CvPage";
+import BlogPage from "./pages/BlogPage";
+import BlogPostPage from "./pages/BlogPostPage";
+import DemosPage from "./pages/DemosPage";
+import DemoDetailPage from "./pages/DemoDetailPage";
 
 export default function App() {
     return (

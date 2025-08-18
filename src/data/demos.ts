@@ -1,4 +1,8 @@
-import { type Demo } from "../../types";
+import { type Demo } from "../types";
+
+import EdgeDetectDemo from "../components/demos/EdgeDetectDemo";
+import CameraCalibDemo from "../components/demos/CameraCalibDemo";
+import StereoDepthDemo from "../components/demos/StereoDepthDemo";
 
 export const DEMOS: Demo[] = [
     {
@@ -21,5 +25,5 @@ export const DEMOS: Demo[] = [
         blurb: "Block-matching & point cloud preview.",
         tags: ["3d", "stereo", "depth"],
         Component: StereoDepthDemo
-    },
+    }
 ];

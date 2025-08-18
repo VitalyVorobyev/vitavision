@@ -7,7 +7,9 @@ interface CardProps {
 
 
 const Card: React.FC<CardProps> = ({ className, children }) => (
-    <div className={classNames("card", className)}>{children}</div>
+    <div className={classNames("card", className)}>
+        {children}
+    </div>
 );
 
 // const CardHeader: React.FC<{ children: React.ReactNode }> = ({ children }) => <div className="card-header">{children}</div>;

@@ -14,16 +14,14 @@ import {
   Mail,
   Download
 } from "lucide-react";
+import { classNames } from "../../utils/helpers";
 
 import useTheme from "../../hooks/useTheme";
 
-function classNames(...xs: Array<string | false | null | undefined>) {
-    return xs.filter(Boolean).join(" ");
-};
 
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { theme, setTheme } = useTheme();
-  const [drawer, setDrawer] = useState(false);
+  const [ drawer, setDrawer ] = useState(false);
 
   const NavLinkItem: React.FC<{ to: string; children: React.ReactNode; icon?: React.ReactNode }>
     = ({ to, children, icon }) => (

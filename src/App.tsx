@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./App.css";
 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AppShell from "./components/layout/AppShell";
 
 import HomePage from "./pages/HomePage";
@@ -8,6 +9,7 @@ import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import DemosPage from "./pages/DemosPage";
 import DemoDetailPage from "./pages/DemoDetailPage";
+
 
 export default function App() {
     return (

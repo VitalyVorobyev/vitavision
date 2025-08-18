@@ -2,65 +2,18 @@ import React, { useMemo, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, NavLink, Link, useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Menu,
-  Home,
-  User,
-  PenSquare,
-  FlaskConical,
-  Sun,
-  Moon,
-  Github,
-  Linkedin,
-  Mail,
-  Download,
   ExternalLink,
   Search,
   ArrowRightCircle,
 } from "lucide-react";
 
-import GlobalStyles from "./style/style"; // Import global styles
-import Card from "./components/ui/card";
-
-import useTheme from "./hooks/useTheme";
+import Card from "./components/ui/Card";
+import AppShell from "./components/layout/AppShell";
 
 /********************
  * Helpers
  ********************/
 function classNames(...xs: Array<string | false | null | undefined>) { return xs.filter(Boolean).join(" "); }
-
-/********************
- * UI Primitives
- ********************/
-const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { iconLeft?: React.ReactNode }> = ({ className, iconLeft, ...rest }) => (
-  <div className="input-wrap">
-    {iconLeft && <span className="icon">{iconLeft}</span>}
-    <input className={classNames("input", className)} {...rest} />
-  </div>
-);
-
-const Separator: React.FC<{ className?: string }> = ({ className }) => <div className={classNames("separator", className)} />;
-
-/********************
- * Data Types
- ********************/
-
-type Demo = {
-  slug: string;
-  title: string;
-  blurb: string;
-  tags: string[];
-  Component: React.ComponentType;
-  externalUrl?: string;
-};
-
-type Post = {
-  id: string;
-  title: string;
-  date: string; // ISO
-  tags: string[];
-  summary: string;
-  content: string;
-};
 
 /********************
  * Demo Components (stubs)
@@ -85,106 +38,11 @@ const CameraCalibDemo: React.FC = () => (
   </div>
 );
 
-const StereoDepthDemo: React.FC = () => (
-  <div style={{ display: "grid", gap: 12 }}>
-    <h3 style={{ fontSize: 20, fontWeight: 600 }}>Stereo Disparity Explorer</h3>
-    <p style={{ color: "var(--muted)", fontSize: 14 }}>Load rectified pair → compute disparity & visualize point cloud (placeholder UI).</p>
-    <div style={{ height: 192, border: "1px dashed var(--border)", borderRadius: 16, display: "grid", placeItems: "center", background: "var(--bg-soft)" }}>
-      <span style={{ color: "var(--muted)" }}>Add your WebAssembly/OpenCV.js here</span>
-    </div>
-  </div>
-);
 
-/********************
- * Data
- ********************/
-
-const DEMOS: Demo[] = [
-  { slug: "edges", title: "Edge Detection", blurb: "Sobel/Canny preview with interactive thresholds and overlay.", tags: ["image-processing", "filters", "wasm"], Component: EdgeDetectDemo },
-  { slug: "calibration", title: "Camera Calibration", blurb: "Undistortion, reprojection error plots, grid debug.", tags: ["calibration", "opencv", "geometry"], Component: CameraCalibDemo },
-  { slug: "stereo", title: "Stereo Depth", blurb: "Block-matching & point cloud preview.", tags: ["3d", "stereo", "depth"], Component: StereoDepthDemo },
-];
-
-const POSTS: Post[] = [
-  { id: "cv-architecture-intro", title: "Designing a Modular CV/3D Toolkit for Demos & Production", date: "2025-08-15", tags: ["architecture", "cv", "3d", "react"], summary: "A pragmatic approach to structuring computer vision services with a React front-end and IPC for demos.", content: "This starter shows how to separate concerns between UI, demo harness, and algorithm backends. Replace this with MDX or Contentlayer later." },
-  { id: "ellipse-detection-notes", title: "Notes on Fast, Robust Ellipse Detection", date: "2025-07-30", tags: ["vision", "algorithms"], summary: "Benchmarking classical approaches (Fornaciari, Qi Jia) and when to sprinkle ML.", content: "Draft your insights here. Code snippets, figures, and references can live in MDX." },
-];
 
 /********************
  * Layout & Pages
  ********************/
-
-const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { theme, setTheme } = useTheme();
-  const [drawer, setDrawer] = useState(false);
-
-  const NavLinkItem: React.FC<{ to: string; children: React.ReactNode; icon?: React.ReactNode }>
-    = ({ to, children, icon }) => (
-      <NavLink to={to} className={({ isActive }) => classNames("nav-link", isActive && "active") }>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>{icon}{children}</span>
-      </NavLink>
-    );
-
-  return (
-    <div>
-      <GlobalStyles />
-      <header className="header">
-        <div className="container header-inner">
-          <Link to="/" className="brand">
-            <div className="brand-logo">DV</div>
-            <div>
-              <div style={{ fontWeight: 600 }}>Vitaly V.</div>
-              <div className="brand-sub">Computer Vision • 3D • Robotics</div>
-            </div>
-          </Link>
-
-          <nav className="nav">
-            <NavLinkItem to="/" icon={<Home size={16} />}>Home</NavLinkItem>
-            <NavLinkItem to="/cv" icon={<User size={16} />}>CV</NavLinkItem>
-            <NavLinkItem to="/blog" icon={<PenSquare size={16} />}>Blog</NavLinkItem>
-            <NavLinkItem to="/demos" icon={<FlaskConical size={16} />}>Demos</NavLinkItem>
-          </nav>
-
-          <div className="actions">
-            <a href="https://github.com/" target="_blank" rel="noreferrer" className="icon-btn" aria-label="GitHub"><Github size={18} /></a>
-            <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" className="icon-btn" aria-label="LinkedIn"><Linkedin size={18} /></a>
-            <button className="icon-btn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme">
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <button className="icon-btn hamburger" onClick={() => setDrawer(true)} aria-label="Open menu"><Menu size={18} /></button>
-          </div>
-        </div>
-      </header>
-
-      {drawer && (
-        <div className="drawer" role="dialog" aria-modal="true">
-          <div className="backdrop" onClick={() => setDrawer(false)} />
-          <div className="panel">
-            <NavLink to="/" onClick={() => setDrawer(false)} className={({ isActive }) => classNames("nav-link", isActive && "active") }><Home size={16}/> Home</NavLink>
-            <NavLink to="/cv" onClick={() => setDrawer(false)} className={({ isActive }) => classNames("nav-link", isActive && "active") }><User size={16}/> CV</NavLink>
-            <NavLink to="/blog" onClick={() => setDrawer(false)} className={({ isActive }) => classNames("nav-link", isActive && "active") }><PenSquare size={16}/> Blog</NavLink>
-            <NavLink to="/demos" onClick={() => setDrawer(false)} className={({ isActive }) => classNames("nav-link", isActive && "active") }><FlaskConical size={16}/> Demos</NavLink>
-            <div style={{ marginTop: "auto", display: "flex", gap: 8 }}>
-              <button className="btn btn-outline" onClick={() => setDrawer(false)}>Close</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <main className="container main">{children}</main>
-
-      <footer className="footer">
-        <div className="container footer-inner">
-          <p style={{ color: "var(--muted)", fontSize: 14 }}>© {new Date().getFullYear()} Vitaly V. All rights reserved.</p>
-          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <a href="mailto:hello@example.com" className="btn btn-outline"><Mail size={16}/> hello@example.com</a>
-            <a href={`${import.meta.env.BASE_URL}cv.pdf`} className="btn btn-outline"><Download size={16}/> Download CV</a>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-};
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();

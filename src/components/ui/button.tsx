@@ -1,5 +1,5 @@
 
-function classNames(...xs: Array<string | false | null | undefined>) { return xs.filter(Boolean).join(" "); }
+import { classNames } from "../../utils/helpers";
 
 interface ButtonProps {
     className?: string;

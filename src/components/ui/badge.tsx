@@ -1,12 +1,9 @@
+import { classNames } from "../../utils/helpers";
 
 interface BadgeProps {
     variant?: "secondary" | "outline";
     className?: string;
     children: React.ReactNode[];
-};
-
-function classNames(...xs: Array<string | false | null | undefined>) {
-    return xs.filter(Boolean).join(" ");
 };
 
 const Badge = (props:BadgeProps) => {

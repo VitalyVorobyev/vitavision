@@ -62,21 +62,23 @@ const DemoCard = ({ demo }: { demo: Demo }) => {
                 {demo.tags.map(t => <span key={t} className="badge secondary">{t}</span>)}
             </div>
             <div className="card-footer">
-                <Link className="btn btn-primary" to={`/demos/${demo.slug}`}>Launch</Link>
-                {demo.externalUrl && (
+                {
+                demo.externalUrl ?
                     <a className="btn btn-outline" href={demo.externalUrl} target="_blank" rel="noreferrer">
                         Open <ExternalLink size={16}/>
                     </a>
-                )}
+                    :
+                    <Link className="btn btn-primary" to={`/demos/${demo.slug}`}>Launch</Link>
+                }
             </div>
         </Card>
     );
 };
 
-const Demos = () => {
+const Demos = ({nmax}: {nmax: number}) => {
     return (
         <section className="grid grid-3">
-            {DEMOS.map((d) => <DemoCard key={d.slug} demo={d} /> )}
+            {DEMOS.slice(0, nmax).map((d) => <DemoCard key={d.slug} demo={d} /> )}
         </section>
     );
 };
@@ -126,7 +128,7 @@ const AboutCard = () => {
             </div>
             <div className="card-footer">
                 <Link className="btn btn-primary" to="/cv">View CV</Link>
-                <a className="btn btn-outline" href="mailto:hello@example.com">Contact</a>
+                {/* <a className="btn btn-outline" href="mailto:hello@example.com">Contact</a> */}
             </div>
         </Card>
     );
@@ -136,7 +138,7 @@ const HomePage: React.FC = () => {
     return (
         <div style={{ display: "grid", gap: 32 }}>
             <Hero />
-            <Demos />
+            <Demos nmax={3} />
 
             <section className="grid grid-2">
                 <LatestPostCard />

@@ -6,6 +6,13 @@ import StereoDepthDemo from "../components/demos/StereoDepthDemo";
 
 export const DEMOS: Demo[] = [
     {
+        slug: "pong",
+        title: "Pong Game",
+        blurb: "Interactive pong game with computer vision controls.",
+        tags: ["game", "interactive", "cv"],
+        externalUrl: "https://pong.vitavision.dev"
+    },
+    {
         slug: "edges",
         title: "Edge Detection",
         blurb: "Sobel/Canny preview with interactive thresholds and overlay.",

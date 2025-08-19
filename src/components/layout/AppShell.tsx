@@ -11,8 +11,8 @@ import {
   Moon,
   Github,
   Linkedin,
-  Mail,
-  Download
+  // Mail,
+  // Download
 } from "lucide-react";
 import { classNames } from "../../utils/helpers";
 
@@ -50,8 +50,8 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </nav>
 
           <div className="actions">
-            <a href="https://github.com/" target="_blank" rel="noreferrer" className="icon-btn" aria-label="GitHub"><Github size={18} /></a>
-            <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" className="icon-btn" aria-label="LinkedIn"><Linkedin size={18} /></a>
+            <a href="https://github.com/VitalyVorobyev" target="_blank" rel="noreferrer" className="icon-btn" aria-label="GitHub"><Github size={18} /></a>
+            <a href="https://www.linkedin.com/in/vitaly-vorobyev" target="_blank" rel="noreferrer" className="icon-btn" aria-label="LinkedIn"><Linkedin size={18} /></a>
             <button className="icon-btn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme">
               {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
             </button>
@@ -81,8 +81,8 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="container footer-inner">
           <p style={{ color: "var(--muted)", fontSize: 14 }}>© {new Date().getFullYear()} Vitaly V. All rights reserved.</p>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <a href="mailto:hello@example.com" className="btn btn-outline"><Mail size={16}/> hello@example.com</a>
-            <a href={`${import.meta.env.BASE_URL}cv.pdf`} className="btn btn-outline"><Download size={16}/> Download CV</a>
+            {/* <a href="mailto:hello@example.com" className="btn btn-outline"><Mail size={16}/> hello@example.com</a> */}
+            {/* <a href={`${import.meta.env.BASE_URL}cv.pdf`} className="btn btn-outline"><Download size={16}/> Download CV</a> */}
           </div>
         </div>
       </footer>

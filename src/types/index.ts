@@ -7,7 +7,7 @@ export type Demo = {
     title: string;
     blurb: string;
     tags: string[];
-    Component: React.ComponentType;
+    Component?: React.ComponentType;
     externalUrl?: string;
 };
 

@@ -30,7 +30,7 @@ const DemoDetailPage: React.FC = () => {
                 )}
             </div>
             <Separator />
-            <Comp />
+            { Comp && <Comp /> }
         </div>
     );
 };

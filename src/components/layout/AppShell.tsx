@@ -17,6 +17,8 @@ import {
 import { classNames } from "../../utils/helpers";
 
 import useTheme from "../../hooks/useTheme";
+import lightIcon from "/icon-512.svg";
+import darkIcon from "/icon-512-dark.svg";
 
 
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -35,7 +37,13 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <header className="header">
         <div className="container header-inner">
           <Link to="/" className="brand">
-            <div className="brand-logo">DV</div>
+            <div className="brand-logo">
+              <img
+                src={theme === "dark" ? darkIcon : lightIcon}
+                alt="VitaVision Logo"
+                style={{ width: "100%", height: "100%", objectFit: "contain" }}
+              />
+            </div>
             <div>
               <div style={{ fontWeight: 600 }}>Vitaly V.</div>
               <div className="brand-sub">Computer Vision • 3D • Robotics</div>

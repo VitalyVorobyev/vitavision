@@ -37,7 +37,7 @@ const Hero = () => {
                             Featured Areas
                         </div>
                         <div className="tag-cloud" style={{ marginTop: 12 }}>
-                            {["Calibration","Stereo","SLAM","Inspection","Optimization","WASM"].map(t => (
+                            {["Calibration","Stereo","3D","Inspection","Optimization"].map(t => (
                                 <span key={t} className="badge secondary">{t}</span>
                             ))}
                         </div>
@@ -123,7 +123,7 @@ const AboutCard = () => {
                 </p>
                 <Separator />
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    {["C++", "Rust", "Python", "TypeScript", "OpenCV", "Eigen", "WebAssembly"].map(s => <span key={s} className="badge outline">{s}</span>)}
+                    {["C++", "Rust", "Python", "TypeScript", "OpenCV", "Eigen"].map(s => <span key={s} className="badge outline">{s}</span>)}
                 </div>
             </div>
             <div className="card-footer">

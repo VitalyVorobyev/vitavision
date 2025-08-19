@@ -5,7 +5,9 @@ const useTheme = () => {
         try {
             const ls = localStorage.getItem("theme");
             if (ls === "light" || ls === "dark") return ls;
-        } catch {}
+        } catch {
+            console.error("Error reading theme from localStorage");
+        }
         return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     };
 
@@ -17,7 +19,11 @@ const useTheme = () => {
         } else {
             root.classList.add("light");
         }
-        try { localStorage.setItem("theme", theme); } catch {}
+        try {
+            localStorage.setItem("theme", theme);
+        } catch {
+            console.error("Error saving theme to localStorage");
+        }
     }, [theme]);
     return { theme, setTheme };
 }

@@ -13,14 +13,14 @@ export const DEMOS: Demo[] = [
     {
         slug: "annotation",
         title: "Image Annotation",
-        blurb: "Visual image annotation.",
+        blurb: "Interactive visual image annotation with simple geometric shapes.",
         tags: ["image-processing", "filters"],
         externalUrl: "https://annotation.vitavision.dev"
     },
     {
         slug: "calibration",
         title: "Camera Calibration",
-        blurb: "Interactive camera calibration tool.",
+        blurb: "Interactive camera calibration tool with advanced optimization algorithms",
         tags: ["calibration", "opencv", "geometry"],
         Component: CameraCalibDemo
     }

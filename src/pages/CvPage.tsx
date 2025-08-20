@@ -117,6 +117,7 @@ const Skills = () => {
 };
 
 const Education = () => {
+    const style = { color: "var(--muted)", fontSize: 14 };
     return (
         <Card>
             <div className="card-header">
@@ -125,14 +126,14 @@ const Education = () => {
                 </h3>
             </div>
             <div className="card-content">
-                <div style={{ color: "var(--muted)", fontSize: 14 }}>
+                <div style={style}>
                     B.Sc. in Physics (Novosibirsk State University, 2009)
                 </div>
-                <div style={{ color: "var(--muted)", fontSize: 14 }}>
+                <div style={style}>
                     M.Sc. in Particle Physics (Novosibirsk State University, 2011)
                 </div>
-                <div style={{ color: "var(--muted)", fontSize: 14 }}>
-                    PhD in Particle Physics (Budker Institute of Nuclear Physics, 2026)
+                <div style={style}>
+                    PhD in Particle Physics (Budker Institute of Nuclear Physics, 2016)
                 </div>
             </div>
         </Card>

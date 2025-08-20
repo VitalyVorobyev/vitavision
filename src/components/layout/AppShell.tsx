@@ -9,14 +9,15 @@ import {
   FlaskConical,
   Sun,
   Moon,
-  Github,
-  Linkedin,
-  // Mail,
-  // Download
 } from "lucide-react";
 import { classNames } from "../../utils/helpers";
 
 import useTheme from "../../hooks/useTheme";
+
+import linkedinIconLight from "/InBug-White.png";
+import linkedinIconDark from "/InBug-Black.png";
+import githubIcon from "/github-mark.svg";
+import githubIconLight from "/github-mark-light.svg";
 import lightIcon from "/icon-512.svg";
 import darkIcon from "/icon-512-dark.svg";
 
@@ -58,8 +59,12 @@ const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </nav>
 
           <div className="actions">
-            <a href="https://github.com/VitalyVorobyev" target="_blank" rel="noreferrer" className="icon-btn" aria-label="GitHub"><Github size={18} /></a>
-            <a href="https://www.linkedin.com/in/vitaly-vorobyev" target="_blank" rel="noreferrer" className="icon-btn" aria-label="LinkedIn"><Linkedin size={18} /></a>
+            <a href="https://github.com/VitalyVorobyev" target="_blank" rel="noreferrer" className="icon-btn" aria-label="GitHub">
+              <img src={theme === "dark" ? githubIconLight : githubIcon} alt="GitHub" width="18" height="18" />
+            </a>
+            <a href="https://www.linkedin.com/in/vitaly-vorobyev" target="_blank" rel="noreferrer" className="icon-btn" aria-label="LinkedIn">
+              <img src={theme === "dark" ? linkedinIconLight : linkedinIconDark} alt="LinkedIn" width="18" height="18" />
+            </a>
             <button className="icon-btn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme">
               {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
             </button>

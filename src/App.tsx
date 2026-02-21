@@ -1,29 +1,29 @@
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
+import Editor from './pages/Editor';
+import Navbar from './components/layout/Navbar';
+import Footer from './components/layout/Footer';
+import './index.css';
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AppShell from "./components/layout/AppShell";
-
-import HomePage from "./pages/HomePage";
-import CvPage from "./pages/CvPage";
-import BlogPage from "./pages/BlogPage";
-import BlogPostPage from "./pages/BlogPostPage";
-import DemosPage from "./pages/DemosPage";
-import DemoDetailPage from "./pages/DemoDetailPage";
-
-
-export default function App() {
+function App() {
     return (
-        <Router basename={import.meta.env.BASE_URL}>
-            <AppShell>
-                <Routes>
-                    <Route path="/" element={<HomePage/>} />
-                    <Route path="/cv" element={<CvPage/>} />
-                    <Route path="/blog" element={<BlogPage/>} />
-                    <Route path="/blog/:id" element={<BlogPostPage/>} />
-                    <Route path="/demos" element={<DemosPage/>} />
-                    <Route path="/demos/:slug" element={<DemoDetailPage/>} />
-                </Routes>
-            </AppShell>
+        <Router>
+            <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
+                <Navbar />
+                <main className="flex-1">
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/blog" element={<Blog />} />
+                        <Route path="/blog/:slug" element={<BlogPost />} />
+                        <Route path="/editor" element={<Editor />} />
+                    </Routes>
+                </main>
+                <Footer />
+            </div>
         </Router>
     );
-};
+}
+
+export default App;

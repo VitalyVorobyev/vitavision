@@ -53,6 +53,12 @@ export interface EllipseFeature extends BaseFeature {
 
 export type Feature = PointFeature | LineFeature | PolylineFeature | BBoxFeature | EllipseFeature;
 
+export interface GalleryImage {
+    id: string;
+    src: string;
+    name: string;
+}
+
 interface EditorState {
     imageSrc: string | null;
     imageWidth: number;
@@ -64,6 +70,10 @@ interface EditorState {
 
     zoom: number;
     pan: { x: number; y: number };
+    showFeatures: boolean;
+
+    galleryMode: boolean;
+    galleryImages: GalleryImage[];
 
     // Actions
     setImage: (src: string, width: number, height: number) => void;
@@ -77,6 +87,10 @@ interface EditorState {
 
     setZoom: (zoom: number) => void;
     setPan: (pan: { x: number; y: number }) => void;
+    setShowFeatures: (show: boolean) => void;
+
+    setGalleryMode: (mode: boolean) => void;
+    addGalleryImage: (img: GalleryImage) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -110,4 +124,17 @@ export const useEditorStore = create<EditorState>((set) => ({
 
     setZoom: (zoom) => set({ zoom }),
     setPan: (pan) => set({ pan }),
+
+    showFeatures: true,
+    setShowFeatures: (show: boolean) => set({ showFeatures: show }),
+
+    // Gallery state
+    galleryMode: true, // Start in gallery mode by default
+    galleryImages: [
+        { id: '1', src: 'https://images.unsplash.com/photo-1549480017-d76466a4b7e8?auto=format&fit=crop&q=80&w=800', name: 'Sample Office' },
+        { id: '2', src: 'https://images.unsplash.com/photo-1517404215738-15263e9f9178?auto=format&fit=crop&q=80&w=800', name: 'Sample Street' },
+        { id: '3', src: 'https://images.unsplash.com/photo-1563207153-f404bef274b6?auto=format&fit=crop&q=80&w=800', name: 'Sample Portrait' }
+    ],
+    setGalleryMode: (mode) => set({ galleryMode: mode }),
+    addGalleryImage: (img) => set((state) => ({ galleryImages: [...state.galleryImages, img] }))
 }));

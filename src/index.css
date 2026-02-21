@@ -4,29 +4,32 @@
 
 @layer base {
   :root {
-    --background: 240 10% 98%;
-    --foreground: 240 10% 10%;
-    
-    --muted: 240 5% 90%;
-    --muted-foreground: 240 5% 40%;
-    
-    --border: 240 5% 84%;
-    
+    /* Warmer, slightly lower contrast light theme */
+    --background: 40 15% 97%;
+    --foreground: 40 15% 15%;
+
+    --muted: 40 10% 90%;
+    --muted-foreground: 40 10% 45%;
+
+    --border: 40 10% 86%;
+
     --primary: 240 100% 50%;
+    /* Keeping some accent logic if needed, but softer could be 240 80% 60% */
     --primary-foreground: 0 0% 100%;
   }
 
   .dark {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
-    
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 65%;
-    
-    --border: 240 5% 20%;
-    
-    --primary: 240 100% 50%;
-    --primary-foreground: 0 0% 100%;
+    /* Lower contrast dark theme */
+    --background: 240 6% 10%;
+    --foreground: 0 0% 90%;
+
+    --muted: 240 5% 18%;
+    --muted-foreground: 240 5% 60%;
+
+    --border: 240 5% 25%;
+
+    --primary: 240 100% 65%;
+    --primary-foreground: 240 10% 10%;
   }
 }
 
@@ -34,13 +37,19 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  
+
   /* Additional sleek/brutalist typography touches for later */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply tracking-tight font-semibold;
   }
 }

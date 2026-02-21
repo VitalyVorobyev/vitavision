@@ -17,21 +17,29 @@ export interface UploadResponse {
  * Uploads an image blob to Cloudflare R2.
  */
 export async function uploadToR2(file: File | Blob, path: string): Promise<UploadResponse> {
-    // STUB: Fetch presigned URL from API
-    // const { presignedUrl } = await api.getPresignedUrl(path);
+    try {
+        // 1. Fetch presigned URL from API
+        const response = await fetch(`http://localhost:8000/api/v1/storage/presigned-url?filename=${encodeURIComponent(path)}&content_type=${encodeURIComponent(file.type)}`);
+        if (!response.ok) {
+            throw new Error('Failed to get presigned URL from backend');
+        }
 
-    // STUB: Upload directly to R2
-    // await fetch(presignedUrl, {
-    //   method: 'PUT',
-    //   body: file,
-    //   headers: { 'Content-Type': file.type }
-    // });
+        const { uploadUrl, key, publicUrl } = await response.json();
 
-    console.log(`[Stub] Uploaded file of size ${file.size} to R2 path: ${path}`);
-    return {
-        url: `https://cdn.vitavision.example.com/${path}`,
-        path
-    };
+        // 2. Upload directly to R2
+        // Since it's a mock uploadUrl right now, we will just log it and simulate.
+        // In reality, you'd do:
+        // await fetch(uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
+        console.log(`[Backend connected] Uploading to presigned URL: ${uploadUrl}`);
+
+        return {
+            url: publicUrl,
+            path: key
+        };
+    } catch (e) {
+        console.error("Storage upload error:", e);
+        throw e;
+    }
 }
 
 /**

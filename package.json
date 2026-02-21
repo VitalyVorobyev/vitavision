@@ -11,17 +11,23 @@
   },
   "dependencies": {
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/uuid": "^10.0.0",
     "framer-motion": "^12.34.3",
     "katex": "^0.16.28",
+    "konva": "^10.2.0",
     "lucide-react": "^0.539.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-konva": "^19.2.2",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.13.0",
     "react-syntax-highlighter": "^16.1.0",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
-    "vite-plugin-markdown": "^2.2.0"
+    "use-image": "^1.1.4",
+    "uuid": "^13.0.0",
+    "vite-plugin-markdown": "^2.2.0",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.3",

@@ -22,48 +22,70 @@ export interface CalibrationRequest {
     points: Point2D[];
 }
 
-export interface CalibrationResponse {
+export interface CalibrationResult {
     camera_matrix: number[][]; // 3x3
     dist_coeffs: number[];     // 1x5
     reprojection_error: number;
 }
 
-/**
- * Invokes the camera calibration pipeline on the backend
- */
-export async function runCalibration(request: CalibrationRequest): Promise<CalibrationResponse> {
-    // STUB: POST /api/v1/cv/calibrate
-    // const res = await fetch('/api/v1/cv/calibrate', { method: 'POST', body: JSON.stringify(request) });
-    // return res.json();
-
-    console.log("[Stub] Ran calibration on points:", request.points.length);
-    return {
-        camera_matrix: [[1000, 0, 320], [0, 1000, 240], [0, 0, 1]],
-        dist_coeffs: [0, 0, 0, 0, 0],
-        reprojection_error: 0.5
-    };
-}
-
-export interface FeatureDetectionRequest {
-    image_url: string;
-    roi?: BoundingBox;
-}
-
-export interface FeatureDetectionResponse {
+// Renamed from FeatureDetectionResponse to FeatureDetectionResult to match new function signature
+export interface FeatureDetectionResult {
     keypoints: Point2D[];
     descriptors?: number[][];
 }
 
+const API_BASE_URL = 'http://localhost:8000/api/v1';
+
+/**
+ * Invokes the camera calibration pipeline on the backend
+ */
+export const calibrateCamera = async (images: string[]): Promise<CalibrationResult> => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/cv/calibrate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ images }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to calibrate camera');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Calibration error:", error);
+        throw error;
+    }
+};
+
 /**
  * Invokes a feature detector (e.g. SIFT, ORB) on the backend
  */
-export async function detectFeatures(request: FeatureDetectionRequest): Promise<FeatureDetectionResponse> {
-    // STUB: POST /api/v1/cv/detect-features
-    console.log("[Stub] Detecting features inside ROI?", !!request.roi);
-    return {
-        keypoints: [
-            { x: 100, y: 150 },
-            { x: 200, y: 250 }
-        ]
-    };
-}
+export const detectFeatures = async (imageUrl: string, prompt: string = ""): Promise<FeatureDetectionResult> => {
+    try {
+        // Prepare URL params
+        const url = new URL(`${API_BASE_URL}/cv/detect-features`);
+        url.searchParams.append('image_url', imageUrl);
+        if (prompt) {
+            url.searchParams.append('prompt', prompt);
+        }
+
+        const response = await fetch(url.toString(), {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to detect features');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Feature detection error:", error);
+        throw error;
+    }
+};

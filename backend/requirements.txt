@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+boto3
+opencv-python-headless
+python-dotenv

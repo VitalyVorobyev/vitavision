@@ -37,37 +37,6 @@ jobs:
           # Set in GitHub repo secrets → points to Hetzner backend in production
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
-      # Upload dist/ so the deploy job can grab it without rebuilding
-      - name: Upload dist artifact
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist/
-          retention-days: 1
-
-  # ── Deploy frontend to Cloudflare Pages (main only) ──────────────────────
-  deploy-pages:
-    needs: build-frontend
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download dist artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=vitavision
-
   # ── Build backend Docker image and push to GHCR (main only) ──────────────
   build-backend:
     if: github.ref == 'refs/heads/main'

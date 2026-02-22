@@ -105,7 +105,9 @@ def test_local_upload_empty_body_rejected():
         content=b"",
         headers={"Content-Type": "image/png"},
     )
-    assert resp.status_code == 400
+    # FastAPI rejects missing/empty Body(...) at validation time (422),
+    # before the endpoint's explicit `if not body` check (400).
+    assert resp.status_code in (400, 422)
 
 
 # ── CV / Chess Corners ────────────────────────────────────────────────────────

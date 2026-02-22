@@ -227,9 +227,7 @@ export const useEditorStore = create<EditorState>((set) => ({
 
     galleryMode: true,
     galleryImages: [
-        { id: '1', src: 'https://images.unsplash.com/photo-1549480017-d76466a4b7e8?auto=format&fit=crop&q=80&w=800', name: 'Sample Office' },
-        { id: '2', src: 'https://images.unsplash.com/photo-1517404215738-15263e9f9178?auto=format&fit=crop&q=80&w=800', name: 'Sample Street' },
-        { id: '3', src: 'https://images.unsplash.com/photo-1563207153-f404bef274b6?auto=format&fit=crop&q=80&w=800', name: 'Sample Portrait' },
+        { id: '1', src: '/Im_L_6.png', name: 'Chessboard' },
     ],
     setGalleryMode: (mode) => set({ galleryMode: mode }),
     addGalleryImage: (img) => set((state) => ({ galleryImages: [...state.galleryImages, img] })),

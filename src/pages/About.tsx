@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 const SKILLS = ["Computer vision", "Machine learning", "Algorithms", "C++", "Rust", "Python", "TypeScript", "React"];
 
 const CAREER = [
-    { role: "", place: "QUISS GmbH", period: "2022 – present" },
+    { role: "Computer vision software", place: "QUISS GmbH", period: "2022 – present" },
     { role: "Lecturer", place: "Novosibirsk State University", period: "2011 – 2022" },
     { role: "Particle Physics", place: "Budker Institute of Nuclear Physics", period: "2009 – 2022" },
 ];
@@ -22,7 +22,7 @@ export default function About() {
                 {/* Photo */}
                 <div className="w-full flex justify-center md:block md:w-auto shrink-0">
                     <img
-                        src="/VVAvatar.png"
+                        src="/VVAvatar.jpg"
                         alt="Vitaly Vorobyev"
                         className="w-52 md:w-64 aspect-square object-cover rounded-2xl border border-border"
                     />

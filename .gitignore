@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 setenv.sh
+
+# Python backend artifacts
+__pycache__/
+*.pyc
+backend/local_storage/

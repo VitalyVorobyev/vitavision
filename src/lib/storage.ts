@@ -1,51 +1,63 @@
-/**
- * Cloudflare R2 Direct Communication Stubs
- * 
- * This module defines the interface for communicating directly with
- * Cloudflare R2 from the frontend to minimize backend bandwidth.
- */
+import { API_BASE_URL } from "./http";
 
-// In a real implementation, you would likely fetch a pre-signed URL from your FastAPI backend
-// and then use that URL to upload the blob directly to R2.
+export type StorageMode = "r2" | "local";
 
-export interface UploadResponse {
-    url: string;
-    path: string;
+export interface UploadTicketRequest {
+    filename: string;
+    contentType: string;
+    storageMode?: StorageMode;
 }
 
-/**
- * Uploads an image blob to Cloudflare R2.
- */
-export async function uploadToR2(file: File | Blob, path: string): Promise<UploadResponse> {
-    try {
-        // 1. Fetch presigned URL from API
-        const response = await fetch(`http://localhost:8000/api/v1/storage/presigned-url?filename=${encodeURIComponent(path)}&content_type=${encodeURIComponent(file.type)}`);
-        if (!response.ok) {
-            throw new Error('Failed to get presigned URL from backend');
-        }
+export interface UploadTicket {
+    storage_mode: StorageMode;
+    bucket: string;
+    key: string;
+    upload: {
+        url: string;
+        method: "PUT";
+        headers: Record<string, string>;
+    };
+    preview_url: string | null;
+    expires_in_seconds: number;
+}
 
-        const { uploadUrl, key, publicUrl } = await response.json();
+function normalizeContentType(contentType: string): string {
+    return contentType || "application/octet-stream";
+}
 
-        // 2. Upload directly to R2
-        // Since it's a mock uploadUrl right now, we will just log it and simulate.
-        // In reality, you'd do:
-        // await fetch(uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
-        console.log(`[Backend connected] Uploading to presigned URL: ${uploadUrl}`);
+export async function createUploadTicket(payload: UploadTicketRequest): Promise<UploadTicket> {
+    const response = await fetch(`${API_BASE_URL}/storage/upload-ticket`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            filename: payload.filename,
+            content_type: normalizeContentType(payload.contentType),
+            storage_mode: payload.storageMode,
+        }),
+    });
 
-        return {
-            url: publicUrl,
-            path: key
-        };
-    } catch (e) {
-        console.error("Storage upload error:", e);
-        throw e;
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Failed to create upload ticket: ${response.status} ${text}`);
     }
+
+    return response.json() as Promise<UploadTicket>;
 }
 
-/**
- * Deletes a file from R2 via the backend.
- */
-export async function deleteFromR2(path: string): Promise<boolean> {
-    console.log(`[Stub] Deleted file from R2 path: ${path}`);
-    return true;
+export async function uploadWithTicket(file: Blob, ticket: UploadTicket): Promise<void> {
+    const headers = new Headers(ticket.upload.headers);
+    if (!headers.has("Content-Type") && file.type) {
+        headers.set("Content-Type", file.type);
+    }
+
+    const response = await fetch(ticket.upload.url, {
+        method: ticket.upload.method,
+        headers,
+        body: file,
+    });
+
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Upload failed: ${response.status} ${text}`);
+    }
 }

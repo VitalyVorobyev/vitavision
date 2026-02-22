@@ -34,6 +34,12 @@ export default function Navbar() {
                     Editor
                 </Link>
                 <Link
+                    to="/chess-corners"
+                    className={`hover:text-foreground transition-colors ${location.pathname.startsWith('/chess-corners') ? 'text-foreground' : 'text-muted-foreground'}`}
+                >
+                    Corners
+                </Link>
+                <Link
                     to="/blog"
                     className={`hover:text-foreground transition-colors ${location.pathname.startsWith('/blog') ? 'text-foreground' : 'text-muted-foreground'}`}
                 >

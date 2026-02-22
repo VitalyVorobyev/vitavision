@@ -92,8 +92,24 @@ def sanitize_filename(filename: str) -> str:
     return sanitized or "image.bin"
 
 
+_UUID_PREFIX_LEN = 37  # 36-char UUID + 1 hyphen
+_MAX_SAFE_NAME = 200  # keeps full basename well under the 255-byte ext4 limit
+
+
+def _truncate_filename(name: str, max_len: int) -> str:
+    """Truncate *name* to *max_len* chars while preserving its extension."""
+    if len(name) <= max_len:
+        return name
+    dot = name.rfind(".")
+    if dot > 0:
+        ext = name[dot:]          # e.g. ".png"
+        stem = name[:dot][:max_len - len(ext)]
+        return stem + ext
+    return name[:max_len]
+
+
 def build_object_key(filename: str) -> str:
-    safe_name = sanitize_filename(filename)
+    safe_name = _truncate_filename(sanitize_filename(filename), _MAX_SAFE_NAME)
     upload_prefix = os.getenv("STORAGE_UPLOAD_PREFIX", DEFAULT_UPLOAD_PREFIX).strip("/")
     if not upload_prefix:
         upload_prefix = DEFAULT_UPLOAD_PREFIX

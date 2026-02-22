@@ -72,6 +72,13 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                             draggable={canEditGeometry}
                             onClick={() => setSelectedFeatureId(feature.id)}
                             onTap={() => setSelectedFeatureId(feature.id)}
+                            onDragEnd={(event) => {
+                                const dx = event.target.x();
+                                const dy = event.target.y();
+                                event.target.position({ x: 0, y: 0 });
+                                const points = feature.points.map((v, i) => v + (i % 2 === 0 ? dx : dy));
+                                updateFeature(feature.id, { points } as Partial<Feature>);
+                            }}
                         />
                     );
                 }
@@ -86,6 +93,13 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                             draggable={canEditGeometry}
                             onClick={() => setSelectedFeatureId(feature.id)}
                             onTap={() => setSelectedFeatureId(feature.id)}
+                            onDragEnd={(event) => {
+                                const dx = event.target.x();
+                                const dy = event.target.y();
+                                event.target.position({ x: 0, y: 0 });
+                                const points = feature.points.map((v, i) => v + (i % 2 === 0 ? dx : dy));
+                                updateFeature(feature.id, { points } as Partial<Feature>);
+                            }}
                         />
                     );
                 }

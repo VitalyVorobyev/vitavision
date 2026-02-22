@@ -2,34 +2,138 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Multi-theme CSS variable architecture.
+ *
+ * Three theme variants × two modes (light / dark).
+ * next-themes applies `.dark` to <html>.
+ * useThemeVariant applies `.theme-aubergine`, `.theme-pine`, or `.theme-oxblood` to <html>.
+ *
+ * Combined selectors:
+ *   .theme-aubergine          → light
+ *   .dark.theme-aubergine     → dark
+ *   etc.
+ *
+ * All values are HSL channels only (no hsl() wrapper) because tailwind.config.js
+ * wraps them: `hsl(var(--background))`.
+ */
+
 @layer base {
-  :root {
-    /* Warmer, slightly lower contrast light theme */
-    --background: 40 15% 97%;
-    --foreground: 40 15% 15%;
 
-    --muted: 40 10% 90%;
-    --muted-foreground: 40 10% 45%;
+  /* ─────────────────────────────────────────────
+   * THEME 1 — Aubergine (paper-warm + violet ink)
+   * ───────────────────────────────────────────── */
 
-    --border: 40 10% 86%;
-
-    --primary: 240 100% 50%;
-    /* Keeping some accent logic if needed, but softer could be 240 80% 60% */
+  .theme-aubergine {
+    --background:        38 50% 96%;   /* #FBF7F1 */
+    --surface:           0 0% 100%;    /* #FFFFFF  */
+    --foreground:        20 14% 10%;   /* #1C1917  */
+    --muted:             28 21% 90%;
+    --muted-foreground:  22 8% 39%;    /* #6B625B  */
+    --border:            28 21% 87%;   /* #E7DED5  */
+    --accent:            279 49% 34%;  /* #5B2B82  */
+    --accent-soft:       278 50% 93%;  /* #EFE6F7  */
+    --accent-2:          279 49% 34%;  /* same as accent — no copper in this theme */
+    --primary:           262 83% 65%;  /* #8B5CF6  */
     --primary-foreground: 0 0% 100%;
   }
 
-  .dark {
-    /* Lower contrast dark theme */
-    --background: 240 6% 10%;
-    --foreground: 0 0% 90%;
+  .dark.theme-aubergine {
+    --background:        270 23% 6%;   /* #0D0B0F  */
+    --surface:           270 20% 9%;   /* #15121A  */
+    --foreground:        38 28% 92%;   /* #F1EDE6  */
+    --muted:             270 14% 14%;
+    --muted-foreground:  24 11% 67%;   /* #B7ADA3  */
+    --border:            270 14% 16%;  /* #2A2430  */
+    --accent:            270 100% 82%; /* #C5A3FF  */
+    --accent-soft:       270 25% 14%;  /* #231A2C  */
+    --accent-2:          270 100% 82%; /* same as accent */
+    --primary:           262 83% 65%;  /* #8B5CF6  */
+    --primary-foreground: 270 20% 9%;
+  }
 
-    --muted: 240 5% 18%;
-    --muted-foreground: 240 5% 60%;
+  /* ─────────────────────────────────────────────
+   * THEME 2 — Pine + Copper (user's favorite)
+   * ───────────────────────────────────────────── */
 
-    --border: 240 5% 25%;
+  .theme-pine {
+    --background:        38 45% 96%;   /* #FAF6EF */
+    --surface:           0 0% 100%;    /* #FFFFFF  */
+    --foreground:        30 13% 9%;    /* #1B1916  */
+    --muted:             28 20% 90%;
+    --muted-foreground:  30 8% 40%;    /* #6F665D  */
+    --border:            28 20% 86%;   /* #E6DDD2  */
+    --accent:            175 79% 26%;  /* #0F766E  */
+    --accent-soft:       175 40% 92%;  /* #E7F4F2  */
+    --accent-2:          32 91% 37%;   /* #B45309  copper */
+    --primary:           175 79% 26%;  /* teal as primary */
+    --primary-foreground: 0 0% 100%;
+  }
 
-    --primary: 240 100% 65%;
-    --primary-foreground: 240 10% 10%;
+  .dark.theme-pine {
+    --background:        165 18% 6%;   /* #0B0F0E  */
+    --surface:           160 14% 8%;   /* #121816  */
+    --foreground:        38 29% 92%;   /* #F2EEE6  */
+    --muted:             155 15% 13%;
+    --muted-foreground:  28 10% 67%;   /* #B9B0A6  */
+    --border:            155 15% 16%;  /* #23302B  */
+    --accent:            170 73% 64%;  /* #5EEAD4  */
+    --accent-soft:       165 35% 9%;   /* #0F1F1B  */
+    --accent-2:          31 97% 72%;   /* #FDBA74  copper */
+    --primary:           170 73% 64%;
+    --primary-foreground: 165 18% 6%;
+  }
+
+  /* ─────────────────────────────────────────────
+   * THEME 3 — Oxblood (editorial, research notes)
+   * ───────────────────────────────────────────── */
+
+  .theme-oxblood {
+    --background:        33 47% 96%;   /* #FBF6F0 */
+    --surface:           0 0% 100%;    /* #FFFFFF  */
+    --foreground:        22 14% 11%;   /* #1F1A17  */
+    --muted:             25 21% 90%;
+    --muted-foreground:  22 9% 39%;    /* #6E625A  */
+    --border:            25 21% 86%;   /* #E7DDD3  */
+    --accent:            351 59% 30%;  /* #7A1F2B  */
+    --accent-soft:       351 50% 93%;  /* #F6E6E8  */
+    --accent-2:          351 59% 30%;  /* same as accent */
+    --primary:           351 59% 30%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  .dark.theme-oxblood {
+    --background:        340 18% 6%;   /* #0F0B0C  */
+    --surface:           345 18% 8%;   /* #171112  */
+    --foreground:        30 29% 92%;   /* #F3EDE7  */
+    --muted:             345 21% 11%;
+    --muted-foreground:  22 10% 67%;   /* #B8ACA3  */
+    --border:            345 21% 13%;  /* #2A1B1E  */
+    --accent:            350 100% 85%; /* #FFB4BE  */
+    --accent-soft:       350 30% 11%;  /* #241315  */
+    --accent-2:          350 100% 85%; /* same as accent */
+    --primary:           350 100% 85%;
+    --primary-foreground: 345 18% 8%;
+  }
+
+  /* ─────────────────────────────────────────────
+   * Fallback: bare :root maps to aubergine light
+   * so the app renders correctly before JS hydrates
+   * the theme class.
+   * ───────────────────────────────────────────── */
+
+  :root {
+    --background:        38 50% 96%;
+    --surface:           0 0% 100%;
+    --foreground:        20 14% 10%;
+    --muted:             28 21% 90%;
+    --muted-foreground:  22 8% 39%;
+    --border:            28 21% 87%;
+    --accent:            279 49% 34%;
+    --accent-soft:       278 50% 93%;
+    --accent-2:          279 49% 34%;
+    --primary:           262 83% 65%;
+    --primary-foreground: 0 0% 100%;
   }
 }
 
@@ -39,11 +143,18 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+    @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Selection color uses accent tokens so it adapts per theme */
+    --tw-selection-bg: hsl(var(--accent-soft));
+    --tw-selection-color: hsl(var(--accent));
   }
 
-  /* Additional sleek/brutalist typography touches for later */
+  ::selection {
+    background-color: hsl(var(--accent-soft));
+    color: hsl(var(--foreground));
+  }
+
   h1,
   h2,
   h3,

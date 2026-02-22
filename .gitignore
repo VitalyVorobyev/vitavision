@@ -30,3 +30,5 @@ secrets.txt
 __pycache__/
 *.pyc
 backend/local_storage/
+backend/.env
+.venv/

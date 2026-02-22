@@ -9,38 +9,119 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
+  packages: write  # push Docker image to GHCR
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  # ── Frontend: lint + build ────────────────────────────────────────────────
+  build-frontend:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
+      - uses: oven-sh/setup-bun@v2
 
       - name: Install
-        run: npm ci
+        run: bun install --frozen-lockfile
 
       - name: Lint
-        run: npm run lint --if-present
-
-      - name: Typecheck
-        run: npm run typecheck --if-present
-
-      - name: Test
-        run: npm test --if-present
+        run: bun run lint
 
       - name: Build
-        run: npm run build
+        run: bun run build
+        env:
+          # Set in GitHub repo secrets → points to Hetzner backend in production
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+
+      # Upload dist/ so the deploy job can grab it without rebuilding
+      - name: Upload dist artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  # ── Deploy frontend to Cloudflare Pages (main only) ──────────────────────
+  deploy-pages:
+    needs: build-frontend
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=vitavision
+
+  # ── Build backend Docker image and push to GHCR (main only) ──────────────
+  build-backend:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/vitavision-backend
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=sha-
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+  # ── Deploy backend to Hetzner via SSH (after image is pushed) ────────────
+  deploy-hetzner:
+    needs: build-backend
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Hetzner
+        uses: appleboy/ssh-action@v1
+        env:
+          IMAGE: ghcr.io/${{ github.repository_owner }}/vitavision-backend:latest
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          envs: IMAGE
+          script: |
+            docker pull $IMAGE
+            docker stop vitavision-backend || true
+            docker rm vitavision-backend || true
+            docker run -d \
+              --name vitavision-backend \
+              --env-file ~/vitavision/.env \
+              -p 8000:8000 \
+              --restart unless-stopped \
+              $IMAGE

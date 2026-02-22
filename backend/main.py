@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -14,11 +16,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configure CORS for local development against React
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+# CORS_ORIGINS: comma-separated list of allowed origins.
+# Default allows local Vite dev server.
+# Example for production: "https://vitavision.example.com,http://localhost:5173"
+_cors_env = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
+origins = [o.strip() for o in _cors_env.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,

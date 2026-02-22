@@ -31,6 +31,18 @@ uv pip install -r requirements.txt
 source ../setenv.sh   # loads R2 credentials (gitignored)
 ```
 
+### Docker (backend container)
+```bash
+# Build and run via docker compose (reads backend/.env)
+docker compose up --build
+
+# Or build/run the image directly
+docker build -t vitavision-backend ./backend
+docker run --env-file backend/.env -p 8000:8000 vitavision-backend
+```
+
+Copy `backend/.env.example` → `backend/.env` and fill in credentials before running Docker.
+
 ## Architecture Overview
 
 This is a computer vision web app with an image annotation editor and algorithm runner.
@@ -99,6 +111,12 @@ backend/
 | `S3_ENDPOINT` | none | R2 S3-compatible endpoint |
 | `S3_KEY_ID` / `S3_KEY_SECRET` | none | R2 credentials |
 | `LOCAL_STORAGE_ROOT` | `backend/local_storage` | Filesystem root for local mode |
-| `VITE_API_BASE_URL` | `http://localhost:8000/api/v1` | Frontend API base URL |
+| `CORS_ORIGINS` | `http://localhost:5173,...` | Comma-separated allowed origins |
+| `VITE_API_BASE_URL` | `http://localhost:8000/api/v1` | Frontend API base URL (baked in at build time) |
 
 For local-only dev (no R2), set `STORAGE_MODE=local` and skip `setenv.sh`.
+
+To point the local frontend at the remote Hetzner backend, create `.env.local` (gitignored) in the repo root:
+```
+VITE_API_BASE_URL=http://46.225.132.107:8000/api/v1
+```

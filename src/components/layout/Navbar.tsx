@@ -105,6 +105,12 @@ export default function Navbar() {
                 >
                     Blog
                 </Link>
+                <Link
+                    to="/about"
+                    className={`hover:text-foreground transition-colors ${location.pathname === '/about' ? 'text-foreground' : 'text-muted-foreground'}`}
+                >
+                    About
+                </Link>
                 <a
                     href="https://github.com/vitalyvorobyev"
                     target="_blank"

@@ -22,3 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+setenv.sh
+secrets.txt
+
+# Python backend artifacts
+__pycache__/
+*.pyc
+backend/local_storage/
+backend/.env
+.venv/

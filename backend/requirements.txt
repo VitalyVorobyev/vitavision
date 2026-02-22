@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+boto3
+python-dotenv
+numpy
+pillow
+chess-corners

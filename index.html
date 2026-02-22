@@ -5,6 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/icon-256-dark.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VitaVision</title>
+    <!--
+      Anti-flash script: applies the stored theme-variant class to <html>
+      synchronously before any CSS or React renders. Runs once, inline, at
+      parse time — keeping the FOUC window to zero.
+    -->
+    <script>
+      (function () {
+        var VARIANTS = ['aubergine', 'pine', 'oxblood'];
+        var DEFAULT  = 'aubergine';
+        var stored;
+        try { stored = localStorage.getItem('theme-variant'); } catch (_) {}
+        var variant = VARIANTS.includes(stored) ? stored : DEFAULT;
+        document.documentElement.classList.add('theme-' + variant);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

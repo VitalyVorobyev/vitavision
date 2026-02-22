@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { MarkdownRenderer } from "../components/md/MarkdownRenderer";
-// @ts-ignore
-import examplePost from "../data/example.md?raw"; // Use Vite's raw import to load as string
+// @ts-expect-error — Vite raw import has no TypeScript module declaration
+import examplePost from "../data/example.md?raw";
 
 export default function BlogPost() {
     const { slug } = useParams();

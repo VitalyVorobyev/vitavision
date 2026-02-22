@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useThemeVariant, THEME_VARIANTS, VARIANT_SWATCHES, type ThemeVariant } from "../../hooks/useThemeVariant";
+import { useThemeVariant, type ThemeVariant } from "../../hooks/useThemeVariant";
+import { THEME_VARIANTS, VARIANT_SWATCHES } from "../../hooks/themeVariantConstants";
 
 // ── Dark / Light toggle ───────────────────────────────────────────────────────
 

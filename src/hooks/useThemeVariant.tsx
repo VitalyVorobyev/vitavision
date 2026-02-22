@@ -13,10 +13,9 @@
  */
 
 import { useState, useEffect, createContext, useContext } from 'react';
+import { type ThemeVariant, THEME_VARIANTS } from './themeVariantConstants';
 
-export type ThemeVariant = 'aubergine' | 'pine' | 'oxblood';
-
-export const THEME_VARIANTS: ThemeVariant[] = ['aubergine', 'pine', 'oxblood'];
+export type { ThemeVariant };
 
 const STORAGE_KEY = 'theme-variant';
 const DEFAULT_VARIANT: ThemeVariant = 'aubergine';
@@ -25,15 +24,6 @@ const VARIANT_CLASSES: Record<ThemeVariant, string> = {
     aubergine: 'theme-aubergine',
     pine: 'theme-pine',
     oxblood: 'theme-oxblood',
-};
-
-// ── Accent swatches shown in the picker UI ──────────────────────────────────
-// These are the light-mode accent hex values so the swatch is always readable
-// regardless of the current dark/light mode.
-export const VARIANT_SWATCHES: Record<ThemeVariant, { accent: string; label: string }> = {
-    aubergine: { accent: '#5B2B82', label: 'Aubergine' },
-    pine:      { accent: '#0F766E', label: 'Pine'      },
-    oxblood:   { accent: '#7A1F2B', label: 'Oxblood'   },
 };
 
 // ── Internal helpers ────────────────────────────────────────────────────────

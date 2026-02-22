@@ -28,9 +28,9 @@ export default function CanvasWorkspace() {
     } = useEditorStore();
 
     const [image] = useImage(imageSrc || "", "anonymous");
-    const stageRef = useRef<any>(null);
-    const layerRef = useRef<any>(null);
-    const transformerRef = useRef<any>(null);
+    const stageRef = useRef<Konva.Stage | null>(null);
+    const layerRef = useRef<Konva.Layer | null>(null);
+    const transformerRef = useRef<Konva.Transformer | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
@@ -59,7 +59,7 @@ export default function CanvasWorkspace() {
         const canvas = document.createElement("canvas");
         canvas.width = imageWidth;
         canvas.height = imageHeight;
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
         if (!ctx) {
             hiddenCanvasRef.current = null;
             return;
@@ -157,7 +157,7 @@ export default function CanvasWorkspace() {
         return transform.point(position);
     };
 
-    const handleWheel = (event: any) => {
+    const handleWheel = (event: Konva.KonvaEventObject<WheelEvent>) => {
         event.evt.preventDefault();
         const stage = stageRef.current;
         if (!stage) {
@@ -212,7 +212,7 @@ export default function CanvasWorkspace() {
         }
     };
 
-    const handleStageMouseDown = (event: any) => {
+    const handleStageMouseDown = (event: Konva.KonvaEventObject<MouseEvent>) => {
         const pos = getRelativePointerPosition();
         if (!pos) {
             return;
@@ -340,7 +340,7 @@ export default function CanvasWorkspace() {
     };
 
     const handleTransformEnd = (event: Konva.KonvaEventObject<Event>) => {
-        const node = event.target as any;
+        const node = event.target as Konva.Node;
         if (!selectedFeatureId) {
             return;
         }
@@ -356,12 +356,13 @@ export default function CanvasWorkspace() {
         node.scaleY(1);
 
         if (feature.type === "ellipse") {
+            const ellipseNode = node as Konva.Ellipse;
             updateFeature(selectedFeatureId, {
-                x: node.x(),
-                y: node.y(),
-                radiusX: Math.max(5, node.radiusX() * scaleX),
-                radiusY: Math.max(5, node.radiusY() * scaleY),
-                rotation: node.rotation(),
+                x: ellipseNode.x(),
+                y: ellipseNode.y(),
+                radiusX: Math.max(5, ellipseNode.radiusX() * scaleX),
+                radiusY: Math.max(5, ellipseNode.radiusY() * scaleY),
+                rotation: ellipseNode.rotation(),
             });
             return;
         }

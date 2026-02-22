@@ -112,15 +112,6 @@ export default function Navbar() {
                 >
                     About
                 </Link>
-                <a
-                    href="https://github.com/vitalyvorobyev"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                    GitHub
-                </a>
-
                 {/* Thin separator between nav links and controls */}
                 <NavDivider />
 

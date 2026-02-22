@@ -30,8 +30,9 @@ const toFeatures = (result: ChessCornersResult, runId: string): Feature[] => {
         algorithmId: "chess-corners",
         runId,
         readonly: true,
-        x: corner.x,
-        y: corner.y,
+        // Detector origin is center of top-left pixel; canvas origin is its top-left corner.
+        x: corner.x + 0.5,
+        y: corner.y + 0.5,
         direction: {
             dx: corner.direction.dx,
             dy: corner.direction.dy,

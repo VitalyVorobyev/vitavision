@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
 import { MarkdownRenderer } from "../components/md/MarkdownRenderer";
-// @ts-expect-error — Vite raw import has no TypeScript module declaration
 import examplePost from "../data/example.md?raw";
 
 export default function BlogPost() {

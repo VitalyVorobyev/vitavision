@@ -6,7 +6,7 @@ This document describes the service architecture and how to run the project in d
 
 ```mermaid
 flowchart LR
-    A["Browser UI (/chess-corners)"] --> B["FastAPI backend (/api/v1/storage/upload-ticket)"]
+    A["Browser UI (/editor -> Algorithms tab)"] --> B["FastAPI backend (/api/v1/storage/upload-ticket)"]
     B --> C["Storage mode resolver (r2 | local | auto)"]
     C --> D["R2 presigned PUT URL"]
     C --> E["Local upload endpoint"]
@@ -24,7 +24,11 @@ flowchart LR
 
 | Component | Path | Responsibility |
 |---|---|---|
-| Frontend prototype page | `src/pages/ChessCornersPage.tsx` | File selection, upload pipeline execution, and detection visualization. |
+| Editor composition root | `src/pages/Editor.tsx` | Integrates toolbar, canvas, features panel, and algorithms panel. |
+| Algorithm panel | `src/components/editor/panels/AlgorithmPanel.tsx` | Algorithm selection, config, run status, and run summary. |
+| Feature panel | `src/components/editor/panels/FeatureListPanel.tsx` | Unified manual + algorithm feature list and selection details. |
+| Feature rendering layer | `src/components/editor/canvas/FeatureLayer.tsx` | Renders all persisted feature types including directed points. |
+| Directed point primitive | `src/components/editor/canvas/primitives/DirectedPointGlyph.tsx` | Reusable corner glyph with direction indicator and score styling. |
 | Storage API router | `backend/routers/storage.py` | Upload ticket creation, local upload endpoint, local object serving. |
 | CV API router | `backend/routers/cv.py` | Load image by storage key and run `chess_corners` detection. |
 | Storage service | `backend/services/storage_service.py` | Storage mode resolution, key generation, R2 client calls, local file I/O. |
@@ -85,11 +89,12 @@ npm run dev
 
 ### 3. Open the prototype
 
-- URL: `http://localhost:5173/chess-corners`
+- URL: `http://localhost:5173/editor`
 - Flow:
-  - Select image.
-  - Choose `Auto (prefer R2)`, `R2 only`, or `Local dev storage`.
-  - Click `Upload + Detect`.
+  - Select image from gallery (or upload one in gallery).
+  - Open `Algorithms` tab in right panel.
+  - Choose storage mode and algorithm config.
+  - Run algorithm.
 
 ## Recommended Dev Modes
 

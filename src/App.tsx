@@ -3,7 +3,6 @@ import Home from './pages/Home';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import Editor from './pages/Editor';
-import ChessCornersPage from './pages/ChessCornersPage';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import './index.css';
@@ -22,7 +21,6 @@ function App() {
                             <Route path="/blog" element={<Blog />} />
                             <Route path="/blog/:slug" element={<BlogPost />} />
                             <Route path="/editor" element={<Editor />} />
-                            <Route path="/chess-corners" element={<ChessCornersPage />} />
                         </Routes>
                     </main>
                     <Footer />

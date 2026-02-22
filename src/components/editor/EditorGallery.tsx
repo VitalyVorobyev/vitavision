@@ -3,32 +3,42 @@ import { Plus, Image as ImageIcon } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
 export default function EditorGallery() {
-    const { galleryImages, addGalleryImage, setImage, setGalleryMode, setFeatures, setZoom, setPan } = useEditorStore();
+    const {
+        galleryImages,
+        addGalleryImage,
+        setImage,
+        setGalleryMode,
+        setFeatures,
+        setZoom,
+        setPan,
+    } = useEditorStore();
 
     const handleFileUpload = () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = (e: any) => {
-            const file = e.target?.files?.[0];
-            if (!file) return;
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.onchange = (event: Event) => {
+            const target = event.target as HTMLInputElement;
+            const file = target.files?.[0];
+            if (!file) {
+                return;
+            }
 
             const url = URL.createObjectURL(file);
             addGalleryImage({
                 id: uuidv4(),
                 src: url,
-                name: file.name
+                name: file.name,
             });
         };
         input.click();
     };
 
-    const handleSelectImage = (src: string) => {
+    const handleSelectImage = (src: string, name: string) => {
         const img = new Image();
         img.src = src;
         img.onload = () => {
-            setImage(src, img.width, img.height);
-            // reset editor state for the new image
+            setImage(src, img.width, img.height, name);
             setFeatures([]);
             setZoom(1);
             setPan({ x: 0, y: 0 });
@@ -60,7 +70,7 @@ export default function EditorGallery() {
                     {galleryImages.map((img) => (
                         <div
                             key={img.id}
-                            onClick={() => handleSelectImage(img.src)}
+                            onClick={() => handleSelectImage(img.src, img.name)}
                             className="group cursor-pointer rounded-xl border border-border bg-background overflow-hidden hover:shadow-md transition-all hover:border-primary/50 flex flex-col"
                         >
                             <div className="aspect-video relative overflow-hidden bg-muted flex items-center justify-center">

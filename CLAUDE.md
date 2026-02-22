@@ -31,13 +31,12 @@ uv pip install -r requirements.txt
 source ../setenv.sh   # loads R2 credentials (gitignored)
 ```
 
-### Docker (backend container)
+### Docker (local dev)
 ```bash
-# Build and run via docker compose (reads backend/.env)
-docker compose up --build
-
-# Or build/run the image directly
+# Build image locally
 docker build -t vitavision-backend ./backend
+
+# Run with a local .env file
 docker run --env-file backend/.env -p 8000:8000 vitavision-backend
 ```
 
@@ -118,5 +117,25 @@ For local-only dev (no R2), set `STORAGE_MODE=local` and skip `setenv.sh`.
 
 To point the local frontend at the remote Hetzner backend, create `.env.local` (gitignored) in the repo root:
 ```
-VITE_API_BASE_URL=http://46.225.132.107:8000/api/v1
+VITE_API_BASE_URL=https://<hetzner-domain>/api/v1
+```
+
+### Production deployment (Hetzner)
+
+The server runs at `/opt/demos/` and is managed via docker compose. The stack has two services:
+
+- **`api`** — the FastAPI backend container (`ghcr.io/vitalyvorobyev/vitavision-backend:latest`), exposed only on port 8000 internally, env loaded from `/opt/demos/.env`
+- **`caddy`** — Caddy 2 reverse proxy, terminates TLS and forwards to `api`; config at `/opt/demos/Caddyfile`; data/config persisted in named volumes
+
+```
+/opt/demos/
+  docker-compose.yml   # defines api + caddy services
+  Caddyfile            # Caddy reverse proxy config
+  .env                 # backend env vars (gitignored on server)
+```
+
+CI pushes a new image to GHCR on every merge to `main`, then SSHes into the server and runs:
+```bash
+docker compose -f /opt/demos/docker-compose.yml pull
+docker compose -f /opt/demos/docker-compose.yml up -d
 ```

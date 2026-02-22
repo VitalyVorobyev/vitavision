@@ -37,6 +37,28 @@ jobs:
           # Set in GitHub repo secrets → points to Hetzner backend in production
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
+  # ── Backend: install deps + run tests ────────────────────────────────────
+  test-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        working-directory: backend
+        run: pip install -r requirements.txt -r requirements-test.txt
+
+      - name: Run tests
+        working-directory: backend
+        run: pytest tests/ -v
+        env:
+          STORAGE_MODE: local
+          LOCAL_STORAGE_ROOT: /tmp/vitavision-test-storage
+
   # ── Build backend Docker image and push to GHCR (main only) ──────────────
   build-backend:
     if: github.ref == 'refs/heads/main'
@@ -86,11 +108,7 @@ jobs:
           envs: IMAGE
           script: |
             docker pull $IMAGE
-            docker stop vitavision-backend || true
-            docker rm vitavision-backend || true
-            docker run -d \
-              --name vitavision-backend \
-              --env-file ~/vitavision/.env \
-              -p 8000:8000 \
-              --restart unless-stopped \
-              $IMAGE
+            cd /opt/demos
+            docker compose pull api
+            docker compose up -d --remove-orphans
+            docker image prune -f

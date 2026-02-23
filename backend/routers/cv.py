@@ -119,7 +119,7 @@ def _decode_grayscale_image(data: bytes) -> tuple[np.ndarray, int, int]:
     except UnidentifiedImageError as exc:
         raise HTTPException(status_code=400, detail="Uploaded object is not a supported image format") from exc
     except OSError as exc:
-        raise HTTPException(status_code=400, detail=f"Failed to decode image: {exc}") from exc
+        raise HTTPException(status_code=400, detail="Failed to decode image") from exc
 
     if arr.ndim != 2:
         raise HTTPException(status_code=400, detail="Expected a grayscale 2D image after decoding")

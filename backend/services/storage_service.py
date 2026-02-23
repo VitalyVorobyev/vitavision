@@ -164,7 +164,7 @@ def save_local_object(key: str, body: bytes) -> None:
 def load_local_object(key: str) -> bytes:
     path = local_path_for_key(key)
     if not path.exists():
-        raise HTTPException(status_code=404, detail=f"Local object not found for key: {key}")
+        raise HTTPException(status_code=404, detail="Object not found")
     return path.read_bytes()
 
 
@@ -186,7 +186,7 @@ def create_r2_upload_url(key: str, content_type: str) -> str:
             ExpiresIn=presign_expiry_seconds(),
         )
     except (BotoCoreError, ClientError) as exc:
-        raise HTTPException(status_code=500, detail=f"Failed to generate R2 presigned URL: {exc}") from exc
+        raise HTTPException(status_code=500, detail="Failed to generate upload URL") from exc
 
 
 def load_r2_object(key: str) -> bytes:
@@ -200,10 +200,10 @@ def load_r2_object(key: str) -> bytes:
     except ClientError as exc:
         code = exc.response.get("Error", {}).get("Code")
         if code in {"NoSuchKey", "404"}:
-            raise HTTPException(status_code=404, detail=f"R2 object not found for key: {key}") from exc
-        raise HTTPException(status_code=500, detail=f"Failed to fetch object from R2: {exc}") from exc
+            raise HTTPException(status_code=404, detail="Object not found") from exc
+        raise HTTPException(status_code=500, detail="Failed to fetch object") from exc
     except BotoCoreError as exc:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch object from R2: {exc}") from exc
+        raise HTTPException(status_code=500, detail="Failed to fetch object") from exc
 
 
 def load_object_bytes(key: str, storage_mode: StorageMode) -> bytes:

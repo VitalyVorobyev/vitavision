@@ -87,7 +87,7 @@ async def local_upload(
 async def local_object(request: Request, key: str):
     path = storage_service.local_path_for_key(key)
     if not path.exists():
-        raise HTTPException(status_code=404, detail=f"Local object not found for key: {key}")
+        raise HTTPException(status_code=404, detail="Object not found")
 
     return FileResponse(
         path=path,

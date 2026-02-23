@@ -39,6 +39,15 @@ async def limit_request_body_size(request: Request, call_next):
         return JSONResponse({"detail": "Request body too large"}, status_code=413)
     return await call_next(request)
 
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
+
 # CORS_ORIGINS: comma-separated list of allowed origins.
 # Default allows local Vite dev server.
 # Example for production: "https://vitavision.example.com,http://localhost:5173"
@@ -49,8 +58,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT"],
+    allow_headers=["Content-Type", "X-API-Key"],
 )
 
 # Include routers — all routes require API key when one is configured

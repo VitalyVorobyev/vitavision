@@ -10,7 +10,7 @@ import chess_corners
 import numpy as np
 from fastapi import APIRouter, HTTPException, Request
 from PIL import Image, UnidentifiedImageError
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from services import storage_service
 from limiter import limiter
@@ -19,6 +19,11 @@ router = APIRouter(tags=["Computer Vision"])
 
 # Maximum image dimension accepted by CV endpoints (pixels per side).
 _MAX_IMAGE_DIMENSION = int(os.getenv("MAX_IMAGE_DIMENSION", "16000"))
+
+# Storage keys are generated as "{prefix}/{uuid}-{filename}".
+# This pattern rejects arbitrary strings that don't match.
+import re as _re
+_KEY_PATTERN = _re.compile(r"^[a-z0-9_-]+/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-.{1,220}$")
 
 
 class RefinerName(str, Enum):
@@ -46,6 +51,13 @@ class ChessCornersRequest(BaseModel):
     storage_mode: Literal["r2", "local"] | None = None
     use_ml_refiner: bool = False
     config: ChessDetectorConfigOverrides = Field(default_factory=ChessDetectorConfigOverrides)
+
+    @field_validator("key")
+    @classmethod
+    def validate_key_format(cls, v: str) -> str:
+        if not _KEY_PATTERN.match(v):
+            raise ValueError("key does not match expected storage key format")
+        return v
 
 
 class DirectionVector(BaseModel):

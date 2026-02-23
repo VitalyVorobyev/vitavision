@@ -1,4 +1,6 @@
+import logging
 import os
+import time
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,6 +8,8 @@ from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+
+logger = logging.getLogger("vitavision.access")
 
 # 50 MB hard cap on all incoming request bodies.
 # Overridable via MAX_UPLOAD_BYTES env var.
@@ -46,6 +50,21 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    started = time.perf_counter()
+    response = await call_next(request)
+    duration_ms = (time.perf_counter() - started) * 1000
+    logger.info(
+        "%s %s %d %.1fms",
+        request.method,
+        request.url.path,
+        response.status_code,
+        duration_ms,
+    )
     return response
 
 # CORS_ORIGINS: comma-separated list of allowed origins.

@@ -15,7 +15,7 @@ StorageMode = Literal["r2", "local"]
 
 DEFAULT_BUCKET = "vitavision"
 DEFAULT_UPLOAD_PREFIX = "uploads"
-DEFAULT_PRESIGN_EXPIRY = 900
+DEFAULT_PRESIGN_EXPIRY = 300  # 5 minutes
 
 
 def _backend_root() -> Path:

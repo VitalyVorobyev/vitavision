@@ -92,10 +92,12 @@ Storage modes: `r2` (Cloudflare R2), `local` (filesystem at `backend/local_stora
 ### Backend Structure
 ```
 backend/
-  main.py                    # FastAPI app, CORS config, router registration
+  main.py                    # FastAPI app, CORS config, router registration, size-limit middleware
+  auth.py                    # X-API-Key dependency (verify_api_key); reads API_KEY env var
+  limiter.py                 # Shared slowapi Limiter instance (IP-keyed rate limiting)
   routers/
-    cv.py                    # POST /api/v1/cv/chess-corners
-    storage.py               # upload-ticket, local-upload, local-object endpoints
+    cv.py                    # POST /api/v1/cv/chess-corners  (10 req/min)
+    storage.py               # upload-ticket, local-upload, local-object endpoints (20-60 req/min)
   services/
     storage_service.py       # Storage mode resolution, R2 client, local file I/O
 ```
@@ -111,31 +113,41 @@ backend/
 | `S3_KEY_ID` / `S3_KEY_SECRET` | none | R2 credentials |
 | `LOCAL_STORAGE_ROOT` | `backend/local_storage` | Filesystem root for local mode |
 | `CORS_ORIGINS` | `http://localhost:5173,...` | Comma-separated allowed origins |
+| `API_KEY` | *(unset = auth disabled)* | `X-API-Key` value required on all `/api/v1/*` endpoints |
+| `MAX_UPLOAD_BYTES` | `52428800` (50 MB) | Hard cap on request body size |
 | `VITE_API_BASE_URL` | `http://localhost:8000/api/v1` | Frontend API base URL (baked in at build time) |
+| `VITE_API_KEY` | *(unset)* | Forwarded as `X-API-Key` header by the frontend; must match `API_KEY` |
 
 For local-only dev (no R2), set `STORAGE_MODE=local` and skip `setenv.sh`.
 
 To point the local frontend at the remote Hetzner backend, create `.env.local` (gitignored) in the repo root:
 ```
 VITE_API_BASE_URL=https://<hetzner-domain>/api/v1
+VITE_API_KEY=<same-value-as-backend-API_KEY>
 ```
 
 ### Production deployment (Hetzner)
 
 The server runs at `/opt/demos/` and is managed via docker compose. The stack has two services:
 
-- **`api`** — the FastAPI backend container (`ghcr.io/vitalyvorobyev/vitavision-backend:latest`), exposed only on port 8000 internally, env loaded from `/opt/demos/.env`
+- **`api`** — the FastAPI backend container (`ghcr.io/vitalyvorobyev/vitavision-backend`), exposed only on port 8000 internally, env loaded from `/opt/demos/.env`
 - **`caddy`** — Caddy 2 reverse proxy, terminates TLS and forwards to `api`; config at `/opt/demos/Caddyfile`; data/config persisted in named volumes
 
 ```
 /opt/demos/
   docker-compose.yml   # defines api + caddy services
   Caddyfile            # Caddy reverse proxy config
-  .env                 # backend env vars (gitignored on server)
+  .env                 # backend env vars (gitignored on server); must include API_KEY
 ```
 
-CI pushes a new image to GHCR on every merge to `main`, then SSHes into the server and runs:
-```bash
-docker compose -f /opt/demos/docker-compose.yml pull
-docker compose -f /opt/demos/docker-compose.yml up -d
-```
+CI pushes a new image to GHCR on every merge to `main`, captures the immutable `sha256` digest from the build step, then SSHes into the server and deploys by digest (not `:latest`) to prevent tag-swap attacks.
+
+### Security model
+
+- **Authentication**: All `/api/v1/*` endpoints require `X-API-Key` header matching `API_KEY` env var. Unset = auth disabled (dev only — always set in production).
+- **Rate limiting**: Per-IP via `slowapi`. Limits: chess-corners 10/min, upload-ticket & local-upload 20/min, local-object 60/min.
+- **Upload size**: Hard 50 MB cap enforced in HTTP middleware (checks `Content-Length`) and again inside `local_upload` endpoint. Configurable via `MAX_UPLOAD_BYTES`.
+- **Error messages**: All exception details are stripped from API responses; exceptions are re-raised with `from exc` for server-side logging only.
+- **Docker supply chain**: Base images pinned to specific patch versions (`python:3.12.9-slim-bookworm`, `uv:0.9.2`). Production deploys by image digest, not tag.
+- **Frontend API key**: `VITE_API_KEY` is baked into the frontend bundle at build time and injected as `X-API-Key` via `apiHeaders()` in `src/lib/http.ts`. It is visible to anyone who inspects the bundle — this is acceptable for a personal/demo app but not for multi-tenant production use.
+- **Remaining open items**: See `SECURITY_TASKS.md` (gitignored) for the full prioritised list. P2 tasks (CORS narrowing, security headers, Content-Type whitelist, zod import validation, image size limits in CV, CI permission scoping) and P3 tasks are still open.

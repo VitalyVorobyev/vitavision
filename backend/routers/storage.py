@@ -2,17 +2,36 @@ from typing import Literal
 
 from fastapi import APIRouter, Body, HTTPException, Request
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from services import storage_service
+from limiter import limiter
+
+_ALLOWED_CONTENT_TYPES = {
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "image/bmp",
+    "image/tiff",
+}
 
 router = APIRouter(tags=["Storage"])
 
 
 class UploadTicketRequest(BaseModel):
     filename: str = Field(..., min_length=1, max_length=255)
-    content_type: str = Field(default="application/octet-stream", min_length=1, max_length=128)
+    content_type: str = Field(default="image/jpeg", min_length=1, max_length=128)
     storage_mode: Literal["r2", "local"] | None = None
+
+    @field_validator("content_type")
+    @classmethod
+    def validate_content_type(cls, v: str) -> str:
+        if v not in _ALLOWED_CONTENT_TYPES:
+            raise ValueError(
+                f"content_type must be one of: {', '.join(sorted(_ALLOWED_CONTENT_TYPES))}"
+            )
+        return v
 
 
 class UploadDescriptor(BaseModel):
@@ -38,9 +57,11 @@ class LocalUploadResponse(BaseModel):
 
 
 @router.post("/upload-ticket", response_model=UploadTicketResponse)
-async def create_upload_ticket(payload: UploadTicketRequest, request: Request):
+@limiter.limit("20/minute")
+async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
     storage_mode = storage_service.resolve_storage_mode(payload.storage_mode)
     key = storage_service.build_object_key(payload.filename)
+    upload_headers = {"Content-Type": payload.content_type}
 
     if storage_mode == "r2":
         expires = storage_service.presign_expiry_seconds()
@@ -50,6 +71,9 @@ async def create_upload_ticket(payload: UploadTicketRequest, request: Request):
         expires = 0
         upload_url = f"{str(request.base_url).rstrip('/')}/api/v1/storage/local-upload/{key}"
         preview_url = storage_service.build_local_object_url(str(request.base_url), key)
+        api_key_header = request.headers.get("x-api-key")
+        if api_key_header:
+            upload_headers["X-API-Key"] = api_key_header
 
     return UploadTicketResponse(
         storage_mode=storage_mode,
@@ -58,7 +82,7 @@ async def create_upload_ticket(payload: UploadTicketRequest, request: Request):
         upload=UploadDescriptor(
             url=upload_url,
             method="PUT",
-            headers={"Content-Type": payload.content_type},
+            headers=upload_headers,
         ),
         preview_url=preview_url,
         expires_in_seconds=expires,
@@ -66,13 +90,18 @@ async def create_upload_ticket(payload: UploadTicketRequest, request: Request):
 
 
 @router.put("/local-upload/{key:path}", response_model=LocalUploadResponse)
+@limiter.limit("20/minute")
 async def local_upload(
-    key: str,
     request: Request,
+    key: str,
     body: bytes = Body(...),
 ):
     if not body:
         raise HTTPException(status_code=400, detail="Upload body is empty")
+    if len(body) > storage_service.max_upload_bytes():
+        raise HTTPException(status_code=413, detail="Request body too large")
+    if not storage_service.is_image_bytes(body):
+        raise HTTPException(status_code=415, detail="Unsupported media type: not a recognised image format")
 
     storage_service.save_local_object(key, body)
     preview_url = storage_service.build_local_object_url(str(request.base_url), key)
@@ -80,10 +109,11 @@ async def local_upload(
 
 
 @router.get("/local-object/{key:path}")
-async def local_object(key: str):
+@limiter.limit("60/minute")
+async def local_object(request: Request, key: str):
     path = storage_service.local_path_for_key(key)
     if not path.exists():
-        raise HTTPException(status_code=404, detail=f"Local object not found for key: {key}")
+        raise HTTPException(status_code=404, detail="Object not found")
 
     return FileResponse(
         path=path,

@@ -1,0 +1,25 @@
+version: 2
+
+updates:
+  # Frontend — npm/bun ecosystem
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      react:
+        patterns: ["react", "react-*", "@types/react*"]
+      eslint:
+        patterns: ["eslint*", "@eslint/*", "typescript-eslint", "@typescript-eslint/*"]
+      vite:
+        patterns: ["vite*", "@vitejs/*"]
+
+  # Backend — pip ecosystem
+  - package-ecosystem: "pip"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5

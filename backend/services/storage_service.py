@@ -15,7 +15,8 @@ StorageMode = Literal["r2", "local"]
 
 DEFAULT_BUCKET = "vitavision"
 DEFAULT_UPLOAD_PREFIX = "uploads"
-DEFAULT_PRESIGN_EXPIRY = 900
+DEFAULT_PRESIGN_EXPIRY = 300  # 5 minutes
+DEFAULT_MAX_UPLOAD_BYTES = 50 * 1024 * 1024  # 50 MB
 
 
 def _backend_root() -> Path:
@@ -46,6 +47,19 @@ def presign_expiry_seconds() -> int:
         raise HTTPException(status_code=500, detail="Invalid R2_PRESIGN_EXPIRES_SECONDS") from exc
     if value <= 0:
         raise HTTPException(status_code=500, detail="R2_PRESIGN_EXPIRES_SECONDS must be > 0")
+    return value
+
+
+def max_upload_bytes() -> int:
+    raw = os.getenv("MAX_UPLOAD_BYTES")
+    if not raw:
+        return DEFAULT_MAX_UPLOAD_BYTES
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise HTTPException(status_code=500, detail="Invalid MAX_UPLOAD_BYTES") from exc
+    if value <= 0:
+        raise HTTPException(status_code=500, detail="MAX_UPLOAD_BYTES must be > 0")
     return value
 
 
@@ -145,6 +159,31 @@ def build_local_object_url(base_url: str, key: str) -> str:
     return f"{base_url.rstrip('/')}/api/v1/storage/local-object/{key}"
 
 
+# Magic-byte signatures for accepted image formats.
+_IMAGE_MAGIC: list[bytes] = [
+    b"\xff\xd8\xff",           # JPEG
+    b"\x89PNG\r\n\x1a\n",     # PNG
+    b"GIF87a",                 # GIF87a
+    b"GIF89a",                 # GIF89a
+    b"BM",                     # BMP
+    b"II*\x00",                # TIFF (little-endian)
+    b"MM\x00*",                # TIFF (big-endian)
+]
+_RIFF_MAGIC = b"RIFF"
+_WEBP_MARKER = b"WEBP"
+
+
+def is_image_bytes(data: bytes) -> bool:
+    """Return True if *data* starts with a recognised image magic signature."""
+    for sig in _IMAGE_MAGIC:
+        if data[: len(sig)] == sig:
+            return True
+    # WebP: RIFF????WEBP
+    if data[:4] == _RIFF_MAGIC and data[8:12] == _WEBP_MARKER:
+        return True
+    return False
+
+
 def local_path_for_key(key: str) -> Path:
     root = local_storage_root()
     candidate = (root / key).resolve()
@@ -164,7 +203,7 @@ def save_local_object(key: str, body: bytes) -> None:
 def load_local_object(key: str) -> bytes:
     path = local_path_for_key(key)
     if not path.exists():
-        raise HTTPException(status_code=404, detail=f"Local object not found for key: {key}")
+        raise HTTPException(status_code=404, detail="Object not found")
     return path.read_bytes()
 
 
@@ -186,7 +225,7 @@ def create_r2_upload_url(key: str, content_type: str) -> str:
             ExpiresIn=presign_expiry_seconds(),
         )
     except (BotoCoreError, ClientError) as exc:
-        raise HTTPException(status_code=500, detail=f"Failed to generate R2 presigned URL: {exc}") from exc
+        raise HTTPException(status_code=500, detail="Failed to generate upload URL") from exc
 
 
 def load_r2_object(key: str) -> bytes:
@@ -200,10 +239,10 @@ def load_r2_object(key: str) -> bytes:
     except ClientError as exc:
         code = exc.response.get("Error", {}).get("Code")
         if code in {"NoSuchKey", "404"}:
-            raise HTTPException(status_code=404, detail=f"R2 object not found for key: {key}") from exc
-        raise HTTPException(status_code=500, detail=f"Failed to fetch object from R2: {exc}") from exc
+            raise HTTPException(status_code=404, detail="Object not found") from exc
+        raise HTTPException(status_code=500, detail="Failed to fetch object") from exc
     except BotoCoreError as exc:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch object from R2: {exc}") from exc
+        raise HTTPException(status_code=500, detail="Failed to fetch object") from exc
 
 
 def load_object_bytes(key: str, storage_mode: StorageMode) -> bytes:

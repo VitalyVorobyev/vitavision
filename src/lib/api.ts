@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "./http";
+import { API_BASE_URL, apiHeaders } from "./http";
 import type { StorageMode } from "./storage";
 
 export type ConfidenceLevel = "low" | "medium" | "high";
@@ -99,7 +99,7 @@ function toBackendConfig(config?: ChessDetectorConfig): Record<string, unknown> 
 export async function detectChessCorners(payload: DetectChessCornersRequest): Promise<ChessCornersResult> {
     const response = await fetch(`${API_BASE_URL}/cv/chess-corners`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
             key: payload.key,
             storage_mode: payload.storageMode,

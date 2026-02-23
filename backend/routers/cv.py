@@ -1,5 +1,6 @@
 import io
 import math
+import os
 import time
 from enum import Enum
 from typing import Literal
@@ -7,13 +8,22 @@ from uuid import uuid4
 
 import chess_corners
 import numpy as np
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from PIL import Image, UnidentifiedImageError
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from services import storage_service
+from limiter import limiter
 
 router = APIRouter(tags=["Computer Vision"])
+
+# Maximum image dimension accepted by CV endpoints (pixels per side).
+_MAX_IMAGE_DIMENSION = int(os.getenv("MAX_IMAGE_DIMENSION", "16000"))
+
+# Storage keys are generated as "{prefix}/{uuid}-{filename}".
+# This pattern rejects arbitrary strings that don't match.
+import re as _re
+_KEY_PATTERN = _re.compile(r"^[a-z0-9_-]+/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-.{1,220}$")
 
 
 class RefinerName(str, Enum):
@@ -41,6 +51,13 @@ class ChessCornersRequest(BaseModel):
     storage_mode: Literal["r2", "local"] | None = None
     use_ml_refiner: bool = False
     config: ChessDetectorConfigOverrides = Field(default_factory=ChessDetectorConfigOverrides)
+
+    @field_validator("key")
+    @classmethod
+    def validate_key_format(cls, v: str) -> str:
+        if not _KEY_PATTERN.match(v):
+            raise ValueError("key does not match expected storage key format")
+        return v
 
 
 class DirectionVector(BaseModel):
@@ -118,12 +135,17 @@ def _decode_grayscale_image(data: bytes) -> tuple[np.ndarray, int, int]:
     except UnidentifiedImageError as exc:
         raise HTTPException(status_code=400, detail="Uploaded object is not a supported image format") from exc
     except OSError as exc:
-        raise HTTPException(status_code=400, detail=f"Failed to decode image: {exc}") from exc
+        raise HTTPException(status_code=400, detail="Failed to decode image") from exc
 
     if arr.ndim != 2:
         raise HTTPException(status_code=400, detail="Expected a grayscale 2D image after decoding")
     if width <= 0 or height <= 0:
         raise HTTPException(status_code=400, detail="Decoded image has invalid dimensions")
+    if width > _MAX_IMAGE_DIMENSION or height > _MAX_IMAGE_DIMENSION:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Image dimensions exceed maximum allowed {_MAX_IMAGE_DIMENSION}px per side",
+        )
     return arr, width, height
 
 
@@ -197,7 +219,8 @@ def _confidence_level(value: float) -> Literal["low", "medium", "high"]:
 
 
 @router.post("/calibrate")
-async def calibrate_image():
+@limiter.limit("30/minute")
+async def calibrate_image(request: Request):
     return {
         "status": "success",
         "camera_matrix": [
@@ -211,7 +234,8 @@ async def calibrate_image():
 
 
 @router.post("/chess-corners", response_model=ChessCornersResponse)
-async def detect_chess_corners(payload: ChessCornersRequest):
+@limiter.limit("10/minute")
+async def detect_chess_corners(request: Request, payload: ChessCornersRequest):
     storage_mode = storage_service.resolve_storage_mode(payload.storage_mode)
     object_bytes = storage_service.load_object_bytes(payload.key, storage_mode)
     image_u8, image_width, image_height = _decode_grayscale_image(object_bytes)

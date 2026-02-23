@@ -25,6 +25,7 @@ dist-ssr
 
 setenv.sh
 secrets.txt
+SECURITY_TASKS.md
 
 # Python backend artifacts
 __pycache__/

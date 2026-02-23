@@ -63,6 +63,8 @@ jobs:
   build-backend:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    outputs:
+      image_digest: ${{ steps.push.outputs.digest }}
 
     steps:
       - uses: actions/checkout@v4
@@ -84,6 +86,7 @@ jobs:
             type=sha,prefix=sha-
 
       - name: Build and push
+        id: push
         uses: docker/build-push-action@v6
         with:
           context: ./backend
@@ -100,7 +103,8 @@ jobs:
       - name: Deploy to Hetzner
         uses: appleboy/ssh-action@v1
         env:
-          IMAGE: ghcr.io/${{ github.repository_owner }}/vitavision-backend:latest
+          # Pin to the exact digest produced by this CI run — immune to tag overwrites.
+          IMAGE: ghcr.io/${{ github.repository_owner }}/vitavision-backend@${{ needs.build-backend.outputs.image_digest }}
         with:
           host: ${{ secrets.HETZNER_HOST }}
           username: ${{ secrets.HETZNER_USER }}

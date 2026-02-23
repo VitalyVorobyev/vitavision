@@ -1,3 +1,4 @@
+import os
 from typing import Literal
 
 from fastapi import APIRouter, Body, HTTPException, Request
@@ -6,6 +7,8 @@ from pydantic import BaseModel, Field
 
 from services import storage_service
 from limiter import limiter
+
+_MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", str(50 * 1024 * 1024)))
 
 router = APIRouter(tags=["Storage"])
 
@@ -76,6 +79,8 @@ async def local_upload(
 ):
     if not body:
         raise HTTPException(status_code=400, detail="Upload body is empty")
+    if len(body) > _MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="Request body too large")
 
     storage_service.save_local_object(key, body)
     preview_url = storage_service.build_local_object_url(str(request.base_url), key)

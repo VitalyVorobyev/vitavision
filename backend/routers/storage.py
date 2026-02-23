@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from services import storage_service
+from limiter import limiter
 
 router = APIRouter(tags=["Storage"])
 
@@ -38,7 +39,8 @@ class LocalUploadResponse(BaseModel):
 
 
 @router.post("/upload-ticket", response_model=UploadTicketResponse)
-async def create_upload_ticket(payload: UploadTicketRequest, request: Request):
+@limiter.limit("20/minute")
+async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
     storage_mode = storage_service.resolve_storage_mode(payload.storage_mode)
     key = storage_service.build_object_key(payload.filename)
 
@@ -66,9 +68,10 @@ async def create_upload_ticket(payload: UploadTicketRequest, request: Request):
 
 
 @router.put("/local-upload/{key:path}", response_model=LocalUploadResponse)
+@limiter.limit("20/minute")
 async def local_upload(
-    key: str,
     request: Request,
+    key: str,
     body: bytes = Body(...),
 ):
     if not body:
@@ -80,7 +83,8 @@ async def local_upload(
 
 
 @router.get("/local-object/{key:path}")
-async def local_object(key: str):
+@limiter.limit("60/minute")
+async def local_object(request: Request, key: str):
     path = storage_service.local_path_for_key(key)
     if not path.exists():
         raise HTTPException(status_code=404, detail=f"Local object not found for key: {key}")

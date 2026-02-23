@@ -7,11 +7,12 @@ from uuid import uuid4
 
 import chess_corners
 import numpy as np
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, Field
 
 from services import storage_service
+from limiter import limiter
 
 router = APIRouter(tags=["Computer Vision"])
 
@@ -197,7 +198,8 @@ def _confidence_level(value: float) -> Literal["low", "medium", "high"]:
 
 
 @router.post("/calibrate")
-async def calibrate_image():
+@limiter.limit("30/minute")
+async def calibrate_image(request: Request):
     return {
         "status": "success",
         "camera_matrix": [
@@ -211,7 +213,8 @@ async def calibrate_image():
 
 
 @router.post("/chess-corners", response_model=ChessCornersResponse)
-async def detect_chess_corners(payload: ChessCornersRequest):
+@limiter.limit("10/minute")
+async def detect_chess_corners(request: Request, payload: ChessCornersRequest):
     storage_mode = storage_service.resolve_storage_mode(payload.storage_mode)
     object_bytes = storage_service.load_object_bytes(payload.key, storage_mode)
     image_u8, image_width, image_height = _decode_grayscale_image(object_bytes)

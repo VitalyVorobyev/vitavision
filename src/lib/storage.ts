@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "./http";
+import { API_BASE_URL, apiHeaders } from "./http";
 
 export type StorageMode = "r2" | "local";
 
@@ -28,7 +28,7 @@ function normalizeContentType(contentType: string): string {
 export async function createUploadTicket(payload: UploadTicketRequest): Promise<UploadTicket> {
     const response = await fetch(`${API_BASE_URL}/storage/upload-ticket`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
             filename: payload.filename,
             content_type: normalizeContentType(payload.contentType),

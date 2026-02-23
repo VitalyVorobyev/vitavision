@@ -1,20 +1,30 @@
 import os
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 # Import routers
 from routers import cv, storage
+from auth import init_auth, verify_api_key
+from limiter import limiter
 
 # Load env vars
 load_dotenv()
+
+# Initialise auth (reads API_KEY env var, logs warning if unset)
+init_auth()
 
 app = FastAPI(
     title="Vitavision CV API",
     description="Backend for Vitavision image processing and R2 storage.",
     version="1.0.0"
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS_ORIGINS: comma-separated list of allowed origins.
 # Default allows local Vite dev server.
@@ -30,9 +40,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
-app.include_router(cv.router, prefix="/api/v1/cv")
-app.include_router(storage.router, prefix="/api/v1/storage")
+# Include routers — all routes require API key when one is configured
+_auth = [Depends(verify_api_key)]
+app.include_router(cv.router, prefix="/api/v1/cv", dependencies=_auth)
+app.include_router(storage.router, prefix="/api/v1/storage", dependencies=_auth)
 
 @app.get("/")
 def read_root():

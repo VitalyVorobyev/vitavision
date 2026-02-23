@@ -145,6 +145,31 @@ def build_local_object_url(base_url: str, key: str) -> str:
     return f"{base_url.rstrip('/')}/api/v1/storage/local-object/{key}"
 
 
+# Magic-byte signatures for accepted image formats.
+_IMAGE_MAGIC: list[bytes] = [
+    b"\xff\xd8\xff",           # JPEG
+    b"\x89PNG\r\n\x1a\n",     # PNG
+    b"GIF87a",                 # GIF87a
+    b"GIF89a",                 # GIF89a
+    b"BM",                     # BMP
+    b"II*\x00",                # TIFF (little-endian)
+    b"MM\x00*",                # TIFF (big-endian)
+]
+_RIFF_MAGIC = b"RIFF"
+_WEBP_MARKER = b"WEBP"
+
+
+def is_image_bytes(data: bytes) -> bool:
+    """Return True if *data* starts with a recognised image magic signature."""
+    for sig in _IMAGE_MAGIC:
+        if data[: len(sig)] == sig:
+            return True
+    # WebP: RIFF????WEBP
+    if data[:4] == _RIFF_MAGIC and data[8:12] == _WEBP_MARKER:
+        return True
+    return False
+
+
 def local_path_for_key(key: str) -> Path:
     root = local_storage_root()
     candidate = (root / key).resolve()

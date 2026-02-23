@@ -3,20 +3,38 @@ from typing import Literal
 
 from fastapi import APIRouter, Body, HTTPException, Request
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from services import storage_service
 from limiter import limiter
 
 _MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", str(50 * 1024 * 1024)))
 
+_ALLOWED_CONTENT_TYPES = {
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "image/bmp",
+    "image/tiff",
+}
+
 router = APIRouter(tags=["Storage"])
 
 
 class UploadTicketRequest(BaseModel):
     filename: str = Field(..., min_length=1, max_length=255)
-    content_type: str = Field(default="application/octet-stream", min_length=1, max_length=128)
+    content_type: str = Field(default="image/jpeg", min_length=1, max_length=128)
     storage_mode: Literal["r2", "local"] | None = None
+
+    @field_validator("content_type")
+    @classmethod
+    def validate_content_type(cls, v: str) -> str:
+        if v not in _ALLOWED_CONTENT_TYPES:
+            raise ValueError(
+                f"content_type must be one of: {', '.join(sorted(_ALLOWED_CONTENT_TYPES))}"
+            )
+        return v
 
 
 class UploadDescriptor(BaseModel):
@@ -81,6 +99,8 @@ async def local_upload(
         raise HTTPException(status_code=400, detail="Upload body is empty")
     if len(body) > _MAX_UPLOAD_BYTES:
         raise HTTPException(status_code=413, detail="Request body too large")
+    if not storage_service.is_image_bytes(body):
+        raise HTTPException(status_code=415, detail="Unsupported media type: not a recognised image format")
 
     storage_service.save_local_object(key, body)
     preview_url = storage_service.build_local_object_url(str(request.base_url), key)

@@ -1,5 +1,6 @@
 import io
 import math
+import os
 import time
 from enum import Enum
 from typing import Literal
@@ -15,6 +16,9 @@ from services import storage_service
 from limiter import limiter
 
 router = APIRouter(tags=["Computer Vision"])
+
+# Maximum image dimension accepted by CV endpoints (pixels per side).
+_MAX_IMAGE_DIMENSION = int(os.getenv("MAX_IMAGE_DIMENSION", "16000"))
 
 
 class RefinerName(str, Enum):
@@ -125,6 +129,11 @@ def _decode_grayscale_image(data: bytes) -> tuple[np.ndarray, int, int]:
         raise HTTPException(status_code=400, detail="Expected a grayscale 2D image after decoding")
     if width <= 0 or height <= 0:
         raise HTTPException(status_code=400, detail="Decoded image has invalid dimensions")
+    if width > _MAX_IMAGE_DIMENSION or height > _MAX_IMAGE_DIMENSION:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Image dimensions exceed maximum allowed {_MAX_IMAGE_DIMENSION}px per side",
+        )
     return arr, width, height
 
 

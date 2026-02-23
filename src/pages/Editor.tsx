@@ -6,6 +6,7 @@ import {
     useEditorStore,
     type ToolType,
 } from "../store/editor/useEditorStore";
+import { featuresArraySchema } from "../store/editor/featureSchema";
 import {
     MousePointer2,
     MapPin,
@@ -74,18 +75,12 @@ export default function Editor() {
             reader.onload = (readerEvent) => {
                 try {
                     const parsed = JSON.parse((readerEvent.target?.result as string) || "null");
-                    if (!Array.isArray(parsed)) {
-                        alert("Invalid JSON format. Expected an array of features.");
+                    const result = featuresArraySchema.safeParse(parsed);
+                    if (!result.success) {
+                        alert(`Invalid feature file: ${result.error.issues[0]?.message ?? "unknown error"}`);
                         return;
                     }
-
-                    const normalized = normalizeImportedFeatures(parsed);
-                    if (parsed.length > 0 && normalized.length === 0) {
-                        alert("JSON parsed but feature objects are invalid.");
-                        return;
-                    }
-
-                    setFeatures(normalized);
+                    setFeatures(normalizeImportedFeatures(result.data));
                 } catch {
                     alert("Failed to parse JSON.");
                 }

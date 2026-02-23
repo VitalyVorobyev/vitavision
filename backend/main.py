@@ -1,6 +1,8 @@
+import asyncio
 import logging
 import os
 import time
+from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Request
@@ -23,7 +25,23 @@ from services import storage_service
 # Initialise auth (reads API_KEY env var, logs warning if unset)
 init_auth()
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    task = None
+    if storage_service.r2_cache_root() is not None:
+        async def _cleanup_loop():
+            while True:
+                await asyncio.sleep(3600)
+                storage_service.cleanup_stale_cache()
+        task = asyncio.create_task(_cleanup_loop())
+    yield
+    if task:
+        task.cancel()
+
+
 app = FastAPI(
+    lifespan=lifespan,
     title="Vitavision CV API",
     description="Backend for Vitavision image processing and R2 storage.",
     version="1.0.0"

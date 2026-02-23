@@ -83,23 +83,30 @@ New CV algorithms are added by:
 Currently registered: `chess-corners` (ChESS X-junction keypoint detector).
 
 ### Storage Upload Flow
-1. Frontend calls `POST /api/v1/storage/upload-ticket` → gets presigned PUT URL + storage key
-2. Frontend uploads file bytes directly to R2 (or to local backend endpoint in local mode)
-3. Storage key is passed to CV endpoints for image retrieval
+Images are stored under a **content-addressed key** (`uploads/<sha256-of-bytes>`), so the same file is never stored twice.
+
+1. Frontend hashes the image bytes with WebCrypto SHA-256 (`sha256Hex` in `src/lib/storage.ts`)
+2. Frontend calls `POST /api/v1/storage/upload-ticket` with `{ sha256, content_type, size }` → backend does a HEAD check
+   - Object already exists → `{ exists: true, key }` — no upload needed
+   - Object missing → `{ exists: false, key, upload: { url, method, headers } }` — presigned PUT URL returned
+3. Frontend uploads only when `exists: false` (direct PUT to R2, or to local backend endpoint)
+4. Storage key is passed to CV endpoints for image retrieval
+
+Re-running an algorithm on the same image skips steps 2–3 entirely (ticket returns `exists: true`).
 
 Storage modes: `r2` (Cloudflare R2), `local` (filesystem at `backend/local_storage/`), `auto` (prefers R2, falls back to local).
 
 ### Backend Structure
 ```
 backend/
-  main.py                    # FastAPI app, CORS config, router registration, size-limit middleware
+  main.py                    # FastAPI app, CORS config, router registration, size-limit middleware, lifespan (cache cleanup)
   auth.py                    # X-API-Key dependency (verify_api_key); reads API_KEY env var
   limiter.py                 # Shared slowapi Limiter instance (IP-keyed rate limiting)
   routers/
     cv.py                    # POST /api/v1/cv/chess-corners  (10 req/min)
     storage.py               # upload-ticket, local-upload, local-object endpoints (20-60 req/min)
   services/
-    storage_service.py       # Storage mode resolution, R2 client, local file I/O
+    storage_service.py       # Storage mode resolution, R2 client, local file I/O, content-addressed keys, R2 cache
 ```
 
 ### Environment Variables
@@ -115,6 +122,8 @@ backend/
 | `CORS_ORIGINS` | `http://localhost:5173,...` | Comma-separated allowed origins |
 | `API_KEY` | *(unset = auth disabled)* | `X-API-Key` value required on all `/api/v1/*` endpoints |
 | `MAX_UPLOAD_BYTES` | `52428800` (50 MB) | Hard cap on request body size |
+| `R2_CACHE_ROOT` | *(unset = disabled)* | Local directory for caching R2 downloads (e.g. `/data/cache` on Hetzner) |
+| `R2_CACHE_MAX_AGE_HOURS` | `24` | Max age of cached R2 objects before cleanup |
 | `VITE_API_BASE_URL` | `http://localhost:8000/api/v1` | Frontend API base URL (baked in at build time) |
 | `VITE_API_KEY` | *(unset)* | Forwarded as `X-API-Key` header by the frontend; must match `API_KEY` |
 

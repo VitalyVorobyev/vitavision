@@ -3,22 +3,32 @@ import { API_BASE_URL, apiHeaders } from "./http";
 export type StorageMode = "r2" | "local";
 
 export interface UploadTicketRequest {
-    filename: string;
+    sha256: string;
     contentType: string;
+    size?: number;
     storageMode?: StorageMode;
 }
 
 export interface UploadTicket {
+    exists: boolean;
     storage_mode: StorageMode;
     bucket: string;
     key: string;
-    upload: {
+    upload?: {
         url: string;
         method: "PUT";
         headers: Record<string, string>;
     };
     preview_url: string | null;
     expires_in_seconds: number;
+}
+
+export async function sha256Hex(blob: Blob): Promise<string> {
+    const buf = await blob.arrayBuffer();
+    const hash = await crypto.subtle.digest("SHA-256", buf);
+    return Array.from(new Uint8Array(hash))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
 }
 
 function normalizeContentType(contentType: string): string {
@@ -30,8 +40,9 @@ export async function createUploadTicket(payload: UploadTicketRequest): Promise<
         method: "POST",
         headers: apiHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
-            filename: payload.filename,
+            sha256: payload.sha256,
             content_type: normalizeContentType(payload.contentType),
+            size: payload.size,
             storage_mode: payload.storageMode,
         }),
     });
@@ -44,14 +55,17 @@ export async function createUploadTicket(payload: UploadTicketRequest): Promise<
     return response.json() as Promise<UploadTicket>;
 }
 
-export async function uploadWithTicket(file: Blob, ticket: UploadTicket): Promise<void> {
-    const headers = new Headers(ticket.upload.headers);
+export async function uploadWithTicket(
+    file: Blob,
+    upload: NonNullable<UploadTicket["upload"]>,
+): Promise<void> {
+    const headers = new Headers(upload.headers);
     if (!headers.has("Content-Type") && file.type) {
         headers.set("Content-Type", file.type);
     }
 
-    const response = await fetch(ticket.upload.url, {
-        method: ticket.upload.method,
+    const response = await fetch(upload.url, {
+        method: upload.method,
         headers,
         body: file,
     });

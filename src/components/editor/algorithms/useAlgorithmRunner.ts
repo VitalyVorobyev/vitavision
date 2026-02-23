@@ -1,27 +1,12 @@
 import { useCallback, useState } from "react";
 
-import { createUploadTicket, uploadWithTicket } from "../../../lib/storage";
+import { createUploadTicket, sha256Hex, uploadWithTicket } from "../../../lib/storage";
 
 import type { AlgorithmDefinition, AlgorithmRunResult, AlgorithmSummaryEntry, RequestedStorageMode } from "./types";
 
-export type AlgorithmRunStage = "idle" | "fetching-image" | "requesting-ticket" | "uploading" | "processing";
+export type AlgorithmRunStage = "idle" | "fetching-image" | "hashing" | "requesting-ticket" | "uploading" | "processing";
 
 const corsMessage = "Cannot fetch current image bytes. Upload local image or choose CORS-enabled source.";
-
-const extensionFromMime = (mime: string): string => {
-    if (mime === "image/png") return "png";
-    if (mime === "image/jpeg") return "jpg";
-    if (mime === "image/webp") return "webp";
-    if (mime === "image/bmp") return "bmp";
-    return "png";
-};
-
-const buildUploadName = (imageName: string | null, mime: string): string => {
-    if (imageName && imageName.trim().length > 0) {
-        return imageName;
-    }
-    return `editor-image.${extensionFromMime(mime)}`;
-};
 
 const fetchImageBlob = async (imageSrc: string): Promise<Blob> => {
     try {
@@ -64,7 +49,8 @@ interface UseAlgorithmRunnerResult {
 
 export const stageLabel = (stage: AlgorithmRunStage): string => {
     if (stage === "fetching-image") return "Reading current image...";
-    if (stage === "requesting-ticket") return "Requesting upload ticket...";
+    if (stage === "hashing") return "Computing image hash...";
+    if (stage === "requesting-ticket") return "Checking storage...";
     if (stage === "uploading") return "Uploading image...";
     if (stage === "processing") return "Running algorithm...";
     return "Idle";
@@ -76,7 +62,7 @@ export default function useAlgorithmRunner(): UseAlgorithmRunnerResult {
     const [summary, setSummary] = useState<AlgorithmSummaryEntry[]>([]);
 
     const runAlgorithm = useCallback(async (params: RunAlgorithmParams): Promise<AlgorithmRunResult | null> => {
-        const { algorithm, config, imageSrc, imageName, storageMode } = params;
+        const { algorithm, config, imageSrc, storageMode } = params;
         if (!imageSrc) {
             setError("No active image. Select an image in gallery first.");
             return null;
@@ -88,17 +74,22 @@ export default function useAlgorithmRunner(): UseAlgorithmRunnerResult {
 
             const blob = await fetchImageBlob(imageSrc);
             const contentType = blob.type || "image/png";
-            const filename = buildUploadName(imageName, contentType);
+
+            setStage("hashing");
+            const hash = await sha256Hex(blob);
 
             setStage("requesting-ticket");
             const ticket = await createUploadTicket({
-                filename,
+                sha256: hash,
                 contentType,
+                size: blob.size,
                 storageMode: storageMode === "auto" ? undefined : storageMode,
             });
 
-            setStage("uploading");
-            await uploadWithTicket(blob, ticket);
+            if (!ticket.exists && ticket.upload) {
+                setStage("uploading");
+                await uploadWithTicket(blob, ticket.upload);
+            }
 
             setStage("processing");
             const result = await algorithm.run({

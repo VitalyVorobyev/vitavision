@@ -20,10 +20,9 @@ router = APIRouter(tags=["Computer Vision"])
 # Maximum image dimension accepted by CV endpoints (pixels per side).
 _MAX_IMAGE_DIMENSION = int(os.getenv("MAX_IMAGE_DIMENSION", "16000"))
 
-# Storage keys are generated as "{prefix}/{uuid}-{filename}".
-# This pattern rejects arbitrary strings that don't match.
+# Storage keys use content-addressed format: "{prefix}/{sha256}" where sha256 is 64 hex chars.
 import re as _re
-_KEY_PATTERN = _re.compile(r"^[a-z0-9_-]+/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-.{1,220}$")
+_KEY_PATTERN = _re.compile(r"^[a-z0-9_-]+/[0-9a-f]{64}$")
 
 
 class RefinerName(str, Enum):

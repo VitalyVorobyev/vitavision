@@ -20,8 +20,9 @@ router = APIRouter(tags=["Storage"])
 
 
 class UploadTicketRequest(BaseModel):
-    filename: str = Field(..., min_length=1, max_length=255)
+    sha256: str = Field(..., pattern=r"^[0-9a-f]{64}$")
     content_type: str = Field(default="image/jpeg", min_length=1, max_length=128)
+    size: int | None = Field(default=None, gt=0)
     storage_mode: Literal["r2", "local"] | None = None
 
     @field_validator("content_type")
@@ -41,10 +42,11 @@ class UploadDescriptor(BaseModel):
 
 
 class UploadTicketResponse(BaseModel):
+    exists: bool
     storage_mode: Literal["r2", "local"]
     bucket: str
     key: str
-    upload: UploadDescriptor
+    upload: UploadDescriptor | None = None
     preview_url: str | None = None
     expires_in_seconds: int
 
@@ -60,7 +62,24 @@ class LocalUploadResponse(BaseModel):
 @limiter.limit("20/minute")
 async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
     storage_mode = storage_service.resolve_storage_mode(payload.storage_mode)
-    key = storage_service.build_object_key(payload.filename)
+    key = storage_service.build_content_addressed_key(payload.sha256)
+
+    # Short-circuit: if the object is already in storage, skip the upload entirely.
+    if storage_service.check_object_exists(key, storage_mode):
+        if storage_mode == "r2":
+            preview_url = storage_service.build_r2_public_url(key)
+        else:
+            preview_url = storage_service.build_local_object_url(str(request.base_url), key)
+        return UploadTicketResponse(
+            exists=True,
+            storage_mode=storage_mode,
+            bucket=storage_service.bucket_name(),
+            key=key,
+            upload=None,
+            preview_url=preview_url,
+            expires_in_seconds=0,
+        )
+
     upload_headers = {"Content-Type": payload.content_type}
 
     if storage_mode == "r2":
@@ -76,6 +95,7 @@ async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
             upload_headers["X-API-Key"] = api_key_header
 
     return UploadTicketResponse(
+        exists=False,
         storage_mode=storage_mode,
         bucket=storage_service.bucket_name(),
         key=key,

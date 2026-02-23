@@ -2,26 +2,23 @@ import logging
 import os
 import time
 
+from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from dotenv import load_dotenv
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 logger = logging.getLogger("vitavision.access")
 
-# 50 MB hard cap on all incoming request bodies.
-# Overridable via MAX_UPLOAD_BYTES env var.
-_MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", str(50 * 1024 * 1024)))
+# Load env vars before importing modules that read env at import time.
+load_dotenv()
 
 # Import routers
 from routers import cv, storage
 from auth import init_auth, verify_api_key
 from limiter import limiter
-
-# Load env vars
-load_dotenv()
+from services import storage_service
 
 # Initialise auth (reads API_KEY env var, logs warning if unset)
 init_auth()
@@ -39,7 +36,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 @app.middleware("http")
 async def limit_request_body_size(request: Request, call_next):
     content_length = request.headers.get("content-length")
-    if content_length and int(content_length) > _MAX_UPLOAD_BYTES:
+    if content_length and int(content_length) > storage_service.max_upload_bytes():
         return JSONResponse({"detail": "Request body too large"}, status_code=413)
     return await call_next(request)
 

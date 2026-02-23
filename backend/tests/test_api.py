@@ -13,6 +13,7 @@ import numpy as np
 from PIL import Image
 from starlette.testclient import TestClient
 
+import auth
 from main import app
 
 client = TestClient(app)
@@ -41,6 +42,11 @@ def _upload(key: str, content: bytes = b"") -> None:
         headers={"Content-Type": "image/png"},
     )
     assert resp.status_code == 200
+
+
+def _valid_cv_key(name: str, suffix: int = 0) -> str:
+    # Matches backend pattern: "{prefix}/{uuid}-{filename}".
+    return f"uploads/123e4567-e89b-12d3-a456-4266141740{suffix:02d}-{name}"
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
@@ -110,10 +116,45 @@ def test_local_upload_empty_body_rejected():
     assert resp.status_code in (400, 422)
 
 
+def test_local_upload_rejects_over_max_upload_bytes(monkeypatch):
+    png = _make_checkerboard_png(size=40, cell=20)
+    monkeypatch.setenv("MAX_UPLOAD_BYTES", str(len(png) - 1))
+
+    resp = client.put(
+        "/api/v1/storage/local-upload/uploads/too-large.png",
+        content=png,
+        headers={"Content-Type": "image/png"},
+    )
+    assert resp.status_code == 413
+
+
+def test_local_upload_ticket_includes_api_key_header_when_auth_enabled(monkeypatch):
+    monkeypatch.setattr(auth, "_api_key", "ci-secret")
+    png = _make_checkerboard_png()
+
+    ticket_resp = client.post(
+        "/api/v1/storage/upload-ticket",
+        json={"filename": "auth-local.png", "content_type": "image/png", "storage_mode": "local"},
+        headers={"X-API-Key": "ci-secret"},
+    )
+    assert ticket_resp.status_code == 200
+
+    ticket = ticket_resp.json()
+    assert ticket["upload"]["headers"]["X-API-Key"] == "ci-secret"
+
+    upload_path = ticket["upload"]["url"].replace("http://testserver", "")
+    upload_resp = client.put(
+        upload_path,
+        content=png,
+        headers=ticket["upload"]["headers"],
+    )
+    assert upload_resp.status_code == 200
+
+
 # ── CV / Chess Corners ────────────────────────────────────────────────────────
 
 def test_chess_corners_basic():
-    key = "uploads/ci-chess-basic.png"
+    key = _valid_cv_key("ci-chess-basic.png", suffix=0)
     _upload(key)
 
     resp = client.post(
@@ -132,11 +173,20 @@ def test_chess_corners_basic():
 
 
 def test_chess_corners_missing_key_returns_404():
+    key = _valid_cv_key("no-such-image.png", suffix=1)
+    resp = client.post(
+        "/api/v1/cv/chess-corners",
+        json={"key": key, "storage_mode": "local"},
+    )
+    assert resp.status_code == 404
+
+
+def test_chess_corners_invalid_key_format_rejected():
     resp = client.post(
         "/api/v1/cv/chess-corners",
         json={"key": "uploads/no-such-image.png", "storage_mode": "local"},
     )
-    assert resp.status_code == 404
+    assert resp.status_code == 422
 
 
 def test_chess_corners_invalid_payload_rejected():

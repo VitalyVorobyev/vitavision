@@ -1,4 +1,3 @@
-import os
 from typing import Literal
 
 from fastapi import APIRouter, Body, HTTPException, Request
@@ -7,8 +6,6 @@ from pydantic import BaseModel, Field, field_validator
 
 from services import storage_service
 from limiter import limiter
-
-_MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", str(50 * 1024 * 1024)))
 
 _ALLOWED_CONTENT_TYPES = {
     "image/jpeg",
@@ -64,6 +61,7 @@ class LocalUploadResponse(BaseModel):
 async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
     storage_mode = storage_service.resolve_storage_mode(payload.storage_mode)
     key = storage_service.build_object_key(payload.filename)
+    upload_headers = {"Content-Type": payload.content_type}
 
     if storage_mode == "r2":
         expires = storage_service.presign_expiry_seconds()
@@ -73,6 +71,9 @@ async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
         expires = 0
         upload_url = f"{str(request.base_url).rstrip('/')}/api/v1/storage/local-upload/{key}"
         preview_url = storage_service.build_local_object_url(str(request.base_url), key)
+        api_key_header = request.headers.get("x-api-key")
+        if api_key_header:
+            upload_headers["X-API-Key"] = api_key_header
 
     return UploadTicketResponse(
         storage_mode=storage_mode,
@@ -81,7 +82,7 @@ async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
         upload=UploadDescriptor(
             url=upload_url,
             method="PUT",
-            headers={"Content-Type": payload.content_type},
+            headers=upload_headers,
         ),
         preview_url=preview_url,
         expires_in_seconds=expires,
@@ -97,7 +98,7 @@ async def local_upload(
 ):
     if not body:
         raise HTTPException(status_code=400, detail="Upload body is empty")
-    if len(body) > _MAX_UPLOAD_BYTES:
+    if len(body) > storage_service.max_upload_bytes():
         raise HTTPException(status_code=413, detail="Request body too large")
     if not storage_service.is_image_bytes(body):
         raise HTTPException(status_code=415, detail="Unsupported media type: not a recognised image format")

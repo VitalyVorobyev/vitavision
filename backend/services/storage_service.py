@@ -16,6 +16,7 @@ StorageMode = Literal["r2", "local"]
 DEFAULT_BUCKET = "vitavision"
 DEFAULT_UPLOAD_PREFIX = "uploads"
 DEFAULT_PRESIGN_EXPIRY = 300  # 5 minutes
+DEFAULT_MAX_UPLOAD_BYTES = 50 * 1024 * 1024  # 50 MB
 
 
 def _backend_root() -> Path:
@@ -46,6 +47,19 @@ def presign_expiry_seconds() -> int:
         raise HTTPException(status_code=500, detail="Invalid R2_PRESIGN_EXPIRES_SECONDS") from exc
     if value <= 0:
         raise HTTPException(status_code=500, detail="R2_PRESIGN_EXPIRES_SECONDS must be > 0")
+    return value
+
+
+def max_upload_bytes() -> int:
+    raw = os.getenv("MAX_UPLOAD_BYTES")
+    if not raw:
+        return DEFAULT_MAX_UPLOAD_BYTES
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise HTTPException(status_code=500, detail="Invalid MAX_UPLOAD_BYTES") from exc
+    if value <= 0:
+        raise HTTPException(status_code=500, detail="MAX_UPLOAD_BYTES must be > 0")
     return value
 
 

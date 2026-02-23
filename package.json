@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@types/react-syntax-highlighter": "^15.5.13",
-    "@types/uuid": "^10.0.0",
+    "@types/uuid": "^11.0.0",
     "framer-motion": "^12.34.3",
     "katex": "^0.16.29",
     "konva": "^10.2.0",

@@ -1,15 +1,59 @@
 import asyncio
+import json
 import logging
 import os
 import time
+import uuid
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+
+
+# ── Structured JSON logging ──────────────────────────────────────────────────
+
+class _JSONFormatter(logging.Formatter):
+    """Emit each log record as a single JSON line."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        entry: dict = {
+            "ts": self.formatTime(record, self.datefmt),
+            "level": record.levelname,
+            "logger": record.name,
+            "msg": record.getMessage(),
+        }
+        # Attach correlation ID when available.
+        if hasattr(record, "request_id"):
+            entry["request_id"] = record.request_id
+        if record.exc_info and record.exc_info[0] is not None:
+            entry["exception"] = self.formatException(record.exc_info)
+        return json.dumps(entry, default=str)
+
+
+def _configure_logging() -> None:
+    """Set up root logging: JSON in production, human-readable otherwise."""
+    use_json = os.getenv("LOG_FORMAT", "text").strip().lower() == "json"
+    level_name = os.getenv("LOG_LEVEL", "INFO").strip().upper()
+    level = getattr(logging, level_name, logging.INFO)
+
+    handler = logging.StreamHandler()
+    if use_json:
+        handler.setFormatter(_JSONFormatter())
+    else:
+        handler.setFormatter(
+            logging.Formatter("%(asctime)s %(levelname)-8s [%(name)s] %(message)s")
+        )
+
+    root = logging.getLogger()
+    root.handlers.clear()
+    root.addHandler(handler)
+    root.setLevel(level)
+
+
+_configure_logging()
 
 logger = logging.getLogger("vitavision.access")
 
@@ -25,6 +69,28 @@ from services import storage_service
 # Initialise auth (reads API_KEY env var, logs warning if unset)
 init_auth()
 
+
+# ── Rate-limit exceeded handler (with logging) ──────────────────────────────
+
+_rl_logger = logging.getLogger("vitavision.ratelimit")
+
+
+async def _rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    client_ip = request.client.host if request.client else "unknown"
+    _rl_logger.warning(
+        "rate limit exceeded: %s %s from %s (limit: %s)",
+        request.method,
+        request.url.path,
+        client_ip,
+        getattr(exc, "detail", ""),
+    )
+    return JSONResponse(
+        {"detail": "Rate limit exceeded"},
+        status_code=429,
+    )
+
+
+# ── Lifespan ─────────────────────────────────────────────────────────────────
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -48,8 +114,10 @@ app = FastAPI(
 )
 
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)
 
+
+# ── Middleware ────────────────────────────────────────────────────────────────
 
 @app.middleware("http")
 async def limit_request_body_size(request: Request, call_next):
@@ -65,6 +133,17 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    return response
+
+
+@app.middleware("http")
+async def add_request_id(request: Request, call_next):
+    """Attach a correlation ID to every request for structured log tracing."""
+    request_id = request.headers.get("X-Request-Id") or uuid.uuid4().hex[:12]
+    request.state.request_id = request_id
+    response = await call_next(request)
+    response.headers["X-Request-Id"] = request_id
     return response
 
 
@@ -73,14 +152,21 @@ async def log_requests(request: Request, call_next):
     started = time.perf_counter()
     response = await call_next(request)
     duration_ms = (time.perf_counter() - started) * 1000
+    extra = {}
+    if hasattr(request.state, "request_id"):
+        extra["request_id"] = request.state.request_id
     logger.info(
         "%s %s %d %.1fms",
         request.method,
         request.url.path,
         response.status_code,
         duration_ms,
+        extra=extra,
     )
     return response
+
+
+# ── CORS ──────────────────────────────────────────────────────────────────────
 
 # CORS_ORIGINS: comma-separated list of allowed origins.
 # Default allows local Vite dev server.

@@ -22,16 +22,21 @@ import lightIcon from "/icon-512.svg";
 import darkIcon from "/icon-512-dark.svg";
 
 
+interface NavLinkItemProps {
+  to: string;
+  children: React.ReactNode;
+  icon?: React.ReactNode;
+}
+
+const NavLinkItem: React.FC<NavLinkItemProps> = ({ to, children, icon }) => (
+  <NavLink to={to} className={({ isActive }) => classNames("nav-link", isActive && "active") }>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>{icon}{children}</span>
+  </NavLink>
+);
+
 const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { theme, setTheme } = useTheme();
   const [ drawer, setDrawer ] = useState(false);
-
-  const NavLinkItem: React.FC<{ to: string; children: React.ReactNode; icon?: React.ReactNode }>
-    = ({ to, children, icon }) => (
-      <NavLink to={to} className={({ isActive }) => classNames("nav-link", isActive && "active") }>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>{icon}{children}</span>
-      </NavLink>
-    );
 
   return (
     <div>

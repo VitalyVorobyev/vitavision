@@ -17,7 +17,7 @@ const fetchImageBlob = async (imageSrc: string): Promise<Blob> => {
         return await response.blob();
     } catch (error) {
         if (error instanceof TypeError) {
-            throw new Error(corsMessage);
+            throw new Error(corsMessage, { cause: error });
         }
         throw error;
     }

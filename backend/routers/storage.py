@@ -1,3 +1,4 @@
+import re
 from typing import Literal
 
 from fastapi import APIRouter, Body, HTTPException, Request
@@ -6,6 +7,18 @@ from pydantic import BaseModel, Field, field_validator
 
 from services import storage_service
 from limiter import limiter
+
+# Content-addressed key format: "{prefix}/{sha256}" where sha256 is 64 lowercase hex chars.
+_STORAGE_KEY_PATTERN = re.compile(r"^[a-z0-9_-]+/[0-9a-f]{64}$")
+
+
+def _validate_storage_key(key: str) -> None:
+    """Raise 400 if *key* does not match the expected content-addressed format."""
+    if not _STORAGE_KEY_PATTERN.match(key):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid storage key format: expected '{prefix}/{sha256}'",
+        )
 
 _ALLOWED_CONTENT_TYPES = {
     "image/jpeg",
@@ -116,6 +129,7 @@ async def local_upload(
     key: str,
     body: bytes = Body(...),
 ):
+    _validate_storage_key(key)
     if not body:
         raise HTTPException(status_code=400, detail="Upload body is empty")
     if len(body) > storage_service.max_upload_bytes():
@@ -131,12 +145,14 @@ async def local_upload(
 @router.get("/local-object/{key:path}")
 @limiter.limit("60/minute")
 async def local_object(request: Request, key: str):
+    _validate_storage_key(key)
     path = storage_service.local_path_for_key(key)
     if not path.exists():
         raise HTTPException(status_code=404, detail="Object not found")
 
     return FileResponse(
         path=path,
-        media_type=storage_service.local_media_type_for_key(key),
+        media_type="application/octet-stream",
         filename=path.name,
+        content_disposition_type="attachment",
     )

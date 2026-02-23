@@ -290,7 +290,15 @@ def _cache_path_for_key(key: str) -> Path | None:
         return None
     # Key format is "uploads/<sha256>"; the sha256 segment is always 64 lowercase hex chars.
     sha256 = key.rsplit("/", 1)[-1]
-    return root / sha256
+    if not re.fullmatch(r"[0-9a-f]{64}", sha256):
+        raise HTTPException(status_code=400, detail="Invalid cache key format")
+    candidate = (root / sha256).resolve()
+    root_resolved = root.resolve()
+    try:
+        candidate.relative_to(root_resolved)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Invalid cache key path") from exc
+    return candidate
 
 
 def load_r2_object_cached(key: str) -> bytes:

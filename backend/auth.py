@@ -1,3 +1,4 @@
+import hmac
 import logging
 import os
 
@@ -35,5 +36,5 @@ async def verify_api_key(header_key: str | None = Security(_API_KEY_HEADER)) -> 
         return
     if header_key is None:
         raise HTTPException(status_code=401, detail="Missing X-API-Key header")
-    if header_key != _api_key:
+    if not hmac.compare_digest(header_key, _api_key):
         raise HTTPException(status_code=403, detail="Invalid API key")

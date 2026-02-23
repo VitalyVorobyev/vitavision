@@ -124,6 +124,8 @@ backend/
 | `MAX_UPLOAD_BYTES` | `52428800` (50 MB) | Hard cap on request body size |
 | `R2_CACHE_ROOT` | *(unset = disabled)* | Local directory for caching R2 downloads (e.g. `/data/cache` on Hetzner) |
 | `R2_CACHE_MAX_AGE_HOURS` | `24` | Max age of cached R2 objects before cleanup |
+| `LOG_FORMAT` | `text` | `json` for structured JSON logging (production), `text` for human-readable |
+| `LOG_LEVEL` | `INFO` | Python log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
 | `VITE_API_BASE_URL` | `http://localhost:8000/api/v1` | Frontend API base URL (baked in at build time) |
 | `VITE_API_KEY` | *(unset)* | Forwarded as `X-API-Key` header by the frontend; must match `API_KEY` |
 

@@ -23,7 +23,7 @@ export default function FeatureTooltip(props: FeatureTooltipProps) {
 
     return (
         <div
-            className="absolute z-30 pointer-events-none rounded-md border border-border bg-background/95 backdrop-blur px-1.5 py-1 text-[10px] font-mono leading-none shadow-sm whitespace-nowrap"
+            className="absolute z-30 pointer-events-none rounded-md border border-border bg-background/95 backdrop-blur-sm px-1.5 py-1 text-[10px] font-mono leading-none shadow-xs whitespace-nowrap"
             style={{ left: tooltip.left, top: tooltip.top }}
         >
             x {tooltip.feature.x.toFixed(2)} y {tooltip.feature.y.toFixed(2)} θ {directionDeg.toFixed(1)}° s {tooltip.feature.score.toFixed(3)}

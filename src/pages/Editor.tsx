@@ -135,7 +135,7 @@ export default function Editor() {
                             key={tool.id}
                             onClick={() => setActiveTool(tool.id)}
                             title={tool.label}
-                            className={`p-3 rounded-md flex items-center justify-center transition-colors mx-auto ${activeTool === tool.id ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
+                            className={`p-3 rounded-md flex items-center justify-center transition-colors mx-auto ${activeTool === tool.id ? "bg-primary text-primary-foreground shadow-xs" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
                         >
                             {tool.icon}
                         </button>

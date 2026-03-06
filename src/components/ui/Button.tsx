@@ -4,7 +4,7 @@ import { classNames } from "../../utils/helpers";
 interface ButtonProps {
     className?: string;
     children: React.ReactNode[];
-    variant?: "primary" | "outline";
+    variant?: "primary" | "outline-solid";
 };
 
 const Button = (props:ButtonProps) => {

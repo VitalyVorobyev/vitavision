@@ -41,7 +41,7 @@ export default function FeatureListPanel() {
             <h2 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">Features</h2>
 
             {selectedFeature && (
-                <div className="text-xs p-3 mb-4 rounded-md border border-primary/20 bg-primary/5 shadow-sm space-y-2">
+                <div className="text-xs p-3 mb-4 rounded-md border border-primary/20 bg-primary/5 shadow-xs space-y-2">
                     <div className="flex items-center justify-between gap-2">
                         <div className="font-semibold text-primary">Selected</div>
                         {isReadonlyFeature(selectedFeature) && (
@@ -83,11 +83,11 @@ export default function FeatureListPanel() {
                             <div
                                 key={feature.id}
                                 onClick={() => setSelectedFeatureId(feature.id)}
-                                className={`flex items-center justify-between p-2 rounded-md border cursor-pointer text-sm transition-colors ${selectedFeatureId === feature.id ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-background hover:border-muted-foreground/30"}`}
+                                className={`flex items-center justify-between p-2 rounded-md border cursor-pointer text-sm transition-colors ${selectedFeatureId === feature.id ? "border-primary bg-primary/5 shadow-xs" : "border-border bg-background hover:border-muted-foreground/30"}`}
                             >
                                 <div className="flex items-center space-x-2 truncate">
                                     <div
-                                        className="w-3 h-3 rounded-sm shrink-0"
+                                        className="w-3 h-3 rounded-xs shrink-0"
                                         style={{ backgroundColor: featureSwatch(feature) }}
                                     />
                                     <span className="truncate font-medium">{feature.type}</span>

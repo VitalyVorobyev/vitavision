@@ -44,7 +44,7 @@ const DemosPage: React.FC = () => {
                                 <h3 style={{ margin: 0, fontWeight: 600 }}>
                                     {d.title}
                                 </h3>
-                                <span className="badge outline">{d.tags[0]}</span>
+                                <span className="badge outline-solid">{d.tags[0]}</span>
                             </div>
                             <p style={{ color: "var(--muted)", fontSize: 14 }}>{d.blurb}</p>
                         </div>

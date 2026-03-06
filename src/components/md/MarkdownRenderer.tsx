@@ -35,7 +35,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                                 {String(children).replace(/\n$/, '')}
                             </SyntaxHighlighter>
                         ) : (
-                            <code className="bg-muted px-1.5 py-0.5 rounded text-sm text-primary font-mono" {...props}>
+                            <code className="bg-muted px-1.5 py-0.5 rounded-sm text-sm text-primary font-mono" {...props}>
                                 {children}
                             </code>
                         );
@@ -43,7 +43,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                     h1: ({ node: _node, ...props }) => <h1 className="text-3xl font-bold mt-8 mb-4 tracking-tight" {...props} />,
                     h2: ({ node: _node, ...props }) => <h2 className="text-2xl font-semibold mt-8 mb-4 tracking-tight" {...props} />,
                     h3: ({ node: _node, ...props }) => <h3 className="text-xl font-semibold mt-6 mb-3 tracking-tight" {...props} />,
-                    p: ({ node: _node, ...props }) => <p className="leading-7 [&:not(:first-child)]:mt-6 text-muted-foreground" {...props} />,
+                    p: ({ node: _node, ...props }) => <p className="leading-7 not-first:mt-6 text-muted-foreground" {...props} />,
                     a: ({ node: _node, ...props }) => <a className="text-primary underline hover:text-primary/80" {...props} />,
                     ul: ({ node: _node, ...props }) => <ul className="my-6 ml-6 list-disc space-y-2" {...props} />,
                     ol: ({ node: _node, ...props }) => <ol className="my-6 ml-6 list-decimal space-y-2" {...props} />,

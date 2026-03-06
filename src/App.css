@@ -113,6 +113,7 @@ button { font: inherit; }
 .badge { display:inline-flex; align-items:center; padding:6px 10px; border-radius: 999px; font-size: 12px; border:1px solid var(--border); color: var(--muted); }
 .badge.secondary { background: var(--bg-soft); }
 .badge.outline { background: transparent; }
+.badge.outline-solid { background: transparent; }
 
 .input { height: 38px; border-radius: 10px; border:1px solid var(--border); background: var(--bg-card); color: var(--text); padding: 0 12px 0 36px; width: 260px; }
 .input-wrap { position: relative; }

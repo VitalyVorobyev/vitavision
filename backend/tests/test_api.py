@@ -7,6 +7,7 @@ Requires env vars set before the process starts:
 No external services (R2, network) are needed.
 """
 
+import hashlib
 import io
 
 import numpy as np
@@ -34,6 +35,15 @@ def _make_checkerboard_png(size: int = 300, cell: int = 100) -> bytes:
     return buf.getvalue()
 
 
+def _sha256_hex(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def _content_addressed_key(data: bytes) -> str:
+    """Return the content-addressed storage key for *data*."""
+    return f"uploads/{_sha256_hex(data)}"
+
+
 def _upload(key: str, content: bytes = b"") -> None:
     png = content or _make_checkerboard_png()
     resp = client.put(
@@ -42,11 +52,6 @@ def _upload(key: str, content: bytes = b"") -> None:
         headers={"Content-Type": "image/png"},
     )
     assert resp.status_code == 200
-
-
-def _valid_cv_key(name: str, suffix: int = 0) -> str:
-    # Matches backend pattern: "{prefix}/{uuid}-{filename}".
-    return f"uploads/123e4567-e89b-12d3-a456-4266141740{suffix:02d}-{name}"
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
@@ -60,19 +65,21 @@ def test_root_returns_ok():
 # ── Storage ───────────────────────────────────────────────────────────────────
 
 def test_upload_ticket_returns_local_descriptor():
+    png = _make_checkerboard_png()
+    sha = _sha256_hex(png)
     resp = client.post(
         "/api/v1/storage/upload-ticket",
-        json={"filename": "test.png", "content_type": "image/png", "storage_mode": "local"},
+        json={"sha256": sha, "content_type": "image/png", "storage_mode": "local"},
     )
     assert resp.status_code == 200
     body = resp.json()
     assert body["storage_mode"] == "local"
     assert body["upload"]["method"] == "PUT"
     assert "local-upload" in body["upload"]["url"]
-    assert body["key"].endswith(".png")
+    assert body["key"] == f"uploads/{sha}"
 
 
-def test_upload_ticket_missing_filename_rejected():
+def test_upload_ticket_missing_sha256_rejected():
     resp = client.post(
         "/api/v1/storage/upload-ticket",
         json={"content_type": "image/png"},
@@ -80,9 +87,17 @@ def test_upload_ticket_missing_filename_rejected():
     assert resp.status_code == 422
 
 
+def test_upload_ticket_invalid_sha256_rejected():
+    resp = client.post(
+        "/api/v1/storage/upload-ticket",
+        json={"sha256": "not-a-valid-hash", "content_type": "image/png"},
+    )
+    assert resp.status_code == 422
+
+
 def test_local_upload_and_round_trip():
-    key = "uploads/ci-round-trip.png"
     png = _make_checkerboard_png()
+    key = _content_addressed_key(png)
 
     resp = client.put(
         f"/api/v1/storage/local-upload/{key}",
@@ -101,13 +116,32 @@ def test_local_upload_and_round_trip():
 
 
 def test_local_object_missing_returns_404():
-    resp = client.get("/api/v1/storage/local-object/uploads/does-not-exist.png")
+    # Valid format key that doesn't exist on disk
+    fake_sha = "0" * 64
+    resp = client.get(f"/api/v1/storage/local-object/uploads/{fake_sha}")
     assert resp.status_code == 404
 
 
-def test_local_upload_empty_body_rejected():
+def test_local_upload_rejects_invalid_key_format():
+    """Keys that don't match the content-addressed format are rejected."""
+    png = _make_checkerboard_png()
     resp = client.put(
-        "/api/v1/storage/local-upload/uploads/empty.png",
+        "/api/v1/storage/local-upload/uploads/not-a-sha256.png",
+        content=png,
+        headers={"Content-Type": "image/png"},
+    )
+    assert resp.status_code == 400
+
+
+def test_local_object_rejects_invalid_key_format():
+    resp = client.get("/api/v1/storage/local-object/uploads/not-a-sha256.png")
+    assert resp.status_code == 400
+
+
+def test_local_upload_empty_body_rejected():
+    fake_sha = "a" * 64
+    resp = client.put(
+        f"/api/v1/storage/local-upload/uploads/{fake_sha}",
         content=b"",
         headers={"Content-Type": "image/png"},
     )
@@ -118,10 +152,11 @@ def test_local_upload_empty_body_rejected():
 
 def test_local_upload_rejects_over_max_upload_bytes(monkeypatch):
     png = _make_checkerboard_png(size=40, cell=20)
+    key = _content_addressed_key(png)
     monkeypatch.setenv("MAX_UPLOAD_BYTES", str(len(png) - 1))
 
     resp = client.put(
-        "/api/v1/storage/local-upload/uploads/too-large.png",
+        f"/api/v1/storage/local-upload/{key}",
         content=png,
         headers={"Content-Type": "image/png"},
     )
@@ -130,16 +165,20 @@ def test_local_upload_rejects_over_max_upload_bytes(monkeypatch):
 
 def test_local_upload_ticket_includes_api_key_header_when_auth_enabled(monkeypatch):
     monkeypatch.setattr(auth, "_api_key", "ci-secret")
-    png = _make_checkerboard_png()
+    # Use a unique image that hasn't been uploaded yet so we get exists=False.
+    png = _make_checkerboard_png(size=50, cell=25)
+    sha = _sha256_hex(png)
 
     ticket_resp = client.post(
         "/api/v1/storage/upload-ticket",
-        json={"filename": "auth-local.png", "content_type": "image/png", "storage_mode": "local"},
+        json={"sha256": sha, "content_type": "image/png", "storage_mode": "local"},
         headers={"X-API-Key": "ci-secret"},
     )
     assert ticket_resp.status_code == 200
 
     ticket = ticket_resp.json()
+    assert ticket["exists"] is False
+    assert ticket["upload"] is not None
     assert ticket["upload"]["headers"]["X-API-Key"] == "ci-secret"
 
     upload_path = ticket["upload"]["url"].replace("http://testserver", "")
@@ -154,8 +193,9 @@ def test_local_upload_ticket_includes_api_key_header_when_auth_enabled(monkeypat
 # ── CV / Chess Corners ────────────────────────────────────────────────────────
 
 def test_chess_corners_basic():
-    key = _valid_cv_key("ci-chess-basic.png", suffix=0)
-    _upload(key)
+    png = _make_checkerboard_png()
+    key = _content_addressed_key(png)
+    _upload(key, png)
 
     resp = client.post(
         "/api/v1/cv/chess-corners",
@@ -173,7 +213,8 @@ def test_chess_corners_basic():
 
 
 def test_chess_corners_missing_key_returns_404():
-    key = _valid_cv_key("no-such-image.png", suffix=1)
+    fake_sha = "b" * 64
+    key = f"uploads/{fake_sha}"
     resp = client.post(
         "/api/v1/cv/chess-corners",
         json={"key": key, "storage_mode": "local"},

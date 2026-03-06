@@ -1,6 +1,7 @@
 import mimetypes
 import os
 import re
+import time
 import uuid
 from functools import lru_cache
 from pathlib import Path
@@ -130,6 +131,38 @@ def build_object_key(filename: str) -> str:
     return f"{upload_prefix}/{uuid.uuid4()}-{safe_name}"
 
 
+def build_content_addressed_key(sha256: str) -> str:
+    """Return a deterministic storage key derived from the file's sha256 hash."""
+    upload_prefix = os.getenv("STORAGE_UPLOAD_PREFIX", DEFAULT_UPLOAD_PREFIX).strip("/")
+    if not upload_prefix:
+        upload_prefix = DEFAULT_UPLOAD_PREFIX
+    return f"{upload_prefix}/{sha256}"
+
+
+def check_r2_object_exists(key: str) -> bool:
+    client = _r2_client()
+    try:
+        client.head_object(Bucket=bucket_name(), Key=key)
+        return True
+    except ClientError as exc:
+        code = exc.response.get("Error", {}).get("Code", "")
+        if code in {"404", "NoSuchKey"}:
+            return False
+        raise HTTPException(status_code=500, detail="Storage HEAD check failed") from exc
+    except BotoCoreError as exc:
+        raise HTTPException(status_code=500, detail="Storage HEAD check failed") from exc
+
+
+def check_local_object_exists(key: str) -> bool:
+    return local_path_for_key(key).exists()
+
+
+def check_object_exists(key: str, storage_mode: StorageMode) -> bool:
+    if storage_mode == "local":
+        return check_local_object_exists(key)
+    return check_r2_object_exists(key)
+
+
 @lru_cache(maxsize=1)
 def _r2_client():
     endpoint = os.getenv("S3_ENDPOINT")
@@ -245,7 +278,57 @@ def load_r2_object(key: str) -> bytes:
         raise HTTPException(status_code=500, detail="Failed to fetch object") from exc
 
 
+def r2_cache_root() -> Path | None:
+    path = os.getenv("R2_CACHE_ROOT")
+    return Path(path) if path else None
+
+
+def _cache_path_for_key(key: str) -> Path | None:
+    """Return the local cache file path for a content-addressed R2 key, or None if caching is disabled."""
+    root = r2_cache_root()
+    if root is None:
+        return None
+    # Key format is "uploads/<sha256>"; the sha256 segment is always 64 lowercase hex chars.
+    sha256 = key.rsplit("/", 1)[-1]
+    if not re.fullmatch(r"[0-9a-f]{64}", sha256):
+        raise HTTPException(status_code=400, detail="Invalid cache key format")
+    candidate = (root / sha256).resolve()
+    root_resolved = root.resolve()
+    try:
+        candidate.relative_to(root_resolved)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Invalid cache key path") from exc
+    return candidate
+
+
+def load_r2_object_cached(key: str) -> bytes:
+    """Load from local cache when available, otherwise fetch from R2 and cache the result."""
+    cache = _cache_path_for_key(key)
+    if cache is not None and cache.exists():
+        return cache.read_bytes()
+    data = load_r2_object(key)
+    if cache is not None:
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_bytes(data)
+    return data
+
+
+def cleanup_stale_cache() -> None:
+    """Delete cache files older than R2_CACHE_MAX_AGE_HOURS (default 24)."""
+    root = r2_cache_root()
+    if root is None or not root.exists():
+        return
+    try:
+        max_age_hours = int(os.getenv("R2_CACHE_MAX_AGE_HOURS", "24"))
+    except ValueError:
+        max_age_hours = 24
+    cutoff = time.time() - max_age_hours * 3600
+    for f in root.iterdir():
+        if f.is_file() and f.stat().st_mtime < cutoff:
+            f.unlink(missing_ok=True)
+
+
 def load_object_bytes(key: str, storage_mode: StorageMode) -> bytes:
     if storage_mode == "local":
         return load_local_object(key)
-    return load_r2_object(key)
+    return load_r2_object_cached(key)

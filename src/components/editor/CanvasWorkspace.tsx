@@ -409,7 +409,7 @@ export default function CanvasWorkspace() {
             )}
 
             {hoverPixel && hoveredDirectedPoint === null && (
-                <div className="absolute top-4 left-4 z-20 bg-background/90 border border-border backdrop-blur p-2 rounded-md shadow-sm text-xs font-mono flex items-center space-x-4 pointer-events-none">
+                <div className="absolute top-4 left-4 z-20 bg-background/90 border border-border backdrop-blur-sm p-2 rounded-md shadow-xs text-xs font-mono flex items-center space-x-4 pointer-events-none">
                     <div>
                         <span className="text-muted-foreground">X:</span> {hoverPixel.x.toFixed(2)} <span className="text-muted-foreground">Y:</span> {hoverPixel.y.toFixed(2)}
                     </div>

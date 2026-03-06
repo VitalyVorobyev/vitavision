@@ -52,7 +52,7 @@ export function ThemeVariantPicker() {
                         className={[
                             // Base swatch
                             "h-4 w-4 rounded-full transition-all duration-200",
-                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                            "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                             // Active state: slightly larger
                             isActive
                                 ? "scale-125"
@@ -89,7 +89,7 @@ export default function Navbar() {
     const location = useLocation();
 
     return (
-        <nav className="h-16 border-b border-border bg-background/80 backdrop-blur sticky top-0 z-50 flex items-center px-6 justify-between animate-in slide-in-from-top-4 duration-500">
+        <nav className="h-16 border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50 flex items-center px-6 justify-between animate-in slide-in-from-top-4 duration-500">
             <Link to="/" className="font-bold text-xl tracking-tighter">
                 VV.
             </Link>

@@ -65,14 +65,11 @@ interface ThemeVariantProviderProps {
 }
 
 export function ThemeVariantProvider({ children }: ThemeVariantProviderProps) {
-    const [variant, setVariantState] = useState<ThemeVariant>(DEFAULT_VARIANT);
+    const [variant, setVariantState] = useState<ThemeVariant>(() => readStoredVariant());
 
-    // On mount: read from storage and apply class
     useEffect(() => {
-        const stored = readStoredVariant();
-        setVariantState(stored);
-        applyVariantClass(stored);
-    }, []);
+        applyVariantClass(variant);
+    }, [variant]);
 
     const setVariant = (next: ThemeVariant) => {
         setVariantState(next);

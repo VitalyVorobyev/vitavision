@@ -2,32 +2,53 @@ import { useMemo, useState } from "react";
 import { LoaderCircle, Sparkles } from "lucide-react";
 
 import { useEditorStore } from "../../../store/editor/useEditorStore";
+import type { SampleId } from "../../../store/editor/useEditorStore";
 
 import { ALGORITHM_REGISTRY, DEFAULT_ALGORITHM_ID, getAlgorithmById } from "../algorithms/registry";
 import useAlgorithmRunner, { stageLabel } from "../algorithms/useAlgorithmRunner";
 import type { RequestedStorageMode } from "../algorithms/types";
 
-const buildInitialConfigs = (): Record<string, unknown> => {
-    return Object.fromEntries(ALGORITHM_REGISTRY.map((algorithm) => [algorithm.id, algorithm.initialConfig]));
+type ConfigEntry = { value: unknown; sampleId: SampleId };
+
+const resolveConfig = (
+    entries: Record<string, ConfigEntry>,
+    algorithmId: string,
+    sampleId: SampleId,
+    initialConfig: unknown,
+    sampleDefaults: Partial<Record<SampleId, unknown>> | undefined,
+): unknown => {
+    const entry = entries[algorithmId];
+    if (entry?.sampleId === sampleId) {
+        return entry.value;
+    }
+    const defaults = sampleDefaults?.[sampleId];
+    return defaults !== undefined ? { ...initialConfig as object, ...defaults as object } : initialConfig;
 };
 
 export default function AlgorithmPanel() {
     const {
         imageSrc,
         imageName,
+        imageSampleId,
         replaceAlgorithmFeatures,
         setSelectedFeatureId,
     } = useEditorStore();
 
     const [selectedAlgorithmId, setSelectedAlgorithmId] = useState<string>(DEFAULT_ALGORITHM_ID);
     const [requestedStorageMode, setRequestedStorageMode] = useState<RequestedStorageMode>("auto");
-    const [configs, setConfigs] = useState<Record<string, unknown>>(() => buildInitialConfigs());
+    const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>({});
 
     const runner = useAlgorithmRunner();
     const algorithm = useMemo(() => getAlgorithmById(selectedAlgorithmId), [selectedAlgorithmId]);
 
     const ConfigComponent = algorithm.ConfigComponent;
-    const config = configs[algorithm.id] ?? algorithm.initialConfig;
+    const config = resolveConfig(
+        configEntries,
+        algorithm.id,
+        imageSampleId,
+        algorithm.initialConfig,
+        algorithm.sampleDefaults,
+    );
 
     const canRun = imageSrc !== null && !runner.isRunning;
 
@@ -89,9 +110,9 @@ export default function AlgorithmPanel() {
 
                 <ConfigComponent
                     config={config}
-                    onChange={(next) => setConfigs((current) => ({
+                    onChange={(next) => setConfigEntries((current) => ({
                         ...current,
-                        [algorithm.id]: next,
+                        [algorithm.id]: { value: next, sampleId: imageSampleId },
                     }))}
                     disabled={runner.isRunning}
                 />

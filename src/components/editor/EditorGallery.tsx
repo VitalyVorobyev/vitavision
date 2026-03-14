@@ -1,4 +1,5 @@
 import { useEditorStore } from "../../store/editor/useEditorStore";
+import type { SampleId } from "../../store/editor/useEditorStore";
 import { Plus, Image as ImageIcon } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -29,16 +30,17 @@ export default function EditorGallery() {
                 id: uuidv4(),
                 src: url,
                 name: file.name,
+                sampleId: 'upload',
             });
         };
         input.click();
     };
 
-    const handleSelectImage = (src: string, name: string) => {
+    const handleSelectImage = (src: string, name: string, sampleId: SampleId) => {
         const img = new Image();
         img.src = src;
         img.onload = () => {
-            setImage(src, img.width, img.height, name);
+            setImage(src, img.width, img.height, name, sampleId);
             setFeatures([]);
             setZoom(1);
             setPan({ x: 0, y: 0 });
@@ -70,7 +72,7 @@ export default function EditorGallery() {
                     {galleryImages.map((img) => (
                         <div
                             key={img.id}
-                            onClick={() => handleSelectImage(img.src, img.name)}
+                            onClick={() => handleSelectImage(img.src, img.name, img.sampleId)}
                             className="group cursor-pointer rounded-xl border border-border bg-background overflow-hidden hover:shadow-md transition-all hover:border-primary/50 flex flex-col"
                         >
                             <div className="aspect-video relative overflow-hidden bg-muted flex items-center justify-center">

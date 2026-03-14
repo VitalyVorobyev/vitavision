@@ -3,6 +3,8 @@ import type { ComponentType } from "react";
 import type { StorageMode } from "../../../lib/storage";
 import type { Feature, SampleId } from "../../../store/editor/useEditorStore";
 
+export type RequestedStorageMode = "auto" | StorageMode;
+
 export interface AlgorithmSummaryEntry {
     label: string;
     value: string;

@@ -83,11 +83,16 @@ export default function EditorGallery() {
                                 />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                             </div>
-                            <div className="p-4 flex items-center gap-3">
-                                <div className="p-2 bg-primary/10 rounded-md text-primary shrink-0">
+                            <div className="p-4 flex items-start gap-3">
+                                <div className="p-2 bg-primary/10 rounded-md text-primary shrink-0 mt-0.5">
                                     <ImageIcon size={18} />
                                 </div>
-                                <span className="font-medium truncate flex-1">{img.name}</span>
+                                <div className="min-w-0 flex-1">
+                                    <span className="font-medium truncate block">{img.name}</span>
+                                    {img.description && (
+                                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{img.description}</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}

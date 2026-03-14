@@ -47,7 +47,7 @@ const toFeatures = (result: ChessCornersResult, runId: string): Feature[] => {
 
 export const chessCornersAlgorithm: AlgorithmDefinition = {
     id: "chess-corners",
-    title: "Chess Corners",
+    title: "ChESS Corners",
     description: "Detect ChESS X-junction keypoints with subpixel positions and orientation vectors.",
     initialConfig,
     ConfigComponent: ChessCornersConfigForm as AlgorithmDefinition["ConfigComponent"],

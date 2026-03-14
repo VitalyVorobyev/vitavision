@@ -1,0 +1,99 @@
+# Backlog
+
+## Status Values
+- `todo` — not started
+- `in-progress` — actively being worked
+- `blocked` — waiting on something
+- `done` — completed
+
+## Priority Values
+- `P0` — blocking release or correctness
+- `P1` — next up
+- `P2` — planned
+- `P3` — someday
+
+## ID Model
+- Backlog ids (`INFRA-011`, `ALGO-014`, `DOCS-003`) are the stable planning ids used in this file.
+- Workflow handoff ids (`TASK-012-...`) are execution-trace ids used under `docs/handoffs/`.
+- Handoff reports should record both ids when the work came from the backlog.
+
+---
+
+## Active Sprint
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| CV-001 | in-progress | P1 | feature | Add unified calibration-target detection API | Implementer | Partial working-tree changes already exist in `backend/routers/cv.py` and `backend/tests/test_api.py`; finish contract review, preset tuning, and validation before handoff. |
+| EDITOR-001 | in-progress | P1 | feature | Add sample-aware editor state and calibration client contracts | Implementer | Partial working-tree changes already exist in `src/lib/api.ts`, `src/store/editor/useEditorStore.ts`, `src/store/editor/featureSchema.ts`, and `src/components/editor/algorithms/types.ts`; UI wiring is still missing. |
+| EDITOR-002 | todo | P1 | feature | Replace editor tabs with guided workflow rail | Implementer | Right rail order: sample hint, algorithm choice, config, run summary, features. Remove public `R2` mentions. |
+
+## Up Next
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| CV-002 | todo | P1 | feature | Add fully editable Chessboard, ChArUco, and Marker Board config surfaces | Implementer | Use `public/board_charuco.json` and `public/marker_detect_config.json` as preset sources, but keep fields editable in the UI. |
+| EDITOR-003 | todo | P1 | feature | Wire curated examples and algorithm recommendations | Implementer | Three curated sample cards remain: `chessboard`, `charuco`, `markerboard`. Four guided contexts remain: Chessboard, ChArUco, Marker Board, and ChESS; Chessboard and ChESS share the same `chessboard.png` card. |
+| EDITOR-004 | todo | P1 | feature | Show algorithm metadata in selected feature details | Implementer | Surface grid coords, ids, score, target position, and marker/circle metadata without changing manual editing tools. |
+
+## Backlog
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| QA-001 | todo | P1 | test | Add regression coverage for bundled samples and editor workflow | Implementer | Backend sample tests should pass for Chessboard, ChArUco, and Marker Board; frontend should get at least build and smoke coverage for the editor flow. |
+| DOCS-001 | todo | P2 | docs | Update editor and backend documentation for calibration targets | Implementer | Document the new endpoint, guided examples, sample defaults, and storage-vendor-neutral UI copy. |
+| EDITOR-005 | todo | P2 | enhancement | Add richer readonly overlays for markers and circle matches | Implementer | Keep out of the first slice unless point-only overlays prove insufficient. |
+
+## API / Interface Tracking
+
+- `CV-001`: add `POST /api/v1/cv/calibration-targets/detect`.
+  - Request is discriminated by `algorithm: "chessboard" | "charuco" | "markerboard"`.
+  - Shared fields: `key`, `storage_mode`.
+  - Algorithm-specific config blocks stay explicit rather than inferred.
+- `CV-001`: response must always include `status`, `key`, `storage_mode`, `algorithm`, `image_width`, `image_height`, `frame`, `summary`, and `detection.corners`.
+  - Optional fields: `markers`, `alignment`, `circle_candidates`, `circle_matches`.
+  - Frame contract remains `image_px_center`, top-left origin, `x` right, `y` down, pixels.
+- `EDITOR-001`: extend frontend API surface in `src/lib/api.ts` with `detectCalibrationTarget(...)` and typed request/response models matching the backend contract.
+- `EDITOR-001`: extend editor state/contracts with `SampleId`, gallery sample metadata, and optional `Feature.meta`.
+- `EDITOR-003`: curated gallery remains three sample cards, but the chessboard card must recommend both Chessboard and ChESS algorithms.
+
+## Acceptance Scenarios (Attached to Tasks)
+
+- `CV-001`: `chessboard.png` returns non-empty chessboard corners and explicit frame metadata.
+- `CV-001`: `charuco.png` returns `kind="charuco"`, non-empty labeled corners, and non-empty markers using the bundled ChArUco preset.
+- `CV-001`: `markerboard.png` returns `kind="checkerboard_marker"`, non-empty corners, and exactly three circle matches using the tuned preset.
+- `EDITOR-002` and `EDITOR-003`: editor gallery shows three curated cards plus uploads; there is no fourth curated card for ChESS.
+- `EDITOR-002` and `EDITOR-003`: selecting the chessboard sample explains both Chessboard and ChESS usage and seeds the recommended algorithm defaults appropriately.
+- `EDITOR-002`: right rail has no tabs and is ordered as hint, algorithm, config, summary, features.
+- `EDITOR-001` and `EDITOR-004`: running a calibration-target algorithm creates readonly features with metadata visible in the selected-feature panel.
+- `EDITOR-002`: no visible public UI strings mention `R2`.
+
+## Locked Defaults
+
+- Guided example model:
+  - Three curated sample cards: `chessboard.png`, `charuco.png`, `markerboard.png`.
+  - Four guided contexts: Chessboard, ChArUco, Marker Board, ChESS.
+  - Uploads are always available.
+- Chessboard sample defaults:
+  - `expected_rows = 7`
+  - `expected_cols = 11`
+  - `min_corner_strength = 0.2`
+  - `completeness_threshold = 0.1`
+- ChArUco board defaults from `public/board_charuco.json`:
+  - `rows = 22`
+  - `cols = 22`
+  - `cell_size_mm = 4.8`
+  - `marker_size_rel = 0.75`
+  - `dictionary = DICT_4X4_1000`
+  - initial sample default `px_per_square = 40`
+- Marker Board defaults:
+  - use `public/marker_detect_config.json` as the preset source,
+  - allow translation/tuning to match the `calib-targets` Python API,
+  - acceptance target remains exactly three circle matches on the bundled sample.
+- Public UI copy:
+  - storage behavior can remain automatic or local behind the scenes,
+  - public-facing labels and hints must not mention `R2`.
+
+## Done
+
+| ID | Date | Type | Title | Notes |
+|----|------|------|-------|-------|

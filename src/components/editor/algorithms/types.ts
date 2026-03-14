@@ -1,9 +1,7 @@
 import type { ComponentType } from "react";
 
 import type { StorageMode } from "../../../lib/storage";
-import type { Feature } from "../../../store/editor/useEditorStore";
-
-export type RequestedStorageMode = "auto" | StorageMode;
+import type { Feature, SampleId } from "../../../store/editor/useEditorStore";
 
 export interface AlgorithmSummaryEntry {
     label: string;
@@ -21,6 +19,7 @@ export interface AlgorithmDefinition {
     title: string;
     description: string;
     initialConfig: unknown;
+    sampleDefaults?: Partial<Record<SampleId, unknown>>;
     ConfigComponent: ComponentType<AlgorithmConfigFormProps<unknown>>;
     run: (args: {
         key: string;

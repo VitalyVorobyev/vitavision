@@ -9,6 +9,7 @@ No external services (R2, network) are needed.
 
 import hashlib
 import io
+from pathlib import Path
 
 import numpy as np
 from PIL import Image
@@ -52,6 +53,11 @@ def _upload(key: str, content: bytes = b"") -> None:
         headers={"Content-Type": "image/png"},
     )
     assert resp.status_code == 200
+
+
+def _sample_bytes(name: str) -> bytes:
+    repo_root = Path(__file__).resolve().parents[2]
+    return (repo_root / "public" / name).read_bytes()
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
@@ -233,3 +239,142 @@ def test_chess_corners_invalid_key_format_rejected():
 def test_chess_corners_invalid_payload_rejected():
     resp = client.post("/api/v1/cv/chess-corners", json={})
     assert resp.status_code == 422
+
+
+def test_calibration_targets_chessboard_sample():
+    png = _sample_bytes("chessboard.png")
+    key = _content_addressed_key(png)
+    _upload(key, png)
+
+    resp = client.post(
+        "/api/v1/cv/calibration-targets/detect",
+        json={
+            "algorithm": "chessboard",
+            "key": key,
+            "storage_mode": "local",
+            "config": {
+                "detector": {
+                    "expected_rows": 7,
+                    "expected_cols": 11,
+                    "min_corner_strength": 0.2,
+                    "completeness_threshold": 0.1,
+                }
+            },
+        },
+    )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "success"
+    assert body["algorithm"] == "chessboard"
+    assert body["frame"]["name"] == "image_px_center"
+    assert body["detection"]["kind"] == "chessboard"
+    assert len(body["detection"]["corners"]) > 0
+    assert body["summary"]["corner_count"] == len(body["detection"]["corners"])
+
+
+def test_calibration_targets_charuco_sample():
+    png = _sample_bytes("charuco.png")
+    key = _content_addressed_key(png)
+    _upload(key, png)
+
+    resp = client.post(
+        "/api/v1/cv/calibration-targets/detect",
+        json={
+            "algorithm": "charuco",
+            "key": key,
+            "storage_mode": "local",
+            "config": {
+                "board": {
+                    "rows": 22,
+                    "cols": 22,
+                    "cell_size": 4.8,
+                    "marker_size_rel": 0.75,
+                    "dictionary": "DICT_4X4_1000",
+                },
+                "px_per_square": 40.0,
+                "graph": {
+                    "min_spacing_pix": 40.0,
+                    "max_spacing_pix": 160.0,
+                    "k_neighbors": 8,
+                    "orientation_tolerance_deg": 22.5,
+                },
+            },
+        },
+    )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "success"
+    assert body["algorithm"] == "charuco"
+    assert body["detection"]["kind"] == "charuco"
+    assert len(body["detection"]["corners"]) > 0
+    assert body["markers"] is not None
+    assert len(body["markers"]) > 0
+    assert body["summary"]["marker_count"] == len(body["markers"])
+
+
+def test_calibration_targets_markerboard_sample():
+    png = _sample_bytes("markerboard.png")
+    key = _content_addressed_key(png)
+    _upload(key, png)
+
+    resp = client.post(
+        "/api/v1/cv/calibration-targets/detect",
+        json={
+            "algorithm": "markerboard",
+            "key": key,
+            "storage_mode": "local",
+            "config": {
+                "layout": {
+                    "rows": 22,
+                    "cols": 22,
+                    "circles": [
+                        {"i": 11, "j": 11, "polarity": "white"},
+                        {"i": 12, "j": 11, "polarity": "white"},
+                        {"i": 12, "j": 12, "polarity": "white"},
+                    ],
+                },
+                "chessboard": {
+                    "min_corner_strength": 0.2,
+                    "min_corners": 50,
+                    "expected_rows": 22,
+                    "expected_cols": 22,
+                    "completeness_threshold": 0.05,
+                    "use_orientation_clustering": True,
+                    "orientation_clustering_params": {
+                        "num_bins": 90,
+                        "max_iters": 10,
+                        "peak_min_separation_deg": 15.0,
+                        "outlier_threshold_deg": 30.0,
+                        "min_peak_weight_fraction": 0.2,
+                        "use_weights": True,
+                    },
+                },
+                "grid_graph": {
+                    "min_spacing_pix": 20.0,
+                    "max_spacing_pix": 120.0,
+                    "k_neighbors": 8,
+                    "orientation_tolerance_deg": 22.5,
+                },
+                "circle_score": {
+                    "patch_size": 64,
+                    "diameter_frac": 0.5,
+                    "ring_thickness_frac": 0.35,
+                    "ring_radius_mul": 1.6,
+                    "min_contrast": 10.0,
+                    "samples": 48,
+                    "center_search_px": 2,
+                },
+            },
+        },
+    )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "success"
+    assert body["algorithm"] == "markerboard"
+    assert body["detection"]["kind"] == "checkerboard_marker"
+    assert len(body["detection"]["corners"]) > 0
+    assert body["circle_matches"] is not None
+    assert len(body["circle_matches"]) == 3

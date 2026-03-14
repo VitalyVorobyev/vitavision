@@ -10,6 +10,19 @@ export interface MarkerBoardConfig {
     expectedCols: number;
     minCornerStrength: number;
     completenessThreshold: number;
+    // Grid graph sub-params
+    graphMinSpacingPix: number;
+    graphMaxSpacingPix: number;
+    graphKNeighbors: number;
+    graphOrientationToleranceDeg: number;
+    // Circle score sub-params
+    circleScorePatchSize: number;
+    circleScoreDiameterFrac: number;
+    circleScoreRingThicknessFrac: number;
+    circleScoreRingRadiusMul: number;
+    circleScoreMinContrast: number;
+    circleScoreSamples: number;
+    circleScoreCenterSearchPx: number;
 }
 
 const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig>) => {
@@ -72,6 +85,105 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                     min={0}
                     max={1}
                     step={0.01}
+                />
+            </Section>
+            <Section title="Grid graph">
+                <NumberField
+                    label="Min spacing (px)"
+                    value={config.graphMinSpacingPix}
+                    onChange={(v) => set("graphMinSpacingPix", v ?? 40)}
+                    disabled={disabled}
+                    min={1}
+                    step={1}
+                />
+                <NumberField
+                    label="Max spacing (px)"
+                    value={config.graphMaxSpacingPix}
+                    onChange={(v) => set("graphMaxSpacingPix", v ?? 160)}
+                    disabled={disabled}
+                    min={1}
+                    step={1}
+                />
+                <NumberField
+                    label="K neighbors"
+                    value={config.graphKNeighbors}
+                    onChange={(v) => set("graphKNeighbors", v ?? 8)}
+                    disabled={disabled}
+                    min={1}
+                    max={64}
+                    step={1}
+                />
+                <NumberField
+                    label="Orientation tolerance (°)"
+                    value={config.graphOrientationToleranceDeg}
+                    onChange={(v) => set("graphOrientationToleranceDeg", v ?? 22.5)}
+                    disabled={disabled}
+                    min={0}
+                    max={180}
+                    step={0.5}
+                />
+            </Section>
+            <Section title="Circle score">
+                <NumberField
+                    label="Patch size (px)"
+                    value={config.circleScorePatchSize}
+                    onChange={(v) => set("circleScorePatchSize", v ?? 64)}
+                    disabled={disabled}
+                    min={1}
+                    step={1}
+                />
+                <NumberField
+                    label="Diameter fraction"
+                    value={config.circleScoreDiameterFrac}
+                    onChange={(v) => set("circleScoreDiameterFrac", v ?? 0.5)}
+                    disabled={disabled}
+                    min={0.01}
+                    max={2}
+                    step={0.05}
+                />
+                <NumberField
+                    label="Ring thickness fraction"
+                    value={config.circleScoreRingThicknessFrac}
+                    onChange={(v) => set("circleScoreRingThicknessFrac", v ?? 0.35)}
+                    disabled={disabled}
+                    min={0.01}
+                    max={2}
+                    step={0.05}
+                />
+                <NumberField
+                    label="Ring radius multiplier"
+                    value={config.circleScoreRingRadiusMul}
+                    onChange={(v) => set("circleScoreRingRadiusMul", v ?? 1.6)}
+                    disabled={disabled}
+                    min={0.01}
+                    max={10}
+                    step={0.1}
+                />
+                <NumberField
+                    label="Min contrast"
+                    value={config.circleScoreMinContrast}
+                    onChange={(v) => set("circleScoreMinContrast", v ?? 10)}
+                    disabled={disabled}
+                    min={0}
+                    step={1}
+                />
+                <NumberField
+                    label="Samples"
+                    value={config.circleScoreSamples}
+                    onChange={(v) => set("circleScoreSamples", v ?? 48)}
+                    disabled={disabled}
+                    min={1}
+                    max={1024}
+                    step={1}
+                />
+                <NumberField
+                    label="Center search (px)"
+                    value={config.circleScoreCenterSearchPx}
+                    onChange={(v) => set("circleScoreCenterSearchPx", v ?? 2)}
+                    disabled={disabled}
+                    min={0}
+                    max={256}
+                    step={1}
                 />
             </Section>
         </>

@@ -11,6 +11,14 @@ const initialConfig: CharucoConfig = {
     markerSizeRel: 0.75,
     dictionary: "DICT_4X4_1000",
     pxPerSquare: 40,
+    chessExpectedRows: 22,
+    chessExpectedCols: 22,
+    chessMinCornerStrength: 0.2,
+    chessCompletenessThreshold: 0.05,
+    graphMinSpacingPix: 40,
+    graphMaxSpacingPix: 160,
+    graphKNeighbors: 8,
+    graphOrientationToleranceDeg: 22.5,
 };
 
 const toFeatures = (result: CalibrationTargetResult, runId: string) => [
@@ -24,14 +32,7 @@ export const charucoAlgorithm: AlgorithmDefinition = {
     description: "Detect ChArUco board corners and embedded ArUco markers.",
     initialConfig,
     sampleDefaults: {
-        charuco: {
-            rows: 22,
-            cols: 22,
-            cellSize: 4.8,
-            markerSizeRel: 0.75,
-            dictionary: "DICT_4X4_1000",
-            pxPerSquare: 40,
-        },
+        charuco: { ...initialConfig },
     },
     ConfigComponent: CharucoConfigForm as AlgorithmDefinition["ConfigComponent"],
     run: async ({ key, storageMode, config }) => {
@@ -49,6 +50,18 @@ export const charucoAlgorithm: AlgorithmDefinition = {
                     dictionary: c.dictionary,
                 },
                 pxPerSquare: c.pxPerSquare,
+                chessboard: {
+                    expectedRows: c.chessExpectedRows,
+                    expectedCols: c.chessExpectedCols,
+                    minCornerStrength: c.chessMinCornerStrength,
+                    completenessThreshold: c.chessCompletenessThreshold,
+                },
+                graph: {
+                    minSpacingPix: c.graphMinSpacingPix,
+                    maxSpacingPix: c.graphMaxSpacingPix,
+                    kNeighbors: c.graphKNeighbors,
+                    orientationToleranceDeg: c.graphOrientationToleranceDeg,
+                },
             },
         });
     },

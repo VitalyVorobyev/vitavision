@@ -20,6 +20,17 @@ const initialConfig: MarkerBoardConfig = {
     expectedCols: 22,
     minCornerStrength: 0.2,
     completenessThreshold: 0.05,
+    graphMinSpacingPix: 40,
+    graphMaxSpacingPix: 160,
+    graphKNeighbors: 8,
+    graphOrientationToleranceDeg: 22.5,
+    circleScorePatchSize: 64,
+    circleScoreDiameterFrac: 0.5,
+    circleScoreRingThicknessFrac: 0.35,
+    circleScoreRingRadiusMul: 1.6,
+    circleScoreMinContrast: 10,
+    circleScoreSamples: 48,
+    circleScoreCenterSearchPx: 2,
 };
 
 const toFeatures = (result: CalibrationTargetResult, runId: string) => [
@@ -53,6 +64,21 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
                     expectedCols: c.expectedCols,
                     minCornerStrength: c.minCornerStrength,
                     completenessThreshold: c.completenessThreshold,
+                },
+                gridGraph: {
+                    minSpacingPix: c.graphMinSpacingPix,
+                    maxSpacingPix: c.graphMaxSpacingPix,
+                    kNeighbors: c.graphKNeighbors,
+                    orientationToleranceDeg: c.graphOrientationToleranceDeg,
+                },
+                circleScore: {
+                    patchSize: c.circleScorePatchSize,
+                    diameterFrac: c.circleScoreDiameterFrac,
+                    ringThicknessFrac: c.circleScoreRingThicknessFrac,
+                    ringRadiusMul: c.circleScoreRingRadiusMul,
+                    minContrast: c.circleScoreMinContrast,
+                    samples: c.circleScoreSamples,
+                    centerSearchPx: c.circleScoreCenterSearchPx,
                 },
             },
         });

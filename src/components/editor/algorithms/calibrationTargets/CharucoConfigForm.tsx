@@ -9,6 +9,16 @@ export interface CharucoConfig {
     markerSizeRel: number;
     dictionary: DictionaryName;
     pxPerSquare: number;
+    // Chessboard detector sub-params
+    chessExpectedRows: number;
+    chessExpectedCols: number;
+    chessMinCornerStrength: number;
+    chessCompletenessThreshold: number;
+    // Grid graph sub-params
+    graphMinSpacingPix: number;
+    graphMaxSpacingPix: number;
+    graphKNeighbors: number;
+    graphOrientationToleranceDeg: number;
 }
 
 const DICTIONARY_OPTIONS: Array<{ value: DictionaryName; label: string }> = [
@@ -84,6 +94,78 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     disabled={disabled}
                     min={4}
                     step={1}
+                />
+            </Section>
+            <Section title="Chessboard detector">
+                <NumberField
+                    label="Expected rows"
+                    value={config.chessExpectedRows}
+                    onChange={(v) => set("chessExpectedRows", v ?? 22)}
+                    disabled={disabled}
+                    min={2}
+                    step={1}
+                />
+                <NumberField
+                    label="Expected cols"
+                    value={config.chessExpectedCols}
+                    onChange={(v) => set("chessExpectedCols", v ?? 22)}
+                    disabled={disabled}
+                    min={2}
+                    step={1}
+                />
+                <NumberField
+                    label="Min corner strength"
+                    value={config.chessMinCornerStrength}
+                    onChange={(v) => set("chessMinCornerStrength", v ?? 0.2)}
+                    disabled={disabled}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                />
+                <NumberField
+                    label="Completeness threshold"
+                    value={config.chessCompletenessThreshold}
+                    onChange={(v) => set("chessCompletenessThreshold", v ?? 0.05)}
+                    disabled={disabled}
+                    min={0}
+                    max={1}
+                    step={0.01}
+                />
+            </Section>
+            <Section title="Grid graph">
+                <NumberField
+                    label="Min spacing (px)"
+                    value={config.graphMinSpacingPix}
+                    onChange={(v) => set("graphMinSpacingPix", v ?? 40)}
+                    disabled={disabled}
+                    min={1}
+                    step={1}
+                />
+                <NumberField
+                    label="Max spacing (px)"
+                    value={config.graphMaxSpacingPix}
+                    onChange={(v) => set("graphMaxSpacingPix", v ?? 160)}
+                    disabled={disabled}
+                    min={1}
+                    step={1}
+                />
+                <NumberField
+                    label="K neighbors"
+                    value={config.graphKNeighbors}
+                    onChange={(v) => set("graphKNeighbors", v ?? 8)}
+                    disabled={disabled}
+                    min={1}
+                    max={64}
+                    step={1}
+                />
+                <NumberField
+                    label="Orientation tolerance (°)"
+                    value={config.graphOrientationToleranceDeg}
+                    onChange={(v) => set("graphOrientationToleranceDeg", v ?? 22.5)}
+                    disabled={disabled}
+                    min={0}
+                    max={180}
+                    step={0.5}
                 />
             </Section>
         </>

@@ -23,7 +23,6 @@
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| EDITOR-001 | in-progress | P1 | feature | Add sample-aware editor state and calibration client contracts | Implementer | Partial working-tree changes already exist in `src/lib/api.ts`, `src/store/editor/useEditorStore.ts`, `src/store/editor/featureSchema.ts`, and `src/components/editor/algorithms/types.ts`; UI wiring is still missing. |
 | EDITOR-002 | todo | P1 | feature | Replace editor tabs with guided workflow rail | Implementer | Right rail order: sample hint, algorithm choice, config, run summary, features. Remove public `R2` mentions. |
 
 ## Up Next
@@ -97,3 +96,4 @@
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
 | ~~CV-001~~ | 2026-03-14 | feature | ~~Add unified calibration-target detection API~~ | `POST /api/v1/cv/calibration-targets/detect`; all 3 acceptance scenarios pass |
+| ~~EDITOR-001~~ | 2026-03-14 | feature | ~~Add sample-aware editor state and calibration client contracts~~ | Chessboard, ChArUco, Marker Board plugins registered; sampleDefaults wired in AlgorithmPanel |

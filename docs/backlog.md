@@ -28,7 +28,6 @@
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| CV-002 | todo | P1 | feature | Add fully editable Chessboard, ChArUco, and Marker Board config surfaces | Implementer | Use `public/board_charuco.json` and `public/marker_detect_config.json` as preset sources, but keep fields editable in the UI. |
 
 ## Backlog
 
@@ -93,6 +92,7 @@
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
 | ~~CV-001~~ | 2026-03-14 | feature | ~~Add unified calibration-target detection API~~ | `POST /api/v1/cv/calibration-targets/detect`; all 3 acceptance scenarios pass |
+| ~~CV-002~~ | 2026-03-14 | feature | ~~Add fully editable Chessboard, ChArUco, and Marker Board config surfaces~~ | ChArUco gains chessboard+graph sub-params; Marker Board gains graph+circleScore sub-params; all seeded from public preset JSON |
 | ~~EDITOR-001~~ | 2026-03-14 | feature | ~~Add sample-aware editor state and calibration client contracts~~ | Chessboard, ChArUco, Marker Board plugins registered; sampleDefaults wired in AlgorithmPanel |
 | ~~EDITOR-002~~ | 2026-03-14 | feature | ~~Replace editor tabs with guided workflow rail~~ | Tabs removed; single scrollable rail (hint → algorithm → config → run+summary → features); R2 mentions removed from UI |
 | ~~EDITOR-003~~ | 2026-03-14 | feature | ~~Wire curated examples and algorithm recommendations~~ | ChESS adapter title fixed to "ChESS Corners"; all recommendation buttons now resolve correctly |

@@ -1,9 +1,10 @@
 import io
 import math
 import os
+import re as _re
 import time
 from enum import Enum
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from uuid import uuid4
 
 import calib_targets
@@ -13,8 +14,8 @@ from fastapi import APIRouter, HTTPException, Request
 from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, Field, field_validator
 
-from services import storage_service
 from limiter import limiter
+from services import storage_service
 
 router = APIRouter(tags=["Computer Vision"])
 
@@ -22,7 +23,6 @@ router = APIRouter(tags=["Computer Vision"])
 _MAX_IMAGE_DIMENSION = int(os.getenv("MAX_IMAGE_DIMENSION", "16000"))
 
 # Storage keys use content-addressed format: "{prefix}/{sha256}" where sha256 is 64 hex chars.
-import re as _re
 _KEY_PATTERN = _re.compile(r"^[a-z0-9_-]+/[0-9a-f]{64}$")
 _CALIB_TARGET_DICTIONARIES = set(calib_targets.DICTIONARY_NAMES)
 
@@ -51,7 +51,9 @@ class ChessCornersRequest(BaseModel):
     key: str = Field(..., min_length=3, max_length=2048)
     storage_mode: Literal["r2", "local"] | None = None
     use_ml_refiner: bool = False
-    config: ChessDetectorConfigOverrides = Field(default_factory=ChessDetectorConfigOverrides)
+    config: ChessDetectorConfigOverrides = Field(
+        default_factory=ChessDetectorConfigOverrides
+    )
 
     @field_validator("key")
     @classmethod
@@ -198,7 +200,9 @@ class CharucoBoardSpecRequest(BaseModel):
     @classmethod
     def validate_dictionary(cls, value: str) -> str:
         if value not in _CALIB_TARGET_DICTIONARIES:
-            raise ValueError(f"dictionary must be one of {sorted(_CALIB_TARGET_DICTIONARIES)}")
+            raise ValueError(
+                f"dictionary must be one of {sorted(_CALIB_TARGET_DICTIONARIES)}"
+            )
         return value
 
 
@@ -271,7 +275,9 @@ class CalibrationTargetRequestBase(BaseModel):
 
 class ChessboardDetectionRequest(CalibrationTargetRequestBase):
     algorithm: Literal["chessboard"]
-    config: ChessboardAlgorithmConfigRequest = Field(default_factory=ChessboardAlgorithmConfigRequest)
+    config: ChessboardAlgorithmConfigRequest = Field(
+        default_factory=ChessboardAlgorithmConfigRequest
+    )
 
 
 class CharucoDetectionRequest(CalibrationTargetRequestBase):
@@ -281,7 +287,9 @@ class CharucoDetectionRequest(CalibrationTargetRequestBase):
 
 class MarkerBoardDetectionRequest(CalibrationTargetRequestBase):
     algorithm: Literal["markerboard"]
-    config: MarkerBoardAlgorithmConfigRequest = Field(default_factory=MarkerBoardAlgorithmConfigRequest)
+    config: MarkerBoardAlgorithmConfigRequest = Field(
+        default_factory=MarkerBoardAlgorithmConfigRequest
+    )
 
 
 CalibrationTargetRequest = Annotated[
@@ -404,14 +412,20 @@ def _decode_grayscale_image(data: bytes) -> tuple[np.ndarray, int, int]:
             width, height = gray.size
             arr = np.asarray(gray, dtype=np.uint8)
     except UnidentifiedImageError as exc:
-        raise HTTPException(status_code=400, detail="Uploaded object is not a supported image format") from exc
+        raise HTTPException(
+            status_code=400, detail="Uploaded object is not a supported image format"
+        ) from exc
     except OSError as exc:
         raise HTTPException(status_code=400, detail="Failed to decode image") from exc
 
     if arr.ndim != 2:
-        raise HTTPException(status_code=400, detail="Expected a grayscale 2D image after decoding")
+        raise HTTPException(
+            status_code=400, detail="Expected a grayscale 2D image after decoding"
+        )
     if width <= 0 or height <= 0:
-        raise HTTPException(status_code=400, detail="Decoded image has invalid dimensions")
+        raise HTTPException(
+            status_code=400, detail="Decoded image has invalid dimensions"
+        )
     if width > _MAX_IMAGE_DIMENSION or height > _MAX_IMAGE_DIMENSION:
         raise HTTPException(
             status_code=400,
@@ -424,11 +438,17 @@ def _apply_refiner(cfg: chess_corners.ChessConfig, refiner: RefinerName | None) 
     if refiner is None:
         return
     if refiner == RefinerName.CENTER_OF_MASS:
-        cfg.params.refiner = chess_corners.RefinerKind.center_of_mass(chess_corners.CenterOfMassConfig())
+        cfg.params.refiner = chess_corners.RefinerKind.center_of_mass(
+            chess_corners.CenterOfMassConfig()
+        )
     elif refiner == RefinerName.FORSTNER:
-        cfg.params.refiner = chess_corners.RefinerKind.forstner(chess_corners.ForstnerConfig())
+        cfg.params.refiner = chess_corners.RefinerKind.forstner(
+            chess_corners.ForstnerConfig()
+        )
     elif refiner == RefinerName.SADDLE_POINT:
-        cfg.params.refiner = chess_corners.RefinerKind.saddle_point(chess_corners.SaddlePointConfig())
+        cfg.params.refiner = chess_corners.RefinerKind.saddle_point(
+            chess_corners.SaddlePointConfig()
+        )
 
 
 def _apply_config_overrides(
@@ -458,13 +478,19 @@ def _apply_config_overrides(
     _apply_refiner(cfg, overrides.refiner)
 
 
-def _effective_config_snapshot(cfg: chess_corners.ChessConfig, use_ml_refiner: bool) -> EffectiveConfig:
+def _effective_config_snapshot(
+    cfg: chess_corners.ChessConfig, use_ml_refiner: bool
+) -> EffectiveConfig:
     # The binding exposes a nested `params.refiner.kind`.
     refiner_kind = getattr(cfg.params.refiner, "kind", "center_of_mass")
     return EffectiveConfig(
         use_ml_refiner=use_ml_refiner,
-        threshold_rel=float(cfg.threshold_rel) if cfg.threshold_rel is not None else None,
-        threshold_abs=float(cfg.threshold_abs) if cfg.threshold_abs is not None else None,
+        threshold_rel=float(cfg.threshold_rel)
+        if cfg.threshold_rel is not None
+        else None,
+        threshold_abs=float(cfg.threshold_abs)
+        if cfg.threshold_abs is not None
+        else None,
         nms_radius=int(cfg.nms_radius),
         min_cluster_size=int(cfg.min_cluster_size),
         pyramid_num_levels=int(cfg.pyramid_num_levels),
@@ -521,7 +547,11 @@ async def detect_chess_corners(request: Request, payload: ChessCornersRequest):
         corners_raw = chess_corners.find_chess_corners(image_u8, cfg)
     runtime_ms = (time.perf_counter() - started) * 1000.0
 
-    if not isinstance(corners_raw, np.ndarray) or corners_raw.ndim != 2 or corners_raw.shape[1] < 4:
+    if (
+        not isinstance(corners_raw, np.ndarray)
+        or corners_raw.ndim != 2
+        or corners_raw.shape[1] < 4
+    ):
         raise HTTPException(status_code=500, detail="Unexpected detector output format")
 
     finite_mask = np.all(np.isfinite(corners_raw[:, :4]), axis=1)
@@ -552,7 +582,11 @@ async def detect_chess_corners(request: Request, payload: ChessCornersRequest):
         y = float(row[1])
         response = float(row[2])
         orientation_rad = float(row[3])
-        confidence = (response - response_min) / response_span if response_max > response_min else 1.0
+        confidence = (
+            (response - response_min) / response_span
+            if response_max > response_min
+            else 1.0
+        )
         confidence = float(max(0.0, min(1.0, confidence)))
 
         nearest_x = float(round(x))
@@ -568,7 +602,9 @@ async def detect_chess_corners(request: Request, payload: ChessCornersRequest):
                 response=response,
                 orientation_rad=orientation_rad,
                 orientation_deg=math.degrees(orientation_rad),
-                direction=DirectionVector(dx=math.cos(orientation_rad), dy=math.sin(orientation_rad)),
+                direction=DirectionVector(
+                    dx=math.cos(orientation_rad), dy=math.sin(orientation_rad)
+                ),
                 confidence=confidence,
                 confidence_level=_confidence_level(confidence),
                 subpixel_offset_px=subpixel_offset,
@@ -605,7 +641,9 @@ async def detect_chess_corners(request: Request, payload: ChessCornersRequest):
 def _finite_float(value: float, *, field_name: str) -> float:
     numeric = float(value)
     if not math.isfinite(numeric):
-        raise HTTPException(status_code=500, detail=f"Detector returned non-finite {field_name}")
+        raise HTTPException(
+            status_code=500, detail=f"Detector returned non-finite {field_name}"
+        )
     return numeric
 
 
@@ -720,7 +758,7 @@ def _to_charuco_params(
             cols=request_cfg.board.cols,
             cell_size=request_cfg.board.cell_size,
             marker_size_rel=request_cfg.board.marker_size_rel,
-            dictionary=request_cfg.board.dictionary,
+            dictionary=request_cfg.board.dictionary,  # type: ignore[arg-type]
             marker_layout=calib_targets.MarkerLayout.OPENCV_CHARUCO,
         ),
         px_per_square=request_cfg.px_per_square,
@@ -753,7 +791,7 @@ def _to_marker_board_layout(
     return calib_targets.MarkerBoardLayout(
         rows=request_cfg.rows,
         cols=request_cfg.cols,
-        circles=circles,
+        circles=circles,  # type: ignore[arg-type]
         cell_size=request_cfg.cell_size,
     )
 
@@ -859,7 +897,9 @@ def _marker_response(marker: calib_targets.MarkerDetection) -> MarkerResponse:
         rotation=int(marker.rotation),
         hamming=int(marker.hamming),
         score=_finite_float(marker.score, field_name="marker.score"),
-        border_score=_finite_float(marker.border_score, field_name="marker.border_score"),
+        border_score=_finite_float(
+            marker.border_score, field_name="marker.border_score"
+        ),
         code=int(marker.code),
         inverted=bool(marker.inverted),
         corners_rect=[
@@ -890,11 +930,15 @@ def _circle_candidate_response(
     candidate: calib_targets.CircleCandidate,
 ) -> CircleCandidateResponse:
     return CircleCandidateResponse(
-        center_img=_frame_point_from_pair(candidate.center_img, field_name="circle_candidate.center_img"),
+        center_img=_frame_point_from_pair(
+            candidate.center_img, field_name="circle_candidate.center_img"
+        ),
         cell=GridCoordsResponse(i=int(candidate.cell.i), j=int(candidate.cell.j)),
         polarity=candidate.polarity.value,
         score=_finite_float(candidate.score, field_name="circle_candidate.score"),
-        contrast=_finite_float(candidate.contrast, field_name="circle_candidate.contrast"),
+        contrast=_finite_float(
+            candidate.contrast, field_name="circle_candidate.contrast"
+        ),
     )
 
 
@@ -903,17 +947,25 @@ def _circle_match_response(
 ) -> CircleMatchResponse:
     return CircleMatchResponse(
         expected=CircleMatchExpectedResponse(
-            cell=GridCoordsResponse(i=int(match.expected.cell.i), j=int(match.expected.cell.j)),
+            cell=GridCoordsResponse(
+                i=int(match.expected.cell.i), j=int(match.expected.cell.j)
+            ),
             polarity=match.expected.polarity.value,
         ),
-        matched_index=int(match.matched_index) if match.matched_index is not None else None,
+        matched_index=int(match.matched_index)
+        if match.matched_index is not None
+        else None,
         distance_cells=(
-            _finite_float(match.distance_cells, field_name="circle_match.distance_cells")
+            _finite_float(
+                match.distance_cells, field_name="circle_match.distance_cells"
+            )
             if match.distance_cells is not None
             else None
         ),
         offset_cells=(
-            CellOffsetResponse(di=int(match.offset_cells.di), dj=int(match.offset_cells.dj))
+            CellOffsetResponse(
+                di=int(match.offset_cells.di), dj=int(match.offset_cells.dj)
+            )
             if match.offset_cells is not None
             else None
         ),
@@ -957,12 +1009,15 @@ def _empty_calibration_response(
 
 @router.post("/calibration-targets/detect", response_model=CalibrationTargetResponse)
 @limiter.limit("10/minute")
-async def detect_calibration_target(request: Request, payload: CalibrationTargetRequest):
+async def detect_calibration_target(
+    request: Request, payload: CalibrationTargetRequest
+):
     storage_mode = storage_service.resolve_storage_mode(payload.storage_mode)
     object_bytes = storage_service.load_object_bytes(payload.key, storage_mode)
     image_u8, image_width, image_height = _decode_grayscale_image(object_bytes)
 
     started = time.perf_counter()
+    raw_result: Any = None
     try:
         if payload.algorithm == "chessboard":
             raw_result = calib_targets.detect_chessboard(
@@ -993,7 +1048,9 @@ async def detect_calibration_target(request: Request, payload: CalibrationTarget
                 image_height=image_height,
                 runtime_ms=runtime_ms,
             )
-        raise HTTPException(status_code=400, detail=f"Calibration target detection failed: {exc}") from exc
+        raise HTTPException(
+            status_code=400, detail=f"Calibration target detection failed: {exc}"
+        ) from exc
 
     runtime_ms = (time.perf_counter() - started) * 1000.0
     if raw_result is None:
@@ -1026,8 +1083,7 @@ async def detect_calibration_target(request: Request, payload: CalibrationTarget
             for candidate in raw_result.circle_candidates
         ]
         circle_matches = [
-            _circle_match_response(match)
-            for match in raw_result.circle_matches
+            _circle_match_response(match) for match in raw_result.circle_matches
         ]
         alignment_inliers = int(raw_result.alignment_inliers)
 
@@ -1042,8 +1098,12 @@ async def detect_calibration_target(request: Request, payload: CalibrationTarget
         summary=CalibrationSummaryResponse(
             corner_count=len(corners),
             marker_count=len(markers) if markers is not None else None,
-            circle_candidate_count=len(circle_candidates) if circle_candidates is not None else None,
-            circle_match_count=len(circle_matches) if circle_matches is not None else None,
+            circle_candidate_count=len(circle_candidates)
+            if circle_candidates is not None
+            else None,
+            circle_match_count=len(circle_matches)
+            if circle_matches is not None
+            else None,
             alignment_inliers=alignment_inliers,
             runtime_ms=runtime_ms,
         ),

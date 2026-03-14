@@ -23,13 +23,16 @@ client = TestClient(app)
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
+
 def _make_checkerboard_png(size: int = 300, cell: int = 100) -> bytes:
     """Return PNG bytes of a synthetic checkerboard image."""
     board = np.zeros((size, size), dtype=np.uint8)
     for row in range(size // cell):
         for col in range(size // cell):
             if (row + col) % 2 == 1:
-                board[row * cell:(row + 1) * cell, col * cell:(col + 1) * cell] = 255
+                board[row * cell : (row + 1) * cell, col * cell : (col + 1) * cell] = (
+                    255
+                )
     img = Image.fromarray(board, mode="L")
     buf = io.BytesIO()
     img.save(buf, format="PNG")
@@ -62,6 +65,7 @@ def _sample_bytes(name: str) -> bytes:
 
 # ── Health ────────────────────────────────────────────────────────────────────
 
+
 def test_root_returns_ok():
     resp = client.get("/")
     assert resp.status_code == 200
@@ -69,6 +73,7 @@ def test_root_returns_ok():
 
 
 # ── Storage ───────────────────────────────────────────────────────────────────
+
 
 def test_upload_ticket_returns_local_descriptor():
     png = _make_checkerboard_png()
@@ -197,6 +202,7 @@ def test_local_upload_ticket_includes_api_key_header_when_auth_enabled(monkeypat
 
 
 # ── CV / Chess Corners ────────────────────────────────────────────────────────
+
 
 def test_chess_corners_basic():
     png = _make_checkerboard_png()

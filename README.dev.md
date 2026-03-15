@@ -83,8 +83,8 @@ uvicorn main:app --reload --port 8000
 
 ```bash
 cd ..
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 ### 3. Open the prototype

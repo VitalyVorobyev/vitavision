@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Development Workflow
+
+Planning and implementation use a structured handoff process documented in `docs/handoffs.md`.
+Run `/implement <backlog-id>` (e.g. `/implement CV-001`) to execute the full
+Architect → Implementer → Reviewer → commit pipeline for a backlog task.
+
+Handoff reports live in `docs/handoffs/<task-id>/` (separate files per role).
+The backlog is at `docs/backlog.md`; IDs follow the pattern `CV-NNN`, `EDITOR-NNN`, etc.
+
 ## Commands
 
 ### Frontend
@@ -21,6 +30,16 @@ uvicorn main:app --reload --port 8000
 # Run backend smoke test / demo script
 python test_chess.py
 ```
+
+### Backend quality gates
+```bash
+cd backend && source .venv/bin/activate
+ruff check .                        # lint
+ruff format --check .               # formatting
+mypy . --ignore-missing-imports     # type check
+STORAGE_MODE=local LOCAL_STORAGE_ROOT=/tmp pytest tests/ -v   # tests
+```
+Install dev deps first: `uv pip install -r requirements-test.txt`
 
 ### Backend setup (first time)
 ```bash
@@ -103,7 +122,7 @@ backend/
   auth.py                    # X-API-Key dependency (verify_api_key); reads API_KEY env var
   limiter.py                 # Shared slowapi Limiter instance (IP-keyed rate limiting)
   routers/
-    cv.py                    # POST /api/v1/cv/chess-corners  (10 req/min)
+    cv.py                    # POST /api/v1/cv/chess-corners (10/min), POST /api/v1/cv/calibration-targets/detect (10/min)
     storage.py               # upload-ticket, local-upload, local-object endpoints (20-60 req/min)
   services/
     storage_service.py       # Storage mode resolution, R2 client, local file I/O, content-addressed keys, R2 cache

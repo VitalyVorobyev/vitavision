@@ -1,5 +1,6 @@
 ## [Unreleased]
 
+- feat(BLOG-004): add BlogPost page rendering pre-built HTML with metadata header, tag badges, repo/demo links, and heading anchors via rehype-slug
 - feat(BLOG-003): replace placeholder Blog page with BlogIndex featuring PostCard, TagBadge, and TagFilter components with tag-based filtering
 - feat(BLOG-002): add content processing pipeline (`scripts/content-build.ts`) with gray-matter frontmatter parsing, Zod validation, and unified markdown→HTML rendering; generates `src/generated/content-manifest.ts`
 - feat(BLOG-001): add content directory structure (`content/blog/`, `content/algorithms/`, `content/images/`) and Zod frontmatter schemas for blog posts and algorithm pages

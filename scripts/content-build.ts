@@ -5,7 +5,8 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
-import rehypeSanitize from "rehype-sanitize";
+import rehypeSlug from "rehype-slug";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
 
 import {
@@ -32,7 +33,19 @@ async function renderMarkdown(content: string): Promise<string> {
         .use(remarkParse)
         .use(remarkGfm)
         .use(remarkRehype)
-        .use(rehypeSanitize)
+        .use(rehypeSlug)
+        .use(rehypeSanitize, {
+            ...defaultSchema,
+            attributes: {
+                ...defaultSchema.attributes,
+                h1: [...(defaultSchema.attributes?.h1 ?? []), "id"],
+                h2: [...(defaultSchema.attributes?.h2 ?? []), "id"],
+                h3: [...(defaultSchema.attributes?.h3 ?? []), "id"],
+                h4: [...(defaultSchema.attributes?.h4 ?? []), "id"],
+                h5: [...(defaultSchema.attributes?.h5 ?? []), "id"],
+                h6: [...(defaultSchema.attributes?.h6 ?? []), "id"],
+            },
+        })
         .use(rehypeStringify)
         .process(content);
     return String(result);

@@ -55,6 +55,9 @@ export default function ConfigurePanel() {
         galleryImages,
         replaceAlgorithmFeatures,
         setSelectedFeatureId,
+        setPanelMode,
+        setLastAlgorithmResult,
+        addRunToHistory,
     } = useEditorStore();
 
     const [selectedAlgorithmId, setSelectedAlgorithmId] = useState<string>(DEFAULT_ALGORITHM_ID);
@@ -100,6 +103,18 @@ export default function ConfigurePanel() {
         if (mappedFeatures.length > 0) {
             setSelectedFeatureId(mappedFeatures[0].id);
         }
+
+        const summaryEntries = algorithm.summary(output.result);
+        setLastAlgorithmResult(algorithm.id, output.result);
+        addRunToHistory({
+            runId: output.runId,
+            algorithmId: algorithm.id,
+            algorithmTitle: algorithm.title,
+            summary: summaryEntries,
+            featureCount: mappedFeatures.length,
+            timestamp: Date.now(),
+        });
+        setPanelMode("results");
     };
 
     const hasHint = activeGalleryImage !== null && imageSrc !== null &&

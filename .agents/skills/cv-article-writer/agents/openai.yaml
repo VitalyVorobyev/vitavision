@@ -1,0 +1,4 @@
+interface:
+  display_name: "CV Article Writer"
+  short_description: "Plan technical CV articles from repo context"
+  default_prompt: "Use $cv-article-writer to scope a new technical computer vision article from the demos and algorithms in this repo."

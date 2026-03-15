@@ -11,7 +11,7 @@ const ChessCornersConfigForm = (props: AlgorithmConfigFormProps<ChessCornersConf
     return (
         <div className="space-y-3">
             <label className="grid gap-1 text-sm">
-                <span className="text-muted-foreground">
+                <span className="text-muted-foreground" title="Relative detection threshold (0.05-0.8). Lower values detect more corners but increase false positives.">
                     Threshold (relative): {config.thresholdRel.toFixed(2)}
                 </span>
                 <input
@@ -42,7 +42,7 @@ const ChessCornersConfigForm = (props: AlgorithmConfigFormProps<ChessCornersConf
                         });
                     }}
                 />
-                <span>Use ML refiner</span>
+                <span title="Apply an ML-based subpixel refinement model to improve corner localization accuracy.">Use ML refiner</span>
             </label>
         </div>
     );

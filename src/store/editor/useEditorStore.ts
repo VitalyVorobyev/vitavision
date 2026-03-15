@@ -120,6 +120,35 @@ export interface GalleryImage {
     recommendedAlgorithms?: string[];
 }
 
+// --- Panel mode, run history, overlay visibility ---
+
+export type PanelMode = 'configure' | 'results';
+
+export type OverlayVisibilityKey = 'features' | 'algorithmOverlay';
+
+export interface OverlayToggles {
+    corners: boolean;
+    edges: boolean;
+    labels: boolean;
+    markers: boolean;
+}
+
+export interface RunSummaryEntry {
+    label: string;
+    value: string;
+}
+
+export interface RunHistoryEntry {
+    runId: string;
+    algorithmId: string;
+    algorithmTitle: string;
+    summary: RunSummaryEntry[];
+    featureCount: number;
+    timestamp: number;
+}
+
+const MAX_RUN_HISTORY = 20;
+
 const isObjectRecord = (value: unknown): value is Record<string, unknown> => {
     return typeof value === 'object' && value !== null;
 };
@@ -175,6 +204,12 @@ interface EditorState {
     galleryMode: boolean;
     galleryImages: GalleryImage[];
 
+    panelMode: PanelMode;
+    lastAlgorithmResult: { algorithmId: string; result: unknown } | null;
+    runHistory: RunHistoryEntry[];
+    overlayVisibility: Record<OverlayVisibilityKey, boolean>;
+    overlayToggles: OverlayToggles;
+
     setImage: (src: string, width: number, height: number, name?: string, sampleId?: SampleId) => void;
     setActiveTool: (tool: ToolType) => void;
     setSelectedFeatureId: (id: string | null) => void;
@@ -191,6 +226,13 @@ interface EditorState {
 
     setGalleryMode: (mode: boolean) => void;
     addGalleryImage: (img: GalleryImage) => void;
+
+    setPanelMode: (mode: PanelMode) => void;
+    setLastAlgorithmResult: (algorithmId: string, result: unknown) => void;
+    addRunToHistory: (entry: RunHistoryEntry) => void;
+    clearRunHistory: () => void;
+    setOverlayVisibility: (key: OverlayVisibilityKey, visible: boolean) => void;
+    setOverlayToggle: (key: keyof OverlayToggles, value: boolean) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -213,6 +255,11 @@ export const useEditorStore = create<EditorState>((set) => ({
         imageSampleId: sampleId ?? 'upload',
         imageWidth: width,
         imageHeight: height,
+        features: [],
+        selectedFeatureId: null,
+        lastAlgorithmResult: null,
+        runHistory: [],
+        panelMode: 'configure',
     }),
     setActiveTool: (tool) => set({ activeTool: tool, selectedFeatureId: null }),
     setSelectedFeatureId: (id) => set({ selectedFeatureId: id }),
@@ -265,7 +312,10 @@ export const useEditorStore = create<EditorState>((set) => ({
     setPan: (pan) => set({ pan }),
 
     showFeatures: true,
-    setShowFeatures: (show) => set({ showFeatures: show }),
+    setShowFeatures: (show) => set((state) => ({
+        showFeatures: show,
+        overlayVisibility: { ...state.overlayVisibility, features: show },
+    })),
 
     galleryMode: true,
     galleryImages: [
@@ -296,4 +346,26 @@ export const useEditorStore = create<EditorState>((set) => ({
     ],
     setGalleryMode: (mode) => set({ galleryMode: mode }),
     addGalleryImage: (img) => set((state) => ({ galleryImages: [...state.galleryImages, img] })),
+
+    panelMode: 'configure',
+    lastAlgorithmResult: null,
+    runHistory: [],
+    overlayVisibility: { features: true, algorithmOverlay: true },
+    overlayToggles: { corners: true, edges: true, labels: false, markers: true },
+
+    setPanelMode: (mode) => set({ panelMode: mode }),
+    setLastAlgorithmResult: (algorithmId, result) => set({
+        lastAlgorithmResult: { algorithmId, result },
+    }),
+    addRunToHistory: (entry) => set((state) => ({
+        runHistory: [entry, ...state.runHistory].slice(0, MAX_RUN_HISTORY),
+    })),
+    clearRunHistory: () => set({ runHistory: [] }),
+    setOverlayVisibility: (key, visible) => set((state) => ({
+        overlayVisibility: { ...state.overlayVisibility, [key]: visible },
+        ...(key === 'features' ? { showFeatures: visible } : {}),
+    })),
+    setOverlayToggle: (key, value) => set((state) => ({
+        overlayToggles: { ...state.overlayToggles, [key]: value },
+    })),
 }));

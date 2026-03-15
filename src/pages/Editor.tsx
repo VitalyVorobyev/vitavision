@@ -31,8 +31,8 @@ export default function Editor() {
         setActiveTool,
         features,
         setFeatures,
-        showFeatures,
-        setShowFeatures,
+        overlayVisibility,
+        setOverlayVisibility,
         zoom,
         setZoom,
         setPan,
@@ -145,11 +145,11 @@ export default function Editor() {
                 <div className="border-t border-border w-full my-4" />
 
                 <button
-                    onClick={() => setShowFeatures(!showFeatures)}
-                    title={showFeatures ? "Hide Features" : "Show Features"}
+                    onClick={() => setOverlayVisibility("features", !overlayVisibility.features)}
+                    title={overlayVisibility.features ? "Hide Features" : "Show Features"}
                     className="p-3 rounded-md text-muted-foreground hover:bg-muted transition-colors"
                 >
-                    {showFeatures ? <Eye size={18} /> : <EyeOff size={18} />}
+                    {overlayVisibility.features ? <Eye size={18} /> : <EyeOff size={18} />}
                 </button>
 
                 <div className="flex-1" />

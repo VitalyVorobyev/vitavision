@@ -3,6 +3,7 @@ import type { CalibrationTargetResult } from "../../../../lib/api";
 import { detectCalibrationTarget } from "../../../../lib/api";
 import { calibrationCornerFeatures, calibrationSummary } from "./shared";
 import ChessboardConfigForm, { type ChessboardConfig } from "./ChessboardConfigForm";
+import ChessboardOverlay from "../../canvas/overlays/ChessboardOverlay";
 
 const initialConfig: ChessboardConfig = {
     expectedRows: 7,
@@ -44,4 +45,5 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
     toFeatures: (result, runId) =>
         calibrationCornerFeatures(result as CalibrationTargetResult, runId, "chessboard"),
     summary: (result) => calibrationSummary(result as CalibrationTargetResult),
+    OverlayComponent: ChessboardOverlay,
 };

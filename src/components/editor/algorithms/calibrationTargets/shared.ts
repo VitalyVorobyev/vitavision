@@ -5,7 +5,7 @@ import type {
 } from "../../../../lib/api";
 import type { Feature, PointFeature } from "../../../../store/editor/useEditorStore";
 
-const toCanvasCoordinate = (value: number): number => value + 0.5;
+export const toCanvasCoordinate = (value: number): number => value + 0.5;
 
 const averagePoint = (points: Array<{ x: number; y: number }>): { x: number; y: number } => {
     const total = points.reduce(

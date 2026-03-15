@@ -3,6 +3,7 @@ import type { CalibrationTargetResult } from "../../../../lib/api";
 import { detectCalibrationTarget } from "../../../../lib/api";
 import { calibrationCornerFeatures, calibrationMarkerFeatures, calibrationSummary } from "./shared";
 import CharucoConfigForm, { type CharucoConfig } from "./CharucoConfigForm";
+import CharucoOverlay from "../../canvas/overlays/CharucoOverlay";
 
 const initialConfig: CharucoConfig = {
     rows: 22,
@@ -18,7 +19,7 @@ const initialConfig: CharucoConfig = {
     graphMinSpacingPix: 40,
     graphMaxSpacingPix: 160,
     graphKNeighbors: 8,
-    graphOrientationToleranceDeg: 22.5,
+    graphOrientationToleranceDeg: 12.5,
 };
 
 const toFeatures = (result: CalibrationTargetResult, runId: string) => [
@@ -68,4 +69,5 @@ export const charucoAlgorithm: AlgorithmDefinition = {
     toFeatures: (result, runId) =>
         toFeatures(result as CalibrationTargetResult, runId),
     summary: (result) => calibrationSummary(result as CalibrationTargetResult),
+    OverlayComponent: CharucoOverlay,
 };

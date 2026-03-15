@@ -1,238 +1,136 @@
-import { useMemo, useState } from "react";
-import { LoaderCircle, Sparkles, AlertCircle } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 
-import { useEditorStore } from "../../../store/editor/useEditorStore";
-import type { SampleId } from "../../../store/editor/useEditorStore";
+import { useEditorStore, type OverlayToggles, type PanelMode } from "../../../store/editor/useEditorStore";
+import { getAlgorithmById } from "../algorithms/registry";
 
-import { ALGORITHM_REGISTRY, DEFAULT_ALGORITHM_ID, getAlgorithmById } from "../algorithms/registry";
-import useAlgorithmRunner, { stageLabel } from "../algorithms/useAlgorithmRunner";
-
+import ConfigurePanel from "./ConfigurePanel";
 import FeatureListPanel from "./FeatureListPanel";
+import RailSection from "./RailSection";
+import ResultsPanel from "./ResultsPanel";
 
-type ConfigEntry = { value: unknown; sampleId: SampleId };
+const MODES: { key: PanelMode; label: string }[] = [
+    { key: "configure", label: "Configure" },
+    { key: "results", label: "Results" },
+];
 
-const resolveConfig = (
-    entries: Record<string, ConfigEntry>,
-    algorithmId: string,
-    sampleId: SampleId,
-    initialConfig: unknown,
-    sampleDefaults: Partial<Record<SampleId, unknown>> | undefined,
-): unknown => {
-    const entry = entries[algorithmId];
-    if (entry?.sampleId === sampleId) {
-        return entry.value;
-    }
-    const defaults = sampleDefaults?.[sampleId];
-    return defaults !== undefined ? { ...initialConfig as object, ...defaults as object } : initialConfig;
-};
+const MIN_WIDTH = 280;
+const MAX_WIDTH = 600;
+const DEFAULT_WIDTH = 320;
 
-function RailSection({ label, children }: { label: string; children: React.ReactNode }) {
+function ModeToggle({ value, onChange }: { value: PanelMode; onChange: (m: PanelMode) => void }) {
     return (
-        <div className="space-y-2.5">
-            <div className="flex items-center gap-2">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60 shrink-0">
-                    {label}
-                </span>
-                <div className="h-px flex-1 bg-border/50" />
-            </div>
-            {children}
-        </div>
-    );
-}
-
-function AlgorithmPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
-    return (
-        <div className="rounded-lg border border-border overflow-hidden divide-y divide-border/70">
-            {ALGORITHM_REGISTRY.map((algo) => (
+        <div className="flex rounded-lg border border-border overflow-hidden">
+            {MODES.map(({ key, label }) => (
                 <button
-                    key={algo.id}
+                    key={key}
                     type="button"
-                    onClick={() => onChange(algo.id)}
-                    className={`w-full text-left px-3 py-2 text-xs transition-colors ${
-                        value === algo.id
-                            ? "bg-primary/10 text-primary font-semibold"
-                            : "bg-background hover:bg-muted/60 text-foreground"
+                    onClick={() => onChange(key)}
+                    className={`flex-1 text-xs py-1.5 font-medium transition-colors ${
+                        value === key
+                            ? "bg-primary/10 text-primary"
+                            : "bg-background text-muted-foreground hover:bg-muted/60"
                     }`}
                 >
-                    {algo.title}
+                    {label}
                 </button>
             ))}
         </div>
     );
 }
 
-export default function EditorRightPanel() {
-    const {
-        imageSrc,
-        imageName,
-        imageSampleId,
-        galleryImages,
-        replaceAlgorithmFeatures,
-        setSelectedFeatureId,
-    } = useEditorStore();
+/* ── overlay toggle controls ─────────────────────────────────── */
 
-    const [selectedAlgorithmId, setSelectedAlgorithmId] = useState<string>(DEFAULT_ALGORITHM_ID);
-    const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>({});
+const TOGGLE_ITEMS: { key: keyof OverlayToggles; label: string }[] = [
+    { key: "corners", label: "Corners" },
+    { key: "edges", label: "Grid edges" },
+    { key: "labels", label: "Labels" },
+    { key: "markers", label: "Markers" },
+];
 
-    const runner = useAlgorithmRunner();
-    const algorithm = useMemo(() => getAlgorithmById(selectedAlgorithmId), [selectedAlgorithmId]);
-
-    const ConfigComponent = algorithm.ConfigComponent;
-    const config = resolveConfig(
-        configEntries,
-        algorithm.id,
-        imageSampleId,
-        algorithm.initialConfig,
-        algorithm.sampleDefaults,
-    );
-
-    const activeGalleryImage = useMemo(
-        () => galleryImages.find((img) => img.sampleId === imageSampleId && imageSrc !== null) ?? null,
-        [galleryImages, imageSampleId, imageSrc],
-    );
-
-    const canRun = imageSrc !== null && !runner.isRunning;
-
-    const handleSelectAlgorithm = (id: string) => {
-        setSelectedAlgorithmId(id);
-        runner.clearError();
-    };
-
-    const handleRun = async () => {
-        const output = await runner.runAlgorithm({
-            algorithm,
-            config,
-            imageSrc,
-            imageName,
-            storageMode: "auto",
-        });
-
-        if (!output) return;
-
-        const mappedFeatures = algorithm.toFeatures(output.result, output.runId);
-        replaceAlgorithmFeatures(algorithm.id, mappedFeatures);
-        if (mappedFeatures.length > 0) {
-            setSelectedFeatureId(mappedFeatures[0].id);
-        }
-    };
-
-    const hasHint = activeGalleryImage !== null && imageSrc !== null &&
-        (activeGalleryImage.description || (activeGalleryImage.recommendedAlgorithms?.length ?? 0) > 0);
+function OverlayTogglePanel() {
+    const { overlayToggles, setOverlayToggle } = useEditorStore();
 
     return (
-        <div className="w-80 border-l border-border bg-muted/20 p-4 shrink-0 flex flex-col h-full overflow-hidden">
-            <div className="flex-1 overflow-y-auto space-y-5 pr-0.5">
+        <div className="flex flex-wrap gap-1.5">
+            {TOGGLE_ITEMS.map(({ key, label }) => (
+                <button
+                    key={key}
+                    type="button"
+                    onClick={() => setOverlayToggle(key, !overlayToggles[key])}
+                    className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
+                        overlayToggles[key]
+                            ? "border-primary/40 bg-primary/10 text-primary"
+                            : "border-border text-muted-foreground hover:bg-muted/30"
+                    }`}
+                >
+                    {label}
+                </button>
+            ))}
+        </div>
+    );
+}
 
-                {/* Section 1: No-image hint OR sample context card */}
-                {imageSrc === null ? (
-                    <div className="rounded-lg border border-dashed border-border/80 bg-background/40 p-4 text-center">
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                            Open an image from the gallery to get started.
-                        </p>
-                    </div>
-                ) : hasHint && (
-                    <div className="rounded-lg border border-border bg-background p-3 space-y-2">
-                        <p className="text-xs font-semibold text-foreground leading-tight">
-                            {activeGalleryImage!.name}
-                        </p>
-                        {activeGalleryImage!.description && (
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                                {activeGalleryImage!.description}
-                            </p>
-                        )}
-                        {(activeGalleryImage!.recommendedAlgorithms?.length ?? 0) > 0 && (
-                            <div className="flex flex-wrap gap-1 pt-0.5">
-                                <span className="text-[10px] text-muted-foreground self-center">Try:</span>
-                                {activeGalleryImage!.recommendedAlgorithms!.map((name) => {
-                                    const match = ALGORITHM_REGISTRY.find((a) => a.title === name);
-                                    return (
-                                        <button
-                                            key={name}
-                                            type="button"
-                                            onClick={() => match && handleSelectAlgorithm(match.id)}
-                                            className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors"
-                                        >
-                                            {name}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        )}
-                    </div>
-                )}
+/* ── main panel ──────────────────────────────────────────────── */
 
-                {/* Section 2: Algorithm selector */}
-                <RailSection label="Algorithm">
-                    <AlgorithmPicker value={selectedAlgorithmId} onChange={handleSelectAlgorithm} />
-                    <p className="text-xs text-muted-foreground leading-relaxed px-0.5">
-                        {algorithm.description}
-                    </p>
-                </RailSection>
+export default function EditorRightPanel() {
+    const { panelMode, setPanelMode, lastAlgorithmResult } = useEditorStore();
+    const [width, setWidth] = useState(DEFAULT_WIDTH);
+    const isDragging = useRef(false);
 
-                {/* Section 3: Config */}
-                <RailSection label="Configuration">
-                    <ConfigComponent
-                        config={config}
-                        onChange={(next) => setConfigEntries((current) => ({
-                            ...current,
-                            [algorithm.id]: { value: next, sampleId: imageSampleId },
-                        }))}
-                        disabled={runner.isRunning}
-                    />
-                </RailSection>
+    const hasOverlay = lastAlgorithmResult
+        ? !!getAlgorithmById(lastAlgorithmResult.algorithmId).OverlayComponent
+        : false;
 
-                {/* Section 4: Run + status + summary */}
-                <RailSection label="Run">
-                    <div className="space-y-2.5">
-                        <button
-                            type="button"
-                            onClick={handleRun}
-                            disabled={!canRun}
-                            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:bg-primary/90 transition-colors shadow-sm"
-                        >
-                            {runner.isRunning
-                                ? <LoaderCircle size={14} className="animate-spin" />
-                                : <Sparkles size={14} />
-                            }
-                            {runner.isRunning ? "Running…" : "Run Algorithm"}
-                        </button>
+    const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        isDragging.current = true;
+        const handle = e.currentTarget;
+        handle.setPointerCapture(e.pointerId);
 
-                        {runner.isRunning && (
-                            <p className="text-[11px] text-center text-muted-foreground">
-                                {stageLabel(runner.stage)}
-                            </p>
-                        )}
+        const onMove = (ev: PointerEvent) => {
+            const newWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, window.innerWidth - ev.clientX));
+            setWidth(newWidth);
+        };
+        const onUp = () => {
+            isDragging.current = false;
+            handle.removeEventListener("pointermove", onMove);
+            handle.removeEventListener("pointerup", onUp);
+        };
+        handle.addEventListener("pointermove", onMove);
+        handle.addEventListener("pointerup", onUp);
+    }, []);
 
-                        {runner.error && (
-                            <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
-                                <AlertCircle size={13} className="text-destructive shrink-0 mt-0.5" />
-                                <p className="text-xs text-destructive leading-relaxed">{runner.error}</p>
-                            </div>
-                        )}
+    return (
+        <div
+            className="border-l border-border bg-muted/20 shrink-0 flex h-full overflow-hidden relative"
+            style={{ width }}
+        >
+            {/* resize handle */}
+            <div
+                onPointerDown={handlePointerDown}
+                className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize z-10 group"
+            >
+                <div className="absolute inset-y-0 left-0 w-1 bg-transparent group-hover:bg-primary/20 group-active:bg-primary/30 transition-colors" />
+            </div>
 
-                        {runner.summary.length > 0 && (
-                            <div className="space-y-2">
-                                <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
-                                    Last Run
-                                </span>
-                                <div className="grid grid-cols-2 gap-1.5">
-                                    {runner.summary.map((entry) => (
-                                        <div key={entry.label} className="rounded-md border border-border bg-background/70 px-2.5 py-2">
-                                            <div className="text-sm font-semibold text-foreground leading-tight">{entry.value}</div>
-                                            <div className="text-[11px] text-muted-foreground mt-0.5">{entry.label}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </RailSection>
+            <div className="flex flex-col h-full w-full p-4 pl-3">
+                <div className="mb-4 shrink-0">
+                    <ModeToggle value={panelMode} onChange={setPanelMode} />
+                </div>
+                <div className="flex-1 overflow-y-auto space-y-5 pr-0.5">
+                    {panelMode === "configure" && <ConfigurePanel />}
+                    {panelMode === "results" && <ResultsPanel />}
 
-                {/* Section 5: Features */}
-                <RailSection label="Features">
-                    <FeatureListPanel />
-                </RailSection>
+                    {hasOverlay && (
+                        <RailSection label="Overlay">
+                            <OverlayTogglePanel />
+                        </RailSection>
+                    )}
 
+                    <RailSection label="Features">
+                        <FeatureListPanel />
+                    </RailSection>
+                </div>
             </div>
         </div>
     );

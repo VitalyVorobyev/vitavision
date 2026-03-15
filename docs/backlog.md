@@ -30,7 +30,7 @@ Phase 1 — Right Panel Mode System + Store Foundations
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| EDITOR-010 | todo | P1 | refactor | Add panelMode, runHistory, overlayVisibility to Zustand store | Implementer | New state groups: panelMode, runHistory, lastAlgorithmResult, overlayVisibility (replaces showFeatures). Extract types to editorTypes.ts if store exceeds ~500 lines. |
+| ~~EDITOR-010~~ | done | P1 | refactor | ~~Add panelMode, runHistory, overlayVisibility to Zustand store~~ | Implementer | New state groups: panelMode, runHistory, lastAlgorithmResult, overlayVisibility (replaces showFeatures). Extract types to editorTypes.ts if store exceeds ~500 lines. |
 | EDITOR-011 | todo | P1 | refactor | Extract ConfigurePanel from EditorRightPanel | Implementer | Move hint card + algo picker + config form + run button into ConfigurePanel. EditorRightPanel becomes a thin mode-switching shell. Deps: EDITOR-010. |
 | EDITOR-012 | todo | P1 | feature | Create ResultsPanel with summary, diagnostics placeholder, and feature list | Implementer | Run summary grid + FeatureListPanel + run history list + "Configure" back-button. Deps: EDITOR-010. |
 | EDITOR-013 | todo | P1 | feature | Wire auto-transition, mode toggle, and run history recording | Implementer | Auto-switch to Results after successful run. Segmented control at top of right panel. Update left rail eye toggle to use overlayVisibility. Deps: EDITOR-011, EDITOR-012. |
@@ -140,6 +140,7 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~EDITOR-010~~ | 2026-03-15 | refactor | ~~Add panelMode, runHistory, overlayVisibility to Zustand store~~ | Store extended with panelMode, runHistory, lastAlgorithmResult, overlayVisibility; backward-compatible showFeatures wrapper |
 | ~~DOCS-001~~ | 2026-03-15 | docs | ~~Update editor and backend documentation for calibration targets~~ | `docs/backend.md` created; README.dev.md expanded with charuco/markerboard smoke tests and sample-defaults table |
 | ~~QA-001~~ | 2026-03-15 | test | ~~Add regression coverage for bundled samples and editor workflow~~ | conftest.py session-scoped fixture fixes test isolation; all 24 tests pass on repeated runs |
 | ~~TEST-001~~ | 2026-03-15 | test | ~~Add API key enforcement tests and Python quality gates in CI~~ | 6 auth tests (401/403); `lint-backend` CI job (ruff + mypy); pre-existing lint/type violations fixed |

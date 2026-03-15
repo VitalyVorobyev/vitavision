@@ -31,7 +31,7 @@ Blog System — Phase 1: Foundation
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
 | ~~BLOG-001~~ | done | P0 | infra | ~~Create content directory structure and frontmatter Zod schemas~~ | Implementer | `content/blog/`, `content/algorithms/`, `content/images/`; `src/lib/content/schema.ts` with Zod blog + algorithm schemas. |
-| BLOG-002 | todo | P0 | infra | Build content processing pipeline (`scripts/content-build.ts`) | Implementer | gray-matter + Zod validate + markdown→HTML; generates `src/generated/content-manifest.ts`; add `content:build` script. Deps: BLOG-001. |
+| ~~BLOG-002~~ | done | P0 | infra | ~~Build content processing pipeline (`scripts/content-build.ts`)~~ | Implementer | gray-matter + Zod validate + markdown→HTML; generates `src/generated/content-manifest.ts`; add `content:build` script. Deps: BLOG-001. |
 | BLOG-003 | todo | P0 | feature | Create BlogIndex page with post cards and tag filtering | Implementer | Replace placeholder Blog.tsx; PostCard, TagBadge, TagFilter components; sorted by date desc. Deps: BLOG-002. |
 | BLOG-004 | todo | P0 | feature | Create BlogPost page with enhanced MarkdownRenderer | Implementer | Extend MarkdownRenderer with remark-gfm, rehype-sanitize, heading anchors; render pre-built HTML. Deps: BLOG-002. |
 | BLOG-005 | todo | P0 | infra | Add blog routes to App.tsx and wire navigation | Implementer | `/blog`, `/blog/:slug` routes; update Navbar. Deps: BLOG-003, BLOG-004. |
@@ -190,6 +190,7 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~BLOG-002~~ | 2026-03-15 | infra | ~~Build content processing pipeline~~ | scripts/content-build.ts; gray-matter + Zod + unified; generates src/generated/content-manifest.ts |
 | ~~BLOG-001~~ | 2026-03-15 | infra | ~~Create content directory structure and frontmatter Zod schemas~~ | content/blog/, content/algorithms/, content/images/ dirs; src/lib/content/schema.ts with Zod blog + algorithm schemas |
 | ~~EDITOR-036~~ | 2026-03-15 | enhancement | ~~Inline tooltips for algorithm config fields~~ | InfoTooltip component; tooltip prop on all form fields; all 4 config forms annotated |
 | ~~EDITOR-035~~ | 2026-03-15 | enhancement | ~~Resizable right panel with drag handle~~ | Pointer-event drag on left edge; min 280px, max 600px; overlay toggle panel |

@@ -33,7 +33,6 @@
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| QA-001 | todo | P1 | test | Add regression coverage for bundled samples and editor workflow | Implementer | Backend sample tests should pass for Chessboard, ChArUco, and Marker Board; frontend should get at least build and smoke coverage for the editor flow. |
 | DOCS-001 | todo | P2 | docs | Update editor and backend documentation for calibration targets | Implementer | Document the new endpoint, guided examples, sample defaults, and storage-vendor-neutral UI copy. |
 | EDITOR-005 | todo | P2 | enhancement | Add richer readonly overlays for markers and circle matches | Implementer | Keep out of the first slice unless point-only overlays prove insufficient. |
 | DEV-002 | todo | P3 | enhancement | Add Vite dev server proxy for zero-config local API routing | Implementer | Would eliminate the need for the devCspPlugin by proxying /api/v1 through the Vite dev server. Requires backend to return relative local-upload URLs. |
@@ -92,6 +91,7 @@
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~QA-001~~ | 2026-03-15 | test | ~~Add regression coverage for bundled samples and editor workflow~~ | conftest.py session-scoped fixture fixes test isolation; all 24 tests pass on repeated runs |
 | ~~TEST-001~~ | 2026-03-15 | test | ~~Add API key enforcement tests and Python quality gates in CI~~ | 6 auth tests (401/403); `lint-backend` CI job (ruff + mypy); pre-existing lint/type violations fixed |
 | ~~DEV-001~~ | 2026-03-15 | fix | ~~Fix local dev — relax CSP via Vite plugin (dev mode only)~~ | `devCspPlugin` in `vite.config.ts` adds `localhost:8000` and `worker-src blob:` in `serve` mode only; production build untouched |
 | ~~CV-001~~ | 2026-03-14 | feature | ~~Add unified calibration-target detection API~~ | `POST /api/v1/cv/calibration-targets/detect`; all 3 acceptance scenarios pass |

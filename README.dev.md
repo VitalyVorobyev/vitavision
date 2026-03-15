@@ -311,3 +311,5 @@ if the domain changes. Current config forwards HTTPS traffic to the `api` contai
 |----------|---------|---------|
 | `VITE_API_BASE_URL` | `http://localhost:8000/api/v1` | Backend API base URL |
 | `VITE_API_KEY` | *(unset)* | Forwarded as `X-API-Key`; must match `API_KEY` |
+
+docker pull ghcr.io/vitalyvorobyev/vitavision-backend:latest

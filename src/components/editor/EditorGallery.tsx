@@ -57,7 +57,7 @@ export default function EditorGallery() {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight">Image Gallery</h1>
-                        <p className="text-muted-foreground mt-1">Select an image to start editing or upload a new one.</p>
+                        <p className="text-muted-foreground mt-1">Select an image to start exploring algorithms.</p>
                     </div>
                     <button
                         onClick={handleFileUpload}

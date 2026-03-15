@@ -14,6 +14,7 @@ export interface AlgorithmConfigFormProps<TConfig = unknown> {
     config: TConfig;
     onChange: (next: TConfig) => void;
     disabled: boolean;
+    modal?: boolean;
 }
 
 export interface AlgorithmDefinition {

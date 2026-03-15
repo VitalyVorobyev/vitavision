@@ -52,6 +52,7 @@ function FieldLabel({ label, tooltip }: { label: string; tooltip?: string }) {
 interface SectionProps {
     title: string;
     children: React.ReactNode;
+    columns?: 1 | 2;
 }
 
 interface NumberFieldProps {
@@ -90,13 +91,15 @@ const inputClass =
     "disabled:opacity-50 disabled:cursor-not-allowed";
 
 export function Section(props: SectionProps) {
-    const { title, children } = props;
+    const { title, children, columns } = props;
     return (
-        <section className="space-y-3 rounded-xl border border-border/70 bg-background/60 p-3">
+        <section className="space-y-2.5 rounded-xl border border-border/70 bg-background/60 p-3">
             <h3 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">
                 {title}
             </h3>
-            {children}
+            <div className={columns === 2 ? "grid grid-cols-2 gap-x-3 gap-y-2.5" : "grid gap-y-2.5"}>
+                {children}
+            </div>
         </section>
     );
 }

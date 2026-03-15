@@ -37,14 +37,15 @@ const DICTIONARY_OPTIONS: Array<{ value: DictionaryName; label: string }> = [
 ];
 
 const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
-    const { config, onChange, disabled } = props;
+    const { config, onChange, disabled, modal } = props;
+    const cols = modal ? 2 : undefined;
 
     const set = <K extends keyof CharucoConfig>(key: K, value: CharucoConfig[K]) =>
         onChange({ ...config, [key]: value });
 
     return (
         <>
-            <Section title="Board">
+            <Section title="Board" columns={cols}>
                 <NumberField
                     label="Rows"
                     tooltip="Total number of rows of squares on the ChArUco board."
@@ -102,7 +103,7 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     step={1}
                 />
             </Section>
-            <Section title="Chessboard detector">
+            <Section title="Chessboard detector" columns={cols}>
                 <NumberField
                     label="Expected rows"
                     tooltip="Number of internal corner rows expected on the board (squares minus one)."
@@ -142,7 +143,7 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     step={0.01}
                 />
             </Section>
-            <Section title="Grid graph">
+            <Section title="Grid graph" columns={cols}>
                 <NumberField
                     label="Min spacing (px)"
                     tooltip="Minimum distance between adjacent corners in pixels. Filters out noise from too-close detections."
@@ -172,10 +173,10 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     step={1}
                 />
                 <NumberField
-                    label="Orientation tolerance (\u00b0)"
+                    label="Orientation tolerance (°)"
                     tooltip="Maximum angle deviation from grid directions when connecting corners. Handles perspective distortion."
                     value={config.graphOrientationToleranceDeg}
-                    onChange={(v) => set("graphOrientationToleranceDeg", v ?? 22.5)}
+                    onChange={(v) => set("graphOrientationToleranceDeg", v ?? 12.5)}
                     disabled={disabled}
                     min={0}
                     max={180}

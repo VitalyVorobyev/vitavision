@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { LoaderCircle, Sparkles, AlertCircle } from "lucide-react";
+import { LoaderCircle, Sparkles, AlertCircle, Maximize2 } from "lucide-react";
 
 import { useEditorStore } from "../../../store/editor/useEditorStore";
 import type { SampleId } from "../../../store/editor/useEditorStore";
@@ -8,6 +8,7 @@ import { ALGORITHM_REGISTRY, DEFAULT_ALGORITHM_ID, getAlgorithmById } from "../a
 import useAlgorithmRunner, { stageLabel } from "../algorithms/useAlgorithmRunner";
 
 import RailSection from "./RailSection";
+import ConfigModal from "./ConfigModal";
 
 type ConfigEntry = { value: unknown; sampleId: SampleId };
 
@@ -62,6 +63,7 @@ export default function ConfigurePanel() {
 
     const [selectedAlgorithmId, setSelectedAlgorithmId] = useState<string>(DEFAULT_ALGORITHM_ID);
     const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>({});
+    const [configModalOpen, setConfigModalOpen] = useState(false);
 
     const runner = useAlgorithmRunner();
     const algorithm = useMemo(() => getAlgorithmById(selectedAlgorithmId), [selectedAlgorithmId]);
@@ -74,6 +76,12 @@ export default function ConfigurePanel() {
         algorithm.initialConfig,
         algorithm.sampleDefaults,
     );
+
+    const handleConfigChange = (next: unknown) =>
+        setConfigEntries((current) => ({
+            ...current,
+            [algorithm.id]: { value: next, sampleId: imageSampleId },
+        }));
 
     const activeGalleryImage = useMemo(
         () => galleryImages.find((img) => img.sampleId === imageSampleId && imageSrc !== null) ?? null,
@@ -145,16 +153,35 @@ export default function ConfigurePanel() {
             </RailSection>
 
             {/* Section 3: Config */}
-            <RailSection label="Configuration">
+            <RailSection
+                label="Configuration"
+                action={
+                    <button
+                        type="button"
+                        onClick={() => setConfigModalOpen(true)}
+                        className="text-muted-foreground/50 hover:text-foreground transition-colors"
+                        title="Expand configuration"
+                    >
+                        <Maximize2 size={11} />
+                    </button>
+                }
+            >
                 <ConfigComponent
                     config={config}
-                    onChange={(next) => setConfigEntries((current) => ({
-                        ...current,
-                        [algorithm.id]: { value: next, sampleId: imageSampleId },
-                    }))}
+                    onChange={handleConfigChange}
                     disabled={runner.isRunning}
                 />
             </RailSection>
+
+            <ConfigModal
+                open={configModalOpen}
+                onClose={() => setConfigModalOpen(false)}
+                title={`${algorithm.title} Configuration`}
+                ConfigComponent={ConfigComponent}
+                config={config}
+                onChange={handleConfigChange}
+                disabled={runner.isRunning}
+            />
 
             {/* Section 4: Run + status + summary */}
             <RailSection label="Run">

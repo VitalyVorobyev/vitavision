@@ -9,13 +9,13 @@ export interface ChessboardConfig {
 }
 
 const ChessboardConfigForm = (props: AlgorithmConfigFormProps<ChessboardConfig>) => {
-    const { config, onChange, disabled } = props;
+    const { config, onChange, disabled, modal } = props;
 
     const set = <K extends keyof ChessboardConfig>(key: K, value: ChessboardConfig[K]) =>
         onChange({ ...config, [key]: value });
 
     return (
-        <Section title="Detector">
+        <Section title="Detector" columns={modal ? 2 : undefined}>
             <NumberField
                 label="Expected rows"
                 tooltip="Number of internal corner rows in the chessboard pattern (squares minus one)."

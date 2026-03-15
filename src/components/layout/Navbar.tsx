@@ -1,8 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useThemeVariant, type ThemeVariant } from "../../hooks/useThemeVariant";
-import { THEME_VARIANTS, VARIANT_SWATCHES } from "../../hooks/themeVariantConstants";
 
 // ── Dark / Light toggle ───────────────────────────────────────────────────────
 
@@ -19,56 +17,6 @@ export function ThemeToggle() {
             <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
         </button>
-    );
-}
-
-// ── Theme variant picker (3 color swatches) ───────────────────────────────────
-
-export function ThemeVariantPicker() {
-    const { variant, setVariant } = useThemeVariant();
-
-    return (
-        /*
-         * A slim row of 3 circular swatches. Each swatch shows the accent
-         * color of its theme. The active swatch gets a ring that matches the
-         * accent so it reads clearly in both light and dark modes.
-         */
-        <div
-            className="flex items-center gap-1.5"
-            role="group"
-            aria-label="Choose color theme"
-        >
-            {THEME_VARIANTS.map((v: ThemeVariant) => {
-                const { accent, label } = VARIANT_SWATCHES[v];
-                const isActive = v === variant;
-
-                return (
-                    <button
-                        key={v}
-                        onClick={() => setVariant(v)}
-                        title={label}
-                        aria-label={`${label} theme${isActive ? " (active)" : ""}`}
-                        aria-pressed={isActive}
-                        className={[
-                            // Base swatch
-                            "h-4 w-4 rounded-full transition-all duration-200",
-                            "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                            // Active state: slightly larger
-                            isActive
-                                ? "scale-125"
-                                : "opacity-60 hover:opacity-90 hover:scale-110",
-                        ].join(" ")}
-                        style={{
-                            backgroundColor: accent,
-                            // Double-ring: background gap + accent color ring
-                            boxShadow: isActive
-                                ? `0 0 0 2px hsl(var(--background)), 0 0 0 4px ${accent}`
-                                : undefined,
-                        } as React.CSSProperties}
-                    />
-                );
-            })}
-        </div>
     );
 }
 
@@ -114,9 +62,6 @@ export default function Navbar() {
                 </Link>
                 {/* Thin separator between nav links and controls */}
                 <NavDivider />
-
-                {/* Theme variant swatches */}
-                <ThemeVariantPicker />
 
                 {/* Dark / light toggle */}
                 <ThemeToggle />

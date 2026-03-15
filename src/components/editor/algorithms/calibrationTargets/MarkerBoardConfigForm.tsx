@@ -26,14 +26,15 @@ export interface MarkerBoardConfig {
 }
 
 const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig>) => {
-    const { config, onChange, disabled } = props;
+    const { config, onChange, disabled, modal } = props;
+    const cols = modal ? 2 : undefined;
 
     const set = <K extends keyof MarkerBoardConfig>(key: K, value: MarkerBoardConfig[K]) =>
         onChange({ ...config, [key]: value });
 
     return (
         <>
-            <Section title="Board">
+            <Section title="Board" columns={cols}>
                 <NumberField
                     label="Rows"
                     tooltip="Total number of rows of squares on the marker board."
@@ -53,7 +54,7 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                     step={1}
                 />
             </Section>
-            <Section title="Chessboard detector">
+            <Section title="Chessboard detector" columns={cols}>
                 <NumberField
                     label="Expected rows"
                     tooltip="Number of internal corner rows expected (squares minus one)."
@@ -93,7 +94,7 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                     step={0.01}
                 />
             </Section>
-            <Section title="Grid graph">
+            <Section title="Grid graph" columns={cols}>
                 <NumberField
                     label="Min spacing (px)"
                     tooltip="Minimum distance between adjacent corners in pixels."
@@ -123,7 +124,7 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                     step={1}
                 />
                 <NumberField
-                    label="Orientation tolerance (\u00b0)"
+                    label="Orientation tolerance (°)"
                     tooltip="Maximum angle deviation from grid directions when connecting corners."
                     value={config.graphOrientationToleranceDeg}
                     onChange={(v) => set("graphOrientationToleranceDeg", v ?? 12.5)}
@@ -133,7 +134,7 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                     step={0.5}
                 />
             </Section>
-            <Section title="Circle score">
+            <Section title="Circle score" columns={cols}>
                 <NumberField
                     label="Patch size (px)"
                     tooltip="Size of the image patch extracted around each candidate circle for scoring."

@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- feat(BLOG-001): add content directory structure (`content/blog/`, `content/algorithms/`, `content/images/`) and Zod frontmatter schemas for blog posts and algorithm pages
+
 - feat(EDITOR-013): wire auto-transition to results after run, add segmented mode toggle, update left rail eye to use overlayVisibility
 - feat(EDITOR-012): add ResultsPanel with run summary grid, diagnostics placeholder, run history list, and Configure back-button
 - refactor(EDITOR-011): extract ConfigurePanel from EditorRightPanel; EditorRightPanel becomes a thin mode-switching shell reading panelMode from store

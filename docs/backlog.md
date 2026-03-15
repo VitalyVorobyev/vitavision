@@ -33,7 +33,7 @@ Blog System — Phase 1: Foundation
 | ~~BLOG-001~~ | done | P0 | infra | ~~Create content directory structure and frontmatter Zod schemas~~ | Implementer | `content/blog/`, `content/algorithms/`, `content/images/`; `src/lib/content/schema.ts` with Zod blog + algorithm schemas. |
 | ~~BLOG-002~~ | done | P0 | infra | ~~Build content processing pipeline (`scripts/content-build.ts`)~~ | Implementer | gray-matter + Zod validate + markdown→HTML; generates `src/generated/content-manifest.ts`; add `content:build` script. Deps: BLOG-001. |
 | ~~BLOG-003~~ | done | P0 | feature | ~~Create BlogIndex page with post cards and tag filtering~~ | Implementer | Replace placeholder Blog.tsx; PostCard, TagBadge, TagFilter components; sorted by date desc. Deps: BLOG-002. |
-| BLOG-004 | todo | P0 | feature | Create BlogPost page with enhanced MarkdownRenderer | Implementer | Extend MarkdownRenderer with remark-gfm, rehype-sanitize, heading anchors; render pre-built HTML. Deps: BLOG-002. |
+| ~~BLOG-004~~ | done | P0 | feature | ~~Create BlogPost page with enhanced MarkdownRenderer~~ | Implementer | Extend MarkdownRenderer with remark-gfm, rehype-sanitize, heading anchors; render pre-built HTML. Deps: BLOG-002. |
 | BLOG-005 | todo | P0 | infra | Add blog routes to App.tsx and wire navigation | Implementer | `/blog`, `/blog/:slug` routes; update Navbar. Deps: BLOG-003, BLOG-004. |
 | BLOG-006 | todo | P0 | infra | Build prerender postbuild script + SSR entry point | Implementer | `src/entry-server.tsx`, `scripts/postbuild.ts`; static HTML for blog routes via react-dom/server + StaticRouter. Deps: BLOG-005. |
 
@@ -160,36 +160,11 @@ Other
 - `EDITOR-001` and `EDITOR-004`: running a calibration-target algorithm creates readonly features with metadata visible in the selected-feature panel.
 - `EDITOR-002`: no visible public UI strings mention `R2`.
 
-## Locked Defaults
-
-- Guided example model:
-  - Three curated sample cards: `chessboard.png`, `charuco.png`, `markerboard.png`.
-  - Four guided contexts: Chessboard, ChArUco, Marker Board, ChESS.
-  - Uploads are always available.
-- Chessboard sample defaults:
-  - `expected_rows = 7`
-  - `expected_cols = 11`
-  - `min_corner_strength = 0.2`
-  - `completeness_threshold = 0.1`
-- ChArUco board defaults from `public/board_charuco.json`:
-  - `rows = 22`
-  - `cols = 22`
-  - `cell_size_mm = 4.8`
-  - `marker_size_rel = 0.75`
-  - `dictionary = DICT_4X4_1000`
-  - initial sample default `px_per_square = 40`
-- Marker Board defaults:
-  - use `public/marker_detect_config.json` as the preset source,
-  - allow translation/tuning to match the `calib-targets` Python API,
-  - acceptance target remains exactly three circle matches on the bundled sample.
-- Public UI copy:
-  - storage behavior can remain automatic or local behind the scenes,
-  - public-facing labels and hints must not mention `R2`.
-
 ## Done
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~BLOG-004~~ | 2026-03-15 | feature | ~~Create BlogPost page with enhanced MarkdownRenderer~~ | Pre-built HTML rendering; rehype-slug heading anchors; metadata header; repo/demo links |
 | ~~BLOG-003~~ | 2026-03-15 | feature | ~~Create BlogIndex page with post cards and tag filtering~~ | PostCard, TagBadge, TagFilter components; tag-based filtering |
 | ~~BLOG-002~~ | 2026-03-15 | infra | ~~Build content processing pipeline~~ | scripts/content-build.ts; gray-matter + Zod + unified; generates src/generated/content-manifest.ts |
 | ~~BLOG-001~~ | 2026-03-15 | infra | ~~Create content directory structure and frontmatter Zod schemas~~ | content/blog/, content/algorithms/, content/images/ dirs; src/lib/content/schema.ts with Zod blog + algorithm schemas |

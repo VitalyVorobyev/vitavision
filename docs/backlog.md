@@ -28,6 +28,7 @@
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
+| TEST-001 | todo | P1 | test | Add API key enforcement tests and Python quality gates in CI | Implementer | Auth tests added to test_api.py; ruff + mypy lint-backend job added to CI. Verify all green on next push. |
 
 ## Backlog
 
@@ -36,6 +37,7 @@
 | QA-001 | todo | P1 | test | Add regression coverage for bundled samples and editor workflow | Implementer | Backend sample tests should pass for Chessboard, ChArUco, and Marker Board; frontend should get at least build and smoke coverage for the editor flow. |
 | DOCS-001 | todo | P2 | docs | Update editor and backend documentation for calibration targets | Implementer | Document the new endpoint, guided examples, sample defaults, and storage-vendor-neutral UI copy. |
 | EDITOR-005 | todo | P2 | enhancement | Add richer readonly overlays for markers and circle matches | Implementer | Keep out of the first slice unless point-only overlays prove insufficient. |
+| DEV-002 | todo | P3 | enhancement | Add Vite dev server proxy for zero-config local API routing | Implementer | Would eliminate the need for the devCspPlugin by proxying /api/v1 through the Vite dev server. Requires backend to return relative local-upload URLs. |
 
 ## API / Interface Tracking
 
@@ -91,6 +93,7 @@
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~DEV-001~~ | 2026-03-15 | fix | ~~Fix local dev — relax CSP via Vite plugin (dev mode only)~~ | `devCspPlugin` in `vite.config.ts` adds `localhost:8000` and `worker-src blob:` in `serve` mode only; production build untouched |
 | ~~CV-001~~ | 2026-03-14 | feature | ~~Add unified calibration-target detection API~~ | `POST /api/v1/cv/calibration-targets/detect`; all 3 acceptance scenarios pass |
 | ~~CV-002~~ | 2026-03-14 | feature | ~~Add fully editable Chessboard, ChArUco, and Marker Board config surfaces~~ | ChArUco gains chessboard+graph sub-params; Marker Board gains graph+circleScore sub-params; all seeded from public preset JSON |
 | ~~EDITOR-001~~ | 2026-03-14 | feature | ~~Add sample-aware editor state and calibration client contracts~~ | Chessboard, ChArUco, Marker Board plugins registered; sampleDefaults wired in AlgorithmPanel |

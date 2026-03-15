@@ -320,6 +320,76 @@ def test_calibration_targets_charuco_sample():
     assert body["summary"]["marker_count"] == len(body["markers"])
 
 
+# ── API Key Enforcement ───────────────────────────────────────────────────────
+
+
+class TestApiKeyEnforcement:
+    """Verify that all /api/v1/* endpoints return 401 when the API key is
+    configured but the request omits the X-API-Key header."""
+
+    def test_upload_ticket_requires_api_key(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        resp = client.post(
+            "/api/v1/storage/upload-ticket",
+            json={"sha256": "a" * 64, "content_type": "image/png"},
+        )
+        assert resp.status_code == 401
+
+    def test_local_upload_requires_api_key(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        fake_sha = "c" * 64
+        resp = client.put(
+            f"/api/v1/storage/local-upload/uploads/{fake_sha}",
+            content=_make_checkerboard_png(),
+            headers={"Content-Type": "image/png"},
+        )
+        assert resp.status_code == 401
+
+    def test_chess_corners_requires_api_key(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        fake_sha = "d" * 64
+        resp = client.post(
+            "/api/v1/cv/chess-corners",
+            json={"key": f"uploads/{fake_sha}", "storage_mode": "local"},
+        )
+        assert resp.status_code == 401
+
+    def test_calibration_targets_requires_api_key(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        fake_sha = "e" * 64
+        resp = client.post(
+            "/api/v1/cv/calibration-targets/detect",
+            json={
+                "algorithm": "chessboard",
+                "key": f"uploads/{fake_sha}",
+                "storage_mode": "local",
+            },
+        )
+        assert resp.status_code == 401
+
+    def test_valid_api_key_accepted(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        png = _make_checkerboard_png(size=20, cell=10)
+        sha = _sha256_hex(png)
+        resp = client.post(
+            "/api/v1/storage/upload-ticket",
+            json={"sha256": sha, "content_type": "image/png", "storage_mode": "local"},
+            headers={"X-API-Key": "test-secret"},
+        )
+        assert resp.status_code == 200
+
+    def test_wrong_api_key_rejected(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        png = _make_checkerboard_png(size=20, cell=10)
+        sha = _sha256_hex(png)
+        resp = client.post(
+            "/api/v1/storage/upload-ticket",
+            json={"sha256": sha, "content_type": "image/png", "storage_mode": "local"},
+            headers={"X-API-Key": "wrong-key"},
+        )
+        assert resp.status_code == 403
+
+
 def test_calibration_targets_markerboard_sample():
     png = _sample_bytes("markerboard.png")
     key = _content_addressed_key(png)

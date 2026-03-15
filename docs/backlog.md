@@ -34,7 +34,7 @@ Blog System — Phase 1: Foundation
 | ~~BLOG-002~~ | done | P0 | infra | ~~Build content processing pipeline (`scripts/content-build.ts`)~~ | Implementer | gray-matter + Zod validate + markdown→HTML; generates `src/generated/content-manifest.ts`; add `content:build` script. Deps: BLOG-001. |
 | ~~BLOG-003~~ | done | P0 | feature | ~~Create BlogIndex page with post cards and tag filtering~~ | Implementer | Replace placeholder Blog.tsx; PostCard, TagBadge, TagFilter components; sorted by date desc. Deps: BLOG-002. |
 | ~~BLOG-004~~ | done | P0 | feature | ~~Create BlogPost page with enhanced MarkdownRenderer~~ | Implementer | Extend MarkdownRenderer with remark-gfm, rehype-sanitize, heading anchors; render pre-built HTML. Deps: BLOG-002. |
-| BLOG-005 | todo | P0 | infra | Add blog routes to App.tsx and wire navigation | Implementer | `/blog`, `/blog/:slug` routes; update Navbar. Deps: BLOG-003, BLOG-004. |
+| ~~BLOG-005~~ | done | P0 | infra | ~~Add blog routes to App.tsx and wire navigation~~ | Implementer | `/blog`, `/blog/:slug` routes; update Navbar. Deps: BLOG-003, BLOG-004. |
 | BLOG-006 | todo | P0 | infra | Build prerender postbuild script + SSR entry point | Implementer | `src/entry-server.tsx`, `scripts/postbuild.ts`; static HTML for blog routes via react-dom/server + StaticRouter. Deps: BLOG-005. |
 
 Blog System — Phase 2: Discoverability
@@ -164,6 +164,7 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~BLOG-005~~ | 2026-03-15 | infra | ~~Add blog routes to App.tsx and wire navigation~~ | `/blog/:slug` route added; Navbar already wired |
 | ~~BLOG-004~~ | 2026-03-15 | feature | ~~Create BlogPost page with enhanced MarkdownRenderer~~ | Pre-built HTML rendering; rehype-slug heading anchors; metadata header; repo/demo links |
 | ~~BLOG-003~~ | 2026-03-15 | feature | ~~Create BlogIndex page with post cards and tag filtering~~ | PostCard, TagBadge, TagFilter components; tag-based filtering |
 | ~~BLOG-002~~ | 2026-03-15 | infra | ~~Build content processing pipeline~~ | scripts/content-build.ts; gray-matter + Zod + unified; generates src/generated/content-manifest.ts |

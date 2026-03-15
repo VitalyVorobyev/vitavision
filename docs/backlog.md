@@ -33,7 +33,7 @@ Phase 1 — Right Panel Mode System + Store Foundations
 | ~~EDITOR-010~~ | done | P1 | refactor | ~~Add panelMode, runHistory, overlayVisibility to Zustand store~~ | Implementer | New state groups: panelMode, runHistory, lastAlgorithmResult, overlayVisibility (replaces showFeatures). Extract types to editorTypes.ts if store exceeds ~500 lines. |
 | ~~EDITOR-011~~ | done | P1 | refactor | ~~Extract ConfigurePanel from EditorRightPanel~~ | Implementer | Move hint card + algo picker + config form + run button into ConfigurePanel. EditorRightPanel becomes a thin mode-switching shell. Deps: EDITOR-010. |
 | ~~EDITOR-012~~ | done | P1 | feature | ~~Create ResultsPanel with summary, diagnostics placeholder, and feature list~~ | Implementer | Run summary grid + FeatureListPanel + run history list + "Configure" back-button. Deps: EDITOR-010. |
-| EDITOR-013 | todo | P1 | feature | Wire auto-transition, mode toggle, and run history recording | Implementer | Auto-switch to Results after successful run. Segmented control at top of right panel. Update left rail eye toggle to use overlayVisibility. Deps: EDITOR-011, EDITOR-012. |
+| ~~EDITOR-013~~ | done | P1 | feature | ~~Wire auto-transition, mode toggle, and run history recording~~ | Implementer | Auto-switch to Results after successful run. Segmented control at top of right panel. Update left rail eye toggle to use overlayVisibility. Deps: EDITOR-011, EDITOR-012. |
 
 ## Backlog
 
@@ -140,6 +140,7 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~EDITOR-013~~ | 2026-03-15 | feature | ~~Wire auto-transition, mode toggle, and run history recording~~ | Auto-transition to results after run; segmented Configure/Results toggle; left rail eye uses overlayVisibility |
 | ~~EDITOR-012~~ | 2026-03-15 | feature | ~~Create ResultsPanel with summary, diagnostics placeholder, and feature list~~ | ResultsPanel (122 lines) with summary grid, diagnostics placeholder, run history list, and Configure back-button |
 | ~~EDITOR-011~~ | 2026-03-15 | refactor | ~~Extract ConfigurePanel from EditorRightPanel~~ | ConfigurePanel (247 lines) + RailSection (13 lines) extracted; EditorRightPanel now 21-line mode-switching shell |
 | ~~EDITOR-010~~ | 2026-03-15 | refactor | ~~Add panelMode, runHistory, overlayVisibility to Zustand store~~ | Store extended with panelMode, runHistory, lastAlgorithmResult, overlayVisibility; backward-compatible showFeatures wrapper |

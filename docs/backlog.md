@@ -28,7 +28,6 @@
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| TEST-001 | todo | P1 | test | Add API key enforcement tests and Python quality gates in CI | Implementer | Auth tests added to test_api.py; ruff + mypy lint-backend job added to CI. Verify all green on next push. |
 
 ## Backlog
 
@@ -93,6 +92,7 @@
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~TEST-001~~ | 2026-03-15 | test | ~~Add API key enforcement tests and Python quality gates in CI~~ | 6 auth tests (401/403); `lint-backend` CI job (ruff + mypy); pre-existing lint/type violations fixed |
 | ~~DEV-001~~ | 2026-03-15 | fix | ~~Fix local dev — relax CSP via Vite plugin (dev mode only)~~ | `devCspPlugin` in `vite.config.ts` adds `localhost:8000` and `worker-src blob:` in `serve` mode only; production build untouched |
 | ~~CV-001~~ | 2026-03-14 | feature | ~~Add unified calibration-target detection API~~ | `POST /api/v1/cv/calibration-targets/detect`; all 3 acceptance scenarios pass |
 | ~~CV-002~~ | 2026-03-14 | feature | ~~Add fully editable Chessboard, ChArUco, and Marker Board config surfaces~~ | ChArUco gains chessboard+graph sub-params; Marker Board gains graph+circleScore sub-params; all seeded from public preset JSON |

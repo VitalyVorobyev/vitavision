@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { blogPosts } from "../generated/content-manifest.ts";
 import PostCard from "../components/blog/PostCard.tsx";
 import TagFilter from "../components/blog/TagFilter.tsx";
+import SeoHead from "../components/seo/SeoHead.tsx";
 
 export default function Blog() {
     const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -20,6 +21,10 @@ export default function Blog() {
 
     return (
         <div className="max-w-[800px] mx-auto py-16 space-y-8 animate-in fade-in px-4">
+            <SeoHead
+                title="Blog"
+                description="Articles on computer vision algorithms, calibration, and building intelligent systems."
+            />
             <div className="space-y-4">
                 <h1 className="text-4xl font-bold tracking-tight">Blog</h1>
                 <p className="text-muted-foreground text-lg">

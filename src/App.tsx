@@ -9,6 +9,7 @@ import Footer from './components/layout/Footer';
 import './index.css';
 
 import { ThemeProvider } from 'next-themes';
+import { HelmetProvider } from 'react-helmet-async';
 
 function AppLayout() {
     const { pathname } = useLocation();
@@ -33,11 +34,13 @@ function AppLayout() {
 
 function App() {
     return (
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Router>
-                <AppLayout />
-            </Router>
-        </ThemeProvider>
+        <HelmetProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                <Router>
+                    <AppLayout />
+                </Router>
+            </ThemeProvider>
+        </HelmetProvider>
     );
 }
 

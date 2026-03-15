@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import SeoHead from "../components/seo/SeoHead.tsx";
 
 export default function Home() {
     return (
         <div className="flex flex-col items-center justify-center min-h-[80vh] text-center space-y-8 px-4">
+            <SeoHead />
             <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

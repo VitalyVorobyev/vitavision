@@ -1,5 +1,6 @@
 import CanvasWorkspace from "../components/editor/CanvasWorkspace";
 import EditorGallery from "../components/editor/EditorGallery";
+import SeoHead from "../components/seo/SeoHead.tsx";
 import EditorRightPanel from "../components/editor/panels/EditorRightPanel";
 import {
     normalizeImportedFeatures,
@@ -112,6 +113,10 @@ export default function Editor() {
     if (galleryMode) {
         return (
             <div className="flex h-[calc(100vh-64px)] overflow-hidden animate-in fade-in">
+                <SeoHead
+                    title="Editor"
+                    description="Interactive image annotation editor with computer vision algorithm runner."
+                />
                 <EditorGallery />
             </div>
         );

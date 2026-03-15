@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { blogPosts } from "../generated/content-manifest.ts";
 import TagBadge from "../components/blog/TagBadge.tsx";
+import SeoHead from "../components/seo/SeoHead.tsx";
 
 export default function BlogPost() {
     const { slug } = useParams<{ slug: string }>();
@@ -29,6 +30,13 @@ export default function BlogPost() {
 
     return (
         <div className="max-w-[800px] mx-auto py-16 px-4 animate-in fade-in">
+            <SeoHead
+                title={frontmatter.title}
+                description={frontmatter.summary}
+                ogImage={frontmatter.coverImage}
+                ogType="article"
+                url={`/blog/${slug}`}
+            />
             <header className="space-y-4 mb-10">
                 <Link
                     to="/blog"

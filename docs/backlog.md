@@ -41,7 +41,7 @@ Blog System — Phase 2: Discoverability
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| BLOG-007 | todo | P1 | feature | Add SEO head management (react-helmet-async) | Implementer | SeoHead component; per-page title, description, OG, Twitter cards on all blog pages. Deps: BLOG-005. |
+| ~~BLOG-007~~ | done | P1 | feature | ~~Add SEO head management (react-helmet-async)~~ | Implementer | SeoHead component; per-page title, description, OG, Twitter cards on all blog pages. Deps: BLOG-005. |
 | BLOG-008 | todo | P1 | feature | Add Schema.org BlogPosting structured data | Implementer | JSON-LD script tag in BlogPost; generated from frontmatter metadata. Deps: BLOG-007. |
 | BLOG-009 | todo | P1 | infra | Generate sitemap.xml and robots.txt | Implementer | Add sitemap generation to postbuild; `public/robots.txt` pointing to sitemap. Deps: BLOG-006. |
 | BLOG-010 | todo | P1 | infra | Generate RSS and Atom feeds | Implementer | Install `feed` package; generate `dist/rss.xml` + `dist/atom.xml`. Deps: BLOG-006. |
@@ -164,6 +164,7 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~BLOG-007~~ | 2026-03-15 | feature | ~~Add SEO head management (react-helmet-async)~~ | SeoHead component; per-page title, description, OG, Twitter cards; postbuild head injection |
 | ~~BLOG-006~~ | 2026-03-15 | infra | ~~Build prerender postbuild script + SSR entry point~~ | entry-server.tsx + postbuild.ts; MemoryRouter SSR for blog routes |
 | ~~BLOG-005~~ | 2026-03-15 | infra | ~~Add blog routes to App.tsx and wire navigation~~ | `/blog/:slug` route added; Navbar already wired |
 | ~~BLOG-004~~ | 2026-03-15 | feature | ~~Create BlogPost page with enhanced MarkdownRenderer~~ | Pre-built HTML rendering; rehype-slug heading anchors; metadata header; repo/demo links |

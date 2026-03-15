@@ -126,6 +126,13 @@ export type PanelMode = 'configure' | 'results';
 
 export type OverlayVisibilityKey = 'features' | 'algorithmOverlay';
 
+export interface OverlayToggles {
+    corners: boolean;
+    edges: boolean;
+    labels: boolean;
+    markers: boolean;
+}
+
 export interface RunSummaryEntry {
     label: string;
     value: string;
@@ -201,6 +208,7 @@ interface EditorState {
     lastAlgorithmResult: { algorithmId: string; result: unknown } | null;
     runHistory: RunHistoryEntry[];
     overlayVisibility: Record<OverlayVisibilityKey, boolean>;
+    overlayToggles: OverlayToggles;
 
     setImage: (src: string, width: number, height: number, name?: string, sampleId?: SampleId) => void;
     setActiveTool: (tool: ToolType) => void;
@@ -224,6 +232,7 @@ interface EditorState {
     addRunToHistory: (entry: RunHistoryEntry) => void;
     clearRunHistory: () => void;
     setOverlayVisibility: (key: OverlayVisibilityKey, visible: boolean) => void;
+    setOverlayToggle: (key: keyof OverlayToggles, value: boolean) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -246,6 +255,11 @@ export const useEditorStore = create<EditorState>((set) => ({
         imageSampleId: sampleId ?? 'upload',
         imageWidth: width,
         imageHeight: height,
+        features: [],
+        selectedFeatureId: null,
+        lastAlgorithmResult: null,
+        runHistory: [],
+        panelMode: 'configure',
     }),
     setActiveTool: (tool) => set({ activeTool: tool, selectedFeatureId: null }),
     setSelectedFeatureId: (id) => set({ selectedFeatureId: id }),
@@ -337,6 +351,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     lastAlgorithmResult: null,
     runHistory: [],
     overlayVisibility: { features: true, algorithmOverlay: true },
+    overlayToggles: { corners: true, edges: true, labels: false, markers: true },
 
     setPanelMode: (mode) => set({ panelMode: mode }),
     setLastAlgorithmResult: (algorithmId, result) => set({
@@ -349,5 +364,8 @@ export const useEditorStore = create<EditorState>((set) => ({
     setOverlayVisibility: (key, visible) => set((state) => ({
         overlayVisibility: { ...state.overlayVisibility, [key]: visible },
         ...(key === 'features' ? { showFeatures: visible } : {}),
+    })),
+    setOverlayToggle: (key, value) => set((state) => ({
+        overlayToggles: { ...state.overlayToggles, [key]: value },
     })),
 }));

@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 
 import type { StorageMode } from "../../../lib/storage";
-import type { Feature, SampleId } from "../../../store/editor/useEditorStore";
+import type { Feature, OverlayToggles, SampleId } from "../../../store/editor/useEditorStore";
 
 export type RequestedStorageMode = "auto" | StorageMode;
 
@@ -30,6 +30,11 @@ export interface AlgorithmDefinition {
     }) => Promise<unknown>;
     toFeatures: (result: unknown, runId: string) => Feature[];
     summary: (result: unknown) => AlgorithmSummaryEntry[];
+    OverlayComponent?: ComponentType<{
+        result: unknown;
+        zoom: number;
+        toggles: OverlayToggles;
+    }>;
 }
 
 export interface AlgorithmRunResult {

@@ -1,3 +1,54 @@
+import { useState, useRef, useEffect } from "react";
+import { Info } from "lucide-react";
+
+/* ── tooltip ─────────────────────────────────────────────────── */
+
+function InfoTooltip({ text }: { text: string }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!open) return;
+        const close = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", close);
+        return () => document.removeEventListener("mousedown", close);
+    }, [open]);
+
+    return (
+        <span
+            ref={ref}
+            className="relative inline-flex"
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+            onClick={() => setOpen((v) => !v)}
+        >
+            <Info size={12} className="text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
+            {open && (
+                <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-56 rounded-md border border-border bg-popover p-2 text-[11px] text-popover-foreground shadow-md leading-relaxed">
+                    {text}
+                </div>
+            )}
+        </span>
+    );
+}
+
+/* ── field label ─────────────────────────────────────────────── */
+
+function FieldLabel({ label, tooltip }: { label: string; tooltip?: string }) {
+    return (
+        <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
+            {label}
+            {tooltip && <InfoTooltip text={tooltip} />}
+        </span>
+    );
+}
+
+/* ── types ───────────────────────────────────────────────────── */
+
 interface SectionProps {
     title: string;
     children: React.ReactNode;
@@ -12,6 +63,7 @@ interface NumberFieldProps {
     max?: number;
     step?: number;
     placeholder?: string;
+    tooltip?: string;
 }
 
 interface CheckboxFieldProps {
@@ -19,6 +71,7 @@ interface CheckboxFieldProps {
     checked?: boolean;
     onChange: (next: boolean) => void;
     disabled: boolean;
+    tooltip?: string;
 }
 
 interface SelectFieldProps<TValue extends string> {
@@ -27,6 +80,7 @@ interface SelectFieldProps<TValue extends string> {
     onChange: (next: TValue) => void;
     disabled: boolean;
     options: Array<{ value: TValue; label: string }>;
+    tooltip?: string;
 }
 
 const inputClass =
@@ -48,10 +102,10 @@ export function Section(props: SectionProps) {
 }
 
 export function NumberField(props: NumberFieldProps) {
-    const { label, value, onChange, disabled, min, max, step, placeholder } = props;
+    const { label, value, onChange, disabled, min, max, step, placeholder, tooltip } = props;
     return (
         <label className="grid gap-1">
-            <span className="text-xs text-muted-foreground">{label}</span>
+            <FieldLabel label={label} tooltip={tooltip} />
             <input
                 type="number"
                 min={min}
@@ -71,7 +125,7 @@ export function NumberField(props: NumberFieldProps) {
 }
 
 export function CheckboxField(props: CheckboxFieldProps) {
-    const { label, checked, onChange, disabled } = props;
+    const { label, checked, onChange, disabled, tooltip } = props;
     return (
         <label className="inline-flex items-center gap-2 cursor-pointer">
             <input
@@ -81,16 +135,16 @@ export function CheckboxField(props: CheckboxFieldProps) {
                 onChange={(event) => onChange(event.target.checked)}
                 className="accent-primary disabled:opacity-50 disabled:cursor-not-allowed"
             />
-            <span className="text-xs text-foreground">{label}</span>
+            <FieldLabel label={label} tooltip={tooltip} />
         </label>
     );
 }
 
 export function SelectField<TValue extends string>(props: SelectFieldProps<TValue>) {
-    const { label, value, onChange, disabled, options } = props;
+    const { label, value, onChange, disabled, options, tooltip } = props;
     return (
         <label className="grid gap-1">
-            <span className="text-xs text-muted-foreground">{label}</span>
+            <FieldLabel label={label} tooltip={tooltip} />
             <select
                 value={value ?? options[0]?.value ?? ""}
                 disabled={disabled}

@@ -7,6 +7,7 @@ import {
     calibrationSummary,
 } from "./shared";
 import MarkerBoardConfigForm, { type MarkerBoardConfig } from "./MarkerBoardConfigForm";
+import MarkerboardOverlay from "../../canvas/overlays/MarkerboardOverlay";
 
 const initialConfig: MarkerBoardConfig = {
     boardRows: 22,
@@ -20,7 +21,7 @@ const initialConfig: MarkerBoardConfig = {
     expectedCols: 22,
     minCornerStrength: 0.2,
     completenessThreshold: 0.05,
-    graphMinSpacingPix: 40,
+    graphMinSpacingPix: 20,
     graphMaxSpacingPix: 160,
     graphKNeighbors: 8,
     graphOrientationToleranceDeg: 22.5,
@@ -86,4 +87,5 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
     toFeatures: (result, runId) =>
         toFeatures(result as CalibrationTargetResult, runId),
     summary: (result) => calibrationSummary(result as CalibrationTargetResult),
+    OverlayComponent: MarkerboardOverlay,
 };

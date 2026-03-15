@@ -41,9 +41,9 @@ Phase 2 — Algorithm Canvas Overlays
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| EDITOR-014 | todo | P1 | feature | Add OverlayComponent slot to AlgorithmDefinition and CanvasWorkspace | Implementer | Optional OverlayComponent on AlgorithmDefinition. Render between image and FeatureLayer in single Konva Layer. Deps: EDITOR-010. |
-| EDITOR-015 | todo | P1 | feature | Build chessboard grid overlay (connect corners by row/col, color-coded) | Implementer | Group corners by grid.i/j, draw Konva Lines connecting rows and columns. Color-code. Board outline. Deps: EDITOR-014. |
-| EDITOR-016 | todo | P2 | feature | Build charuco overlay (grid + marker bounding boxes) | Implementer | Grid lines + marker corner rectangles with markerId labels. Deps: EDITOR-014. |
+| ~~EDITOR-014~~ | done | P1 | feature | ~~Add OverlayComponent slot to AlgorithmDefinition and CanvasWorkspace~~ | Implementer | Subsumed by EDITOR-033. |
+| ~~EDITOR-015~~ | done | P1 | feature | ~~Build chessboard grid overlay (connect corners by row/col, color-coded)~~ | Implementer | Subsumed by EDITOR-033. |
+| ~~EDITOR-016~~ | done | P2 | feature | ~~Build charuco overlay (grid + marker bounding boxes)~~ | Implementer | Subsumed by EDITOR-034. |
 | EDITOR-017 | todo | P2 | feature | Add overlay visibility toggle to left rail | Implementer | Expand eye toggle into layers popover: Features, Algorithm Overlay. Uses overlayVisibility store. Deps: EDITOR-014. |
 
 Phase 3 — Diagnostics + Progressive Disclosure + Presets
@@ -78,6 +78,18 @@ Phase 6 — Responsive Layout + Touch Support
 | EDITOR-028 | todo | P2 | enhancement | Left rail tooltips + touch-friendly tap targets (44x44px min) | Implementer | Proper tooltips on hover. Min 44x44px touch targets. Independent. |
 | EDITOR-029 | todo | P3 | enhancement | Touch canvas: pinch-to-zoom, tap-to-select, single-finger pan | Implementer | Konva touch support. Pinch-to-zoom, tap-to-select features, pan in SELECT mode. Independent. |
 | EDITOR-030 | todo | P3 | enhancement | Hide drawing tools on touch-only devices | Implementer | Detect no fine pointer. Hide POINT/LINE/POLYLINE/BBOX/ELLIPSE/POLYGON tools. Keep SELECT + zoom + visibility. Deps: EDITOR-028. |
+
+Phase 7 — UX Improvements
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| ~~EDITOR-031~~ | done | P1 | enhancement | ~~Grouped feature list with collapsible sections and keyboard navigation~~ | Implementer | Group by meta.kind/type, chevron collapse, arrow key nav, 0-based indices. |
+| ~~EDITOR-032~~ | done | P1 | refactor | ~~Overlay data extraction utility (overlayData.ts)~~ | Implementer | buildCornerGrid, buildGridEdges, buildMarkerPolygons for canvas overlays. |
+| ~~EDITOR-033~~ | done | P1 | feature | ~~Chessboard grid overlay with edge/label rendering~~ | Implementer | Subsumes EDITOR-014+015. OverlayComponent on AlgorithmDefinition, ChessboardOverlay, toggleable corners/edges/labels. |
+| ~~EDITOR-034~~ | done | P1 | feature | ~~ChArUco + Marker Board overlays~~ | Implementer | Subsumes EDITOR-016. CharucoOverlay (grid+marker quads), MarkerboardOverlay (grid+circle outlines). |
+| ~~EDITOR-035~~ | done | P2 | enhancement | ~~Resizable right panel with drag handle~~ | Implementer | Pointer-event drag on left edge, min 280px, max 600px, default 320px. |
+| ~~EDITOR-036~~ | done | P2 | enhancement | ~~Inline tooltips for algorithm config fields~~ | Implementer | InfoTooltip component, tooltip prop on NumberField/CheckboxField/SelectField, all config forms annotated. |
+| EDITOR-037 | todo | P3 | feature | Canvas config summary overlay | Implementer | Optional Konva text in canvas corner showing algo name + key config values. Deferred. |
 
 Other
 
@@ -140,6 +152,15 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~EDITOR-036~~ | 2026-03-15 | enhancement | ~~Inline tooltips for algorithm config fields~~ | InfoTooltip component; tooltip prop on all form fields; all 4 config forms annotated |
+| ~~EDITOR-035~~ | 2026-03-15 | enhancement | ~~Resizable right panel with drag handle~~ | Pointer-event drag on left edge; min 280px, max 600px; overlay toggle panel |
+| ~~EDITOR-034~~ | 2026-03-15 | feature | ~~ChArUco + Marker Board overlays~~ | CharucoOverlay (grid edges + marker quads with IDs); MarkerboardOverlay (grid + circle outlines by polarity) |
+| ~~EDITOR-033~~ | 2026-03-15 | feature | ~~Chessboard grid overlay with edge/label rendering~~ | OverlayComponent slot on AlgorithmDefinition; ChessboardOverlay; GridEdgesGroup shared component; overlayToggles store |
+| ~~EDITOR-032~~ | 2026-03-15 | refactor | ~~Overlay data extraction utility~~ | buildCornerGrid, buildGridEdges, buildMarkerPolygons in overlayData.ts |
+| ~~EDITOR-031~~ | 2026-03-15 | enhancement | ~~Grouped feature list with keyboard navigation~~ | Collapsible groups by kind/type; arrow key cycling; 0-based indices |
+| ~~EDITOR-016~~ | 2026-03-15 | feature | ~~Build charuco overlay~~ | Subsumed by EDITOR-034 |
+| ~~EDITOR-015~~ | 2026-03-15 | feature | ~~Build chessboard grid overlay~~ | Subsumed by EDITOR-033 |
+| ~~EDITOR-014~~ | 2026-03-15 | feature | ~~Add OverlayComponent slot to AlgorithmDefinition~~ | Subsumed by EDITOR-033 |
 | ~~EDITOR-013~~ | 2026-03-15 | feature | ~~Wire auto-transition, mode toggle, and run history recording~~ | Auto-transition to results after run; segmented Configure/Results toggle; left rail eye uses overlayVisibility |
 | ~~EDITOR-012~~ | 2026-03-15 | feature | ~~Create ResultsPanel with summary, diagnostics placeholder, and feature list~~ | ResultsPanel (122 lines) with summary grid, diagnostics placeholder, run history list, and Configure back-button |
 | ~~EDITOR-011~~ | 2026-03-15 | refactor | ~~Extract ConfigurePanel from EditorRightPanel~~ | ConfigurePanel (247 lines) + RailSection (13 lines) extracted; EditorRightPanel now 21-line mode-switching shell |

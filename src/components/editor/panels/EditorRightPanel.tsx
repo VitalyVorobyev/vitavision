@@ -1,4 +1,7 @@
-import { useEditorStore, type PanelMode } from "../../../store/editor/useEditorStore";
+import { useCallback, useRef, useState } from "react";
+
+import { useEditorStore, type OverlayToggles, type PanelMode } from "../../../store/editor/useEditorStore";
+import { getAlgorithmById } from "../algorithms/registry";
 
 import ConfigurePanel from "./ConfigurePanel";
 import FeatureListPanel from "./FeatureListPanel";
@@ -9,6 +12,10 @@ const MODES: { key: PanelMode; label: string }[] = [
     { key: "configure", label: "Configure" },
     { key: "results", label: "Results" },
 ];
+
+const MIN_WIDTH = 280;
+const MAX_WIDTH = 600;
+const DEFAULT_WIDTH = 320;
 
 function ModeToggle({ value, onChange }: { value: PanelMode; onChange: (m: PanelMode) => void }) {
     return (
@@ -31,21 +38,99 @@ function ModeToggle({ value, onChange }: { value: PanelMode; onChange: (m: Panel
     );
 }
 
-export default function EditorRightPanel() {
-    const { panelMode, setPanelMode } = useEditorStore();
+/* ── overlay toggle controls ─────────────────────────────────── */
+
+const TOGGLE_ITEMS: { key: keyof OverlayToggles; label: string }[] = [
+    { key: "corners", label: "Corners" },
+    { key: "edges", label: "Grid edges" },
+    { key: "labels", label: "Labels" },
+    { key: "markers", label: "Markers" },
+];
+
+function OverlayTogglePanel() {
+    const { overlayToggles, setOverlayToggle } = useEditorStore();
 
     return (
-        <div className="w-80 border-l border-border bg-muted/20 p-4 shrink-0 flex flex-col h-full overflow-hidden">
-            <div className="mb-4 shrink-0">
-                <ModeToggle value={panelMode} onChange={setPanelMode} />
-            </div>
-            <div className="flex-1 overflow-y-auto space-y-5 pr-0.5">
-                {panelMode === "configure" && <ConfigurePanel />}
-                {panelMode === "results" && <ResultsPanel />}
+        <div className="flex flex-wrap gap-1.5">
+            {TOGGLE_ITEMS.map(({ key, label }) => (
+                <button
+                    key={key}
+                    type="button"
+                    onClick={() => setOverlayToggle(key, !overlayToggles[key])}
+                    className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
+                        overlayToggles[key]
+                            ? "border-primary/40 bg-primary/10 text-primary"
+                            : "border-border text-muted-foreground hover:bg-muted/30"
+                    }`}
+                >
+                    {label}
+                </button>
+            ))}
+        </div>
+    );
+}
 
-                <RailSection label="Features">
-                    <FeatureListPanel />
-                </RailSection>
+/* ── main panel ──────────────────────────────────────────────── */
+
+export default function EditorRightPanel() {
+    const { panelMode, setPanelMode, lastAlgorithmResult } = useEditorStore();
+    const [width, setWidth] = useState(DEFAULT_WIDTH);
+    const isDragging = useRef(false);
+
+    const hasOverlay = lastAlgorithmResult
+        ? !!getAlgorithmById(lastAlgorithmResult.algorithmId).OverlayComponent
+        : false;
+
+    const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        isDragging.current = true;
+        const handle = e.currentTarget;
+        handle.setPointerCapture(e.pointerId);
+
+        const onMove = (ev: PointerEvent) => {
+            const newWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, window.innerWidth - ev.clientX));
+            setWidth(newWidth);
+        };
+        const onUp = () => {
+            isDragging.current = false;
+            handle.removeEventListener("pointermove", onMove);
+            handle.removeEventListener("pointerup", onUp);
+        };
+        handle.addEventListener("pointermove", onMove);
+        handle.addEventListener("pointerup", onUp);
+    }, []);
+
+    return (
+        <div
+            className="border-l border-border bg-muted/20 shrink-0 flex h-full overflow-hidden relative"
+            style={{ width }}
+        >
+            {/* resize handle */}
+            <div
+                onPointerDown={handlePointerDown}
+                className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize z-10 group"
+            >
+                <div className="absolute inset-y-0 left-0 w-1 bg-transparent group-hover:bg-primary/20 group-active:bg-primary/30 transition-colors" />
+            </div>
+
+            <div className="flex flex-col h-full w-full p-4 pl-3">
+                <div className="mb-4 shrink-0">
+                    <ModeToggle value={panelMode} onChange={setPanelMode} />
+                </div>
+                <div className="flex-1 overflow-y-auto space-y-5 pr-0.5">
+                    {panelMode === "configure" && <ConfigurePanel />}
+                    {panelMode === "results" && <ResultsPanel />}
+
+                    {hasOverlay && (
+                        <RailSection label="Overlay">
+                            <OverlayTogglePanel />
+                        </RailSection>
+                    )}
+
+                    <RailSection label="Features">
+                        <FeatureListPanel />
+                    </RailSection>
+                </div>
             </div>
         </div>
     );

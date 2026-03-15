@@ -1,5 +1,6 @@
 ## [Unreleased]
 
+- refactor(EDITOR-011): extract ConfigurePanel from EditorRightPanel; EditorRightPanel becomes a thin mode-switching shell reading panelMode from store
 - refactor(EDITOR-010): add panelMode, runHistory, lastAlgorithmResult, and overlayVisibility state groups to Zustand editor store; backward-compatible showFeatures wrapper
 - docs(DOCS-001): add `docs/backend.md` API reference for calibration-targets endpoint (full schemas, sample defaults, editor guided-workflow doc); expand README.dev.md smoke-test section with ChArUco and Marker Board examples and sample-defaults table
 - test(QA-001): fix test isolation via conftest.py session-scoped fixture; pytest now passes on repeated runs without manual storage cleanup

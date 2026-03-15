@@ -15,6 +15,7 @@ from slowapi.errors import RateLimitExceeded
 
 # ── Structured JSON logging ──────────────────────────────────────────────────
 
+
 class _JSONFormatter(logging.Formatter):
     """Emit each log record as a single JSON line."""
 
@@ -60,11 +61,11 @@ logger = logging.getLogger("vitavision.access")
 # Load env vars before importing modules that read env at import time.
 load_dotenv()
 
-# Import routers
-from routers import cv, storage
-from auth import init_auth, verify_api_key
-from limiter import limiter
-from services import storage_service
+# Import routers — must come after load_dotenv() and logging setup
+from routers import cv, storage  # noqa: E402
+from auth import init_auth, verify_api_key  # noqa: E402
+from limiter import limiter  # noqa: E402
+from services import storage_service  # noqa: E402
 
 # Initialise auth (reads API_KEY env var, logs warning if unset)
 init_auth()
@@ -92,14 +93,17 @@ async def _rate_limit_handler(request: Request, exc: RateLimitExceeded):
 
 # ── Lifespan ─────────────────────────────────────────────────────────────────
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     task = None
     if storage_service.r2_cache_root() is not None:
+
         async def _cleanup_loop():
             while True:
                 await asyncio.sleep(3600)
                 storage_service.cleanup_stale_cache()
+
         task = asyncio.create_task(_cleanup_loop())
     yield
     if task:
@@ -110,14 +114,15 @@ app = FastAPI(
     lifespan=lifespan,
     title="Vitavision CV API",
     description="Backend for Vitavision image processing and R2 storage.",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)
+app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)  # type: ignore[arg-type]
 
 
 # ── Middleware ────────────────────────────────────────────────────────────────
+
 
 @app.middleware("http")
 async def limit_request_body_size(request: Request, call_next):
@@ -186,6 +191,7 @@ app.add_middleware(
 _auth = [Depends(verify_api_key)]
 app.include_router(cv.router, prefix="/api/v1/cv", dependencies=_auth)
 app.include_router(storage.router, prefix="/api/v1/storage", dependencies=_auth)
+
 
 @app.get("/")
 def read_root():

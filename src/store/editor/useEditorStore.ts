@@ -3,10 +3,45 @@ import { create } from 'zustand';
 export type ToolType = 'SELECT' | 'POINT' | 'LINE' | 'POLYLINE' | 'BBOX' | 'ELLIPSE';
 export type FeatureType = 'point' | 'line' | 'polyline' | 'bbox' | 'ellipse' | 'directed_point';
 export type FeatureSource = 'manual' | 'algorithm';
+export type SampleId = 'chessboard' | 'charuco' | 'markerboard' | 'upload';
 
 export interface Point2D {
     x: number;
     y: number;
+}
+
+export interface GridCoords {
+    i: number;
+    j: number;
+}
+
+export interface GridCell {
+    gx: number;
+    gy: number;
+}
+
+export interface CellOffset {
+    di: number;
+    dj: number;
+}
+
+export interface FeatureMeta {
+    kind?: string;
+    score?: number;
+    grid?: GridCoords;
+    gridCell?: GridCell;
+    cornerId?: number | null;
+    markerId?: number | null;
+    targetPosition?: Point2D | null;
+    rotation?: number;
+    hamming?: number;
+    borderScore?: number;
+    code?: number;
+    inverted?: boolean;
+    polarity?: string;
+    contrast?: number;
+    distanceCells?: number | null;
+    offsetCells?: CellOffset | null;
 }
 
 export interface BaseFeature {
@@ -18,6 +53,7 @@ export interface BaseFeature {
     readonly?: boolean;
     color?: string;
     label?: string;
+    meta?: FeatureMeta;
 }
 
 export interface PointFeature extends BaseFeature {
@@ -79,7 +115,39 @@ export interface GalleryImage {
     id: string;
     src: string;
     name: string;
+    sampleId: SampleId;
+    description?: string;
+    recommendedAlgorithms?: string[];
 }
+
+// --- Panel mode, run history, overlay visibility ---
+
+export type PanelMode = 'configure' | 'results';
+
+export type OverlayVisibilityKey = 'features' | 'algorithmOverlay';
+
+export interface OverlayToggles {
+    corners: boolean;
+    edges: boolean;
+    labels: boolean;
+    markers: boolean;
+}
+
+export interface RunSummaryEntry {
+    label: string;
+    value: string;
+}
+
+export interface RunHistoryEntry {
+    runId: string;
+    algorithmId: string;
+    algorithmTitle: string;
+    summary: RunSummaryEntry[];
+    featureCount: number;
+    timestamp: number;
+}
+
+const MAX_RUN_HISTORY = 20;
 
 const isObjectRecord = (value: unknown): value is Record<string, unknown> => {
     return typeof value === 'object' && value !== null;
@@ -121,6 +189,7 @@ export const isReadonlyFeature = (feature: Feature): boolean => {
 interface EditorState {
     imageSrc: string | null;
     imageName: string | null;
+    imageSampleId: SampleId;
     imageWidth: number;
     imageHeight: number;
 
@@ -135,7 +204,13 @@ interface EditorState {
     galleryMode: boolean;
     galleryImages: GalleryImage[];
 
-    setImage: (src: string, width: number, height: number, name?: string) => void;
+    panelMode: PanelMode;
+    lastAlgorithmResult: { algorithmId: string; result: unknown } | null;
+    runHistory: RunHistoryEntry[];
+    overlayVisibility: Record<OverlayVisibilityKey, boolean>;
+    overlayToggles: OverlayToggles;
+
+    setImage: (src: string, width: number, height: number, name?: string, sampleId?: SampleId) => void;
     setActiveTool: (tool: ToolType) => void;
     setSelectedFeatureId: (id: string | null) => void;
 
@@ -151,11 +226,19 @@ interface EditorState {
 
     setGalleryMode: (mode: boolean) => void;
     addGalleryImage: (img: GalleryImage) => void;
+
+    setPanelMode: (mode: PanelMode) => void;
+    setLastAlgorithmResult: (algorithmId: string, result: unknown) => void;
+    addRunToHistory: (entry: RunHistoryEntry) => void;
+    clearRunHistory: () => void;
+    setOverlayVisibility: (key: OverlayVisibilityKey, visible: boolean) => void;
+    setOverlayToggle: (key: keyof OverlayToggles, value: boolean) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
     imageSrc: null,
     imageName: null,
+    imageSampleId: 'upload',
     imageWidth: 0,
     imageHeight: 0,
 
@@ -166,11 +249,17 @@ export const useEditorStore = create<EditorState>((set) => ({
     zoom: 1,
     pan: { x: 0, y: 0 },
 
-    setImage: (src, width, height, name) => set({
+    setImage: (src, width, height, name, sampleId) => set({
         imageSrc: src,
         imageName: name ?? null,
+        imageSampleId: sampleId ?? 'upload',
         imageWidth: width,
         imageHeight: height,
+        features: [],
+        selectedFeatureId: null,
+        lastAlgorithmResult: null,
+        runHistory: [],
+        panelMode: 'configure',
     }),
     setActiveTool: (tool) => set({ activeTool: tool, selectedFeatureId: null }),
     setSelectedFeatureId: (id) => set({ selectedFeatureId: id }),
@@ -223,12 +312,60 @@ export const useEditorStore = create<EditorState>((set) => ({
     setPan: (pan) => set({ pan }),
 
     showFeatures: true,
-    setShowFeatures: (show) => set({ showFeatures: show }),
+    setShowFeatures: (show) => set((state) => ({
+        showFeatures: show,
+        overlayVisibility: { ...state.overlayVisibility, features: show },
+    })),
 
     galleryMode: true,
     galleryImages: [
-        { id: '1', src: '/Im_L_6.png', name: 'Chessboard' },
+        {
+            id: 'sample-chessboard',
+            src: '/chessboard.png',
+            name: 'Chessboard',
+            sampleId: 'chessboard',
+            description: 'Labeled board corners or low-level ChESS keypoints on the same sample.',
+            recommendedAlgorithms: ['Chessboard', 'ChESS Corners'],
+        },
+        {
+            id: 'sample-charuco',
+            src: '/charuco.png',
+            name: 'ChArUco',
+            sampleId: 'charuco',
+            description: 'Dense ChArUco board with embedded markers.',
+            recommendedAlgorithms: ['ChArUco'],
+        },
+        {
+            id: 'sample-markerboard',
+            src: '/markerboard.png',
+            name: 'Marker Board',
+            sampleId: 'markerboard',
+            description: 'Checkerboard plus fiducial circles for marker-board detection.',
+            recommendedAlgorithms: ['Marker Board'],
+        },
     ],
     setGalleryMode: (mode) => set({ galleryMode: mode }),
     addGalleryImage: (img) => set((state) => ({ galleryImages: [...state.galleryImages, img] })),
+
+    panelMode: 'configure',
+    lastAlgorithmResult: null,
+    runHistory: [],
+    overlayVisibility: { features: true, algorithmOverlay: true },
+    overlayToggles: { corners: true, edges: true, labels: false, markers: true },
+
+    setPanelMode: (mode) => set({ panelMode: mode }),
+    setLastAlgorithmResult: (algorithmId, result) => set({
+        lastAlgorithmResult: { algorithmId, result },
+    }),
+    addRunToHistory: (entry) => set((state) => ({
+        runHistory: [entry, ...state.runHistory].slice(0, MAX_RUN_HISTORY),
+    })),
+    clearRunHistory: () => set({ runHistory: [] }),
+    setOverlayVisibility: (key, visible) => set((state) => ({
+        overlayVisibility: { ...state.overlayVisibility, [key]: visible },
+        ...(key === 'features' ? { showFeatures: visible } : {}),
+    })),
+    setOverlayToggle: (key, value) => set((state) => ({
+        overlayToggles: { ...state.overlayToggles, [key]: value },
+    })),
 }));

@@ -9,6 +9,7 @@ No external services (R2, network) are needed.
 
 import hashlib
 import io
+from pathlib import Path
 
 import numpy as np
 from PIL import Image
@@ -22,13 +23,16 @@ client = TestClient(app)
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
+
 def _make_checkerboard_png(size: int = 300, cell: int = 100) -> bytes:
     """Return PNG bytes of a synthetic checkerboard image."""
     board = np.zeros((size, size), dtype=np.uint8)
     for row in range(size // cell):
         for col in range(size // cell):
             if (row + col) % 2 == 1:
-                board[row * cell:(row + 1) * cell, col * cell:(col + 1) * cell] = 255
+                board[row * cell : (row + 1) * cell, col * cell : (col + 1) * cell] = (
+                    255
+                )
     img = Image.fromarray(board, mode="L")
     buf = io.BytesIO()
     img.save(buf, format="PNG")
@@ -54,7 +58,13 @@ def _upload(key: str, content: bytes = b"") -> None:
     assert resp.status_code == 200
 
 
+def _sample_bytes(name: str) -> bytes:
+    repo_root = Path(__file__).resolve().parents[2]
+    return (repo_root / "public" / name).read_bytes()
+
+
 # ── Health ────────────────────────────────────────────────────────────────────
+
 
 def test_root_returns_ok():
     resp = client.get("/")
@@ -63,6 +73,7 @@ def test_root_returns_ok():
 
 
 # ── Storage ───────────────────────────────────────────────────────────────────
+
 
 def test_upload_ticket_returns_local_descriptor():
     png = _make_checkerboard_png()
@@ -192,6 +203,7 @@ def test_local_upload_ticket_includes_api_key_header_when_auth_enabled(monkeypat
 
 # ── CV / Chess Corners ────────────────────────────────────────────────────────
 
+
 def test_chess_corners_basic():
     png = _make_checkerboard_png()
     key = _content_addressed_key(png)
@@ -233,3 +245,212 @@ def test_chess_corners_invalid_key_format_rejected():
 def test_chess_corners_invalid_payload_rejected():
     resp = client.post("/api/v1/cv/chess-corners", json={})
     assert resp.status_code == 422
+
+
+def test_calibration_targets_chessboard_sample():
+    png = _sample_bytes("chessboard.png")
+    key = _content_addressed_key(png)
+    _upload(key, png)
+
+    resp = client.post(
+        "/api/v1/cv/calibration-targets/detect",
+        json={
+            "algorithm": "chessboard",
+            "key": key,
+            "storage_mode": "local",
+            "config": {
+                "detector": {
+                    "expected_rows": 7,
+                    "expected_cols": 11,
+                    "min_corner_strength": 0.2,
+                    "completeness_threshold": 0.1,
+                }
+            },
+        },
+    )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "success"
+    assert body["algorithm"] == "chessboard"
+    assert body["frame"]["name"] == "image_px_center"
+    assert body["detection"]["kind"] == "chessboard"
+    assert len(body["detection"]["corners"]) > 0
+    assert body["summary"]["corner_count"] == len(body["detection"]["corners"])
+
+
+def test_calibration_targets_charuco_sample():
+    png = _sample_bytes("charuco.png")
+    key = _content_addressed_key(png)
+    _upload(key, png)
+
+    resp = client.post(
+        "/api/v1/cv/calibration-targets/detect",
+        json={
+            "algorithm": "charuco",
+            "key": key,
+            "storage_mode": "local",
+            "config": {
+                "board": {
+                    "rows": 22,
+                    "cols": 22,
+                    "cell_size": 4.8,
+                    "marker_size_rel": 0.75,
+                    "dictionary": "DICT_4X4_1000",
+                },
+                "px_per_square": 40.0,
+                "graph": {
+                    "min_spacing_pix": 40.0,
+                    "max_spacing_pix": 160.0,
+                    "k_neighbors": 8,
+                    "orientation_tolerance_deg": 22.5,
+                },
+            },
+        },
+    )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "success"
+    assert body["algorithm"] == "charuco"
+    assert body["detection"]["kind"] == "charuco"
+    assert len(body["detection"]["corners"]) > 0
+    assert body["markers"] is not None
+    assert len(body["markers"]) > 0
+    assert body["summary"]["marker_count"] == len(body["markers"])
+
+
+# ── API Key Enforcement ───────────────────────────────────────────────────────
+
+
+class TestApiKeyEnforcement:
+    """Verify that all /api/v1/* endpoints return 401 when the API key is
+    configured but the request omits the X-API-Key header."""
+
+    def test_upload_ticket_requires_api_key(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        resp = client.post(
+            "/api/v1/storage/upload-ticket",
+            json={"sha256": "a" * 64, "content_type": "image/png"},
+        )
+        assert resp.status_code == 401
+
+    def test_local_upload_requires_api_key(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        fake_sha = "c" * 64
+        resp = client.put(
+            f"/api/v1/storage/local-upload/uploads/{fake_sha}",
+            content=_make_checkerboard_png(),
+            headers={"Content-Type": "image/png"},
+        )
+        assert resp.status_code == 401
+
+    def test_chess_corners_requires_api_key(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        fake_sha = "d" * 64
+        resp = client.post(
+            "/api/v1/cv/chess-corners",
+            json={"key": f"uploads/{fake_sha}", "storage_mode": "local"},
+        )
+        assert resp.status_code == 401
+
+    def test_calibration_targets_requires_api_key(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        fake_sha = "e" * 64
+        resp = client.post(
+            "/api/v1/cv/calibration-targets/detect",
+            json={
+                "algorithm": "chessboard",
+                "key": f"uploads/{fake_sha}",
+                "storage_mode": "local",
+            },
+        )
+        assert resp.status_code == 401
+
+    def test_valid_api_key_accepted(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        png = _make_checkerboard_png(size=20, cell=10)
+        sha = _sha256_hex(png)
+        resp = client.post(
+            "/api/v1/storage/upload-ticket",
+            json={"sha256": sha, "content_type": "image/png", "storage_mode": "local"},
+            headers={"X-API-Key": "test-secret"},
+        )
+        assert resp.status_code == 200
+
+    def test_wrong_api_key_rejected(self, monkeypatch):
+        monkeypatch.setattr(auth, "_api_key", "test-secret")
+        png = _make_checkerboard_png(size=20, cell=10)
+        sha = _sha256_hex(png)
+        resp = client.post(
+            "/api/v1/storage/upload-ticket",
+            json={"sha256": sha, "content_type": "image/png", "storage_mode": "local"},
+            headers={"X-API-Key": "wrong-key"},
+        )
+        assert resp.status_code == 403
+
+
+def test_calibration_targets_markerboard_sample():
+    png = _sample_bytes("markerboard.png")
+    key = _content_addressed_key(png)
+    _upload(key, png)
+
+    resp = client.post(
+        "/api/v1/cv/calibration-targets/detect",
+        json={
+            "algorithm": "markerboard",
+            "key": key,
+            "storage_mode": "local",
+            "config": {
+                "layout": {
+                    "rows": 22,
+                    "cols": 22,
+                    "circles": [
+                        {"i": 11, "j": 11, "polarity": "white"},
+                        {"i": 12, "j": 11, "polarity": "white"},
+                        {"i": 12, "j": 12, "polarity": "white"},
+                    ],
+                },
+                "chessboard": {
+                    "min_corner_strength": 0.2,
+                    "min_corners": 50,
+                    "expected_rows": 22,
+                    "expected_cols": 22,
+                    "completeness_threshold": 0.05,
+                    "use_orientation_clustering": True,
+                    "orientation_clustering_params": {
+                        "num_bins": 90,
+                        "max_iters": 10,
+                        "peak_min_separation_deg": 15.0,
+                        "outlier_threshold_deg": 30.0,
+                        "min_peak_weight_fraction": 0.2,
+                        "use_weights": True,
+                    },
+                },
+                "grid_graph": {
+                    "min_spacing_pix": 20.0,
+                    "max_spacing_pix": 120.0,
+                    "k_neighbors": 8,
+                    "orientation_tolerance_deg": 22.5,
+                },
+                "circle_score": {
+                    "patch_size": 64,
+                    "diameter_frac": 0.5,
+                    "ring_thickness_frac": 0.35,
+                    "ring_radius_mul": 1.6,
+                    "min_contrast": 10.0,
+                    "samples": 48,
+                    "center_search_px": 2,
+                },
+            },
+        },
+    )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "success"
+    assert body["algorithm"] == "markerboard"
+    assert body["detection"]["kind"] == "checkerboard_marker"
+    assert len(body["detection"]["corners"]) > 0
+    assert body["circle_matches"] is not None
+    assert len(body["circle_matches"]) == 3

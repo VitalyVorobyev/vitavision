@@ -1,8 +1,14 @@
 import { chessCornersAlgorithm } from "./chessCorners/adapter";
+import { chessboardAlgorithm } from "./calibrationTargets/chessboardAdapter";
+import { charucoAlgorithm } from "./calibrationTargets/charucoAdapter";
+import { markerboardAlgorithm } from "./calibrationTargets/markerboardAdapter";
 import type { AlgorithmDefinition } from "./types";
 
 export const ALGORITHM_REGISTRY: AlgorithmDefinition[] = [
     chessCornersAlgorithm,
+    chessboardAlgorithm,
+    charucoAlgorithm,
+    markerboardAlgorithm,
 ];
 
 export const DEFAULT_ALGORITHM_ID = chessCornersAlgorithm.id;

@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 
 import type { StorageMode } from "../../../lib/storage";
-import type { Feature } from "../../../store/editor/useEditorStore";
+import type { Feature, OverlayToggles, SampleId } from "../../../store/editor/useEditorStore";
 
 export type RequestedStorageMode = "auto" | StorageMode;
 
@@ -14,6 +14,7 @@ export interface AlgorithmConfigFormProps<TConfig = unknown> {
     config: TConfig;
     onChange: (next: TConfig) => void;
     disabled: boolean;
+    modal?: boolean;
 }
 
 export interface AlgorithmDefinition {
@@ -21,6 +22,7 @@ export interface AlgorithmDefinition {
     title: string;
     description: string;
     initialConfig: unknown;
+    sampleDefaults?: Partial<Record<SampleId, unknown>>;
     ConfigComponent: ComponentType<AlgorithmConfigFormProps<unknown>>;
     run: (args: {
         key: string;
@@ -29,6 +31,11 @@ export interface AlgorithmDefinition {
     }) => Promise<unknown>;
     toFeatures: (result: unknown, runId: string) => Feature[];
     summary: (result: unknown) => AlgorithmSummaryEntry[];
+    OverlayComponent?: ComponentType<{
+        result: unknown;
+        zoom: number;
+        toggles: OverlayToggles;
+    }>;
 }
 
 export interface AlgorithmRunResult {

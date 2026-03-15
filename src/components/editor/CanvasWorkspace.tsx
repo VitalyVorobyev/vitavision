@@ -7,6 +7,7 @@ import type Konva from "konva";
 import FeatureLayer from "./canvas/FeatureLayer";
 import FeatureTooltip, { type DirectedPointTooltipState } from "./canvas/FeatureTooltip";
 import { isReadonlyFeature, useEditorStore } from "../../store/editor/useEditorStore";
+import { getAlgorithmById } from "./algorithms/registry";
 
 export default function CanvasWorkspace() {
     const {
@@ -25,6 +26,9 @@ export default function CanvasWorkspace() {
         selectedFeatureId,
         setSelectedFeatureId,
         showFeatures,
+        lastAlgorithmResult,
+        overlayVisibility,
+        overlayToggles,
     } = useEditorStore();
 
     const [image] = useImage(imageSrc || "", "anonymous");
@@ -500,6 +504,20 @@ export default function CanvasWorkspace() {
                                 dash={[5 / zoom, 5 / zoom]}
                             />
                         )}
+
+                        {/* Algorithm overlay (grid edges, labels, markers) */}
+                        {overlayVisibility.algorithmOverlay && lastAlgorithmResult && (() => {
+                            const algo = getAlgorithmById(lastAlgorithmResult.algorithmId);
+                            const Overlay = algo.OverlayComponent;
+                            if (!Overlay) return null;
+                            return (
+                                <Overlay
+                                    result={lastAlgorithmResult.result}
+                                    zoom={zoom}
+                                    toggles={overlayToggles}
+                                />
+                            );
+                        })()}
 
                         <FeatureLayer
                             features={features}

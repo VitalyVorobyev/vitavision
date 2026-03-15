@@ -4,7 +4,7 @@ FROM python:3.12.9-slim-bookworm AS builder
 COPY --from=ghcr.io/astral-sh/uv:0.9.2 /uv /usr/local/bin/uv
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc curl && \
+    apt-get install -y --no-install-recommends build-essential curl pkg-config && \
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal && \
     rm -rf /var/lib/apt/lists/*
 ENV PATH="/root/.cargo/bin:${PATH}"

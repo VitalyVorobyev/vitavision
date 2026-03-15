@@ -26,9 +26,47 @@
 
 ## Up Next
 
+Blog System — Phase 1: Foundation
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| ~~BLOG-001~~ | done | P0 | infra | ~~Create content directory structure and frontmatter Zod schemas~~ | Implementer | `content/blog/`, `content/algorithms/`, `content/images/`; `src/lib/content/schema.ts` with Zod blog + algorithm schemas. |
+| BLOG-002 | todo | P0 | infra | Build content processing pipeline (`scripts/content-build.ts`) | Implementer | gray-matter + Zod validate + markdown→HTML; generates `src/generated/content-manifest.ts`; add `content:build` script. Deps: BLOG-001. |
+| BLOG-003 | todo | P0 | feature | Create BlogIndex page with post cards and tag filtering | Implementer | Replace placeholder Blog.tsx; PostCard, TagBadge, TagFilter components; sorted by date desc. Deps: BLOG-002. |
+| BLOG-004 | todo | P0 | feature | Create BlogPost page with enhanced MarkdownRenderer | Implementer | Extend MarkdownRenderer with remark-gfm, rehype-sanitize, heading anchors; render pre-built HTML. Deps: BLOG-002. |
+| BLOG-005 | todo | P0 | infra | Add blog routes to App.tsx and wire navigation | Implementer | `/blog`, `/blog/:slug` routes; update Navbar. Deps: BLOG-003, BLOG-004. |
+| BLOG-006 | todo | P0 | infra | Build prerender postbuild script + SSR entry point | Implementer | `src/entry-server.tsx`, `scripts/postbuild.ts`; static HTML for blog routes via react-dom/server + StaticRouter. Deps: BLOG-005. |
+
+Blog System — Phase 2: Discoverability
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| BLOG-007 | todo | P1 | feature | Add SEO head management (react-helmet-async) | Implementer | SeoHead component; per-page title, description, OG, Twitter cards on all blog pages. Deps: BLOG-005. |
+| BLOG-008 | todo | P1 | feature | Add Schema.org BlogPosting structured data | Implementer | JSON-LD script tag in BlogPost; generated from frontmatter metadata. Deps: BLOG-007. |
+| BLOG-009 | todo | P1 | infra | Generate sitemap.xml and robots.txt | Implementer | Add sitemap generation to postbuild; `public/robots.txt` pointing to sitemap. Deps: BLOG-006. |
+| BLOG-010 | todo | P1 | infra | Generate RSS and Atom feeds | Implementer | Install `feed` package; generate `dist/rss.xml` + `dist/atom.xml`. Deps: BLOG-006. |
+| BLOG-011 | todo | P1 | feature | Draft post support | Implementer | `draft: true` frontmatter field; excluded in prod build, shown with badge in dev. Deps: BLOG-002. |
+
+Blog System — Phase 3: Authoring Quality
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| BLOG-012 | todo | P1 | feature | Client-side Mermaid rendering | Implementer | Add mermaid.js; render fenced mermaid blocks in browser. Build-time SVG deferred to future optimization. Deps: BLOG-004. |
+| BLOG-013 | todo | P1 | enhancement | Image handling conventions and content image pipeline | Implementer | Copy `content/images/` to dist during build; resolve relative paths in markdown. Deps: BLOG-002. |
+| BLOG-014 | todo | P1 | infra | Content validation CI job | Implementer | `content:validate` script + CI job; Zod validation, broken link check, image reference check. Deps: BLOG-002. |
+
+Blog System — Phase 4: Refinement
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| BLOG-015 | todo | P2 | feature | Create AlgorithmIndex and AlgorithmPost pages | Implementer | `/algorithms`, `/algorithms/:slug` routes; add "Algorithms" to Navbar. Deps: BLOG-002, BLOG-004. |
+| BLOG-016 | todo | P2 | feature | Algorithm/blog cross-linking | Implementer | Related posts/algorithms sections rendered from frontmatter. Deps: BLOG-015. |
+| BLOG-017 | todo | P2 | enhancement | Prerender algorithm pages | Implementer | Extend postbuild for `/algorithms/*` routes. Deps: BLOG-015, BLOG-006. |
+| BLOG-018 | todo | P2 | feature | Wire editor deep links (blogSlug, "Try in Editor") | Implementer | Connects to EDITOR-025/026. Deps: BLOG-015. |
+
 ## Backlog
 
-Phase 1 — Right Panel Mode System + Store Foundations
+Editor — Phase 1: Right Panel Mode System + Store Foundations (done)
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
@@ -37,7 +75,7 @@ Phase 1 — Right Panel Mode System + Store Foundations
 | ~~EDITOR-012~~ | done | P1 | feature | ~~Create ResultsPanel with summary, diagnostics placeholder, and feature list~~ | Implementer | Run summary grid + FeatureListPanel + run history list + "Configure" back-button. Deps: EDITOR-010. |
 | ~~EDITOR-013~~ | done | P1 | feature | ~~Wire auto-transition, mode toggle, and run history recording~~ | Implementer | Auto-switch to Results after successful run. Segmented control at top of right panel. Update left rail eye toggle to use overlayVisibility. Deps: EDITOR-011, EDITOR-012. |
 
-Phase 2 — Algorithm Canvas Overlays
+Editor — Phase 2: Algorithm Canvas Overlays
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
@@ -46,7 +84,7 @@ Phase 2 — Algorithm Canvas Overlays
 | ~~EDITOR-016~~ | done | P2 | feature | ~~Build charuco overlay (grid + marker bounding boxes)~~ | Implementer | Subsumed by EDITOR-034. |
 | EDITOR-017 | todo | P2 | feature | Add overlay visibility toggle to left rail | Implementer | Expand eye toggle into layers popover: Features, Algorithm Overlay. Uses overlayVisibility store. Deps: EDITOR-014. |
 
-Phase 3 — Diagnostics + Progressive Disclosure + Presets
+Editor — Phase 3: Diagnostics + Progressive Disclosure + Presets
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
@@ -54,7 +92,7 @@ Phase 3 — Diagnostics + Progressive Disclosure + Presets
 | EDITOR-019 | todo | P2 | feature | Add preset configurations to AlgorithmDefinition and ConfigurePanel | Implementer | presets record on AlgorithmDefinition. Preset picker dropdown in ConfigurePanel. Deps: EDITOR-011. |
 | EDITOR-020 | todo | P2 | enhancement | Add progressive disclosure (CollapsibleSection) to config forms | Implementer | Shared CollapsibleSection in formFields.tsx. Wrap advanced params in all config forms. Deps: EDITOR-011. |
 
-Phase 4 — Feature Model Extension
+Editor — Phase 4: Feature Model Extension
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
@@ -62,7 +100,7 @@ Phase 4 — Feature Model Extension
 | EDITOR-022 | todo | P2 | feature | Add polygon renderer to FeatureLayer (closed Line with fill) | Implementer | Konva Line with closed=true, semi-transparent fill. Selection + drag. Deps: EDITOR-021. |
 | EDITOR-023 | todo | P2 | feature | Add POLYGON drawing tool to left rail and CanvasWorkspace | Implementer | Similar to POLYLINE but closes on double-click. Add icon to left rail. Deps: EDITOR-021, EDITOR-022. |
 
-Phase 5 — Deep Links + Blog Integration
+Editor — Phase 5: Deep Links + Blog Integration
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
@@ -70,7 +108,7 @@ Phase 5 — Deep Links + Blog Integration
 | EDITOR-025 | todo | P2 | feature | Add blogSlug to AlgorithmDefinition, render "Learn more" links | Implementer | blogSlug field. "Learn more" link in ConfigurePanel pointing to /blog/{slug}. Independent. |
 | EDITOR-026 | todo | P3 | feature | Add "Try in Editor" buttons in blog post content | Implementer | Standardized links to /editor?algo=...&image=... in blog markdown. Deps: EDITOR-024. |
 
-Phase 6 — Responsive Layout + Touch Support
+Editor — Phase 6: Responsive Layout + Touch Support
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
@@ -79,7 +117,7 @@ Phase 6 — Responsive Layout + Touch Support
 | EDITOR-029 | todo | P3 | enhancement | Touch canvas: pinch-to-zoom, tap-to-select, single-finger pan | Implementer | Konva touch support. Pinch-to-zoom, tap-to-select features, pan in SELECT mode. Independent. |
 | EDITOR-030 | todo | P3 | enhancement | Hide drawing tools on touch-only devices | Implementer | Detect no fine pointer. Hide POINT/LINE/POLYLINE/BBOX/ELLIPSE/POLYGON tools. Keep SELECT + zoom + visibility. Deps: EDITOR-028. |
 
-Phase 7 — UX Improvements
+Editor — Phase 7: UX Improvements
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
@@ -152,6 +190,7 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~BLOG-001~~ | 2026-03-15 | infra | ~~Create content directory structure and frontmatter Zod schemas~~ | content/blog/, content/algorithms/, content/images/ dirs; src/lib/content/schema.ts with Zod blog + algorithm schemas |
 | ~~EDITOR-036~~ | 2026-03-15 | enhancement | ~~Inline tooltips for algorithm config fields~~ | InfoTooltip component; tooltip prop on all form fields; all 4 config forms annotated |
 | ~~EDITOR-035~~ | 2026-03-15 | enhancement | ~~Resizable right panel with drag handle~~ | Pointer-event drag on left edge; min 280px, max 600px; overlay toggle panel |
 | ~~EDITOR-034~~ | 2026-03-15 | feature | ~~ChArUco + Marker Board overlays~~ | CharucoOverlay (grid edges + marker quads with IDs); MarkerboardOverlay (grid + circle outlines by polarity) |

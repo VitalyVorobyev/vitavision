@@ -1,5 +1,6 @@
 ## [Unreleased]
 
+- feat(BLOG-002): add content processing pipeline (`scripts/content-build.ts`) with gray-matter frontmatter parsing, Zod validation, and unified markdown→HTML rendering; generates `src/generated/content-manifest.ts`
 - feat(BLOG-001): add content directory structure (`content/blog/`, `content/algorithms/`, `content/images/`) and Zod frontmatter schemas for blog posts and algorithm pages
 
 - feat(EDITOR-013): wire auto-transition to results after run, add segmented mode toggle, update left rail eye to use overlayVisibility

@@ -27,3 +27,20 @@ export const algorithmFrontmatterSchema = z.object({
 });
 
 export type AlgorithmFrontmatter = z.infer<typeof algorithmFrontmatterSchema>;
+
+/** Manifest entry for a blog post (dates serialized as ISO strings). */
+export interface BlogEntry {
+    slug: string;
+    frontmatter: Omit<BlogFrontmatter, "date" | "updated"> & {
+        date: string;
+        updated?: string;
+    };
+    html: string;
+}
+
+/** Manifest entry for an algorithm page. */
+export interface AlgorithmEntry {
+    slug: string;
+    frontmatter: AlgorithmFrontmatter;
+    html: string;
+}

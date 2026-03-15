@@ -26,6 +26,8 @@
 
 ## Up Next
 
+## Backlog
+
 Phase 1 — Right Panel Mode System + Store Foundations
 
 | ID | Status | Priority | Type | Title | Role | Notes |
@@ -34,8 +36,6 @@ Phase 1 — Right Panel Mode System + Store Foundations
 | ~~EDITOR-011~~ | done | P1 | refactor | ~~Extract ConfigurePanel from EditorRightPanel~~ | Implementer | Move hint card + algo picker + config form + run button into ConfigurePanel. EditorRightPanel becomes a thin mode-switching shell. Deps: EDITOR-010. |
 | ~~EDITOR-012~~ | done | P1 | feature | ~~Create ResultsPanel with summary, diagnostics placeholder, and feature list~~ | Implementer | Run summary grid + FeatureListPanel + run history list + "Configure" back-button. Deps: EDITOR-010. |
 | ~~EDITOR-013~~ | done | P1 | feature | ~~Wire auto-transition, mode toggle, and run history recording~~ | Implementer | Auto-switch to Results after successful run. Segmented control at top of right panel. Update left rail eye toggle to use overlayVisibility. Deps: EDITOR-011, EDITOR-012. |
-
-## Backlog
 
 Phase 2 — Algorithm Canvas Overlays
 

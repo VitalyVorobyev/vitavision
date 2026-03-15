@@ -1,27 +1,53 @@
-// import { Link } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { blogPosts } from "../generated/content-manifest.ts";
+import PostCard from "../components/blog/PostCard.tsx";
+import TagFilter from "../components/blog/TagFilter.tsx";
 
 export default function Blog() {
+    const [selectedTag, setSelectedTag] = useState<string | null>(null);
+
+    const allTags = useMemo(() => {
+        const tagSet = new Set<string>();
+        for (const post of blogPosts) {
+            for (const tag of post.frontmatter.tags) tagSet.add(tag);
+        }
+        return [...tagSet].sort();
+    }, []);
+
+    const filtered = selectedTag
+        ? blogPosts.filter((p) => p.frontmatter.tags.includes(selectedTag))
+        : blogPosts;
+
     return (
-        <div className="max-w-[800px] mx-auto py-16 space-y-8 animate-in fade-in py-8 px-4">
+        <div className="max-w-[800px] mx-auto py-16 space-y-8 animate-in fade-in px-4">
             <div className="space-y-4">
-                <h1 className="text-4xl font-bold tracking-tight">Blog </h1>
+                <h1 className="text-4xl font-bold tracking-tight">Blog</h1>
                 <p className="text-muted-foreground text-lg">
-                    Thoughts on algorithms, computer vision, and building intelligent systems.
+                    Thoughts on algorithms, computer vision, and building
+                    intelligent systems.
                 </p>
             </div>
 
+            <TagFilter
+                tags={allTags}
+                selected={selectedTag}
+                onSelect={setSelectedTag}
+            />
+
             <div className="space-y-6">
-                Stay tuned!
-                {/* Placeholder for blog posts */}
-                {/* <div className="p-6 rounded-xl border border-border hover:border-foreground/20 transition-colors group">
-                    <Link to="/blog/example">
-                        <h2 className="text-2xl font-semibold group-hover:underline">Camera Calibration and PnP</h2>
-                        <p className="text-muted-foreground mt-2">
-                            Deep dive into solving the Perspective-n-Point problem for visual odometry.
-                        </p>
-                        <div className="text-sm font-mono text-muted-foreground mt-4">Oct 24, 2026</div>
-                    </Link>
-                </div> */}
+                {filtered.length > 0 ? (
+                    filtered.map((post) => (
+                        <PostCard key={post.slug} post={post} />
+                    ))
+                ) : blogPosts.length === 0 ? (
+                    <p className="text-muted-foreground">
+                        No posts yet. Stay tuned!
+                    </p>
+                ) : (
+                    <p className="text-muted-foreground">
+                        No posts match the selected tag.
+                    </p>
+                )}
             </div>
         </div>
     );

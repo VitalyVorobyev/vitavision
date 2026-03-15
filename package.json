@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "content:build": "bun run scripts/content-build.ts"
+    "content:build": "bun run scripts/content-build.ts",
+    "postbuild": "bun run scripts/postbuild.ts"
   },
   "dependencies": {
     "@types/react-syntax-highlighter": "^15.5.13",

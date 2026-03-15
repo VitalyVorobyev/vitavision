@@ -5,7 +5,7 @@ import time
 import uuid
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 import boto3
 from botocore.config import Config as BotoConfig
@@ -45,9 +45,13 @@ def presign_expiry_seconds() -> int:
     try:
         value = int(raw)
     except ValueError as exc:
-        raise HTTPException(status_code=500, detail="Invalid R2_PRESIGN_EXPIRES_SECONDS") from exc
+        raise HTTPException(
+            status_code=500, detail="Invalid R2_PRESIGN_EXPIRES_SECONDS"
+        ) from exc
     if value <= 0:
-        raise HTTPException(status_code=500, detail="R2_PRESIGN_EXPIRES_SECONDS must be > 0")
+        raise HTTPException(
+            status_code=500, detail="R2_PRESIGN_EXPIRES_SECONDS must be > 0"
+        )
     return value
 
 
@@ -75,7 +79,9 @@ def is_r2_configured() -> bool:
 
 def resolve_storage_mode(requested_mode: str | None = None) -> StorageMode:
     if requested_mode is not None and requested_mode not in {"r2", "local"}:
-        raise HTTPException(status_code=400, detail="storage_mode must be either 'r2' or 'local'")
+        raise HTTPException(
+            status_code=400, detail="storage_mode must be either 'r2' or 'local'"
+        )
 
     if requested_mode == "r2" and not is_r2_configured():
         raise HTTPException(
@@ -83,7 +89,7 @@ def resolve_storage_mode(requested_mode: str | None = None) -> StorageMode:
             detail="R2 storage requested but S3_ENDPOINT/S3_KEY_ID/S3_KEY_SECRET are not configured",
         )
     if requested_mode in {"r2", "local"}:
-        return requested_mode
+        return cast(StorageMode, requested_mode)
 
     mode = _storage_mode_env()
     if mode == "local":
@@ -117,8 +123,8 @@ def _truncate_filename(name: str, max_len: int) -> str:
         return name
     dot = name.rfind(".")
     if dot > 0:
-        ext = name[dot:]          # e.g. ".png"
-        stem = name[:dot][:max_len - len(ext)]
+        ext = name[dot:]  # e.g. ".png"
+        stem = name[:dot][: max_len - len(ext)]
         return stem + ext
     return name[:max_len]
 
@@ -148,9 +154,13 @@ def check_r2_object_exists(key: str) -> bool:
         code = exc.response.get("Error", {}).get("Code", "")
         if code in {"404", "NoSuchKey"}:
             return False
-        raise HTTPException(status_code=500, detail="Storage HEAD check failed") from exc
+        raise HTTPException(
+            status_code=500, detail="Storage HEAD check failed"
+        ) from exc
     except BotoCoreError as exc:
-        raise HTTPException(status_code=500, detail="Storage HEAD check failed") from exc
+        raise HTTPException(
+            status_code=500, detail="Storage HEAD check failed"
+        ) from exc
 
 
 def check_local_object_exists(key: str) -> bool:
@@ -194,13 +204,13 @@ def build_local_object_url(base_url: str, key: str) -> str:
 
 # Magic-byte signatures for accepted image formats.
 _IMAGE_MAGIC: list[bytes] = [
-    b"\xff\xd8\xff",           # JPEG
-    b"\x89PNG\r\n\x1a\n",     # PNG
-    b"GIF87a",                 # GIF87a
-    b"GIF89a",                 # GIF89a
-    b"BM",                     # BMP
-    b"II*\x00",                # TIFF (little-endian)
-    b"MM\x00*",                # TIFF (big-endian)
+    b"\xff\xd8\xff",  # JPEG
+    b"\x89PNG\r\n\x1a\n",  # PNG
+    b"GIF87a",  # GIF87a
+    b"GIF89a",  # GIF89a
+    b"BM",  # BMP
+    b"II*\x00",  # TIFF (little-endian)
+    b"MM\x00*",  # TIFF (big-endian)
 ]
 _RIFF_MAGIC = b"RIFF"
 _WEBP_MARKER = b"WEBP"
@@ -258,7 +268,9 @@ def create_r2_upload_url(key: str, content_type: str) -> str:
             ExpiresIn=presign_expiry_seconds(),
         )
     except (BotoCoreError, ClientError) as exc:
-        raise HTTPException(status_code=500, detail="Failed to generate upload URL") from exc
+        raise HTTPException(
+            status_code=500, detail="Failed to generate upload URL"
+        ) from exc
 
 
 def load_r2_object(key: str) -> bytes:
@@ -267,7 +279,9 @@ def load_r2_object(key: str) -> bytes:
         response = client.get_object(Bucket=bucket_name(), Key=key)
         payload = response.get("Body")
         if payload is None:
-            raise HTTPException(status_code=500, detail="R2 get_object returned no body")
+            raise HTTPException(
+                status_code=500, detail="R2 get_object returned no body"
+            )
         return payload.read()
     except ClientError as exc:
         code = exc.response.get("Error", {}).get("Code")

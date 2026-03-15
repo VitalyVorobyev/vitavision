@@ -20,6 +20,7 @@ def _validate_storage_key(key: str) -> None:
             detail="Invalid storage key format: expected '{prefix}/{sha256}'",
         )
 
+
 _ALLOWED_CONTENT_TYPES = {
     "image/jpeg",
     "image/png",
@@ -82,7 +83,9 @@ async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
         if storage_mode == "r2":
             preview_url = storage_service.build_r2_public_url(key)
         else:
-            preview_url = storage_service.build_local_object_url(str(request.base_url), key)
+            preview_url = storage_service.build_local_object_url(
+                str(request.base_url), key
+            )
         return UploadTicketResponse(
             exists=True,
             storage_mode=storage_mode,
@@ -101,7 +104,9 @@ async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
         preview_url = storage_service.build_r2_public_url(key)
     else:
         expires = 0
-        upload_url = f"{str(request.base_url).rstrip('/')}/api/v1/storage/local-upload/{key}"
+        upload_url = (
+            f"{str(request.base_url).rstrip('/')}/api/v1/storage/local-upload/{key}"
+        )
         preview_url = storage_service.build_local_object_url(str(request.base_url), key)
         api_key_header = request.headers.get("x-api-key")
         if api_key_header:
@@ -135,11 +140,16 @@ async def local_upload(
     if len(body) > storage_service.max_upload_bytes():
         raise HTTPException(status_code=413, detail="Request body too large")
     if not storage_service.is_image_bytes(body):
-        raise HTTPException(status_code=415, detail="Unsupported media type: not a recognised image format")
+        raise HTTPException(
+            status_code=415,
+            detail="Unsupported media type: not a recognised image format",
+        )
 
     storage_service.save_local_object(key, body)
     preview_url = storage_service.build_local_object_url(str(request.base_url), key)
-    return LocalUploadResponse(status="ok", key=key, bytes_written=len(body), preview_url=preview_url)
+    return LocalUploadResponse(
+        status="ok", key=key, bytes_written=len(body), preview_url=preview_url
+    )
 
 
 @router.get("/local-object/{key:path}")

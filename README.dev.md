@@ -161,7 +161,7 @@ curl -s -X POST http://localhost:8000/api/v1/cv/chess-corners \
   -H 'Content-Type: application/json' \
   -d '{"key":"<key>","storage_mode":"local","use_ml_refiner":false}'
 
-# 2b. Run calibration target detection (chessboard example)
+# 2b. Run calibration target detection — chessboard
 curl -s -X POST http://localhost:8000/api/v1/cv/calibration-targets/detect \
   -H 'Content-Type: application/json' \
   -d '{
@@ -177,7 +177,58 @@ curl -s -X POST http://localhost:8000/api/v1/cv/calibration-targets/detect \
       }
     }
   }'
+
+# 2c. Run calibration target detection — ChArUco (use board_charuco.json defaults)
+curl -s -X POST http://localhost:8000/api/v1/cv/calibration-targets/detect \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "algorithm": "charuco",
+    "key": "<key>",
+    "storage_mode": "local",
+    "config": {
+      "board": {
+        "rows": 22,
+        "cols": 22,
+        "cell_size": 4.8,
+        "marker_size_rel": 0.75,
+        "dictionary": "DICT_4X4_1000",
+        "marker_layout": "opencv_charuco"
+      },
+      "px_per_square": 40
+    }
+  }'
+
+# 2d. Run calibration target detection — Marker Board (use marker_detect_config.json layout)
+curl -s -X POST http://localhost:8000/api/v1/cv/calibration-targets/detect \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "algorithm": "markerboard",
+    "key": "<key>",
+    "storage_mode": "local",
+    "config": {
+      "layout": {
+        "rows": 22,
+        "cols": 22,
+        "circles": [
+          { "i": 11, "j": 11, "polarity": "white" },
+          { "i": 12, "j": 11, "polarity": "white" },
+          { "i": 12, "j": 12, "polarity": "white" }
+        ]
+      }
+    }
+  }'
 ```
+
+### Sample defaults reference
+
+| Sample image | Algorithm | Key defaults |
+|---|---|---|
+| `chessboard.png` | Chessboard | `expected_rows=7`, `expected_cols=11`, `min_corner_strength=0.2`, `completeness_threshold=0.1` |
+| `chessboard.png` | ChESS Corners | `use_ml_refiner=false` |
+| `charuco.png` | ChArUco | `rows=22`, `cols=22`, `cell_size=4.8 mm`, `marker_size_rel=0.75`, `dictionary=DICT_4X4_1000`, `px_per_square=40` |
+| `markerboard.png` | Marker Board | `rows=22`, `cols=22`, 3 white circles at (11,11), (12,11), (12,12) |
+
+Full API schema for all config options: [`docs/backend.md`](docs/backend.md).
 
 ---
 

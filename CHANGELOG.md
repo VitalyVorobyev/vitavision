@@ -1,5 +1,6 @@
 ## [Unreleased]
 
+- docs(DOCS-001): add `docs/backend.md` API reference for calibration-targets endpoint (full schemas, sample defaults, editor guided-workflow doc); expand README.dev.md smoke-test section with ChArUco and Marker Board examples and sample-defaults table
 - test(QA-001): fix test isolation via conftest.py session-scoped fixture; pytest now passes on repeated runs without manual storage cleanup
 - test(TEST-001): add API key enforcement tests (401/403 coverage for all /api/v1/* endpoints) and `lint-backend` CI job (ruff + mypy); fix pre-existing ruff/mypy violations in auth.py, main.py, test_chess.py, storage_service.py
 - feat(CV-001): add unified calibration-target detection API (`POST /api/v1/cv/calibration-targets/detect`) supporting chessboard, ChArUco, and marker-board algorithms with full acceptance test coverage

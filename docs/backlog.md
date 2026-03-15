@@ -26,14 +26,64 @@
 
 ## Up Next
 
+Phase 1 — Right Panel Mode System + Store Foundations
+
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
+| EDITOR-010 | todo | P1 | refactor | Add panelMode, runHistory, overlayVisibility to Zustand store | Implementer | New state groups: panelMode, runHistory, lastAlgorithmResult, overlayVisibility (replaces showFeatures). Extract types to editorTypes.ts if store exceeds ~500 lines. |
+| EDITOR-011 | todo | P1 | refactor | Extract ConfigurePanel from EditorRightPanel | Implementer | Move hint card + algo picker + config form + run button into ConfigurePanel. EditorRightPanel becomes a thin mode-switching shell. Deps: EDITOR-010. |
+| EDITOR-012 | todo | P1 | feature | Create ResultsPanel with summary, diagnostics placeholder, and feature list | Implementer | Run summary grid + FeatureListPanel + run history list + "Configure" back-button. Deps: EDITOR-010. |
+| EDITOR-013 | todo | P1 | feature | Wire auto-transition, mode toggle, and run history recording | Implementer | Auto-switch to Results after successful run. Segmented control at top of right panel. Update left rail eye toggle to use overlayVisibility. Deps: EDITOR-011, EDITOR-012. |
 
 ## Backlog
 
+Phase 2 — Algorithm Canvas Overlays
+
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| EDITOR-005 | todo | P2 | enhancement | Add richer readonly overlays for markers and circle matches | Implementer | Keep out of the first slice unless point-only overlays prove insufficient. |
+| EDITOR-014 | todo | P1 | feature | Add OverlayComponent slot to AlgorithmDefinition and CanvasWorkspace | Implementer | Optional OverlayComponent on AlgorithmDefinition. Render between image and FeatureLayer in single Konva Layer. Deps: EDITOR-010. |
+| EDITOR-015 | todo | P1 | feature | Build chessboard grid overlay (connect corners by row/col, color-coded) | Implementer | Group corners by grid.i/j, draw Konva Lines connecting rows and columns. Color-code. Board outline. Deps: EDITOR-014. |
+| EDITOR-016 | todo | P2 | feature | Build charuco overlay (grid + marker bounding boxes) | Implementer | Grid lines + marker corner rectangles with markerId labels. Deps: EDITOR-014. |
+| EDITOR-017 | todo | P2 | feature | Add overlay visibility toggle to left rail | Implementer | Expand eye toggle into layers popover: Features, Algorithm Overlay. Uses overlayVisibility store. Deps: EDITOR-014. |
+
+Phase 3 — Diagnostics + Progressive Disclosure + Presets
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| EDITOR-018 | todo | P2 | feature | Add diagnostics interface and structured run status to ResultsPanel | Implementer | DiagnosticEntry {level, message, detail}. Optional diagnostics() on AlgorithmDefinition. Render in ResultsPanel. Deps: EDITOR-012. |
+| EDITOR-019 | todo | P2 | feature | Add preset configurations to AlgorithmDefinition and ConfigurePanel | Implementer | presets record on AlgorithmDefinition. Preset picker dropdown in ConfigurePanel. Deps: EDITOR-011. |
+| EDITOR-020 | todo | P2 | enhancement | Add progressive disclosure (CollapsibleSection) to config forms | Implementer | Shared CollapsibleSection in formFields.tsx. Wrap advanced params in all config forms. Deps: EDITOR-011. |
+
+Phase 4 — Feature Model Extension
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| EDITOR-021 | todo | P2 | feature | Add PolygonFeature to feature model and Zod schema | Implementer | type "polygon", points: number[], closed. Add to Feature union + featureSchema. Independent. |
+| EDITOR-022 | todo | P2 | feature | Add polygon renderer to FeatureLayer (closed Line with fill) | Implementer | Konva Line with closed=true, semi-transparent fill. Selection + drag. Deps: EDITOR-021. |
+| EDITOR-023 | todo | P2 | feature | Add POLYGON drawing tool to left rail and CanvasWorkspace | Implementer | Similar to POLYLINE but closes on double-click. Add icon to left rail. Deps: EDITOR-021, EDITOR-022. |
+
+Phase 5 — Deep Links + Blog Integration
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| EDITOR-024 | todo | P2 | feature | Deep link serialization: read/write URL params for algo+config+image | Implementer | Read URL params on mount. serializeConfig/deserializeConfig on AlgorithmDefinition. history.replaceState on change. Deps: EDITOR-019. |
+| EDITOR-025 | todo | P2 | feature | Add blogSlug to AlgorithmDefinition, render "Learn more" links | Implementer | blogSlug field. "Learn more" link in ConfigurePanel pointing to /blog/{slug}. Independent. |
+| EDITOR-026 | todo | P3 | feature | Add "Try in Editor" buttons in blog post content | Implementer | Standardized links to /editor?algo=...&image=... in blog markdown. Deps: EDITOR-024. |
+
+Phase 6 — Responsive Layout + Touch Support
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| EDITOR-027 | todo | P2 | enhancement | Responsive breakpoints: stack panels vertically on narrow screens | Implementer | Below ~768px: canvas on top (60vh), right panel below. Left rail → bottom bar or hamburger. Deps: EDITOR-013. |
+| EDITOR-028 | todo | P2 | enhancement | Left rail tooltips + touch-friendly tap targets (44x44px min) | Implementer | Proper tooltips on hover. Min 44x44px touch targets. Independent. |
+| EDITOR-029 | todo | P3 | enhancement | Touch canvas: pinch-to-zoom, tap-to-select, single-finger pan | Implementer | Konva touch support. Pinch-to-zoom, tap-to-select features, pan in SELECT mode. Independent. |
+| EDITOR-030 | todo | P3 | enhancement | Hide drawing tools on touch-only devices | Implementer | Detect no fine pointer. Hide POINT/LINE/POLYLINE/BBOX/ELLIPSE/POLYGON tools. Keep SELECT + zoom + visibility. Deps: EDITOR-028. |
+
+Other
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| ~~EDITOR-005~~ | done | P2 | enhancement | ~~Add richer readonly overlays for markers and circle matches~~ | Implementer | Subsumed by Phase 2 (EDITOR-014 through EDITOR-017). |
 | DEV-002 | todo | P3 | enhancement | Add Vite dev server proxy for zero-config local API routing | Implementer | Would eliminate the need for the devCspPlugin by proxying /api/v1 through the Vite dev server. Requires backend to return relative local-upload URLs. |
 
 ## API / Interface Tracking

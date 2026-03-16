@@ -29,6 +29,7 @@ export default function PaperConfig({ page, dispatch }: Props) {
                 onChange={(v) => update({ sizeKind: v })}
                 disabled={false}
                 options={PAGE_SIZE_OPTIONS}
+                tooltip="Paper size for the printed target"
             />
             {page.sizeKind === "custom" && (
                 <>
@@ -40,6 +41,7 @@ export default function PaperConfig({ page, dispatch }: Props) {
                         min={10}
                         max={2000}
                         step={1}
+                        tooltip="Custom page width in millimeters"
                     />
                     <NumberField
                         label="Height (mm)"
@@ -49,6 +51,7 @@ export default function PaperConfig({ page, dispatch }: Props) {
                         min={10}
                         max={2000}
                         step={1}
+                        tooltip="Custom page height in millimeters"
                     />
                 </>
             )}
@@ -58,6 +61,7 @@ export default function PaperConfig({ page, dispatch }: Props) {
                 onChange={(v) => update({ orientation: v })}
                 disabled={false}
                 options={ORIENTATION_OPTIONS}
+                tooltip="Portrait (tall) or landscape (wide) page layout"
             />
             <NumberField
                 label="Margin (mm)"
@@ -67,6 +71,7 @@ export default function PaperConfig({ page, dispatch }: Props) {
                 min={0}
                 max={100}
                 step={1}
+                tooltip="Minimum margin around the board on all sides"
             />
         </Section>
     );

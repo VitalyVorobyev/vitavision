@@ -66,6 +66,7 @@ export default function CharucoGenConfig({ config, dispatch }: Props) {
                 min={1}
                 max={500}
                 step={0.5}
+                tooltip="Physical size of each square in millimeters"
             />
             <NumberField
                 label="Marker ratio"
@@ -84,6 +85,7 @@ export default function CharucoGenConfig({ config, dispatch }: Props) {
                     onChange={(v) => update({ dictionary: v })}
                     disabled={false}
                     options={DICTIONARY_OPTIONS}
+                    tooltip="ArUco marker dictionary — NxN is the bit grid size, number is the pool size"
                 />
             </div>
             <NumberField
@@ -94,6 +96,7 @@ export default function CharucoGenConfig({ config, dispatch }: Props) {
                 min={0}
                 max={16}
                 step={1}
+                tooltip="Black border width around each marker in bits"
             />
         </Section>
     );

@@ -1,5 +1,7 @@
-import { Grid3X3, QrCode, CircleDot } from "lucide-react";
+import { useRef } from "react";
+import { Grid3X3, QrCode, CircleDot, Upload } from "lucide-react";
 import type { TargetType, TargetGeneratorAction } from "../types";
+import { presetsForType } from "../presets";
 
 const TARGET_TYPES: {
     id: TargetType;
@@ -33,6 +35,34 @@ interface Props {
 }
 
 export default function TargetTypeSelector({ selected, dispatch }: Props) {
+    const fileRef = useRef<HTMLInputElement>(null);
+    const presets = presetsForType(selected);
+
+    const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const data = JSON.parse(ev.target?.result as string);
+                if (data?.target?.targetType && data?.target?.config && data?.page) {
+                    dispatch({
+                        type: "LOAD_PRESET",
+                        target: data.target,
+                        page: data.page,
+                    });
+                } else {
+                    alert("Invalid config file: missing target or page fields.");
+                }
+            } catch {
+                alert("Failed to parse JSON config file.");
+            }
+        };
+        reader.readAsText(file);
+        // Reset so re-importing the same file works
+        e.target.value = "";
+    };
+
     return (
         <div className="flex flex-col gap-2 p-3">
             <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70 px-1">
@@ -65,6 +95,55 @@ export default function TargetTypeSelector({ selected, dispatch }: Props) {
                     </span>
                 </button>
             ))}
+
+            {/* Preset picker */}
+            <div className="mt-2">
+                <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70 px-1 mb-1.5">
+                    Presets
+                </h2>
+                <select
+                    value=""
+                    onChange={(e) => {
+                        const preset = presets.find((p) => p.id === e.target.value);
+                        if (preset) {
+                            dispatch({
+                                type: "LOAD_PRESET",
+                                target: preset.target,
+                                page: preset.page,
+                            });
+                        }
+                    }}
+                    className="w-full rounded-md border border-border bg-background px-3 py-1.5 text-sm transition-colors hover:border-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50"
+                >
+                    <option value="" disabled>
+                        Choose a preset...
+                    </option>
+                    {presets.map((p) => (
+                        <option key={p.id} value={p.id}>
+                            {p.label}
+                        </option>
+                    ))}
+                </select>
+                <p className="text-[10px] text-muted-foreground/60 mt-1 px-1">
+                    Select a preset to auto-fill config
+                </p>
+            </div>
+
+            {/* Import config */}
+            <button
+                onClick={() => fileRef.current?.click()}
+                className="flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-muted-foreground/40 hover:bg-muted mt-1"
+            >
+                <Upload size={14} />
+                Import Config
+            </button>
+            <input
+                ref={fileRef}
+                type="file"
+                accept="application/json,.json"
+                className="hidden"
+                onChange={handleImport}
+            />
         </div>
     );
 }

@@ -40,6 +40,7 @@ export default function ChessboardGenConfig({ config, dispatch }: Props) {
                 min={1}
                 max={500}
                 step={0.5}
+                tooltip="Physical size of each square in millimeters"
             />
         </Section>
     );

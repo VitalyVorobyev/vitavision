@@ -85,6 +85,16 @@ export function targetGeneratorReducer(
                 generationStatus: "idle",
                 errorMessage: undefined,
             };
+        case "LOAD_PRESET":
+            return {
+                ...state,
+                target: action.target,
+                page: action.page,
+                finalSvg: null,
+                configJson: null,
+                generationStatus: "idle",
+                errorMessage: undefined,
+            };
         case "UPDATE_PAGE":
             return {
                 ...state,

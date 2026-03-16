@@ -75,6 +75,7 @@ export type TargetGeneratorAction =
     | { type: "UPDATE_CONFIG"; partial: Record<string, unknown> }
     | { type: "UPDATE_PAGE"; partial: Partial<PageConfig> }
     | { type: "SET_PREVIEW"; svg: string; validation: ValidationResult }
+    | { type: "LOAD_PRESET"; target: TargetConfig; page: PageConfig }
     | { type: "GENERATION_START" }
     | { type: "GENERATION_SUCCESS"; svg: string; configJson: string }
     | { type: "GENERATION_ERROR"; message: string };

@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- feat(TGEN-007): add curated preset configurations (camera calibration, robotics, industrial) for all 3 target types with preset picker and JSON config import
+- enhancement(TGEN-008): add board/page dimension overlay in preview, tooltips on all config fields
 - feat(TGEN-001): add `POST /api/v1/cv/calibration-targets/generate` endpoint supporting chessboard, ChArUco, and marker board targets with SVG/JSON/PNG output and paper configuration
 - test(TGEN-002): add 9 generation endpoint tests covering all target types, PNG inclusion, dictionary validation, board-too-large 422, and custom page sizes
 - feat(BLOG-015): add AlgorithmIndex and AlgorithmPost pages with /algorithms routes and Navbar link

@@ -59,10 +59,10 @@ Blog System — Phase 4: Refinement
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| BLOG-015 | todo | P2 | feature | Create AlgorithmIndex and AlgorithmPost pages | Implementer | `/algorithms`, `/algorithms/:slug` routes; add "Algorithms" to Navbar. Deps: BLOG-002, BLOG-004. |
-| BLOG-016 | todo | P2 | feature | Algorithm/blog cross-linking | Implementer | Related posts/algorithms sections rendered from frontmatter. Deps: BLOG-015. |
-| BLOG-017 | todo | P2 | enhancement | Prerender algorithm pages | Implementer | Extend postbuild for `/algorithms/*` routes. Deps: BLOG-015, BLOG-006. |
-| BLOG-018 | todo | P2 | feature | Wire editor deep links (blogSlug, "Try in Editor") | Implementer | Connects to EDITOR-025/026. Deps: BLOG-015. |
+| ~~BLOG-015~~ | done | P2 | feature | ~~Create AlgorithmIndex and AlgorithmPost pages~~ | Implementer | `/algorithms`, `/algorithms/:slug` routes; add "Algorithms" to Navbar. Deps: BLOG-002, BLOG-004. |
+| ~~BLOG-016~~ | done | P2 | feature | ~~Algorithm/blog cross-linking~~ | Implementer | Related posts/algorithms sections rendered from frontmatter. Deps: BLOG-015. |
+| ~~BLOG-017~~ | done | P2 | enhancement | ~~Prerender algorithm pages~~ | Implementer | Extend postbuild for `/algorithms/*` routes. Deps: BLOG-015, BLOG-006. |
+| ~~BLOG-018~~ | done | P2 | feature | ~~Wire editor deep links (blogSlug, "Try in Editor")~~ | Implementer | Connects to EDITOR-025/026. Deps: BLOG-015. |
 
 ## Backlog
 
@@ -164,6 +164,10 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~BLOG-018~~ | 2026-03-16 | feature | ~~Wire editor deep links (blogSlug, "Try in Editor")~~ | blogSlug field on AlgorithmDefinition; "Learn more" link in ConfigurePanel |
+| ~~BLOG-017~~ | 2026-03-16 | enhancement | ~~Prerender algorithm pages~~ | Algorithm pages in postbuild SSR + sitemap |
+| ~~BLOG-016~~ | 2026-03-16 | feature | ~~Algorithm/blog cross-linking~~ | RelatedPosts component; relatedAlgorithms blog field; relatedPosts rendered |
+| ~~BLOG-015~~ | 2026-03-16 | feature | ~~Create AlgorithmIndex and AlgorithmPost pages~~ | /algorithms routes; Navbar link; tag filtering; Mermaid support |
 | ~~BLOG-014~~ | 2026-03-16 | infra | ~~Content validation CI job~~ | content:validate script + validate-content CI job; Zod, image refs, internal links |
 | ~~BLOG-013~~ | 2026-03-16 | enhancement | ~~Image handling conventions and content image pipeline~~ | Relative path resolution in content-build; content/images/ copy in postbuild |
 | ~~BLOG-012~~ | 2026-03-16 | feature | ~~Client-side Mermaid rendering~~ | Dynamic import mermaid.js; useMermaid hook renders fenced blocks as SVG |

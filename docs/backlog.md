@@ -154,8 +154,8 @@ Target Generator — Phase 4: Polish
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| TGEN-007 | todo | P1 | feature | Add preset configurations and JSON config import | Implementer | `presets.ts` with curated configs (camera calibration, robotics, industrial). Preset picker in left panel. "Import Config" button: file picker → JSON parse → populate config. Deps: TGEN-006. |
-| TGEN-008 | todo | P1 | enhancement | UX polish: client-side validation, board dimension display, tooltips | Implementer | Inline validation warnings (board doesn't fit page) before server call. Board/page dimension display in preview. Tooltips on all config fields. Deps: TGEN-006. |
+| ~~TGEN-007~~ | done | P1 | feature | ~~Add preset configurations and JSON config import~~ | Implementer | 9 curated presets (3 per type). Preset picker dropdown + JSON import button in left panel. |
+| ~~TGEN-008~~ | done | P1 | enhancement | ~~UX polish: client-side validation, board dimension display, tooltips~~ | Implementer | Board/page/printable dimension overlay in preview. Tooltips on all config fields including paper settings. |
 
 Target Generator — Future
 
@@ -200,6 +200,8 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~TGEN-008~~ | 2026-03-16 | enhancement | ~~UX polish: dimension overlay, tooltips~~ | Board/page dimension overlay; tooltips on all config fields |
+| ~~TGEN-007~~ | 2026-03-16 | feature | ~~Add preset configurations and JSON config import~~ | 9 curated presets; preset picker; JSON import button |
 | ~~TGEN-006~~ | 2026-03-16 | feature | ~~Build download bar (SVG, PNG, JSON)~~ | Client-side PNG rasterization; backend only for charuco; blob downloads |
 | ~~TGEN-005~~ | 2026-03-16 | feature | ~~Build SVG preview with zoom/pan~~ | Client-side SVG for chessboard/markerboard; charuco placeholder preview; CSS zoom/pan |
 | ~~TGEN-004~~ | 2026-03-16 | feature | ~~Build target type selector and config panels~~ | 3 target type cards; type-specific config forms; shared PaperConfig; reuses formFields.tsx |

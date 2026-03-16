@@ -5,6 +5,7 @@ import { render } from "../src/entry-server.tsx";
 
 const DIST = join(import.meta.dir, "..", "dist");
 const SITE_NAME = "VitaVision";
+const SITE_URL = (process.env.SITE_URL ?? "https://vitavision.dev").replace(/\/+$/, "");
 
 function readTemplate(): string {
     const templatePath = join(DIST, "index.html");
@@ -88,6 +89,19 @@ function writePage(template: string, url: string, outDir: string, meta: SeoMeta,
     writeFileSync(join(dir, "index.html"), page, "utf-8");
 }
 
+function buildSitemap(paths: string[]): string {
+    const urls = paths.map((p) => {
+        const loc = `${SITE_URL}${p}`;
+        return `  <url>\n    <loc>${esc(loc)}</loc>\n  </url>`;
+    });
+    return [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        ...urls,
+        "</urlset>",
+    ].join("\n");
+}
+
 function main(): void {
     const template = readTemplate();
     let count = 0;
@@ -122,7 +136,11 @@ function main(): void {
         count++;
     }
 
-    console.log(`postbuild: ${count} static page(s) generated in dist/`);
+    // Generate sitemap
+    const sitemapPaths = ["/", "/blog", ...blogPosts.map((p) => `/blog/${p.slug}`)];
+    writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(sitemapPaths), "utf-8");
+
+    console.log(`postbuild: ${count} static page(s) + sitemap.xml generated in dist/`);
 }
 
 main();

@@ -1,5 +1,6 @@
 ## [Unreleased]
 
+- feat(BLOG-009): generate sitemap.xml during postbuild and add static robots.txt
 - feat(BLOG-008): add Schema.org BlogPosting JSON-LD structured data to blog posts (client-side via Helmet + postbuild injection)
 - feat(BLOG-007): add SeoHead component with per-page title, description, Open Graph, and Twitter Card meta tags; SSR head injection for prerendered blog pages
 - feat(BLOG-006): add SSR entry point and postbuild prerender script for static blog HTML generation

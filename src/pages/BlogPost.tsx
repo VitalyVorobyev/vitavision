@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { blogPosts } from "../generated/content-manifest.ts";
 import TagBadge from "../components/blog/TagBadge.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
@@ -28,6 +29,18 @@ export default function BlogPost() {
 
     const { frontmatter, html } = post;
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: frontmatter.title,
+        description: frontmatter.summary,
+        datePublished: frontmatter.date,
+        ...(frontmatter.updated && { dateModified: frontmatter.updated }),
+        author: { "@type": "Person", name: frontmatter.author },
+        ...(frontmatter.coverImage && { image: frontmatter.coverImage }),
+        keywords: frontmatter.tags.join(", "),
+    };
+
     return (
         <div className="max-w-[800px] mx-auto py-16 px-4 animate-in fade-in">
             <SeoHead
@@ -37,6 +50,11 @@ export default function BlogPost() {
                 ogType="article"
                 url={`/blog/${slug}`}
             />
+            <Helmet>
+                <script type="application/ld+json">
+                    {JSON.stringify(jsonLd)}
+                </script>
+            </Helmet>
             <header className="space-y-4 mb-10">
                 <Link
                     to="/blog"

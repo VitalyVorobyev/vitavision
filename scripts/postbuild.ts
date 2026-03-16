@@ -48,14 +48,40 @@ function esc(s: string): string {
     return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-function writePage(template: string, url: string, outDir: string, meta: SeoMeta): void {
+interface BlogPostingMeta {
+    title: string;
+    description: string;
+    author: string;
+    datePublished: string;
+    dateModified?: string;
+    image?: string;
+    keywords?: string;
+}
+
+function buildJsonLd(meta: BlogPostingMeta): string {
+    const data: Record<string, unknown> = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: meta.title,
+        description: meta.description,
+        datePublished: meta.datePublished,
+        author: { "@type": "Person", name: meta.author },
+    };
+    if (meta.dateModified) data.dateModified = meta.dateModified;
+    if (meta.image) data.image = meta.image;
+    if (meta.keywords) data.keywords = meta.keywords;
+    return `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
+}
+
+function writePage(template: string, url: string, outDir: string, meta: SeoMeta, extraHead?: string): void {
     const html = render(url);
     let page = template.replace(
         '<div id="root"></div>',
         `<div id="root">${html}</div>`,
     );
     // Replace the generic <title> and inject SEO tags
-    const headTags = buildHeadTags(meta);
+    let headTags = buildHeadTags(meta);
+    if (extraHead) headTags += `\n    ${extraHead}`;
     page = page.replace("<title>VitaVision</title>", headTags);
     const dir = join(DIST, outDir);
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
@@ -76,13 +102,23 @@ function main(): void {
 
     // Individual blog posts
     for (const post of blogPosts) {
-        writePage(template, `/blog/${post.slug}`, `blog/${post.slug}`, {
-            title: post.frontmatter.title,
-            description: post.frontmatter.summary,
-            ogType: "article",
-            ogImage: post.frontmatter.coverImage,
-            url: `/blog/${post.slug}`,
+        const { frontmatter } = post;
+        const jsonLd = buildJsonLd({
+            title: frontmatter.title,
+            description: frontmatter.summary,
+            author: frontmatter.author,
+            datePublished: frontmatter.date,
+            dateModified: frontmatter.updated,
+            image: frontmatter.coverImage,
+            keywords: frontmatter.tags.join(", "),
         });
+        writePage(template, `/blog/${post.slug}`, `blog/${post.slug}`, {
+            title: frontmatter.title,
+            description: frontmatter.summary,
+            ogType: "article",
+            ogImage: frontmatter.coverImage,
+            url: `/blog/${post.slug}`,
+        }, jsonLd);
         count++;
     }
 

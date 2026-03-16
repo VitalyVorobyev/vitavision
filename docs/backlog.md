@@ -51,9 +51,9 @@ Blog System — Phase 3: Authoring Quality
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| BLOG-012 | todo | P1 | feature | Client-side Mermaid rendering | Implementer | Add mermaid.js; render fenced mermaid blocks in browser. Build-time SVG deferred to future optimization. Deps: BLOG-004. |
-| BLOG-013 | todo | P1 | enhancement | Image handling conventions and content image pipeline | Implementer | Copy `content/images/` to dist during build; resolve relative paths in markdown. Deps: BLOG-002. |
-| BLOG-014 | todo | P1 | infra | Content validation CI job | Implementer | `content:validate` script + CI job; Zod validation, broken link check, image reference check. Deps: BLOG-002. |
+| ~~BLOG-012~~ | done | P1 | feature | ~~Client-side Mermaid rendering~~ | Implementer | Add mermaid.js; render fenced mermaid blocks in browser. Build-time SVG deferred to future optimization. Deps: BLOG-004. |
+| ~~BLOG-013~~ | done | P1 | enhancement | ~~Image handling conventions and content image pipeline~~ | Implementer | Copy `content/images/` to dist during build; resolve relative paths in markdown. Deps: BLOG-002. |
+| ~~BLOG-014~~ | done | P1 | infra | ~~Content validation CI job~~ | Implementer | `content:validate` script + CI job; Zod validation, broken link check, image reference check. Deps: BLOG-002. |
 
 Blog System — Phase 4: Refinement
 
@@ -164,6 +164,9 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~BLOG-014~~ | 2026-03-16 | infra | ~~Content validation CI job~~ | content:validate script + validate-content CI job; Zod, image refs, internal links |
+| ~~BLOG-013~~ | 2026-03-16 | enhancement | ~~Image handling conventions and content image pipeline~~ | Relative path resolution in content-build; content/images/ copy in postbuild |
+| ~~BLOG-012~~ | 2026-03-16 | feature | ~~Client-side Mermaid rendering~~ | Dynamic import mermaid.js; useMermaid hook renders fenced blocks as SVG |
 | ~~BLOG-011~~ | 2026-03-16 | feature | ~~Draft post support~~ | INCLUDE_DRAFTS env var; amber "DRAFT" badge in PostCard and BlogPost |
 | ~~BLOG-010~~ | 2026-03-16 | infra | ~~Generate RSS and Atom feeds~~ | feed package; rss.xml + atom.xml during postbuild; autodiscovery links in index.html |
 | ~~BLOG-009~~ | 2026-03-16 | infra | ~~Generate sitemap.xml and robots.txt~~ | Sitemap generated during postbuild; static robots.txt; SITE_URL env var |

@@ -129,6 +129,42 @@ Editor — Phase 7: UX Improvements
 | ~~EDITOR-036~~ | done | P2 | enhancement | ~~Inline tooltips for algorithm config fields~~ | Implementer | InfoTooltip component, tooltip prop on NumberField/CheckboxField/SelectField, all config forms annotated. |
 | EDITOR-037 | todo | P3 | feature | Canvas config summary overlay | Implementer | Optional Konva text in canvas corner showing algo name + key config values. Deferred. |
 
+Target Generator — Phase 1: Backend API
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| ~~TGEN-001~~ | done | P0 | feature | ~~Add `POST /api/v1/cv/calibration-targets/generate` endpoint~~ | Implementer | Discriminated union request (chessboard/charuco/markerboard). Returns SVG text + JSON config + optional PNG base64. Paper config with A4/Letter/custom. 422 when board doesn't fit page. Rate limit 30/min. File: `backend/routers/cv.py`. |
+| ~~TGEN-002~~ | done | P0 | test | ~~Add generation endpoint tests~~ | Implementer | 9 tests: all 3 target types, paper validation (board too large), PNG inclusion, invalid dictionary, custom page. File: `backend/tests/test_generate_target.py`. Deps: TGEN-001. |
+
+Target Generator — Phase 2: Frontend Scaffold & Config
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| TGEN-003 | todo | P0 | feature | Create TargetGenerator page with three-panel layout and routing | Implementer | `src/pages/TargetGenerator.tsx` + route in `App.tsx`. Three-panel full-height layout. `useReducer` state. Types in `src/components/targetgen/types.ts`. API function in `api.ts`. Navbar link. Hide footer on `/tools/*`. Use `/react-ui-designer` + `/frontend-design` skills. |
+| TGEN-004 | todo | P0 | feature | Build target type selector and config panels | Implementer | Left panel: `TargetTypeSelector.tsx` with 3 target type cards. Right panel: `TargetConfigPanel.tsx` dispatching to `ChessboardGenConfig`, `CharucoGenConfig`, `MarkerBoardGenConfig`. Shared `PaperConfig.tsx`. Reuse `formFields.tsx` components. Deps: TGEN-003. |
+
+Target Generator — Phase 3: Preview & Downloads
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| TGEN-005 | todo | P0 | feature | Build SVG preview with zoom/pan and debounced server fetch | Implementer | Center panel: `TargetPreview.tsx`. Render SVG via innerHTML. CSS transform zoom/pan (mouse wheel + drag). Debounced 300ms fetch on config change. Loading spinner, error state, fits-page indicator. Deps: TGEN-001, TGEN-004. |
+| TGEN-006 | todo | P0 | feature | Build download bar (SVG, PNG, JSON) | Implementer | `DownloadBar.tsx` at bottom of right panel. SVG/JSON from preview response (instant). PNG triggers `include_png: true` re-fetch. Blob download via `URL.createObjectURL`. Deps: TGEN-005. |
+
+Target Generator — Phase 4: Polish
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| TGEN-007 | todo | P1 | feature | Add preset configurations and JSON config import | Implementer | `presets.ts` with curated configs (camera calibration, robotics, industrial). Preset picker in left panel. "Import Config" button: file picker → JSON parse → populate config. Deps: TGEN-006. |
+| TGEN-008 | todo | P1 | enhancement | UX polish: client-side validation, board dimension display, tooltips | Implementer | Inline validation warnings (board doesn't fit page) before server call. Board/page dimension display in preview. Tooltips on all config fields. Deps: TGEN-006. |
+
+Target Generator — Future
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| TGEN-009 | todo | P2 | feature | Add ring grid target type (integrate `ringgrid` crate) | Implementer | Add `ringgrid` Python package to backend. New `RingGridGenConfig` variant. New config form. Deps: TGEN-006. |
+| TGEN-010 | todo | P2 | feature | Add ZIP bundle download (all artifacts in one file) | Implementer | Server-side ZIP or client-side JSZip. Single download button. Deps: TGEN-006. |
+| TGEN-011 | todo | P2 | feature | Prerender target generator page for SEO | Implementer | Extend `postbuild.ts` for `/tools/target-generator`. Deps: TGEN-003. |
+
 Other
 
 | ID | Status | Priority | Type | Title | Role | Notes |
@@ -164,6 +200,8 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~TGEN-002~~ | 2026-03-16 | test | ~~Add generation endpoint tests~~ | 9 tests covering all target types, PNG, validation, custom pages |
+| ~~TGEN-001~~ | 2026-03-16 | feature | ~~Add calibration target generation endpoint~~ | POST /api/v1/cv/calibration-targets/generate; chessboard/charuco/markerboard; SVG+JSON+PNG |
 | ~~BLOG-018~~ | 2026-03-16 | feature | ~~Wire editor deep links (blogSlug, "Try in Editor")~~ | blogSlug field on AlgorithmDefinition; "Learn more" link in ConfigurePanel |
 | ~~BLOG-017~~ | 2026-03-16 | enhancement | ~~Prerender algorithm pages~~ | Algorithm pages in postbuild SSR + sitemap |
 | ~~BLOG-016~~ | 2026-03-16 | feature | ~~Algorithm/blog cross-linking~~ | RelatedPosts component; relatedAlgorithms blog field; relatedPosts rendered |

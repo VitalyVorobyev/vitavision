@@ -5,6 +5,7 @@ import BlogPost from './pages/BlogPost';
 import AlgorithmIndex from './pages/AlgorithmIndex';
 import AlgorithmPost from './pages/AlgorithmPost';
 import Editor from './pages/Editor';
+import TargetGenerator from './pages/TargetGenerator';
 import About from './pages/About';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -15,7 +16,7 @@ import { HelmetProvider } from 'react-helmet-async';
 
 function AppLayout() {
     const { pathname } = useLocation();
-    const isEditor = pathname === '/editor';
+    const isEditor = pathname === '/editor' || pathname.startsWith('/tools/');
 
     return (
         <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
@@ -28,6 +29,7 @@ function AppLayout() {
                     <Route path="/algorithms" element={<AlgorithmIndex />} />
                     <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
                     <Route path="/editor" element={<Editor />} />
+                    <Route path="/tools/target-generator" element={<TargetGenerator />} />
                     <Route path="/about" element={<About />} />
                 </Routes>
             </main>

@@ -531,6 +531,47 @@ export async function detectChessCorners(payload: DetectChessCornersRequest): Pr
     return response.json() as Promise<ChessCornersResult>;
 }
 
+// ── Target generation ────────────────────────────────────────────────────────
+
+export interface GenerateTargetRequest {
+    config: {
+        target_type: "chessboard" | "charuco" | "markerboard";
+        [key: string]: unknown;
+    };
+    page?: {
+        size?: { kind?: string; width_mm?: number; height_mm?: number };
+        orientation?: string;
+        margin_mm?: number;
+    };
+    render?: { debug_annotations?: boolean; png_dpi?: number };
+    include_png?: boolean;
+}
+
+export interface GenerateTargetResponse {
+    status: "success";
+    target_type: string;
+    svg: string;
+    config_json: string;
+    png_base64: string | null;
+}
+
+export async function generateCalibrationTarget(
+    payload: GenerateTargetRequest,
+): Promise<GenerateTargetResponse> {
+    const response = await fetch(`${API_BASE_URL}/cv/calibration-targets/generate`, {
+        method: "POST",
+        headers: apiHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Target generation failed: ${response.status} ${text}`);
+    }
+
+    return response.json() as Promise<GenerateTargetResponse>;
+}
+
 export async function detectCalibrationTarget(
     payload: DetectCalibrationTargetRequest,
 ): Promise<CalibrationTargetResult> {

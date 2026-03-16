@@ -140,15 +140,15 @@ Target Generator — Phase 2: Frontend Scaffold & Config
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| TGEN-003 | todo | P0 | feature | Create TargetGenerator page with three-panel layout and routing | Implementer | `src/pages/TargetGenerator.tsx` + route in `App.tsx`. Three-panel full-height layout. `useReducer` state. Types in `src/components/targetgen/types.ts`. API function in `api.ts`. Navbar link. Hide footer on `/tools/*`. Use `/react-ui-designer` + `/frontend-design` skills. |
-| TGEN-004 | todo | P0 | feature | Build target type selector and config panels | Implementer | Left panel: `TargetTypeSelector.tsx` with 3 target type cards. Right panel: `TargetConfigPanel.tsx` dispatching to `ChessboardGenConfig`, `CharucoGenConfig`, `MarkerBoardGenConfig`. Shared `PaperConfig.tsx`. Reuse `formFields.tsx` components. Deps: TGEN-003. |
+| ~~TGEN-003~~ | done | P0 | feature | ~~Create TargetGenerator page with three-panel layout and routing~~ | Implementer | `src/pages/TargetGenerator.tsx` + route in `App.tsx`. Three-panel full-height layout. `useReducer` state. Types in `src/components/targetgen/types.ts`. API function in `api.ts`. Navbar link. Hide footer on `/tools/*`. |
+| ~~TGEN-004~~ | done | P0 | feature | ~~Build target type selector and config panels~~ | Implementer | Left panel: `TargetTypeSelector.tsx` with 3 target type cards. Right panel: `TargetConfigPanel.tsx` dispatching to `ChessboardGenConfig`, `CharucoGenConfig`, `MarkerBoardGenConfig`. Shared `PaperConfig.tsx`. Reuses `formFields.tsx` components. |
 
 Target Generator — Phase 3: Preview & Downloads
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| TGEN-005 | todo | P0 | feature | Build SVG preview with zoom/pan and debounced server fetch | Implementer | Center panel: `TargetPreview.tsx`. Render SVG via innerHTML. CSS transform zoom/pan (mouse wheel + drag). Debounced 300ms fetch on config change. Loading spinner, error state, fits-page indicator. Deps: TGEN-001, TGEN-004. |
-| TGEN-006 | todo | P0 | feature | Build download bar (SVG, PNG, JSON) | Implementer | `DownloadBar.tsx` at bottom of right panel. SVG/JSON from preview response (instant). PNG triggers `include_png: true` re-fetch. Blob download via `URL.createObjectURL`. Deps: TGEN-005. |
+| ~~TGEN-005~~ | done | P0 | feature | ~~Build SVG preview with zoom/pan and client-side generation~~ | Implementer | Center panel: `TargetPreview.tsx`. Client-side SVG for chessboard/markerboard (instant). ChArUco shows gray placeholder preview. CSS transform zoom/pan. Validation overlay. |
+| ~~TGEN-006~~ | done | P0 | feature | ~~Build download bar (SVG, PNG, JSON) with client-side rasterization~~ | Implementer | `DownloadBar.tsx`. Client-side PNG via canvas rasterization at 300 DPI. Backend called only for charuco final SVG. Blob download via `URL.createObjectURL`. |
 
 Target Generator — Phase 4: Polish
 
@@ -200,6 +200,10 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~TGEN-006~~ | 2026-03-16 | feature | ~~Build download bar (SVG, PNG, JSON)~~ | Client-side PNG rasterization; backend only for charuco; blob downloads |
+| ~~TGEN-005~~ | 2026-03-16 | feature | ~~Build SVG preview with zoom/pan~~ | Client-side SVG for chessboard/markerboard; charuco placeholder preview; CSS zoom/pan |
+| ~~TGEN-004~~ | 2026-03-16 | feature | ~~Build target type selector and config panels~~ | 3 target type cards; type-specific config forms; shared PaperConfig; reuses formFields.tsx |
+| ~~TGEN-003~~ | 2026-03-16 | feature | ~~Create TargetGenerator page with routing~~ | Three-panel layout; /tools/target-generator route; useReducer state; Navbar "Tools" link |
 | ~~TGEN-002~~ | 2026-03-16 | test | ~~Add generation endpoint tests~~ | 9 tests covering all target types, PNG, validation, custom pages |
 | ~~TGEN-001~~ | 2026-03-16 | feature | ~~Add calibration target generation endpoint~~ | POST /api/v1/cv/calibration-targets/generate; chessboard/charuco/markerboard; SVG+JSON+PNG |
 | ~~BLOG-018~~ | 2026-03-16 | feature | ~~Wire editor deep links (blogSlug, "Try in Editor")~~ | blogSlug field on AlgorithmDefinition; "Learn more" link in ConfigurePanel |

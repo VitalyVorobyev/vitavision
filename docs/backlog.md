@@ -44,7 +44,7 @@ Blog System — Phase 2: Discoverability
 | ~~BLOG-007~~ | done | P1 | feature | ~~Add SEO head management (react-helmet-async)~~ | Implementer | SeoHead component; per-page title, description, OG, Twitter cards on all blog pages. Deps: BLOG-005. |
 | ~~BLOG-008~~ | done | P1 | feature | ~~Add Schema.org BlogPosting structured data~~ | Implementer | JSON-LD script tag in BlogPost; generated from frontmatter metadata. Deps: BLOG-007. |
 | ~~BLOG-009~~ | done | P1 | infra | ~~Generate sitemap.xml and robots.txt~~ | Implementer | Add sitemap generation to postbuild; `public/robots.txt` pointing to sitemap. Deps: BLOG-006. |
-| BLOG-010 | todo | P1 | infra | Generate RSS and Atom feeds | Implementer | Install `feed` package; generate `dist/rss.xml` + `dist/atom.xml`. Deps: BLOG-006. |
+| ~~BLOG-010~~ | done | P1 | infra | ~~Generate RSS and Atom feeds~~ | Implementer | Install `feed` package; generate `dist/rss.xml` + `dist/atom.xml`. Deps: BLOG-006. |
 | BLOG-011 | todo | P1 | feature | Draft post support | Implementer | `draft: true` frontmatter field; excluded in prod build, shown with badge in dev. Deps: BLOG-002. |
 
 Blog System — Phase 3: Authoring Quality
@@ -164,6 +164,7 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| ~~BLOG-010~~ | 2026-03-16 | infra | ~~Generate RSS and Atom feeds~~ | feed package; rss.xml + atom.xml during postbuild; autodiscovery links in index.html |
 | ~~BLOG-009~~ | 2026-03-16 | infra | ~~Generate sitemap.xml and robots.txt~~ | Sitemap generated during postbuild; static robots.txt; SITE_URL env var |
 | ~~BLOG-008~~ | 2026-03-16 | feature | ~~Add Schema.org BlogPosting structured data~~ | JSON-LD script tag in BlogPost + postbuild injection from frontmatter |
 | ~~BLOG-007~~ | 2026-03-15 | feature | ~~Add SEO head management (react-helmet-async)~~ | SeoHead component; per-page title, description, OG, Twitter cards; postbuild head injection |

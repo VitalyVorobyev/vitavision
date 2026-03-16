@@ -1,3 +1,4 @@
+import base64
 import io
 import math
 import os
@@ -1115,4 +1116,193 @@ async def detect_calibration_target(
         alignment=alignment,
         circle_candidates=circle_candidates,
         circle_matches=circle_matches,
+    )
+
+
+# ── Target Generation ────────────────────────────────────────────────────────
+
+_VALID_PAGE_KINDS = {"a4", "letter", "custom"}
+
+
+class PageSizeRequest(BaseModel):
+    kind: Literal["a4", "letter", "custom"] = "a4"
+    width_mm: float | None = Field(default=None, gt=0.0, le=2000.0)
+    height_mm: float | None = Field(default=None, gt=0.0, le=2000.0)
+
+    @field_validator("width_mm", "height_mm")
+    @classmethod
+    def custom_requires_dimensions(cls, v: float | None, info: Any) -> float | None:
+        return v
+
+
+class PageSpecRequest(BaseModel):
+    size: PageSizeRequest = Field(default_factory=PageSizeRequest)
+    orientation: Literal["portrait", "landscape"] = "portrait"
+    margin_mm: float = Field(default=10.0, ge=0.0, le=100.0)
+
+
+class RenderOptionsRequest(BaseModel):
+    debug_annotations: bool = False
+    png_dpi: int = Field(default=300, ge=72, le=1200)
+
+
+class ChessboardGenConfigRequest(BaseModel):
+    target_type: Literal["chessboard"]
+    inner_rows: int = Field(..., ge=1, le=100)
+    inner_cols: int = Field(..., ge=1, le=100)
+    square_size_mm: float = Field(..., gt=0.0, le=500.0)
+
+
+class CharucoGenConfigRequest(BaseModel):
+    target_type: Literal["charuco"]
+    rows: int = Field(..., ge=2, le=100)
+    cols: int = Field(..., ge=2, le=100)
+    square_size_mm: float = Field(..., gt=0.0, le=500.0)
+    marker_size_rel: float = Field(..., gt=0.0, lt=1.0)
+    dictionary: str = Field(..., min_length=1)
+    border_bits: int = Field(default=1, ge=0, le=16)
+
+    @field_validator("dictionary")
+    @classmethod
+    def validate_dictionary(cls, value: str) -> str:
+        if value not in _CALIB_TARGET_DICTIONARIES:
+            raise ValueError(
+                f"dictionary must be one of {sorted(_CALIB_TARGET_DICTIONARIES)}"
+            )
+        return value
+
+
+class MarkerBoardGenCircleRequest(BaseModel):
+    i: int
+    j: int
+    polarity: Literal["white", "black"]
+
+
+class MarkerBoardGenConfigRequest(BaseModel):
+    target_type: Literal["markerboard"]
+    inner_rows: int = Field(..., ge=1, le=100)
+    inner_cols: int = Field(..., ge=1, le=100)
+    square_size_mm: float = Field(..., gt=0.0, le=500.0)
+    circles: list[MarkerBoardGenCircleRequest] | None = None
+    circle_diameter_rel: float = Field(default=0.5, gt=0.0, lt=1.0)
+
+
+GenerateTargetConfig = Annotated[
+    ChessboardGenConfigRequest | CharucoGenConfigRequest | MarkerBoardGenConfigRequest,
+    Field(discriminator="target_type"),
+]
+
+
+class GenerateTargetRequest(BaseModel):
+    config: GenerateTargetConfig
+    page: PageSpecRequest = Field(default_factory=PageSpecRequest)
+    render: RenderOptionsRequest = Field(default_factory=RenderOptionsRequest)
+    include_png: bool = False
+
+
+class GenerateTargetResponse(BaseModel):
+    status: Literal["success"]
+    target_type: Literal["chessboard", "charuco", "markerboard"]
+    svg: str
+    config_json: str
+    png_base64: str | None = None
+
+
+def _build_page_spec(req: PageSpecRequest) -> calib_targets.PageSpec:
+    size = calib_targets.PageSize(
+        kind=req.size.kind,
+        width_mm=req.size.width_mm,
+        height_mm=req.size.height_mm,
+    )
+    return calib_targets.PageSpec(
+        size=size,
+        orientation=req.orientation,
+        margin_mm=req.margin_mm,
+    )
+
+
+def _build_target_spec(
+    config: GenerateTargetConfig,
+) -> (
+    calib_targets.ChessboardTargetSpec
+    | calib_targets.CharucoTargetSpec
+    | calib_targets.MarkerBoardTargetSpec
+):
+    if isinstance(config, ChessboardGenConfigRequest):
+        return calib_targets.ChessboardTargetSpec(
+            inner_rows=config.inner_rows,
+            inner_cols=config.inner_cols,
+            square_size_mm=config.square_size_mm,
+        )
+    if isinstance(config, CharucoGenConfigRequest):
+        return calib_targets.CharucoTargetSpec(
+            rows=config.rows,
+            cols=config.cols,
+            square_size_mm=config.square_size_mm,
+            marker_size_rel=config.marker_size_rel,
+            dictionary=config.dictionary,  # type: ignore[arg-type]
+            marker_layout=calib_targets.MarkerLayout.OPENCV_CHARUCO,
+            border_bits=config.border_bits,
+        )
+    # MarkerBoardGenConfigRequest
+    if config.circles is not None:
+        circles = tuple(
+            calib_targets.MarkerCircleSpec(
+                i=c.i,
+                j=c.j,
+                polarity=(
+                    calib_targets.CirclePolarity.WHITE
+                    if c.polarity == "white"
+                    else calib_targets.CirclePolarity.BLACK
+                ),
+            )
+            for c in config.circles
+        )
+    else:
+        circles = calib_targets.MarkerBoardTargetSpec.default_circles(
+            config.inner_rows, config.inner_cols
+        )
+    return calib_targets.MarkerBoardTargetSpec(
+        inner_rows=config.inner_rows,
+        inner_cols=config.inner_cols,
+        square_size_mm=config.square_size_mm,
+        circles=circles,  # type: ignore[arg-type]
+        circle_diameter_rel=config.circle_diameter_rel,
+    )
+
+
+@router.post("/calibration-targets/generate", response_model=GenerateTargetResponse)
+@limiter.limit("30/minute")
+async def generate_calibration_target(request: Request, payload: GenerateTargetRequest):
+    page = _build_page_spec(payload.page)
+    target = _build_target_spec(payload.config)
+    render = calib_targets.RenderOptions(
+        debug_annotations=payload.render.debug_annotations,
+        png_dpi=payload.render.png_dpi,
+    )
+    doc = calib_targets.PrintableTargetDocument(target=target, page=page, render=render)
+
+    try:
+        bundle = calib_targets.render_target_bundle(doc)
+    except RuntimeError as exc:
+        if "does not fit" in str(exc).lower():
+            raise HTTPException(
+                status_code=422,
+                detail=f"Board does not fit page: {exc}",
+            ) from exc
+        raise HTTPException(
+            status_code=500,
+            detail=f"Target generation failed: {exc}",
+        ) from exc
+
+    png_base64 = None
+    if payload.include_png:
+        png_base64 = base64.b64encode(bundle.png_bytes).decode("ascii")
+
+    return GenerateTargetResponse(
+        status="success",
+        target_type=payload.config.target_type,
+        svg=bundle.svg_text,
+        config_json=bundle.json_text,
+        png_base64=png_base64,
     )

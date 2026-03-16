@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from "node:fs";
 import { join } from "node:path";
 import { Feed } from "feed";
-import { blogPosts } from "../src/generated/content-manifest.ts";
+import { blogPosts, algorithmPages } from "../src/generated/content-manifest.ts";
 import { render } from "../src/entry-server.tsx";
 
 const DIST = join(import.meta.dir, "..", "dist");
@@ -137,8 +137,30 @@ function main(): void {
         count++;
     }
 
+    // Algorithm index
+    writePage(template, "/algorithms", "algorithms", {
+        title: "Algorithms",
+        description: "Interactive computer vision algorithms — explore, understand, and experiment.",
+    });
+    count++;
+
+    // Individual algorithm pages
+    for (const page of algorithmPages) {
+        const { frontmatter } = page;
+        writePage(template, `/algorithms/${page.slug}`, `algorithms/${page.slug}`, {
+            title: frontmatter.title,
+            description: frontmatter.summary,
+            ogType: "article",
+            url: `/algorithms/${page.slug}`,
+        });
+        count++;
+    }
+
     // Generate sitemap
-    const sitemapPaths = ["/", "/blog", ...blogPosts.map((p) => `/blog/${p.slug}`)];
+    const sitemapPaths = [
+        "/", "/blog", ...blogPosts.map((p) => `/blog/${p.slug}`),
+        "/algorithms", ...algorithmPages.map((p) => `/algorithms/${p.slug}`),
+    ];
     writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(sitemapPaths), "utf-8");
 
     // Generate RSS and Atom feeds

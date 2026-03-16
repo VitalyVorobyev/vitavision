@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Home from './pages/Home';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
+import AlgorithmIndex from './pages/AlgorithmIndex';
+import AlgorithmPost from './pages/AlgorithmPost';
 import Editor from './pages/Editor';
 import About from './pages/About';
 import Navbar from './components/layout/Navbar';
@@ -23,6 +25,8 @@ function AppLayout() {
                     <Route path="/" element={<Home />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/blog/:slug" element={<BlogPost />} />
+                    <Route path="/algorithms" element={<AlgorithmIndex />} />
+                    <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
                     <Route path="/editor" element={<Editor />} />
                     <Route path="/about" element={<About />} />
                 </Routes>

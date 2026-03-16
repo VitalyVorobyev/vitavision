@@ -12,6 +12,7 @@ export const blogFrontmatterSchema = z.object({
     coverImage: z.string().optional(),
     repoLinks: z.array(z.string().url()).optional(),
     demoLinks: z.array(z.string().url()).optional(),
+    relatedAlgorithms: z.array(z.string().min(1)).optional(),
 });
 
 export type BlogFrontmatter = z.infer<typeof blogFrontmatterSchema>;

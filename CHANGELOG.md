@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+- feat(BLOG-015): add AlgorithmIndex and AlgorithmPost pages with /algorithms routes and Navbar link
+- feat(BLOG-016): add algorithm/blog cross-linking via relatedAlgorithms and relatedPosts frontmatter fields
+- feat(BLOG-017): prerender algorithm pages in postbuild with SSR and sitemap inclusion
+- feat(BLOG-018): add blogSlug to AlgorithmDefinition with "Learn more" link in ConfigurePanel
 - feat(BLOG-012): add client-side Mermaid diagram rendering via dynamic import and useMermaid hook
 - feat(BLOG-013): add content image pipeline — relative path resolution in markdown and content/images/ copy to dist during postbuild
 - feat(BLOG-014): add content:validate script (Zod frontmatter, image references, internal links) and validate-content CI job

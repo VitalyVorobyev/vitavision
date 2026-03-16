@@ -21,6 +21,7 @@ export interface AlgorithmDefinition {
     id: string;
     title: string;
     description: string;
+    blogSlug?: string;
     initialConfig: unknown;
     sampleDefaults?: Partial<Record<SampleId, unknown>>;
     ConfigComponent: ComponentType<AlgorithmConfigFormProps<unknown>>;

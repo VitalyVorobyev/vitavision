@@ -81,7 +81,6 @@ class CornerFeature(BaseModel):
     direction: DirectionVector
     confidence: float
     confidence_level: Literal["low", "medium", "high"]
-    subpixel_offset_px: float
 
 
 class DetectionFrame(BaseModel):
@@ -100,7 +99,6 @@ class DetectionSummary(BaseModel):
     confidence_min: float | None = None
     confidence_max: float | None = None
     runtime_ms: float
-    subpixel_mean_offset_px: float | None = None
 
 
 class EffectiveConfig(BaseModel):
@@ -589,10 +587,6 @@ async def detect_chess_corners(request: Request, payload: ChessCornersRequest):
             else 1.0
         )
         confidence = float(max(0.0, min(1.0, confidence)))
-
-        nearest_x = float(round(x))
-        nearest_y = float(round(y))
-        subpixel_offset = math.hypot(x - nearest_x, y - nearest_y)
         corners.append(
             CornerFeature(
                 id=str(uuid4()),
@@ -608,14 +602,12 @@ async def detect_chess_corners(request: Request, payload: ChessCornersRequest):
                 ),
                 confidence=confidence,
                 confidence_level=_confidence_level(confidence),
-                subpixel_offset_px=subpixel_offset,
             )
         )
 
     corners.sort(key=lambda item: item.confidence, reverse=True)
 
     confidences = [item.confidence for item in corners]
-    subpixel_offsets = [item.subpixel_offset_px for item in corners]
 
     return ChessCornersResponse(
         status="success",
@@ -633,7 +625,6 @@ async def detect_chess_corners(request: Request, payload: ChessCornersRequest):
             confidence_min=min(confidences),
             confidence_max=max(confidences),
             runtime_ms=runtime_ms,
-            subpixel_mean_offset_px=float(np.mean(subpixel_offsets)),
         ),
         corners=corners,
     )

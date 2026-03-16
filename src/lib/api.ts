@@ -99,7 +99,6 @@ export interface ChessCornersResult {
         confidence_min: number | null;
         confidence_max: number | null;
         runtime_ms: number;
-        subpixel_mean_offset_px: number | null;
     };
     corners: ChessCornerFeature[];
 }

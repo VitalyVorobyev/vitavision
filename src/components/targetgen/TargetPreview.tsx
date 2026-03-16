@@ -41,12 +41,6 @@ export default function TargetPreview({ state, dispatch }: Props) {
     const containerRef = useRef<HTMLDivElement>(null);
     const hasAutoFit = useRef(false);
 
-    // Keep zoom/pan in refs so click handler always reads fresh values
-    const zoomRef = useRef(zoom);
-    const panRef = useRef(pan);
-    useEffect(() => { zoomRef.current = zoom; }, [zoom]);
-    useEffect(() => { panRef.current = pan; }, [pan]);
-
     const dims = useMemo(() => {
         const page = resolvePageDimensions(state.page);
         const board = computeBoardDims(state);
@@ -95,7 +89,9 @@ export default function TargetPreview({ state, dispatch }: Props) {
     }, []);
 
     const handleMouseDown = useCallback((e: React.MouseEvent) => {
-        if (e.button !== 0) return;
+        // Right-click (button 2) to pan — works with trackpad two-finger click
+        if (e.button !== 2) return;
+        e.preventDefault();
         setDragging(true);
         lastMouse.current = { x: e.clientX, y: e.clientY };
         dragDistance.current = 0;
@@ -116,37 +112,28 @@ export default function TargetPreview({ state, dispatch }: Props) {
     const handleMouseUp = useCallback(() => setDragging(false), []);
 
     // Click-to-place circles for markerboard.
-    // Uses analytical coordinate conversion (container rect + zoom + pan)
-    // instead of SVG getBoundingClientRect to avoid transform measurement issues.
+    // Uses SVG getScreenCTM() to robustly convert viewport coordinates
+    // to SVG user-space coordinates (which equal mm in our viewBox).
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
-            if (dragDistance.current > 5) return;
             if (state.target.targetType !== "markerboard") return;
 
             const container = containerRef.current;
             if (!container) return;
 
+            const svg = container.querySelector("svg") as SVGSVGElement | null;
+            if (!svg) return;
+
+            const ctm = svg.getScreenCTM();
+            if (!ctm) return;
+
+            // Convert viewport click to SVG user-space (viewBox units = mm)
+            const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(ctm.inverse());
+            const mmX = pt.x;
+            const mmY = pt.y;
+
             const config = state.target.config;
             const page = dims.page;
-            const z = zoomRef.current;
-            const p = panRef.current;
-
-            // SVG natural size in CSS px
-            const svgNaturalW = page.widthMm * CSS_PX_PER_MM;
-            const svgNaturalH = page.heightMm * CSS_PX_PER_MM;
-
-            // Container center in viewport coords
-            const cr = container.getBoundingClientRect();
-            const cx = cr.left + cr.width / 2;
-            const cy = cr.top + cr.height / 2;
-
-            // SVG top-left in viewport coords (centered + pan + zoom)
-            const svgLeft = cx + p.x - (svgNaturalW * z) / 2;
-            const svgTop = cy + p.y - (svgNaturalH * z) / 2;
-
-            // Click position in mm
-            const mmX = (e.clientX - svgLeft) / z / CSS_PX_PER_MM;
-            const mmY = (e.clientY - svgTop) / z / CSS_PX_PER_MM;
 
             // Board geometry
             const totalCols = config.innerCols + 1;
@@ -184,14 +171,16 @@ export default function TargetPreview({ state, dispatch }: Props) {
 
     const isMarkerboard = state.target.targetType === "markerboard";
 
+    const handleContextMenu = useCallback((e: React.MouseEvent) => {
+        e.preventDefault(); // suppress context menu — right-click is used for panning
+    }, []);
+
     return (
         <div
             ref={containerRef}
             className={
                 "relative flex-1 overflow-hidden bg-muted/20 " +
-                (isMarkerboard
-                    ? "cursor-crosshair"
-                    : "cursor-grab active:cursor-grabbing")
+                (isMarkerboard ? "cursor-crosshair" : "cursor-default")
             }
             onWheel={handleWheel}
             onMouseDown={handleMouseDown}
@@ -199,6 +188,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
             onClick={handleClick}
+            onContextMenu={handleContextMenu}
         >
             {/* SVG preview */}
             <div

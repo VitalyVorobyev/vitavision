@@ -106,10 +106,36 @@ export function Section(props: SectionProps) {
 
 export function NumberField(props: NumberFieldProps) {
     const { label, value, onChange, disabled, min, max, step, placeholder, tooltip } = props;
+    const inputRef = useRef<HTMLInputElement>(null);
+    // Store latest props in a ref so the wheel handler always sees current values
+    // without needing to re-register the listener.
+    const propsRef = useRef(props);
+    propsRef.current = props;
+
+    useEffect(() => {
+        const el = inputRef.current;
+        if (!el) return;
+        const handleWheel = (e: WheelEvent) => {
+            if (document.activeElement !== el) return;
+            e.preventDefault();
+            e.stopPropagation();
+            const { value: cur, onChange: cb, disabled: off, min: lo, max: hi, step: s } = propsRef.current;
+            if (off) return;
+            const delta = e.deltaY < 0 ? (s ?? 1) : -(s ?? 1);
+            let next = (cur ?? 0) + delta;
+            if (lo != null) next = Math.max(lo, next);
+            if (hi != null) next = Math.min(hi, next);
+            cb(next);
+        };
+        el.addEventListener("wheel", handleWheel, { passive: false });
+        return () => el.removeEventListener("wheel", handleWheel);
+    }, []);
+
     return (
         <label className="grid gap-1">
             <FieldLabel label={label} tooltip={tooltip} />
             <input
+                ref={inputRef}
                 type="number"
                 min={min}
                 max={max}
@@ -121,7 +147,6 @@ export function NumberField(props: NumberFieldProps) {
                     const raw = event.target.value.trim();
                     onChange(raw === "" ? undefined : Number(raw));
                 }}
-                onWheel={(e) => (e.target as HTMLInputElement).blur()}
                 className={inputClass}
             />
         </label>

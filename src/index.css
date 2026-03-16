@@ -15,191 +15,68 @@
 
   --color-border: hsl(var(--border));
 
-  --color-accent-2: hsl(var(--accent-2));
   --color-accent: hsl(var(--accent));
   --color-accent-soft: hsl(var(--accent-soft));
+  --color-accent-2: hsl(var(--accent-2));
 
   --font-sans: Inter, system-ui, sans-serif;
   --font-mono: Geist Mono, ui-monospace, monospace;
+  
+  /* Precision Radius: Sharp corners feel more engineered */
+  --radius-lg: 0.375rem; 
+  --radius-md: 0.25rem;
+  --radius-sm: 0.125rem;
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    border-color: var(--color-border);
   }
-}
-
-/*
- * Multi-theme CSS variable architecture.
- *
- * Three theme variants × two modes (light / dark).
- * next-themes applies `.dark` to <html>.
- * useThemeVariant applies `.theme-aubergine`, `.theme-pine`, or `.theme-oxblood` to <html>.
- *
- * Combined selectors:
- *   .theme-aubergine          → light
- *   .dark.theme-aubergine     → dark
- *   etc.
- *
- * All values are HSL channels only (no hsl() wrapper).
- * Tailwind v4 maps them via `@theme` color tokens defined above.
- */
-
-@layer base {
-
-  /* ─────────────────────────────────────────────
-   * THEME 1 — Aubergine (paper-warm + violet ink)
-   * ───────────────────────────────────────────── */
-
-  .theme-aubergine {
-    --background:        38 50% 96%;   /* #FBF7F1 */
-    --surface:           0 0% 100%;    /* #FFFFFF  */
-    --foreground:        20 14% 10%;   /* #1C1917  */
-    --muted:             28 21% 90%;
-    --muted-foreground:  22 8% 39%;    /* #6B625B  */
-    --border:            28 21% 87%;   /* #E7DED5  */
-    --accent:            279 49% 34%;  /* #5B2B82  */
-    --accent-soft:       278 50% 93%;  /* #EFE6F7  */
-    --accent-2:          279 49% 34%;  /* same as accent — no copper in this theme */
-    --primary:           262 83% 65%;  /* #8B5CF6  */
-    --primary-foreground: 0 0% 100%;
-  }
-
-  .dark.theme-aubergine {
-    --background:        270 23% 6%;   /* #0D0B0F  */
-    --surface:           270 20% 9%;   /* #15121A  */
-    --foreground:        38 28% 92%;   /* #F1EDE6  */
-    --muted:             270 14% 14%;
-    --muted-foreground:  24 11% 67%;   /* #B7ADA3  */
-    --border:            270 14% 16%;  /* #2A2430  */
-    --accent:            270 100% 82%; /* #C5A3FF  */
-    --accent-soft:       270 25% 14%;  /* #231A2C  */
-    --accent-2:          270 100% 82%; /* same as accent */
-    --primary:           262 83% 65%;  /* #8B5CF6  */
-    --primary-foreground: 270 20% 9%;
-  }
-
-  /* ─────────────────────────────────────────────
-   * THEME 2 — Pine + Copper (user's favorite)
-   * ───────────────────────────────────────────── */
-
-  .theme-pine {
-    --background:        38 45% 96%;   /* #FAF6EF */
-    --surface:           0 0% 100%;    /* #FFFFFF  */
-    --foreground:        30 13% 9%;    /* #1B1916  */
-    --muted:             28 20% 90%;
-    --muted-foreground:  30 8% 40%;    /* #6F665D  */
-    --border:            28 20% 86%;   /* #E6DDD2  */
-    --accent:            175 79% 26%;  /* #0F766E  */
-    --accent-soft:       175 40% 92%;  /* #E7F4F2  */
-    --accent-2:          32 91% 37%;   /* #B45309  copper */
-    --primary:           175 79% 26%;  /* teal as primary */
-    --primary-foreground: 0 0% 100%;
-  }
-
-  .dark.theme-pine {
-    --background:        165 18% 6%;   /* #0B0F0E  */
-    --surface:           160 14% 8%;   /* #121816  */
-    --foreground:        38 29% 92%;   /* #F2EEE6  */
-    --muted:             155 15% 13%;
-    --muted-foreground:  28 10% 67%;   /* #B9B0A6  */
-    --border:            155 15% 16%;  /* #23302B  */
-    --accent:            170 73% 64%;  /* #5EEAD4  */
-    --accent-soft:       165 35% 9%;   /* #0F1F1B  */
-    --accent-2:          31 97% 72%;   /* #FDBA74  copper */
-    --primary:           170 73% 64%;
-    --primary-foreground: 165 18% 6%;
-  }
-
-  /* ─────────────────────────────────────────────
-   * THEME 3 — Oxblood (editorial, research notes)
-   * ───────────────────────────────────────────── */
-
-  .theme-oxblood {
-    --background:        33 47% 96%;   /* #FBF6F0 */
-    --surface:           0 0% 100%;    /* #FFFFFF  */
-    --foreground:        22 14% 11%;   /* #1F1A17  */
-    --muted:             25 21% 90%;
-    --muted-foreground:  22 9% 39%;    /* #6E625A  */
-    --border:            25 21% 86%;   /* #E7DDD3  */
-    --accent:            351 59% 30%;  /* #7A1F2B  */
-    --accent-soft:       351 50% 93%;  /* #F6E6E8  */
-    --accent-2:          351 59% 30%;  /* same as accent */
-    --primary:           351 59% 30%;
-    --primary-foreground: 0 0% 100%;
-  }
-
-  .dark.theme-oxblood {
-    --background:        340 18% 6%;   /* #0F0B0C  */
-    --surface:           345 18% 8%;   /* #171112  */
-    --foreground:        30 29% 92%;   /* #F3EDE7  */
-    --muted:             345 21% 11%;
-    --muted-foreground:  22 10% 67%;   /* #B8ACA3  */
-    --border:            345 21% 13%;  /* #2A1B1E  */
-    --accent:            350 100% 85%; /* #FFB4BE  */
-    --accent-soft:       350 30% 11%;  /* #241315  */
-    --accent-2:          350 100% 85%; /* same as accent */
-    --primary:           350 100% 85%;
-    --primary-foreground: 345 18% 8%;
-  }
-
-  /* ─────────────────────────────────────────────
-   * Fallback: bare :root maps to aubergine light
-   * so the app renders correctly before JS hydrates
-   * the theme class.
-   * ───────────────────────────────────────────── */
 
   :root {
-    --background:        38 50% 96%;
-    --surface:           0 0% 100%;
-    --foreground:        20 14% 10%;
-    --muted:             28 21% 90%;
-    --muted-foreground:  22 8% 39%;
-    --border:            28 21% 87%;
-    --accent:            279 49% 34%;
-    --accent-soft:       278 50% 93%;
-    --accent-2:          279 49% 34%;
-    --primary:           262 83% 65%;
-    --primary-foreground: 0 0% 100%;
+    /* LIGHT MODE: "The Technical Journal" */
+    --background:        210 40% 98%;   /* Soft Paper White */
+    --surface:           0 0% 100%;    /* Pure White */
+    --foreground:        215 25% 27%;   /* Deep Ink Blue-Grey */
+    --muted:             210 40% 96%;
+    --muted-foreground:  215 16% 47%;   /* Slate Grey */
+    --border:            214 32% 91%;   /* Subtle Blueprint Lines */
+    --accent:            215 19% 35%;   /* Blueprint Blue */
+    --accent-soft:       214 32% 91%;
+    --accent-2:          215 19% 35%;
+    --primary:           215 19% 35%;
+    --primary-foreground: 210 40% 98%;
   }
-}
 
-@layer base {
-  * {
-    @apply border-border;
+  .dark {
+    /* DARK MODE: "The Observatory" */
+    --background:        222 47% 11%;   /* Deep Midnight Slate */
+    --surface:           217 33% 17%;   /* Dark Slate Surface */
+    --foreground:        210 40% 96%;   /* Soft Silver Text */
+    --muted:             217 33% 17%;
+    --muted-foreground:  215 20% 65%;   /* Muted Slate */
+    --border:            215 25% 27%;   /* Subtle Depth Borders */
+    --accent:            215 20% 65%;   /* Steel Blue Accent */
+    --accent-soft:       217 33% 17%;
+    --accent-2:          215 20% 65%;
+    --primary:           215 20% 65%;
+    --primary-foreground: 222 47% 11%;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
-    /* Selection color uses accent tokens so it adapts per theme */
-    --tw-selection-bg: hsl(var(--accent-soft));
-    --tw-selection-color: hsl(var(--accent));
   }
 
-  ::selection {
-    background-color: hsl(var(--accent-soft));
-    color: hsl(var(--foreground));
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  h1, h2, h3, h4, h5, h6 {
     @apply tracking-tight font-semibold;
+    /* Reduced tracking for a tighter, engineered feel */
+    letter-spacing: -0.02em;
+  }
+
+  /* Refined Selection to match the blueprint aesthetic */
+  ::selection {
+    background-color: hsl(var(--primary) / 0.15);
+    color: hsl(var(--foreground));
   }
 }

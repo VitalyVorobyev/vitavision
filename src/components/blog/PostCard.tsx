@@ -15,6 +15,11 @@ export default function PostCard({ post }: PostCardProps) {
             className="block p-6 rounded-xl border border-border hover:border-foreground/20 transition-colors group"
         >
             <h2 className="text-2xl font-semibold group-hover:underline">
+                {frontmatter.draft && (
+                    <span className="text-xs font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-1.5 py-0.5 mr-2 align-middle">
+                        draft
+                    </span>
+                )}
                 {frontmatter.title}
             </h2>
             <p className="text-muted-foreground mt-2">{frontmatter.summary}</p>

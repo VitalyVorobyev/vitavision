@@ -113,9 +113,12 @@ async function main(): Promise<void> {
         blogSlug,
     );
 
-    // Serialize dates and sort by date descending
+    const includeDrafts = process.env.INCLUDE_DRAFTS === "true";
+
+    // Serialize dates, filter drafts, and sort by date descending
     const blogPosts = rawBlogPosts
         .map((e) => serializeBlogEntry(e as { slug: string; frontmatter: Record<string, unknown>; html: string }))
+        .filter((e) => includeDrafts || !e.frontmatter.draft)
         .sort((a, b) => b.frontmatter.date.localeCompare(a.frontmatter.date));
 
     const algorithmPages = await processDirectory(

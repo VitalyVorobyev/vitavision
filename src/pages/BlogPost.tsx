@@ -63,6 +63,11 @@ export default function BlogPost() {
                     &larr; Back to blog
                 </Link>
                 <h1 className="text-4xl font-bold tracking-tight">
+                    {frontmatter.draft && (
+                        <span className="text-sm font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-2 py-1 mr-3 align-middle">
+                            draft
+                        </span>
+                    )}
                     {frontmatter.title}
                 </h1>
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">

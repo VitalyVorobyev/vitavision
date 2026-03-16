@@ -31,6 +31,9 @@ export default function Home() {
                 <Link to="/editor" className="px-6 py-3 bg-foreground text-background font-medium rounded-full hover:bg-foreground/90 transition-all hover:scale-105 active:scale-95">
                     Open Editor
                 </Link>
+                <Link to="/tools/target-generator" className="px-6 py-3 border border-border font-medium rounded-full hover:bg-muted transition-all hover:scale-105 active:scale-95">
+                    Target Generator
+                </Link>
                 <Link to="/blog" className="px-6 py-3 border border-border font-medium rounded-full hover:bg-muted transition-all hover:scale-105 active:scale-95">
                     Read Blog
                 </Link>

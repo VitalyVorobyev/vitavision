@@ -46,10 +46,12 @@ export default function TargetTypeSelector({ selected, dispatch }: Props) {
             try {
                 const data = JSON.parse(ev.target?.result as string);
                 if (data?.target?.targetType && data?.target?.config && data?.page) {
+                    // Ensure pngDpi exists for configs from older versions
+                    const page = { pngDpi: 300, ...data.page };
                     dispatch({
                         type: "LOAD_PRESET",
                         target: data.target,
-                        page: data.page,
+                        page,
                     });
                 } else {
                     alert("Invalid config file: missing target or page fields.");

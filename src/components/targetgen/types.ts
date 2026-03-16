@@ -10,6 +10,7 @@ export interface ChessboardConfig {
     innerRows: number;
     innerCols: number;
     squareSizeMm: number;
+    innerSquareRel: number;
 }
 
 export interface CharucoConfig {
@@ -19,6 +20,11 @@ export interface CharucoConfig {
     markerSizeRel: number;
     dictionary: DictionaryName;
     borderBits: number;
+    innerSquareRel: number;
+}
+
+export interface CircleSpec {
+    cell: { i: number; j: number };
 }
 
 export interface MarkerBoardConfig {
@@ -26,6 +32,8 @@ export interface MarkerBoardConfig {
     innerCols: number;
     squareSizeMm: number;
     circleDiameterRel: number;
+    circles: CircleSpec[];
+    innerSquareRel: number;
 }
 
 export type TargetConfig =
@@ -44,6 +52,7 @@ export interface PageConfig {
     customHeightMm: number;
     orientation: Orientation;
     marginMm: number;
+    pngDpi: number;
 }
 
 // ── Validation ───────────────────────────────────────────────────────────────
@@ -55,17 +64,11 @@ export interface ValidationResult {
 
 // ── State ────────────────────────────────────────────────────────────────────
 
-export type GenerationStatus = "idle" | "generating" | "success" | "error";
-
 export interface TargetGeneratorState {
     target: TargetConfig;
     page: PageConfig;
     previewSvg: string;
     validation: ValidationResult;
-    finalSvg: string | null;
-    configJson: string | null;
-    generationStatus: GenerationStatus;
-    errorMessage?: string;
 }
 
 // ── Actions ──────────────────────────────────────────────────────────────────
@@ -75,7 +78,4 @@ export type TargetGeneratorAction =
     | { type: "UPDATE_CONFIG"; partial: Record<string, unknown> }
     | { type: "UPDATE_PAGE"; partial: Partial<PageConfig> }
     | { type: "SET_PREVIEW"; svg: string; validation: ValidationResult }
-    | { type: "LOAD_PRESET"; target: TargetConfig; page: PageConfig }
-    | { type: "GENERATION_START" }
-    | { type: "GENERATION_SUCCESS"; svg: string; configJson: string }
-    | { type: "GENERATION_ERROR"; message: string };
+    | { type: "LOAD_PRESET"; target: TargetConfig; page: PageConfig };

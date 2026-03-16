@@ -121,6 +121,7 @@ export function NumberField(props: NumberFieldProps) {
                     const raw = event.target.value.trim();
                     onChange(raw === "" ? undefined : Number(raw));
                 }}
+                onWheel={(e) => (e.target as HTMLInputElement).blur()}
                 className={inputClass}
             />
         </label>

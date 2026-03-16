@@ -73,6 +73,16 @@ export default function PaperConfig({ page, dispatch }: Props) {
                 step={1}
                 tooltip="Minimum margin around the board on all sides"
             />
+            <NumberField
+                label="PNG DPI"
+                value={page.pngDpi}
+                onChange={(v) => update({ pngDpi: v ?? 300 })}
+                disabled={false}
+                min={72}
+                max={1200}
+                step={1}
+                tooltip="Resolution for PNG export (dots per inch)"
+            />
         </Section>
     );
 }

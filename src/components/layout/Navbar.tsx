@@ -64,7 +64,7 @@ export default function Navbar() {
                     to="/tools/target-generator"
                     className={`hover:text-foreground transition-colors ${location.pathname.startsWith('/tools') ? 'text-foreground' : 'text-muted-foreground'}`}
                 >
-                    Tools
+                    Targets
                 </Link>
                 <Link
                     to="/about"

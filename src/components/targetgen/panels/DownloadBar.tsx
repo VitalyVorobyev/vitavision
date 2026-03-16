@@ -1,5 +1,6 @@
 import { Download } from "lucide-react";
 import { rasterizeSvgToPng } from "../pngRasterizer";
+import { generateDxf } from "../dxf";
 import type { TargetGeneratorState } from "../types";
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -32,31 +33,14 @@ function buildFilename(state: TargetGeneratorState, ext: string): string {
 
 interface Props {
     state: TargetGeneratorState;
-    generate: () => Promise<void>;
 }
 
-export default function DownloadBar({ state, generate }: Props) {
-    const hasFinal = state.finalSvg !== null;
+export default function DownloadBar({ state }: Props) {
     const hasErrors = state.validation.errors.length > 0;
-    const isGenerating = state.generationStatus === "generating";
+    const svg = state.previewSvg;
 
-    const ensureFinal = async (): Promise<string | null> => {
-        if (state.finalSvg) return state.finalSvg;
-        await generate();
-        // After generate, finalSvg should be set — but we can't access the new
-        // state directly here. The caller should re-check. For download, we
-        // return null and let the UI handle it after state updates.
-        return null;
-    };
-
-    const handleSvg = async () => {
-        let svg = state.finalSvg;
-        if (!svg) {
-            await generate();
-            // The state won't update synchronously. A second click will work.
-            return;
-        }
-        svg = state.finalSvg!;
+    const handleSvg = () => {
+        if (!svg) return;
         downloadBlob(
             new Blob([svg], { type: "image/svg+xml" }),
             buildFilename(state, "svg"),
@@ -64,61 +48,54 @@ export default function DownloadBar({ state, generate }: Props) {
     };
 
     const handlePng = async () => {
-        let svg = state.finalSvg;
-        if (!svg) {
-            await ensureFinal();
-            return;
-        }
-        svg = state.finalSvg!;
-        const blob = await rasterizeSvgToPng(svg);
+        if (!svg) return;
+        const blob = await rasterizeSvgToPng(svg, state.page.pngDpi);
         downloadBlob(blob, buildFilename(state, "png"));
     };
 
-    const handleJson = async () => {
-        let json = state.configJson;
-        if (!json) {
-            await ensureFinal();
-            return;
-        }
-        json = state.configJson!;
+    const handleDxf = () => {
+        const dxf = generateDxf(state.target, state.page);
+        downloadBlob(
+            new Blob([dxf], { type: "application/dxf" }),
+            buildFilename(state, "dxf"),
+        );
+    };
+
+    const handleJson = () => {
+        const json = JSON.stringify(
+            { target: state.target, page: state.page },
+            null,
+            2,
+        );
         downloadBlob(
             new Blob([json], { type: "application/json" }),
             buildFilename(state, "json"),
         );
     };
 
+    const disabled = hasErrors || !svg;
+
     const btnClass =
         "flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium transition-colors " +
         "hover:border-muted-foreground/40 hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed";
 
     return (
-        <div className="flex gap-2">
-            <button
-                className={btnClass}
-                onClick={handleSvg}
-                disabled={hasErrors || isGenerating}
-                title={hasFinal ? "Download SVG" : "Generate & download SVG"}
-            >
+        <div className="grid grid-cols-2 gap-2">
+            <button className={btnClass} onClick={handleSvg} disabled={disabled} title="Download SVG">
                 <Download size={14} />
                 SVG
             </button>
-            <button
-                className={btnClass}
-                onClick={handlePng}
-                disabled={hasErrors || isGenerating}
-                title={hasFinal ? "Download PNG" : "Generate & download PNG"}
-            >
+            <button className={btnClass} onClick={handlePng} disabled={disabled} title="Download PNG">
                 <Download size={14} />
                 PNG
             </button>
-            <button
-                className={btnClass}
-                onClick={handleJson}
-                disabled={hasErrors || isGenerating}
-                title={hasFinal ? "Download config" : "Generate & download config"}
-            >
+            <button className={btnClass} onClick={handleJson} disabled={disabled} title="Download config JSON">
                 <Download size={14} />
                 JSON
+            </button>
+            <button className={btnClass} onClick={handleDxf} disabled={disabled} title="Download DXF (geometry only)">
+                <Download size={14} />
+                DXF
             </button>
         </div>
     );

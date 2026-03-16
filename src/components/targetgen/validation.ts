@@ -37,8 +37,24 @@ export function validateConfig(
         case "markerboard": {
             const c = target.config;
             squareSizeMm = c.squareSizeMm;
-            boardW = (c.innerCols + 1) * squareSizeMm;
-            boardH = (c.innerRows + 1) * squareSizeMm;
+            const totalRows = c.innerRows + 1;
+            const totalCols = c.innerCols + 1;
+            boardW = totalCols * squareSizeMm;
+            boardH = totalRows * squareSizeMm;
+
+            // Validate circles
+            const seen = new Set<string>();
+            for (const circ of c.circles) {
+                const { i, j } = circ.cell;
+                if (i < 0 || i >= totalRows || j < 0 || j >= totalCols) {
+                    errors.push(`Circle at (${i}, ${j}) is outside the board.`);
+                }
+                const key = `${i},${j}`;
+                if (seen.has(key)) {
+                    warnings.push(`Duplicate circle at (${i}, ${j}).`);
+                }
+                seen.add(key);
+            }
             break;
         }
         case "charuco": {

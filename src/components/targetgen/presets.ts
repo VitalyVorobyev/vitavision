@@ -3,6 +3,7 @@ import type {
     TargetConfig,
     PageConfig,
 } from "./types";
+import { defaultCircles } from "./reducer";
 
 export interface Preset {
     id: string;
@@ -13,17 +14,13 @@ export interface Preset {
     page: PageConfig;
 }
 
-const A4_PORTRAIT: PageConfig = {
+const A4_LANDSCAPE: PageConfig = {
     sizeKind: "a4",
     customWidthMm: 210,
     customHeightMm: 297,
-    orientation: "portrait",
-    marginMm: 10,
-};
-
-const A4_LANDSCAPE: PageConfig = {
-    ...A4_PORTRAIT,
     orientation: "landscape",
+    marginMm: 10,
+    pngDpi: 300,
 };
 
 const LETTER_PORTRAIT: PageConfig = {
@@ -32,6 +29,7 @@ const LETTER_PORTRAIT: PageConfig = {
     customHeightMm: 279.4,
     orientation: "portrait",
     marginMm: 10,
+    pngDpi: 300,
 };
 
 // ── Chessboard presets ───────────────────────────────────────────────────────
@@ -42,15 +40,15 @@ export const CHESSBOARD_PRESETS: Preset[] = [
         label: "Camera Calibration",
         description: "Standard 7x10 board for OpenCV-style calibration",
         targetType: "chessboard",
-        target: { targetType: "chessboard", config: { innerRows: 7, innerCols: 10, squareSizeMm: 20 } },
-        page: A4_PORTRAIT,
+        target: { targetType: "chessboard", config: { innerRows: 7, innerCols: 10, squareSizeMm: 20, innerSquareRel: 0 } },
+        page: A4_LANDSCAPE,
     },
     {
         id: "chess-robotics",
         label: "Robotics",
         description: "Large 5x7 board with 30 mm squares for robotic arm calibration",
         targetType: "chessboard",
-        target: { targetType: "chessboard", config: { innerRows: 5, innerCols: 7, squareSizeMm: 30 } },
+        target: { targetType: "chessboard", config: { innerRows: 5, innerCols: 7, squareSizeMm: 30, innerSquareRel: 0 } },
         page: A4_LANDSCAPE,
     },
     {
@@ -58,7 +56,7 @@ export const CHESSBOARD_PRESETS: Preset[] = [
         label: "Industrial QC",
         description: "Dense 9x13 board for high-precision measurement",
         targetType: "chessboard",
-        target: { targetType: "chessboard", config: { innerRows: 9, innerCols: 13, squareSizeMm: 15 } },
+        target: { targetType: "chessboard", config: { innerRows: 9, innerCols: 13, squareSizeMm: 15, innerSquareRel: 0 } },
         page: A4_LANDSCAPE,
     },
 ];
@@ -75,7 +73,7 @@ export const CHARUCO_PRESETS: Preset[] = [
             targetType: "charuco",
             config: {
                 rows: 8, cols: 11, squareSizeMm: 20,
-                markerSizeRel: 0.75, dictionary: "DICT_4X4_250", borderBits: 1,
+                markerSizeRel: 0.75, dictionary: "DICT_4X4_250", borderBits: 1, innerSquareRel: 0,
             },
         },
         page: A4_LANDSCAPE,
@@ -89,7 +87,7 @@ export const CHARUCO_PRESETS: Preset[] = [
             targetType: "charuco",
             config: {
                 rows: 6, cols: 8, squareSizeMm: 30,
-                markerSizeRel: 0.7, dictionary: "DICT_APRILTAG_36h11", borderBits: 1,
+                markerSizeRel: 0.7, dictionary: "DICT_APRILTAG_36h11", borderBits: 1, innerSquareRel: 0,
             },
         },
         page: A4_LANDSCAPE,
@@ -103,7 +101,7 @@ export const CHARUCO_PRESETS: Preset[] = [
             targetType: "charuco",
             config: {
                 rows: 10, cols: 14, squareSizeMm: 15,
-                markerSizeRel: 0.8, dictionary: "DICT_6X6_250", borderBits: 1,
+                markerSizeRel: 0.8, dictionary: "DICT_6X6_250", borderBits: 1, innerSquareRel: 0,
             },
         },
         page: A4_LANDSCAPE,
@@ -120,9 +118,9 @@ export const MARKERBOARD_PRESETS: Preset[] = [
         targetType: "markerboard",
         target: {
             targetType: "markerboard",
-            config: { innerRows: 7, innerCols: 10, squareSizeMm: 20, circleDiameterRel: 0.5 },
+            config: { innerRows: 7, innerCols: 10, squareSizeMm: 20, circleDiameterRel: 0.5, circles: defaultCircles(7, 10), innerSquareRel: 0 },
         },
-        page: A4_PORTRAIT,
+        page: A4_LANDSCAPE,
     },
     {
         id: "marker-robotics",
@@ -131,7 +129,7 @@ export const MARKERBOARD_PRESETS: Preset[] = [
         targetType: "markerboard",
         target: {
             targetType: "markerboard",
-            config: { innerRows: 5, innerCols: 7, squareSizeMm: 30, circleDiameterRel: 0.6 },
+            config: { innerRows: 5, innerCols: 7, squareSizeMm: 30, circleDiameterRel: 0.6, circles: defaultCircles(5, 7), innerSquareRel: 0 },
         },
         page: A4_LANDSCAPE,
     },
@@ -142,7 +140,7 @@ export const MARKERBOARD_PRESETS: Preset[] = [
         targetType: "markerboard",
         target: {
             targetType: "markerboard",
-            config: { innerRows: 6, innerCols: 9, squareSizeMm: 20, circleDiameterRel: 0.5 },
+            config: { innerRows: 6, innerCols: 9, squareSizeMm: 20, circleDiameterRel: 0.5, circles: defaultCircles(6, 9), innerSquareRel: 0 },
         },
         page: LETTER_PORTRAIT,
     },

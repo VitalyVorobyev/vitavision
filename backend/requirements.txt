@@ -7,5 +7,5 @@ python-dotenv==1.2.2
 numpy==2.4.3
 pillow==12.1.1
 chess-corners==0.3.2
-calib-targets==0.3.1
+calib-targets==0.3.2
 slowapi==0.1.9

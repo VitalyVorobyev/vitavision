@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { Feed } from "feed";
 import { blogPosts } from "../src/generated/content-manifest.ts";
 import { render } from "../src/entry-server.tsx";
 
@@ -140,7 +141,35 @@ function main(): void {
     const sitemapPaths = ["/", "/blog", ...blogPosts.map((p) => `/blog/${p.slug}`)];
     writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(sitemapPaths), "utf-8");
 
-    console.log(`postbuild: ${count} static page(s) + sitemap.xml generated in dist/`);
+    // Generate RSS and Atom feeds
+    const feed = new Feed({
+        title: SITE_NAME,
+        description: "Computer vision algorithms, interactive tools, and technical deep dives.",
+        id: SITE_URL,
+        link: SITE_URL,
+        language: "en",
+        copyright: `© ${new Date().getFullYear()} ${SITE_NAME}`,
+        feedLinks: {
+            rss2: `${SITE_URL}/rss.xml`,
+            atom: `${SITE_URL}/atom.xml`,
+        },
+    });
+    for (const post of blogPosts) {
+        const { frontmatter } = post;
+        feed.addItem({
+            title: frontmatter.title,
+            id: `${SITE_URL}/blog/${post.slug}`,
+            link: `${SITE_URL}/blog/${post.slug}`,
+            description: frontmatter.summary,
+            date: new Date(frontmatter.date),
+            author: [{ name: frontmatter.author }],
+            ...(frontmatter.coverImage && { image: frontmatter.coverImage }),
+        });
+    }
+    writeFileSync(join(DIST, "rss.xml"), feed.rss2(), "utf-8");
+    writeFileSync(join(DIST, "atom.xml"), feed.atom1(), "utf-8");
+
+    console.log(`postbuild: ${count} static page(s) + sitemap.xml + feeds generated in dist/`);
 }
 
 main();

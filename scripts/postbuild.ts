@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from "node:fs";
 import { join } from "node:path";
 import { Feed } from "feed";
 import { blogPosts } from "../src/generated/content-manifest.ts";
@@ -168,6 +168,15 @@ function main(): void {
     }
     writeFileSync(join(DIST, "rss.xml"), feed.rss2(), "utf-8");
     writeFileSync(join(DIST, "atom.xml"), feed.atom1(), "utf-8");
+
+    // Copy content images to dist
+    const contentImagesDir = join(import.meta.dir, "..", "content", "images");
+    if (existsSync(contentImagesDir)) {
+        const destDir = join(DIST, "content", "images");
+        mkdirSync(destDir, { recursive: true });
+        cpSync(contentImagesDir, destDir, { recursive: true });
+        console.log(`postbuild: copied content/images/ → dist/content/images/`);
+    }
 
     console.log(`postbuild: ${count} static page(s) + sitemap.xml + feeds generated in dist/`);
 }

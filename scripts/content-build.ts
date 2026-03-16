@@ -28,6 +28,11 @@ function algoSlug(filename: string): string {
     return basename(filename, ".md");
 }
 
+/** Rewrite relative image paths (./images/*, ../images/*) to /content/images/*. */
+function resolveContentImagePaths(html: string): string {
+    return html.replace(/src="\.{1,2}\/images\//g, 'src="/content/images/');
+}
+
 async function renderMarkdown(content: string): Promise<string> {
     const result = await unified()
         .use(remarkParse)
@@ -48,7 +53,7 @@ async function renderMarkdown(content: string): Promise<string> {
         })
         .use(rehypeStringify)
         .process(content);
-    return String(result);
+    return resolveContentImagePaths(String(result));
 }
 
 async function processDirectory<T>(

@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "content:build": "bun run scripts/content-build.ts",
+    "content:validate": "bun run scripts/content-validate.ts",
     "postbuild": "bun run scripts/postbuild.ts"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "katex": "^0.16.38",
     "konva": "^10.2.1",
     "lucide-react": "^0.577.0",
+    "mermaid": "^11.13.0",
     "next-themes": "^0.4.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

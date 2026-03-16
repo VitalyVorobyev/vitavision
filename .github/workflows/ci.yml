@@ -15,6 +15,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # ── Content: validate frontmatter, images, links ─────────────────────────
+  validate-content:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: oven-sh/setup-bun@3d267786b128fe76c2f16a390aa2448b815359f3 # v2
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Validate content
+        run: bun run content:validate
+
   # ── Frontend: lint + build ────────────────────────────────────────────────
   build-frontend:
     runs-on: ubuntu-latest

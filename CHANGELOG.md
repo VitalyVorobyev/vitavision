@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+- feat(BLOG-012): add client-side Mermaid diagram rendering via dynamic import and useMermaid hook
+- feat(BLOG-013): add content image pipeline — relative path resolution in markdown and content/images/ copy to dist during postbuild
+- feat(BLOG-014): add content:validate script (Zod frontmatter, image references, internal links) and validate-content CI job
 - feat(BLOG-011): add draft post support with INCLUDE_DRAFTS env var and visual badge
 - feat(BLOG-010): generate RSS and Atom feeds during postbuild with feed autodiscovery links
 - feat(BLOG-009): generate sitemap.xml during postbuild and add static robots.txt

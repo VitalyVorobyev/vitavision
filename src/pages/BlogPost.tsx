@@ -1,12 +1,16 @@
 import { useParams, Link } from "react-router-dom";
+import { useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { blogPosts } from "../generated/content-manifest.ts";
 import TagBadge from "../components/blog/TagBadge.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
+import { useMermaid } from "../hooks/useMermaid.ts";
 
 export default function BlogPost() {
     const { slug } = useParams<{ slug: string }>();
     const post = blogPosts.find((p) => p.slug === slug);
+    const articleRef = useRef<HTMLElement>(null);
+    useMermaid(articleRef, [post?.html]);
 
     if (!post) {
         return (
@@ -89,6 +93,7 @@ export default function BlogPost() {
             </header>
 
             <article
+                ref={articleRef}
                 className="prose prose-neutral dark:prose-invert max-w-none
                     prose-headings:tracking-tight prose-headings:font-semibold
                     prose-h1:text-3xl prose-h1:mt-8 prose-h1:mb-4

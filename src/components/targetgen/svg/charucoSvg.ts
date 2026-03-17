@@ -42,8 +42,10 @@ export async function charucoSvg(
                 }
             } else {
                 // White square — draw ArUco marker
-                renderMarker(parts, dict.codes[markerIdx], dict.markerSize,
-                    config.borderBits, cellX, cellY, sq, config.markerSizeRel);
+                if (markerIdx < dict.codes.length) {
+                    renderMarker(parts, dict.codes[markerIdx], dict.markerSize,
+                        config.borderBits, cellX, cellY, sq, config.markerSizeRel);
+                }
                 markerIdx++;
             }
         }

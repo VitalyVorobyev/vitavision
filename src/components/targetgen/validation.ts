@@ -1,5 +1,19 @@
-import type { TargetConfig, PageConfig, ValidationResult } from "./types";
+import type { TargetConfig, PageConfig, ValidationResult, CharucoConfig } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
+
+/** Number of markers a ChArUco board requires (one per white square). */
+function charucoMarkerCount(c: CharucoConfig): number {
+    return Math.floor(c.rows * c.cols / 2);
+}
+
+/** Extract pool size from dictionary name, e.g. "DICT_4X4_250" -> 250. */
+function dictionaryPoolSize(name: string): number | null {
+    // Standard dictionaries: DICT_NxN_SIZE
+    const match = name.match(/_(\d+)$/);
+    if (match) return Number(match[1]);
+    // AprilTag / ArUco original — large enough for any practical board
+    return null;
+}
 
 export function validateConfig(
     target: TargetConfig,
@@ -65,6 +79,14 @@ export function validateConfig(
 
             if (c.markerSizeRel <= 0 || c.markerSizeRel >= 1) {
                 errors.push("Marker size ratio must be between 0 and 1.");
+            }
+            const needed = charucoMarkerCount(c);
+            const poolSize = dictionaryPoolSize(c.dictionary);
+            if (poolSize !== null && needed > poolSize) {
+                errors.push(
+                    `Board requires ${needed} markers but dictionary ${c.dictionary} only has ${poolSize}. ` +
+                    `Use a larger dictionary or reduce board dimensions.`,
+                );
             }
             break;
         }

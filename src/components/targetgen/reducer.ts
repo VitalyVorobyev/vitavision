@@ -5,6 +5,7 @@ import type {
     CharucoConfig,
     MarkerBoardConfig,
     CircleSpec,
+    TargetType,
 } from "./types";
 
 /** Compute default circle triangle centered on the board. */
@@ -72,6 +73,7 @@ export const INITIAL_STATE: TargetGeneratorState = {
     },
     previewSvg: "",
     validation: { errors: [], warnings: [] },
+    configCache: {},
 };
 
 export function targetGeneratorReducer(
@@ -80,9 +82,14 @@ export function targetGeneratorReducer(
 ): TargetGeneratorState {
     switch (action.type) {
         case "SET_TARGET_TYPE": {
-            const config = defaultConfigForType(action.targetType);
+            const cache = {
+                ...state.configCache,
+                [state.target.targetType]: state.target.config,
+            };
+            const config = cache[action.targetType as TargetType] ?? defaultConfigForType(action.targetType);
             return {
                 ...state,
+                configCache: cache,
                 target: { targetType: action.targetType, config } as TargetGeneratorState["target"],
             };
         }

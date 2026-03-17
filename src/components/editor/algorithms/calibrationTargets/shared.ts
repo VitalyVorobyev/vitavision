@@ -1,5 +1,6 @@
 import type {
     CalibrationCircleCandidate,
+    CalibrationCircleMatch,
     CalibrationMarker,
     CalibrationTargetResult,
 } from "../../../../lib/api";
@@ -136,4 +137,41 @@ export const calibrationCircleCandidateFeatures = (
             contrast: candidate.contrast,
         },
     }));
+};
+
+export const calibrationCircleMatchFeatures = (
+    matches: CalibrationCircleMatch[] | null,
+    candidates: CalibrationCircleCandidate[] | null,
+    runId: string,
+    algorithmId: string,
+    color = overlayTheme.markerStroke,
+): Feature[] => {
+    if (!matches || !candidates) return [];
+
+    return matches
+        .filter((m) => m.matched_index !== null && m.matched_index! < candidates.length)
+        .map((m) => {
+            const candidate = candidates[m.matched_index!];
+            return {
+                id: `${algorithmId}-circle-match-${m.expected.cell.i}-${m.expected.cell.j}`,
+                type: "point" as const,
+                source: "algorithm" as const,
+                algorithmId,
+                runId,
+                readonly: true,
+                x: toCanvasCoordinate(candidate.center_img.x),
+                y: toCanvasCoordinate(candidate.center_img.y),
+                color,
+                label: `(${m.expected.cell.i}, ${m.expected.cell.j})`,
+                meta: {
+                    kind: "circle_match",
+                    grid: m.expected.cell,
+                    polarity: m.expected.polarity,
+                    score: candidate.score,
+                    contrast: candidate.contrast,
+                    distanceCells: m.distance_cells,
+                    offsetCells: m.offset_cells,
+                },
+            };
+        });
 };

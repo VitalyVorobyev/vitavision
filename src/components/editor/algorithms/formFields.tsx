@@ -5,7 +5,7 @@ import { Info } from "lucide-react";
 
 function InfoTooltip({ text }: { text: string }) {
     const [open, setOpen] = useState(false);
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
         if (!open) return;
@@ -28,12 +28,31 @@ function InfoTooltip({ text }: { text: string }) {
         >
             <Info size={12} className="text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
             {open && (
-                <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-56 rounded-md border border-border bg-popover p-2 text-[11px] text-popover-foreground shadow-md leading-relaxed">
+                <div className="fixed z-[100] w-56 rounded-md border border-border bg-surface p-2 text-[11px] text-foreground shadow-lg leading-relaxed pointer-events-none"
+                    style={tooltipPosition(ref)}
+                >
                     {text}
                 </div>
             )}
         </span>
     );
+}
+
+/** Position the tooltip above the trigger, clamped within the viewport. */
+function tooltipPosition(ref: React.RefObject<HTMLSpanElement | null>): React.CSSProperties {
+    const el = ref.current;
+    if (!el) return {};
+    const rect = el.getBoundingClientRect();
+    const pad = 8;
+    // Try to center above the icon
+    let left = rect.left + rect.width / 2 - 112; // 112 = w-56 / 2
+    left = Math.max(pad, Math.min(left, window.innerWidth - 224 - pad));
+    let top = rect.top - pad;
+    // If too close to top, show below instead
+    if (top < 40) {
+        top = rect.bottom + pad;
+    }
+    return { left, top, transform: top < rect.top ? "translateY(-100%)" : undefined };
 }
 
 /* ── field label ─────────────────────────────────────────────── */

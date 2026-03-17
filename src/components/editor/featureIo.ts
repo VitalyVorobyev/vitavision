@@ -1,8 +1,38 @@
 import { featuresArraySchema } from "../../store/editor/featureSchema";
 import { normalizeImportedFeatures, type Feature } from "../../store/editor/useEditorStore";
 
+/** Internal fields stripped from JSON export. */
+const INTERNAL_KEYS = new Set(["id", "runId", "algorithmId", "source", "readonly"]);
+
+/** Meta fields to keep in export (rendering-relevant only). */
+const EXPORT_META_KEYS = new Set(["grid", "polarity"]);
+
+function stripForExport(feature: Feature): Record<string, unknown> {
+    const out: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(feature)) {
+        if (INTERNAL_KEYS.has(key)) continue;
+        if (key === "meta" && value && typeof value === "object") {
+            const meta: Record<string, unknown> = {};
+            for (const [mk, mv] of Object.entries(value as Record<string, unknown>)) {
+                if (EXPORT_META_KEYS.has(mk) && mv !== undefined && mv !== null) {
+                    meta[mk] = mv;
+                }
+            }
+            if (Object.keys(meta).length > 0) {
+                out.meta = meta;
+            }
+            continue;
+        }
+        if (value !== undefined) {
+            out[key] = value;
+        }
+    }
+    return out;
+}
+
 export function exportFeaturesAsJson(features: Feature[]) {
-    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(features, null, 2))}`;
+    const exported = features.map(stripForExport);
+    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(exported, null, 2))}`;
     const link = document.createElement("a");
     link.setAttribute("href", dataStr);
     link.setAttribute("download", "vitavision_features.json");

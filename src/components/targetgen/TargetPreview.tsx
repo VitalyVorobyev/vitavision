@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
-import { Maximize } from "lucide-react";
 import type { TargetGeneratorState, TargetGeneratorAction } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
+import ZoomControls from "../shared/ZoomControls";
 
 /** CSS px per mm (CSS spec: 1in = 96px, 1in = 25.4mm). */
 const CSS_PX_PER_MM = 96 / 25.4;
@@ -68,6 +68,14 @@ export default function TargetPreview({ state, dispatch }: Props) {
     const zoomTo100 = useCallback(() => {
         setZoom(1);
         setPan({ x: 0, y: 0 });
+    }, []);
+
+    const zoomIn = useCallback(() => {
+        setZoom((z) => Math.min(10, z * 1.1));
+    }, []);
+
+    const zoomOut = useCallback(() => {
+        setZoom((z) => Math.max(0.1, z / 1.1));
     }, []);
 
     // Auto-fit on first render
@@ -219,26 +227,14 @@ export default function TargetPreview({ state, dispatch }: Props) {
             </div>
 
             {/* Zoom controls */}
-            <div className="absolute bottom-3 right-3 flex items-center gap-1">
-                <button
-                    type="button"
-                    onClick={fitToScreen}
-                    className="rounded-md bg-background/80 backdrop-blur-sm border border-border p-1.5 text-muted-foreground hover:text-foreground hover:bg-background transition-colors"
-                    title="Fit to screen"
-                >
-                    <Maximize size={14} />
-                </button>
-                <button
-                    type="button"
-                    onClick={zoomTo100}
-                    className="rounded-md bg-background/80 backdrop-blur-sm border border-border px-1.5 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-background transition-colors"
-                    title="Zoom to 100%"
-                >
-                    1:1
-                </button>
-                <div className="rounded-md bg-background/80 backdrop-blur-sm border border-border px-2 py-1 text-[11px] text-muted-foreground min-w-[3.5rem] text-center">
-                    {Math.round(zoom * 100)}%
-                </div>
+            <div className="absolute top-3 right-3">
+                <ZoomControls
+                    onZoomIn={zoomIn}
+                    onZoomOut={zoomOut}
+                    onFit={fitToScreen}
+                    onActual={zoomTo100}
+                    zoomPercent={Math.round(zoom * 100)}
+                />
             </div>
         </div>
     );

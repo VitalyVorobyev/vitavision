@@ -64,11 +64,18 @@ export interface ValidationResult {
 
 // ── State ────────────────────────────────────────────────────────────────────
 
+export interface ConfigCache {
+    chessboard?: ChessboardConfig;
+    charuco?: CharucoConfig;
+    markerboard?: MarkerBoardConfig;
+}
+
 export interface TargetGeneratorState {
     target: TargetConfig;
     page: PageConfig;
     previewSvg: string;
     validation: ValidationResult;
+    configCache: ConfigCache;
 }
 
 // ── Actions ──────────────────────────────────────────────────────────────────

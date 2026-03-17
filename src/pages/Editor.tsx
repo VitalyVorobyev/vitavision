@@ -13,14 +13,11 @@ import {
     Edit2,
     Square,
     Circle,
-    ZoomIn,
-    ZoomOut,
-    Maximize,
-    Scaling,
     Eye,
     EyeOff,
     Image as ImageIcon,
 } from "lucide-react";
+import ZoomControls from "../components/shared/ZoomControls";
 
 export default function Editor() {
     const {
@@ -39,11 +36,11 @@ export default function Editor() {
     const [annotationToolsOpen, setAnnotationToolsOpen] = useState(false);
 
     const manualTools: { id: ToolType; icon: React.ReactNode; label: string }[] = [
-        { id: "POINT", icon: <MapPin size={18} />, label: "Point" },
-        { id: "LINE", icon: <Minus size={18} />, label: "Line" },
-        { id: "POLYLINE", icon: <Edit2 size={18} />, label: "Polyline" },
-        { id: "BBOX", icon: <Square size={18} />, label: "Bounding Box" },
-        { id: "ELLIPSE", icon: <Circle size={18} />, label: "Ellipse" },
+        { id: "POINT", icon: <MapPin size={22} />, label: "Point" },
+        { id: "LINE", icon: <Minus size={22} />, label: "Line" },
+        { id: "POLYLINE", icon: <Edit2 size={22} />, label: "Polyline" },
+        { id: "BBOX", icon: <Square size={22} />, label: "Bounding Box" },
+        { id: "ELLIPSE", icon: <Circle size={22} />, label: "Ellipse" },
     ];
 
     const handleZoomIn = () => setZoom(zoom * 1.2);
@@ -143,7 +140,7 @@ export default function Editor() {
                                         key={tool.id}
                                         onClick={() => setActiveTool(tool.id)}
                                         title={tool.label}
-                                        className={`p-2.5 rounded-md flex items-center justify-center transition-colors ${
+                                        className={`p-3 rounded-md flex items-center justify-center transition-colors ${
                                             activeTool === tool.id
                                                 ? "bg-primary text-primary-foreground shadow-xs"
                                                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -157,18 +154,19 @@ export default function Editor() {
                     </div>
                 </div>
 
-                <div className="shrink-0 border-t border-border/70 px-2 py-4">
-                    <div className="flex flex-col space-y-2 w-full">
-                        <button onClick={handleZoomIn} title="Zoom In" className="p-2 mx-auto rounded-md text-muted-foreground hover:bg-muted"><ZoomIn size={16} /></button>
-                        <button onClick={handleZoomOut} title="Zoom Out" className="p-2 mx-auto rounded-md text-muted-foreground hover:bg-muted"><ZoomOut size={16} /></button>
-                        <button onClick={handleZoomActual} title="1:1 Size" className="p-2 mx-auto rounded-md text-muted-foreground hover:bg-muted"><Scaling size={16} /></button>
-                        <button onClick={handleZoomFit} title="Fit to Screen" className="p-2 mx-auto rounded-md text-muted-foreground hover:bg-muted"><Maximize size={16} /></button>
-                    </div>
-                </div>
             </div>
 
             <div className="flex-1 relative overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiAvPgo8cGF0aCBkPSJNMCAwbDhfOGm0XzgtOF8wIiBzdHJva2U9IiNlNWU3ZWIiIC8+Cjwvc3ZnPg==')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjMTgxODE4IiAvPgo8cGF0aCBkPSJNMCAwbDhfOG0wXzgtOF8wIiBzdHJva2U9IiMyODI4MjgiIC8+Cjwvc3ZnPg==')]">
                 <CanvasWorkspace />
+                <div className="absolute top-3 right-3">
+                    <ZoomControls
+                        onZoomIn={handleZoomIn}
+                        onZoomOut={handleZoomOut}
+                        onFit={handleZoomFit}
+                        onActual={handleZoomActual}
+                        zoomPercent={Math.round(zoom * 100)}
+                    />
+                </div>
             </div>
 
             <EditorRightPanel />

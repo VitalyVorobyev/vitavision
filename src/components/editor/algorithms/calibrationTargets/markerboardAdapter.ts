@@ -3,7 +3,7 @@ import type { CalibrationTargetResult } from "../../../../lib/api";
 import { detectCalibrationTarget } from "../../../../lib/api";
 import {
     calibrationCornerFeatures,
-    calibrationCircleCandidateFeatures,
+    calibrationCircleMatchFeatures,
     calibrationSummary,
 } from "./shared";
 import MarkerBoardConfigForm, { type MarkerBoardConfig } from "./MarkerBoardConfigForm";
@@ -36,7 +36,7 @@ const initialConfig: MarkerBoardConfig = {
 
 const toFeatures = (result: CalibrationTargetResult, runId: string) => [
     ...calibrationCornerFeatures(result, runId, "markerboard"),
-    ...calibrationCircleCandidateFeatures(result.circle_candidates, runId, "markerboard"),
+    ...calibrationCircleMatchFeatures(result.circle_matches, result.circle_candidates, runId, "markerboard"),
 ];
 
 export const markerboardAlgorithm: AlgorithmDefinition = {

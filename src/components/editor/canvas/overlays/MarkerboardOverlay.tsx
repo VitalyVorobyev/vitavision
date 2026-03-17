@@ -31,7 +31,16 @@ export default function MarkerboardOverlay({
     const grid = useMemo(() => buildCornerGrid(data.detection.corners), [data]);
     const edges = useMemo(() => buildGridEdges(grid), [grid]);
 
-    const candidates = data.circle_candidates ?? [];
+    const matchedCircles = useMemo(() => {
+        const matches = data.circle_matches ?? [];
+        const candidates = data.circle_candidates ?? [];
+        return matches
+            .filter((m) => m.matched_index !== null && m.matched_index! < candidates.length)
+            .map((m) => ({
+                ...candidates[m.matched_index!],
+                expectedCell: m.expected.cell,
+            }));
+    }, [data]);
     const cornersVisible = showFeatures && isFeatureGroupVisible("algo:checkerboard_marker", featureGroupVisibility);
     const circlesVisible = showFeatures && isFeatureGroupVisible("algo:circle_candidate", featureGroupVisibility);
     const showLabels = toggles.labels && zoom >= LABEL_MIN_ZOOM;
@@ -82,7 +91,7 @@ export default function MarkerboardOverlay({
 
             {circlesVisible && (
                 <Group>
-                    {candidates.map((c, i) => {
+                    {matchedCircles.map((c, i) => {
                         const cx = toCanvasCoordinate(c.center_img.x);
                         const cy = toCanvasCoordinate(c.center_img.y);
                         const color = c.polarity === "white" ? overlayTheme.circleLight : overlayTheme.circleDark;
@@ -112,7 +121,7 @@ export default function MarkerboardOverlay({
                                     >
                                         <Tag fill={overlayTheme.labelBg} cornerRadius={2 / zoom} />
                                         <Text
-                                            text={`${c.cell.i},${c.cell.j}`}
+                                            text={`(${c.expectedCell.i}, ${c.expectedCell.j})`}
                                             fontSize={fontSize}
                                             fill={overlayTheme.labelText}
                                             padding={labelPad}

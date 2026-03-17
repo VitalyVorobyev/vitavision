@@ -97,16 +97,6 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
                     step={0.05}
                     tooltip="Circle diameter relative to square size"
                 />
-                <NumberField
-                    label="Inner square"
-                    value={config.innerSquareRel}
-                    onChange={(v) => update({ innerSquareRel: v ?? 0 })}
-                    disabled={false}
-                    min={0}
-                    max={0.95}
-                    step={0.05}
-                    tooltip="White square inside black squares (0 = off). For laser calibration targets."
-                />
             </Section>
 
             <Section title="Circle Markers">

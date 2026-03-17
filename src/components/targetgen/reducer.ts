@@ -11,8 +11,8 @@ import type {
 export function defaultCircles(innerRows: number, innerCols: number): CircleSpec[] {
     const totalRows = innerRows + 1;
     const totalCols = innerCols + 1;
-    const ci = Math.floor(totalRows / 2);
-    const cj = Math.floor(totalCols / 2);
+    const ci = Math.floor((totalRows - 1) / 2);
+    const cj = Math.floor((totalCols - 1) / 2);
 
     return [
         { cell: { i: ci, j: cj } },

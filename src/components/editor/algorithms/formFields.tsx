@@ -1,10 +1,11 @@
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Info } from "lucide-react";
 
 /* ── tooltip ─────────────────────────────────────────────────── */
 
 function InfoTooltip({ text }: { text: string }) {
     const [open, setOpen] = useState(false);
+    const [pos, setPos] = useState<React.CSSProperties>({});
     const ref = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
@@ -18,41 +19,38 @@ function InfoTooltip({ text }: { text: string }) {
         return () => document.removeEventListener("mousedown", close);
     }, [open]);
 
+    const show = useCallback(() => {
+        const el = ref.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const pad = 8;
+        let left = rect.left + rect.width / 2 - 112; // 112 = w-56 / 2
+        left = Math.max(pad, Math.min(left, window.innerWidth - 224 - pad));
+        let top = rect.top - pad;
+        if (top < 40) top = rect.bottom + pad;
+        setPos({ left, top, transform: top < rect.top ? "translateY(-100%)" : undefined });
+        setOpen(true);
+    }, []);
+
     return (
         <span
             ref={ref}
             className="relative inline-flex"
-            onMouseEnter={() => setOpen(true)}
+            onMouseEnter={show}
             onMouseLeave={() => setOpen(false)}
-            onClick={() => setOpen((v) => !v)}
+            onClick={show}
         >
             <Info size={12} className="text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
             {open && (
-                <div className="fixed z-[100] w-56 rounded-md border border-border bg-surface p-2 text-[11px] text-foreground shadow-lg leading-relaxed pointer-events-none"
-                    style={tooltipPosition(ref)}
+                <div
+                    className="fixed z-[100] w-56 rounded-md border border-border bg-surface p-2 text-[11px] text-foreground shadow-lg leading-relaxed pointer-events-none"
+                    style={pos}
                 >
                     {text}
                 </div>
             )}
         </span>
     );
-}
-
-/** Position the tooltip above the trigger, clamped within the viewport. */
-function tooltipPosition(ref: React.RefObject<HTMLSpanElement | null>): React.CSSProperties {
-    const el = ref.current;
-    if (!el) return {};
-    const rect = el.getBoundingClientRect();
-    const pad = 8;
-    // Try to center above the icon
-    let left = rect.left + rect.width / 2 - 112; // 112 = w-56 / 2
-    left = Math.max(pad, Math.min(left, window.innerWidth - 224 - pad));
-    let top = rect.top - pad;
-    // If too close to top, show below instead
-    if (top < 40) {
-        top = rect.bottom + pad;
-    }
-    return { left, top, transform: top < rect.top ? "translateY(-100%)" : undefined };
 }
 
 /* ── field label ─────────────────────────────────────────────── */

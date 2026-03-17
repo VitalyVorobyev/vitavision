@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
 import { Info } from "lucide-react";
 
 /* ── tooltip ─────────────────────────────────────────────────── */

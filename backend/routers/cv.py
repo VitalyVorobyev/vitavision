@@ -1107,5 +1107,3 @@ async def detect_calibration_target(
         circle_candidates=circle_candidates,
         circle_matches=circle_matches,
     )
-
-

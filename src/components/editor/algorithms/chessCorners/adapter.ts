@@ -13,12 +13,6 @@ const toSummary = (result: ChessCornersResult): AlgorithmSummaryEntry[] => {
     return [
         { label: "Corners", value: `${result.summary.count}` },
         { label: "Runtime", value: `${result.summary.runtime_ms.toFixed(2)} ms` },
-        {
-            label: "Subpixel mean",
-            value: result.summary.subpixel_mean_offset_px === null
-                ? "n/a"
-                : `${result.summary.subpixel_mean_offset_px.toFixed(3)} px`,
-        },
     ];
 };
 

@@ -33,6 +33,12 @@ STORAGE_MODE=local LOCAL_STORAGE_ROOT=/tmp pytest tests/ -v   # tests
 ruff check . && ruff format --check . && mypy . --ignore-missing-imports  # quality gates
 ```
 
+### Verification Checklist
+After any code change, run **all** of the following before committing:
+1. `bun run build` — frontend type-check + production build
+2. `bun run lint` — ESLint
+3. `cd backend && source .venv/bin/activate && STORAGE_MODE=local LOCAL_STORAGE_ROOT=/tmp pytest tests/ -v` — backend tests
+
 ## Architecture Overview
 
 Computer vision web app: image annotation editor + algorithm runner.

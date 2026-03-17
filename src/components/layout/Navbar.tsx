@@ -55,6 +55,18 @@ export default function Navbar() {
                     Blog
                 </Link>
                 <Link
+                    to="/algorithms"
+                    className={`hover:text-foreground transition-colors ${location.pathname.startsWith('/algorithms') ? 'text-foreground' : 'text-muted-foreground'}`}
+                >
+                    Algorithms
+                </Link>
+                <Link
+                    to="/tools/target-generator"
+                    className={`hover:text-foreground transition-colors ${location.pathname.startsWith('/tools') ? 'text-foreground' : 'text-muted-foreground'}`}
+                >
+                    Targets
+                </Link>
+                <Link
                     to="/about"
                     className={`hover:text-foreground transition-colors ${location.pathname === '/about' ? 'text-foreground' : 'text-muted-foreground'}`}
                 >

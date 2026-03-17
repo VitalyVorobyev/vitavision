@@ -1,11 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
 import { Info } from "lucide-react";
 
 /* ── tooltip ─────────────────────────────────────────────────── */
 
 function InfoTooltip({ text }: { text: string }) {
     const [open, setOpen] = useState(false);
-    const ref = useRef<HTMLDivElement>(null);
+    const [pos, setPos] = useState<React.CSSProperties>({});
+    const ref = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
         if (!open) return;
@@ -18,17 +19,33 @@ function InfoTooltip({ text }: { text: string }) {
         return () => document.removeEventListener("mousedown", close);
     }, [open]);
 
+    const show = useCallback(() => {
+        const el = ref.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const pad = 8;
+        let left = rect.left + rect.width / 2 - 112; // 112 = w-56 / 2
+        left = Math.max(pad, Math.min(left, window.innerWidth - 224 - pad));
+        let top = rect.top - pad;
+        if (top < 40) top = rect.bottom + pad;
+        setPos({ left, top, transform: top < rect.top ? "translateY(-100%)" : undefined });
+        setOpen(true);
+    }, []);
+
     return (
         <span
             ref={ref}
             className="relative inline-flex"
-            onMouseEnter={() => setOpen(true)}
+            onMouseEnter={show}
             onMouseLeave={() => setOpen(false)}
-            onClick={() => setOpen((v) => !v)}
+            onClick={show}
         >
             <Info size={12} className="text-muted-foreground/50 hover:text-muted-foreground cursor-help" />
             {open && (
-                <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-56 rounded-md border border-border bg-popover p-2 text-[11px] text-popover-foreground shadow-md leading-relaxed">
+                <div
+                    className="fixed z-[100] w-56 rounded-md border border-border bg-surface p-2 text-[11px] text-foreground shadow-lg leading-relaxed pointer-events-none"
+                    style={pos}
+                >
                     {text}
                 </div>
             )}
@@ -106,10 +123,42 @@ export function Section(props: SectionProps) {
 
 export function NumberField(props: NumberFieldProps) {
     const { label, value, onChange, disabled, min, max, step, placeholder, tooltip } = props;
+    const inputRef = useRef<HTMLInputElement>(null);
+    const handleWheelEvent = useEffectEvent((e: WheelEvent) => {
+        const el = inputRef.current;
+        if (!el || document.activeElement !== el) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        if (disabled) {
+            return;
+        }
+
+        const stepVal = step ?? 1;
+        const delta = e.deltaY < 0 ? stepVal : -stepVal;
+        // Round to step precision to avoid floating-point drift (e.g. 0.75 + 0.01 = 0.7600000000000001)
+        const precision = Math.max(0, -Math.floor(Math.log10(stepVal)));
+        let next = parseFloat(((value ?? 0) + delta).toFixed(precision));
+        if (min != null) next = Math.max(min, next);
+        if (max != null) next = Math.min(max, next);
+        onChange(next);
+    });
+
+    useEffect(() => {
+        const el = inputRef.current;
+        if (!el) return;
+        const handleWheel = (e: WheelEvent) => handleWheelEvent(e);
+        el.addEventListener("wheel", handleWheel, { passive: false });
+        return () => el.removeEventListener("wheel", handleWheel);
+    }, []);
+
     return (
         <label className="grid gap-1">
             <FieldLabel label={label} tooltip={tooltip} />
             <input
+                ref={inputRef}
                 type="number"
                 min={min}
                 max={max}

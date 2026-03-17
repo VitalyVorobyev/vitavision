@@ -27,6 +27,7 @@ export default function CanvasWorkspace() {
         setSelectedFeatureId,
         showFeatures,
         lastAlgorithmResult,
+        featureGroupVisibility,
         overlayVisibility,
         overlayToggles,
     } = useEditorStore();
@@ -53,6 +54,8 @@ export default function CanvasWorkspace() {
     const canTransformSelectedFeature = selectedFeature !== null
         && !isReadonlyFeature(selectedFeature)
         && (selectedFeature.type === "bbox" || selectedFeature.type === "ellipse");
+    const hasActiveAlgorithmOverlay = lastAlgorithmResult !== null
+        && !!getAlgorithmById(lastAlgorithmResult.algorithmId).OverlayComponent;
 
     useEffect(() => {
         if (!imageSrc || !imageWidth || !imageHeight) {
@@ -514,6 +517,8 @@ export default function CanvasWorkspace() {
                                 <Overlay
                                     result={lastAlgorithmResult.result}
                                     zoom={zoom}
+                                    showFeatures={showFeatures}
+                                    featureGroupVisibility={featureGroupVisibility}
                                     toggles={overlayToggles}
                                 />
                             );
@@ -522,6 +527,8 @@ export default function CanvasWorkspace() {
                         <FeatureLayer
                             features={features}
                             showFeatures={showFeatures}
+                            showAlgorithmFeatures={!overlayVisibility.algorithmOverlay || !hasActiveAlgorithmOverlay}
+                            featureGroupVisibility={featureGroupVisibility}
                             zoom={zoom}
                             activeTool={activeTool}
                             selectedFeatureId={selectedFeatureId}

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const baseFeatureSchema = z.object({
-    id: z.string(),
+    id: z.string().default(() => crypto.randomUUID()),
     source: z.enum(["manual", "algorithm"]).default("manual"),
     algorithmId: z.string().optional(),
     runId: z.string().optional(),

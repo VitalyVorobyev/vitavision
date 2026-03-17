@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { LoaderCircle, Sparkles, AlertCircle, Maximize2 } from "lucide-react";
 
 import { useEditorStore } from "../../../store/editor/useEditorStore";
@@ -149,6 +150,17 @@ export default function ConfigurePanel() {
                 <AlgorithmPicker value={selectedAlgorithmId} onChange={handleSelectAlgorithm} />
                 <p className="text-xs text-muted-foreground leading-relaxed px-0.5">
                     {algorithm.description}
+                    {algorithm.blogSlug && (
+                        <>
+                            {" "}
+                            <Link
+                                to={`/blog/${algorithm.blogSlug}`}
+                                className="text-primary underline hover:text-primary/80"
+                            >
+                                Learn more
+                            </Link>
+                        </>
+                    )}
                 </p>
             </RailSection>
 

@@ -1,6 +1,12 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { ChevronRight, Lock, Trash2 } from "lucide-react";
+import { ChevronRight, Download, Eye, EyeOff, Lock, Trash2, Upload } from "lucide-react";
 
+import { exportFeaturesAsJson, promptFeatureImport } from "../featureIo";
+import {
+    buildFeatureGroups,
+    getFeatureGroupKey,
+    isFeatureGroupVisible,
+} from "../../../store/editor/featureGroups";
 import { isReadonlyFeature, useEditorStore, type Feature, type FeatureMeta } from "../../../store/editor/useEditorStore";
 
 /* ── helpers ─────────────────────────────────────────────────── */
@@ -48,16 +54,6 @@ const renderDetailMeta = (meta: FeatureMeta): React.ReactNode[] => {
             : null,
     ];
     return rows.filter((row): row is React.ReactNode => row !== null);
-};
-
-const featureSwatch = (feature: Feature): string => {
-    if (feature.color) {
-        return feature.color;
-    }
-    if (feature.type === "directed_point") {
-        return "#60a5fa";
-    }
-    return "#9ca3af";
 };
 
 /** Extract (x, y) from any spatial feature. */
@@ -115,73 +111,17 @@ function featureRowSummary(feature: Feature): string {
 
     return "";
 }
-
-/* ── grouping ────────────────────────────────────────────────── */
-
-interface FeatureGroup {
-    key: string;
-    label: string;
-    color: string;
-    features: Feature[];
-}
-
-const KIND_LABELS: Record<string, string> = {
-    chessboard: "Corners",
-    charuco: "Corners",
-    checkerboard_marker: "Corners",
-    marker: "Markers",
-    circle_candidate: "Circle candidates",
-};
-
-const TYPE_LABELS: Record<string, string> = {
-    point: "Points",
-    line: "Lines",
-    polyline: "Polylines",
-    bbox: "Bounding boxes",
-    ellipse: "Ellipses",
-    directed_point: "Directed points",
-};
-
-function groupKey(feature: Feature): string {
-    if (feature.source === "algorithm" && feature.meta?.kind) {
-        return `algo:${feature.meta.kind}`;
-    }
-    return `type:${feature.type}`;
-}
-
-function groupLabel(key: string): string {
-    const [prefix, value] = key.split(":");
-    if (prefix === "algo") {
-        return KIND_LABELS[value] ?? value;
-    }
-    return TYPE_LABELS[value] ?? value;
-}
-
-function buildGroups(features: Feature[]): FeatureGroup[] {
-    const map = new Map<string, Feature[]>();
-    const order: string[] = [];
-    for (const f of features) {
-        const k = groupKey(f);
-        if (!map.has(k)) {
-            map.set(k, []);
-            order.push(k);
-        }
-        map.get(k)!.push(f);
-    }
-    return order.map((k) => {
-        const items = map.get(k)!;
-        return {
-            key: k,
-            label: groupLabel(k),
-            color: featureSwatch(items[0]),
-            features: items,
-        };
-    });
-}
-
 /* ── selected feature card ───────────────────────────────────── */
 
-function SelectedFeatureCard({ feature, onDelete }: { feature: Feature; onDelete: () => void }) {
+function SelectedFeatureCard({
+    feature,
+    hidden,
+    onDelete,
+}: {
+    feature: Feature;
+    hidden: boolean;
+    onDelete: () => void;
+}) {
     const readonly = isReadonlyFeature(feature);
     const meta = feature.meta;
     const xy = featureXY(feature);
@@ -192,11 +132,18 @@ function SelectedFeatureCard({ feature, onDelete }: { feature: Feature; onDelete
                 <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
                     Selected
                 </span>
-                {readonly && (
-                    <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
-                        <Lock size={9} /> read-only
-                    </span>
-                )}
+                <div className="flex items-center gap-1.5">
+                    {hidden && (
+                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-slate-900 text-slate-100">
+                            <EyeOff size={9} /> hidden
+                        </span>
+                    )}
+                    {readonly && (
+                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                            <Lock size={9} /> read-only
+                        </span>
+                    )}
+                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
@@ -257,6 +204,32 @@ function SelectedFeatureCard({ feature, onDelete }: { feature: Feature; onDelete
     );
 }
 
+function ActionButton({
+    children,
+    className,
+    disabled,
+    onClick,
+    title,
+}: {
+    children: React.ReactNode;
+    className?: string;
+    disabled?: boolean;
+    onClick: () => void;
+    title: string;
+}) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            disabled={disabled}
+            title={title}
+            className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-medium transition-colors disabled:opacity-45 disabled:cursor-not-allowed ${className ?? "border-border bg-background text-foreground hover:bg-muted/50"}`}
+        >
+            {children}
+        </button>
+    );
+}
+
 /* ── main component ──────────────────────────────────────────── */
 
 export default function FeatureListPanel() {
@@ -264,14 +237,45 @@ export default function FeatureListPanel() {
         features,
         selectedFeatureId,
         setSelectedFeatureId,
+        setFeatures,
+        clearFeatures,
         deleteFeature,
+        featureGroupVisibility,
+        setFeatureGroupVisibility,
     } = useEditorStore();
 
     const selectedFeature = features.find((feature) => feature.id === selectedFeatureId) ?? null;
+    const selectedFeatureHidden = selectedFeature
+        ? !isFeatureGroupVisible(getFeatureGroupKey(selectedFeature), featureGroupVisibility)
+        : false;
 
-    const groups = useMemo(() => buildGroups(features), [features]);
+    const groups = useMemo(() => buildFeatureGroups(features), [features]);
     const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
     const listRef = useRef<HTMLDivElement>(null);
+
+    const handleImport = useCallback(() => {
+        promptFeatureImport({
+            currentFeatureCount: features.length,
+            onLoaded: (imported) => {
+                clearFeatures();
+                setFeatures(imported);
+            },
+        });
+    }, [clearFeatures, features.length, setFeatures]);
+
+    const handleExport = useCallback(() => {
+        exportFeaturesAsJson(features);
+    }, [features]);
+
+    const handleClear = useCallback(() => {
+        if (features.length === 0) {
+            return;
+        }
+        if (!window.confirm("Clear all features and reset the current results for this image?")) {
+            return;
+        }
+        clearFeatures();
+    }, [clearFeatures, features.length]);
 
     const toggleGroup = useCallback((key: string) => {
         setCollapsed((prev) => {
@@ -331,10 +335,34 @@ export default function FeatureListPanel() {
 
     return (
         <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap gap-2">
+                <ActionButton title="Import feature JSON" onClick={handleImport}>
+                    <Upload size={12} />
+                    Import JSON
+                </ActionButton>
+                <ActionButton
+                    title="Export current features"
+                    onClick={handleExport}
+                    disabled={features.length === 0}
+                >
+                    <Download size={12} />
+                    Export JSON
+                </ActionButton>
+                <ActionButton
+                    title="Clear all features"
+                    onClick={handleClear}
+                    disabled={features.length === 0}
+                    className="border-destructive/20 bg-destructive/5 text-destructive hover:bg-destructive/10"
+                >
+                    <Trash2 size={12} />
+                    Clear features
+                </ActionButton>
+            </div>
 
             {selectedFeature && (
                 <SelectedFeatureCard
                     feature={selectedFeature}
+                    hidden={selectedFeatureHidden}
                     onDelete={() => deleteFeature(selectedFeature.id)}
                 />
             )}
@@ -361,32 +389,44 @@ export default function FeatureListPanel() {
                     <div className="space-y-1.5 pb-4">
                         {groups.map((group) => {
                             const isCollapsed = collapsed.has(group.key);
+                            const isVisible = isFeatureGroupVisible(group.key, featureGroupVisibility);
                             return (
                                 <div key={group.key}>
                                     {/* group header */}
-                                    <button
-                                        onClick={() => toggleGroup(group.key)}
-                                        className="flex items-center gap-1.5 w-full px-1 py-1 text-xs rounded-md hover:bg-muted/30 transition-colors"
-                                    >
-                                        <ChevronRight
-                                            size={12}
-                                            className={`text-muted-foreground/60 transition-transform duration-150 ${
-                                                isCollapsed ? "" : "rotate-90"
-                                            }`}
-                                        />
-                                        <div
-                                            className="w-2 h-2 rounded-xs shrink-0"
-                                            style={{ backgroundColor: group.color }}
-                                        />
-                                        <span className="font-medium text-foreground">{group.label}</span>
-                                        <span className="text-[10px] text-muted-foreground tabular-nums ml-auto">
-                                            {group.features.length}
-                                        </span>
-                                    </button>
+                                    <div className={`flex items-center gap-1 rounded-md transition-colors ${isVisible ? "hover:bg-muted/30" : "opacity-55 hover:bg-muted/20"}`}>
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleGroup(group.key)}
+                                            className="flex min-w-0 flex-1 items-center gap-1.5 px-1 py-1 text-xs text-left"
+                                        >
+                                            <ChevronRight
+                                                size={12}
+                                                className={`text-muted-foreground/60 transition-transform duration-150 ${
+                                                    isCollapsed ? "" : "rotate-90"
+                                                }`}
+                                            />
+                                            <div
+                                                className="w-2 h-2 rounded-xs shrink-0"
+                                                style={{ backgroundColor: group.color }}
+                                            />
+                                            <span className="font-medium text-foreground truncate">{group.label}</span>
+                                            <span className="text-[10px] text-muted-foreground tabular-nums ml-auto">
+                                                {group.features.length}
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFeatureGroupVisibility(group.key, !isVisible)}
+                                            className="mr-1 rounded-md p-1 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+                                            title={isVisible ? `Hide ${group.label}` : `Show ${group.label}`}
+                                        >
+                                            {isVisible ? <Eye size={12} /> : <EyeOff size={12} />}
+                                        </button>
+                                    </div>
 
                                     {/* group items */}
                                     {!isCollapsed && (
-                                        <div className="space-y-0.5 mt-0.5 ml-3">
+                                        <div className={`space-y-0.5 mt-0.5 ml-3 ${isVisible ? "" : "opacity-50"}`}>
                                             {group.features.map((feature, idx) => {
                                                 const isSelected = selectedFeatureId === feature.id;
                                                 const summary = featureRowSummary(feature);

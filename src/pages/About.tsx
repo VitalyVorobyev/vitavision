@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import SeoHead from "../components/seo/SeoHead.tsx";
 
 const SKILLS = ["Computer vision", "Machine learning", "Algorithms", "C++", "Rust", "Python", "TypeScript", "React"];
 
@@ -16,6 +17,10 @@ export default function About() {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="max-w-3xl mx-auto px-6 py-16"
         >
+            <SeoHead
+                title="About"
+                description="About Vitaly Vorobyev — computer vision engineer, team lead at QUISS GmbH, and creator of VitaVision."
+            />
             {/* Two-column on md+, stacked on mobile */}
             <div className="flex flex-col md:flex-row gap-10 md:gap-14 items-start">
 

@@ -1,36 +1,28 @@
+import { useState } from "react";
+
 import CanvasWorkspace from "../components/editor/CanvasWorkspace";
 import EditorGallery from "../components/editor/EditorGallery";
+import SeoHead from "../components/seo/SeoHead.tsx";
 import EditorRightPanel from "../components/editor/panels/EditorRightPanel";
+import { useEditorStore, type ToolType } from "../store/editor/useEditorStore";
 import {
-    normalizeImportedFeatures,
-    useEditorStore,
-    type ToolType,
-} from "../store/editor/useEditorStore";
-import { featuresArraySchema } from "../store/editor/featureSchema";
-import {
+    ChevronDown,
     MousePointer2,
     MapPin,
     Minus,
     Edit2,
     Square,
     Circle,
-    ZoomIn,
-    ZoomOut,
-    Maximize,
-    Scaling,
     Eye,
     EyeOff,
-    Download,
-    Upload,
     Image as ImageIcon,
 } from "lucide-react";
+import ZoomControls from "../components/shared/ZoomControls";
 
 export default function Editor() {
     const {
         activeTool,
         setActiveTool,
-        features,
-        setFeatures,
         overlayVisibility,
         setOverlayVisibility,
         zoom,
@@ -41,54 +33,15 @@ export default function Editor() {
         galleryMode,
         setGalleryMode,
     } = useEditorStore();
+    const [annotationToolsOpen, setAnnotationToolsOpen] = useState(false);
 
-    const tools: { id: ToolType; icon: React.ReactNode; label: string }[] = [
-        { id: "SELECT", icon: <MousePointer2 size={18} />, label: "Select" },
-        { id: "POINT", icon: <MapPin size={18} />, label: "Point" },
-        { id: "LINE", icon: <Minus size={18} />, label: "Line" },
-        { id: "POLYLINE", icon: <Edit2 size={18} />, label: "Polyline" },
-        { id: "BBOX", icon: <Square size={18} />, label: "Bounding Box" },
-        { id: "ELLIPSE", icon: <Circle size={18} />, label: "Ellipse" },
+    const manualTools: { id: ToolType; icon: React.ReactNode; label: string }[] = [
+        { id: "POINT", icon: <MapPin size={22} />, label: "Point" },
+        { id: "LINE", icon: <Minus size={22} />, label: "Line" },
+        { id: "POLYLINE", icon: <Edit2 size={22} />, label: "Polyline" },
+        { id: "BBOX", icon: <Square size={22} />, label: "Bounding Box" },
+        { id: "ELLIPSE", icon: <Circle size={22} />, label: "Ellipse" },
     ];
-
-    const handleExport = () => {
-        const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(features, null, 2))}`;
-        const link = document.createElement("a");
-        link.setAttribute("href", dataStr);
-        link.setAttribute("download", "vitavision_features.json");
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-    };
-
-    const handleImport = () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = "application/json";
-        input.onchange = (event: Event) => {
-            const target = event.target as HTMLInputElement;
-            const file = target.files?.[0];
-            if (!file) {
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = (readerEvent) => {
-                try {
-                    const parsed = JSON.parse((readerEvent.target?.result as string) || "null");
-                    const result = featuresArraySchema.safeParse(parsed);
-                    if (!result.success) {
-                        alert(`Invalid feature file: ${result.error.issues[0]?.message ?? "unknown error"}`);
-                        return;
-                    }
-                    setFeatures(normalizeImportedFeatures(result.data));
-                } catch {
-                    alert("Failed to parse JSON.");
-                }
-            };
-            reader.readAsText(file);
-        };
-        input.click();
-    };
 
     const handleZoomIn = () => setZoom(zoom * 1.2);
     const handleZoomOut = () => setZoom(zoom / 1.2);
@@ -109,9 +62,23 @@ export default function Editor() {
         });
     };
 
+    const toggleAnnotationTools = () => {
+        setAnnotationToolsOpen((open) => {
+            const next = !open;
+            if (!next && activeTool !== "SELECT") {
+                setActiveTool("SELECT");
+            }
+            return next;
+        });
+    };
+
     if (galleryMode) {
         return (
             <div className="flex h-[calc(100vh-64px)] overflow-hidden animate-in fade-in">
+                <SeoHead
+                    title="Editor"
+                    description="Interactive image annotation editor with computer vision algorithm runner."
+                />
                 <EditorGallery />
             </div>
         );
@@ -119,60 +86,87 @@ export default function Editor() {
 
     return (
         <div className="flex h-[calc(100vh-64px)] overflow-hidden animate-in fade-in">
-            <div className="w-16 border-r border-border bg-muted/20 flex flex-col items-center py-4 space-y-4 shrink-0">
-                <button
-                    onClick={() => setGalleryMode(true)}
-                    title="Back to Gallery"
-                    className="p-3 rounded-md text-primary hover:bg-muted transition-colors font-bold"
-                >
-                    <ImageIcon size={20} />
-                </button>
-                <div className="border-t border-border w-full my-4" />
+            <div className="w-16 border-r border-border bg-muted/20 shrink-0 flex h-full flex-col">
+                <div className="shrink-0 flex flex-col items-center gap-3 px-2 pt-4">
+                    <button
+                        onClick={() => setGalleryMode(true)}
+                        title="Back to Gallery"
+                        className="p-3 rounded-md text-primary hover:bg-muted transition-colors font-bold"
+                    >
+                        <ImageIcon size={20} />
+                    </button>
 
-                <div className="space-y-4 flex flex-col w-full px-2">
-                    {tools.map((tool) => (
+                    <div className="w-full border-t border-border" />
+
+                    <button
+                        onClick={() => setActiveTool("SELECT")}
+                        title="Select"
+                        className={`p-3 rounded-md flex items-center justify-center transition-colors mx-auto ${
+                            activeTool === "SELECT"
+                                ? "bg-primary text-primary-foreground shadow-xs"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        }`}
+                    >
+                        <MousePointer2 size={18} />
+                    </button>
+
+                    <button
+                        onClick={() => setOverlayVisibility("features", !overlayVisibility.features)}
+                        title={overlayVisibility.features ? "Hide feature marks" : "Show feature marks"}
+                        className="p-3 rounded-md text-muted-foreground hover:bg-muted transition-colors"
+                    >
+                        {overlayVisibility.features ? <Eye size={18} /> : <EyeOff size={18} />}
+                    </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto px-2 py-4">
+                    <div className="rounded-xl border border-border/70 bg-background/70 shadow-xs overflow-hidden">
                         <button
-                            key={tool.id}
-                            onClick={() => setActiveTool(tool.id)}
-                            title={tool.label}
-                            className={`p-3 rounded-md flex items-center justify-center transition-colors mx-auto ${activeTool === tool.id ? "bg-primary text-primary-foreground shadow-xs" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
+                            type="button"
+                            onClick={toggleAnnotationTools}
+                            title={annotationToolsOpen ? "Collapse manual annotation tools" : "Expand manual annotation tools"}
+                            className="flex w-full items-center justify-center gap-1 py-2 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
                         >
-                            {tool.icon}
+                            <Edit2 size={15} />
+                            <ChevronDown
+                                size={12}
+                                className={`transition-transform duration-150 ${annotationToolsOpen ? "rotate-180" : ""}`}
+                            />
                         </button>
-                    ))}
+                        {annotationToolsOpen && (
+                            <div className="flex flex-col gap-2 px-2 pb-2">
+                                {manualTools.map((tool) => (
+                                    <button
+                                        key={tool.id}
+                                        onClick={() => setActiveTool(tool.id)}
+                                        title={tool.label}
+                                        className={`p-3 rounded-md flex items-center justify-center transition-colors ${
+                                            activeTool === tool.id
+                                                ? "bg-primary text-primary-foreground shadow-xs"
+                                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                        }`}
+                                    >
+                                        {tool.icon}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <div className="border-t border-border w-full my-4" />
-
-                <button
-                    onClick={() => setOverlayVisibility("features", !overlayVisibility.features)}
-                    title={overlayVisibility.features ? "Hide Features" : "Show Features"}
-                    className="p-3 rounded-md text-muted-foreground hover:bg-muted transition-colors"
-                >
-                    {overlayVisibility.features ? <Eye size={18} /> : <EyeOff size={18} />}
-                </button>
-
-                <div className="flex-1" />
-
-                <div className="flex flex-col space-y-2 w-full px-2 mt-auto">
-                    <button onClick={handleZoomIn} title="Zoom In" className="p-2 mx-auto rounded-md text-muted-foreground hover:bg-muted"><ZoomIn size={16} /></button>
-                    <button onClick={handleZoomOut} title="Zoom Out" className="p-2 mx-auto rounded-md text-muted-foreground hover:bg-muted"><ZoomOut size={16} /></button>
-                    <button onClick={handleZoomActual} title="1:1 Size" className="p-2 mx-auto rounded-md text-muted-foreground hover:bg-muted"><Scaling size={16} /></button>
-                    <button onClick={handleZoomFit} title="Fit to Screen" className="p-2 mx-auto rounded-md text-muted-foreground hover:bg-muted"><Maximize size={16} /></button>
-                </div>
-
-                <div className="border-t border-border w-full my-4" />
-
-                <button onClick={handleImport} title="Import JSON" className="p-3 rounded-md text-muted-foreground hover:bg-muted transition-colors">
-                    <Upload size={18} />
-                </button>
-                <button onClick={handleExport} title="Export JSON" className="p-3 rounded-md text-muted-foreground hover:bg-muted transition-colors">
-                    <Download size={18} />
-                </button>
             </div>
 
             <div className="flex-1 relative overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiAvPgo8cGF0aCBkPSJNMCAwbDhfOGm0XzgtOF8wIiBzdHJva2U9IiNlNWU3ZWIiIC8+Cjwvc3ZnPg==')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjMTgxODE4IiAvPgo8cGF0aCBkPSJNMCAwbDhfOG0wXzgtOF8wIiBzdHJva2U9IiMyODI4MjgiIC8+Cjwvc3ZnPg==')]">
                 <CanvasWorkspace />
+                <div className="absolute top-3 right-3">
+                    <ZoomControls
+                        onZoomIn={handleZoomIn}
+                        onZoomOut={handleZoomOut}
+                        onFit={handleZoomFit}
+                        onActual={handleZoomActual}
+                        zoomPercent={Math.round(zoom * 100)}
+                    />
+                </div>
             </div>
 
             <EditorRightPanel />

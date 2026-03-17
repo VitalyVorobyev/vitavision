@@ -1,5 +1,28 @@
 ## [Unreleased]
 
+- feat(TGEN-007): add curated preset configurations (camera calibration, robotics, industrial) for all 3 target types with preset picker and JSON config import
+- enhancement(TGEN-008): add board/page dimension overlay in preview, tooltips on all config fields
+- feat(TGEN-001): add `POST /api/v1/cv/calibration-targets/generate` endpoint supporting chessboard, ChArUco, and marker board targets with SVG/JSON/PNG output and paper configuration
+- test(TGEN-002): add 9 generation endpoint tests covering all target types, PNG inclusion, dictionary validation, board-too-large 422, and custom page sizes
+- feat(BLOG-015): add AlgorithmIndex and AlgorithmPost pages with /algorithms routes and Navbar link
+- feat(BLOG-016): add algorithm/blog cross-linking via relatedAlgorithms and relatedPosts frontmatter fields
+- feat(BLOG-017): prerender algorithm pages in postbuild with SSR and sitemap inclusion
+- feat(BLOG-018): add blogSlug to AlgorithmDefinition with "Learn more" link in ConfigurePanel
+- feat(BLOG-012): add client-side Mermaid diagram rendering via dynamic import and useMermaid hook
+- feat(BLOG-013): add content image pipeline — relative path resolution in markdown and content/images/ copy to dist during postbuild
+- feat(BLOG-014): add content:validate script (Zod frontmatter, image references, internal links) and validate-content CI job
+- feat(BLOG-011): add draft post support with INCLUDE_DRAFTS env var and visual badge
+- feat(BLOG-010): generate RSS and Atom feeds during postbuild with feed autodiscovery links
+- feat(BLOG-009): generate sitemap.xml during postbuild and add static robots.txt
+- feat(BLOG-008): add Schema.org BlogPosting JSON-LD structured data to blog posts (client-side via Helmet + postbuild injection)
+- feat(BLOG-007): add SeoHead component with per-page title, description, Open Graph, and Twitter Card meta tags; SSR head injection for prerendered blog pages
+- feat(BLOG-006): add SSR entry point and postbuild prerender script for static blog HTML generation
+- feat(BLOG-005): add `/blog/:slug` route to App.tsx for individual blog post pages
+- feat(BLOG-004): add BlogPost page rendering pre-built HTML with metadata header, tag badges, repo/demo links, and heading anchors via rehype-slug
+- feat(BLOG-003): replace placeholder Blog page with BlogIndex featuring PostCard, TagBadge, and TagFilter components with tag-based filtering
+- feat(BLOG-002): add content processing pipeline (`scripts/content-build.ts`) with gray-matter frontmatter parsing, Zod validation, and unified markdown→HTML rendering; generates `src/generated/content-manifest.ts`
+- feat(BLOG-001): add content directory structure (`content/blog/`, `content/algorithms/`, `content/images/`) and Zod frontmatter schemas for blog posts and algorithm pages
+
 - feat(EDITOR-013): wire auto-transition to results after run, add segmented mode toggle, update left rail eye to use overlayVisibility
 - feat(EDITOR-012): add ResultsPanel with run summary grid, diagnostics placeholder, run history list, and Configure back-button
 - refactor(EDITOR-011): extract ConfigurePanel from EditorRightPanel; EditorRightPanel becomes a thin mode-switching shell reading panelMode from store

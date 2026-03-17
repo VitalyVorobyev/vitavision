@@ -41,10 +41,8 @@ function ModeToggle({ value, onChange }: { value: PanelMode; onChange: (m: Panel
 /* ── overlay toggle controls ─────────────────────────────────── */
 
 const TOGGLE_ITEMS: { key: keyof OverlayToggles; label: string }[] = [
-    { key: "corners", label: "Corners" },
     { key: "edges", label: "Grid edges" },
     { key: "labels", label: "Labels" },
-    { key: "markers", label: "Markers" },
 ];
 
 function OverlayTogglePanel() {

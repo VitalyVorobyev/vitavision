@@ -2,11 +2,14 @@ import { Circle, Ellipse, Line, Rect } from "react-konva";
 import type Konva from "konva";
 
 import DirectedPointGlyph from "./primitives/DirectedPointGlyph";
+import { isFeatureVisible } from "../../../store/editor/featureGroups";
 import { isReadonlyFeature, type DirectedPointFeature, type Feature, type ToolType } from "../../../store/editor/useEditorStore";
 
 interface FeatureLayerProps {
     features: Feature[];
     showFeatures: boolean;
+    showAlgorithmFeatures: boolean;
+    featureGroupVisibility: Record<string, boolean>;
     zoom: number;
     activeTool: ToolType;
     selectedFeatureId: string | null;
@@ -22,6 +25,8 @@ export default function FeatureLayer(props: FeatureLayerProps) {
     const {
         features,
         showFeatures,
+        showAlgorithmFeatures,
+        featureGroupVisibility,
         zoom,
         activeTool,
         selectedFeatureId,
@@ -40,6 +45,12 @@ export default function FeatureLayer(props: FeatureLayerProps) {
     return (
         <>
             {features.map((feature) => {
+                const groupVisible = isFeatureVisible(feature, featureGroupVisibility);
+                const sourceVisible = feature.source === "manual" || showAlgorithmFeatures;
+                if (!groupVisible || !sourceVisible) {
+                    return null;
+                }
+
                 const isSelected = selectedFeatureId === feature.id;
                 const isReadonly = isReadonlyFeature(feature);
                 const canEditGeometry = activeTool === "SELECT" && !isReadonly;

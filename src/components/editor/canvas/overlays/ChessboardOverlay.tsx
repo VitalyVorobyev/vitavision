@@ -2,29 +2,38 @@ import { useMemo } from "react";
 import { Circle, Group, Label, Tag, Text } from "react-konva";
 
 import type { CalibrationTargetResult } from "../../../../lib/api";
+import { isFeatureGroupVisible } from "../../../../store/editor/featureGroups";
 import type { OverlayToggles } from "../../../../store/editor/useEditorStore";
 import { buildCornerGrid, buildGridEdges } from "../../algorithms/calibrationTargets/overlayData";
 import GridEdgesGroup from "./GridEdgesGroup";
+import { overlayTheme } from "./overlayTheme";
 
 interface ChessboardOverlayProps {
     result: unknown;
     zoom: number;
+    showFeatures: boolean;
+    featureGroupVisibility: Record<string, boolean>;
     toggles: OverlayToggles;
 }
 
-const CORNER_COLOR = "#0f766e";
-const LABEL_BG = "rgba(0,0,0,0.55)";
 const LABEL_MIN_ZOOM = 0.5;
 
-export default function ChessboardOverlay({ result, zoom, toggles }: ChessboardOverlayProps) {
+export default function ChessboardOverlay({
+    result,
+    zoom,
+    showFeatures,
+    featureGroupVisibility,
+    toggles,
+}: ChessboardOverlayProps) {
     const data = result as CalibrationTargetResult;
 
     const grid = useMemo(() => buildCornerGrid(data.detection.corners), [data]);
     const edges = useMemo(() => buildGridEdges(grid), [grid]);
 
-    const showLabels = toggles.labels && zoom >= LABEL_MIN_ZOOM;
+    const cornersVisible = showFeatures && isFeatureGroupVisible("algo:chessboard", featureGroupVisibility);
+    const showLabels = toggles.labels && cornersVisible && zoom >= LABEL_MIN_ZOOM;
     const fontSize = 10 / zoom;
-    const cornerRadius = 3 / zoom;
+    const cornerRadius = 4.5 / zoom;
     const labelPad = 2 / zoom;
 
     return (
@@ -37,17 +46,32 @@ export default function ChessboardOverlay({ result, zoom, toggles }: ChessboardO
                 />
             )}
 
-            {toggles.corners && (
+            {cornersVisible && (
                 <Group>
                     {Array.from(grid.nodes.values()).map((node) => (
-                        <Circle
-                            key={`corner-${node.i}-${node.j}`}
-                            x={node.x}
-                            y={node.y}
-                            radius={cornerRadius}
-                            fill={CORNER_COLOR}
-                            opacity={0.85}
-                        />
+                        <Group key={`corner-${node.i}-${node.j}`}>
+                            <Circle
+                                x={node.x}
+                                y={node.y}
+                                radius={cornerRadius}
+                                fill={overlayTheme.cornerHalo}
+                                opacity={0.88}
+                            />
+                            <Circle
+                                x={node.x}
+                                y={node.y}
+                                radius={cornerRadius * 0.66}
+                                fill={overlayTheme.cornerFill}
+                                opacity={0.98}
+                            />
+                            <Circle
+                                x={node.x}
+                                y={node.y}
+                                radius={cornerRadius * 0.28}
+                                fill={overlayTheme.cornerAccent}
+                                opacity={0.95}
+                            />
+                        </Group>
                     ))}
                 </Group>
             )}
@@ -60,11 +84,11 @@ export default function ChessboardOverlay({ result, zoom, toggles }: ChessboardO
                             x={node.x + 4 / zoom}
                             y={node.y - fontSize - 2 / zoom}
                         >
-                            <Tag fill={LABEL_BG} cornerRadius={2 / zoom} />
+                            <Tag fill={overlayTheme.labelBg} cornerRadius={2 / zoom} />
                             <Text
                                 text={`${node.i},${node.j}`}
                                 fontSize={fontSize}
-                                fill="#e2e8f0"
+                                fill={overlayTheme.labelText}
                                 padding={labelPad}
                             />
                         </Label>

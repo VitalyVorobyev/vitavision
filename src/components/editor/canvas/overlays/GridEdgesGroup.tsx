@@ -1,6 +1,7 @@
 import { Group, Line } from "react-konva";
 
 import type { GridEdge } from "../../algorithms/calibrationTargets/overlayData";
+import { overlayTheme } from "./overlayTheme";
 
 interface GridEdgesGroupProps {
     rowEdges: GridEdge[];
@@ -14,30 +15,45 @@ export default function GridEdgesGroup({
     rowEdges,
     colEdges,
     zoom,
-    rowColor = "#2dd4bf",
-    colColor = "#60a5fa",
+    rowColor = overlayTheme.rowEdge,
+    colColor = overlayTheme.colEdge,
 }: GridEdgesGroupProps) {
-    const strokeWidth = 1.2 / zoom;
+    const strokeWidth = 1.5 / zoom;
+    const haloWidth = 3.2 / zoom;
 
     return (
         <Group listening={false}>
             {rowEdges.map((e, i) => (
-                <Line
-                    key={`r-${i}`}
-                    points={[e.x1, e.y1, e.x2, e.y2]}
-                    stroke={rowColor}
-                    strokeWidth={strokeWidth}
-                    opacity={0.7}
-                />
+                <Group key={`r-${i}`}>
+                    <Line
+                        points={[e.x1, e.y1, e.x2, e.y2]}
+                        stroke={overlayTheme.edgeHalo}
+                        strokeWidth={haloWidth}
+                        opacity={0.72}
+                    />
+                    <Line
+                        points={[e.x1, e.y1, e.x2, e.y2]}
+                        stroke={rowColor}
+                        strokeWidth={strokeWidth}
+                        opacity={0.95}
+                    />
+                </Group>
             ))}
             {colEdges.map((e, i) => (
-                <Line
-                    key={`c-${i}`}
-                    points={[e.x1, e.y1, e.x2, e.y2]}
-                    stroke={colColor}
-                    strokeWidth={strokeWidth}
-                    opacity={0.7}
-                />
+                <Group key={`c-${i}`}>
+                    <Line
+                        points={[e.x1, e.y1, e.x2, e.y2]}
+                        stroke={overlayTheme.edgeHalo}
+                        strokeWidth={haloWidth}
+                        opacity={0.72}
+                    />
+                    <Line
+                        points={[e.x1, e.y1, e.x2, e.y2]}
+                        stroke={colColor}
+                        strokeWidth={strokeWidth}
+                        opacity={0.95}
+                    />
+                </Group>
             ))}
         </Group>
     );

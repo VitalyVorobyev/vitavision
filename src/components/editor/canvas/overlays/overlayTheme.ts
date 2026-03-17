@@ -1,0 +1,15 @@
+export const overlayTheme = {
+    cornerAccent: "#0f766e",
+    cornerHalo: "rgba(15, 23, 42, 0.82)",
+    cornerFill: "#f8fafc",
+    rowEdge: "#0f766e",
+    colEdge: "#64748b",
+    edgeHalo: "rgba(248, 250, 252, 0.46)",
+    markerFill: "rgba(217, 119, 6, 0.18)",
+    markerStroke: "#b45309",
+    markerLabel: "#fbbf24",
+    circleLight: "#f8fafc",
+    circleDark: "#0f172a",
+    labelBg: "rgba(15, 23, 42, 0.86)",
+    labelText: "#e2e8f0",
+};

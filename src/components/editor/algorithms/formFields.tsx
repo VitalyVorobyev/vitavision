@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { Info } from "lucide-react";
 
 /* ── tooltip ─────────────────────────────────────────────────── */
@@ -107,26 +107,32 @@ export function Section(props: SectionProps) {
 export function NumberField(props: NumberFieldProps) {
     const { label, value, onChange, disabled, min, max, step, placeholder, tooltip } = props;
     const inputRef = useRef<HTMLInputElement>(null);
-    // Store latest props in a ref so the wheel handler always sees current values
-    // without needing to re-register the listener.
-    const propsRef = useRef(props);
-    propsRef.current = props;
+    const handleWheelEvent = useEffectEvent((e: WheelEvent) => {
+        const el = inputRef.current;
+        if (!el || document.activeElement !== el) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        if (disabled) {
+            return;
+        }
+
+        const stepVal = step ?? 1;
+        const delta = e.deltaY < 0 ? stepVal : -stepVal;
+        // Round to step precision to avoid floating-point drift (e.g. 0.75 + 0.01 = 0.7600000000000001)
+        const precision = Math.max(0, -Math.floor(Math.log10(stepVal)));
+        let next = parseFloat(((value ?? 0) + delta).toFixed(precision));
+        if (min != null) next = Math.max(min, next);
+        if (max != null) next = Math.min(max, next);
+        onChange(next);
+    });
 
     useEffect(() => {
         const el = inputRef.current;
         if (!el) return;
-        const handleWheel = (e: WheelEvent) => {
-            if (document.activeElement !== el) return;
-            e.preventDefault();
-            e.stopPropagation();
-            const { value: cur, onChange: cb, disabled: off, min: lo, max: hi, step: s } = propsRef.current;
-            if (off) return;
-            const delta = e.deltaY < 0 ? (s ?? 1) : -(s ?? 1);
-            let next = (cur ?? 0) + delta;
-            if (lo != null) next = Math.max(lo, next);
-            if (hi != null) next = Math.min(hi, next);
-            cb(next);
-        };
+        const handleWheel = (e: WheelEvent) => handleWheelEvent(e);
         el.addEventListener("wheel", handleWheel, { passive: false });
         return () => el.removeEventListener("wheel", handleWheel);
     }, []);

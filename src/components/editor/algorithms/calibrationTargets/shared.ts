@@ -3,6 +3,7 @@ import type {
     CalibrationMarker,
     CalibrationTargetResult,
 } from "../../../../lib/api";
+import { overlayTheme } from "../../canvas/overlays/overlayTheme";
 import type { Feature, PointFeature } from "../../../../store/editor/useEditorStore";
 
 export const toCanvasCoordinate = (value: number): number => value + 0.5;
@@ -42,7 +43,7 @@ export const calibrationCornerFeatures = (
     result: CalibrationTargetResult,
     runId: string,
     algorithmId: string,
-    color = "#0f766e",
+    color = overlayTheme.cornerAccent,
 ): Feature[] => {
     return result.detection.corners.map((corner, index) => ({
         id: corner.id,
@@ -69,7 +70,7 @@ export const calibrationMarkerFeatures = (
     markers: CalibrationMarker[] | null,
     runId: string,
     algorithmId: string,
-    color = "#b45309",
+    color = overlayTheme.markerStroke,
 ): Feature[] => {
     if (!markers) {
         return [];
@@ -110,7 +111,7 @@ export const calibrationCircleCandidateFeatures = (
     candidates: CalibrationCircleCandidate[] | null,
     runId: string,
     algorithmId: string,
-    color = "#b45309",
+    color = overlayTheme.markerStroke,
 ): Feature[] => {
     if (!candidates) {
         return [];

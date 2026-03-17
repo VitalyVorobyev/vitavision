@@ -127,11 +127,14 @@ export type PanelMode = 'configure' | 'results';
 export type OverlayVisibilityKey = 'features' | 'algorithmOverlay';
 
 export interface OverlayToggles {
-    corners: boolean;
     edges: boolean;
     labels: boolean;
-    markers: boolean;
 }
+
+const DEFAULT_OVERLAY_TOGGLES: OverlayToggles = {
+    edges: true,
+    labels: false,
+};
 
 export interface RunSummaryEntry {
     label: string;
@@ -208,6 +211,7 @@ interface EditorState {
     lastAlgorithmResult: { algorithmId: string; result: unknown } | null;
     runHistory: RunHistoryEntry[];
     overlayVisibility: Record<OverlayVisibilityKey, boolean>;
+    featureGroupVisibility: Record<string, boolean>;
     overlayToggles: OverlayToggles;
 
     setImage: (src: string, width: number, height: number, name?: string, sampleId?: SampleId) => void;
@@ -231,6 +235,9 @@ interface EditorState {
     setLastAlgorithmResult: (algorithmId: string, result: unknown) => void;
     addRunToHistory: (entry: RunHistoryEntry) => void;
     clearRunHistory: () => void;
+    clearFeatures: () => void;
+    setFeatureGroupVisibility: (key: string, visible: boolean) => void;
+    resetFeatureGroupVisibility: () => void;
     setOverlayVisibility: (key: OverlayVisibilityKey, visible: boolean) => void;
     setOverlayToggle: (key: keyof OverlayToggles, value: boolean) => void;
 }
@@ -257,8 +264,12 @@ export const useEditorStore = create<EditorState>((set) => ({
         imageHeight: height,
         features: [],
         selectedFeatureId: null,
+        showFeatures: true,
         lastAlgorithmResult: null,
         runHistory: [],
+        overlayVisibility: { features: true, algorithmOverlay: true },
+        featureGroupVisibility: {},
+        overlayToggles: DEFAULT_OVERLAY_TOGGLES,
         panelMode: 'configure',
     }),
     setActiveTool: (tool) => set({ activeTool: tool, selectedFeatureId: null }),
@@ -351,7 +362,8 @@ export const useEditorStore = create<EditorState>((set) => ({
     lastAlgorithmResult: null,
     runHistory: [],
     overlayVisibility: { features: true, algorithmOverlay: true },
-    overlayToggles: { corners: true, edges: true, labels: false, markers: true },
+    featureGroupVisibility: {},
+    overlayToggles: DEFAULT_OVERLAY_TOGGLES,
 
     setPanelMode: (mode) => set({ panelMode: mode }),
     setLastAlgorithmResult: (algorithmId, result) => set({
@@ -361,6 +373,21 @@ export const useEditorStore = create<EditorState>((set) => ({
         runHistory: [entry, ...state.runHistory].slice(0, MAX_RUN_HISTORY),
     })),
     clearRunHistory: () => set({ runHistory: [] }),
+    clearFeatures: () => set({
+        features: [],
+        selectedFeatureId: null,
+        showFeatures: true,
+        lastAlgorithmResult: null,
+        runHistory: [],
+        overlayVisibility: { features: true, algorithmOverlay: true },
+        featureGroupVisibility: {},
+        overlayToggles: DEFAULT_OVERLAY_TOGGLES,
+        panelMode: 'configure',
+    }),
+    setFeatureGroupVisibility: (key, visible) => set((state) => ({
+        featureGroupVisibility: { ...state.featureGroupVisibility, [key]: visible },
+    })),
+    resetFeatureGroupVisibility: () => set({ featureGroupVisibility: {} }),
     setOverlayVisibility: (key, visible) => set((state) => ({
         overlayVisibility: { ...state.overlayVisibility, [key]: visible },
         ...(key === 'features' ? { showFeatures: visible } : {}),

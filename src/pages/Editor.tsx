@@ -11,6 +11,7 @@ import {
     MapPin,
     Minus,
     Edit2,
+    Pentagon,
     Square,
     Circle,
     Eye,
@@ -97,6 +98,7 @@ export default function Editor() {
         { id: "POINT", icon: <MapPin size={22} />, label: "Point" },
         { id: "LINE", icon: <Minus size={22} />, label: "Line" },
         { id: "POLYLINE", icon: <Edit2 size={22} />, label: "Polyline" },
+        { id: "POLYGON", icon: <Pentagon size={22} />, label: "Polygon" },
         { id: "BBOX", icon: <Square size={22} />, label: "Bounding Box" },
         { id: "ELLIPSE", icon: <Circle size={22} />, label: "Ellipse" },
     ];

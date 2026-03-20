@@ -322,7 +322,7 @@ export default function CanvasWorkspace() {
             return;
         }
 
-        if (activeTool === "POLYLINE") {
+        if (activeTool === "POLYLINE" || activeTool === "POLYGON") {
             if (!isDrawing) {
                 setIsDrawing(true);
                 setCurrentLinePoints([pos.x, pos.y]);
@@ -341,6 +341,19 @@ export default function CanvasWorkspace() {
                 source: "manual",
                 points: currentLinePoints,
                 color: "#00ff00",
+            });
+            setCurrentLinePoints([]);
+        }
+
+        if (activeTool === "POLYGON" && isDrawing && currentLinePoints.length >= 6) {
+            setIsDrawing(false);
+            addFeature({
+                id: uuidv4(),
+                type: "polygon",
+                source: "manual",
+                points: currentLinePoints,
+                closed: true,
+                color: "#8b5cf6",
             });
             setCurrentLinePoints([]);
         }
@@ -470,6 +483,20 @@ export default function CanvasWorkspace() {
                                 points={currentLinePoints}
                                 stroke="#00ff00"
                                 strokeWidth={2 / zoom}
+                                tension={0}
+                                lineCap="round"
+                                lineJoin="round"
+                            />
+                        )}
+
+                        {activeTool === "POLYGON" && isDrawing && currentLinePoints.length > 0 && (
+                            <Line
+                                points={currentLinePoints}
+                                closed={currentLinePoints.length >= 6}
+                                fill={currentLinePoints.length >= 6 ? "rgba(139,92,246,0.1)" : undefined}
+                                stroke="#8b5cf6"
+                                strokeWidth={2 / zoom}
+                                dash={[5 / zoom, 5 / zoom]}
                                 tension={0}
                                 lineCap="round"
                                 lineJoin="round"

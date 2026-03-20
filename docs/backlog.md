@@ -33,15 +33,15 @@ Editor — Phase 2: Algorithm Canvas Overlays
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| EDITOR-017 | todo | P2 | feature | Add overlay visibility toggle to left rail | Implementer | Expand eye toggle into layers popover: Features, Algorithm Overlay. Uses overlayVisibility store. Deps: EDITOR-014. |
+| ~~EDITOR-017~~ | done | P2 | feature | ~~Add overlay visibility toggle to left rail~~ | Implementer | Layers popover with Features + Algorithm Overlay toggles. |
 
 Editor — Phase 3: Diagnostics + Progressive Disclosure + Presets
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| EDITOR-018 | todo | P2 | feature | Add diagnostics interface and structured run status to ResultsPanel | Implementer | DiagnosticEntry {level, message, detail}. Optional diagnostics() on AlgorithmDefinition. Render in ResultsPanel. Deps: EDITOR-012. |
-| EDITOR-019 | todo | P2 | feature | Add preset configurations to AlgorithmDefinition and ConfigurePanel | Implementer | presets record on AlgorithmDefinition. Preset picker dropdown in ConfigurePanel. Deps: EDITOR-011. |
-| EDITOR-020 | todo | P2 | enhancement | Add progressive disclosure (CollapsibleSection) to config forms | Implementer | Shared CollapsibleSection in formFields.tsx. Wrap advanced params in all config forms. Deps: EDITOR-011. |
+| ~~EDITOR-018~~ | done | P2 | feature | ~~Add diagnostics interface and structured run status to ResultsPanel~~ | Implementer | DiagnosticEntry with info/warning/error levels. All 4 adapters provide diagnostics. |
+| ~~EDITOR-019~~ | done | P2 | feature | ~~Add preset configurations to AlgorithmDefinition and ConfigurePanel~~ | Implementer | AlgorithmPreset type, presets on all 4 adapters, PresetPicker UI. |
+| ~~EDITOR-020~~ | done | P2 | enhancement | ~~Add progressive disclosure (CollapsibleSection) to config forms~~ | Implementer | CollapsibleSection in formFields.tsx. Advanced params collapsed in Chessboard, ChArUco, MarkerBoard. |
 
 Editor — Phase 4: Feature Model Extension
 
@@ -96,6 +96,10 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| EDITOR-017 | 2026-03-20 | feature | Add overlay visibility toggle to left rail | Layers popover for Features + Algorithm Overlay. |
+| EDITOR-018 | 2026-03-20 | feature | Add diagnostics interface to ResultsPanel | DiagnosticEntry with info/warning/error levels. |
+| EDITOR-019 | 2026-03-20 | feature | Add preset configurations to ConfigurePanel | AlgorithmPreset type + PresetPicker UI. |
+| EDITOR-020 | 2026-03-20 | enhancement | Add CollapsibleSection to config forms | Progressive disclosure for advanced parameters. |
 | TGEN-012 | 2026-03-16 | fix | Fix default page orientation (portrait → landscape) | Changed INITIAL_STATE + presets. |
 | TGEN-013 | 2026-03-16 | feature | ArUco dictionary loader + hex-to-bitgrid decoder | New aruco/ module with loader, decoder, types. |
 | TGEN-014 | 2026-03-16 | feature | Client-side ChArUco SVG generation | Full marker rendering, removed backend dependency for generation. |

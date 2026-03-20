@@ -1,4 +1,4 @@
-import type { AlgorithmDefinition, AlgorithmSummaryEntry } from "../types";
+import type { AlgorithmDefinition, AlgorithmPreset, AlgorithmSummaryEntry, DiagnosticEntry } from "../types";
 import type { DirectedPointFeature, Feature } from "../../../../store/editor/useEditorStore";
 import { detectChessCorners, type ChessCornersResult } from "../../../../lib/api";
 
@@ -7,6 +7,20 @@ import ChessCornersConfigForm, { type ChessCornersConfig } from "./ChessCornersC
 const initialConfig: ChessCornersConfig = {
     thresholdRel: 0.2,
     useMlRefiner: false,
+};
+
+const presets: AlgorithmPreset[] = [
+    { label: "Sensitive", description: "Lower threshold, more corners", config: { thresholdRel: 0.08, useMlRefiner: false } },
+    { label: "Balanced", description: "Default detection settings", config: { thresholdRel: 0.2, useMlRefiner: false } },
+    { label: "Precise", description: "ML-refined subpixel accuracy", config: { thresholdRel: 0.2, useMlRefiner: true } },
+];
+
+const toDiagnostics = (result: ChessCornersResult): DiagnosticEntry[] => {
+    const entries: DiagnosticEntry[] = [];
+    if (result.summary.count === 0) {
+        entries.push({ level: "warning", message: "No corners detected", detail: "Try lowering the threshold or check that the image contains X-junctions." });
+    }
+    return entries;
 };
 
 const toSummary = (result: ChessCornersResult): AlgorithmSummaryEntry[] => {
@@ -44,6 +58,7 @@ export const chessCornersAlgorithm: AlgorithmDefinition = {
     title: "ChESS Corners",
     description: "Detect ChESS X-junction keypoints with subpixel positions and orientation vectors.",
     initialConfig,
+    presets,
     ConfigComponent: ChessCornersConfigForm as AlgorithmDefinition["ConfigComponent"],
     run: async ({ key, storageMode, config }) => {
         const typedConfig = config as ChessCornersConfig;
@@ -58,4 +73,5 @@ export const chessCornersAlgorithm: AlgorithmDefinition = {
     },
     toFeatures: (result, runId) => toFeatures(result as ChessCornersResult, runId),
     summary: (result) => toSummary(result as ChessCornersResult),
+    diagnostics: (result) => toDiagnostics(result as ChessCornersResult),
 };

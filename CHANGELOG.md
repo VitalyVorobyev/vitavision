@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+- feat(EDITOR-017): add overlay visibility popover with per-layer toggles (Features, Algorithm Overlay)
+- feat(EDITOR-018): add structured diagnostics interface to ResultsPanel with info/warning/error levels
+- feat(EDITOR-019): add preset configurations to all algorithm adapters with preset picker in ConfigurePanel
+- feat(EDITOR-020): add CollapsibleSection component for progressive disclosure of advanced config parameters
 - feat(TGEN-007): add curated preset configurations (camera calibration, robotics, industrial) for all 3 target types with preset picker and JSON config import
 - enhancement(TGEN-008): add board/page dimension overlay in preview, tooltips on all config fields
 - feat(TGEN-001): add `POST /api/v1/cv/calibration-targets/generate` endpoint supporting chessboard, ChArUco, and marker board targets with SVG/JSON/PNG output and paper configuration

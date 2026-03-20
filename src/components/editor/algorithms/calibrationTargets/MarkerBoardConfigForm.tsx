@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, Plus } from "lucide-react";
-import { NumberField, Section } from "../formFields";
+import { CollapsibleSection, NumberField, Section } from "../formFields";
 import type { AlgorithmConfigFormProps } from "../types";
 import type { MarkerCircleSpec } from "../../../../lib/api";
 
@@ -130,7 +130,7 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                     </button>
                 </div>
             </Section>
-            <Section title="Chessboard detector" columns={cols}>
+            <CollapsibleSection title="Chessboard detector" columns={cols}>
                 <NumberField
                     label="Expected rows"
                     tooltip="Number of internal corner rows expected (squares minus one)."
@@ -169,8 +169,8 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                     max={1}
                     step={0.01}
                 />
-            </Section>
-            <Section title="Grid graph" columns={cols}>
+            </CollapsibleSection>
+            <CollapsibleSection title="Grid graph" columns={cols}>
                 <NumberField
                     label="Min spacing (px)"
                     tooltip="Minimum distance between adjacent corners in pixels."
@@ -209,8 +209,8 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                     max={180}
                     step={0.5}
                 />
-            </Section>
-            <Section title="Circle score" columns={cols}>
+            </CollapsibleSection>
+            <CollapsibleSection title="Circle score" columns={cols}>
                 <NumberField
                     label="Patch size (px)"
                     tooltip="Size of the image patch extracted around each candidate circle for scoring."
@@ -279,7 +279,7 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                     max={256}
                     step={1}
                 />
-            </Section>
+            </CollapsibleSection>
         </>
     );
 };

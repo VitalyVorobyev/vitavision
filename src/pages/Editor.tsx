@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import CanvasWorkspace from "../components/editor/CanvasWorkspace";
 import EditorGallery from "../components/editor/EditorGallery";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import EditorRightPanel from "../components/editor/panels/EditorRightPanel";
-import { useEditorStore, type ToolType } from "../store/editor/useEditorStore";
+import { useEditorStore, type OverlayVisibilityKey, type ToolType } from "../store/editor/useEditorStore";
 import {
     ChevronDown,
     MousePointer2,
@@ -15,16 +15,74 @@ import {
     Circle,
     Eye,
     EyeOff,
+    Layers,
     Image as ImageIcon,
 } from "lucide-react";
 import ZoomControls from "../components/shared/ZoomControls";
+
+const OVERLAY_LAYERS: { key: OverlayVisibilityKey; label: string }[] = [
+    { key: "features", label: "Features" },
+    { key: "algorithmOverlay", label: "Algorithm overlay" },
+];
+
+function OverlayVisibilityPopover() {
+    const { overlayVisibility, setOverlayVisibility } = useEditorStore();
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    const allVisible = OVERLAY_LAYERS.every((l) => overlayVisibility[l.key]);
+
+    const handleClose = useCallback((e: MouseEvent) => {
+        if (ref.current && !ref.current.contains(e.target as Node)) {
+            setOpen(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!open) return;
+        document.addEventListener("mousedown", handleClose);
+        return () => document.removeEventListener("mousedown", handleClose);
+    }, [open, handleClose]);
+
+    return (
+        <div ref={ref} className="relative">
+            <button
+                onClick={() => setOpen((v) => !v)}
+                title="Layer visibility"
+                className={`p-3 rounded-md transition-colors ${
+                    open ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted"
+                }`}
+            >
+                {allVisible ? <Layers size={18} /> : <EyeOff size={18} />}
+            </button>
+            {open && (
+                <div className="absolute left-full top-0 ml-2 z-50 w-44 rounded-lg border border-border bg-surface shadow-lg py-1">
+                    {OVERLAY_LAYERS.map(({ key, label }) => (
+                        <button
+                            key={key}
+                            type="button"
+                            onClick={() => setOverlayVisibility(key, !overlayVisibility[key])}
+                            className="flex w-full items-center gap-2 px-3 py-1.5 text-xs hover:bg-muted/60 transition-colors"
+                        >
+                            {overlayVisibility[key]
+                                ? <Eye size={14} className="text-primary" />
+                                : <EyeOff size={14} className="text-muted-foreground/50" />
+                            }
+                            <span className={overlayVisibility[key] ? "text-foreground" : "text-muted-foreground"}>
+                                {label}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
 
 export default function Editor() {
     const {
         activeTool,
         setActiveTool,
-        overlayVisibility,
-        setOverlayVisibility,
         zoom,
         setZoom,
         setPan,
@@ -110,13 +168,7 @@ export default function Editor() {
                         <MousePointer2 size={18} />
                     </button>
 
-                    <button
-                        onClick={() => setOverlayVisibility("features", !overlayVisibility.features)}
-                        title={overlayVisibility.features ? "Hide feature marks" : "Show feature marks"}
-                        className="p-3 rounded-md text-muted-foreground hover:bg-muted transition-colors"
-                    >
-                        {overlayVisibility.features ? <Eye size={18} /> : <EyeOff size={18} />}
-                    </button>
+                    <OverlayVisibilityPopover />
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-2 py-4">

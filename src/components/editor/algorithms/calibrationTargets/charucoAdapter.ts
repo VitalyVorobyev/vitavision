@@ -1,4 +1,4 @@
-import type { AlgorithmDefinition } from "../types";
+import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
 import type { CalibrationTargetResult } from "../../../../lib/api";
 import { detectCalibrationTarget } from "../../../../lib/api";
 import { calibrationCornerFeatures, calibrationMarkerFeatures, calibrationSummary } from "./shared";
@@ -22,6 +22,25 @@ const initialConfig: CharucoConfig = {
     graphOrientationToleranceDeg: 12.5,
 };
 
+const presets: AlgorithmPreset[] = [
+    { label: "22×22 4×4", description: "Large board, 4×4 dictionary", config: { ...initialConfig } },
+    { label: "10×14 4×4", description: "Medium board, 4×4 dictionary", config: { ...initialConfig, rows: 10, cols: 14, chessExpectedRows: 10, chessExpectedCols: 14 } },
+    { label: "6×9 5×5", description: "Small board, 5×5 dictionary", config: { ...initialConfig, rows: 6, cols: 9, chessExpectedRows: 6, chessExpectedCols: 9, dictionary: "DICT_5X5_250" as const } },
+];
+
+const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
+    const entries: DiagnosticEntry[] = [];
+    if (result.summary.corner_count === 0) {
+        entries.push({ level: "error", message: "No corners detected", detail: "Verify board dimensions and dictionary match the printed board." });
+    }
+    if (result.summary.marker_count === 0) {
+        entries.push({ level: "warning", message: "No ArUco markers detected", detail: "Check that the dictionary setting matches the board." });
+    } else if (result.summary.marker_count !== null && result.summary.marker_count > 0 && result.summary.corner_count === 0) {
+        entries.push({ level: "info", message: "Markers found but no corners — chessboard detector may need tuning" });
+    }
+    return entries;
+};
+
 const toFeatures = (result: CalibrationTargetResult, runId: string) => [
     ...calibrationCornerFeatures(result, runId, "charuco"),
     ...calibrationMarkerFeatures(result.markers, runId, "charuco"),
@@ -32,6 +51,7 @@ export const charucoAlgorithm: AlgorithmDefinition = {
     title: "ChArUco",
     description: "Detect ChArUco board corners and embedded ArUco markers.",
     initialConfig,
+    presets,
     sampleDefaults: {
         charuco: { ...initialConfig },
     },
@@ -69,5 +89,6 @@ export const charucoAlgorithm: AlgorithmDefinition = {
     toFeatures: (result, runId) =>
         toFeatures(result as CalibrationTargetResult, runId),
     summary: (result) => calibrationSummary(result as CalibrationTargetResult),
+    diagnostics: (result) => toDiagnostics(result as CalibrationTargetResult),
     OverlayComponent: CharucoOverlay,
 };

@@ -164,7 +164,17 @@ export default function ConfigurePanel() {
                 </p>
             </RailSection>
 
-            {/* Section 3: Config */}
+            {/* Section 3: Presets (if available) */}
+            {algorithm.presets && algorithm.presets.length > 0 && (
+                <RailSection label="Presets">
+                    <PresetPicker
+                        presets={algorithm.presets}
+                        onSelect={handleConfigChange}
+                    />
+                </RailSection>
+            )}
+
+            {/* Section 4: Config */}
             <RailSection
                 label="Configuration"
                 action={
@@ -204,6 +214,32 @@ export default function ConfigurePanel() {
 }
 
 // --- Sub-components to keep ConfigurePanel render body under 40 lines ---
+
+import type { AlgorithmPreset } from "../algorithms/types";
+
+function PresetPicker({
+    presets,
+    onSelect,
+}: {
+    presets: AlgorithmPreset[];
+    onSelect: (config: unknown) => void;
+}) {
+    return (
+        <div className="flex flex-wrap gap-1.5">
+            {presets.map((preset) => (
+                <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => onSelect(preset.config)}
+                    title={preset.description}
+                    className="text-[11px] px-2.5 py-1 rounded-full border border-border bg-background text-foreground hover:bg-primary/10 hover:border-primary/40 hover:text-primary transition-colors"
+                >
+                    {preset.label}
+                </button>
+            ))}
+        </div>
+    );
+}
 
 function HintCard({
     image,

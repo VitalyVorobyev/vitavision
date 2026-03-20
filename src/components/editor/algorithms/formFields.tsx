@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
-import { Info } from "lucide-react";
+import { ChevronRight, Info } from "lucide-react";
 
 /* ── tooltip ─────────────────────────────────────────────────── */
 
@@ -117,6 +117,41 @@ export function Section(props: SectionProps) {
             <div className={columns === 2 ? "grid grid-cols-2 gap-x-3 gap-y-2.5" : "grid gap-y-2.5"}>
                 {children}
             </div>
+        </section>
+    );
+}
+
+interface CollapsibleSectionProps {
+    title: string;
+    children: React.ReactNode;
+    columns?: 1 | 2;
+    defaultOpen?: boolean;
+}
+
+export function CollapsibleSection(props: CollapsibleSectionProps) {
+    const { title, children, columns, defaultOpen = false } = props;
+    const [open, setOpen] = useState(defaultOpen);
+
+    return (
+        <section className="rounded-xl border border-border/70 bg-background/60 overflow-hidden">
+            <button
+                type="button"
+                onClick={() => setOpen((v) => !v)}
+                className="flex w-full items-center gap-1.5 p-3 text-left hover:bg-muted/30 transition-colors"
+            >
+                <ChevronRight
+                    size={12}
+                    className={`text-muted-foreground/60 transition-transform duration-150 ${open ? "rotate-90" : ""}`}
+                />
+                <h3 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">
+                    {title}
+                </h3>
+            </button>
+            {open && (
+                <div className={`px-3 pb-3 ${columns === 2 ? "grid grid-cols-2 gap-x-3 gap-y-2.5" : "grid gap-y-2.5"}`}>
+                    {children}
+                </div>
+            )}
         </section>
     );
 }

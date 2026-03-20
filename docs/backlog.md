@@ -47,9 +47,9 @@ Editor — Phase 4: Feature Model Extension
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| EDITOR-021 | todo | P2 | feature | Add PolygonFeature to feature model and Zod schema | Implementer | type "polygon", points: number[], closed. Add to Feature union + featureSchema. Independent. |
-| EDITOR-022 | todo | P2 | feature | Add polygon renderer to FeatureLayer (closed Line with fill) | Implementer | Konva Line with closed=true, semi-transparent fill. Selection + drag. Deps: EDITOR-021. |
-| EDITOR-023 | todo | P2 | feature | Add POLYGON drawing tool to left rail and CanvasWorkspace | Implementer | Similar to POLYLINE but closes on double-click. Add icon to left rail. Deps: EDITOR-021, EDITOR-022. |
+| ~~EDITOR-021~~ | done | P2 | feature | ~~Add PolygonFeature to feature model and Zod schema~~ | Implementer | PolygonFeature with points[] + closed. Added to union + Zod + groups. |
+| ~~EDITOR-022~~ | done | P2 | feature | ~~Add polygon renderer to FeatureLayer (closed Line with fill)~~ | Implementer | Closed Konva Line with semi-transparent purple fill. Selection + drag. |
+| ~~EDITOR-023~~ | done | P2 | feature | ~~Add POLYGON drawing tool to left rail and CanvasWorkspace~~ | Implementer | Click vertices, double-click to close. Pentagon icon on left rail. |
 
 Editor — Phase 5: Deep Links + Blog Integration
 
@@ -100,6 +100,9 @@ Other
 | EDITOR-018 | 2026-03-20 | feature | Add diagnostics interface to ResultsPanel | DiagnosticEntry with info/warning/error levels. |
 | EDITOR-019 | 2026-03-20 | feature | Add preset configurations to ConfigurePanel | AlgorithmPreset type + PresetPicker UI. |
 | EDITOR-020 | 2026-03-20 | enhancement | Add CollapsibleSection to config forms | Progressive disclosure for advanced parameters. |
+| EDITOR-021 | 2026-03-20 | feature | Add PolygonFeature to feature model and Zod schema | PolygonFeature with points[] + closed. |
+| EDITOR-022 | 2026-03-20 | feature | Add polygon renderer to FeatureLayer | Closed Konva Line with semi-transparent fill. |
+| EDITOR-023 | 2026-03-20 | feature | Add POLYGON drawing tool to left rail and CanvasWorkspace | Click vertices, dblClick to close. |
 | TGEN-012 | 2026-03-16 | fix | Fix default page orientation (portrait → landscape) | Changed INITIAL_STATE + presets. |
 | TGEN-013 | 2026-03-16 | feature | ArUco dictionary loader + hex-to-bitgrid decoder | New aruco/ module with loader, decoder, types. |
 | TGEN-014 | 2026-03-16 | feature | Client-side ChArUco SVG generation | Full marker rendering, removed backend dependency for generation. |

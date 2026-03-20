@@ -3,7 +3,7 @@ import type {
     TargetConfig,
     PageConfig,
 } from "./types";
-import { defaultCircles } from "./reducer";
+import { defaultCircles, DEFAULT_RINGGRID } from "./reducer";
 
 export interface Preset {
     id: string;
@@ -21,6 +21,7 @@ const A4_LANDSCAPE: PageConfig = {
     orientation: "landscape",
     marginMm: 10,
     pngDpi: 300,
+    showScaleLine: true,
 };
 
 const LETTER_PORTRAIT: PageConfig = {
@@ -30,6 +31,7 @@ const LETTER_PORTRAIT: PageConfig = {
     orientation: "portrait",
     marginMm: 10,
     pngDpi: 300,
+    showScaleLine: true,
 };
 
 // ── Chessboard presets ───────────────────────────────────────────────────────
@@ -146,6 +148,57 @@ export const MARKERBOARD_PRESETS: Preset[] = [
     },
 ];
 
+// ── Ring Grid presets ───────────────────────────────────────────────────────
+
+export const RINGGRID_PRESETS: Preset[] = [
+    {
+        id: "ringgrid-200mm",
+        label: "200mm Hex Grid",
+        description: "Standard 15×14 hex grid at 8 mm pitch (~200 mm board)",
+        targetType: "ringgrid",
+        target: { targetType: "ringgrid", config: { ...DEFAULT_RINGGRID } },
+        page: A4_LANDSCAPE,
+    },
+    {
+        id: "ringgrid-compact",
+        label: "Compact Grid",
+        description: "9×8 grid at 10 mm pitch for smaller setups",
+        targetType: "ringgrid",
+        target: {
+            targetType: "ringgrid",
+            config: {
+                rows: 9,
+                longRowCols: 8,
+                pitchMm: 10,
+                markerOuterRadiusMm: 5.5,
+                markerInnerRadiusMm: 3.6,
+                markerRingWidthMm: 1.3,
+                profile: "baseline",
+            },
+        },
+        page: A4_LANDSCAPE,
+    },
+    {
+        id: "ringgrid-large",
+        label: "Large Grid (Extended)",
+        description: "20×18 grid at 6 mm pitch with extended codebook",
+        targetType: "ringgrid",
+        target: {
+            targetType: "ringgrid",
+            config: {
+                rows: 20,
+                longRowCols: 18,
+                pitchMm: 6,
+                markerOuterRadiusMm: 3.5,
+                markerInnerRadiusMm: 2.3,
+                markerRingWidthMm: 0.85,
+                profile: "extended",
+            },
+        },
+        page: A4_LANDSCAPE,
+    },
+];
+
 export function presetsForType(targetType: TargetType): Preset[] {
     switch (targetType) {
         case "chessboard":
@@ -154,5 +207,7 @@ export function presetsForType(targetType: TargetType): Preset[] {
             return CHARUCO_PRESETS;
         case "markerboard":
             return MARKERBOARD_PRESETS;
+        case "ringgrid":
+            return RINGGRID_PRESETS;
     }
 }

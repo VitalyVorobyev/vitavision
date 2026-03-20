@@ -27,6 +27,9 @@ function buildFilename(state: TargetGeneratorState, ext: string): string {
         case "markerboard":
             dims = `${t.config.innerRows}x${t.config.innerCols}`;
             break;
+        case "ringgrid":
+            dims = `${t.config.rows}x${t.config.longRowCols}`;
+            break;
     }
     return `vitavision_${t.targetType}_${dims}.${ext}`;
 }

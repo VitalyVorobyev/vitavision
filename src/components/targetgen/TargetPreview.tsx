@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import type { TargetGeneratorState, TargetGeneratorAction } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
+import { generateMarkers, markerOuterDrawRadius, markerBounds } from "./ringgrid/layout";
 import ZoomControls from "../shared/ZoomControls";
 
 /** CSS px per mm (CSS spec: 1in = 96px, 1in = 25.4mm). */
@@ -24,6 +25,15 @@ function computeBoardDims(state: TargetGeneratorState) {
                 w: t.config.cols * t.config.squareSizeMm,
                 h: t.config.rows * t.config.squareSizeMm,
             };
+        case "ringgrid": {
+            const markers = generateMarkers(t.config.rows, t.config.longRowCols, t.config.pitchMm);
+            const drawR = markerOuterDrawRadius(t.config.markerOuterRadiusMm, t.config.markerRingWidthMm);
+            const [minX, minY, maxX, maxY] = markerBounds(markers);
+            return {
+                w: (maxX - minX) + 2 * drawR,
+                h: (maxY - minY) + 2 * drawR,
+            };
+        }
     }
 }
 

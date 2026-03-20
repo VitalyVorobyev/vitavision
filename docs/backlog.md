@@ -78,7 +78,8 @@ Target Generator — Future
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| TGEN-009 | todo | P2 | feature | Add ring grid target type (client-side SVG) | Implementer | Client-side ring grid SVG generation. New `RingGridGenConfig` variant. New config form. |
+| ~~TGEN-009~~ | done | P2 | feature | ~~Add ring grid target type (client-side SVG)~~ | Implementer | Hex-lattice concentric ring markers with 16-sector code bands. Codebook loader, layout generator, SVG/DXF export, config panel, 3 presets. |
+| ~~TGEN-023~~ | done | P2 | feature | ~~Add scale line to all target types~~ | Implementer | Minimal reference bar with label. Optional toggle in Paper config (default ON). SVG + DXF. |
 | TGEN-010 | todo | P2 | feature | Add ZIP bundle download (all artifacts in one file) | Implementer | Client-side JSZip. Bundle SVG + PNG + JSON + DXF. Deps: TGEN-018. |
 | TGEN-011 | todo | P2 | feature | Prerender target generator page for SEO | Implementer | Extend `postbuild.ts` for `/tools/target-generator`. Deps: TGEN-003. |
 
@@ -114,3 +115,5 @@ Other
 | TGEN-020 | 2026-03-16 | feature | Auto circle polarity from square color | Removed polarity from CircleSpec. White circle on black square, black on white. |
 | TGEN-021 | 2026-03-16 | feature | Configurable PNG DPI | Added pngDpi to PageConfig. Exposed in Paper config panel (72–1200). |
 | TGEN-022 | 2026-03-16 | feature | Inner white square in black squares (laser calibration) | innerSquareRel (0–0.95) on all target types. For reflective surface calibration. |
+| TGEN-009 | 2026-03-20 | feature | Add ring grid target type (client-side SVG) | Hex-lattice concentric ring markers with 16-sector code bands. Baseline + extended codebook profiles. |
+| TGEN-023 | 2026-03-20 | feature | Add scale line to all target types | Minimal reference bar with label. Optional toggle (default ON). SVG + DXF integration. |

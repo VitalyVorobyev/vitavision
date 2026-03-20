@@ -2,7 +2,7 @@ import type { DictionaryName } from "../../lib/api";
 
 // ── Target type discriminator ────────────────────────────────────────────────
 
-export type TargetType = "chessboard" | "charuco" | "markerboard";
+export type TargetType = "chessboard" | "charuco" | "markerboard" | "ringgrid";
 
 // ── Per-type config ──────────────────────────────────────────────────────────
 
@@ -36,10 +36,23 @@ export interface MarkerBoardConfig {
     innerSquareRel: number;
 }
 
+export type RingGridProfile = "baseline" | "extended";
+
+export interface RingGridConfig {
+    rows: number;
+    longRowCols: number;
+    pitchMm: number;
+    markerOuterRadiusMm: number;
+    markerInnerRadiusMm: number;
+    markerRingWidthMm: number;
+    profile: RingGridProfile;
+}
+
 export type TargetConfig =
     | { targetType: "chessboard"; config: ChessboardConfig }
     | { targetType: "charuco"; config: CharucoConfig }
-    | { targetType: "markerboard"; config: MarkerBoardConfig };
+    | { targetType: "markerboard"; config: MarkerBoardConfig }
+    | { targetType: "ringgrid"; config: RingGridConfig };
 
 // ── Page config ──────────────────────────────────────────────────────────────
 
@@ -53,6 +66,7 @@ export interface PageConfig {
     orientation: Orientation;
     marginMm: number;
     pngDpi: number;
+    showScaleLine: boolean;
 }
 
 // ── Validation ───────────────────────────────────────────────────────────────
@@ -68,6 +82,7 @@ export interface ConfigCache {
     chessboard?: ChessboardConfig;
     charuco?: CharucoConfig;
     markerboard?: MarkerBoardConfig;
+    ringgrid?: RingGridConfig;
 }
 
 export interface TargetGeneratorState {

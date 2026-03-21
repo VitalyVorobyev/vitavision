@@ -4,6 +4,15 @@
 - fix(BE-002): add byte-size guard in `_decode_grayscale_image` before CV processing
 - fix(BE-003): move `load_dotenv()` before `_configure_logging()` so .env LOG_FORMAT/LOG_LEVEL are respected
 - test(BE-004): add rate limiting tests (upload-ticket 20/min, local-object 60/min, chess-corners 10/min), security header tests, request ID tests, malformed Content-Length test
+- fix(BE-005): remove dummy `/calibrate` endpoint returning hardcoded camera matrix
+- fix(BE-006): use actual media type for `local-object` GET responses via `local_media_type_for_key()`
+- refactor(BE-007): split 1110-line `cv.py` into `routers/cv/` package (models, corners, calibration_targets, shared)
+- fix(BE-008): make R2 cache writes atomic via write-to-tmp-then-rename
+- enhancement(BE-009): add configurable timeout (`CV_TIMEOUT_SECONDS`) for CV algorithm C extension calls
+- enhancement(BE-010): run blocking CV algorithm calls via `run_in_executor` to unblock the event loop
+- enhancement(BE-011): propagate request ID to all loggers via `contextvars.ContextVar`
+- test(BE-012): add middleware tests for security headers, request ID, body size limit
+- test(BE-013): add storage service unit tests (content-addressed keys, image validation, path traversal, R2 cache)
 - feat(FE-001): add React ErrorBoundary component wrapping canvas, algorithm config, and blog content
 - infra(FE-002): set up Vitest with jsdom, add 26 unit tests for featureSchema and target generator reducer
 - enhancement(FE-003): replace all alert() calls with sonner toast notifications

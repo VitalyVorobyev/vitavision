@@ -9,7 +9,12 @@ from fastapi import APIRouter, HTTPException, Request
 from limiter import limiter
 from services import storage_service
 
-from ._shared import CV_TIMEOUT_SECONDS, decode_grayscale_image, finite_float, frame_point_from_pair
+from ._shared import (
+    CV_TIMEOUT_SECONDS,
+    decode_grayscale_image,
+    finite_float,
+    frame_point_from_pair,
+)
 from .models import (
     DetectionFrame,
     FramePoint,
@@ -42,7 +47,9 @@ def _decode_response(dec: ringgrid.DecodeMetrics) -> RinggridDecodeResponse:
         best_rotation=dec.best_rotation,
         best_dist=dec.best_dist,
         margin=dec.margin,
-        decode_confidence=finite_float(dec.decode_confidence, field_name="decode_confidence"),
+        decode_confidence=finite_float(
+            dec.decode_confidence, field_name="decode_confidence"
+        ),
     )
 
 
@@ -59,12 +66,16 @@ def _fit_response(fit: ringgrid.FitMetrics) -> RinggridFitResponse:
             else None
         ),
         ransac_inlier_ratio_outer=(
-            finite_float(fit.ransac_inlier_ratio_outer, field_name="ransac_inlier_ratio_outer")
+            finite_float(
+                fit.ransac_inlier_ratio_outer, field_name="ransac_inlier_ratio_outer"
+            )
             if fit.ransac_inlier_ratio_outer is not None
             else None
         ),
         ransac_inlier_ratio_inner=(
-            finite_float(fit.ransac_inlier_ratio_inner, field_name="ransac_inlier_ratio_inner")
+            finite_float(
+                fit.ransac_inlier_ratio_inner, field_name="ransac_inlier_ratio_inner"
+            )
             if fit.ransac_inlier_ratio_inner is not None
             else None
         ),
@@ -72,7 +83,11 @@ def _fit_response(fit: ringgrid.FitMetrics) -> RinggridFitResponse:
 
 
 def _marker_response(marker: ringgrid.DetectedMarker) -> RinggridMarkerResponse | None:
-    if marker.id is None or marker.ellipse_outer is None or marker.ellipse_inner is None:
+    if (
+        marker.id is None
+        or marker.ellipse_outer is None
+        or marker.ellipse_inner is None
+    ):
         return None
 
     center = frame_point_from_pair(
@@ -131,7 +146,10 @@ async def detect_ringgrid(request: Request, payload: RinggridDetectRequest):
             loop.run_in_executor(
                 None,
                 functools.partial(
-                    _run_detection, image_u8, payload.board, payload.profile,
+                    _run_detection,
+                    image_u8,
+                    payload.board,
+                    payload.profile,
                 ),
             ),
             timeout=CV_TIMEOUT_SECONDS,

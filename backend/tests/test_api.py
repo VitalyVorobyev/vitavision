@@ -454,3 +454,99 @@ def test_calibration_targets_markerboard_sample():
     assert len(body["detection"]["corners"]) > 0
     assert body["circle_matches"] is not None
     assert len(body["circle_matches"]) == 3
+
+
+# ── Rate Limiting ────────────────────────────────────────────────────────────
+
+
+class TestRateLimiting:
+    """Verify rate limiting is active and returns 429 when exceeded."""
+
+    def test_upload_ticket_rate_limit(self):
+        """POST /upload-ticket is limited to 20/minute."""
+        from limiter import limiter
+
+        limiter.reset()
+        png = _make_checkerboard_png(size=20, cell=10)
+        sha = _sha256_hex(png)
+        payload = {"sha256": sha, "content_type": "image/png", "storage_mode": "local"}
+
+        for _ in range(20):
+            resp = client.post("/api/v1/storage/upload-ticket", json=payload)
+            assert resp.status_code == 200
+
+        resp = client.post("/api/v1/storage/upload-ticket", json=payload)
+        assert resp.status_code == 429
+        assert "Rate limit" in resp.json()["detail"]
+        limiter.reset()
+
+    def test_local_object_rate_limit(self):
+        """GET /local-object is limited to 60/minute."""
+        from limiter import limiter
+
+        limiter.reset()
+        png = _make_checkerboard_png()
+        key = _content_addressed_key(png)
+        _upload(key, png)
+
+        for _ in range(60):
+            resp = client.get(f"/api/v1/storage/local-object/{key}")
+            assert resp.status_code == 200
+
+        resp = client.get(f"/api/v1/storage/local-object/{key}")
+        assert resp.status_code == 429
+        limiter.reset()
+
+    def test_cv_endpoint_rate_limit(self):
+        """POST /chess-corners is limited to 10/minute."""
+        from limiter import limiter
+
+        limiter.reset()
+        png = _make_checkerboard_png()
+        key = _content_addressed_key(png)
+        _upload(key, png)
+        payload = {"key": key, "storage_mode": "local"}
+
+        for _ in range(10):
+            resp = client.post("/api/v1/cv/chess-corners", json=payload)
+            assert resp.status_code == 200
+
+        resp = client.post("/api/v1/cv/chess-corners", json=payload)
+        assert resp.status_code == 429
+        limiter.reset()
+
+
+# ── Middleware ────────────────────────────────────────────────────────────────
+
+
+def test_security_headers_present():
+    """Verify security headers are set on every response."""
+    resp = client.get("/")
+    assert resp.headers["X-Content-Type-Options"] == "nosniff"
+    assert resp.headers["X-Frame-Options"] == "DENY"
+    assert resp.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
+    assert "camera=()" in resp.headers["Permissions-Policy"]
+
+
+def test_request_id_generated():
+    """Middleware generates X-Request-Id when not provided."""
+    resp = client.get("/")
+    assert "X-Request-Id" in resp.headers
+    assert len(resp.headers["X-Request-Id"]) > 0
+
+
+def test_request_id_echoed():
+    """Middleware echoes back a client-provided X-Request-Id."""
+    resp = client.get("/", headers={"X-Request-Id": "test-trace-42"})
+    assert resp.headers["X-Request-Id"] == "test-trace-42"
+
+
+def test_malformed_content_length_returns_400():
+    """Non-numeric Content-Length header returns 400 instead of crashing."""
+    resp = client.post(
+        "/api/v1/storage/upload-ticket",
+        content=b'{"sha256":"' + b"a" * 64 + b'","content_type":"image/png"}',
+        headers={"Content-Type": "application/json", "Content-Length": "not-a-number"},
+    )
+    assert resp.status_code == 400
+    assert "Content-Length" in resp.json()["detail"]

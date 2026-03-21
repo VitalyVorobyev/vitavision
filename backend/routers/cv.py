@@ -404,6 +404,12 @@ class CalibrationTargetResponse(BaseModel):
 
 
 def _decode_grayscale_image(data: bytes) -> tuple[np.ndarray, int, int]:
+    max_bytes = storage_service.max_upload_bytes()
+    if len(data) > max_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Image data exceeds maximum allowed size ({max_bytes} bytes)",
+        )
     try:
         with Image.open(io.BytesIO(data)) as image:
             gray = image.convert("L")

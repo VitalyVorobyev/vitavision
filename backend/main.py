@@ -12,6 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 
+# Load .env before anything reads env vars (logging, auth, storage config).
+load_dotenv()
 
 # ── Structured JSON logging ──────────────────────────────────────────────────
 
@@ -57,9 +59,6 @@ def _configure_logging() -> None:
 _configure_logging()
 
 logger = logging.getLogger("vitavision.access")
-
-# Load env vars before importing modules that read env at import time.
-load_dotenv()
 
 # Import routers — must come after load_dotenv() and logging setup
 from routers import cv, storage  # noqa: E402
@@ -127,8 +126,16 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)  # type: ignor
 @app.middleware("http")
 async def limit_request_body_size(request: Request, call_next):
     content_length = request.headers.get("content-length")
-    if content_length and int(content_length) > storage_service.max_upload_bytes():
-        return JSONResponse({"detail": "Request body too large"}, status_code=413)
+    if content_length:
+        try:
+            if int(content_length) > storage_service.max_upload_bytes():
+                return JSONResponse(
+                    {"detail": "Request body too large"}, status_code=413
+                )
+        except ValueError:
+            return JSONResponse(
+                {"detail": "Invalid Content-Length header"}, status_code=400
+            )
     return await call_next(request)
 
 

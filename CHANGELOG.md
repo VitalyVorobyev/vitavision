@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+- fix(BE-001): wrap Content-Length parsing in try/except to return 400 on malformed headers instead of crashing
+- fix(BE-002): add byte-size guard in `_decode_grayscale_image` before CV processing
+- fix(BE-003): move `load_dotenv()` before `_configure_logging()` so .env LOG_FORMAT/LOG_LEVEL are respected
+- test(BE-004): add rate limiting tests (upload-ticket 20/min, local-object 60/min, chess-corners 10/min), security header tests, request ID tests, malformed Content-Length test
 - feat(FE-001): add React ErrorBoundary component wrapping canvas, algorithm config, and blog content
 - infra(FE-002): set up Vitest with jsdom, add 26 unit tests for featureSchema and target generator reducer
 - enhancement(FE-003): replace all alert() calls with sonner toast notifications

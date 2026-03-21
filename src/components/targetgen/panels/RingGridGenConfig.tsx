@@ -7,8 +7,8 @@ interface Props {
 }
 
 const PROFILE_OPTIONS: { value: RingGridProfile; label: string }[] = [
-    { value: "baseline", label: "Baseline (893 markers)" },
-    { value: "extended", label: "Extended (2180 markers)" },
+    { value: "baseline", label: "Baseline" },
+    { value: "extended", label: "Extended" },
 ];
 
 export default function RingGridGenConfig({ config, dispatch }: Props) {
@@ -61,7 +61,7 @@ export default function RingGridGenConfig({ config, dispatch }: Props) {
                 <NumberField
                     label="Outer radius (mm)"
                     value={config.markerOuterRadiusMm}
-                    onChange={(v) => update({ markerOuterRadiusMm: v ?? 4.8 })}
+                    onChange={(v) => update({ markerOuterRadiusMm: v ?? 5.6 })}
                     disabled={false}
                     min={0.5}
                     max={25}
@@ -81,7 +81,7 @@ export default function RingGridGenConfig({ config, dispatch }: Props) {
                 <NumberField
                     label="Ring width (mm)"
                     value={config.markerRingWidthMm}
-                    onChange={(v) => update({ markerRingWidthMm: v ?? 1.152 })}
+                    onChange={(v) => update({ markerRingWidthMm: v ?? 0.8 })}
                     disabled={false}
                     min={0.1}
                     max={5}

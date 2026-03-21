@@ -24,11 +24,11 @@ const A4_LANDSCAPE: PageConfig = {
     showScaleLine: true,
 };
 
-const LETTER_PORTRAIT: PageConfig = {
+const LETTER_LANDSCAPE: PageConfig = {
     sizeKind: "letter",
     customWidthMm: 215.9,
     customHeightMm: 279.4,
-    orientation: "portrait",
+    orientation: "landscape",
     marginMm: 10,
     pngDpi: 300,
     showScaleLine: true,
@@ -144,7 +144,7 @@ export const MARKERBOARD_PRESETS: Preset[] = [
             targetType: "markerboard",
             config: { innerRows: 6, innerCols: 9, squareSizeMm: 20, circleDiameterRel: 0.5, circles: defaultCircles(6, 9), innerSquareRel: 0 },
         },
-        page: LETTER_PORTRAIT,
+        page: LETTER_LANDSCAPE,
     },
 ];
 
@@ -170,9 +170,9 @@ export const RINGGRID_PRESETS: Preset[] = [
                 rows: 9,
                 longRowCols: 8,
                 pitchMm: 10,
-                markerOuterRadiusMm: 5.5,
-                markerInnerRadiusMm: 3.6,
-                markerRingWidthMm: 1.3,
+                markerOuterRadiusMm: 6.5,
+                markerInnerRadiusMm: 3.0,
+                markerRingWidthMm: 1.0,
                 profile: "baseline",
             },
         },
@@ -186,12 +186,12 @@ export const RINGGRID_PRESETS: Preset[] = [
         target: {
             targetType: "ringgrid",
             config: {
-                rows: 20,
-                longRowCols: 18,
-                pitchMm: 6,
-                markerOuterRadiusMm: 3.5,
-                markerInnerRadiusMm: 2.3,
-                markerRingWidthMm: 0.85,
+                rows: 34,
+                longRowCols: 38,
+                pitchMm: 3.5,
+                markerOuterRadiusMm: 2.5,
+                markerInnerRadiusMm: 1.1,
+                markerRingWidthMm: 0.4,
                 profile: "extended",
             },
         },

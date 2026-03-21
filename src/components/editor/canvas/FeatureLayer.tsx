@@ -42,6 +42,14 @@ export default function FeatureLayer(props: FeatureLayerProps) {
         return null;
     }
 
+    const handleFeatureSelect = (featureId: string) => (event: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
+        if (event.evt instanceof MouseEvent && event.evt.button !== 0) {
+            return;
+        }
+
+        setSelectedFeatureId(featureId);
+    };
+
     return (
         <>
             {features.map((feature) => {
@@ -54,6 +62,7 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                 const isSelected = selectedFeatureId === feature.id;
                 const isReadonly = isReadonlyFeature(feature);
                 const canEditGeometry = activeTool === "SELECT" && !isReadonly;
+                const selectFeature = handleFeatureSelect(feature.id);
 
                 if (feature.type === "point") {
                     return (
@@ -67,8 +76,8 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                             onDragEnd={(event) => {
                                 updateFeature(feature.id, { x: event.target.x(), y: event.target.y() });
                             }}
-                            onClick={() => setSelectedFeatureId(feature.id)}
-                            onTap={() => setSelectedFeatureId(feature.id)}
+                            onClick={selectFeature}
+                            onTap={selectFeature}
                         />
                     );
                 }
@@ -81,8 +90,8 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                             stroke={isSelected ? "#00ffff" : feature.color || "#00ffff"}
                             strokeWidth={isSelected ? 3 / zoom : 2 / zoom}
                             draggable={canEditGeometry}
-                            onClick={() => setSelectedFeatureId(feature.id)}
-                            onTap={() => setSelectedFeatureId(feature.id)}
+                            onClick={selectFeature}
+                            onTap={selectFeature}
                             onDragEnd={(event) => {
                                 const dx = event.target.x();
                                 const dy = event.target.y();
@@ -102,8 +111,8 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                             stroke={isSelected ? "#00ffff" : feature.color || "#00ff00"}
                             strokeWidth={isSelected ? 3 / zoom : 2 / zoom}
                             draggable={canEditGeometry}
-                            onClick={() => setSelectedFeatureId(feature.id)}
-                            onTap={() => setSelectedFeatureId(feature.id)}
+                            onClick={selectFeature}
+                            onTap={selectFeature}
                             onDragEnd={(event) => {
                                 const dx = event.target.x();
                                 const dy = event.target.y();
@@ -126,8 +135,8 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                             stroke={isSelected ? "#00ffff" : feature.color || "#8b5cf6"}
                             strokeWidth={isSelected ? 3 / zoom : 2 / zoom}
                             draggable={canEditGeometry}
-                            onClick={() => setSelectedFeatureId(feature.id)}
-                            onTap={() => setSelectedFeatureId(feature.id)}
+                            onClick={selectFeature}
+                            onTap={selectFeature}
                             onDragEnd={(event) => {
                                 const dx = event.target.x();
                                 const dy = event.target.y();
@@ -152,8 +161,8 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                             stroke={feature.color || "#ffaa00"}
                             strokeWidth={isSelected ? 3 / zoom : 2 / zoom}
                             draggable={canEditGeometry}
-                            onClick={() => setSelectedFeatureId(feature.id)}
-                            onTap={() => setSelectedFeatureId(feature.id)}
+                            onClick={selectFeature}
+                            onTap={selectFeature}
                             onDragEnd={(event) => {
                                 updateFeature(feature.id, { x: event.target.x(), y: event.target.y() });
                             }}
@@ -175,8 +184,8 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                             stroke={feature.color || "#ff00ff"}
                             strokeWidth={isSelected ? 3 / zoom : 2 / zoom}
                             draggable={canEditGeometry}
-                            onClick={() => setSelectedFeatureId(feature.id)}
-                            onTap={() => setSelectedFeatureId(feature.id)}
+                            onClick={selectFeature}
+                            onTap={selectFeature}
                             onDragEnd={(event) => {
                                 updateFeature(feature.id, { x: event.target.x(), y: event.target.y() });
                             }}
@@ -193,7 +202,7 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                             zoom={zoom}
                             selected={isSelected}
                             hovered={hoveredDirectedPointId === feature.id}
-                            onSelect={() => setSelectedFeatureId(feature.id)}
+                            onSelect={selectFeature}
                             onHover={onDirectedPointHover}
                             onHoverEnd={onDirectedPointLeave}
                         />

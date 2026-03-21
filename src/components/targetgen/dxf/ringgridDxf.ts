@@ -1,16 +1,30 @@
 import type { RingGridConfig } from "../types";
 import type { PageDimensions } from "../svg/paperConstants";
-import { dxfCircle, dxfLine, buildDxf } from "./dxfWriter";
+import { loadCodebook } from "../ringgrid/loader";
 import {
     generateMarkers,
-    markerOuterDrawRadius,
-    codeBandBounds,
     markerBounds,
+    markerOuterDrawRadius,
+    markerRingHalfThickness,
+    codeBandBounds,
 } from "../ringgrid/layout";
+import { dxfFilledAnnularSector, dxfFilledAnnulus } from "./dxfWriter";
 
-export function ringgridDxf(config: RingGridConfig, page: PageDimensions): string {
+const DEG_PER_SECTOR = 360 / 16;
+
+function svgAngleToDxf(angleDeg: number): number {
+    const normalized = (((360 - angleDeg) % 360) + 360) % 360;
+    return normalized === 0 && angleDeg !== 0 ? 360 : normalized;
+}
+
+export async function ringgridDxf(
+    config: RingGridConfig,
+    page: PageDimensions,
+): Promise<string[]> {
+    const codebook = await loadCodebook(config.profile);
     const markers = generateMarkers(config.rows, config.longRowCols, config.pitchMm);
 
+    const halfThickness = markerRingHalfThickness(config.markerRingWidthMm);
     const drawR = markerOuterDrawRadius(config.markerOuterRadiusMm, config.markerRingWidthMm);
     const [bandInnerR, bandOuterR] = codeBandBounds(
         config.markerOuterRadiusMm,
@@ -24,7 +38,6 @@ export function ringgridDxf(config: RingGridConfig, page: PageDimensions): strin
 
     const ox = (page.widthMm - boardW) / 2 + drawR - minX;
     const oy = (page.heightMm - boardH) / 2 + drawR - minY;
-
     const flipY = (svgY: number) => page.heightMm - svgY;
 
     const entities: string[] = [];
@@ -32,26 +45,46 @@ export function ringgridDxf(config: RingGridConfig, page: PageDimensions): strin
     for (const marker of markers) {
         const cx = ox + marker.x;
         const cy = flipY(oy + marker.y);
+        const code = marker.id < codebook.codes.length ? codebook.codes[marker.id] : 0;
 
-        // Outer and inner rings
-        entities.push(dxfCircle(cx, cy, config.markerOuterRadiusMm));
-        entities.push(dxfCircle(cx, cy, config.markerInnerRadiusMm));
+        entities.push(
+            dxfFilledAnnulus(
+                cx,
+                cy,
+                config.markerOuterRadiusMm + halfThickness,
+                config.markerOuterRadiusMm - halfThickness,
+            ),
+        );
 
-        // Code band sector boundaries: 16 radial lines from inner to outer edge
+        entities.push(
+            dxfFilledAnnulus(
+                cx,
+                cy,
+                config.markerInnerRadiusMm + halfThickness,
+                config.markerInnerRadiusMm - halfThickness,
+            ),
+        );
+
         for (let i = 0; i < 16; i++) {
-            const angle = (i * 22.5 * Math.PI) / 180;
-            const cos = Math.cos(angle);
-            const sin = Math.sin(angle);
+            const bit = (code >> (15 - i)) & 1;
+            if (bit === 0) continue;
+
+            const startDeg = i * DEG_PER_SECTOR;
+            const endDeg = (i + 1) * DEG_PER_SECTOR;
+
             entities.push(
-                dxfLine(
-                    cx + bandInnerR * cos,
-                    cy + bandInnerR * sin,
-                    cx + bandOuterR * cos,
-                    cy + bandOuterR * sin,
+                dxfFilledAnnularSector(
+                    cx,
+                    cy,
+                    bandInnerR,
+                    bandOuterR,
+                    svgAngleToDxf(startDeg),
+                    svgAngleToDxf(endDeg),
+                    false,
                 ),
             );
         }
     }
 
-    return buildDxf(entities);
+    return entities;
 }

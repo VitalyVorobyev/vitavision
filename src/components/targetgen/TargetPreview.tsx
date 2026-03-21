@@ -3,6 +3,7 @@ import type { TargetGeneratorState, TargetGeneratorAction } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
 import { generateMarkers, markerOuterDrawRadius, markerBounds } from "./ringgrid/layout";
 import ZoomControls from "../shared/ZoomControls";
+import CanvasControlsHint from "../shared/CanvasControlsHint";
 
 /** CSS px per mm (CSS spec: 1in = 96px, 1in = 25.4mm). */
 const CSS_PX_PER_MM = 96 / 25.4;
@@ -188,6 +189,11 @@ export default function TargetPreview({ state, dispatch }: Props) {
     );
 
     const isMarkerboard = state.target.targetType === "markerboard";
+    const controlHints = [
+        ...(isMarkerboard ? ["Left click toggles circles"] : []),
+        "Right drag pans",
+        "Wheel zooms",
+    ];
 
     const handleContextMenu = useCallback((e: React.MouseEvent) => {
         e.preventDefault(); // suppress context menu — right-click is used for panning
@@ -246,6 +252,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
                     zoomPercent={Math.round(zoom * 100)}
                 />
             </div>
+            <CanvasControlsHint lines={controlHints} className="bottom-3 right-3 max-w-52" />
         </div>
     );
 }

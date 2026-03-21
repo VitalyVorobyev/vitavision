@@ -53,9 +53,9 @@ export const DEFAULT_RINGGRID: RingGridConfig = {
     rows: 15,
     longRowCols: 14,
     pitchMm: 8.0,
-    markerOuterRadiusMm: 4.8,
+    markerOuterRadiusMm: 5.6,
     markerInnerRadiusMm: 3.2,
-    markerRingWidthMm: 1.152,
+    markerRingWidthMm: 0.8,
     profile: "baseline",
 };
 

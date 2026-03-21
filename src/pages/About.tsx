@@ -27,9 +27,9 @@ export default function About() {
                 {/* Photo */}
                 <div className="w-full flex justify-center md:block md:w-auto shrink-0">
                     <img
-                        src="/VVAvatar.jpg"
+                        src="/AIAvatar.jpg"
                         alt="Vitaly Vorobyev"
-                        className="w-52 md:w-64 aspect-square object-cover rounded-2xl border border-border"
+                        className="w-52 md:w-64 aspect-square object-cover object-[50%_15%] rounded-2xl border border-border"
                     />
                 </div>
 

@@ -57,6 +57,7 @@ export const chessCornersAlgorithm: AlgorithmDefinition = {
     id: "chess-corners",
     title: "ChESS Corners",
     description: "Detect ChESS X-junction keypoints with subpixel positions and orientation vectors.",
+    blogSlug: "01-chess",
     initialConfig,
     presets,
     ConfigComponent: ChessCornersConfigForm as AlgorithmDefinition["ConfigComponent"],

@@ -3,8 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { generateDxf } from "../../src/components/targetgen/dxf/index.ts";
 
-const REPO_ROOT = "/Users/vitalyvorobyev/vitavision";
-const PUBLIC_ROOT = join(REPO_ROOT, "public");
+const PUBLIC_ROOT = join(import.meta.dir, "..", "..", "public");
 
 const PAGE = {
     sizeKind: "a4",

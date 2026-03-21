@@ -65,11 +65,14 @@ export default function ConfigurePanel() {
     } = useEditorStore();
 
     const { initialState, syncToUrl } = useDeepLinkSync();
+    const configSampleId: SampleId = imageSrc === null && initialState.sampleId !== null
+        ? initialState.sampleId
+        : imageSampleId;
 
     const [selectedAlgorithmId, setSelectedAlgorithmId] = useState<string>(initialState.algorithmId);
     const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>(() => {
         if (initialState.config !== null) {
-            return { [initialState.algorithmId]: { value: initialState.config, sampleId: imageSampleId } };
+            return { [initialState.algorithmId]: { value: initialState.config, sampleId: initialState.sampleId ?? imageSampleId } };
         }
         return {};
     });
@@ -82,7 +85,7 @@ export default function ConfigurePanel() {
     const config = resolveConfig(
         configEntries,
         algorithm.id,
-        imageSampleId,
+        configSampleId,
         algorithm.initialConfig,
         algorithm.sampleDefaults,
     );
@@ -90,10 +93,10 @@ export default function ConfigurePanel() {
     const handleConfigChange = useCallback((next: unknown) => {
         setConfigEntries((current) => ({
             ...current,
-            [algorithm.id]: { value: next, sampleId: imageSampleId },
+            [algorithm.id]: { value: next, sampleId: configSampleId },
         }));
         syncToUrl(algorithm.id, next);
-    }, [algorithm.id, imageSampleId, syncToUrl]);
+    }, [algorithm.id, configSampleId, syncToUrl]);
 
     const activeGalleryImage = useMemo(
         () => galleryImages.find((img) => img.sampleId === imageSampleId && imageSrc !== null) ?? null,
@@ -106,8 +109,10 @@ export default function ConfigurePanel() {
         setSelectedAlgorithmId(id);
         runner.clearError();
         const algo = getAlgorithmById(id);
-        const entry = configEntries[id];
-        syncToUrl(id, entry?.value ?? algo.initialConfig);
+        syncToUrl(
+            id,
+            resolveConfig(configEntries, id, configSampleId, algo.initialConfig, algo.sampleDefaults),
+        );
     };
 
     const handleRun = async () => {

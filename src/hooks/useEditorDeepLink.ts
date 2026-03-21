@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAlgorithmById, DEFAULT_ALGORITHM_ID } from "../components/editor/algorithms/registry";
+import type { SampleId } from "../store/editor/useEditorStore";
 
 /* ── base64url helpers ───────────────────────────────────────── */
 
@@ -13,12 +14,22 @@ function fromBase64Url(b64: string): string {
     return atob(padded);
 }
 
+const VALID_SAMPLE_IDS = new Set<SampleId>(["chessboard", "charuco", "markerboard", "upload"]);
+
+function parseSampleId(value: string | null): SampleId | null {
+    if (value === null) {
+        return null;
+    }
+
+    return VALID_SAMPLE_IDS.has(value as SampleId) ? value as SampleId : null;
+}
+
 /* ── public interface ────────────────────────────────────────── */
 
 export interface DeepLinkState {
     algorithmId: string;
     config: unknown | null;
-    sampleId: string | null;
+    sampleId: SampleId | null;
 }
 
 /**
@@ -28,7 +39,7 @@ export interface DeepLinkState {
 export function readDeepLink(searchParams: URLSearchParams): DeepLinkState {
     const algoParam = searchParams.get("algo");
     const configParam = searchParams.get("config");
-    const sampleParam = searchParams.get("sample");
+    const sampleParam = parseSampleId(searchParams.get("sample"));
 
     const algorithmId = algoParam && getAlgorithmById(algoParam).id === algoParam
         ? algoParam
@@ -46,6 +57,21 @@ export function readDeepLink(searchParams: URLSearchParams): DeepLinkState {
     return { algorithmId, config, sampleId: sampleParam };
 }
 
+export function buildDeepLinkSearch(currentSearch: string, algorithmId: string, config: unknown): string {
+    const params = new URLSearchParams(currentSearch);
+    params.set("algo", algorithmId);
+
+    try {
+        const json = JSON.stringify(config);
+        params.set("config", toBase64Url(json));
+    } catch {
+        params.delete("config");
+    }
+
+    const query = params.toString();
+    return query.length > 0 ? `?${query}` : "";
+}
+
 /**
  * Hook that syncs editor state → URL search params via history.replaceState.
  * Does not trigger React Router re-renders.
@@ -56,17 +82,8 @@ export function useDeepLinkSync() {
     const initialState = useMemo(() => readDeepLink(searchParams), []);
 
     const syncToUrl = useCallback((algorithmId: string, config: unknown) => {
-        const params = new URLSearchParams();
-        params.set("algo", algorithmId);
-
-        try {
-            const json = JSON.stringify(config);
-            params.set("config", toBase64Url(json));
-        } catch {
-            // non-serializable config — skip
-        }
-
-        const url = `${window.location.pathname}?${params.toString()}`;
+        const search = buildDeepLinkSearch(window.location.search, algorithmId, config);
+        const url = `${window.location.pathname}${search}${window.location.hash}`;
         window.history.replaceState(null, "", url);
     }, []);
 

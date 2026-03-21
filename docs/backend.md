@@ -143,7 +143,7 @@ All config fields are optional; defaults are derived from `public/marker_detect_
       "rows": 22,
       "cols": 22,
       "circles": [
-        { "i": 11, "j": 11, "polarity": "white" },
+        { "i": 11, "j": 11, "polarity": "black" },
         { "i": 12, "j": 11, "polarity": "white" },
         { "i": 12, "j": 12, "polarity": "white" }
       ],

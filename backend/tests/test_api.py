@@ -406,7 +406,7 @@ def test_calibration_targets_markerboard_sample():
                     "rows": 22,
                     "cols": 22,
                     "circles": [
-                        {"i": 11, "j": 11, "polarity": "white"},
+                        {"i": 11, "j": 11, "polarity": "black"},
                         {"i": 12, "j": 11, "polarity": "white"},
                         {"i": 12, "j": 12, "polarity": "white"},
                     ],

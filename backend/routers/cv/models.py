@@ -392,3 +392,79 @@ class CalibrationTargetResponse(BaseModel):
     alignment: AlignmentResponse | None = None
     circle_candidates: list[CircleCandidateResponse] | None = None
     circle_matches: list[CircleMatchResponse] | None = None
+
+
+# ── Ringgrid models ────────────────────────────────────────────────────────
+
+
+class RinggridBoardRequest(BaseModel):
+    rows: int = Field(..., ge=1, le=200)
+    long_row_cols: int = Field(..., ge=1, le=200)
+    pitch_mm: float = Field(..., gt=0.0)
+    marker_outer_radius_mm: float = Field(..., gt=0.0)
+    marker_inner_radius_mm: float = Field(..., gt=0.0)
+    marker_ring_width_mm: float = Field(..., gt=0.0)
+
+
+class RinggridDetectRequest(BaseModel):
+    key: str = Field(..., min_length=3, max_length=2048)
+    storage_mode: Literal["r2", "local"] | None = None
+    board: RinggridBoardRequest
+    profile: Literal["baseline", "extended"] = "baseline"
+
+    @field_validator("key")
+    @classmethod
+    def validate_key_format(cls, value: str) -> str:
+        if not _KEY_PATTERN.match(value):
+            raise ValueError("key does not match expected storage key format")
+        return value
+
+
+class RinggridEllipseResponse(BaseModel):
+    cx: float
+    cy: float
+    a: float
+    b: float
+    angle: float
+
+
+class RinggridDecodeResponse(BaseModel):
+    best_id: int
+    best_rotation: int
+    best_dist: int
+    margin: int
+    decode_confidence: float
+
+
+class RinggridFitResponse(BaseModel):
+    rms_residual_outer: float | None = None
+    rms_residual_inner: float | None = None
+    ransac_inlier_ratio_outer: float | None = None
+    ransac_inlier_ratio_inner: float | None = None
+
+
+class RinggridMarkerResponse(BaseModel):
+    id: int
+    confidence: float
+    center: FramePoint
+    ellipse_outer: RinggridEllipseResponse
+    ellipse_inner: RinggridEllipseResponse
+    decode: RinggridDecodeResponse | None = None
+    fit: RinggridFitResponse | None = None
+    board_xy_mm: FramePoint | None = None
+
+
+class RinggridSummaryResponse(BaseModel):
+    marker_count: int
+    runtime_ms: float
+
+
+class RinggridDetectResponse(BaseModel):
+    status: Literal["success"]
+    key: str
+    storage_mode: Literal["r2", "local"]
+    image_width: int
+    image_height: int
+    frame: DetectionFrame
+    summary: RinggridSummaryResponse
+    markers: list[RinggridMarkerResponse]

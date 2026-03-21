@@ -1,11 +1,17 @@
 import type { MarkerBoardConfig } from "../types";
 import type { PageDimensions } from "../svg/paperConstants";
-import { dxfLine, dxfCircle, dxfRect, buildDxf } from "./dxfWriter";
+import {
+    circleHoleBoundary,
+    dxfFilledCircle,
+    dxfFilledRect,
+    dxfFilledRectWithVoids,
+    outermostPolyline,
+} from "./dxfWriter";
 
 export function markerboardDxf(
     config: MarkerBoardConfig,
     page: PageDimensions,
-): string {
+): string[] {
     const totalCols = config.innerCols + 1;
     const totalRows = config.innerRows + 1;
     const sq = config.squareSizeMm;
@@ -16,46 +22,58 @@ export function markerboardDxf(
     const oy = (page.heightMm - boardH) / 2;
 
     const flipY = (svgY: number) => page.heightMm - svgY;
+    const innerSq = config.innerSquareRel > 0 ? sq * config.innerSquareRel : 0;
+    const innerOff = (sq - innerSq) / 2;
+    const circR = (sq * config.circleDiameterRel) / 2;
+    const circleKey = (row: number, col: number) => `${row}:${col}`;
+    const circleSet = new Set(config.circles.map((circle) => circleKey(circle.cell.i, circle.cell.j)));
 
     const entities: string[] = [];
 
-    // Outer board rectangle
-    entities.push(...dxfRect(ox, flipY(oy + boardH), boardW, boardH));
+    for (let r = 0; r < totalRows; r++) {
+        for (let c = 0; c < totalCols; c++) {
+            const cellX = ox + c * sq;
+            const cellY = oy + r * sq;
+            const isBlackCell = (r + c) % 2 === 0;
 
-    // Vertical grid lines (interior)
-    for (let c = 1; c < totalCols; c++) {
-        const x = ox + c * sq;
-        entities.push(dxfLine(x, flipY(oy), x, flipY(oy + boardH)));
-    }
-
-    // Horizontal grid lines (interior)
-    for (let r = 1; r < totalRows; r++) {
-        const y = oy + r * sq;
-        entities.push(dxfLine(ox, flipY(y), ox + boardW, flipY(y)));
-    }
-
-    // Inner squares in black squares
-    if (config.innerSquareRel > 0) {
-        const innerSq = sq * config.innerSquareRel;
-        const off = (sq - innerSq) / 2;
-        for (let r = 0; r < totalRows; r++) {
-            for (let c = 0; c < totalCols; c++) {
-                if ((r + c) % 2 === 0) {
-                    const ix = ox + c * sq + off;
-                    const iy = oy + r * sq + off;
-                    entities.push(...dxfRect(ix, flipY(iy + innerSq), innerSq, innerSq));
+            if (isBlackCell) {
+                const voids = [];
+                if (innerSq > 0) {
+                    voids.push(
+                        outermostPolyline([
+                            { x: cellX + innerOff, y: flipY(cellY + innerOff + innerSq) },
+                            { x: cellX + innerOff + innerSq, y: flipY(cellY + innerOff + innerSq) },
+                            { x: cellX + innerOff + innerSq, y: flipY(cellY + innerOff) },
+                            { x: cellX + innerOff, y: flipY(cellY + innerOff) },
+                        ]),
+                    );
                 }
+
+                if (circleSet.has(circleKey(r, c))) {
+                    voids.push(circleHoleBoundary(cellX + sq / 2, flipY(cellY + sq / 2), circR));
+                }
+
+                if (voids.length > 0) {
+                    entities.push(
+                        dxfFilledRectWithVoids(
+                            cellX,
+                            flipY(cellY + sq),
+                            sq,
+                            sq,
+                            voids,
+                        ),
+                    );
+                } else {
+                    entities.push(dxfFilledRect(cellX, flipY(cellY + sq), sq, sq));
+                }
+                continue;
+            }
+
+            if (circleSet.has(circleKey(r, c))) {
+                entities.push(dxfFilledCircle(cellX + sq / 2, flipY(cellY + sq / 2), circR));
             }
         }
     }
 
-    // Circles from config
-    const circR = (sq * config.circleDiameterRel) / 2;
-    for (const circ of config.circles) {
-        const cx = ox + circ.cell.j * sq + sq / 2;
-        const cy = oy + circ.cell.i * sq + sq / 2;
-        entities.push(dxfCircle(cx, flipY(cy), circR));
-    }
-
-    return buildDxf(entities);
+    return entities;
 }

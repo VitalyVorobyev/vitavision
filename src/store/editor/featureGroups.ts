@@ -19,6 +19,7 @@ const TYPE_LABELS: Record<string, string> = {
     point: "Points",
     line: "Lines",
     polyline: "Polylines",
+    polygon: "Polygons",
     bbox: "Bounding boxes",
     ellipse: "Ellipses",
     directed_point: "Directed points",

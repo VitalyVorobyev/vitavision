@@ -20,6 +20,14 @@ export function render(url: string): string {
                             <Route path="/blog/:slug" element={<BlogPost />} />
                             <Route path="/algorithms" element={<AlgorithmIndex />} />
                             <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
+                            <Route path="/tools/target-generator" element={
+                                <div className="max-w-3xl mx-auto px-6 py-16 text-center">
+                                    <h1 className="text-3xl font-bold tracking-tight mb-4">Calibration Target Generator</h1>
+                                    <p className="text-muted-foreground">
+                                        Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.
+                                    </p>
+                                </div>
+                            } />
                         </Routes>
                     </main>
                     <Footer />

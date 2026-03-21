@@ -1,12 +1,14 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { LoaderCircle, Sparkles, AlertCircle, Maximize2 } from "lucide-react";
 
 import { useEditorStore } from "../../../store/editor/useEditorStore";
 import type { SampleId } from "../../../store/editor/useEditorStore";
 
-import { ALGORITHM_REGISTRY, DEFAULT_ALGORITHM_ID, getAlgorithmById } from "../algorithms/registry";
+import { ALGORITHM_REGISTRY, getAlgorithmById } from "../algorithms/registry";
 import useAlgorithmRunner, { stageLabel } from "../algorithms/useAlgorithmRunner";
+import { useDeepLinkSync } from "../../../hooks/useEditorDeepLink";
 
 import RailSection from "./RailSection";
 import ConfigModal from "./ConfigModal";
@@ -62,8 +64,18 @@ export default function ConfigurePanel() {
         addRunToHistory,
     } = useEditorStore();
 
-    const [selectedAlgorithmId, setSelectedAlgorithmId] = useState<string>(DEFAULT_ALGORITHM_ID);
-    const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>({});
+    const { initialState, syncToUrl } = useDeepLinkSync();
+    const configSampleId: SampleId = imageSrc === null && initialState.sampleId !== null
+        ? initialState.sampleId
+        : imageSampleId;
+
+    const [selectedAlgorithmId, setSelectedAlgorithmId] = useState<string>(initialState.algorithmId);
+    const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>(() => {
+        if (initialState.config !== null) {
+            return { [initialState.algorithmId]: { value: initialState.config, sampleId: initialState.sampleId ?? imageSampleId } };
+        }
+        return {};
+    });
     const [configModalOpen, setConfigModalOpen] = useState(false);
 
     const runner = useAlgorithmRunner();
@@ -73,16 +85,18 @@ export default function ConfigurePanel() {
     const config = resolveConfig(
         configEntries,
         algorithm.id,
-        imageSampleId,
+        configSampleId,
         algorithm.initialConfig,
         algorithm.sampleDefaults,
     );
 
-    const handleConfigChange = (next: unknown) =>
+    const handleConfigChange = useCallback((next: unknown) => {
         setConfigEntries((current) => ({
             ...current,
-            [algorithm.id]: { value: next, sampleId: imageSampleId },
+            [algorithm.id]: { value: next, sampleId: configSampleId },
         }));
+        syncToUrl(algorithm.id, next);
+    }, [algorithm.id, configSampleId, syncToUrl]);
 
     const activeGalleryImage = useMemo(
         () => galleryImages.find((img) => img.sampleId === imageSampleId && imageSrc !== null) ?? null,
@@ -94,6 +108,11 @@ export default function ConfigurePanel() {
     const handleSelectAlgorithm = (id: string) => {
         setSelectedAlgorithmId(id);
         runner.clearError();
+        const algo = getAlgorithmById(id);
+        syncToUrl(
+            id,
+            resolveConfig(configEntries, id, configSampleId, algo.initialConfig, algo.sampleDefaults),
+        );
     };
 
     const handleRun = async () => {
@@ -107,23 +126,27 @@ export default function ConfigurePanel() {
 
         if (!output) return;
 
-        const mappedFeatures = algorithm.toFeatures(output.result, output.runId);
-        replaceAlgorithmFeatures(algorithm.id, mappedFeatures);
-        if (mappedFeatures.length > 0) {
-            setSelectedFeatureId(mappedFeatures[0].id);
-        }
+        try {
+            const mappedFeatures = algorithm.toFeatures(output.result, output.runId);
+            replaceAlgorithmFeatures(algorithm.id, mappedFeatures);
+            if (mappedFeatures.length > 0) {
+                setSelectedFeatureId(mappedFeatures[0].id);
+            }
 
-        const summaryEntries = algorithm.summary(output.result);
-        setLastAlgorithmResult(algorithm.id, output.result);
-        addRunToHistory({
-            runId: output.runId,
-            algorithmId: algorithm.id,
-            algorithmTitle: algorithm.title,
-            summary: summaryEntries,
-            featureCount: mappedFeatures.length,
-            timestamp: Date.now(),
-        });
-        setPanelMode("results");
+            const summaryEntries = algorithm.summary(output.result);
+            setLastAlgorithmResult(algorithm.id, output.result);
+            addRunToHistory({
+                runId: output.runId,
+                algorithmId: algorithm.id,
+                algorithmTitle: algorithm.title,
+                summary: summaryEntries,
+                featureCount: mappedFeatures.length,
+                timestamp: Date.now(),
+            });
+            setPanelMode("results");
+        } catch (err) {
+            toast.error(`Failed to process algorithm results: ${err instanceof Error ? err.message : "unknown error"}`);
+        }
     };
 
     const hasHint = activeGalleryImage !== null && imageSrc !== null &&
@@ -164,7 +187,17 @@ export default function ConfigurePanel() {
                 </p>
             </RailSection>
 
-            {/* Section 3: Config */}
+            {/* Section 3: Presets (if available) */}
+            {algorithm.presets && algorithm.presets.length > 0 && (
+                <RailSection label="Presets">
+                    <PresetPicker
+                        presets={algorithm.presets}
+                        onSelect={handleConfigChange}
+                    />
+                </RailSection>
+            )}
+
+            {/* Section 4: Config */}
             <RailSection
                 label="Configuration"
                 action={
@@ -204,6 +237,32 @@ export default function ConfigurePanel() {
 }
 
 // --- Sub-components to keep ConfigurePanel render body under 40 lines ---
+
+import type { AlgorithmPreset } from "../algorithms/types";
+
+function PresetPicker({
+    presets,
+    onSelect,
+}: {
+    presets: AlgorithmPreset[];
+    onSelect: (config: unknown) => void;
+}) {
+    return (
+        <div className="flex flex-wrap gap-1.5">
+            {presets.map((preset) => (
+                <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => onSelect(preset.config)}
+                    title={preset.description}
+                    className="text-[11px] px-2.5 py-1 rounded-full border border-border bg-background text-foreground hover:bg-primary/10 hover:border-primary/40 hover:text-primary transition-colors"
+                >
+                    {preset.label}
+                </button>
+            ))}
+        </div>
+    );
+}
 
 function HintCard({
     image,

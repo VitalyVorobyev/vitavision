@@ -1,5 +1,32 @@
 ## [Unreleased]
 
+- fix(BE-001): wrap Content-Length parsing in try/except to return 400 on malformed headers instead of crashing
+- fix(BE-002): add byte-size guard in `_decode_grayscale_image` before CV processing
+- fix(BE-003): move `load_dotenv()` before `_configure_logging()` so .env LOG_FORMAT/LOG_LEVEL are respected
+- test(BE-004): add rate limiting tests (upload-ticket 20/min, local-object 60/min, chess-corners 10/min), security header tests, request ID tests, malformed Content-Length test
+- fix(BE-005): remove dummy `/calibrate` endpoint returning hardcoded camera matrix
+- fix(BE-006): use actual media type for `local-object` GET responses via `local_media_type_for_key()`
+- refactor(BE-007): split 1110-line `cv.py` into `routers/cv/` package (models, corners, calibration_targets, shared)
+- fix(BE-008): make R2 cache writes atomic via write-to-tmp-then-rename
+- enhancement(BE-009): add configurable timeout (`CV_TIMEOUT_SECONDS`) for CV algorithm C extension calls
+- enhancement(BE-010): run blocking CV algorithm calls via `run_in_executor` to unblock the event loop
+- enhancement(BE-011): propagate request ID to all loggers via `contextvars.ContextVar`
+- test(BE-012): add middleware tests for security headers, request ID, body size limit
+- test(BE-013): add storage service unit tests (content-addressed keys, image validation, path traversal, R2 cache)
+- feat(FE-001): add React ErrorBoundary component wrapping canvas, algorithm config, and blog content
+- infra(FE-002): set up Vitest with jsdom, add 26 unit tests for featureSchema and target generator reducer
+- enhancement(FE-003): replace all alert() calls with sonner toast notifications
+- fix(FE-004): add error handling to useTargetGenerator (.catch) and ConfigurePanel handleRun (try/catch)
+- feat(FE-005): add catch-all 404 page with NotFound component
+- enhancement(FE-006): add route-level code splitting with React.lazy and Suspense fallback
+- refactor(FE-007): extract usePixelSampler, useCanvasGestures, useDrawingHandlers hooks from CanvasWorkspace
+- feat(EDITOR-017): add overlay visibility popover with per-layer toggles (Features, Algorithm Overlay)
+- feat(EDITOR-018): add structured diagnostics interface to ResultsPanel with info/warning/error levels
+- feat(EDITOR-019): add preset configurations to all algorithm adapters with preset picker in ConfigurePanel
+- feat(EDITOR-020): add CollapsibleSection component for progressive disclosure of advanced config parameters
+- feat(EDITOR-021): add PolygonFeature to feature model, Zod schema, and feature groups
+- feat(EDITOR-022): add polygon renderer to FeatureLayer (closed Line with semi-transparent fill)
+- feat(EDITOR-023): add POLYGON drawing tool to left rail and CanvasWorkspace (click vertices, double-click to close)
 - feat(TGEN-007): add curated preset configurations (camera calibration, robotics, industrial) for all 3 target types with preset picker and JSON config import
 - enhancement(TGEN-008): add board/page dimension overlay in preview, tooltips on all config fields
 - feat(TGEN-001): add `POST /api/v1/cv/calibration-targets/generate` endpoint supporting chessboard, ChArUco, and marker board targets with SVG/JSON/PNG output and paper configuration

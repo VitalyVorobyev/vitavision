@@ -1,5 +1,6 @@
 import { useRef } from "react";
-import { Grid3X3, QrCode, CircleDot, Upload } from "lucide-react";
+import { toast } from "sonner";
+import { Grid3X3, QrCode, CircleDot, Target, Upload } from "lucide-react";
 import type { TargetType, TargetGeneratorAction } from "../types";
 import { presetsForType } from "../presets";
 
@@ -27,6 +28,12 @@ const TARGET_TYPES: {
         description: "Checkerboard with asymmetric circle markers",
         icon: <CircleDot size={24} />,
     },
+    {
+        id: "ringgrid",
+        label: "Ring Grid",
+        description: "Hex-lattice concentric ring markers with binary code bands",
+        icon: <Target size={24} />,
+    },
 ];
 
 interface Props {
@@ -46,18 +53,18 @@ export default function TargetTypeSelector({ selected, dispatch }: Props) {
             try {
                 const data = JSON.parse(ev.target?.result as string);
                 if (data?.target?.targetType && data?.target?.config && data?.page) {
-                    // Ensure pngDpi exists for configs from older versions
-                    const page = { pngDpi: 300, ...data.page };
+                    // Ensure new fields exist for configs from older versions
+                    const page = { pngDpi: 300, showScaleLine: true, ...data.page };
                     dispatch({
                         type: "LOAD_PRESET",
                         target: data.target,
                         page,
                     });
                 } else {
-                    alert("Invalid config file: missing target or page fields.");
+                    toast.error("Invalid config file: missing target or page fields.");
                 }
             } catch {
-                alert("Failed to parse JSON config file.");
+                toast.error("Failed to parse JSON config file.");
             }
         };
         reader.readAsText(file);

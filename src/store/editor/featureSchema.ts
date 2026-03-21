@@ -45,6 +45,12 @@ const polylineFeatureSchema = baseFeatureSchema.extend({
     points: z.array(z.number()).min(4),
 });
 
+const polygonFeatureSchema = baseFeatureSchema.extend({
+    type: z.literal("polygon"),
+    points: z.array(z.number()).min(6),
+    closed: z.boolean(),
+});
+
 const bboxFeatureSchema = baseFeatureSchema.extend({
     type: z.literal("bbox"),
     x: z.number(),
@@ -76,6 +82,7 @@ export const featureSchema = z.discriminatedUnion("type", [
     pointFeatureSchema,
     lineFeatureSchema,
     polylineFeatureSchema,
+    polygonFeatureSchema,
     bboxFeatureSchema,
     ellipseFeatureSchema,
     directedPointFeatureSchema,

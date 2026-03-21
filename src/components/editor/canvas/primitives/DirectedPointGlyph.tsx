@@ -19,7 +19,7 @@ interface DirectedPointGlyphProps {
     zoom: number;
     selected: boolean;
     hovered: boolean;
-    onSelect: () => void;
+    onSelect: (event: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => void;
     onHover: (feature: DirectedPointFeature, event: Konva.KonvaEventObject<MouseEvent>) => void;
     onHoverEnd: () => void;
 }
@@ -45,8 +45,8 @@ export default function DirectedPointGlyph(props: DirectedPointGlyphProps) {
                 radius={(selected ? 4.5 : 3.2) / zoom}
                 fill={color}
                 opacity={selected ? 0.95 : 0.85}
-                onClick={onSelect}
-                onTap={onSelect}
+                onClick={(event) => onSelect(event)}
+                onTap={(event) => onSelect(event)}
                 onMouseEnter={(event) => onHover(feature, event)}
                 onMouseMove={(event) => onHover(feature, event)}
                 onMouseLeave={onHoverEnd}

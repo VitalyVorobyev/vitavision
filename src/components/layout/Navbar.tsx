@@ -43,12 +43,6 @@ export default function Navbar() {
             </Link>
             <div className="flex space-x-4 text-sm font-medium items-center">
                 <Link
-                    to="/editor"
-                    className={`hover:text-foreground transition-colors ${location.pathname.startsWith('/editor') ? 'text-foreground' : 'text-muted-foreground'}`}
-                >
-                    Editor
-                </Link>
-                <Link
                     to="/blog"
                     className={`hover:text-foreground transition-colors ${location.pathname.startsWith('/blog') ? 'text-foreground' : 'text-muted-foreground'}`}
                 >
@@ -59,6 +53,12 @@ export default function Navbar() {
                     className={`hover:text-foreground transition-colors ${location.pathname.startsWith('/algorithms') ? 'text-foreground' : 'text-muted-foreground'}`}
                 >
                     Algorithms
+                </Link>
+                <Link
+                    to="/editor"
+                    className={`hover:text-foreground transition-colors ${location.pathname.startsWith('/editor') ? 'text-foreground' : 'text-muted-foreground'}`}
+                >
+                    Editor
                 </Link>
                 <Link
                     to="/tools/target-generator"

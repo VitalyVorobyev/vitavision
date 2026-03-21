@@ -4,6 +4,7 @@ import type {
     ChessboardConfig,
     CharucoConfig,
     MarkerBoardConfig,
+    RingGridConfig,
     CircleSpec,
     TargetType,
 } from "./types";
@@ -48,6 +49,16 @@ const DEFAULT_MARKERBOARD: MarkerBoardConfig = {
     innerSquareRel: 0,
 };
 
+export const DEFAULT_RINGGRID: RingGridConfig = {
+    rows: 15,
+    longRowCols: 14,
+    pitchMm: 8.0,
+    markerOuterRadiusMm: 5.6,
+    markerInnerRadiusMm: 3.2,
+    markerRingWidthMm: 0.8,
+    profile: "baseline",
+};
+
 export function defaultConfigForType(targetType: string) {
     switch (targetType) {
         case "chessboard":
@@ -56,6 +67,8 @@ export function defaultConfigForType(targetType: string) {
             return { ...DEFAULT_CHARUCO };
         case "markerboard":
             return { ...DEFAULT_MARKERBOARD, circles: [...DEFAULT_MARKERBOARD.circles] };
+        case "ringgrid":
+            return { ...DEFAULT_RINGGRID };
         default:
             return { ...DEFAULT_CHESSBOARD };
     }
@@ -70,6 +83,7 @@ export const INITIAL_STATE: TargetGeneratorState = {
         orientation: "landscape",
         marginMm: 10,
         pngDpi: 300,
+        showScaleLine: true,
     },
     previewSvg: "",
     validation: { errors: [], warnings: [] },

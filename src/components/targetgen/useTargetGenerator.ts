@@ -14,11 +14,16 @@ export function useTargetGenerator(): {
     useEffect(() => {
         let cancelled = false;
 
-        generatePreviewSvg(state.target, state.page).then((svg) => {
-            if (cancelled) return;
-            const validation = validateConfig(state.target, state.page);
-            dispatch({ type: "SET_PREVIEW", svg, validation });
-        });
+        generatePreviewSvg(state.target, state.page)
+            .then((svg) => {
+                if (cancelled) return;
+                const validation = validateConfig(state.target, state.page);
+                dispatch({ type: "SET_PREVIEW", svg, validation });
+            })
+            .catch((err) => {
+                if (cancelled) return;
+                console.error("SVG preview generation failed:", err);
+            });
 
         return () => {
             cancelled = true;

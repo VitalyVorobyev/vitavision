@@ -1,6 +1,7 @@
 import { useEditorStore } from "../../store/editor/useEditorStore";
 import type { SampleId } from "../../store/editor/useEditorStore";
 import { Plus, Image as ImageIcon } from "lucide-react";
+import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 
 export default function EditorGallery() {
@@ -47,7 +48,7 @@ export default function EditorGallery() {
             setGalleryMode(false);
         };
         img.onerror = () => {
-            alert("Failed to load image");
+            toast.error("Failed to load image");
         };
     };
 

@@ -10,6 +10,18 @@ export interface AlgorithmSummaryEntry {
     value: string;
 }
 
+export interface DiagnosticEntry {
+    level: "info" | "warning" | "error";
+    message: string;
+    detail?: string;
+}
+
+export interface AlgorithmPreset {
+    label: string;
+    description?: string;
+    config: unknown;
+}
+
 export interface AlgorithmConfigFormProps<TConfig = unknown> {
     config: TConfig;
     onChange: (next: TConfig) => void;
@@ -32,6 +44,8 @@ export interface AlgorithmDefinition {
     }) => Promise<unknown>;
     toFeatures: (result: unknown, runId: string) => Feature[];
     summary: (result: unknown) => AlgorithmSummaryEntry[];
+    diagnostics?: (result: unknown) => DiagnosticEntry[];
+    presets?: AlgorithmPreset[];
     OverlayComponent?: ComponentType<{
         result: unknown;
         zoom: number;

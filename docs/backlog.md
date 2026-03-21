@@ -29,65 +29,6 @@
 
 ## Backlog
 
-Editor — Phase 2: Algorithm Canvas Overlays
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| EDITOR-017 | todo | P2 | feature | Add overlay visibility toggle to left rail | Implementer | Expand eye toggle into layers popover: Features, Algorithm Overlay. Uses overlayVisibility store. Deps: EDITOR-014. |
-
-Editor — Phase 3: Diagnostics + Progressive Disclosure + Presets
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| EDITOR-018 | todo | P2 | feature | Add diagnostics interface and structured run status to ResultsPanel | Implementer | DiagnosticEntry {level, message, detail}. Optional diagnostics() on AlgorithmDefinition. Render in ResultsPanel. Deps: EDITOR-012. |
-| EDITOR-019 | todo | P2 | feature | Add preset configurations to AlgorithmDefinition and ConfigurePanel | Implementer | presets record on AlgorithmDefinition. Preset picker dropdown in ConfigurePanel. Deps: EDITOR-011. |
-| EDITOR-020 | todo | P2 | enhancement | Add progressive disclosure (CollapsibleSection) to config forms | Implementer | Shared CollapsibleSection in formFields.tsx. Wrap advanced params in all config forms. Deps: EDITOR-011. |
-
-Editor — Phase 4: Feature Model Extension
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| EDITOR-021 | todo | P2 | feature | Add PolygonFeature to feature model and Zod schema | Implementer | type "polygon", points: number[], closed. Add to Feature union + featureSchema. Independent. |
-| EDITOR-022 | todo | P2 | feature | Add polygon renderer to FeatureLayer (closed Line with fill) | Implementer | Konva Line with closed=true, semi-transparent fill. Selection + drag. Deps: EDITOR-021. |
-| EDITOR-023 | todo | P2 | feature | Add POLYGON drawing tool to left rail and CanvasWorkspace | Implementer | Similar to POLYLINE but closes on double-click. Add icon to left rail. Deps: EDITOR-021, EDITOR-022. |
-
-Editor — Phase 5: Deep Links + Blog Integration
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| EDITOR-024 | todo | P2 | feature | Deep link serialization: read/write URL params for algo+config+image | Implementer | Read URL params on mount. serializeConfig/deserializeConfig on AlgorithmDefinition. history.replaceState on change. Deps: EDITOR-019. |
-| EDITOR-025 | todo | P2 | feature | Add blogSlug to AlgorithmDefinition, render "Learn more" links | Implementer | blogSlug field. "Learn more" link in ConfigurePanel pointing to /blog/{slug}. Independent. |
-| EDITOR-026 | todo | P3 | feature | Add "Try in Editor" buttons in blog post content | Implementer | Standardized links to /editor?algo=...&image=... in blog markdown. Deps: EDITOR-024. |
-
-Editor — Phase 6: Responsive Layout + Touch Support
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| EDITOR-027 | todo | P2 | enhancement | Responsive breakpoints: stack panels vertically on narrow screens | Implementer | Below ~768px: canvas on top (60vh), right panel below. Left rail → bottom bar or hamburger. Deps: EDITOR-013. |
-| EDITOR-028 | todo | P2 | enhancement | Left rail tooltips + touch-friendly tap targets (44x44px min) | Implementer | Proper tooltips on hover. Min 44x44px touch targets. Independent. |
-| EDITOR-029 | todo | P3 | enhancement | Touch canvas: pinch-to-zoom, tap-to-select, single-finger pan | Implementer | Konva touch support. Pinch-to-zoom, tap-to-select features, pan in SELECT mode. Independent. |
-| EDITOR-030 | todo | P3 | enhancement | Hide drawing tools on touch-only devices | Implementer | Detect no fine pointer. Hide POINT/LINE/POLYLINE/BBOX/ELLIPSE/POLYGON tools. Keep SELECT + zoom + visibility. Deps: EDITOR-028. |
-
-Editor — Phase 7: UX Improvements
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| EDITOR-037 | todo | P3 | feature | Canvas config summary overlay | Implementer | Optional Konva text in canvas corner showing algo name + key config values. Deferred. |
-
-Target Generator — Future
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| TGEN-009 | todo | P2 | feature | Add ring grid target type (client-side SVG) | Implementer | Client-side ring grid SVG generation. New `RingGridGenConfig` variant. New config form. |
-| TGEN-010 | todo | P2 | feature | Add ZIP bundle download (all artifacts in one file) | Implementer | Client-side JSZip. Bundle SVG + PNG + JSON + DXF. Deps: TGEN-018. |
-| TGEN-011 | todo | P2 | feature | Prerender target generator page for SEO | Implementer | Extend `postbuild.ts` for `/tools/target-generator`. Deps: TGEN-003. |
-
-Other
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| DEV-002 | todo | P3 | enhancement | Add Vite dev server proxy for zero-config local API routing | Implementer | Would eliminate the need for the devCspPlugin by proxying /api/v1 through the Vite dev server. Requires backend to return relative local-upload URLs. |
-
 ## API / Interface Tracking
 
 ## Acceptance Scenarios (Attached to Tasks)
@@ -96,6 +37,31 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| FE-001 | 2026-03-21 | feature | Add React Error Boundaries | ErrorBoundary wrapping canvas, config, blog content. |
+| FE-002 | 2026-03-21 | infra | Set up Vitest and add core logic tests | 26 tests for featureSchema + reducer. |
+| FE-003 | 2026-03-21 | enhancement | Replace alert() with sonner toasts | 5 alert() calls replaced. Toaster in App. |
+| FE-004 | 2026-03-21 | fix | Add error handling to useTargetGenerator and ConfigurePanel | .catch() + try/catch. |
+| FE-005 | 2026-03-21 | feature | Add catch-all 404 page | NotFound component + Route path="*". |
+| FE-006 | 2026-03-21 | enhancement | Add route-level code splitting | React.lazy + Suspense for 7 pages. |
+| FE-007 | 2026-03-21 | refactor | Extract hooks from CanvasWorkspace | usePixelSampler, useCanvasGestures, useDrawingHandlers. |
+| EDITOR-017 | 2026-03-20 | feature | Add overlay visibility toggle to left rail | Layers popover for Features + Algorithm Overlay. |
+| EDITOR-018 | 2026-03-20 | feature | Add diagnostics interface to ResultsPanel | DiagnosticEntry with info/warning/error levels. |
+| EDITOR-019 | 2026-03-20 | feature | Add preset configurations to ConfigurePanel | AlgorithmPreset type + PresetPicker UI. |
+| EDITOR-020 | 2026-03-20 | enhancement | Add CollapsibleSection to config forms | Progressive disclosure for advanced parameters. |
+| EDITOR-021 | 2026-03-20 | feature | Add PolygonFeature to feature model and Zod schema | PolygonFeature with points[] + closed. |
+| EDITOR-022 | 2026-03-20 | feature | Add polygon renderer to FeatureLayer | Closed Konva Line with semi-transparent fill. |
+| EDITOR-023 | 2026-03-20 | feature | Add POLYGON drawing tool to left rail and CanvasWorkspace | Click vertices, dblClick to close. |
+| EDITOR-024 | 2026-03-20 | feature | Deep link serialization for editor | useEditorDeepLink hook with URL param sync. |
+| EDITOR-025 | 2026-03-20 | feature | blogSlug on chess-corners adapter | "Learn more" link in ConfigurePanel. |
+| EDITOR-026 | 2026-03-20 | feature | "Try in Editor" link in blog content | Deep link in 00-intro.md. |
+| EDITOR-027 | 2026-03-20 | enhancement | Responsive breakpoints for editor | Vertical stack layout below 768px. |
+| EDITOR-028 | 2026-03-20 | enhancement | Radix tooltips + 44px touch targets | @radix-ui/react-tooltip on all toolbar buttons. |
+| EDITOR-029 | 2026-03-20 | enhancement | Touch canvas support | Pinch-to-zoom via Konva touch handlers. |
+| EDITOR-030 | 2026-03-20 | enhancement | Hide drawing tools on touch-only | useTouchOnly() media query hook. |
+| BLOG-001 | 2026-03-20 | content | Add frontmatter to 00-intro.md | Blog manifest now populated. |
+| BLOG-002 | 2026-03-20 | content | Add frontmatter to 01-chess.md | Draft outline with repoLinks + relatedAlgorithms. |
+| TGEN-010 | 2026-03-20 | feature | ZIP bundle download | JSZip bundles all 4 formats. |
+| TGEN-011 | 2026-03-20 | feature | Prerender target generator | SSR stub + sitemap entry. |
 | TGEN-012 | 2026-03-16 | fix | Fix default page orientation (portrait → landscape) | Changed INITIAL_STATE + presets. |
 | TGEN-013 | 2026-03-16 | feature | ArUco dictionary loader + hex-to-bitgrid decoder | New aruco/ module with loader, decoder, types. |
 | TGEN-014 | 2026-03-16 | feature | Client-side ChArUco SVG generation | Full marker rendering, removed backend dependency for generation. |
@@ -107,3 +73,19 @@ Other
 | TGEN-020 | 2026-03-16 | feature | Auto circle polarity from square color | Removed polarity from CircleSpec. White circle on black square, black on white. |
 | TGEN-021 | 2026-03-16 | feature | Configurable PNG DPI | Added pngDpi to PageConfig. Exposed in Paper config panel (72–1200). |
 | TGEN-022 | 2026-03-16 | feature | Inner white square in black squares (laser calibration) | innerSquareRel (0–0.95) on all target types. For reflective surface calibration. |
+| TGEN-009 | 2026-03-20 | feature | Add ring grid target type (client-side SVG) | Hex-lattice concentric ring markers with 16-sector code bands. Baseline + extended codebook profiles. |
+| TGEN-023 | 2026-03-20 | feature | Add scale line to all target types | Minimal reference bar with label. Optional toggle (default ON). SVG + DXF integration. |
+| BE-001 | 2026-03-21 | fix | Fix Content-Length parsing crash | try/except around int(content_length), returns 400. |
+| BE-002 | 2026-03-21 | fix | Add byte-size guard in _decode_grayscale_image | Rejects images exceeding max_upload_bytes before decode. |
+| BE-003 | 2026-03-21 | fix | Move load_dotenv() before _configure_logging() | .env LOG_FORMAT/LOG_LEVEL now respected. |
+| BE-004 | 2026-03-21 | test | Add rate limiting and middleware integration tests | 7 new tests: rate limits, security headers, request ID, malformed Content-Length. |
+| BE-005 | 2026-03-21 | fix | Remove dummy /calibrate endpoint | Endpoint removed. |
+| BE-006 | 2026-03-21 | fix | Use actual media type for local-object GET | Uses local_media_type_for_key(). |
+| BE-007 | 2026-03-21 | refactor | Split cv.py into routers/cv/ package | models.py, corners.py, calibration_targets.py, _shared.py. |
+| BE-008 | 2026-03-21 | fix | Make R2 cache writes atomic | Write to .tmp then rename. |
+| BE-009 | 2026-03-21 | enhancement | Add timeout for CV algorithm calls | CV_TIMEOUT_SECONDS (default 120s). |
+| BE-010 | 2026-03-21 | enhancement | Run blocking CV calls via run_in_executor | Both endpoints use asyncio.wait_for + run_in_executor. |
+| BE-011 | 2026-03-21 | enhancement | Propagate request ID via contextvars | ContextVar set in middleware, read by _JSONFormatter. |
+| BE-012 | 2026-03-21 | test | Add middleware integration tests | Security headers, request ID, body size tests. |
+| BE-013 | 2026-03-21 | test | Add storage service unit tests | 7 tests: keys, validation, path traversal, cache. |
+| BE-014 | 2026-03-21 | test | Test for /calibrate endpoint | Moot — endpoint removed in BE-005. |

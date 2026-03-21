@@ -1,11 +1,73 @@
 import type { CharucoConfig } from "../types";
 import type { PageDimensions } from "../svg/paperConstants";
-import { dxfLine, dxfRect, buildDxf } from "./dxfWriter";
+import { decodeMarker, loadDictionary } from "../aruco";
+import type { ArucoDictionary } from "../aruco";
+import { dxfFilledRect, dxfFilledRectWithHole } from "./dxfWriter";
 
-export function charucoDxf(
+function renderMarkerEntities(
+    entities: string[],
+    dict: ArucoDictionary,
+    markerIdx: number,
+    borderBits: number,
+    cellX: number,
+    cellY: number,
+    squareSizeMm: number,
+    markerSizeRel: number,
+    flipY: (svgY: number) => number,
+): void {
+    const grid = decodeMarker(dict.codes[markerIdx], dict.markerSize);
+    const totalCells = dict.markerSize + 2 * borderBits;
+    const markerMm = squareSizeMm * markerSizeRel;
+    const cellMm = markerMm / totalCells;
+    const offset = (squareSizeMm - markerMm) / 2;
+    const markerX = cellX + offset;
+    const markerY = cellY + offset;
+
+    const isBlack = (row: number, col: number): boolean => {
+        const innerRow = row - borderBits;
+        const innerCol = col - borderBits;
+        if (
+            innerRow < 0
+            || innerCol < 0
+            || innerRow >= dict.markerSize
+            || innerCol >= dict.markerSize
+        ) {
+            return true;
+        }
+        return grid[innerRow][innerCol];
+    };
+
+    for (let row = 0; row < totalCells; row++) {
+        let runStart = -1;
+        for (let col = 0; col <= totalCells; col++) {
+            const black = col < totalCells && isBlack(row, col);
+            if (black && runStart < 0) {
+                runStart = col;
+                continue;
+            }
+
+            if (!black && runStart >= 0) {
+                const runWidth = col - runStart;
+                entities.push(
+                    dxfFilledRect(
+                        markerX + runStart * cellMm,
+                        flipY(markerY + (row + 1) * cellMm),
+                        runWidth * cellMm,
+                        cellMm,
+                    ),
+                );
+                runStart = -1;
+            }
+        }
+    }
+}
+
+export async function charucoDxf(
     config: CharucoConfig,
     page: PageDimensions,
-): string {
+): Promise<string[]> {
+    const dict = await loadDictionary(config.dictionary);
+
     const sq = config.squareSizeMm;
     const boardW = config.cols * sq;
     const boardH = config.rows * sq;
@@ -14,45 +76,53 @@ export function charucoDxf(
     const oy = (page.heightMm - boardH) / 2;
 
     const flipY = (svgY: number) => page.heightMm - svgY;
-
-    const entities: string[] = [];
-
-    // Outer board rectangle
-    entities.push(...dxfRect(ox, flipY(oy + boardH), boardW, boardH));
-
-    // Vertical grid lines (interior)
-    for (let c = 1; c < config.cols; c++) {
-        const x = ox + c * sq;
-        entities.push(dxfLine(x, flipY(oy), x, flipY(oy + boardH)));
-    }
-
-    // Horizontal grid lines (interior)
-    for (let r = 1; r < config.rows; r++) {
-        const y = oy + r * sq;
-        entities.push(dxfLine(ox, flipY(y), ox + boardW, flipY(y)));
-    }
-
-    // Marker outlines in white squares, inner squares in black squares
-    const markerMm = sq * config.markerSizeRel;
-    const markerOff = (sq - markerMm) / 2;
     const innerSq = config.innerSquareRel > 0 ? sq * config.innerSquareRel : 0;
     const innerOff = (sq - innerSq) / 2;
 
+    const entities: string[] = [];
+    let markerIdx = 0;
+
     for (let r = 0; r < config.rows; r++) {
         for (let c = 0; c < config.cols; c++) {
-            if ((r + c) % 2 === 1) {
-                // White square — marker outline
-                const mx = ox + c * sq + markerOff;
-                const my = oy + r * sq + markerOff;
-                entities.push(...dxfRect(mx, flipY(my + markerMm), markerMm, markerMm));
-            } else if (innerSq > 0) {
-                // Black square — inner square outline
-                const ix = ox + c * sq + innerOff;
-                const iy = oy + r * sq + innerOff;
-                entities.push(...dxfRect(ix, flipY(iy + innerSq), innerSq, innerSq));
+            const cellX = ox + c * sq;
+            const cellY = oy + r * sq;
+
+            if ((r + c) % 2 === 0) {
+                if (innerSq > 0) {
+                    entities.push(
+                        dxfFilledRectWithHole(
+                            cellX,
+                            flipY(cellY + sq),
+                            sq,
+                            sq,
+                            cellX + innerOff,
+                            flipY(cellY + innerOff + innerSq),
+                            innerSq,
+                            innerSq,
+                        ),
+                    );
+                } else {
+                    entities.push(dxfFilledRect(cellX, flipY(cellY + sq), sq, sq));
+                }
+                continue;
             }
+
+            if (markerIdx < dict.codes.length) {
+                renderMarkerEntities(
+                    entities,
+                    dict,
+                    markerIdx,
+                    config.borderBits,
+                    cellX,
+                    cellY,
+                    sq,
+                    config.markerSizeRel,
+                    flipY,
+                );
+            }
+            markerIdx++;
         }
     }
 
-    return buildDxf(entities);
+    return entities;
 }

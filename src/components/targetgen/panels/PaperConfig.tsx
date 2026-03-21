@@ -83,6 +83,15 @@ export default function PaperConfig({ page, dispatch }: Props) {
                 step={1}
                 tooltip="Resolution for PNG export (dots per inch)"
             />
+            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                <input
+                    type="checkbox"
+                    checked={page.showScaleLine}
+                    onChange={(e) => update({ showScaleLine: e.target.checked })}
+                    className="rounded border-border"
+                />
+                Show scale line
+            </label>
         </Section>
     );
 }

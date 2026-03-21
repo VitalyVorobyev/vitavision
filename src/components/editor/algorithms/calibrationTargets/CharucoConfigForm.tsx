@@ -1,4 +1,4 @@
-import { NumberField, Section, SelectField } from "../formFields";
+import { CollapsibleSection, NumberField, Section, SelectField } from "../formFields";
 import type { AlgorithmConfigFormProps } from "../types";
 import type { DictionaryName } from "../../../../lib/api";
 
@@ -92,7 +92,7 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     options={DICTIONARY_OPTIONS}
                 />
             </Section>
-            <Section title="Rendering">
+            <CollapsibleSection title="Rendering">
                 <NumberField
                     label="Pixels per square"
                     tooltip="Expected size of one board square in pixels. Sets the detection scale for corner finding."
@@ -102,8 +102,8 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     min={4}
                     step={1}
                 />
-            </Section>
-            <Section title="Chessboard detector" columns={cols}>
+            </CollapsibleSection>
+            <CollapsibleSection title="Chessboard detector" columns={cols}>
                 <NumberField
                     label="Expected rows"
                     tooltip="Number of internal corner rows expected on the board (squares minus one)."
@@ -142,8 +142,8 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     max={1}
                     step={0.01}
                 />
-            </Section>
-            <Section title="Grid graph" columns={cols}>
+            </CollapsibleSection>
+            <CollapsibleSection title="Grid graph" columns={cols}>
                 <NumberField
                     label="Min spacing (px)"
                     tooltip="Minimum distance between adjacent corners in pixels. Filters out noise from too-close detections."
@@ -182,7 +182,7 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     max={180}
                     step={0.5}
                 />
-            </Section>
+            </CollapsibleSection>
         </>
     );
 };

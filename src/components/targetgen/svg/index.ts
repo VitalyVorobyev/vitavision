@@ -3,16 +3,34 @@ import { resolvePageDimensions } from "./paperConstants";
 import { chessboardSvg } from "./chessboardSvg";
 import { markerboardSvg } from "./markerboardSvg";
 import { charucoSvg } from "./charucoSvg";
+import { ringgridSvg } from "./ringgridSvg";
+import { renderScaleLine } from "./scaleLine";
 
 export async function generatePreviewSvg(target: TargetConfig, page: PageConfig): Promise<string> {
     const dims = resolvePageDimensions(page);
 
+    let svg: string;
     switch (target.targetType) {
         case "chessboard":
-            return chessboardSvg(target.config, dims);
+            svg = chessboardSvg(target.config, dims);
+            break;
         case "markerboard":
-            return markerboardSvg(target.config, dims);
+            svg = markerboardSvg(target.config, dims);
+            break;
         case "charuco":
-            return charucoSvg(target.config, dims);
+            svg = await charucoSvg(target.config, dims);
+            break;
+        case "ringgrid":
+            svg = await ringgridSvg(target.config, dims);
+            break;
     }
+
+    if (page.showScaleLine) {
+        const scaleSvg = renderScaleLine(dims.widthMm, dims.heightMm, dims.marginMm);
+        if (scaleSvg) {
+            svg = svg.replace("</svg>", scaleSvg + "</svg>");
+        }
+    }
+
+    return svg;
 }

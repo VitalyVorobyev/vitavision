@@ -323,7 +323,9 @@ def load_r2_object_cached(key: str) -> bytes:
     data = load_r2_object(key)
     if cache is not None:
         cache.parent.mkdir(parents=True, exist_ok=True)
-        cache.write_bytes(data)
+        tmp = cache.with_suffix(".tmp")
+        tmp.write_bytes(data)
+        tmp.rename(cache)
     return data
 
 

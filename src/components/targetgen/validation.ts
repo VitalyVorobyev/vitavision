@@ -1,5 +1,11 @@
-import type { TargetConfig, PageConfig, ValidationResult, CharucoConfig } from "./types";
+import type { TargetConfig, PageConfig, ValidationResult, CharucoConfig, RingGridConfig } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
+import {
+    generateMarkers,
+    markerOuterDrawRadius,
+    hexRowSpacingMm,
+    markerBounds,
+} from "./ringgrid/layout";
 
 /** Number of markers a ChArUco board requires (one per white square). */
 function charucoMarkerCount(c: CharucoConfig): number {
@@ -38,23 +44,23 @@ export function validateConfig(
 
     let boardW: number;
     let boardH: number;
-    let squareSizeMm: number;
+    let smallFeatureWarning = false;
 
     switch (target.targetType) {
         case "chessboard": {
             const c = target.config;
-            squareSizeMm = c.squareSizeMm;
-            boardW = (c.innerCols + 1) * squareSizeMm;
-            boardH = (c.innerRows + 1) * squareSizeMm;
+            boardW = (c.innerCols + 1) * c.squareSizeMm;
+            boardH = (c.innerRows + 1) * c.squareSizeMm;
+            if (c.squareSizeMm < 5) smallFeatureWarning = true;
             break;
         }
         case "markerboard": {
             const c = target.config;
-            squareSizeMm = c.squareSizeMm;
             const totalRows = c.innerRows + 1;
             const totalCols = c.innerCols + 1;
-            boardW = totalCols * squareSizeMm;
-            boardH = totalRows * squareSizeMm;
+            boardW = totalCols * c.squareSizeMm;
+            boardH = totalRows * c.squareSizeMm;
+            if (c.squareSizeMm < 5) smallFeatureWarning = true;
 
             // Validate circles
             const seen = new Set<string>();
@@ -73,9 +79,9 @@ export function validateConfig(
         }
         case "charuco": {
             const c = target.config;
-            squareSizeMm = c.squareSizeMm;
-            boardW = c.cols * squareSizeMm;
-            boardH = c.rows * squareSizeMm;
+            boardW = c.cols * c.squareSizeMm;
+            boardH = c.rows * c.squareSizeMm;
+            if (c.squareSizeMm < 5) smallFeatureWarning = true;
 
             if (c.markerSizeRel <= 0 || c.markerSizeRel >= 1) {
                 errors.push("Marker size ratio must be between 0 and 1.");
@@ -88,6 +94,12 @@ export function validateConfig(
                     `Use a larger dictionary or reduce board dimensions.`,
                 );
             }
+            break;
+        }
+        case "ringgrid": {
+            const c = target.config;
+            [boardW, boardH] = validateRingGrid(c, errors, warnings);
+            if (c.pitchMm < 4) smallFeatureWarning = true;
             break;
         }
     }
@@ -105,9 +117,58 @@ export function validateConfig(
         }
     }
 
-    if (squareSizeMm < 5) {
-        warnings.push("Very small squares (< 5 mm) may be hard to detect reliably.");
+    if (smallFeatureWarning) {
+        warnings.push("Very small features may be hard to detect reliably.");
     }
 
     return { errors, warnings };
+}
+
+function validateRingGrid(
+    c: RingGridConfig,
+    errors: string[],
+    warnings: string[],
+): [number, number] {
+    if (c.rows < 1) errors.push("Rows must be at least 1.");
+    if (c.longRowCols < 1) errors.push("Long row columns must be at least 1.");
+    if (c.rows > 1 && c.longRowCols < 2) {
+        errors.push("Long row columns must be at least 2 when rows > 1.");
+    }
+
+    if (c.markerInnerRadiusMm >= c.markerOuterRadiusMm) {
+        errors.push("Inner radius must be smaller than outer radius.");
+    }
+
+    const half = c.markerRingWidthMm * 0.5;
+    const innerOuter = c.markerInnerRadiusMm + half;
+    const outerInner = c.markerOuterRadiusMm - half;
+    if (innerOuter >= outerInner) {
+        errors.push("Ring width is too large — no space for the code band between rings.");
+    }
+
+    const minSpacing = hexRowSpacingMm(c.pitchMm);
+    const drawDiam = 2 * markerOuterDrawRadius(c.markerOuterRadiusMm, c.markerRingWidthMm);
+    if (drawDiam >= minSpacing) {
+        errors.push(
+            `Marker draw diameter (${drawDiam.toFixed(1)} mm) exceeds minimum spacing (${minSpacing.toFixed(1)} mm).`,
+        );
+    }
+
+    // Marker count vs codebook pool
+    const markers = generateMarkers(c.rows, c.longRowCols, c.pitchMm);
+    const poolSize = c.profile === "extended" ? 2180 : 893;
+    if (markers.length > poolSize) {
+        warnings.push(
+            `Board has ${markers.length} markers but ${c.profile} codebook has ${poolSize}. ` +
+            `Markers beyond the pool will have no code.`,
+        );
+    }
+
+    // Compute board dimensions including draw radius
+    const [minX, minY, maxX, maxY] = markerBounds(markers);
+    const drawR = markerOuterDrawRadius(c.markerOuterRadiusMm, c.markerRingWidthMm);
+    const boardW = (maxX - minX) + 2 * drawR;
+    const boardH = (maxY - minY) + 2 * drawR;
+
+    return [boardW, boardH];
 }

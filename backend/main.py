@@ -1,4 +1,5 @@
 import asyncio
+import contextvars
 import json
 import logging
 import os
@@ -12,6 +13,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 
+# Load .env before anything reads env vars (logging, auth, storage config).
+load_dotenv()
+
+# Context variable for request ID — available to any code running in the request.
+request_id_var: contextvars.ContextVar[str] = contextvars.ContextVar(
+    "request_id", default=""
+)
 
 # ── Structured JSON logging ──────────────────────────────────────────────────
 
@@ -26,9 +34,10 @@ class _JSONFormatter(logging.Formatter):
             "logger": record.name,
             "msg": record.getMessage(),
         }
-        # Attach correlation ID when available.
-        if hasattr(record, "request_id"):
-            entry["request_id"] = record.request_id
+        # Attach correlation ID from context variable.
+        rid = request_id_var.get("")
+        if rid:
+            entry["request_id"] = rid
         if record.exc_info and record.exc_info[0] is not None:
             entry["exception"] = self.formatException(record.exc_info)
         return json.dumps(entry, default=str)
@@ -57,9 +66,6 @@ def _configure_logging() -> None:
 _configure_logging()
 
 logger = logging.getLogger("vitavision.access")
-
-# Load env vars before importing modules that read env at import time.
-load_dotenv()
 
 # Import routers — must come after load_dotenv() and logging setup
 from routers import cv, storage  # noqa: E402
@@ -127,8 +133,16 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)  # type: ignor
 @app.middleware("http")
 async def limit_request_body_size(request: Request, call_next):
     content_length = request.headers.get("content-length")
-    if content_length and int(content_length) > storage_service.max_upload_bytes():
-        return JSONResponse({"detail": "Request body too large"}, status_code=413)
+    if content_length:
+        try:
+            if int(content_length) > storage_service.max_upload_bytes():
+                return JSONResponse(
+                    {"detail": "Request body too large"}, status_code=413
+                )
+        except ValueError:
+            return JSONResponse(
+                {"detail": "Invalid Content-Length header"}, status_code=400
+            )
     return await call_next(request)
 
 
@@ -145,11 +159,15 @@ async def add_security_headers(request: Request, call_next):
 @app.middleware("http")
 async def add_request_id(request: Request, call_next):
     """Attach a correlation ID to every request for structured log tracing."""
-    request_id = request.headers.get("X-Request-Id") or uuid.uuid4().hex[:12]
-    request.state.request_id = request_id
-    response = await call_next(request)
-    response.headers["X-Request-Id"] = request_id
-    return response
+    rid = request.headers.get("X-Request-Id") or uuid.uuid4().hex[:12]
+    request.state.request_id = rid
+    token = request_id_var.set(rid)
+    try:
+        response = await call_next(request)
+        response.headers["X-Request-Id"] = rid
+        return response
+    finally:
+        request_id_var.reset(token)
 
 
 @app.middleware("http")
@@ -157,16 +175,12 @@ async def log_requests(request: Request, call_next):
     started = time.perf_counter()
     response = await call_next(request)
     duration_ms = (time.perf_counter() - started) * 1000
-    extra = {}
-    if hasattr(request.state, "request_id"):
-        extra["request_id"] = request.state.request_id
     logger.info(
         "%s %s %d %.1fms",
         request.method,
         request.url.path,
         response.status_code,
         duration_ms,
-        extra=extra,
     )
     return response
 

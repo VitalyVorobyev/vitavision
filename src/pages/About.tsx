@@ -25,13 +25,16 @@ export default function About() {
             <div className="flex flex-col md:flex-row gap-10 md:gap-14 items-start">
 
                 {/* Photo */}
-                <div className="w-full flex justify-center md:block md:w-auto shrink-0">
+                <figure className="w-full flex flex-col items-center md:items-start md:w-auto shrink-0">
                     <img
-                        src="/VVAvatar.jpg"
-                        alt="Vitaly Vorobyev"
-                        className="w-52 md:w-64 aspect-square object-cover rounded-2xl border border-border"
+                        src="/AIAvatar.jpg"
+                        alt="AI-stylized portrait of Vitaly Vorobyev"
+                        className="w-52 md:w-64 aspect-square object-cover object-[50%_15%] rounded-2xl border border-border"
                     />
-                </div>
+                    <figcaption className="mt-3 max-w-52 md:max-w-64 text-center md:text-left text-xs leading-5 text-muted-foreground">
+                        Portrait based on a real photo, lightly stylized with AI.
+                    </figcaption>
+                </figure>
 
                 {/* Text column */}
                 <div className="flex flex-col gap-6 min-w-0">

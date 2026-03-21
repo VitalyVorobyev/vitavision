@@ -156,10 +156,18 @@ function main(): void {
         count++;
     }
 
+    // Target generator
+    writePage(template, "/tools/target-generator", "tools/target-generator", {
+        title: "Target Generator",
+        description: "Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.",
+    });
+    count++;
+
     // Generate sitemap
     const sitemapPaths = [
         "/", "/blog", ...blogPosts.map((p) => `/blog/${p.slug}`),
         "/algorithms", ...algorithmPages.map((p) => `/algorithms/${p.slug}`),
+        "/tools/target-generator",
     ];
     writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(sitemapPaths), "utf-8");
 

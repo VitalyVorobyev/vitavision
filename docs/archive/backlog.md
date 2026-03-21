@@ -84,39 +84,6 @@ Editor — Phase 2: Algorithm Canvas Overlays
 | ~~EDITOR-016~~ | done | P2 | feature | ~~Build charuco overlay (grid + marker bounding boxes)~~ | Implementer | Subsumed by EDITOR-034. |
 | EDITOR-017 | todo | P2 | feature | Add overlay visibility toggle to left rail | Implementer | Expand eye toggle into layers popover: Features, Algorithm Overlay. Uses overlayVisibility store. Deps: EDITOR-014. |
 
-Editor — Phase 3: Diagnostics + Progressive Disclosure + Presets
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| EDITOR-018 | todo | P2 | feature | Add diagnostics interface and structured run status to ResultsPanel | Implementer | DiagnosticEntry {level, message, detail}. Optional diagnostics() on AlgorithmDefinition. Render in ResultsPanel. Deps: EDITOR-012. |
-| EDITOR-019 | todo | P2 | feature | Add preset configurations to AlgorithmDefinition and ConfigurePanel | Implementer | presets record on AlgorithmDefinition. Preset picker dropdown in ConfigurePanel. Deps: EDITOR-011. |
-| EDITOR-020 | todo | P2 | enhancement | Add progressive disclosure (CollapsibleSection) to config forms | Implementer | Shared CollapsibleSection in formFields.tsx. Wrap advanced params in all config forms. Deps: EDITOR-011. |
-
-Editor — Phase 4: Feature Model Extension
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| EDITOR-021 | todo | P2 | feature | Add PolygonFeature to feature model and Zod schema | Implementer | type "polygon", points: number[], closed. Add to Feature union + featureSchema. Independent. |
-| EDITOR-022 | todo | P2 | feature | Add polygon renderer to FeatureLayer (closed Line with fill) | Implementer | Konva Line with closed=true, semi-transparent fill. Selection + drag. Deps: EDITOR-021. |
-| EDITOR-023 | todo | P2 | feature | Add POLYGON drawing tool to left rail and CanvasWorkspace | Implementer | Similar to POLYLINE but closes on double-click. Add icon to left rail. Deps: EDITOR-021, EDITOR-022. |
-
-Editor — Phase 5: Deep Links + Blog Integration
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| EDITOR-024 | todo | P2 | feature | Deep link serialization: read/write URL params for algo+config+image | Implementer | Read URL params on mount. serializeConfig/deserializeConfig on AlgorithmDefinition. history.replaceState on change. Deps: EDITOR-019. |
-| EDITOR-025 | todo | P2 | feature | Add blogSlug to AlgorithmDefinition, render "Learn more" links | Implementer | blogSlug field. "Learn more" link in ConfigurePanel pointing to /blog/{slug}. Independent. |
-| EDITOR-026 | todo | P3 | feature | Add "Try in Editor" buttons in blog post content | Implementer | Standardized links to /editor?algo=...&image=... in blog markdown. Deps: EDITOR-024. |
-
-Editor — Phase 6: Responsive Layout + Touch Support
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| EDITOR-027 | todo | P2 | enhancement | Responsive breakpoints: stack panels vertically on narrow screens | Implementer | Below ~768px: canvas on top (60vh), right panel below. Left rail → bottom bar or hamburger. Deps: EDITOR-013. |
-| EDITOR-028 | todo | P2 | enhancement | Left rail tooltips + touch-friendly tap targets (44x44px min) | Implementer | Proper tooltips on hover. Min 44x44px touch targets. Independent. |
-| EDITOR-029 | todo | P3 | enhancement | Touch canvas: pinch-to-zoom, tap-to-select, single-finger pan | Implementer | Konva touch support. Pinch-to-zoom, tap-to-select features, pan in SELECT mode. Independent. |
-| EDITOR-030 | todo | P3 | enhancement | Hide drawing tools on touch-only devices | Implementer | Detect no fine pointer. Hide POINT/LINE/POLYLINE/BBOX/ELLIPSE/POLYGON tools. Keep SELECT + zoom + visibility. Deps: EDITOR-028. |
-
 Editor — Phase 7: UX Improvements
 
 | ID | Status | Priority | Type | Title | Role | Notes |
@@ -156,14 +123,6 @@ Target Generator — Phase 4: Polish
 |----|--------|----------|------|-------|------|-------|
 | ~~TGEN-007~~ | done | P1 | feature | ~~Add preset configurations and JSON config import~~ | Implementer | 9 curated presets (3 per type). Preset picker dropdown + JSON import button in left panel. |
 | ~~TGEN-008~~ | done | P1 | enhancement | ~~UX polish: client-side validation, board dimension display, tooltips~~ | Implementer | Board/page/printable dimension overlay in preview. Tooltips on all config fields including paper settings. |
-
-Target Generator — Future
-
-| ID | Status | Priority | Type | Title | Role | Notes |
-|----|--------|----------|------|-------|------|-------|
-| TGEN-009 | todo | P2 | feature | Add ring grid target type (integrate `ringgrid` crate) | Implementer | Add `ringgrid` Python package to backend. New `RingGridGenConfig` variant. New config form. Deps: TGEN-006. |
-| TGEN-010 | todo | P2 | feature | Add ZIP bundle download (all artifacts in one file) | Implementer | Server-side ZIP or client-side JSZip. Single download button. Deps: TGEN-006. |
-| TGEN-011 | todo | P2 | feature | Prerender target generator page for SEO | Implementer | Extend `postbuild.ts` for `/tools/target-generator`. Deps: TGEN-003. |
 
 Other
 

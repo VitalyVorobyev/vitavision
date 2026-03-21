@@ -162,7 +162,7 @@ async def local_object(request: Request, key: str):
 
     return FileResponse(
         path=path,
-        media_type="application/octet-stream",
+        media_type=storage_service.local_media_type_for_key(key),
         filename=path.name,
         content_disposition_type="attachment",
     )

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
-export type ToolType = 'SELECT' | 'POINT' | 'LINE' | 'POLYLINE' | 'BBOX' | 'ELLIPSE';
-export type FeatureType = 'point' | 'line' | 'polyline' | 'bbox' | 'ellipse' | 'directed_point';
+export type ToolType = 'SELECT' | 'POINT' | 'LINE' | 'POLYLINE' | 'POLYGON' | 'BBOX' | 'ELLIPSE';
+export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point';
 export type FeatureSource = 'manual' | 'algorithm';
 export type SampleId = 'chessboard' | 'charuco' | 'markerboard' | 'upload';
 
@@ -73,6 +73,12 @@ export interface PolylineFeature extends BaseFeature {
     points: number[];
 }
 
+export interface PolygonFeature extends BaseFeature {
+    type: 'polygon';
+    points: number[];
+    closed: boolean;
+}
+
 export interface BBoxFeature extends BaseFeature {
     type: 'bbox';
     x: number;
@@ -107,6 +113,7 @@ export type Feature =
     | PointFeature
     | LineFeature
     | PolylineFeature
+    | PolygonFeature
     | BBoxFeature
     | EllipseFeature
     | DirectedPointFeature;

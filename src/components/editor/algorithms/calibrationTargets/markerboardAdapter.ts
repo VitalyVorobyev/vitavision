@@ -1,4 +1,4 @@
-import type { AlgorithmDefinition } from "../types";
+import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
 import type { CalibrationTargetResult } from "../../../../lib/api";
 import { detectCalibrationTarget } from "../../../../lib/api";
 import {
@@ -34,6 +34,25 @@ const initialConfig: MarkerBoardConfig = {
     circleScoreCenterSearchPx: 2,
 };
 
+const presets: AlgorithmPreset[] = [
+    { label: "22×22 default", description: "Standard marker board with centered triangle", config: { ...initialConfig } },
+    { label: "10×14 compact", description: "Smaller board", config: { ...initialConfig, boardRows: 10, boardCols: 14, expectedRows: 10, expectedCols: 14, circles: [{ i: 5, j: 7, polarity: "white" as const }, { i: 6, j: 7, polarity: "white" as const }, { i: 6, j: 8, polarity: "white" as const }] } },
+];
+
+const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
+    const entries: DiagnosticEntry[] = [];
+    if (result.summary.corner_count === 0) {
+        entries.push({ level: "error", message: "No corners detected", detail: "Check board dimensions and corner strength threshold." });
+    }
+    if (result.summary.circle_match_count === 0 && result.circle_matches !== null) {
+        entries.push({ level: "warning", message: "No circle markers matched", detail: "Verify circle positions match the physical board or adjust circle score parameters." });
+    }
+    if (result.summary.alignment_inliers !== null && result.summary.alignment_inliers < 4) {
+        entries.push({ level: "warning", message: `Low alignment inliers: ${result.summary.alignment_inliers}`, detail: "Grid alignment may be unreliable." });
+    }
+    return entries;
+};
+
 const toFeatures = (result: CalibrationTargetResult, runId: string) => [
     ...calibrationCornerFeatures(result, runId, "markerboard"),
     ...calibrationCircleMatchFeatures(result.circle_matches, result.circle_candidates, runId, "markerboard"),
@@ -44,6 +63,7 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
     title: "Marker Board",
     description: "Detect checkerboard corners and fiducial circle markers.",
     initialConfig,
+    presets,
     sampleDefaults: {
         markerboard: { ...initialConfig },
     },
@@ -87,5 +107,6 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
     toFeatures: (result, runId) =>
         toFeatures(result as CalibrationTargetResult, runId),
     summary: (result) => calibrationSummary(result as CalibrationTargetResult),
+    diagnostics: (result) => toDiagnostics(result as CalibrationTargetResult),
     OverlayComponent: MarkerboardOverlay,
 };

@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { Circle, Group, Label, Tag, Text } from "react-konva";
 
 import type { CalibrationTargetResult } from "../../../../lib/api";
-import { isFeatureGroupVisible } from "../../../../store/editor/featureGroups";
 import type { OverlayToggles } from "../../../../store/editor/useEditorStore";
 import { toCanvasCoordinate } from "../../algorithms/calibrationTargets/shared";
 import { buildCornerGrid, buildGridEdges } from "../../algorithms/calibrationTargets/overlayData";
@@ -12,8 +11,6 @@ import { overlayTheme } from "./overlayTheme";
 interface MarkerboardOverlayProps {
     result: unknown;
     zoom: number;
-    showFeatures: boolean;
-    featureGroupVisibility: Record<string, boolean>;
     toggles: OverlayToggles;
 }
 
@@ -22,8 +19,6 @@ const LABEL_MIN_ZOOM = 0.5;
 export default function MarkerboardOverlay({
     result,
     zoom,
-    showFeatures,
-    featureGroupVisibility,
     toggles,
 }: MarkerboardOverlayProps) {
     const data = result as CalibrationTargetResult;
@@ -41,11 +36,9 @@ export default function MarkerboardOverlay({
                 expectedCell: m.expected.cell,
             }));
     }, [data]);
-    const cornersVisible = showFeatures && isFeatureGroupVisible("algo:checkerboard_marker", featureGroupVisibility);
-    const circlesVisible = showFeatures && isFeatureGroupVisible("algo:circle_candidate", featureGroupVisibility);
+
     const showLabels = toggles.labels && zoom >= LABEL_MIN_ZOOM;
     const fontSize = 10 / zoom;
-    const cornerRadius = 4.5 / zoom;
     const circleRadius = 5.2 / zoom;
     const labelPad = 2 / zoom;
 
@@ -59,37 +52,7 @@ export default function MarkerboardOverlay({
                 />
             )}
 
-            {cornersVisible && (
-                <Group>
-                    {Array.from(grid.nodes.values()).map((node) => (
-                        <Group key={`corner-${node.i}-${node.j}`}>
-                            <Circle
-                                x={node.x}
-                                y={node.y}
-                                radius={cornerRadius}
-                                fill={overlayTheme.cornerHalo}
-                                opacity={0.88}
-                            />
-                            <Circle
-                                x={node.x}
-                                y={node.y}
-                                radius={cornerRadius * 0.66}
-                                fill={overlayTheme.cornerFill}
-                                opacity={0.98}
-                            />
-                            <Circle
-                                x={node.x}
-                                y={node.y}
-                                radius={cornerRadius * 0.28}
-                                fill={overlayTheme.cornerAccent}
-                                opacity={0.95}
-                            />
-                        </Group>
-                    ))}
-                </Group>
-            )}
-
-            {circlesVisible && (
+            {toggles.edges && (
                 <Group>
                     {matchedCircles.map((c, i) => {
                         const cx = toCanvasCoordinate(c.center_img.x);
@@ -134,7 +97,7 @@ export default function MarkerboardOverlay({
                 </Group>
             )}
 
-            {showLabels && cornersVisible && (
+            {showLabels && (
                 <Group>
                     {Array.from(grid.nodes.values()).map((node) => (
                         <Label

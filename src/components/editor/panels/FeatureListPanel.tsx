@@ -48,7 +48,9 @@ const renderDetailMeta = (meta: FeatureMeta): React.ReactNode[] => {
         meta.contrast !== undefined && meta.contrast !== null
             ? renderMetaField("Contrast", meta.contrast.toFixed(3))
             : null,
-        renderMetaField("Distance (cells)", meta.distanceCells),
+        meta.distanceCells !== undefined && meta.distanceCells !== null
+            ? renderMetaField("Distance (cells)", meta.distanceCells.toFixed(2))
+            : null,
         meta.offsetCells !== undefined && meta.offsetCells !== null
             ? renderMetaField("Offset (cells)", `di=${meta.offsetCells.di}, dj=${meta.offsetCells.dj}`)
             : null,
@@ -61,7 +63,7 @@ function featureXY(feature: Feature): { x: number; y: number } | null {
     if (feature.type === "point" || feature.type === "directed_point") {
         return { x: feature.x, y: feature.y };
     }
-    if (feature.type === "bbox" || feature.type === "ellipse") {
+    if (feature.type === "bbox" || feature.type === "ellipse" || feature.type === "ring_marker" || feature.type === "aruco_marker") {
         return { x: feature.x, y: feature.y };
     }
     if (feature.type === "line") {
@@ -96,6 +98,13 @@ function featureRowSummary(feature: Feature): string {
         const grid = meta.grid ? `(${meta.grid.i},${meta.grid.j})` : "";
         const pol = meta.polarity ?? "";
         return [grid, pol].filter(Boolean).join("  ");
+    }
+
+    // Ring markers
+    if (meta?.kind === "ringgrid") {
+        const id = meta.markerId !== undefined && meta.markerId !== null ? `#${meta.markerId}` : "";
+        const score = meta.score !== undefined ? meta.score.toFixed(2) : "";
+        return [id, score].filter(Boolean).join("  ");
     }
 
     // Directed points

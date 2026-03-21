@@ -64,7 +64,7 @@ function useNarrowViewport(breakpoint = 768): boolean {
 
 const OVERLAY_LAYERS: { key: OverlayVisibilityKey; label: string }[] = [
     { key: "features", label: "Features" },
-    { key: "algorithmOverlay", label: "Algorithm overlay" },
+    { key: "algorithmOverlay", label: "Grid overlay" },
 ];
 
 const TOOL_BUTTON =

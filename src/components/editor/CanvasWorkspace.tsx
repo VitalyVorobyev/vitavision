@@ -48,9 +48,6 @@ export default function CanvasWorkspace() {
     const canTransformSelectedFeature = selectedFeature !== null
         && !isReadonlyFeature(selectedFeature)
         && (selectedFeature.type === "bbox" || selectedFeature.type === "ellipse");
-    const hasActiveAlgorithmOverlay = lastAlgorithmResult !== null
-        && !!getAlgorithmById(lastAlgorithmResult.algorithmId).OverlayComponent;
-
     /* ── Extracted hooks ── */
 
     const { hoverPixel, sampleAt, clearPixel } = usePixelSampler(imageSrc, imageWidth, imageHeight);
@@ -348,8 +345,6 @@ export default function CanvasWorkspace() {
                                 <Overlay
                                     result={lastAlgorithmResult.result}
                                     zoom={zoom}
-                                    showFeatures={showFeatures}
-                                    featureGroupVisibility={featureGroupVisibility}
                                     toggles={overlayToggles}
                                 />
                             );
@@ -358,7 +353,6 @@ export default function CanvasWorkspace() {
                         <FeatureLayer
                             features={features}
                             showFeatures={showFeatures}
-                            showAlgorithmFeatures={!overlayVisibility.algorithmOverlay || !hasActiveAlgorithmOverlay}
                             featureGroupVisibility={featureGroupVisibility}
                             zoom={zoom}
                             activeTool={activeTool}

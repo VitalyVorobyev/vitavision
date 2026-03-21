@@ -13,6 +13,7 @@ const KIND_LABELS: Record<string, string> = {
     checkerboard_marker: "Corners",
     marker: "Markers",
     circle_candidate: "Circle candidates",
+    ringgrid: "Ring markers",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -23,6 +24,8 @@ const TYPE_LABELS: Record<string, string> = {
     bbox: "Bounding boxes",
     ellipse: "Ellipses",
     directed_point: "Directed points",
+    ring_marker: "Ring markers",
+    aruco_marker: "ArUco markers",
 };
 
 export const featureSwatch = (feature: Feature): string => {
@@ -31,6 +34,12 @@ export const featureSwatch = (feature: Feature): string => {
     }
     if (feature.type === "directed_point") {
         return "#60a5fa";
+    }
+    if (feature.type === "ring_marker") {
+        return "#0f766e";
+    }
+    if (feature.type === "aruco_marker") {
+        return "#b45309";
     }
     return "#94a3b8";
 };

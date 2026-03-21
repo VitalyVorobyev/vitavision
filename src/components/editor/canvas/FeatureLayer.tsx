@@ -1,14 +1,15 @@
-import { Circle, Ellipse, Line, Rect } from "react-konva";
+import { Circle, Ellipse, Group, Line, Rect } from "react-konva";
 import type Konva from "konva";
 
+import ArUcoMarkerGlyph from "./primitives/ArUcoMarkerGlyph";
 import DirectedPointGlyph from "./primitives/DirectedPointGlyph";
+import RingMarkerGlyph from "./primitives/RingMarkerGlyph";
 import { isFeatureVisible } from "../../../store/editor/featureGroups";
-import { isReadonlyFeature, type DirectedPointFeature, type Feature, type ToolType } from "../../../store/editor/useEditorStore";
+import { isReadonlyFeature, type ArUcoMarkerFeature, type DirectedPointFeature, type Feature, type RingMarkerFeature, type ToolType } from "../../../store/editor/useEditorStore";
 
 interface FeatureLayerProps {
     features: Feature[];
     showFeatures: boolean;
-    showAlgorithmFeatures: boolean;
     featureGroupVisibility: Record<string, boolean>;
     zoom: number;
     activeTool: ToolType;
@@ -25,7 +26,6 @@ export default function FeatureLayer(props: FeatureLayerProps) {
     const {
         features,
         showFeatures,
-        showAlgorithmFeatures,
         featureGroupVisibility,
         zoom,
         activeTool,
@@ -54,8 +54,7 @@ export default function FeatureLayer(props: FeatureLayerProps) {
         <>
             {features.map((feature) => {
                 const groupVisible = isFeatureVisible(feature, featureGroupVisibility);
-                const sourceVisible = feature.source === "manual" || showAlgorithmFeatures;
-                if (!groupVisible || !sourceVisible) {
+                if (!groupVisible) {
                     return null;
                 }
 
@@ -65,20 +64,37 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                 const selectFeature = handleFeatureSelect(feature.id);
 
                 if (feature.type === "point") {
+                    const pointRadius = 3 / zoom;
+                    const color = isSelected ? "#00ffff" : feature.color || "#ff0000";
                     return (
-                        <Circle
+                        <Group
                             key={feature.id}
-                            x={feature.x}
-                            y={feature.y}
-                            radius={3 / zoom}
-                            fill={isSelected ? "#00ffff" : feature.color || "#ff0000"}
                             draggable={canEditGeometry}
                             onDragEnd={(event) => {
                                 updateFeature(feature.id, { x: event.target.x(), y: event.target.y() });
+                                event.target.position({ x: 0, y: 0 });
                             }}
                             onClick={selectFeature}
                             onTap={selectFeature}
-                        />
+                        >
+                            {isSelected && (
+                                <Circle
+                                    x={feature.x}
+                                    y={feature.y}
+                                    radius={10 / zoom}
+                                    fill="rgba(0, 255, 255, 0.18)"
+                                    stroke="#00ffff"
+                                    strokeWidth={1.2 / zoom}
+                                    opacity={0.9}
+                                />
+                            )}
+                            <Circle
+                                x={feature.x}
+                                y={feature.y}
+                                radius={pointRadius}
+                                fill={color}
+                            />
+                        </Group>
                     );
                 }
 
@@ -205,6 +221,30 @@ export default function FeatureLayer(props: FeatureLayerProps) {
                             onSelect={selectFeature}
                             onHover={onDirectedPointHover}
                             onHoverEnd={onDirectedPointLeave}
+                        />
+                    );
+                }
+
+                if (feature.type === "ring_marker") {
+                    return (
+                        <RingMarkerGlyph
+                            key={feature.id}
+                            feature={feature as RingMarkerFeature}
+                            zoom={zoom}
+                            selected={isSelected}
+                            onSelect={selectFeature}
+                        />
+                    );
+                }
+
+                if (feature.type === "aruco_marker") {
+                    return (
+                        <ArUcoMarkerGlyph
+                            key={feature.id}
+                            feature={feature as ArUcoMarkerFeature}
+                            zoom={zoom}
+                            selected={isSelected}
+                            onSelect={selectFeature}
                         />
                     );
                 }

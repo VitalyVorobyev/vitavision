@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 
 export type ToolType = 'SELECT' | 'POINT' | 'LINE' | 'POLYLINE' | 'POLYGON' | 'BBOX' | 'ELLIPSE';
-export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point';
+export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point' | 'ring_marker' | 'aruco_marker';
 export type FeatureSource = 'manual' | 'algorithm';
-export type SampleId = 'chessboard' | 'charuco' | 'markerboard' | 'upload';
+export type SampleId = 'chessboard' | 'charuco' | 'markerboard' | 'ringgrid' | 'upload';
 
 export interface Point2D {
     x: number;
@@ -109,6 +109,29 @@ export interface DirectedPointFeature extends BaseFeature {
     orientationRad?: number;
 }
 
+export interface RingMarkerEllipse {
+    cx: number;
+    cy: number;
+    a: number;
+    b: number;
+    angleDeg: number;
+}
+
+export interface RingMarkerFeature extends BaseFeature {
+    type: 'ring_marker';
+    x: number;
+    y: number;
+    outerEllipse: RingMarkerEllipse;
+    innerEllipse: RingMarkerEllipse;
+}
+
+export interface ArUcoMarkerFeature extends BaseFeature {
+    type: 'aruco_marker';
+    x: number;
+    y: number;
+    corners: [number, number, number, number, number, number, number, number];
+}
+
 export type Feature =
     | PointFeature
     | LineFeature
@@ -116,7 +139,9 @@ export type Feature =
     | PolygonFeature
     | BBoxFeature
     | EllipseFeature
-    | DirectedPointFeature;
+    | DirectedPointFeature
+    | RingMarkerFeature
+    | ArUcoMarkerFeature;
 
 export interface GalleryImage {
     id: string;
@@ -360,6 +385,14 @@ export const useEditorStore = create<EditorState>((set) => ({
             sampleId: 'markerboard',
             description: 'Checkerboard plus fiducial circles for marker-board detection.',
             recommendedAlgorithms: ['Marker Board'],
+        },
+        {
+            id: 'sample-ringgrid',
+            src: '/ringgrid.png',
+            name: 'Ring Grid',
+            sampleId: 'ringgrid',
+            description: 'Hex-lattice concentric ring markers with binary code bands.',
+            recommendedAlgorithms: ['Ring Grid'],
         },
     ],
     setGalleryMode: (mode) => set({ galleryMode: mode }),

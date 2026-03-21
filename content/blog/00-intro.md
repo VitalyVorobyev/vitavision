@@ -6,8 +6,6 @@ tags: ["meta", "computer-vision"]
 author: "Vitaly Vorobyev"
 ---
 
-# What Vitavision is
-
 Vitavision is a place for practical computer vision: a combination of technical writing, interactive demos, and production-grade implementations.
 
 Years of teaching at university trained my reflex to turn ideas and findings into educational artifacts. Now, working in the computer vision industry, I keep learning new things and occasionally developing ideas that are worth exploring more deeply. The new generation of agentic tools makes it possible to go from concept to prototype to deployment in the format of a weekend project. Vitavision grew out of that combination.

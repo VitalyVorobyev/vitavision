@@ -50,7 +50,7 @@ export default function AlgorithmIndex() {
             <div className="space-y-4">
                 <h1 className="text-4xl font-bold tracking-tight">Algorithms</h1>
                 <p className="text-muted-foreground text-lg">
-                    Interactive computer vision algorithms — explore, understand,
+                    Computer vision algorithms — explore, understand,
                     and experiment.
                 </p>
             </div>

@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -78,5 +79,15 @@
   ::selection {
     background-color: hsl(var(--primary) / 0.15);
     color: hsl(var(--foreground));
+  }
+
+  /* Mermaid diagram containers */
+  .mermaid-diagram {
+    @apply my-8 rounded-md border border-border bg-surface p-4 overflow-x-auto;
+  }
+
+  .mermaid-diagram svg {
+    max-width: 100%;
+    height: auto;
   }
 }

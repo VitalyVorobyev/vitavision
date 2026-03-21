@@ -140,7 +140,7 @@ function main(): void {
     // Algorithm index
     writePage(template, "/algorithms", "algorithms", {
         title: "Algorithms",
-        description: "Interactive computer vision algorithms — explore, understand, and experiment.",
+        description: "Computer vision algorithms — explore, understand, and experiment.",
     });
     count++;
 

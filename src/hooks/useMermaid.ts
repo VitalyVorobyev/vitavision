@@ -1,41 +1,82 @@
-import { useEffect, type RefObject } from "react";
+import { useEffect, useState, type RefObject } from "react";
+
+/**
+ * Observes the `dark` class on `<html>` and returns the current theme.
+ */
+function useResolvedTheme(): "dark" | "light" {
+    const [dark, setDark] = useState(() =>
+        typeof document !== "undefined"
+            ? document.documentElement.classList.contains("dark")
+            : true,
+    );
+
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            setDark(document.documentElement.classList.contains("dark"));
+        });
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+        return () => observer.disconnect();
+    }, []);
+
+    return dark ? "dark" : "light";
+}
 
 /**
  * Finds `<pre><code class="language-mermaid">` blocks inside the referenced
  * element and renders them as SVG diagrams using mermaid.js.
  *
+ * Re-renders when the dark/light theme changes.
  * Mermaid is dynamically imported so it never runs during SSR.
  */
 export function useMermaid(
     ref: RefObject<HTMLElement | null>,
     deps: unknown[],
 ): void {
+    const theme = useResolvedTheme();
+
     useEffect(() => {
         const el = ref.current;
         if (!el) return;
 
-        const blocks = el.querySelectorAll("pre > code.language-mermaid");
-        if (blocks.length === 0) return;
+        // Collect mermaid sources — either from original code blocks
+        // or from previously rendered diagram wrappers (on re-render).
+        const sources: { node: Element; text: string }[] = [];
+
+        el.querySelectorAll("pre > code.language-mermaid").forEach((code) => {
+            sources.push({ node: code.parentElement!, text: code.textContent ?? "" });
+        });
+        el.querySelectorAll(".mermaid-diagram").forEach((wrapper) => {
+            const src = wrapper.getAttribute("data-mermaid-source");
+            if (src) sources.push({ node: wrapper, text: src });
+        });
+
+        if (sources.length === 0) return;
 
         let cancelled = false;
 
         (async () => {
             const { default: mermaid } = await import("mermaid");
-            mermaid.initialize({ startOnLoad: false, theme: "dark" });
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: theme === "dark" ? "dark" : "default",
+            });
 
-            for (let i = 0; i < blocks.length; i++) {
+            for (let i = 0; i < sources.length; i++) {
                 if (cancelled) return;
-                const code = blocks[i];
-                const text = code.textContent ?? "";
+                const { node, text } = sources[i];
                 const id = `mermaid-${Date.now()}-${i}`;
                 try {
                     const { svg } = await mermaid.render(id, text);
                     const wrapper = document.createElement("div");
-                    wrapper.className = "mermaid-diagram my-6";
+                    wrapper.className = "mermaid-diagram flex justify-center";
+                    wrapper.setAttribute("data-mermaid-source", text);
                     wrapper.innerHTML = svg;
-                    code.parentElement?.replaceWith(wrapper);
+                    node.replaceWith(wrapper);
                 } catch {
-                    /* invalid diagram — leave as code block */
+                    /* invalid diagram — leave as-is */
                 }
             }
         })();
@@ -44,5 +85,5 @@ export function useMermaid(
             cancelled = true;
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps);
+    }, [...deps, theme]);
 }

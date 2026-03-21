@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { featuresArraySchema } from "../../store/editor/featureSchema";
 import { normalizeImportedFeatures, type Feature } from "../../store/editor/useEditorStore";
 
@@ -71,13 +72,13 @@ export function promptFeatureImport({
                 const parsed = JSON.parse((readerEvent.target?.result as string) || "null");
                 const result = featuresArraySchema.safeParse(parsed);
                 if (!result.success) {
-                    window.alert(`Invalid feature file: ${result.error.issues[0]?.message ?? "unknown error"}`);
+                    toast.error(`Invalid feature file: ${result.error.issues[0]?.message ?? "unknown error"}`);
                     return;
                 }
 
                 onLoaded(normalizeImportedFeatures(result.data));
             } catch {
-                window.alert("Failed to parse JSON.");
+                toast.error("Failed to parse JSON.");
             }
         };
         reader.readAsText(file);

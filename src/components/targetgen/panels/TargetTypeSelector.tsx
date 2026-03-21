@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { toast } from "sonner";
 import { Grid3X3, QrCode, CircleDot, Target, Upload } from "lucide-react";
 import type { TargetType, TargetGeneratorAction } from "../types";
 import { presetsForType } from "../presets";
@@ -60,10 +61,10 @@ export default function TargetTypeSelector({ selected, dispatch }: Props) {
                         page,
                     });
                 } else {
-                    alert("Invalid config file: missing target or page fields.");
+                    toast.error("Invalid config file: missing target or page fields.");
                 }
             } catch {
-                alert("Failed to parse JSON config file.");
+                toast.error("Failed to parse JSON config file.");
             }
         };
         reader.readAsText(file);

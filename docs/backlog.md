@@ -55,24 +55,25 @@ Editor — Phase 5: Deep Links + Blog Integration
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| EDITOR-024 | todo | P2 | feature | Deep link serialization: read/write URL params for algo+config+image | Implementer | Read URL params on mount. serializeConfig/deserializeConfig on AlgorithmDefinition. history.replaceState on change. Deps: EDITOR-019. |
-| EDITOR-025 | todo | P2 | feature | Add blogSlug to AlgorithmDefinition, render "Learn more" links | Implementer | blogSlug field. "Learn more" link in ConfigurePanel pointing to /blog/{slug}. Independent. |
-| EDITOR-026 | todo | P3 | feature | Add "Try in Editor" buttons in blog post content | Implementer | Standardized links to /editor?algo=...&image=... in blog markdown. Deps: EDITOR-024. |
+| ~~EDITOR-024~~ | done | P2 | feature | ~~Deep link serialization: read/write URL params for algo+config+image~~ | Implementer | useEditorDeepLink hook. URL params: algo, config (base64url JSON), sample. history.replaceState on change. |
+| ~~EDITOR-025~~ | done | P2 | feature | ~~Add blogSlug to AlgorithmDefinition, render "Learn more" links~~ | Implementer | blogSlug already in type + ConfigurePanel UI. Set on chess-corners adapter. |
+| ~~EDITOR-026~~ | done | P3 | feature | ~~Add "Try in Editor" buttons in blog post content~~ | Implementer | Deep link in 00-intro.md pointing to /editor?algo=chess-corners&sample=chessboard. |
 
 Editor — Phase 6: Responsive Layout + Touch Support
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| EDITOR-027 | todo | P2 | enhancement | Responsive breakpoints: stack panels vertically on narrow screens | Implementer | Below ~768px: canvas on top (60vh), right panel below. Left rail → bottom bar or hamburger. Deps: EDITOR-013. |
-| EDITOR-028 | todo | P2 | enhancement | Left rail tooltips + touch-friendly tap targets (44x44px min) | Implementer | Proper tooltips on hover. Min 44x44px touch targets. Independent. |
-| EDITOR-029 | todo | P3 | enhancement | Touch canvas: pinch-to-zoom, tap-to-select, single-finger pan | Implementer | Konva touch support. Pinch-to-zoom, tap-to-select features, pan in SELECT mode. Independent. |
-| EDITOR-030 | todo | P3 | enhancement | Hide drawing tools on touch-only devices | Implementer | Detect no fine pointer. Hide POINT/LINE/POLYLINE/BBOX/ELLIPSE/POLYGON tools. Keep SELECT + zoom + visibility. Deps: EDITOR-028. |
+| ~~EDITOR-027~~ | done | P2 | enhancement | ~~Responsive breakpoints: stack panels vertically on narrow screens~~ | Implementer | useNarrowViewport(768). Vertical stack: canvas 60vh + horizontal toolbar + right panel below. |
+| ~~EDITOR-028~~ | done | P2 | enhancement | ~~Left rail Radix tooltips + touch-friendly tap targets (44x44px min)~~ | Implementer | @radix-ui/react-tooltip. Tooltip component in ui/Tooltip.tsx. 44x44px min touch targets. |
+| ~~EDITOR-029~~ | done | P3 | enhancement | ~~Touch canvas: pinch-to-zoom, tap-to-select, single-finger pan~~ | Implementer | Two-finger pinch-to-zoom via Konva onTouchMove. Single-finger drag in SELECT mode (existing). |
+| ~~EDITOR-030~~ | done | P3 | enhancement | ~~Hide drawing tools on touch-only devices~~ | Implementer | useTouchOnly() hook (pointer: fine media query). Hides annotation tools section. |
 
-Editor — Phase 7: UX Improvements
+Blog — Content
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| EDITOR-037 | todo | P3 | feature | Canvas config summary overlay | Implementer | Optional Konva text in canvas corner showing algo name + key config values. Deferred. |
+| ~~BLOG-001~~ | done | P2 | content | ~~Add frontmatter + polish 00-intro.md~~ | Author | YAML frontmatter, content:build populates manifest. |
+| ~~BLOG-002~~ | done | P2 | content | ~~Add frontmatter to 01-chess.md (draft)~~ | Author | Marked draft: true. Full outline for ChESS Corners article. |
 
 Target Generator — Future
 
@@ -80,14 +81,26 @@ Target Generator — Future
 |----|--------|----------|------|-------|------|-------|
 | ~~TGEN-009~~ | done | P2 | feature | ~~Add ring grid target type (client-side SVG)~~ | Implementer | Hex-lattice concentric ring markers with 16-sector code bands. Codebook loader, layout generator, SVG/DXF export, config panel, 3 presets. |
 | ~~TGEN-023~~ | done | P2 | feature | ~~Add scale line to all target types~~ | Implementer | Minimal reference bar with label. Optional toggle in Paper config (default ON). SVG + DXF. |
-| TGEN-010 | todo | P2 | feature | Add ZIP bundle download (all artifacts in one file) | Implementer | Client-side JSZip. Bundle SVG + PNG + JSON + DXF. Deps: TGEN-018. |
-| TGEN-011 | todo | P2 | feature | Prerender target generator page for SEO | Implementer | Extend `postbuild.ts` for `/tools/target-generator`. Deps: TGEN-003. |
+| ~~TGEN-010~~ | done | P2 | feature | ~~Add ZIP bundle download (all artifacts in one file)~~ | Implementer | Client-side JSZip. Bundles SVG + PNG + JSON + DXF. Full-width "Download All (ZIP)" button. |
+| ~~TGEN-011~~ | done | P2 | feature | ~~Prerender target generator page for SEO~~ | Implementer | SSR stub in entry-server.tsx. Added to postbuild.ts + sitemap. |
+
+Frontend Quality
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| FE-001 | todo | P1 | feature | Add React Error Boundaries for canvas, config, and content | Implementer | Wrap CanvasWorkspace, ConfigurePanel adapter rendering, blog/algo post content. Fallback UI with retry. |
+| FE-002 | todo | P1 | infra | Set up Vitest and add unit tests for core logic | Implementer | Configure vitest. Tests for: Zustand store actions, featureSchema validation, target generator reducer, adapter toFeatures/summary. |
+| FE-003 | todo | P2 | enhancement | Replace alert() calls with sonner toast notifications | Implementer | Install sonner. Replace 5 alert() calls: EditorGallery:50, featureIo:74+80, TargetTypeSelector:63+66. Add Toaster to App. |
+| FE-004 | todo | P2 | fix | Add error handling to useTargetGenerator and ConfigurePanel handleRun | Implementer | .catch() on generatePreviewSvg promise in useTargetGenerator.ts:17. try/catch around toFeatures/summary in ConfigurePanel.tsx:123-138. |
+| FE-005 | todo | P2 | feature | Add catch-all 404 page | Implementer | `<Route path="*" />` in App.tsx. Simple NotFound component with link home. |
+| FE-006 | todo | P3 | enhancement | Add route-level code splitting with React.lazy | Implementer | Lazy-load Editor, TargetGenerator, Blog, AlgorithmIndex pages. Suspense with spinner fallback. |
+| FE-007 | todo | P3 | refactor | Extract drawing handlers from CanvasWorkspace into hooks | Implementer | Split 734-line CanvasWorkspace.tsx: useDrawingHandlers, useCanvasGestures, usePixelSampler. |
 
 Other
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| DEV-002 | todo | P3 | enhancement | Add Vite dev server proxy for zero-config local API routing | Implementer | Would eliminate the need for the devCspPlugin by proxying /api/v1 through the Vite dev server. Requires backend to return relative local-upload URLs. |
+| DEV-002 | todo | P3 | enhancement | Add Vite dev server proxy for zero-config local API routing | Implementer | Deferred — current CSP plugin works. Would eliminate devCspPlugin by proxying /api/v1. |
 
 ## API / Interface Tracking
 
@@ -104,6 +117,17 @@ Other
 | EDITOR-021 | 2026-03-20 | feature | Add PolygonFeature to feature model and Zod schema | PolygonFeature with points[] + closed. |
 | EDITOR-022 | 2026-03-20 | feature | Add polygon renderer to FeatureLayer | Closed Konva Line with semi-transparent fill. |
 | EDITOR-023 | 2026-03-20 | feature | Add POLYGON drawing tool to left rail and CanvasWorkspace | Click vertices, dblClick to close. |
+| EDITOR-024 | 2026-03-20 | feature | Deep link serialization for editor | useEditorDeepLink hook with URL param sync. |
+| EDITOR-025 | 2026-03-20 | feature | blogSlug on chess-corners adapter | "Learn more" link in ConfigurePanel. |
+| EDITOR-026 | 2026-03-20 | feature | "Try in Editor" link in blog content | Deep link in 00-intro.md. |
+| EDITOR-027 | 2026-03-20 | enhancement | Responsive breakpoints for editor | Vertical stack layout below 768px. |
+| EDITOR-028 | 2026-03-20 | enhancement | Radix tooltips + 44px touch targets | @radix-ui/react-tooltip on all toolbar buttons. |
+| EDITOR-029 | 2026-03-20 | enhancement | Touch canvas support | Pinch-to-zoom via Konva touch handlers. |
+| EDITOR-030 | 2026-03-20 | enhancement | Hide drawing tools on touch-only | useTouchOnly() media query hook. |
+| BLOG-001 | 2026-03-20 | content | Add frontmatter to 00-intro.md | Blog manifest now populated. |
+| BLOG-002 | 2026-03-20 | content | Add frontmatter to 01-chess.md | Draft outline with repoLinks + relatedAlgorithms. |
+| TGEN-010 | 2026-03-20 | feature | ZIP bundle download | JSZip bundles all 4 formats. |
+| TGEN-011 | 2026-03-20 | feature | Prerender target generator | SSR stub + sitemap entry. |
 | TGEN-012 | 2026-03-16 | fix | Fix default page orientation (portrait → landscape) | Changed INITIAL_STATE + presets. |
 | TGEN-013 | 2026-03-16 | feature | ArUco dictionary loader + hex-to-bitgrid decoder | New aruco/ module with loader, decoder, types. |
 | TGEN-014 | 2026-03-16 | feature | Client-side ChArUco SVG generation | Full marker rendering, removed backend dependency for generation. |

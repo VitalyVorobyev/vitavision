@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import CanvasWorkspace from "../components/editor/CanvasWorkspace";
+import ErrorBoundary from "../components/ui/ErrorBoundary";
 import EditorGallery from "../components/editor/EditorGallery";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import EditorRightPanel from "../components/editor/panels/EditorRightPanel";
+import Tooltip from "../components/ui/Tooltip";
 import { useEditorStore, type OverlayVisibilityKey, type ToolType } from "../store/editor/useEditorStore";
+import { readDeepLink } from "../hooks/useEditorDeepLink";
 import {
     ChevronDown,
     MousePointer2,
@@ -21,10 +26,51 @@ import {
 } from "lucide-react";
 import ZoomControls from "../components/shared/ZoomControls";
 
+/* ── hooks ───────────────────────────────────────────────────── */
+
+/** Returns true when no fine pointer is available (touch-only device). */
+function useTouchOnly(): boolean {
+    const [touchOnly, setTouchOnly] = useState(() =>
+        typeof window !== "undefined" && !window.matchMedia("(pointer: fine)").matches,
+    );
+
+    useEffect(() => {
+        const mql = window.matchMedia("(pointer: fine)");
+        const handler = (e: MediaQueryListEvent) => setTouchOnly(!e.matches);
+        mql.addEventListener("change", handler);
+        return () => mql.removeEventListener("change", handler);
+    }, []);
+
+    return touchOnly;
+}
+
+/** Returns true when the viewport is narrower than `breakpoint` px. */
+function useNarrowViewport(breakpoint = 768): boolean {
+    const [narrow, setNarrow] = useState(() =>
+        typeof window !== "undefined" && window.innerWidth < breakpoint,
+    );
+
+    useEffect(() => {
+        const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+        const handler = (e: MediaQueryListEvent) => setNarrow(e.matches);
+        mql.addEventListener("change", handler);
+        return () => mql.removeEventListener("change", handler);
+    }, [breakpoint]);
+
+    return narrow;
+}
+
+/* ── constants ───────────────────────────────────────────────── */
+
 const OVERLAY_LAYERS: { key: OverlayVisibilityKey; label: string }[] = [
     { key: "features", label: "Features" },
     { key: "algorithmOverlay", label: "Algorithm overlay" },
 ];
+
+const TOOL_BUTTON =
+    "min-w-[44px] min-h-[44px] rounded-md flex items-center justify-center transition-colors";
+
+/* ── sub-components ──────────────────────────────────────────── */
 
 function OverlayVisibilityPopover() {
     const { overlayVisibility, setOverlayVisibility } = useEditorStore();
@@ -47,17 +93,18 @@ function OverlayVisibilityPopover() {
 
     return (
         <div ref={ref} className="relative">
-            <button
-                onClick={() => setOpen((v) => !v)}
-                title="Layer visibility"
-                className={`p-3 rounded-md transition-colors ${
-                    open ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted"
-                }`}
-            >
-                {allVisible ? <Layers size={18} /> : <EyeOff size={18} />}
-            </button>
+            <Tooltip content="Layer visibility">
+                <button
+                    onClick={() => setOpen((v) => !v)}
+                    className={`${TOOL_BUTTON} ${
+                        open ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted"
+                    }`}
+                >
+                    {allVisible ? <Layers size={18} /> : <EyeOff size={18} />}
+                </button>
+            </Tooltip>
             {open && (
-                <div className="absolute left-full top-0 ml-2 z-50 w-44 rounded-lg border border-border bg-surface shadow-lg py-1">
+                <div className="absolute left-full top-0 ml-2 z-50 w-44 rounded-lg border border-border bg-surface shadow-lg py-1 max-md:left-auto max-md:right-0 max-md:top-auto max-md:bottom-full max-md:mb-2 max-md:ml-0">
                     {OVERLAY_LAYERS.map(({ key, label }) => (
                         <button
                             key={key}
@@ -80,6 +127,8 @@ function OverlayVisibilityPopover() {
     );
 }
 
+/* ── main component ──────────────────────────────────────────── */
+
 export default function Editor() {
     const {
         activeTool,
@@ -91,8 +140,35 @@ export default function Editor() {
         imageHeight,
         galleryMode,
         setGalleryMode,
+        galleryImages,
+        setImage,
+        setFeatures,
+        imageSrc,
     } = useEditorStore();
     const [annotationToolsOpen, setAnnotationToolsOpen] = useState(false);
+    const [searchParams] = useSearchParams();
+    const deepLinkApplied = useRef(false);
+    const touchOnly = useTouchOnly();
+    const narrow = useNarrowViewport();
+
+    // Auto-select sample image from deep link ?sample=chessboard
+    useEffect(() => {
+        if (deepLinkApplied.current || imageSrc !== null) return;
+        const { sampleId } = readDeepLink(searchParams);
+        if (!sampleId) return;
+        const sample = galleryImages.find((img) => img.sampleId === sampleId);
+        if (!sample) return;
+        deepLinkApplied.current = true;
+        const img = new Image();
+        img.src = sample.src;
+        img.onload = () => {
+            setImage(sample.src, img.width, img.height, sample.name, sample.sampleId);
+            setFeatures([]);
+            setZoom(1);
+            setPan({ x: 0, y: 0 });
+            setGalleryMode(false);
+        };
+    }, [searchParams, galleryImages, imageSrc, setImage, setFeatures, setZoom, setPan, setGalleryMode]);
 
     const manualTools: { id: ToolType; icon: React.ReactNode; label: string }[] = [
         { id: "POINT", icon: <MapPin size={22} />, label: "Point" },
@@ -144,86 +220,170 @@ export default function Editor() {
         );
     }
 
-    return (
-        <div className="flex h-[calc(100vh-64px)] overflow-hidden animate-in fade-in">
-            <div className="w-16 border-r border-border bg-muted/20 shrink-0 flex h-full flex-col">
-                <div className="shrink-0 flex flex-col items-center gap-3 px-2 pt-4">
-                    <button
-                        onClick={() => setGalleryMode(true)}
-                        title="Back to Gallery"
-                        className="p-3 rounded-md text-primary hover:bg-muted transition-colors font-bold"
-                    >
-                        <ImageIcon size={20} />
-                    </button>
+    /* ── toolbar content (shared between vertical rail and horizontal bar) ── */
 
-                    <div className="w-full border-t border-border" />
+    const toolbarContent = (
+        <>
+            <Tooltip content="Back to Gallery" side={narrow ? "top" : "right"}>
+                <button
+                    onClick={() => setGalleryMode(true)}
+                    className={`${TOOL_BUTTON} text-primary hover:bg-muted font-bold`}
+                >
+                    <ImageIcon size={20} />
+                </button>
+            </Tooltip>
 
-                    <button
-                        onClick={() => setActiveTool("SELECT")}
-                        title="Select"
-                        className={`p-3 rounded-md flex items-center justify-center transition-colors mx-auto ${
-                            activeTool === "SELECT"
-                                ? "bg-primary text-primary-foreground shadow-xs"
-                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                        }`}
-                    >
-                        <MousePointer2 size={18} />
-                    </button>
+            <div className={narrow ? "h-full border-l border-border" : "w-full border-t border-border"} />
 
-                    <OverlayVisibilityPopover />
-                </div>
+            <Tooltip content="Select" side={narrow ? "top" : "right"}>
+                <button
+                    onClick={() => setActiveTool("SELECT")}
+                    className={`${TOOL_BUTTON} ${
+                        activeTool === "SELECT"
+                            ? "bg-primary text-primary-foreground shadow-xs"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
+                >
+                    <MousePointer2 size={18} />
+                </button>
+            </Tooltip>
 
-                <div className="flex-1 overflow-y-auto px-2 py-4">
-                    <div className="rounded-xl border border-border/70 bg-background/70 shadow-xs overflow-hidden">
-                        <button
-                            type="button"
-                            onClick={toggleAnnotationTools}
-                            title={annotationToolsOpen ? "Collapse manual annotation tools" : "Expand manual annotation tools"}
-                            className="flex w-full items-center justify-center gap-1 py-2 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
-                        >
-                            <Edit2 size={15} />
-                            <ChevronDown
-                                size={12}
-                                className={`transition-transform duration-150 ${annotationToolsOpen ? "rotate-180" : ""}`}
-                            />
-                        </button>
+            <OverlayVisibilityPopover />
+
+            {/* Drawing tools — hidden on touch-only devices */}
+            {!touchOnly && (
+                <div className={narrow
+                    ? "flex items-center"
+                    : "flex-1 overflow-y-auto px-2 py-4"
+                }>
+                    <div className={narrow
+                        ? "flex items-center gap-1 px-1"
+                        : "w-full rounded-xl border border-border/70 bg-background/70 shadow-xs overflow-hidden"
+                    }>
+                        <Tooltip content={annotationToolsOpen ? "Collapse tools" : "Annotation tools"} side={narrow ? "top" : "right"}>
+                            <button
+                                type="button"
+                                onClick={toggleAnnotationTools}
+                                className={narrow
+                                    ? `${TOOL_BUTTON} text-muted-foreground hover:bg-muted/40 hover:text-foreground`
+                                    : "flex min-h-[58px] w-full flex-col items-center justify-center gap-1 px-2 py-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+                                }
+                            >
+                                {narrow ? (
+                                    <>
+                                        <Edit2 size={15} />
+                                        <ChevronDown
+                                            size={12}
+                                            className={`transition-transform duration-150 ${annotationToolsOpen ? "rotate-90" : ""}`}
+                                        />
+                                    </>
+                                ) : (
+                                    <div className="flex items-center gap-1">
+                                        <Edit2 size={15} />
+                                        <ChevronDown
+                                            size={12}
+                                            className={`transition-transform duration-150 ${annotationToolsOpen ? "rotate-180" : ""}`}
+                                        />
+                                    </div>
+                                )}
+                            </button>
+                        </Tooltip>
                         {annotationToolsOpen && (
-                            <div className="flex flex-col gap-2 px-2 pb-2">
+                            <div className={narrow ? "flex gap-1" : "flex flex-col items-center gap-2 px-2 pb-2"}>
                                 {manualTools.map((tool) => (
-                                    <button
-                                        key={tool.id}
-                                        onClick={() => setActiveTool(tool.id)}
-                                        title={tool.label}
-                                        className={`p-3 rounded-md flex items-center justify-center transition-colors ${
-                                            activeTool === tool.id
-                                                ? "bg-primary text-primary-foreground shadow-xs"
-                                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                                        }`}
-                                    >
-                                        {tool.icon}
-                                    </button>
+                                    <Tooltip key={tool.id} content={tool.label} side={narrow ? "top" : "right"}>
+                                        <button
+                                            onClick={() => setActiveTool(tool.id)}
+                                            className={`${TOOL_BUTTON} ${
+                                                activeTool === tool.id
+                                                    ? "bg-primary text-primary-foreground shadow-xs"
+                                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                            }`}
+                                        >
+                                            {tool.icon}
+                                        </button>
+                                    </Tooltip>
                                 ))}
                             </div>
                         )}
                     </div>
                 </div>
+            )}
+        </>
+    );
 
+    /* ── canvas area (shared) ── */
+
+    const canvasArea = (
+        <div className="flex-1 relative overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiAvPgo8cGF0aCBkPSJNMCAwbDhfOGm0XzgtOF8wIiBzdHJva2U9IiNlNWU3ZWIiIC8+Cjwvc3ZnPg==')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjMTgxODE4IiAvPgo8cGF0aCBkPSJNMCAwbDhfOG0wXzgtOF8wIiBzdHJva2U9IiMyODI4MjgiIC8+Cjwvc3ZnPg==')]">
+            <ErrorBoundary><CanvasWorkspace /></ErrorBoundary>
+            <div className="absolute top-3 right-3">
+                <ZoomControls
+                    onZoomIn={handleZoomIn}
+                    onZoomOut={handleZoomOut}
+                    onFit={handleZoomFit}
+                    onActual={handleZoomActual}
+                    zoomPercent={Math.round(zoom * 100)}
+                />
             </div>
-
-            <div className="flex-1 relative overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiAvPgo8cGF0aCBkPSJNMCAwbDhfOGm0XzgtOF8wIiBzdHJva2U9IiNlNWU3ZWIiIC8+Cjwvc3ZnPg==')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjMTgxODE4IiAvPgo8cGF0aCBkPSJNMCAwbDhfOG0wXzgtOF8wIiBzdHJva2U9IiMyODI4MjgiIC8+Cjwvc3ZnPg==')]">
-                <CanvasWorkspace />
-                <div className="absolute top-3 right-3">
-                    <ZoomControls
-                        onZoomIn={handleZoomIn}
-                        onZoomOut={handleZoomOut}
-                        onFit={handleZoomFit}
-                        onActual={handleZoomActual}
-                        zoomPercent={Math.round(zoom * 100)}
-                    />
-                </div>
-            </div>
-
-            <EditorRightPanel />
         </div>
+    );
+
+    /* ── narrow (mobile) layout: vertical stack ── */
+
+    if (narrow) {
+        return (
+            <TooltipPrimitive.Provider delayDuration={200}>
+                <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden animate-in fade-in">
+                    <SeoHead
+                        title="Editor"
+                        description="Interactive image annotation editor with computer vision algorithm runner."
+                    />
+                    {/* Canvas takes 60vh */}
+                    <div className="h-[60vh] relative overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiAvPgo8cGF0aCBkPSJNMCAwbDhfOGm0XzgtOF8wIiBzdHJva2U9IiNlNWU3ZWIiIC8+Cjwvc3ZnPg==')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjMTgxODE4IiAvPgo8cGF0aCBkPSJNMCAwbDhfOG0wXzgtOF8wIiBzdHJva2U9IiMyODI4MjgiIC8+Cjwvc3ZnPg==')]">
+                        <ErrorBoundary><CanvasWorkspace /></ErrorBoundary>
+                        <div className="absolute top-3 right-3">
+                            <ZoomControls
+                                onZoomIn={handleZoomIn}
+                                onZoomOut={handleZoomOut}
+                                onFit={handleZoomFit}
+                                onActual={handleZoomActual}
+                                zoomPercent={Math.round(zoom * 100)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Bottom toolbar (horizontal) */}
+                    <div className="h-14 border-t border-border bg-muted/20 shrink-0 flex items-center gap-1 px-2 overflow-x-auto">
+                        {toolbarContent}
+                    </div>
+
+                    {/* Right panel below */}
+                    <div className="flex-1 overflow-y-auto border-t border-border">
+                        <EditorRightPanel />
+                    </div>
+                </div>
+            </TooltipPrimitive.Provider>
+        );
+    }
+
+    /* ── wide (desktop) layout: three-panel ── */
+
+    return (
+        <TooltipPrimitive.Provider delayDuration={200}>
+            <div className="flex h-[calc(100vh-64px)] overflow-hidden animate-in fade-in">
+                <SeoHead
+                    title="Editor"
+                    description="Interactive image annotation editor with computer vision algorithm runner."
+                />
+                {/* Left rail (vertical) */}
+                <div className="w-16 border-r border-border bg-muted/20 shrink-0 flex h-full flex-col items-center gap-3 px-2 pt-4">
+                    {toolbarContent}
+                </div>
+
+                {canvasArea}
+                <EditorRightPanel />
+            </div>
+        </TooltipPrimitive.Provider>
     );
 }

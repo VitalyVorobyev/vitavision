@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+- feat(FE-001): add React ErrorBoundary component wrapping canvas, algorithm config, and blog content
+- infra(FE-002): set up Vitest with jsdom, add 26 unit tests for featureSchema and target generator reducer
+- enhancement(FE-003): replace all alert() calls with sonner toast notifications
+- fix(FE-004): add error handling to useTargetGenerator (.catch) and ConfigurePanel handleRun (try/catch)
+- feat(FE-005): add catch-all 404 page with NotFound component
+- enhancement(FE-006): add route-level code splitting with React.lazy and Suspense fallback
+- refactor(FE-007): extract usePixelSampler, useCanvasGestures, useDrawingHandlers hooks from CanvasWorkspace
 - feat(EDITOR-017): add overlay visibility popover with per-layer toggles (Features, Algorithm Overlay)
 - feat(EDITOR-018): add structured diagnostics interface to ResultsPanel with info/warning/error levels
 - feat(EDITOR-019): add preset configurations to all algorithm adapters with preset picker in ConfigurePanel

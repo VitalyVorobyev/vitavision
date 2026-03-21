@@ -96,6 +96,30 @@ Frontend Quality
 | ~~FE-006~~ | done | P3 | enhancement | ~~Add route-level code splitting with React.lazy~~ | Implementer | Lazy-load Editor, TargetGenerator, Blog, AlgorithmIndex pages. Suspense with spinner fallback. |
 | ~~FE-007~~ | done | P3 | refactor | ~~Extract drawing handlers from CanvasWorkspace into hooks~~ | Implementer | Split 734-line CanvasWorkspace.tsx: useDrawingHandlers, useCanvasGestures, usePixelSampler. |
 
+Backend — Security & Correctness
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| ~~BE-001~~ | done | P1 | fix | ~~Fix Content-Length parsing crash on malformed header~~ | Implementer | try/except around int(content_length), returns 400. |
+| ~~BE-002~~ | done | P1 | fix | ~~Add byte-size guard in _decode_grayscale_image~~ | Implementer | Rejects images exceeding max_upload_bytes before decode. |
+| ~~BE-003~~ | done | P1 | fix | ~~Move load_dotenv() before _configure_logging()~~ | Implementer | .env LOG_FORMAT/LOG_LEVEL now respected. |
+| ~~BE-004~~ | done | P1 | test | ~~Add rate limiting and middleware integration tests~~ | Implementer | 7 new tests: 3 rate limit + security headers + request ID + malformed Content-Length. |
+
+Backend — API & Code Quality
+
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+| BE-005 | todo | P2 | fix | Remove or deprecate dummy `/calibrate` endpoint | Implementer | cv.py:516-528 returns hardcoded camera matrix. Dead code that confuses API consumers. |
+| BE-006 | todo | P2 | fix | Use actual media type for `local-object` GET response | Implementer | storage.py:165 always returns `application/octet-stream`. Should use `local_media_type_for_key()`. |
+| BE-007 | todo | P2 | refactor | Split cv.py (1110 lines) into separate modules | Implementer | Split into routers/cv/chess_corners.py, calibration_targets.py, models.py. |
+| BE-008 | todo | P2 | fix | Make R2 cache writes atomic (write-then-rename) | Implementer | storage_service.py:326 writes directly. Crash mid-write leaves partial file served on next request. |
+| BE-009 | todo | P2 | enhancement | Add timeout protection for CV algorithm C extension calls | Implementer | chess_corners/calib_targets calls have no timeout. Pathological image could block worker indefinitely. |
+| BE-010 | todo | P2 | enhancement | Run blocking CV calls via run_in_executor | Implementer | Async handlers call sync C extensions directly, blocking the event loop under concurrent load. |
+| BE-011 | todo | P2 | enhancement | Propagate request ID to route handler logs via contextvars | Implementer | Request ID only available in access log middleware. Route handler/service logs lack correlation IDs. |
+| BE-012 | todo | P2 | test | Add middleware integration tests (security headers, request ID, body size) | Implementer | No dedicated tests for the middleware chain. |
+| BE-013 | todo | P2 | test | Add R2 storage path tests (presigned URLs, caching, error handling) | Implementer | All tests use STORAGE_MODE=local. R2 code path completely untested. |
+| BE-014 | todo | P2 | test | Add test for `/calibrate` endpoint | Implementer | Endpoint exists but is completely untested. |
+
 Other
 
 | ID | Status | Priority | Type | Title | Role | Notes |
@@ -148,3 +172,7 @@ Other
 | TGEN-022 | 2026-03-16 | feature | Inner white square in black squares (laser calibration) | innerSquareRel (0–0.95) on all target types. For reflective surface calibration. |
 | TGEN-009 | 2026-03-20 | feature | Add ring grid target type (client-side SVG) | Hex-lattice concentric ring markers with 16-sector code bands. Baseline + extended codebook profiles. |
 | TGEN-023 | 2026-03-20 | feature | Add scale line to all target types | Minimal reference bar with label. Optional toggle (default ON). SVG + DXF integration. |
+| BE-001 | 2026-03-21 | fix | Fix Content-Length parsing crash | try/except around int(content_length), returns 400. |
+| BE-002 | 2026-03-21 | fix | Add byte-size guard in _decode_grayscale_image | Rejects images exceeding max_upload_bytes before decode. |
+| BE-003 | 2026-03-21 | fix | Move load_dotenv() before _configure_logging() | .env LOG_FORMAT/LOG_LEVEL now respected. |
+| BE-004 | 2026-03-21 | test | Add rate limiting and middleware integration tests | 7 new tests: rate limits, security headers, request ID, malformed Content-Length. |

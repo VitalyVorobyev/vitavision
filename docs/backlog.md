@@ -109,16 +109,16 @@ Backend — API & Code Quality
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| BE-005 | todo | P2 | fix | Remove or deprecate dummy `/calibrate` endpoint | Implementer | cv.py:516-528 returns hardcoded camera matrix. Dead code that confuses API consumers. |
-| BE-006 | todo | P2 | fix | Use actual media type for `local-object` GET response | Implementer | storage.py:165 always returns `application/octet-stream`. Should use `local_media_type_for_key()`. |
-| BE-007 | todo | P2 | refactor | Split cv.py (1110 lines) into separate modules | Implementer | Split into routers/cv/chess_corners.py, calibration_targets.py, models.py. |
-| BE-008 | todo | P2 | fix | Make R2 cache writes atomic (write-then-rename) | Implementer | storage_service.py:326 writes directly. Crash mid-write leaves partial file served on next request. |
-| BE-009 | todo | P2 | enhancement | Add timeout protection for CV algorithm C extension calls | Implementer | chess_corners/calib_targets calls have no timeout. Pathological image could block worker indefinitely. |
-| BE-010 | todo | P2 | enhancement | Run blocking CV calls via run_in_executor | Implementer | Async handlers call sync C extensions directly, blocking the event loop under concurrent load. |
-| BE-011 | todo | P2 | enhancement | Propagate request ID to route handler logs via contextvars | Implementer | Request ID only available in access log middleware. Route handler/service logs lack correlation IDs. |
-| BE-012 | todo | P2 | test | Add middleware integration tests (security headers, request ID, body size) | Implementer | No dedicated tests for the middleware chain. |
-| BE-013 | todo | P2 | test | Add R2 storage path tests (presigned URLs, caching, error handling) | Implementer | All tests use STORAGE_MODE=local. R2 code path completely untested. |
-| BE-014 | todo | P2 | test | Add test for `/calibrate` endpoint | Implementer | Endpoint exists but is completely untested. |
+| ~~BE-005~~ | done | P2 | fix | ~~Remove dummy `/calibrate` endpoint~~ | Implementer | Endpoint removed. |
+| ~~BE-006~~ | done | P2 | fix | ~~Use actual media type for `local-object` GET~~ | Implementer | Uses `local_media_type_for_key()`. |
+| ~~BE-007~~ | done | P2 | refactor | ~~Split cv.py into routers/cv/ package~~ | Implementer | models.py, corners.py, calibration_targets.py, _shared.py. |
+| ~~BE-008~~ | done | P2 | fix | ~~Make R2 cache writes atomic~~ | Implementer | Write to .tmp then rename. |
+| ~~BE-009~~ | done | P2 | enhancement | ~~Add timeout for CV algorithm calls~~ | Implementer | CV_TIMEOUT_SECONDS env var (default 120s). |
+| ~~BE-010~~ | done | P2 | enhancement | ~~Run blocking CV calls via run_in_executor~~ | Implementer | Both endpoints use asyncio.wait_for + run_in_executor. |
+| ~~BE-011~~ | done | P2 | enhancement | ~~Propagate request ID via contextvars~~ | Implementer | contextvars.ContextVar set in middleware, read by _JSONFormatter. |
+| ~~BE-012~~ | done | P2 | test | ~~Add middleware integration tests~~ | Implementer | Security headers, request ID, body size tests. |
+| ~~BE-013~~ | done | P2 | test | ~~Add storage service unit tests~~ | Implementer | 7 tests: keys, image validation, path traversal, R2 cache. |
+| ~~BE-014~~ | done | P2 | test | ~~Test for /calibrate endpoint~~ | Implementer | Moot — endpoint removed in BE-005. |
 
 Other
 
@@ -176,3 +176,13 @@ Other
 | BE-002 | 2026-03-21 | fix | Add byte-size guard in _decode_grayscale_image | Rejects images exceeding max_upload_bytes before decode. |
 | BE-003 | 2026-03-21 | fix | Move load_dotenv() before _configure_logging() | .env LOG_FORMAT/LOG_LEVEL now respected. |
 | BE-004 | 2026-03-21 | test | Add rate limiting and middleware integration tests | 7 new tests: rate limits, security headers, request ID, malformed Content-Length. |
+| BE-005 | 2026-03-21 | fix | Remove dummy /calibrate endpoint | Endpoint removed. |
+| BE-006 | 2026-03-21 | fix | Use actual media type for local-object GET | Uses local_media_type_for_key(). |
+| BE-007 | 2026-03-21 | refactor | Split cv.py into routers/cv/ package | models.py, corners.py, calibration_targets.py, _shared.py. |
+| BE-008 | 2026-03-21 | fix | Make R2 cache writes atomic | Write to .tmp then rename. |
+| BE-009 | 2026-03-21 | enhancement | Add timeout for CV algorithm calls | CV_TIMEOUT_SECONDS (default 120s). |
+| BE-010 | 2026-03-21 | enhancement | Run blocking CV calls via run_in_executor | Both endpoints use asyncio.wait_for + run_in_executor. |
+| BE-011 | 2026-03-21 | enhancement | Propagate request ID via contextvars | ContextVar set in middleware, read by _JSONFormatter. |
+| BE-012 | 2026-03-21 | test | Add middleware integration tests | Security headers, request ID, body size tests. |
+| BE-013 | 2026-03-21 | test | Add storage service unit tests | 7 tests: keys, validation, path traversal, cache. |
+| BE-014 | 2026-03-21 | test | Test for /calibrate endpoint | Moot — endpoint removed in BE-005. |

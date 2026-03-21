@@ -88,13 +88,13 @@ Frontend Quality
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| FE-001 | todo | P1 | feature | Add React Error Boundaries for canvas, config, and content | Implementer | Wrap CanvasWorkspace, ConfigurePanel adapter rendering, blog/algo post content. Fallback UI with retry. |
-| FE-002 | todo | P1 | infra | Set up Vitest and add unit tests for core logic | Implementer | Configure vitest. Tests for: Zustand store actions, featureSchema validation, target generator reducer, adapter toFeatures/summary. |
-| FE-003 | todo | P2 | enhancement | Replace alert() calls with sonner toast notifications | Implementer | Install sonner. Replace 5 alert() calls: EditorGallery:50, featureIo:74+80, TargetTypeSelector:63+66. Add Toaster to App. |
-| FE-004 | todo | P2 | fix | Add error handling to useTargetGenerator and ConfigurePanel handleRun | Implementer | .catch() on generatePreviewSvg promise in useTargetGenerator.ts:17. try/catch around toFeatures/summary in ConfigurePanel.tsx:123-138. |
-| FE-005 | todo | P2 | feature | Add catch-all 404 page | Implementer | `<Route path="*" />` in App.tsx. Simple NotFound component with link home. |
-| FE-006 | todo | P3 | enhancement | Add route-level code splitting with React.lazy | Implementer | Lazy-load Editor, TargetGenerator, Blog, AlgorithmIndex pages. Suspense with spinner fallback. |
-| FE-007 | todo | P3 | refactor | Extract drawing handlers from CanvasWorkspace into hooks | Implementer | Split 734-line CanvasWorkspace.tsx: useDrawingHandlers, useCanvasGestures, usePixelSampler. |
+| ~~FE-001~~ | done | P1 | feature | ~~Add React Error Boundaries for canvas, config, and content~~ | Implementer | Wrap CanvasWorkspace, ConfigurePanel adapter rendering, blog/algo post content. Fallback UI with retry. |
+| ~~FE-002~~ | done | P1 | infra | ~~Set up Vitest and add unit tests for core logic~~ | Implementer | Configure vitest. Tests for: Zustand store actions, featureSchema validation, target generator reducer, adapter toFeatures/summary. |
+| ~~FE-003~~ | done | P2 | enhancement | ~~Replace alert() calls with sonner toast notifications~~ | Implementer | Install sonner. Replace 5 alert() calls: EditorGallery:50, featureIo:74+80, TargetTypeSelector:63+66. Add Toaster to App. |
+| ~~FE-004~~ | done | P2 | fix | ~~Add error handling to useTargetGenerator and ConfigurePanel handleRun~~ | Implementer | .catch() on generatePreviewSvg promise in useTargetGenerator.ts:17. try/catch around toFeatures/summary in ConfigurePanel.tsx:123-138. |
+| ~~FE-005~~ | done | P2 | feature | ~~Add catch-all 404 page~~ | Implementer | `<Route path="*" />` in App.tsx. Simple NotFound component with link home. |
+| ~~FE-006~~ | done | P3 | enhancement | ~~Add route-level code splitting with React.lazy~~ | Implementer | Lazy-load Editor, TargetGenerator, Blog, AlgorithmIndex pages. Suspense with spinner fallback. |
+| ~~FE-007~~ | done | P3 | refactor | ~~Extract drawing handlers from CanvasWorkspace into hooks~~ | Implementer | Split 734-line CanvasWorkspace.tsx: useDrawingHandlers, useCanvasGestures, usePixelSampler. |
 
 Other
 
@@ -110,6 +110,13 @@ Other
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| FE-001 | 2026-03-21 | feature | Add React Error Boundaries | ErrorBoundary wrapping canvas, config, blog content. |
+| FE-002 | 2026-03-21 | infra | Set up Vitest and add core logic tests | 26 tests for featureSchema + reducer. |
+| FE-003 | 2026-03-21 | enhancement | Replace alert() with sonner toasts | 5 alert() calls replaced. Toaster in App. |
+| FE-004 | 2026-03-21 | fix | Add error handling to useTargetGenerator and ConfigurePanel | .catch() + try/catch. |
+| FE-005 | 2026-03-21 | feature | Add catch-all 404 page | NotFound component + Route path="*". |
+| FE-006 | 2026-03-21 | enhancement | Add route-level code splitting | React.lazy + Suspense for 7 pages. |
+| FE-007 | 2026-03-21 | refactor | Extract hooks from CanvasWorkspace | usePixelSampler, useCanvasGestures, useDrawingHandlers. |
 | EDITOR-017 | 2026-03-20 | feature | Add overlay visibility toggle to left rail | Layers popover for Features + Algorithm Overlay. |
 | EDITOR-018 | 2026-03-20 | feature | Add diagnostics interface to ResultsPanel | DiagnosticEntry with info/warning/error levels. |
 | EDITOR-019 | 2026-03-20 | feature | Add preset configurations to ConfigurePanel | AlgorithmPreset type + PresetPicker UI. |

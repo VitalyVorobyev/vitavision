@@ -15,7 +15,7 @@ export default function TargetGenerator() {
             />
 
             {/* Left — target type selector */}
-            <div className="w-56 border-r border-border bg-muted/20 overflow-y-auto shrink-0">
+            <div className="w-40 lg:w-56 border-r border-border bg-muted/20 overflow-y-auto shrink-0">
                 <TargetTypeSelector
                     selected={state.target.targetType}
                     dispatch={dispatch}

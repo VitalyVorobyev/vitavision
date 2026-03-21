@@ -23,6 +23,8 @@
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
+| ALGO-020 | in-progress | P1 | feature | Ringgrid detection algorithm for editor | Implementer | Backend endpoint + frontend adapter, overlay, config form. Uses ringgrid Python package. |
+| UI-015 | in-progress | P2 | enhancement | Responsive target generator left panel | Implementer | Narrow left panel w-40 below lg breakpoint. |
 
 ## Up Next
 

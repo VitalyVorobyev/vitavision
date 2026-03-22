@@ -2,7 +2,10 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from "node
 import { join } from "node:path";
 import { Feed } from "feed";
 import { blogPosts, algorithmPages } from "../src/generated/content-index.ts";
+import { blogHtmlLoaders } from "../src/generated/blog-loaders.ts";
+import { algorithmHtmlLoaders } from "../src/generated/algorithm-loaders.ts";
 import { render } from "../src/entry-server.tsx";
+import type { StaticContentContextValue } from "../src/lib/content/ssr-content.tsx";
 
 const DIST = join(import.meta.dir, "..", "dist");
 const SITE_NAME = "VitaVision";
@@ -75,8 +78,15 @@ function buildJsonLd(meta: BlogPostingMeta): string {
     return `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
 }
 
-function writePage(template: string, url: string, outDir: string, meta: SeoMeta, extraHead?: string): void {
-    const html = render(url);
+function writePage(
+    template: string,
+    url: string,
+    outDir: string,
+    meta: SeoMeta,
+    staticContent: StaticContentContextValue,
+    extraHead?: string,
+): void {
+    const html = render(url, staticContent);
     let page = template.replace(
         '<div id="root"></div>',
         `<div id="root">${html}</div>`,
@@ -88,6 +98,19 @@ function writePage(template: string, url: string, outDir: string, meta: SeoMeta,
     const dir = join(DIST, outDir);
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "index.html"), page, "utf-8");
+}
+
+async function loadHtmlMap(
+    loaders: Record<string, () => Promise<{ html: string }>>,
+): Promise<Record<string, string>> {
+    const entries = await Promise.all(
+        Object.entries(loaders).map(async ([slug, load]) => {
+            const mod = await load();
+            return [slug, mod.html] as const;
+        }),
+    );
+
+    return Object.fromEntries(entries);
 }
 
 function buildSitemap(paths: string[]): string {
@@ -103,8 +126,12 @@ function buildSitemap(paths: string[]): string {
     ].join("\n");
 }
 
-function main(): void {
+async function main(): Promise<void> {
     const template = readTemplate();
+    const staticContent: StaticContentContextValue = {
+        blogHtmlBySlug: await loadHtmlMap(blogHtmlLoaders),
+        algorithmHtmlBySlug: await loadHtmlMap(algorithmHtmlLoaders),
+    };
     let count = 0;
 
     // Blog index
@@ -112,7 +139,7 @@ function main(): void {
         title: "Blog",
         description:
             "Articles on computer vision algorithms, calibration, and building intelligent systems.",
-    });
+    }, staticContent);
     count++;
 
     // Individual blog posts
@@ -133,7 +160,7 @@ function main(): void {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/blog/${post.slug}`,
-        }, jsonLd);
+        }, staticContent, jsonLd);
         count++;
     }
 
@@ -141,7 +168,7 @@ function main(): void {
     writePage(template, "/algorithms", "algorithms", {
         title: "Algorithms",
         description: "Computer vision algorithms — explore, understand, and experiment.",
-    });
+    }, staticContent);
     count++;
 
     // Individual algorithm pages
@@ -152,7 +179,7 @@ function main(): void {
             description: frontmatter.summary,
             ogType: "article",
             url: `/algorithms/${page.slug}`,
-        });
+        }, staticContent);
         count++;
     }
 
@@ -160,7 +187,7 @@ function main(): void {
     writePage(template, "/tools/target-generator", "tools/target-generator", {
         title: "Target Generator",
         description: "Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.",
-    });
+    }, staticContent);
     count++;
 
     // Generate sitemap
@@ -211,4 +238,7 @@ function main(): void {
     console.log(`postbuild: ${count} static page(s) + sitemap.xml + feeds generated in dist/`);
 }
 
-main();
+main().catch((err) => {
+    console.error("postbuild failed:", err);
+    process.exit(1);
+});

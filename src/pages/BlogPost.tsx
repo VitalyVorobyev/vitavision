@@ -2,35 +2,78 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { blogPosts } from "../generated/content-index.ts";
+import { blogHtmlLoaders } from "../generated/blog-loaders.ts";
 import TagBadge from "../components/blog/TagBadge.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import { useMermaid } from "../hooks/useMermaid.ts";
 import RelatedPosts from "../components/blog/RelatedPosts.tsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
 import { proseClasses } from "../lib/prose-classes";
+import { useStaticContent } from "../lib/content/ssr-content.tsx";
 
-const blogHtmlLoaders = (typeof import.meta.glob === "function"
-    ? import.meta.glob("../generated/content/blog/*.ts")
-    : {}) as Record<string, () => Promise<{ html: string }>>;
+function readHydratedArticleHtml(slug?: string): string | null {
+    if (!slug || typeof document === "undefined") return null;
+    const article = document.querySelector<HTMLElement>(`article[data-blog-article-slug="${slug}"]`);
+
+    return article?.innerHTML ?? null;
+}
 
 export default function BlogPost() {
     const { slug } = useParams<{ slug: string }>();
     const post = blogPosts.find((p) => p.slug === slug);
+    const staticContent = useStaticContent();
     const articleRef = useRef<HTMLElement>(null);
-    const [html, setHtml] = useState<string | null>(null);
+    const [html, setHtml] = useState<string | null>(() => (
+        slug
+            ? staticContent?.blogHtmlBySlug?.[slug] ?? readHydratedArticleHtml(slug)
+            : null
+    ));
+    const [loadFailed, setLoadFailed] = useState(false);
     useMermaid(articleRef, [html]);
 
     useEffect(() => {
-        if (!slug) return;
-        const key = `../generated/content/blog/${slug}.ts`;
-        const loader = blogHtmlLoaders[key];
-        if (!loader) return;
+        if (!slug) {
+            setHtml(null);
+            setLoadFailed(true);
+            return;
+        }
+
+        const initialHtml = staticContent?.blogHtmlBySlug?.[slug] ?? readHydratedArticleHtml(slug);
+        if (initialHtml !== null) {
+            setHtml(initialHtml);
+            setLoadFailed(false);
+            return;
+        }
+
+        const loader = blogHtmlLoaders[slug];
+        if (!loader) {
+            setHtml(null);
+            setLoadFailed(true);
+            return;
+        }
+
         let cancelled = false;
-        loader().then((mod) => {
-            if (!cancelled) setHtml(mod.html);
-        });
-        return () => { cancelled = true; };
-    }, [slug]);
+        setHtml(null);
+        setLoadFailed(false);
+
+        loader()
+            .then((mod) => {
+                if (!cancelled) {
+                    setHtml(mod.html);
+                    setLoadFailed(false);
+                }
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setHtml(null);
+                    setLoadFailed(true);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [slug, staticContent]);
 
     if (!post) {
         return (
@@ -115,13 +158,20 @@ export default function BlogPost() {
             <div className="border-t border-border mb-10" />
 
             {html === null ? (
-                <div className="flex items-center justify-center py-16">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                </div>
+                loadFailed ? (
+                    <div className="py-10 text-sm text-muted-foreground">
+                        Post content failed to load.
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center py-16">
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    </div>
+                )
             ) : (
                 <ErrorBoundary>
                     <article
                         ref={articleRef}
+                        data-blog-article-slug={slug}
                         className={proseClasses}
                         dangerouslySetInnerHTML={{ __html: html }}
                     />

@@ -72,7 +72,9 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                             key={feature.id}
                             draggable={canEditGeometry}
                             onDragEnd={(event) => {
-                                updateFeature(feature.id, { x: event.target.x(), y: event.target.y() });
+                                const dx = event.target.x();
+                                const dy = event.target.y();
+                                updateFeature(feature.id, { x: feature.x + dx, y: feature.y + dy });
                                 event.target.position({ x: 0, y: 0 });
                             }}
                             onClick={selectFeature}

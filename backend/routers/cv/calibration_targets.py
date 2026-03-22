@@ -414,13 +414,12 @@ async def detect_calibration_target(
     object_bytes = storage_service.load_object_bytes(payload.key, storage_mode)
     image_u8, image_width, image_height = decode_grayscale_image(object_bytes)
 
-    CalibDetectionResult = (
+    def _run_detection() -> (
         calib_targets.ChessboardDetectionResult
         | calib_targets.CharucoDetectionResult
         | calib_targets.MarkerBoardDetectionResult
-    )
-
-    def _run_detection() -> CalibDetectionResult | None:
+        | None
+    ):
         if payload.algorithm == "chessboard":
             return calib_targets.detect_chessboard(
                 image_u8,
@@ -442,7 +441,12 @@ async def detect_calibration_target(
 
     loop = asyncio.get_running_loop()
     started = time.perf_counter()
-    raw_result: CalibDetectionResult | None = None
+    raw_result: (
+        calib_targets.ChessboardDetectionResult
+        | calib_targets.CharucoDetectionResult
+        | calib_targets.MarkerBoardDetectionResult
+        | None
+    ) = None
     try:
         raw_result = await asyncio.wait_for(
             loop.run_in_executor(cv_executor, _run_detection),

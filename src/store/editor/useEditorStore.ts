@@ -218,6 +218,7 @@ interface EditorState {
     imageHeight: number;
 
     activeTool: ToolType;
+    toolVersion: number;
     selectedFeatureId: string | null;
     features: Feature[];
 
@@ -271,6 +272,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     imageHeight: 0,
 
     activeTool: 'SELECT',
+    toolVersion: 0,
     selectedFeatureId: null,
     features: [],
 
@@ -293,7 +295,11 @@ export const useEditorStore = create<EditorState>((set) => ({
         overlayToggles: DEFAULT_OVERLAY_TOGGLES,
         panelMode: 'configure',
     }),
-    setActiveTool: (tool) => set({ activeTool: tool, selectedFeatureId: null }),
+    setActiveTool: (tool) => set((state) => ({
+        activeTool: tool,
+        toolVersion: state.toolVersion + 1,
+        selectedFeatureId: null,
+    })),
     setSelectedFeatureId: (id) => set({ selectedFeatureId: id }),
 
     addFeature: (f) => set((state) => ({ features: [...state.features, normalizeFeature(f)] })),

@@ -1,4 +1,4 @@
-import { NumberField, Section, SelectField } from "../formFields";
+import { NumberField, Section, SelectField, type FieldOption } from "../formFields";
 import type { AlgorithmConfigFormProps } from "../types";
 
 export interface RinggridConfig {
@@ -16,6 +16,11 @@ const RinggridConfigForm = (props: AlgorithmConfigFormProps<RinggridConfig>) => 
 
     const set = <K extends keyof RinggridConfig>(key: K, value: RinggridConfig[K]) =>
         onChange({ ...config, [key]: value });
+
+    const profileOptions: FieldOption<RinggridConfig["profile"]>[] = [
+        { value: "baseline", label: "Baseline (893 codes)", shortLabel: "Baseline" },
+        { value: "extended", label: "Extended (2180 codes)", shortLabel: "Extended" },
+    ];
 
     return (
         <>
@@ -86,10 +91,7 @@ const RinggridConfigForm = (props: AlgorithmConfigFormProps<RinggridConfig>) => 
                     value={config.profile}
                     onChange={(v) => set("profile", v)}
                     disabled={disabled}
-                    options={[
-                        { value: "baseline", label: "Baseline (893 codes)" },
-                        { value: "extended", label: "Extended (2180 codes)" },
-                    ]}
+                    options={profileOptions}
                 />
             </Section>
         </>

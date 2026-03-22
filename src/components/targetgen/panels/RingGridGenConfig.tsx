@@ -1,4 +1,4 @@
-import { Section, NumberField, SelectField, CollapsibleSection } from "../../editor/algorithms/formFields";
+import { Section, NumberField, SelectField, CollapsibleSection, type FieldOption } from "../../editor/algorithms/formFields";
 import type { RingGridConfig, RingGridProfile, TargetGeneratorAction } from "../types";
 
 interface Props {
@@ -6,9 +6,9 @@ interface Props {
     dispatch: React.Dispatch<TargetGeneratorAction>;
 }
 
-const PROFILE_OPTIONS: { value: RingGridProfile; label: string }[] = [
-    { value: "baseline", label: "Baseline" },
-    { value: "extended", label: "Extended" },
+const PROFILE_OPTIONS: FieldOption<RingGridProfile>[] = [
+    { value: "baseline", label: "Baseline", shortLabel: "Baseline" },
+    { value: "extended", label: "Extended", shortLabel: "Extended" },
 ];
 
 export default function RingGridGenConfig({ config, dispatch }: Props) {

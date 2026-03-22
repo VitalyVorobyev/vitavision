@@ -5,13 +5,11 @@ interface GestureParams {
     pan: { x: number; y: number };
     setZoom: (z: number) => void;
     setPan: (p: { x: number; y: number }) => void;
+    touchPrimary: boolean;
 }
 
-export function useCanvasGestures({ pan, setZoom, setPan }: GestureParams) {
+export function useCanvasGestures({ pan, setZoom, setPan, touchPrimary }: GestureParams) {
     const [isPanning, setIsPanning] = useState(false);
-    const [touchOnly, setTouchOnly] = useState(() =>
-        typeof window !== "undefined" && !window.matchMedia("(pointer: fine)").matches,
-    );
     const lastPanPointerRef = useRef<{ x: number; y: number } | null>(null);
     const panRef = useRef(pan);
     const lastTouchDist = useRef<number | null>(null);
@@ -20,13 +18,6 @@ export function useCanvasGestures({ pan, setZoom, setPan }: GestureParams) {
     useEffect(() => {
         panRef.current = pan;
     }, [pan]);
-
-    useEffect(() => {
-        const mql = window.matchMedia("(pointer: fine)");
-        const handler = (event: MediaQueryListEvent) => setTouchOnly(!event.matches);
-        mql.addEventListener("change", handler);
-        return () => mql.removeEventListener("change", handler);
-    }, []);
 
     const stopMousePan = useCallback(() => {
         setIsPanning(false);
@@ -104,6 +95,10 @@ export function useCanvasGestures({ pan, setZoom, setPan }: GestureParams) {
     };
 
     const handleTouchMove = (event: Konva.KonvaEventObject<TouchEvent>) => {
+        if (!touchPrimary) {
+            return;
+        }
+
         const touches = event.evt.touches;
         if (touches.length < 2) return;
         event.evt.preventDefault();
@@ -145,7 +140,6 @@ export function useCanvasGestures({ pan, setZoom, setPan }: GestureParams) {
 
     return {
         isPanning,
-        touchOnly,
         startPan,
         handleWheel,
         handleTouchMove,

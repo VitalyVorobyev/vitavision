@@ -39,9 +39,16 @@ const TARGET_TYPES: {
 interface Props {
     selected: TargetType;
     dispatch: React.Dispatch<TargetGeneratorAction>;
+    showPresets?: boolean;
+    layout?: "stack" | "grid";
 }
 
-export default function TargetTypeSelector({ selected, dispatch }: Props) {
+export default function TargetTypeSelector({
+    selected,
+    dispatch,
+    showPresets = true,
+    layout = "stack",
+}: Props) {
     const fileRef = useRef<HTMLInputElement>(null);
     const presets = presetsForType(selected);
 
@@ -77,66 +84,69 @@ export default function TargetTypeSelector({ selected, dispatch }: Props) {
             <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70 px-1">
                 Target Type
             </h2>
-            {TARGET_TYPES.map((t) => (
-                <button
-                    key={t.id}
-                    onClick={() =>
-                        dispatch({ type: "SET_TARGET_TYPE", targetType: t.id })
-                    }
-                    className={`flex flex-col items-center gap-1.5 rounded-lg border p-3 text-center transition-colors ${
-                        selected === t.id
-                            ? "border-primary bg-primary/5 text-foreground"
-                            : "border-border bg-background hover:border-muted-foreground/40 text-muted-foreground"
-                    }`}
-                >
-                    <span
-                        className={
+            <div className={layout === "grid" ? "grid grid-cols-2 gap-2" : "flex flex-col gap-2"}>
+                {TARGET_TYPES.map((t) => (
+                    <button
+                        key={t.id}
+                        onClick={() =>
+                            dispatch({ type: "SET_TARGET_TYPE", targetType: t.id })
+                        }
+                        className={`flex min-h-[7.25rem] flex-col items-center justify-center gap-1.5 rounded-lg border p-3 text-center transition-colors ${
                             selected === t.id
-                                ? "text-primary"
-                                : "text-muted-foreground"
-                        }
+                                ? "border-primary bg-primary/5 text-foreground"
+                                : "border-border bg-background hover:border-muted-foreground/40 text-muted-foreground"
+                        }`}
                     >
-                        {t.icon}
-                    </span>
-                    <span className="text-xs font-medium">{t.label}</span>
-                    <span className="text-[10px] leading-tight text-muted-foreground">
-                        {t.description}
-                    </span>
-                </button>
-            ))}
-
-            {/* Preset picker */}
-            <div className="mt-2">
-                <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70 px-1 mb-1.5">
-                    Presets
-                </h2>
-                <select
-                    value=""
-                    onChange={(e) => {
-                        const preset = presets.find((p) => p.id === e.target.value);
-                        if (preset) {
-                            dispatch({
-                                type: "LOAD_PRESET",
-                                target: preset.target,
-                                page: preset.page,
-                            });
-                        }
-                    }}
-                    className="w-full rounded-md border border-border bg-background px-3 py-1.5 text-sm transition-colors hover:border-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50"
-                >
-                    <option value="" disabled>
-                        Choose a preset...
-                    </option>
-                    {presets.map((p) => (
-                        <option key={p.id} value={p.id}>
-                            {p.label}
-                        </option>
-                    ))}
-                </select>
-                <p className="text-[10px] text-muted-foreground/60 mt-1 px-1">
-                    Select a preset to auto-fill config
-                </p>
+                        <span
+                            className={
+                                selected === t.id
+                                    ? "text-primary"
+                                    : "text-muted-foreground"
+                            }
+                        >
+                            {t.icon}
+                        </span>
+                        <span className="text-xs font-medium">{t.label}</span>
+                        <span className="text-[10px] leading-tight text-muted-foreground">
+                            {t.description}
+                        </span>
+                    </button>
+                ))}
             </div>
+
+            {showPresets && (
+                <div className="mt-2">
+                    <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70 px-1 mb-1.5">
+                        Presets
+                    </h2>
+                    <select
+                        value=""
+                        onChange={(e) => {
+                            const preset = presets.find((p) => p.id === e.target.value);
+                            if (preset) {
+                                dispatch({
+                                    type: "LOAD_PRESET",
+                                    target: preset.target,
+                                    page: preset.page,
+                                });
+                            }
+                        }}
+                        className="w-full rounded-md border border-border bg-background px-3 py-1.5 text-sm transition-colors hover:border-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50"
+                    >
+                        <option value="" disabled>
+                            Choose a preset...
+                        </option>
+                        {presets.map((p) => (
+                            <option key={p.id} value={p.id}>
+                                {p.label}
+                            </option>
+                        ))}
+                    </select>
+                    <p className="text-[10px] text-muted-foreground/60 mt-1 px-1">
+                        Select a preset to auto-fill config
+                    </p>
+                </div>
+            )}
 
             {/* Import config */}
             <button

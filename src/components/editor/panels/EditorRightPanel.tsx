@@ -17,6 +17,7 @@ const MODES: { key: PanelMode; label: string }[] = [
 const MIN_WIDTH = 280;
 const MAX_WIDTH = 600;
 const DEFAULT_WIDTH = 320;
+type TouchPanelTab = PanelMode | "features";
 
 function ModeToggle({ value, onChange }: { value: PanelMode; onChange: (m: PanelMode) => void }) {
     return (
@@ -74,7 +75,7 @@ function OverlayTogglePanel() {
 
 /* ── main panel ──────────────────────────────────────────────── */
 
-export default function EditorRightPanel() {
+export default function EditorRightPanel({ variant = "desktop" }: { variant?: "desktop" | "touch" }) {
     const { panelMode, setPanelMode, lastAlgorithmResult } = useEditorStore(useShallow((s) => ({
         panelMode: s.panelMode,
         setPanelMode: s.setPanelMode,
@@ -82,6 +83,8 @@ export default function EditorRightPanel() {
     })));
     const [width, setWidth] = useState(DEFAULT_WIDTH);
     const isDragging = useRef(false);
+    const [touchTabOverride, setTouchTabOverride] = useState<"features" | null>(null);
+    const touchTab: TouchPanelTab = touchTabOverride ?? panelMode;
 
     const hasOverlay = lastAlgorithmResult
         ? !!getAlgorithmById(lastAlgorithmResult.algorithmId).OverlayComponent
@@ -105,6 +108,63 @@ export default function EditorRightPanel() {
         handle.addEventListener("pointermove", onMove);
         handle.addEventListener("pointerup", onUp);
     }, []);
+
+    if (variant === "touch") {
+        const tabs: { key: TouchPanelTab; label: string }[] = [
+            { key: "configure", label: "Configure" },
+            { key: "results", label: "Results" },
+            { key: "features", label: "Features" },
+        ];
+
+        return (
+            <div className="flex h-full flex-col overflow-hidden bg-muted/10">
+                <div className="border-b border-border px-4 py-3">
+                    <div className="grid grid-cols-3 gap-2">
+                        {tabs.map(({ key, label }) => (
+                            <button
+                                key={key}
+                                type="button"
+                                onClick={() => {
+                                    if (key === "features") {
+                                        setTouchTabOverride("features");
+                                    } else {
+                                        setTouchTabOverride(null);
+                                        setPanelMode(key);
+                                    }
+                                }}
+                                className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                                    touchTab === key
+                                        ? "bg-primary text-primary-foreground shadow-xs"
+                                        : "border border-border bg-background text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                                }`}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto px-4 py-4">
+                    <div className="space-y-5">
+                        {touchTab === "configure" && <ConfigurePanel />}
+                        {touchTab === "results" && <ResultsPanel />}
+                        {touchTab === "features" && (
+                            <>
+                                {hasOverlay && (
+                                    <RailSection label="Overlay">
+                                        <OverlayTogglePanel />
+                                    </RailSection>
+                                )}
+                                <RailSection label="Features">
+                                    <FeatureListPanel />
+                                </RailSection>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div

@@ -10,12 +10,9 @@ export interface ViewportSnapshot {
 }
 
 export function resolveViewportMode(snapshot: ViewportSnapshot): ViewportMode {
-    if (snapshot.width < 768) {
-        return "phone";
-    }
-
-    if (snapshot.hasTouch && (!snapshot.hasFinePointer || !snapshot.canHover)) {
-        return "touch-tablet";
+    const touchPrimary = snapshot.hasTouch && (!snapshot.hasFinePointer || !snapshot.canHover);
+    if (touchPrimary) {
+        return snapshot.width < 768 ? "phone" : "touch-tablet";
     }
 
     return "desktop";

@@ -12,6 +12,15 @@ describe("resolveViewportMode", () => {
         })).toBe("phone");
     });
 
+    it("keeps narrow mouse-first windows in desktop mode", () => {
+        expect(resolveViewportMode({
+            width: 612,
+            hasTouch: false,
+            hasFinePointer: true,
+            canHover: true,
+        })).toBe("desktop");
+    });
+
     it("classifies touch-primary wide screens as touch tablets", () => {
         expect(resolveViewportMode({
             width: 1024,
@@ -24,6 +33,15 @@ describe("resolveViewportMode", () => {
     it("keeps mixed input desktop-class screens in desktop mode", () => {
         expect(resolveViewportMode({
             width: 1024,
+            hasTouch: true,
+            hasFinePointer: true,
+            canHover: true,
+        })).toBe("desktop");
+    });
+
+    it("keeps narrow mixed-input desktop-class screens in desktop mode", () => {
+        expect(resolveViewportMode({
+            width: 612,
             hasTouch: true,
             hasFinePointer: true,
             canHover: true,

@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import type { TargetGeneratorState, TargetGeneratorAction } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
 import { generateMarkers, markerOuterDrawRadius, markerBounds } from "./ringgrid/layout";
+import { isPreviewOverlayTarget } from "./previewInteractions";
 import ZoomControls from "../shared/ZoomControls";
 import CanvasControlsHint from "../shared/CanvasControlsHint";
 import useViewportMode from "../../hooks/useViewportMode";
@@ -192,7 +193,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
     const handleMouseUp = useCallback(() => setDragging(false), []);
 
     const handleClick = useCallback((event: React.MouseEvent) => {
-        if (isTouchPrimary) {
+        if (isTouchPrimary || isPreviewOverlayTarget(event.target)) {
             return;
         }
         toggleMarkerboardCircle(event.clientX, event.clientY);
@@ -300,12 +301,16 @@ export default function TargetPreview({ state, dispatch }: Props) {
         touchGesture.current.moved = true;
     }, [isTouchPrimary, pan.x, pan.y, zoom]);
 
-    const handleTouchEnd = useCallback(() => {
+    const handleTouchEnd = useCallback((event: React.TouchEvent) => {
         if (!isTouchPrimary) {
             return;
         }
 
-        if (!touchGesture.current.moved && touchGesture.current.lastTouchPoint) {
+        if (
+            !isPreviewOverlayTarget(event.target)
+            && !touchGesture.current.moved
+            && touchGesture.current.lastTouchPoint
+        ) {
             toggleMarkerboardCircle(touchGesture.current.lastTouchPoint.x, touchGesture.current.lastTouchPoint.y);
         }
 
@@ -365,7 +370,10 @@ export default function TargetPreview({ state, dispatch }: Props) {
                 />
             </div>
 
-            <div className="absolute bottom-3 left-3 rounded-md border border-border bg-background/80 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground backdrop-blur-sm">
+            <div
+                data-preview-overlay
+                className="absolute bottom-3 left-3 rounded-md border border-border bg-background/80 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground backdrop-blur-sm"
+            >
                 <div>
                     Board: {dims.board.w.toFixed(1)} x {dims.board.h.toFixed(1)} mm
                 </div>
@@ -378,7 +386,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
                 </div>
             </div>
 
-            <div className="absolute top-3 right-3">
+            <div data-preview-overlay className="absolute top-3 right-3">
                 <ZoomControls
                     onZoomIn={zoomIn}
                     onZoomOut={zoomOut}
@@ -388,7 +396,9 @@ export default function TargetPreview({ state, dispatch }: Props) {
                     touchFriendly={isTouchPrimary}
                 />
             </div>
-            <CanvasControlsHint lines={controlHints} className="bottom-3 right-3 max-w-52" />
+            <div data-preview-overlay>
+                <CanvasControlsHint lines={controlHints} className="bottom-3 right-3 max-w-52" />
+            </div>
         </div>
     );
 }

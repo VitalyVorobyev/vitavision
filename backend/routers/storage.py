@@ -75,6 +75,13 @@ class LocalUploadResponse(BaseModel):
 @router.post("/upload-ticket", response_model=UploadTicketResponse)
 @limiter.limit("20/minute")
 async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
+    max_bytes = storage_service.max_upload_bytes()
+    if payload.size is not None and payload.size > max_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Declared size {payload.size} exceeds limit of {max_bytes} bytes",
+        )
+
     storage_mode = storage_service.resolve_storage_mode(payload.storage_mode)
     key = storage_service.build_content_addressed_key(payload.sha256)
 

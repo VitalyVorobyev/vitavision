@@ -120,11 +120,16 @@ async def lifespan(app: FastAPI):
     cv_executor.shutdown(wait=False)
 
 
+_production = bool(os.getenv("API_KEY", "").strip())
+
 app = FastAPI(
     lifespan=lifespan,
     title="Vitavision CV API",
     description="Backend for Vitavision image processing and R2 storage.",
     version="1.0.0",
+    docs_url=None if _production else "/docs",
+    redoc_url=None if _production else "/redoc",
+    openapi_url=None if _production else "/openapi.json",
 )
 
 app.state.limiter = limiter

@@ -73,6 +73,25 @@ export function isFeatureVisible(
     return isFeatureGroupVisible(getFeatureGroupKey(feature), visibility);
 }
 
+function sortFeaturesForDisplay(key: string, features: Feature[]): Feature[] {
+    if (key !== "algo:ringgrid" && key !== "type:ring_marker") {
+        return features;
+    }
+
+    return [...features].sort((left, right) => {
+        const leftMarkerId = left.meta?.markerId;
+        const rightMarkerId = right.meta?.markerId;
+
+        if (leftMarkerId === undefined || leftMarkerId === null) {
+            return rightMarkerId === undefined || rightMarkerId === null ? 0 : 1;
+        }
+        if (rightMarkerId === undefined || rightMarkerId === null) {
+            return -1;
+        }
+        return leftMarkerId - rightMarkerId;
+    });
+}
+
 export function buildFeatureGroups(features: Feature[]): FeatureGroup[] {
     const groups = new Map<string, Feature[]>();
     const order: string[] = [];
@@ -87,7 +106,7 @@ export function buildFeatureGroups(features: Feature[]): FeatureGroup[] {
     }
 
     return order.map((key) => {
-        const items = groups.get(key)!;
+        const items = sortFeaturesForDisplay(key, groups.get(key)!);
         return {
             key,
             label: getFeatureGroupLabel(key),

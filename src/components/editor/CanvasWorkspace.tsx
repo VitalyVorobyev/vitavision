@@ -9,6 +9,7 @@ import { isReadonlyFeature, useEditorStore } from "../../store/editor/useEditorS
 import { useShallow } from "zustand/react/shallow";
 import { getAlgorithmById } from "./algorithms/registry";
 import CanvasControlsHint from "../shared/CanvasControlsHint";
+import useViewportMode from "../../hooks/useViewportMode";
 import { usePixelSampler } from "./hooks/usePixelSampler";
 import { useCanvasGestures } from "./hooks/useCanvasGestures";
 import { useDrawingHandlers } from "./hooks/useDrawingHandlers";
@@ -63,6 +64,7 @@ export default function CanvasWorkspace() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
     const [hoveredDirectedPoint, setHoveredDirectedPoint] = useState<DirectedPointTooltipState | null>(null);
+    const { isTouchPrimary } = useViewportMode();
 
     const hoveredDirectedPointId = hoveredDirectedPoint?.feature.id ?? null;
     const selectedFeature = features.find((feature) => feature.id === selectedFeatureId) ?? null;
@@ -74,9 +76,9 @@ export default function CanvasWorkspace() {
     const { hoverPixel, sampleAt, clearPixel } = usePixelSampler(imageSrc, imageWidth, imageHeight);
 
     const {
-        isPanning, touchOnly,
+        isPanning,
         startPan, handleWheel, handleTouchMove, handleTouchEnd,
-    } = useCanvasGestures({ pan, setZoom, setPan });
+    } = useCanvasGestures({ pan, setZoom, setPan, touchPrimary: isTouchPrimary });
 
     const getRelativePointerPosition = () => {
         const stage = stageRef.current;
@@ -93,18 +95,28 @@ export default function CanvasWorkspace() {
         updateDrawingOnMove,
         handleStageMouseDown: drawingMouseDown,
         handleStageMouseUp,
+        handleStageTouchStart,
+        handleStageTouchEnd,
         handleStageClick,
         handleStageDblClick,
+        finishCurrentShape,
     } = useDrawingHandlers({ activeTool, addFeature, setSelectedFeatureId, getRelativePointerPosition });
 
     /* ── Derived ── */
 
-    const controlHints = [
-        activeTool === "SELECT" ? "Left click selects or edits" : "Left click uses the active tool",
-        "Right drag pans",
-        "Wheel zooms",
-        ...(activeTool === "POLYLINE" || activeTool === "POLYGON" ? ["Double click finishes the shape"] : []),
-    ];
+    const controlHints = isTouchPrimary
+        ? [
+            activeTool === "SELECT" ? "Tap selects or edits" : "Tap uses the active tool",
+            activeTool === "SELECT" ? "Drag pans the canvas" : "Pinch zooms while drawing",
+            "Pinch zooms",
+            ...(activeTool === "POLYLINE" || activeTool === "POLYGON" ? ["Use Finish shape to complete the outline"] : []),
+        ]
+        : [
+            activeTool === "SELECT" ? "Left click selects or edits" : "Left click uses the active tool",
+            "Right drag pans",
+            "Wheel zooms",
+            ...(activeTool === "POLYLINE" || activeTool === "POLYGON" ? ["Double click finishes the shape"] : []),
+        ];
     const workspaceCursor = isPanning ? "cursor-grabbing" : activeTool !== "SELECT" ? "cursor-crosshair" : "cursor-default";
 
     /* ── Effects ── */
@@ -187,6 +199,17 @@ export default function CanvasWorkspace() {
         drawingMouseDown(event);
     };
 
+    const handleStageTouchMove = (event: Konva.KonvaEventObject<TouchEvent>) => {
+        if (event.evt.touches.length === 1) {
+            const pos = getRelativePointerPosition();
+            if (pos) {
+                updateDrawingOnMove(pos);
+            }
+        }
+
+        handleTouchMove(event);
+    };
+
     const handleTransformEnd = useCallback((event: Konva.KonvaEventObject<Event>) => {
         const node = event.target as Konva.Node;
         if (!selectedFeatureId) return;
@@ -262,6 +285,18 @@ export default function CanvasWorkspace() {
             <FeatureTooltip tooltip={hoveredDirectedPoint} />
             <CanvasControlsHint lines={controlHints} className="bottom-4 right-4 max-w-52" />
 
+            {isTouchPrimary && (activeTool === "POLYLINE" || activeTool === "POLYGON") && isDrawing && (
+                <div className="absolute bottom-4 left-4 z-20">
+                    <button
+                        type="button"
+                        onClick={finishCurrentShape}
+                        className="rounded-md border border-border bg-background/90 px-3 py-2 text-sm font-medium text-foreground shadow-xs backdrop-blur-sm transition-colors hover:bg-background"
+                    >
+                        Finish shape
+                    </button>
+                </div>
+            )}
+
             {containerSize.width > 0 && (
                 <Stage
                     ref={stageRef}
@@ -273,8 +308,12 @@ export default function CanvasWorkspace() {
                     onMouseUp={handleStageMouseUp}
                     onClick={handleStageClick}
                     onDblClick={handleStageDblClick}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
+                    onTouchStart={handleStageTouchStart}
+                    onTouchMove={handleStageTouchMove}
+                    onTouchEnd={() => {
+                        handleStageTouchEnd();
+                        handleTouchEnd();
+                    }}
                     onMouseLeave={() => {
                         clearPixel();
                         clearDirectedPointHover();
@@ -283,7 +322,7 @@ export default function CanvasWorkspace() {
                     scaleY={zoom}
                     x={pan.x}
                     y={pan.y}
-                    draggable={touchOnly && activeTool === "SELECT"}
+                    draggable={isTouchPrimary && activeTool === "SELECT"}
                     onDragEnd={(event) => {
                         if (event.target === stageRef.current) {
                             setPan({ x: event.target.x(), y: event.target.y() });

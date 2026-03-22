@@ -1,13 +1,13 @@
-import { Section, NumberField, SelectField } from "../../editor/algorithms/formFields";
+import { Section, NumberField, SelectField, type FieldOption } from "../../editor/algorithms/formFields";
 import type { PageConfig, Orientation, PageSizeKind, TargetGeneratorAction } from "../types";
 
-const PAGE_SIZE_OPTIONS: { value: PageSizeKind; label: string }[] = [
-    { value: "a4", label: "A4 (210 x 297 mm)" },
-    { value: "letter", label: "Letter (8.5 x 11 in)" },
-    { value: "custom", label: "Custom" },
+const PAGE_SIZE_OPTIONS: FieldOption<PageSizeKind>[] = [
+    { value: "a4", label: "A4 (210 x 297 mm)", shortLabel: "A4" },
+    { value: "letter", label: "Letter (8.5 x 11 in)", shortLabel: "Letter" },
+    { value: "custom", label: "Custom", shortLabel: "Custom" },
 ];
 
-const ORIENTATION_OPTIONS: { value: Orientation; label: string }[] = [
+const ORIENTATION_OPTIONS: FieldOption<Orientation>[] = [
     { value: "portrait", label: "Portrait" },
     { value: "landscape", label: "Landscape" },
 ];

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import type Konva from "konva";
 import type { Feature, ToolType } from "../../../store/editor/useEditorStore";
@@ -22,6 +22,28 @@ export function useDrawingHandlers({
     const [currentBBoxDims, setCurrentBBoxDims] = useState<{ w: number; h: number } | null>(null);
     const [currentLinePos, setCurrentLinePos] = useState<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
 
+    const resetDrafts = useCallback(() => {
+        setIsDrawing(false);
+        setCurrentLinePoints([]);
+        setCurrentBBoxPos(null);
+        setCurrentBBoxDims(null);
+        setCurrentLinePos(null);
+    }, []);
+
+    useEffect(() => {
+        if (activeTool === "POINT" || activeTool === "SELECT") {
+            setCurrentBBoxPos(null);
+            setCurrentBBoxDims(null);
+            setCurrentLinePos(null);
+        }
+        if (activeTool !== "POLYLINE" && activeTool !== "POLYGON") {
+            setCurrentLinePoints([]);
+            if (activeTool !== "LINE") {
+                setIsDrawing(false);
+            }
+        }
+    }, [activeTool]);
+
     const updateDrawingOnMove = (pos: { x: number; y: number }) => {
         if ((activeTool === "BBOX" || activeTool === "ELLIPSE") && isDrawing && currentBBoxPos) {
             setCurrentBBoxDims({
@@ -33,17 +55,11 @@ export function useDrawingHandlers({
         }
     };
 
-    const handleStageMouseDown = (event: Konva.KonvaEventObject<MouseEvent>) => {
-        if (event.evt.button !== 0) return;
-
+    const startDragShape = () => {
         const pos = getRelativePointerPosition();
         if (!pos) return;
 
         if (activeTool === "SELECT") {
-            const clickedOnEmpty = event.target === event.target.getStage() || event.target.index === 0;
-            if (clickedOnEmpty) {
-                setSelectedFeatureId(null);
-            }
             return;
         }
 
@@ -60,9 +76,16 @@ export function useDrawingHandlers({
         }
     };
 
-    const handleStageMouseUp = (event: Konva.KonvaEventObject<MouseEvent>) => {
+    const handleStageMouseDown = (event: Konva.KonvaEventObject<MouseEvent>) => {
         if (event.evt.button !== 0) return;
+        startDragShape();
+    };
 
+    const handleStageTouchStart = () => {
+        startDragShape();
+    };
+
+    const completeDragShape = () => {
         if ((activeTool === "BBOX" || activeTool === "ELLIPSE") && isDrawing && currentBBoxPos && currentBBoxDims) {
             setIsDrawing(false);
             const width = Math.abs(currentBBoxDims.w);
@@ -120,11 +143,28 @@ export function useDrawingHandlers({
         }
     };
 
+    const handleStageMouseUp = (event: Konva.KonvaEventObject<MouseEvent>) => {
+        if (event.evt.button !== 0) return;
+        completeDragShape();
+    };
+
+    const handleStageTouchEnd = () => {
+        completeDragShape();
+    };
+
     const handleStageClick = (event: Konva.KonvaEventObject<MouseEvent>) => {
         if (event.evt.button !== 0) return;
 
         const pos = getRelativePointerPosition();
         if (!pos) return;
+
+        if (activeTool === "SELECT") {
+            const clickedOnEmpty = event.target === event.target.getStage() || event.target.index === 0;
+            if (clickedOnEmpty) {
+                setSelectedFeatureId(null);
+            }
+            return;
+        }
 
         if (activeTool === "POINT") {
             addFeature({
@@ -148,9 +188,7 @@ export function useDrawingHandlers({
         }
     };
 
-    const handleStageDblClick = (event: Konva.KonvaEventObject<MouseEvent>) => {
-        if (event.evt.button !== 0) return;
-
+    const finishCurrentShape = useCallback(() => {
         if (activeTool === "POLYLINE" && isDrawing) {
             setIsDrawing(false);
             addFeature({
@@ -175,6 +213,11 @@ export function useDrawingHandlers({
             });
             setCurrentLinePoints([]);
         }
+    }, [activeTool, addFeature, currentLinePoints, isDrawing]);
+
+    const handleStageDblClick = (event: Konva.KonvaEventObject<MouseEvent>) => {
+        if (event.evt.button !== 0) return;
+        finishCurrentShape();
     };
 
     return {
@@ -186,7 +229,11 @@ export function useDrawingHandlers({
         updateDrawingOnMove,
         handleStageMouseDown,
         handleStageMouseUp,
+        handleStageTouchStart,
+        handleStageTouchEnd,
         handleStageClick,
         handleStageDblClick,
+        finishCurrentShape,
+        resetDrafts,
     };
 }

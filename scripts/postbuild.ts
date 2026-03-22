@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from "node:fs";
 import { join } from "node:path";
 import { Feed } from "feed";
-import { blogPosts, algorithmPages } from "../src/generated/content-manifest.ts";
+import { blogPosts, algorithmPages } from "../src/generated/content-index.ts";
 import { render } from "../src/entry-server.tsx";
 
 const DIST = join(import.meta.dir, "..", "dist");
@@ -140,7 +140,7 @@ function main(): void {
     // Algorithm index
     writePage(template, "/algorithms", "algorithms", {
         title: "Algorithms",
-        description: "Interactive computer vision algorithms — explore, understand, and experiment.",
+        description: "Computer vision algorithms — explore, understand, and experiment.",
     });
     count++;
 

@@ -49,8 +49,6 @@ export interface AlgorithmDefinition {
     OverlayComponent?: ComponentType<{
         result: unknown;
         zoom: number;
-        showFeatures: boolean;
-        featureGroupVisibility: Record<string, boolean>;
         toggles: OverlayToggles;
     }>;
 }

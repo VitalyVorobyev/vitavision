@@ -1,0 +1,369 @@
+/* ==========================================================================
+   Article Semantic Blocks & Code Styling
+   Scoped to .vv-block elements rendered by the content pipeline.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Base block styles
+   -------------------------------------------------------------------------- */
+.vv-block {
+    margin-block: 2rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.vv-block + .vv-block {
+    margin-top: 1.5rem;
+}
+
+.vv-block__title {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.25rem;
+}
+
+.vv-block__label {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-style: italic;
+    font-size: 1rem;
+    margin-bottom: 0.625rem;
+}
+
+.vv-block__body {
+    font-family: var(--font-serif);
+    font-size: inherit;
+    line-height: 1.75;
+}
+
+.vv-block__body > *:last-child {
+    margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Group A: Formal math — theorem, lemma, proposition, statement
+   -------------------------------------------------------------------------- */
+.vv-block--theorem,
+.vv-block--lemma,
+.vv-block--proposition,
+.vv-block--statement {
+    border-left: 3px solid hsl(215 60% 55%);
+    background: hsl(215 30% 96%);
+}
+
+.vv-block--theorem .vv-block__title,
+.vv-block--lemma .vv-block__title,
+.vv-block--proposition .vv-block__title,
+.vv-block--statement .vv-block__title {
+    color: hsl(215 60% 55%);
+}
+
+.vv-block--theorem .vv-block__label,
+.vv-block--lemma .vv-block__label,
+.vv-block--proposition .vv-block__label,
+.vv-block--statement .vv-block__label {
+    color: hsl(var(--article-heading));
+}
+
+/* Subtle saturation difference for hierarchy */
+.vv-block--lemma,
+.vv-block--proposition {
+    border-left-color: hsl(215 40% 55%);
+}
+
+.vv-block--statement {
+    border-left-color: hsl(215 30% 55%);
+}
+
+/* Dark mode */
+.dark .vv-block--theorem,
+.dark .vv-block--lemma,
+.dark .vv-block--proposition,
+.dark .vv-block--statement {
+    background: hsl(215 33% 15%);
+    border-left-color: hsl(215 45% 55%);
+}
+
+.dark .vv-block--theorem .vv-block__title,
+.dark .vv-block--lemma .vv-block__title,
+.dark .vv-block--proposition .vv-block__title,
+.dark .vv-block--statement .vv-block__title {
+    color: hsl(215 45% 65%);
+}
+
+.dark .vv-block--lemma,
+.dark .vv-block--proposition {
+    border-left-color: hsl(215 35% 55%);
+}
+
+.dark .vv-block--statement {
+    border-left-color: hsl(215 25% 55%);
+}
+
+/* --------------------------------------------------------------------------
+   Group B: Proof
+   -------------------------------------------------------------------------- */
+.vv-block--proof {
+    border-left: none;
+    border-radius: 0;
+    background: transparent;
+    padding: 0.75rem 0;
+    border-top: 1px solid hsl(215 25% 80%);
+}
+
+.vv-block--proof .vv-block__title {
+    font-weight: 500;
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.dark .vv-block--proof {
+    border-top-color: hsl(215 25% 30%);
+}
+
+.vv-proof-qed {
+    display: block;
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+    margin-top: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Group C: Callouts — note, warning
+   -------------------------------------------------------------------------- */
+
+/* Note */
+.vv-block--note {
+    border-left: 3px solid hsl(200 60% 50%);
+    background: hsl(200 60% 96%);
+}
+
+.vv-block--note .vv-block__title {
+    color: hsl(200 60% 40%);
+}
+
+.dark .vv-block--note {
+    border-left-color: hsl(200 50% 55%);
+    background: hsl(200 30% 14%);
+}
+
+.dark .vv-block--note .vv-block__title {
+    color: hsl(200 50% 65%);
+}
+
+/* Warning */
+.vv-block--warning {
+    border-left: 3px solid hsl(38 85% 50%);
+    background: hsl(38 85% 96%);
+}
+
+.vv-block--warning .vv-block__title {
+    color: hsl(38 85% 38%);
+}
+
+.dark .vv-block--warning {
+    border-left-color: hsl(38 70% 55%);
+    background: hsl(38 40% 13%);
+}
+
+.dark .vv-block--warning .vv-block__title {
+    color: hsl(38 70% 62%);
+}
+
+/* --------------------------------------------------------------------------
+   Group D: Content — definition, example, algorithm
+   -------------------------------------------------------------------------- */
+
+/* Definition */
+.vv-block--definition {
+    border-left: 2px solid hsl(260 40% 55%);
+    background: hsl(260 30% 97%);
+}
+
+.vv-block--definition .vv-block__title {
+    color: hsl(260 40% 50%);
+}
+
+.vv-block--definition .vv-block__label {
+    color: hsl(var(--article-heading));
+}
+
+.dark .vv-block--definition {
+    border-left-color: hsl(260 35% 60%);
+    background: hsl(260 20% 13%);
+}
+
+.dark .vv-block--definition .vv-block__title {
+    color: hsl(260 35% 68%);
+}
+
+/* Example */
+.vv-block--example {
+    border-left: 2px solid hsl(140 40% 45%);
+    background: hsl(140 30% 96%);
+}
+
+.vv-block--example .vv-block__title {
+    color: hsl(140 40% 38%);
+}
+
+.dark .vv-block--example {
+    border-left-color: hsl(140 35% 52%);
+    background: hsl(140 15% 13%);
+}
+
+.dark .vv-block--example .vv-block__title {
+    color: hsl(140 35% 58%);
+}
+
+/* Algorithm */
+.vv-block--algorithm {
+    border: 1px solid hsl(215 20% 80%);
+    border-left-width: 1px;
+    border-radius: 4px;
+    background: hsl(215 15% 97%);
+}
+
+.vv-block--algorithm .vv-block__title {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.vv-block--algorithm .vv-block__meta {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: hsl(215 20% 55%);
+    border-bottom: 1px solid hsl(var(--border));
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+}
+
+.vv-block--algorithm .vv-block__meta-item {
+    margin-bottom: 0.25rem;
+}
+
+.vv-block--algorithm .vv-block__meta-key {
+    font-weight: 600;
+}
+
+.vv-block--algorithm .vv-block__body {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+}
+
+.dark .vv-block--algorithm {
+    border-color: hsl(215 20% 30%);
+    background: hsl(215 20% 13%);
+}
+
+.dark .vv-block--algorithm .vv-block__meta {
+    color: hsl(215 20% 65%);
+}
+
+/* --------------------------------------------------------------------------
+   Group E: Quote
+   -------------------------------------------------------------------------- */
+.vv-block--quote {
+    border-left: none;
+    border-radius: 0;
+    border-top: 2px solid hsl(215 30% 75%);
+    border-bottom: 2px solid hsl(215 30% 75%);
+    background: transparent;
+    padding: 1.5rem 2rem;
+}
+
+.vv-block--quote .vv-block__title {
+    display: none; /* Hide "Quote" title — attribution serves as label */
+}
+
+.vv-block--quote .vv-block__body {
+    font-style: italic;
+    font-size: 1.125rem;
+}
+
+.vv-block--quote .vv-block__label {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-style: normal;
+    font-size: 0.8125rem;
+    color: hsl(var(--muted-foreground));
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+
+.vv-block--quote .vv-block__label::before {
+    content: "— ";
+    color: hsl(var(--accent));
+}
+
+.dark .vv-block--quote {
+    border-top-color: hsl(215 30% 35%);
+    border-bottom-color: hsl(215 30% 35%);
+}
+
+/* --------------------------------------------------------------------------
+   Shiki code block styling
+   -------------------------------------------------------------------------- */
+
+/* Shiki outputs <pre> with inline styles. We override container styling. */
+article pre:has(code) {
+    border-radius: 6px;
+    border: 1px solid hsl(var(--border));
+    margin-block: 1.75rem;
+    overflow-x: auto;
+}
+
+article pre code {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.65;
+    tab-size: 4;
+}
+
+/* Shiki dual-theme: show correct theme based on dark/light class */
+article pre.shiki span {
+    color: var(--shiki-light);
+    background-color: var(--shiki-light-bg);
+}
+
+.dark article pre.shiki span {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
+}
+
+article pre.shiki {
+    background-color: var(--shiki-light-bg) !important;
+}
+
+.dark article pre.shiki {
+    background-color: var(--shiki-dark-bg) !important;
+}
+
+/* --------------------------------------------------------------------------
+   KaTeX overrides for article context
+   -------------------------------------------------------------------------- */
+article .katex-display {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.5rem 0;
+}
+
+article .katex {
+    font-size: 1.1em;
+}
+
+/* Ensure KaTeX respects article text color */
+.dark article .katex {
+    color: hsl(var(--article-body));
+}

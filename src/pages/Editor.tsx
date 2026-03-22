@@ -9,6 +9,7 @@ import SeoHead from "../components/seo/SeoHead.tsx";
 import EditorRightPanel from "../components/editor/panels/EditorRightPanel";
 import Tooltip from "../components/ui/Tooltip";
 import { useEditorStore, type OverlayVisibilityKey, type ToolType } from "../store/editor/useEditorStore";
+import { useShallow } from "zustand/react/shallow";
 import { readDeepLink } from "../hooks/useEditorDeepLink";
 import {
     ChevronDown,
@@ -64,7 +65,7 @@ function useNarrowViewport(breakpoint = 768): boolean {
 
 const OVERLAY_LAYERS: { key: OverlayVisibilityKey; label: string }[] = [
     { key: "features", label: "Features" },
-    { key: "algorithmOverlay", label: "Algorithm overlay" },
+    { key: "algorithmOverlay", label: "Grid overlay" },
 ];
 
 const TOOL_BUTTON =
@@ -73,7 +74,10 @@ const TOOL_BUTTON =
 /* ── sub-components ──────────────────────────────────────────── */
 
 function OverlayVisibilityPopover() {
-    const { overlayVisibility, setOverlayVisibility } = useEditorStore();
+    const { overlayVisibility, setOverlayVisibility } = useEditorStore(useShallow((s) => ({
+        overlayVisibility: s.overlayVisibility,
+        setOverlayVisibility: s.setOverlayVisibility,
+    })));
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
@@ -144,7 +148,21 @@ export default function Editor() {
         setImage,
         setFeatures,
         imageSrc,
-    } = useEditorStore();
+    } = useEditorStore(useShallow((s) => ({
+        activeTool: s.activeTool,
+        setActiveTool: s.setActiveTool,
+        zoom: s.zoom,
+        setZoom: s.setZoom,
+        setPan: s.setPan,
+        imageWidth: s.imageWidth,
+        imageHeight: s.imageHeight,
+        galleryMode: s.galleryMode,
+        setGalleryMode: s.setGalleryMode,
+        galleryImages: s.galleryImages,
+        setImage: s.setImage,
+        setFeatures: s.setFeatures,
+        imageSrc: s.imageSrc,
+    })));
     const [annotationToolsOpen, setAnnotationToolsOpen] = useState(false);
     const [searchParams] = useSearchParams();
     const deepLinkApplied = useRef(false);
@@ -207,6 +225,7 @@ export default function Editor() {
             return next;
         });
     };
+    const annotationToolsPanelId = narrow ? "editor-annotation-tools-mobile" : "editor-annotation-tools-desktop";
 
     if (galleryMode) {
         return (
@@ -264,6 +283,8 @@ export default function Editor() {
                             <button
                                 type="button"
                                 onClick={toggleAnnotationTools}
+                                aria-expanded={annotationToolsOpen}
+                                aria-controls={annotationToolsPanelId}
                                 className={narrow
                                     ? `${TOOL_BUTTON} text-muted-foreground hover:bg-muted/40 hover:text-foreground`
                                     : "flex min-h-[58px] w-full flex-col items-center justify-center gap-1 px-2 py-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
@@ -288,16 +309,38 @@ export default function Editor() {
                                 )}
                             </button>
                         </Tooltip>
-                        {annotationToolsOpen && (
-                            <div className={narrow ? "flex gap-1" : "flex flex-col items-center gap-2 px-2 pb-2"}>
+                        <div
+                            id={annotationToolsPanelId}
+                            aria-hidden={!annotationToolsOpen}
+                            className={narrow
+                                ? `overflow-hidden transition-[max-width,opacity] duration-200 ease-out motion-reduce:transition-none ${
+                                    annotationToolsOpen ? "max-w-[22rem] opacity-100" : "pointer-events-none max-w-0 opacity-0"
+                                }`
+                                : `w-full overflow-hidden transition-[max-height,opacity] duration-200 ease-out motion-reduce:transition-none ${
+                                    annotationToolsOpen ? "max-h-[24rem] opacity-100" : "pointer-events-none max-h-0 opacity-0"
+                                }`
+                            }
+                        >
+                            <div
+                                className={narrow
+                                    ? `flex gap-1 pl-1 transition-transform duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${
+                                        annotationToolsOpen ? "translate-x-0" : "-translate-x-2"
+                                    }`
+                                    : `flex flex-col items-center gap-2 px-2 pb-2 transition-transform duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${
+                                        annotationToolsOpen ? "translate-y-0" : "-translate-y-2"
+                                    }`
+                                }
+                            >
                                 {manualTools.map((tool) => (
                                     <Tooltip key={tool.id} content={tool.label} side={narrow ? "top" : "right"}>
                                         <button
+                                            type="button"
                                             onClick={() => setActiveTool(tool.id)}
+                                            tabIndex={annotationToolsOpen ? 0 : -1}
                                             className={`${TOOL_BUTTON} ${
                                                 activeTool === tool.id
                                                     ? "bg-primary text-primary-foreground shadow-xs"
-                                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                             }`}
                                         >
                                             {tool.icon}
@@ -305,7 +348,7 @@ export default function Editor() {
                                     </Tooltip>
                                 ))}
                             </div>
-                        )}
+                        </div>
                     </div>
                 </div>
             )}

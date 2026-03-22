@@ -23,9 +23,13 @@
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
+(empty — see Done table)
 
 ## Up Next
 
+| ID | Status | Priority | Type | Title | Role | Notes |
+|----|--------|----------|------|-------|------|-------|
+(all moved to Done — see FE-008..FE-015 below)
 
 ## Backlog
 
@@ -37,6 +41,24 @@
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| BE-015 | 2026-03-22 | security | Bound CV concurrency with dedicated thread pool executor | ThreadPoolExecutor(max_workers=2), CV_TIMEOUT_SECONDS default 30s. |
+| BE-016 | 2026-03-22 | security | Cap R2 object memory under concurrent load | Bounded by dedicated executor worker limit. |
+| BE-017 | 2026-03-22 | security | Add total pixel count limit to image decode | MAX_IMAGE_PIXELS=64M + Pillow DecompressionBombError guard. |
+| BE-018 | 2026-03-22 | security | Set uvicorn `--limit-concurrency` | `--limit-concurrency 20` in Dockerfile CMD. |
+| BE-019 | 2026-03-22 | security | Sanitize native exception messages in calibration_targets | Generic error message, log actual exception at WARNING. |
+| BE-020 | 2026-03-22 | test | Add ringgrid detection integration test | 3 tests: happy path, 404, invalid key. |
+| BE-021 | 2026-03-22 | docs | Document CV_TIMEOUT_SECONDS in .env.example | Also added CV_MAX_WORKERS, MAX_IMAGE_PIXELS. |
+| BE-022 | 2026-03-22 | quality | Remove `Any` return type from calibration_targets detection | Union of 3 detection result types. |
+| ALGO-020 | 2026-03-22 | feature | Ringgrid detection algorithm for editor | Backend endpoint + frontend adapter, overlay, config form. |
+| UI-015 | 2026-03-22 | enhancement | Responsive target generator left panel | Narrow left panel w-40 below lg breakpoint. |
+| FE-008 | 2026-03-22 | refactor | Split content manifest into index + per-article chunks | content-index.ts + per-slug lazy imports via import.meta.glob. |
+| FE-009 | 2026-03-22 | perf | Add Zustand selectors to useEditorStore calls | useShallow on all 9 call sites. |
+| FE-010 | 2026-03-22 | perf | Conditional mermaid loading for blog posts | Early return in useMermaid if no mermaid blocks. |
+| FE-011 | 2026-03-22 | fix | Validate imported features with Zod instead of unsafe cast | featureSchema.safeParse + ring_marker/aruco_marker schemas. |
+| FE-012 | 2026-03-22 | perf | Use ResizeObserver in CanvasWorkspace | ResizeObserver on containerRef. |
+| FE-013 | 2026-03-22 | perf | Memoize FeatureLayer component | React.memo + useCallback for stable refs. |
+| FE-014 | 2026-03-22 | test | Add tests for store actions and feature schemas | 13 new tests: replaceAlgorithmFeatures, normalizeImportedFeatures, ring_marker, aruco_marker. |
+| FE-015 | 2026-03-22 | a11y | Add skip-to-content link and landmark audit | Skip-nav + id="main-content" on main element. |
 | FE-001 | 2026-03-21 | feature | Add React Error Boundaries | ErrorBoundary wrapping canvas, config, blog content. |
 | FE-002 | 2026-03-21 | infra | Set up Vitest and add core logic tests | 26 tests for featureSchema + reducer. |
 | FE-003 | 2026-03-21 | enhancement | Replace alert() with sonner toasts | 5 alert() calls replaced. Toaster in App. |

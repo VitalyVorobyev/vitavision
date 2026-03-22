@@ -1,18 +1,36 @@
 import { useParams, Link } from "react-router-dom";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { blogPosts } from "../generated/content-manifest.ts";
+import { blogPosts } from "../generated/content-index.ts";
 import TagBadge from "../components/blog/TagBadge.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import { useMermaid } from "../hooks/useMermaid.ts";
 import RelatedPosts from "../components/blog/RelatedPosts.tsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
+import { proseClasses } from "../lib/prose-classes";
+
+const blogHtmlLoaders = (typeof import.meta.glob === "function"
+    ? import.meta.glob("../generated/content/blog/*.ts")
+    : {}) as Record<string, () => Promise<{ html: string }>>;
 
 export default function BlogPost() {
     const { slug } = useParams<{ slug: string }>();
     const post = blogPosts.find((p) => p.slug === slug);
     const articleRef = useRef<HTMLElement>(null);
-    useMermaid(articleRef, [post?.html]);
+    const [html, setHtml] = useState<string | null>(null);
+    useMermaid(articleRef, [html]);
+
+    useEffect(() => {
+        if (!slug) return;
+        const key = `../generated/content/blog/${slug}.ts`;
+        const loader = blogHtmlLoaders[key];
+        if (!loader) return;
+        let cancelled = false;
+        loader().then((mod) => {
+            if (!cancelled) setHtml(mod.html);
+        });
+        return () => { cancelled = true; };
+    }, [slug]);
 
     if (!post) {
         return (
@@ -33,7 +51,7 @@ export default function BlogPost() {
         );
     }
 
-    const { frontmatter, html } = post;
+    const { frontmatter } = post;
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -48,7 +66,7 @@ export default function BlogPost() {
     };
 
     return (
-        <div className="max-w-[800px] mx-auto py-16 px-4 animate-in fade-in">
+        <div className="max-w-[760px] mx-auto py-16 px-4 sm:px-8 animate-in fade-in">
             <SeoHead
                 title={frontmatter.title}
                 description={frontmatter.summary}
@@ -61,14 +79,14 @@ export default function BlogPost() {
                     {JSON.stringify(jsonLd)}
                 </script>
             </Helmet>
-            <header className="space-y-4 mb-10">
+            <header className="space-y-4 mb-8">
                 <Link
                     to="/blog"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                     &larr; Back to blog
                 </Link>
-                <h1 className="text-4xl font-bold tracking-tight">
+                <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
                     {frontmatter.draft && (
                         <span className="text-sm font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-2 py-1 mr-3 align-middle">
                             draft
@@ -76,7 +94,7 @@ export default function BlogPost() {
                     )}
                     {frontmatter.title}
                 </h1>
-                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <div className="flex items-center gap-3 text-sm text-muted-foreground font-sans">
                     <span>{frontmatter.author}</span>
                     <span>&middot;</span>
                     <time>{frontmatter.date}</time>
@@ -94,23 +112,21 @@ export default function BlogPost() {
                 </div>
             </header>
 
-            <ErrorBoundary>
-                <article
-                    ref={articleRef}
-                    className="prose prose-neutral dark:prose-invert max-w-none
-                        prose-headings:tracking-tight prose-headings:font-semibold
-                        prose-h1:text-3xl prose-h1:mt-8 prose-h1:mb-4
-                        prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
-                        prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
-                        prose-p:leading-7 prose-p:text-muted-foreground
-                        prose-a:text-primary prose-a:underline hover:prose-a:text-primary/80
-                        prose-li:text-muted-foreground
-                        prose-blockquote:border-primary prose-blockquote:text-muted-foreground
-                        prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-sm prose-code:font-mono
-                        prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-pre:rounded-md"
-                    dangerouslySetInnerHTML={{ __html: html }}
-                />
-            </ErrorBoundary>
+            <div className="border-t border-border mb-10" />
+
+            {html === null ? (
+                <div className="flex items-center justify-center py-16">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                </div>
+            ) : (
+                <ErrorBoundary>
+                    <article
+                        ref={articleRef}
+                        className={proseClasses}
+                        dangerouslySetInnerHTML={{ __html: html }}
+                    />
+                </ErrorBoundary>
+            )}
 
             <RelatedPosts slugs={frontmatter.relatedAlgorithms} type="algorithm" />
 

@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import time
-from typing import Any, Literal
+from typing import Literal
 from uuid import uuid4
 
 import calib_targets
@@ -12,6 +12,7 @@ from services import storage_service
 
 from ._shared import (
     CV_TIMEOUT_SECONDS,
+    cv_executor,
     decode_grayscale_image,
     finite_float,
     frame_point_from_pair,
@@ -413,7 +414,12 @@ async def detect_calibration_target(
     object_bytes = storage_service.load_object_bytes(payload.key, storage_mode)
     image_u8, image_width, image_height = decode_grayscale_image(object_bytes)
 
-    def _run_detection() -> Any:
+    def _run_detection() -> (
+        calib_targets.ChessboardDetectionResult
+        | calib_targets.CharucoDetectionResult
+        | calib_targets.MarkerBoardDetectionResult
+        | None
+    ):
         if payload.algorithm == "chessboard":
             return calib_targets.detect_chessboard(
                 image_u8,
@@ -435,10 +441,15 @@ async def detect_calibration_target(
 
     loop = asyncio.get_running_loop()
     started = time.perf_counter()
-    raw_result: Any = None
+    raw_result: (
+        calib_targets.ChessboardDetectionResult
+        | calib_targets.CharucoDetectionResult
+        | calib_targets.MarkerBoardDetectionResult
+        | None
+    ) = None
     try:
         raw_result = await asyncio.wait_for(
-            loop.run_in_executor(None, _run_detection),
+            loop.run_in_executor(cv_executor, _run_detection),
             timeout=CV_TIMEOUT_SECONDS,
         )
     except TimeoutError:
@@ -454,8 +465,9 @@ async def detect_calibration_target(
                 image_height=image_height,
                 runtime_ms=runtime_ms,
             )
+        logger.warning("Calibration detection failed: %s", exc)
         raise HTTPException(
-            status_code=400, detail=f"Calibration target detection failed: {exc}"
+            status_code=400, detail="Calibration target detection failed"
         ) from exc
 
     runtime_ms = (time.perf_counter() - started) * 1000.0

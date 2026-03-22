@@ -63,6 +63,48 @@ describe("featureSchema", () => {
         expect(result.success).toBe(true);
     });
 
+    it("accepts a valid ring_marker feature", () => {
+        const result = featureSchema.safeParse({
+            type: "ring_marker",
+            x: 100,
+            y: 200,
+            outerEllipse: { cx: 100, cy: 200, a: 30, b: 20, angleDeg: 0 },
+            innerEllipse: { cx: 100, cy: 200, a: 15, b: 10, angleDeg: 0 },
+        });
+        expect(result.success).toBe(true);
+    });
+
+    it("accepts a valid aruco_marker feature", () => {
+        const result = featureSchema.safeParse({
+            type: "aruco_marker",
+            x: 50,
+            y: 60,
+            corners: [0, 0, 10, 0, 10, 10, 0, 10],
+        });
+        expect(result.success).toBe(true);
+    });
+
+    it("rejects aruco_marker with wrong corner count", () => {
+        const result = featureSchema.safeParse({
+            type: "aruco_marker",
+            x: 50,
+            y: 60,
+            corners: [0, 0, 10, 0], // needs 8
+        });
+        expect(result.success).toBe(false);
+    });
+
+    it("rejects ring_marker missing ellipse", () => {
+        const result = featureSchema.safeParse({
+            type: "ring_marker",
+            x: 100,
+            y: 200,
+            outerEllipse: { cx: 100, cy: 200, a: 30, b: 20, angleDeg: 0 },
+            // missing innerEllipse
+        });
+        expect(result.success).toBe(false);
+    });
+
     it("rejects unknown feature type", () => {
         const result = featureSchema.safeParse({
             type: "unknown",

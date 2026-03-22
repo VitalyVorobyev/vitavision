@@ -1,5 +1,14 @@
 ## [Unreleased]
 
+- refactor(FE-008): split content manifest into metadata index + per-slug lazy chunks for blog/algorithm pages
+- perf(FE-009): add Zustand shallow selectors to all 9 useEditorStore call sites to prevent unnecessary re-renders
+- perf(FE-010): conditionally load mermaid only when blog content contains mermaid code blocks
+- fix(FE-011): replace unsafe `as unknown as Feature` cast with Zod schema validation in normalizeImportedFeatures
+- perf(FE-012): replace window resize listener with ResizeObserver in CanvasWorkspace
+- perf(FE-013): memoize FeatureLayer with React.memo and stabilize callback refs with useCallback
+- test(FE-014): add 13 tests for store actions (replaceAlgorithmFeatures, normalizeImportedFeatures) and feature schemas (ring_marker, aruco_marker)
+- a11y(FE-015): add skip-to-content link and main landmark id
+
 - fix(BE-001): wrap Content-Length parsing in try/except to return 400 on malformed headers instead of crashing
 - fix(BE-002): add byte-size guard in `_decode_grayscale_image` before CV processing
 - fix(BE-003): move `load_dotenv()` before `_configure_logging()` so .env LOG_FORMAT/LOG_LEVEL are respected
@@ -9,6 +18,11 @@
 - refactor(BE-007): split 1110-line `cv.py` into `routers/cv/` package (models, corners, calibration_targets, shared)
 - fix(BE-008): make R2 cache writes atomic via write-to-tmp-then-rename
 - enhancement(BE-009): add configurable timeout (`CV_TIMEOUT_SECONDS`) for CV algorithm C extension calls
+- security(BE-015..BE-018): bound CV concurrency via dedicated thread pool (default 2 workers), add pixel count limit (64M), lower default CV timeout to 30s, set uvicorn `--limit-concurrency 20`
+- fix(BE-019): sanitize native exception messages in calibration target detection responses
+- test(BE-020): add ringgrid detection integration tests (happy path, 404, invalid key)
+- docs(BE-021): document `CV_TIMEOUT_SECONDS`, `CV_MAX_WORKERS`, `MAX_IMAGE_PIXELS` in `.env.example`
+- quality(BE-022): replace `Any` return type in calibration target detection with proper union type
 - enhancement(BE-010): run blocking CV algorithm calls via `run_in_executor` to unblock the event loop
 - enhancement(BE-011): propagate request ID to all loggers via `contextvars.ContextVar`
 - test(BE-012): add middleware tests for security headers, request ID, body size limit

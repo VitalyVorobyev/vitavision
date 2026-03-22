@@ -13,7 +13,7 @@ const initialConfig: MarkerBoardConfig = {
     boardRows: 22,
     boardCols: 22,
     circles: [
-        { i: 11, j: 11, polarity: "white" },
+        { i: 11, j: 11, polarity: "black" },
         { i: 12, j: 11, polarity: "white" },
         { i: 12, j: 12, polarity: "white" },
     ],
@@ -47,7 +47,7 @@ const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
     if (result.summary.circle_match_count === 0 && result.circle_matches !== null) {
         entries.push({ level: "warning", message: "No circle markers matched", detail: "Verify circle positions match the physical board or adjust circle score parameters." });
     }
-    if (result.summary.alignment_inliers !== null && result.summary.alignment_inliers < 4) {
+    if (result.summary.alignment_inliers !== null && result.summary.alignment_inliers < 2) {
         entries.push({ level: "warning", message: `Low alignment inliers: ${result.summary.alignment_inliers}`, detail: "Grid alignment may be unreliable." });
     }
     return entries;

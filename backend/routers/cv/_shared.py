@@ -2,6 +2,7 @@ import io
 import math
 import os
 import re
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 from fastapi import HTTPException
@@ -13,10 +14,20 @@ from .models import FramePoint
 
 # Maximum image dimension accepted by CV endpoints (pixels per side).
 MAX_IMAGE_DIMENSION = int(os.getenv("MAX_IMAGE_DIMENSION", "16000"))
+# Maximum total pixel count (width * height) to prevent decompression bombs.
+MAX_IMAGE_PIXELS = int(os.getenv("MAX_IMAGE_PIXELS", "64000000"))
 # Maximum time (seconds) a CV algorithm call may take before being aborted.
-CV_TIMEOUT_SECONDS = int(os.getenv("CV_TIMEOUT_SECONDS", "120"))
+CV_TIMEOUT_SECONDS = int(os.getenv("CV_TIMEOUT_SECONDS", "30"))
 # Storage keys use content-addressed format: "{prefix}/{sha256}".
 KEY_PATTERN = re.compile(r"^[a-z0-9_-]+/[0-9a-f]{64}$")
+
+# Dedicated thread pool for CV algorithm work.  Limits concurrent CPU-heavy
+# jobs to avoid saturating all worker threads and exhausting memory.
+_CV_MAX_WORKERS = int(os.getenv("CV_MAX_WORKERS", "2"))
+cv_executor = ThreadPoolExecutor(max_workers=_CV_MAX_WORKERS)
+
+# Also cap Pillow's built-in decompression bomb guard.
+Image.MAX_IMAGE_PIXELS = MAX_IMAGE_PIXELS
 
 
 def decode_grayscale_image(data: bytes) -> tuple[np.ndarray, int, int]:
@@ -35,6 +46,11 @@ def decode_grayscale_image(data: bytes) -> tuple[np.ndarray, int, int]:
         raise HTTPException(
             status_code=400, detail="Uploaded object is not a supported image format"
         ) from exc
+    except Image.DecompressionBombError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Image exceeds maximum allowed pixel count ({MAX_IMAGE_PIXELS})",
+        ) from exc
     except OSError as exc:
         raise HTTPException(status_code=400, detail="Failed to decode image") from exc
 
@@ -50,6 +66,11 @@ def decode_grayscale_image(data: bytes) -> tuple[np.ndarray, int, int]:
         raise HTTPException(
             status_code=400,
             detail=f"Image dimensions exceed maximum allowed {MAX_IMAGE_DIMENSION}px per side",
+        )
+    if width * height > MAX_IMAGE_PIXELS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Image pixel count ({width * height}) exceeds maximum allowed ({MAX_IMAGE_PIXELS})",
         )
     return arr, width, height
 

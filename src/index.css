@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -20,6 +21,7 @@
   --color-accent-2: hsl(var(--accent-2));
 
   --font-sans: Inter, system-ui, sans-serif;
+  --font-serif: 'Source Serif 4 Variable', Georgia, serif;
   --font-mono: Geist Mono, ui-monospace, monospace;
   
   /* Precision Radius: Sharp corners feel more engineered */
@@ -46,6 +48,11 @@
     --accent-2:          215 19% 35%;
     --primary:           215 19% 35%;
     --primary-foreground: 210 40% 98%;
+
+    /* Article reading tokens */
+    --article-body:      215 25% 22%;
+    --article-heading:   215 30% 12%;
+    --article-link:      215 70% 38%;
   }
 
   .dark {
@@ -61,6 +68,11 @@
     --accent-2:          215 20% 65%;
     --primary:           215 20% 65%;
     --primary-foreground: 222 47% 11%;
+
+    /* Article reading tokens */
+    --article-body:      210 30% 83%;
+    --article-heading:   210 20% 95%;
+    --article-link:      205 70% 68%;
   }
 
   body {
@@ -78,5 +90,15 @@
   ::selection {
     background-color: hsl(var(--primary) / 0.15);
     color: hsl(var(--foreground));
+  }
+
+  /* Mermaid diagram containers */
+  .mermaid-diagram {
+    @apply my-8 rounded-md border border-border bg-surface p-4 overflow-x-auto;
+  }
+
+  .mermaid-diagram svg {
+    max-width: 100%;
+    height: auto;
   }
 }

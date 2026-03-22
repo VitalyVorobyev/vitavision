@@ -29,19 +29,30 @@ export const algorithmFrontmatterSchema = z.object({
 
 export type AlgorithmFrontmatter = z.infer<typeof algorithmFrontmatterSchema>;
 
-/** Manifest entry for a blog post (dates serialized as ISO strings). */
-export interface BlogEntry {
+/** Serialized blog frontmatter (dates as ISO strings). */
+export type BlogFrontmatterSerialized = Omit<BlogFrontmatter, "date" | "updated"> & {
+    date: string;
+    updated?: string;
+};
+
+/** Index entry for a blog post (no html). Used by listing pages. */
+export interface BlogIndexEntry {
     slug: string;
-    frontmatter: Omit<BlogFrontmatter, "date" | "updated"> & {
-        date: string;
-        updated?: string;
-    };
+    frontmatter: BlogFrontmatterSerialized;
+}
+
+/** Full blog entry including rendered html. */
+export interface BlogEntry extends BlogIndexEntry {
     html: string;
 }
 
-/** Manifest entry for an algorithm page. */
-export interface AlgorithmEntry {
+/** Index entry for an algorithm page (no html). Used by listing pages. */
+export interface AlgorithmIndexEntry {
     slug: string;
     frontmatter: AlgorithmFrontmatter;
+}
+
+/** Full algorithm entry including rendered html. */
+export interface AlgorithmEntry extends AlgorithmIndexEntry {
     html: string;
 }

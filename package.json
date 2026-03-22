@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "bun run content:build && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "content:build": "bun run scripts/content-build.ts",
@@ -15,6 +15,9 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@fontsource-variable/source-serif-4": "^5.2.9",
+    "@fontsource/geist-mono": "^5.2.7",
+    "@fontsource/inter": "^5.2.8",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/uuid": "^11.0.0",
@@ -34,7 +37,10 @@
     "react-router-dom": "^7.13.1",
     "react-syntax-highlighter": "^16.1.1",
     "rehype-katex": "^7.0.1",
+    "rehype-shiki": "^0.0.9",
+    "remark-directive": "^4.0.0",
     "remark-math": "^6.0.0",
+    "shiki": "^4.0.2",
     "sonner": "^2.0.7",
     "use-image": "^1.1.4",
     "uuid": "^13.0.0",
@@ -45,6 +51,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.2.2",
+    "@tailwindcss/typography": "^0.5.19",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^25.5.0",

@@ -5,7 +5,7 @@ import type {
     CalibrationTargetResult,
 } from "../../../../lib/api";
 import { overlayTheme } from "../../canvas/overlays/overlayTheme";
-import type { Feature, PointFeature } from "../../../../store/editor/useEditorStore";
+import type { ArUcoMarkerFeature, Feature } from "../../../../store/editor/useEditorStore";
 
 export const toCanvasCoordinate = (value: number): number => value + 0.5;
 
@@ -71,26 +71,30 @@ export const calibrationMarkerFeatures = (
     markers: CalibrationMarker[] | null,
     runId: string,
     algorithmId: string,
-    color = overlayTheme.markerStroke,
 ): Feature[] => {
     if (!markers) {
         return [];
     }
 
     return markers
-        .filter((marker) => marker.corners_img !== null && marker.corners_img.length > 0)
+        .filter((marker) => marker.corners_img !== null && marker.corners_img.length === 4)
         .map((marker) => {
-            const center = averagePoint(marker.corners_img ?? []);
-            const feature: PointFeature = {
+            const imgCorners = marker.corners_img as Array<{ x: number; y: number }>;
+            const center = averagePoint(imgCorners);
+            const corners = imgCorners.flatMap((c) => [
+                toCanvasCoordinate(c.x),
+                toCanvasCoordinate(c.y),
+            ]) as ArUcoMarkerFeature["corners"];
+            const feature: ArUcoMarkerFeature = {
                 id: `${algorithmId}-marker-${marker.id}`,
-                type: "point",
+                type: "aruco_marker",
                 source: "algorithm",
                 algorithmId,
                 runId,
                 readonly: true,
                 x: toCanvasCoordinate(center.x),
                 y: toCanvasCoordinate(center.y),
-                color,
+                corners,
                 label: `marker ${marker.id}`,
                 meta: {
                     kind: "marker",

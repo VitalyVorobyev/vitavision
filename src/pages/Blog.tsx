@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { blogPosts } from "../generated/content-manifest.ts";
+import { blogPosts } from "../generated/content-index.ts";
 import PostCard from "../components/blog/PostCard.tsx";
 import TagFilter from "../components/blog/TagFilter.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";

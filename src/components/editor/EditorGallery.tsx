@@ -1,5 +1,6 @@
 import { useEditorStore } from "../../store/editor/useEditorStore";
 import type { SampleId } from "../../store/editor/useEditorStore";
+import { useShallow } from "zustand/react/shallow";
 import { Plus, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -13,7 +14,15 @@ export default function EditorGallery() {
         setFeatures,
         setZoom,
         setPan,
-    } = useEditorStore();
+    } = useEditorStore(useShallow((s) => ({
+        galleryImages: s.galleryImages,
+        addGalleryImage: s.addGalleryImage,
+        setImage: s.setImage,
+        setGalleryMode: s.setGalleryMode,
+        setFeatures: s.setFeatures,
+        setZoom: s.setZoom,
+        setPan: s.setPan,
+    })));
 
     const handleFileUpload = () => {
         const input = document.createElement("input");

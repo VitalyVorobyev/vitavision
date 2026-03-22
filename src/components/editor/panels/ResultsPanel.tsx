@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { AlertCircle, AlertTriangle, ArrowLeft, Info } from "lucide-react";
 
 import { useEditorStore } from "../../../store/editor/useEditorStore";
+import { useShallow } from "zustand/react/shallow";
 import { getAlgorithmById } from "../algorithms/registry";
 import type { AlgorithmSummaryEntry, DiagnosticEntry } from "../algorithms/types";
 
@@ -51,7 +52,10 @@ function DiagnosticsList({ entries }: { entries: DiagnosticEntry[] }) {
 }
 
 export default function ResultsPanel() {
-    const { lastAlgorithmResult, setPanelMode } = useEditorStore();
+    const { lastAlgorithmResult, setPanelMode } = useEditorStore(useShallow((s) => ({
+        lastAlgorithmResult: s.lastAlgorithmResult,
+        setPanelMode: s.setPanelMode,
+    })));
 
     const algo = useMemo(() => {
         if (!lastAlgorithmResult) return null;

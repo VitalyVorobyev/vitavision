@@ -4,6 +4,7 @@ import TargetConfigPanel from "../components/targetgen/panels/TargetConfigPanel"
 import TargetPreview from "../components/targetgen/TargetPreview";
 import TargetGeneratorWizard from "../components/targetgen/TargetGeneratorWizard";
 import { useTargetGenerator } from "../components/targetgen/useTargetGenerator";
+import { FormControlModeProvider } from "../components/editor/algorithms/formFields";
 import useViewportMode from "../hooks/useViewportMode";
 
 export default function TargetGenerator() {
@@ -18,12 +19,14 @@ export default function TargetGenerator() {
             />
 
             {isTouchPrimary ? (
-                <TargetGeneratorWizard
-                    key={isPhone ? "phone" : "touch"}
-                    state={state}
-                    dispatch={dispatch}
-                    isPhone={isPhone}
-                />
+                <FormControlModeProvider mode="touch">
+                    <TargetGeneratorWizard
+                        key={isPhone ? "phone" : "touch"}
+                        state={state}
+                        dispatch={dispatch}
+                        isPhone={isPhone}
+                    />
+                </FormControlModeProvider>
             ) : (
                 <div className="flex h-[calc(100vh-64px)] overflow-hidden animate-in fade-in">
                     <div className="w-40 lg:w-56 border-r border-border bg-muted/20 overflow-y-auto shrink-0">

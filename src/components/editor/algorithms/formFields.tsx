@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { ChevronRight, Info, Minus, Plus } from "lucide-react";
 
 /* ── tooltip ─────────────────────────────────────────────────── */
@@ -108,11 +108,49 @@ interface SelectFieldProps<TValue extends string> {
     presentation?: "auto" | "select" | "segmented";
 }
 
-const inputClass =
+export type FormControlMode = "desktop" | "touch";
+
+const FormControlModeContext = createContext<FormControlMode>("desktop");
+
+const compactInputClass =
+    "rounded-md border border-border bg-background px-3 py-1.5 text-sm transition-colors " +
+    "hover:border-muted-foreground/40 " +
+    "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 " +
+    "disabled:opacity-50 disabled:cursor-not-allowed";
+
+const touchInputClass =
     "rounded-md border border-border bg-background px-3 py-2 text-sm transition-colors " +
     "hover:border-muted-foreground/40 " +
     "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 " +
     "disabled:opacity-50 disabled:cursor-not-allowed";
+
+function useFormControlMode(): FormControlMode {
+    return useContext(FormControlModeContext);
+}
+
+function getSectionGridClass(columns: 1 | 2 | undefined, controlMode: FormControlMode): string {
+    if (columns !== 2) {
+        return "grid gap-y-2.5";
+    }
+
+    return controlMode === "touch"
+        ? "grid grid-cols-1 gap-x-3 gap-y-2.5 min-[612px]:grid-cols-2"
+        : "grid grid-cols-2 gap-x-3 gap-y-2.5";
+}
+
+export function FormControlModeProvider({
+    mode,
+    children,
+}: {
+    mode: FormControlMode;
+    children: React.ReactNode;
+}) {
+    return (
+        <FormControlModeContext.Provider value={mode}>
+            {children}
+        </FormControlModeContext.Provider>
+    );
+}
 
 function getStepPrecision(step: number): number {
     if (!Number.isFinite(step) || step <= 0) {
@@ -161,12 +199,13 @@ function shouldUseSegmentedControl<TValue extends string>(
 
 export function Section(props: SectionProps) {
     const { title, children, columns } = props;
+    const controlMode = useFormControlMode();
     return (
         <section className="space-y-2.5 rounded-xl border border-border/70 bg-background/60 p-3">
             <h3 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">
                 {title}
             </h3>
-            <div className={columns === 2 ? "grid grid-cols-1 gap-x-3 gap-y-2.5 min-[612px]:grid-cols-2" : "grid gap-y-2.5"}>
+            <div className={getSectionGridClass(columns, controlMode)}>
                 {children}
             </div>
         </section>
@@ -183,6 +222,7 @@ interface CollapsibleSectionProps {
 export function CollapsibleSection(props: CollapsibleSectionProps) {
     const { title, children, columns, defaultOpen = false } = props;
     const [open, setOpen] = useState(defaultOpen);
+    const controlMode = useFormControlMode();
 
     return (
         <section className="overflow-hidden rounded-xl border border-border/70 bg-background/60">
@@ -200,7 +240,7 @@ export function CollapsibleSection(props: CollapsibleSectionProps) {
                 </h3>
             </button>
             {open && (
-                <div className={`px-3 pb-3 ${columns === 2 ? "grid grid-cols-1 gap-x-3 gap-y-2.5 min-[612px]:grid-cols-2" : "grid gap-y-2.5"}`}>
+                <div className={`px-3 pb-3 ${getSectionGridClass(columns, controlMode)}`}>
                     {children}
                 </div>
             )}
@@ -210,6 +250,7 @@ export function CollapsibleSection(props: CollapsibleSectionProps) {
 
 export function NumberField(props: NumberFieldProps) {
     const { label, value, onChange, disabled, min, max, step = 1, placeholder, tooltip } = props;
+    const controlMode = useFormControlMode();
     const inputRef = useRef<HTMLInputElement>(null);
     const holdTimeoutRef = useRef<number | null>(null);
     const holdIntervalRef = useRef<number | null>(null);
@@ -330,6 +371,38 @@ export function NumberField(props: NumberFieldProps) {
 
     const inputMode = step < 1 ? "decimal" : "numeric";
 
+    if (controlMode === "desktop") {
+        return (
+            <label className="grid gap-1">
+                <FieldLabel label={label} tooltip={tooltip} />
+                <input
+                    ref={inputRef}
+                    type="number"
+                    inputMode={inputMode}
+                    min={min}
+                    max={max}
+                    step={step}
+                    disabled={disabled}
+                    value={value ?? ""}
+                    placeholder={placeholder}
+                    onChange={(event) => {
+                        const raw = event.target.value.trim();
+                        if (raw === "") {
+                            onChange(undefined);
+                            return;
+                        }
+
+                        const parsed = Number(raw);
+                        if (Number.isFinite(parsed)) {
+                            onChange(parsed);
+                        }
+                    }}
+                    className={`number-field-input ${compactInputClass}`}
+                />
+            </label>
+        );
+    }
+
     return (
         <div className="grid gap-1">
             <FieldLabel label={label} tooltip={tooltip} />
@@ -438,10 +511,11 @@ export function SelectField<TValue extends string>(props: SelectFieldProps<TValu
         tooltip,
         presentation = "auto",
     } = props;
+    const controlMode = useFormControlMode();
     const currentValue = value ?? options[0]?.value ?? "";
     const useSegmented = useMemo(
-        () => shouldUseSegmentedControl(options, presentation),
-        [options, presentation],
+        () => controlMode === "touch" && shouldUseSegmentedControl(options, presentation),
+        [controlMode, options, presentation],
     );
 
     if (useSegmented) {
@@ -487,7 +561,7 @@ export function SelectField<TValue extends string>(props: SelectFieldProps<TValu
                 value={currentValue}
                 disabled={disabled}
                 onChange={(event) => onChange(event.target.value as TValue)}
-                className={inputClass}
+                className={controlMode === "touch" ? touchInputClass : compactInputClass}
             >
                 {options.map((option) => (
                     <option key={option.value} value={option.value}>

@@ -36,21 +36,21 @@ export default function AlgorithmPost() {
     const { frontmatter, html } = page;
 
     return (
-        <div className="max-w-[800px] mx-auto py-16 px-4 animate-in fade-in">
+        <div className="max-w-[760px] mx-auto py-16 px-4 sm:px-8 animate-in fade-in">
             <SeoHead
                 title={frontmatter.title}
                 description={frontmatter.summary}
                 ogType="article"
                 url={`/algorithms/${slug}`}
             />
-            <header className="space-y-4 mb-10">
+            <header className="space-y-4 mb-8">
                 <Link
                     to="/algorithms"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                     &larr; Back to algorithms
                 </Link>
-                <h1 className="text-4xl font-bold tracking-tight">
+                <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
                     {frontmatter.title}
                 </h1>
                 <div className="flex flex-wrap gap-1.5">
@@ -59,6 +59,8 @@ export default function AlgorithmPost() {
                     ))}
                 </div>
             </header>
+
+            <div className="border-t border-border mb-10" />
 
             <ErrorBoundary>
                 <article

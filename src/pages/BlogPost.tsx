@@ -49,7 +49,7 @@ export default function BlogPost() {
     };
 
     return (
-        <div className="max-w-[800px] mx-auto py-16 px-4 animate-in fade-in">
+        <div className="max-w-[760px] mx-auto py-16 px-4 sm:px-8 animate-in fade-in">
             <SeoHead
                 title={frontmatter.title}
                 description={frontmatter.summary}
@@ -62,14 +62,14 @@ export default function BlogPost() {
                     {JSON.stringify(jsonLd)}
                 </script>
             </Helmet>
-            <header className="space-y-4 mb-10">
+            <header className="space-y-4 mb-8">
                 <Link
                     to="/blog"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                     &larr; Back to blog
                 </Link>
-                <h1 className="text-4xl font-bold tracking-tight">
+                <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
                     {frontmatter.draft && (
                         <span className="text-sm font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-2 py-1 mr-3 align-middle">
                             draft
@@ -77,7 +77,7 @@ export default function BlogPost() {
                     )}
                     {frontmatter.title}
                 </h1>
-                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <div className="flex items-center gap-3 text-sm text-muted-foreground font-sans">
                     <span>{frontmatter.author}</span>
                     <span>&middot;</span>
                     <time>{frontmatter.date}</time>
@@ -94,6 +94,8 @@ export default function BlogPost() {
                     ))}
                 </div>
             </header>
+
+            <div className="border-t border-border mb-10" />
 
             <ErrorBoundary>
                 <article

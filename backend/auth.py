@@ -1,6 +1,7 @@
 import hmac
 import logging
 import os
+from urllib.parse import urlparse
 
 from fastapi import HTTPException, Security
 from fastapi.security.api_key import APIKeyHeader
@@ -12,9 +13,34 @@ _API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
 _api_key: str | None = None
 
 
+_LOOPBACK_HOSTS = {"localhost", "127.0.0.1", "[::1]"}
+
+
+def _is_loopback_origin(origin: str) -> bool:
+    """Return True only if the origin's hostname is exactly a loopback address."""
+    parsed = urlparse(origin)
+    return parsed.hostname in _LOOPBACK_HOSTS
+
+
+def _has_production_origins() -> bool:
+    """Return True if CORS_ORIGINS contains non-loopback origins."""
+    cors = os.getenv("CORS_ORIGINS", "")
+    for origin in cors.split(","):
+        origin = origin.strip()
+        if origin and not _is_loopback_origin(origin):
+            return True
+    return False
+
+
 def _load_api_key() -> str | None:
     key = os.getenv("API_KEY", "").strip()
     if not key:
+        if _has_production_origins():
+            raise RuntimeError(
+                "API_KEY is not set but CORS_ORIGINS contains production origins. "
+                "Refusing to start without authentication. "
+                "Set API_KEY or remove production origins from CORS_ORIGINS."
+            )
         logger.warning(
             "API_KEY is not set — authentication is DISABLED. "
             "Set the API_KEY environment variable to enable it."

@@ -33,6 +33,16 @@
 
 ## Backlog
 
+| ID | Status | Priority | Type | Title | Notes |
+|----|--------|----------|------|-------|-------|
+| SEC-001 | done | P0 | security | Add startup guard for API_KEY in production | Refuse to start when CORS has non-localhost origins and API_KEY is unset |
+| SEC-002 | done | P0 | security | Bind Docker port to localhost | Change "8000:8000" → "127.0.0.1:8000:8000" |
+| SEC-003 | done | P1 | security | Disable Swagger UI/OpenAPI in production | docs_url=None when API_KEY is set |
+| SEC-004 | done | P1 | security | Create public/_headers for Cloudflare Pages | Security headers + CSP as HTTP headers |
+| SEC-005 | done | P1 | security | Validate upload size in upload-ticket endpoint | Reject size > MAX_UPLOAD_BYTES with 413 |
+| SEC-006 | todo | P2 | security | Remove style-src unsafe-inline from CSP | Replace with hashes via vite-plugin-csp |
+| SEC-007 | todo | P3 | security | Add /.well-known/security.txt | Contact info for vulnerability reports |
+
 ## API / Interface Tracking
 
 ## Acceptance Scenarios (Attached to Tasks)

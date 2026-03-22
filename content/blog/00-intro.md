@@ -1,6 +1,6 @@
 ---
 title: "Introducing Vitavision"
-date: 2026-03-21
+date: 2026-03-22
 summary: "Vitavision is a place for practical computer vision: a combination of technical writing, interactive demos, and production-grade implementations"
 tags: ["meta", "computer-vision"]
 author: "Vitaly Vorobyev"

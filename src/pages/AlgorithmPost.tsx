@@ -10,22 +10,16 @@ import ErrorBoundary from "../components/ui/ErrorBoundary";
 import { proseClasses } from "../lib/prose-classes";
 import { useStaticContent } from "../lib/content/ssr-content.tsx";
 
-function readHydratedArticleHtml(slug?: string): string | null {
-    if (!slug || typeof document === "undefined") return null;
-    const article = document.querySelector<HTMLElement>(`article[data-algorithm-article-slug="${slug}"]`);
-
-    return article?.innerHTML ?? null;
-}
-
 export default function AlgorithmPost() {
     const { slug } = useParams<{ slug: string }>();
     const page = algorithmPages.find((p) => p.slug === slug);
     const staticContent = useStaticContent();
     const articleRef = useRef<HTMLElement>(null);
 
-    // Resolve content synchronously from SSR context or hydrated DOM.
+    // Resolve content synchronously from SSR context (postbuild prerender).
+    // On the client useStaticContent() returns null, so the async loader runs instead.
     const syncHtml = slug
-        ? staticContent?.algorithmHtmlBySlug?.[slug] ?? readHydratedArticleHtml(slug)
+        ? staticContent?.algorithmHtmlBySlug?.[slug] ?? null
         : null;
 
     // Async loading state — reset when slug changes (render-time state reset pattern).
@@ -118,7 +112,6 @@ export default function AlgorithmPost() {
                 <ErrorBoundary>
                     <article
                         ref={articleRef}
-                        data-algorithm-article-slug={slug}
                         className={proseClasses}
                         dangerouslySetInnerHTML={{ __html: html }}
                     />

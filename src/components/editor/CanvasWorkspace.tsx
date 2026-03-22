@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Stage, Layer, Image as KonvaImage, Line, Rect, Ellipse, Transformer } from "react-konva";
 import useImage from "use-image";
 import type Konva from "konva";
@@ -6,6 +6,7 @@ import type Konva from "konva";
 import FeatureLayer from "./canvas/FeatureLayer";
 import FeatureTooltip, { type DirectedPointTooltipState } from "./canvas/FeatureTooltip";
 import { isReadonlyFeature, useEditorStore } from "../../store/editor/useEditorStore";
+import { useShallow } from "zustand/react/shallow";
 import { getAlgorithmById } from "./algorithms/registry";
 import CanvasControlsHint from "../shared/CanvasControlsHint";
 import { usePixelSampler } from "./hooks/usePixelSampler";
@@ -33,7 +34,27 @@ export default function CanvasWorkspace() {
         featureGroupVisibility,
         overlayVisibility,
         overlayToggles,
-    } = useEditorStore();
+    } = useEditorStore(useShallow((s) => ({
+        imageSrc: s.imageSrc,
+        imageWidth: s.imageWidth,
+        imageHeight: s.imageHeight,
+        zoom: s.zoom,
+        pan: s.pan,
+        setZoom: s.setZoom,
+        setPan: s.setPan,
+        setImage: s.setImage,
+        activeTool: s.activeTool,
+        features: s.features,
+        addFeature: s.addFeature,
+        updateFeature: s.updateFeature,
+        selectedFeatureId: s.selectedFeatureId,
+        setSelectedFeatureId: s.setSelectedFeatureId,
+        showFeatures: s.showFeatures,
+        lastAlgorithmResult: s.lastAlgorithmResult,
+        featureGroupVisibility: s.featureGroupVisibility,
+        overlayVisibility: s.overlayVisibility,
+        overlayToggles: s.overlayToggles,
+    })));
 
     const [image] = useImage(imageSrc || "", "anonymous");
     const stageRef = useRef<Konva.Stage | null>(null);
@@ -89,16 +110,16 @@ export default function CanvasWorkspace() {
     /* ── Effects ── */
 
     useEffect(() => {
-        const handleResize = () => {
-            if (!containerRef.current) return;
+        const el = containerRef.current;
+        if (!el) return;
+        const observer = new ResizeObserver(() => {
             setContainerSize({
-                width: containerRef.current.clientWidth,
-                height: containerRef.current.clientHeight,
+                width: el.clientWidth,
+                height: el.clientHeight,
             });
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
+        });
+        observer.observe(el);
+        return () => observer.disconnect();
     }, []);
 
     useEffect(() => {
@@ -166,7 +187,7 @@ export default function CanvasWorkspace() {
         drawingMouseDown(event);
     };
 
-    const handleTransformEnd = (event: Konva.KonvaEventObject<Event>) => {
+    const handleTransformEnd = useCallback((event: Konva.KonvaEventObject<Event>) => {
         const node = event.target as Konva.Node;
         if (!selectedFeatureId) return;
 
@@ -199,16 +220,16 @@ export default function CanvasWorkspace() {
                 rotation: node.rotation(),
             });
         }
-    };
+    }, [selectedFeatureId, features, updateFeature]);
 
-    const handleDirectedPointHover = (feature: DirectedPointTooltipState["feature"], event: Konva.KonvaEventObject<MouseEvent>) => {
+    const handleDirectedPointHover = useCallback((feature: DirectedPointTooltipState["feature"], event: Konva.KonvaEventObject<MouseEvent>) => {
         const stage = event.target.getStage();
         const pointer = stage?.getPointerPosition();
         if (!pointer) return;
         setHoveredDirectedPoint({ feature, left: pointer.x + 12, top: pointer.y + 12 });
-    };
+    }, []);
 
-    const clearDirectedPointHover = () => setHoveredDirectedPoint(null);
+    const clearDirectedPointHover = useCallback(() => setHoveredDirectedPoint(null), []);
 
     /* ── Render ── */
 

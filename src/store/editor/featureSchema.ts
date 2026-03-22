@@ -78,6 +78,32 @@ const directedPointFeatureSchema = baseFeatureSchema.extend({
     orientationRad: z.number().optional(),
 });
 
+const ringMarkerEllipseSchema = z.object({
+    cx: z.number(),
+    cy: z.number(),
+    a: z.number(),
+    b: z.number(),
+    angleDeg: z.number(),
+});
+
+const ringMarkerFeatureSchema = baseFeatureSchema.extend({
+    type: z.literal("ring_marker"),
+    x: z.number(),
+    y: z.number(),
+    outerEllipse: ringMarkerEllipseSchema,
+    innerEllipse: ringMarkerEllipseSchema,
+});
+
+const arucoMarkerFeatureSchema = baseFeatureSchema.extend({
+    type: z.literal("aruco_marker"),
+    x: z.number(),
+    y: z.number(),
+    corners: z.tuple([
+        z.number(), z.number(), z.number(), z.number(),
+        z.number(), z.number(), z.number(), z.number(),
+    ]),
+});
+
 export const featureSchema = z.discriminatedUnion("type", [
     pointFeatureSchema,
     lineFeatureSchema,
@@ -86,6 +112,8 @@ export const featureSchema = z.discriminatedUnion("type", [
     bboxFeatureSchema,
     ellipseFeatureSchema,
     directedPointFeatureSchema,
+    ringMarkerFeatureSchema,
+    arucoMarkerFeatureSchema,
 ]);
 
 export const featuresArraySchema = z.array(featureSchema);

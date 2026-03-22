@@ -1,5 +1,14 @@
 ## [Unreleased]
 
+- refactor(FE-008): split content manifest into metadata index + per-slug lazy chunks for blog/algorithm pages
+- perf(FE-009): add Zustand shallow selectors to all 9 useEditorStore call sites to prevent unnecessary re-renders
+- perf(FE-010): conditionally load mermaid only when blog content contains mermaid code blocks
+- fix(FE-011): replace unsafe `as unknown as Feature` cast with Zod schema validation in normalizeImportedFeatures
+- perf(FE-012): replace window resize listener with ResizeObserver in CanvasWorkspace
+- perf(FE-013): memoize FeatureLayer with React.memo and stabilize callback refs with useCallback
+- test(FE-014): add 13 tests for store actions (replaceAlgorithmFeatures, normalizeImportedFeatures) and feature schemas (ring_marker, aruco_marker)
+- a11y(FE-015): add skip-to-content link and main landmark id
+
 - fix(BE-001): wrap Content-Length parsing in try/except to return 400 on malformed headers instead of crashing
 - fix(BE-002): add byte-size guard in `_decode_grayscale_image` before CV processing
 - fix(BE-003): move `load_dotenv()` before `_configure_logging()` so .env LOG_FORMAT/LOG_LEVEL are respected

@@ -24,8 +24,14 @@ function AppLayout() {
 
     return (
         <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
+            <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm focus:font-medium focus:shadow-lg"
+            >
+                Skip to content
+            </a>
             <Navbar />
-            <main className="flex-1">
+            <main id="main-content" className="flex-1">
                 <Suspense fallback={<div className="flex-1 flex items-center justify-center py-32"><div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>}>
                     <Routes>
                         <Route path="/" element={<Home />} />

@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 
 import { useEditorStore, type OverlayToggles, type PanelMode } from "../../../store/editor/useEditorStore";
+import { useShallow } from "zustand/react/shallow";
 import { getAlgorithmById } from "../algorithms/registry";
 
 import ConfigurePanel from "./ConfigurePanel";
@@ -46,7 +47,10 @@ const TOGGLE_ITEMS: { key: keyof OverlayToggles; label: string }[] = [
 ];
 
 function OverlayTogglePanel() {
-    const { overlayToggles, setOverlayToggle } = useEditorStore();
+    const { overlayToggles, setOverlayToggle } = useEditorStore(useShallow((s) => ({
+        overlayToggles: s.overlayToggles,
+        setOverlayToggle: s.setOverlayToggle,
+    })));
 
     return (
         <div className="flex flex-wrap gap-1.5">
@@ -71,7 +75,11 @@ function OverlayTogglePanel() {
 /* ── main panel ──────────────────────────────────────────────── */
 
 export default function EditorRightPanel() {
-    const { panelMode, setPanelMode, lastAlgorithmResult } = useEditorStore();
+    const { panelMode, setPanelMode, lastAlgorithmResult } = useEditorStore(useShallow((s) => ({
+        panelMode: s.panelMode,
+        setPanelMode: s.setPanelMode,
+        lastAlgorithmResult: s.lastAlgorithmResult,
+    })));
     const [width, setWidth] = useState(DEFAULT_WIDTH);
     const isDragging = useRef(false);
 

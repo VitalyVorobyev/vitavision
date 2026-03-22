@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { featureSchema } from './featureSchema';
 
 export type ToolType = 'SELECT' | 'POINT' | 'LINE' | 'POLYLINE' | 'POLYGON' | 'BBOX' | 'ELLIPSE';
 export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point' | 'ring_marker' | 'aruco_marker';
@@ -184,10 +185,6 @@ export interface RunHistoryEntry {
 
 const MAX_RUN_HISTORY = 20;
 
-const isObjectRecord = (value: unknown): value is Record<string, unknown> => {
-    return typeof value === 'object' && value !== null;
-};
-
 export const normalizeFeature = (feature: Feature): Feature => {
     const source: FeatureSource = feature.source === 'algorithm' ? 'algorithm' : 'manual';
     const readonly = feature.readonly ?? source === 'algorithm';
@@ -204,17 +201,9 @@ export const normalizeImportedFeatures = (value: unknown): Feature[] => {
     }
 
     return value
-        .filter((item): item is Record<string, unknown> => isObjectRecord(item))
-        .filter((item) => typeof item.id === 'string' && typeof item.type === 'string')
-        .map((item) => {
-            const source: FeatureSource = item.source === 'algorithm' ? 'algorithm' : 'manual';
-            const readonly = typeof item.readonly === 'boolean' ? item.readonly : source === 'algorithm';
-            return ({
-                ...item,
-                source,
-                readonly,
-            } as unknown) as Feature;
-        });
+        .map((item) => featureSchema.safeParse(item))
+        .filter((result): result is { success: true; data: Feature } => result.success)
+        .map((result) => normalizeFeature(result.data as Feature));
 };
 
 export const isReadonlyFeature = (feature: Feature): boolean => {

@@ -9,6 +9,7 @@ import SeoHead from "../components/seo/SeoHead.tsx";
 import EditorRightPanel from "../components/editor/panels/EditorRightPanel";
 import Tooltip from "../components/ui/Tooltip";
 import { useEditorStore, type OverlayVisibilityKey, type ToolType } from "../store/editor/useEditorStore";
+import { useShallow } from "zustand/react/shallow";
 import { readDeepLink } from "../hooks/useEditorDeepLink";
 import {
     ChevronDown,
@@ -73,7 +74,10 @@ const TOOL_BUTTON =
 /* ── sub-components ──────────────────────────────────────────── */
 
 function OverlayVisibilityPopover() {
-    const { overlayVisibility, setOverlayVisibility } = useEditorStore();
+    const { overlayVisibility, setOverlayVisibility } = useEditorStore(useShallow((s) => ({
+        overlayVisibility: s.overlayVisibility,
+        setOverlayVisibility: s.setOverlayVisibility,
+    })));
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
@@ -144,7 +148,21 @@ export default function Editor() {
         setImage,
         setFeatures,
         imageSrc,
-    } = useEditorStore();
+    } = useEditorStore(useShallow((s) => ({
+        activeTool: s.activeTool,
+        setActiveTool: s.setActiveTool,
+        zoom: s.zoom,
+        setZoom: s.setZoom,
+        setPan: s.setPan,
+        imageWidth: s.imageWidth,
+        imageHeight: s.imageHeight,
+        galleryMode: s.galleryMode,
+        setGalleryMode: s.setGalleryMode,
+        galleryImages: s.galleryImages,
+        setImage: s.setImage,
+        setFeatures: s.setFeatures,
+        imageSrc: s.imageSrc,
+    })));
     const [annotationToolsOpen, setAnnotationToolsOpen] = useState(false);
     const [searchParams] = useSearchParams();
     const deepLinkApplied = useRef(false);

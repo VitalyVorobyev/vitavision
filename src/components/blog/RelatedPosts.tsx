@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { blogPosts, algorithmPages } from "../../generated/content-manifest.ts";
+import { blogPosts, algorithmPages } from "../../generated/content-index.ts";
 
 interface RelatedPostsProps {
     slugs?: string[];

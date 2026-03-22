@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
-import { useRef } from "react";
-import { algorithmPages } from "../generated/content-manifest.ts";
+import { useEffect, useRef, useState } from "react";
+import { algorithmPages } from "../generated/content-index.ts";
 import TagBadge from "../components/blog/TagBadge.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import { useMermaid } from "../hooks/useMermaid.ts";
@@ -8,11 +8,28 @@ import RelatedPosts from "../components/blog/RelatedPosts.tsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
 import { proseClasses } from "../lib/prose-classes";
 
+const algoHtmlLoaders = (typeof import.meta.glob === "function"
+    ? import.meta.glob("../generated/content/algorithms/*.ts")
+    : {}) as Record<string, () => Promise<{ html: string }>>;
+
 export default function AlgorithmPost() {
     const { slug } = useParams<{ slug: string }>();
     const page = algorithmPages.find((p) => p.slug === slug);
     const articleRef = useRef<HTMLElement>(null);
-    useMermaid(articleRef, [page?.html]);
+    const [html, setHtml] = useState<string | null>(null);
+    useMermaid(articleRef, [html]);
+
+    useEffect(() => {
+        if (!slug) return;
+        const key = `../generated/content/algorithms/${slug}.ts`;
+        const loader = algoHtmlLoaders[key];
+        if (!loader) return;
+        let cancelled = false;
+        loader().then((mod) => {
+            if (!cancelled) setHtml(mod.html);
+        });
+        return () => { cancelled = true; };
+    }, [slug]);
 
     if (!page) {
         return (
@@ -33,7 +50,7 @@ export default function AlgorithmPost() {
         );
     }
 
-    const { frontmatter, html } = page;
+    const { frontmatter } = page;
 
     return (
         <div className="max-w-[760px] mx-auto py-16 px-4 sm:px-8 animate-in fade-in">
@@ -62,13 +79,19 @@ export default function AlgorithmPost() {
 
             <div className="border-t border-border mb-10" />
 
-            <ErrorBoundary>
-                <article
-                    ref={articleRef}
-                    className={proseClasses}
-                    dangerouslySetInnerHTML={{ __html: html }}
-                />
-            </ErrorBoundary>
+            {html === null ? (
+                <div className="flex items-center justify-center py-16">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                </div>
+            ) : (
+                <ErrorBoundary>
+                    <article
+                        ref={articleRef}
+                        className={proseClasses}
+                        dangerouslySetInnerHTML={{ __html: html }}
+                    />
+                </ErrorBoundary>
+            )}
 
             <RelatedPosts slugs={frontmatter.relatedPosts} type="blog" />
 

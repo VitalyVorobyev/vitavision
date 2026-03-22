@@ -8,6 +8,7 @@ import {
     isFeatureGroupVisible,
 } from "../../../store/editor/featureGroups";
 import { isReadonlyFeature, useEditorStore, type Feature, type FeatureMeta } from "../../../store/editor/useEditorStore";
+import { useShallow } from "zustand/react/shallow";
 
 /* ── helpers ─────────────────────────────────────────────────── */
 
@@ -251,7 +252,16 @@ export default function FeatureListPanel() {
         deleteFeature,
         featureGroupVisibility,
         setFeatureGroupVisibility,
-    } = useEditorStore();
+    } = useEditorStore(useShallow((s) => ({
+        features: s.features,
+        selectedFeatureId: s.selectedFeatureId,
+        setSelectedFeatureId: s.setSelectedFeatureId,
+        setFeatures: s.setFeatures,
+        clearFeatures: s.clearFeatures,
+        deleteFeature: s.deleteFeature,
+        featureGroupVisibility: s.featureGroupVisibility,
+        setFeatureGroupVisibility: s.setFeatureGroupVisibility,
+    })));
 
     const selectedFeature = features.find((feature) => feature.id === selectedFeatureId) ?? null;
     const selectedFeatureHidden = selectedFeature

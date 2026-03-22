@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Circle, Ellipse, Group, Line, Rect } from "react-konva";
 import type Konva from "konva";
 
@@ -22,7 +23,7 @@ interface FeatureLayerProps {
     onDirectedPointLeave: () => void;
 }
 
-export default function FeatureLayer(props: FeatureLayerProps) {
+export default memo(function FeatureLayer(props: FeatureLayerProps) {
     const {
         features,
         showFeatures,
@@ -253,4 +254,4 @@ export default function FeatureLayer(props: FeatureLayerProps) {
             })}
         </>
     );
-}
+});

@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import type { BlogEntry } from "../../lib/content/schema.ts";
+import type { BlogIndexEntry } from "../../lib/content/schema.ts";
 import TagBadge from "./TagBadge.tsx";
 
 interface PostCardProps {
-    post: BlogEntry;
+    post: BlogIndexEntry;
 }
 
 export default function PostCard({ post }: PostCardProps) {

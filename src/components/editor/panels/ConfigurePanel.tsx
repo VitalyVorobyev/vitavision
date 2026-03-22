@@ -5,6 +5,7 @@ import { LoaderCircle, Sparkles, AlertCircle, Maximize2 } from "lucide-react";
 
 import { useEditorStore } from "../../../store/editor/useEditorStore";
 import type { SampleId } from "../../../store/editor/useEditorStore";
+import { useShallow } from "zustand/react/shallow";
 
 import { ALGORITHM_REGISTRY, getAlgorithmById } from "../algorithms/registry";
 import useAlgorithmRunner, { stageLabel } from "../algorithms/useAlgorithmRunner";
@@ -62,7 +63,17 @@ export default function ConfigurePanel() {
         setPanelMode,
         setLastAlgorithmResult,
         addRunToHistory,
-    } = useEditorStore();
+    } = useEditorStore(useShallow((s) => ({
+        imageSrc: s.imageSrc,
+        imageName: s.imageName,
+        imageSampleId: s.imageSampleId,
+        galleryImages: s.galleryImages,
+        replaceAlgorithmFeatures: s.replaceAlgorithmFeatures,
+        setSelectedFeatureId: s.setSelectedFeatureId,
+        setPanelMode: s.setPanelMode,
+        setLastAlgorithmResult: s.setLastAlgorithmResult,
+        addRunToHistory: s.addRunToHistory,
+    })));
 
     const { initialState, syncToUrl } = useDeepLinkSync();
     const configSampleId: SampleId = imageSrc === null && initialState.sampleId !== null

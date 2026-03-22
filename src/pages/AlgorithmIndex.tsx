@@ -1,12 +1,12 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { algorithmPages } from "../generated/content-manifest.ts";
+import { algorithmPages } from "../generated/content-index.ts";
 import TagBadge from "../components/blog/TagBadge.tsx";
 import TagFilter from "../components/blog/TagFilter.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
-import type { AlgorithmEntry } from "../lib/content/schema.ts";
+import type { AlgorithmIndexEntry } from "../lib/content/schema.ts";
 
-function AlgorithmCard({ entry }: { entry: AlgorithmEntry }) {
+function AlgorithmCard({ entry }: { entry: AlgorithmIndexEntry }) {
     const { slug, frontmatter } = entry;
     return (
         <Link

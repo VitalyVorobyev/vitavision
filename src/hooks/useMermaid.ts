@@ -43,17 +43,20 @@ export function useMermaid(
 
         // Collect mermaid sources — either from original code blocks
         // or from previously rendered diagram wrappers (on re-render).
-        const sources: { node: Element; text: string }[] = [];
+        const codeBlocks = el.querySelectorAll("pre > code.language-mermaid");
+        const diagrams = el.querySelectorAll(".mermaid-diagram");
 
-        el.querySelectorAll("pre > code.language-mermaid").forEach((code) => {
+        // Skip mermaid import entirely if no mermaid content is present
+        if (codeBlocks.length === 0 && diagrams.length === 0) return;
+
+        const sources: { node: Element; text: string }[] = [];
+        codeBlocks.forEach((code) => {
             sources.push({ node: code.parentElement!, text: code.textContent ?? "" });
         });
-        el.querySelectorAll(".mermaid-diagram").forEach((wrapper) => {
+        diagrams.forEach((wrapper) => {
             const src = wrapper.getAttribute("data-mermaid-source");
             if (src) sources.push({ node: wrapper, text: src });
         });
-
-        if (sources.length === 0) return;
 
         let cancelled = false;
 

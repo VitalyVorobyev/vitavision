@@ -30,14 +30,7 @@
 
 | ID | Status | Priority | Type | Title | Role | Notes |
 |----|--------|----------|------|-------|------|-------|
-| FE-008 | todo | P1 | refactor | Split content manifest into index + per-article chunks | Implementer | content-build.ts emits single file with inlined HTML; split into metadata-only index + per-slug lazy chunks so blog listing doesn't force-download all article bodies. |
-| FE-009 | todo | P1 | perf | Add Zustand selectors to useEditorStore calls | Implementer | 9 call sites use `useEditorStore()` without selectors, causing full re-renders on any state change. Use granular selectors with `shallow` equality. Hot paths: CanvasWorkspace, FeatureListPanel. |
-| FE-010 | todo | P1 | perf | Conditional mermaid loading for blog posts | Implementer | Mermaid chunks (~1MB) load on every blog post. Only import mermaid when rendered HTML contains `.mermaid` code blocks. |
-| FE-011 | todo | P2 | fix | Validate imported features with Zod instead of unsafe cast | Implementer | `normalizeImportedFeatures` in useEditorStore.ts:216 uses `as unknown as Feature`. Validate against existing Zod schema or check `type` against FeatureType union. |
-| FE-012 | todo | P2 | perf | Use ResizeObserver in CanvasWorkspace | Implementer | CanvasWorkspace uses `window.addEventListener("resize")` which misses container-level resizes. Switch to ResizeObserver on containerRef. |
-| FE-013 | todo | P2 | perf | Memoize FeatureLayer component | Implementer | FeatureLayer re-renders on every mouse move/wheel. Add React.memo with stable callback refs. |
-| FE-014 | todo | P2 | test | Add tests for store actions and API mappers | Implementer | Critical untested: replaceAlgorithmFeatures, normalizeImportedFeatures, camelCase→snake_case mappers in api.ts. |
-| FE-015 | todo | P2 | a11y | Add skip-to-content link and landmark audit | Implementer | No skip-nav link. Blog article content lacks consistent landmark structure. |
+(all moved to Done — see FE-008..FE-015 below)
 
 ## Backlog
 
@@ -49,6 +42,14 @@
 
 | ID | Date | Type | Title | Notes |
 |----|------|------|-------|-------|
+| FE-008 | 2026-03-22 | refactor | Split content manifest into index + per-article chunks | content-index.ts + per-slug lazy imports via import.meta.glob. |
+| FE-009 | 2026-03-22 | perf | Add Zustand selectors to useEditorStore calls | useShallow on all 9 call sites. |
+| FE-010 | 2026-03-22 | perf | Conditional mermaid loading for blog posts | Early return in useMermaid if no mermaid blocks. |
+| FE-011 | 2026-03-22 | fix | Validate imported features with Zod instead of unsafe cast | featureSchema.safeParse + ring_marker/aruco_marker schemas. |
+| FE-012 | 2026-03-22 | perf | Use ResizeObserver in CanvasWorkspace | ResizeObserver on containerRef. |
+| FE-013 | 2026-03-22 | perf | Memoize FeatureLayer component | React.memo + useCallback for stable refs. |
+| FE-014 | 2026-03-22 | test | Add tests for store actions and feature schemas | 13 new tests: replaceAlgorithmFeatures, normalizeImportedFeatures, ring_marker, aruco_marker. |
+| FE-015 | 2026-03-22 | a11y | Add skip-to-content link and landmark audit | Skip-nav + id="main-content" on main element. |
 | FE-001 | 2026-03-21 | feature | Add React Error Boundaries | ErrorBoundary wrapping canvas, config, blog content. |
 | FE-002 | 2026-03-21 | infra | Set up Vitest and add core logic tests | 26 tests for featureSchema + reducer. |
 | FE-003 | 2026-03-21 | enhancement | Replace alert() with sonner toasts | 5 alert() calls replaced. Toaster in App. |

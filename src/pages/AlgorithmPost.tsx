@@ -22,57 +22,39 @@ export default function AlgorithmPost() {
     const page = algorithmPages.find((p) => p.slug === slug);
     const staticContent = useStaticContent();
     const articleRef = useRef<HTMLElement>(null);
-    const [html, setHtml] = useState<string | null>(() => (
-        slug
-            ? staticContent?.algorithmHtmlBySlug?.[slug] ?? readHydratedArticleHtml(slug)
-            : null
-    ));
-    const [loadFailed, setLoadFailed] = useState(false);
+
+    // Resolve content synchronously from SSR context or hydrated DOM.
+    const syncHtml = slug
+        ? staticContent?.algorithmHtmlBySlug?.[slug] ?? readHydratedArticleHtml(slug)
+        : null;
+
+    // Async loading state — reset when slug changes (render-time state reset pattern).
+    const [trackedSlug, setTrackedSlug] = useState(slug);
+    const [asyncHtml, setAsyncHtml] = useState<string | null>(null);
+    const [asyncFailed, setAsyncFailed] = useState(false);
+    if (slug !== trackedSlug) {
+        setTrackedSlug(slug);
+        setAsyncHtml(null);
+        setAsyncFailed(false);
+    }
+
+    const html = syncHtml ?? asyncHtml;
+    const loadFailed = html === null && (!slug || !(slug in algorithmHtmlLoaders) || asyncFailed);
+
     useMermaid(articleRef, [html]);
 
+    // Load content asynchronously when not available from SSR or hydration.
     useEffect(() => {
-        if (!slug) {
-            setHtml(null);
-            setLoadFailed(true);
-            return;
-        }
-
-        const initialHtml = staticContent?.algorithmHtmlBySlug?.[slug] ?? readHydratedArticleHtml(slug);
-        if (initialHtml !== null) {
-            setHtml(initialHtml);
-            setLoadFailed(false);
-            return;
-        }
-
+        if (syncHtml !== null || !slug) return;
         const loader = algorithmHtmlLoaders[slug];
-        if (!loader) {
-            setHtml(null);
-            setLoadFailed(true);
-            return;
-        }
+        if (!loader) return;
 
         let cancelled = false;
-        setHtml(null);
-        setLoadFailed(false);
-
         loader()
-            .then((mod) => {
-                if (!cancelled) {
-                    setHtml(mod.html);
-                    setLoadFailed(false);
-                }
-            })
-            .catch(() => {
-                if (!cancelled) {
-                    setHtml(null);
-                    setLoadFailed(true);
-                }
-            });
-
-        return () => {
-            cancelled = true;
-        };
-    }, [slug, staticContent]);
+            .then((mod) => { if (!cancelled) setAsyncHtml(mod.html); })
+            .catch(() => { if (!cancelled) setAsyncFailed(true); });
+        return () => { cancelled = true; };
+    }, [slug, syncHtml]);
 
     if (!page) {
         return (

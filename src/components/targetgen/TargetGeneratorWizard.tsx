@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Eye, EyeOff, TriangleAlert } from "lucide-react";
 
 import TargetTypeSelector from "./panels/TargetTypeSelector";
@@ -109,10 +109,6 @@ export default function TargetGeneratorWizard({
 }) {
     const [activeStep, setActiveStep] = useState<TargetGeneratorStep>("target");
     const [previewOpen, setPreviewOpen] = useState(!isPhone);
-
-    useEffect(() => {
-        setPreviewOpen(!isPhone);
-    }, [isPhone]);
 
     const activeIndex = STEPS.findIndex((step) => step.key === activeStep);
     const canGoBack = activeIndex > 0;

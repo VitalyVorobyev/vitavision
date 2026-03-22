@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { useEditorStore, type OverlayToggles, type PanelMode } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
@@ -83,15 +83,12 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
     })));
     const [width, setWidth] = useState(DEFAULT_WIDTH);
     const isDragging = useRef(false);
-    const [touchTab, setTouchTab] = useState<TouchPanelTab>(panelMode);
+    const [touchTabOverride, setTouchTabOverride] = useState<"features" | null>(null);
+    const touchTab: TouchPanelTab = touchTabOverride ?? panelMode;
 
     const hasOverlay = lastAlgorithmResult
         ? !!getAlgorithmById(lastAlgorithmResult.algorithmId).OverlayComponent
         : false;
-
-    useEffect(() => {
-        setTouchTab((current) => current === "features" ? current : panelMode);
-    }, [panelMode]);
 
     const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -128,8 +125,10 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
                                 key={key}
                                 type="button"
                                 onClick={() => {
-                                    setTouchTab(key);
-                                    if (key !== "features") {
+                                    if (key === "features") {
+                                        setTouchTabOverride("features");
+                                    } else {
+                                        setTouchTabOverride(null);
                                         setPanelMode(key);
                                     }
                                 }}

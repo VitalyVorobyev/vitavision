@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import type Konva from "konva";
 import type { Feature, ToolType } from "../../../store/editor/useEditorStore";
 
 interface DrawingParams {
     activeTool: ToolType;
+    toolVersion: number;
     addFeature: (feature: Feature) => void;
     setSelectedFeatureId: (id: string | null) => void;
     getRelativePointerPosition: () => { x: number; y: number } | null;
@@ -12,6 +13,7 @@ interface DrawingParams {
 
 export function useDrawingHandlers({
     activeTool,
+    toolVersion,
     addFeature,
     setSelectedFeatureId,
     getRelativePointerPosition,
@@ -21,30 +23,22 @@ export function useDrawingHandlers({
     const [currentBBoxPos, setCurrentBBoxPos] = useState<{ x: number; y: number } | null>(null);
     const [currentBBoxDims, setCurrentBBoxDims] = useState<{ w: number; h: number } | null>(null);
     const [currentLinePos, setCurrentLinePos] = useState<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
+    const [draftToolVersion, setDraftToolVersion] = useState(toolVersion);
 
     const resetDrafts = useCallback(() => {
+        setDraftToolVersion(toolVersion);
         setIsDrawing(false);
         setCurrentLinePoints([]);
         setCurrentBBoxPos(null);
         setCurrentBBoxDims(null);
         setCurrentLinePos(null);
-    }, []);
-
-    useEffect(() => {
-        if (activeTool === "POINT" || activeTool === "SELECT") {
-            setCurrentBBoxPos(null);
-            setCurrentBBoxDims(null);
-            setCurrentLinePos(null);
-        }
-        if (activeTool !== "POLYLINE" && activeTool !== "POLYGON") {
-            setCurrentLinePoints([]);
-            if (activeTool !== "LINE") {
-                setIsDrawing(false);
-            }
-        }
-    }, [activeTool]);
+    }, [toolVersion]);
 
     const updateDrawingOnMove = (pos: { x: number; y: number }) => {
+        if (draftToolVersion !== toolVersion) {
+            return;
+        }
+
         if ((activeTool === "BBOX" || activeTool === "ELLIPSE") && isDrawing && currentBBoxPos) {
             setCurrentBBoxDims({
                 w: pos.x - currentBBoxPos.x,
@@ -64,6 +58,7 @@ export function useDrawingHandlers({
         }
 
         if (activeTool === "BBOX" || activeTool === "ELLIPSE") {
+            setDraftToolVersion(toolVersion);
             setIsDrawing(true);
             setCurrentBBoxPos({ x: pos.x, y: pos.y });
             setCurrentBBoxDims({ w: 0, h: 0 });
@@ -71,6 +66,7 @@ export function useDrawingHandlers({
         }
 
         if (activeTool === "LINE") {
+            setDraftToolVersion(toolVersion);
             setIsDrawing(true);
             setCurrentLinePos({ x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y });
         }
@@ -86,6 +82,10 @@ export function useDrawingHandlers({
     };
 
     const completeDragShape = () => {
+        if (draftToolVersion !== toolVersion) {
+            return;
+        }
+
         if ((activeTool === "BBOX" || activeTool === "ELLIPSE") && isDrawing && currentBBoxPos && currentBBoxDims) {
             setIsDrawing(false);
             const width = Math.abs(currentBBoxDims.w);
@@ -180,15 +180,21 @@ export function useDrawingHandlers({
 
         if (activeTool === "POLYLINE" || activeTool === "POLYGON") {
             if (!isDrawing) {
+                setDraftToolVersion(toolVersion);
                 setIsDrawing(true);
                 setCurrentLinePoints([pos.x, pos.y]);
             } else {
+                setDraftToolVersion(toolVersion);
                 setCurrentLinePoints([...currentLinePoints, pos.x, pos.y]);
             }
         }
     };
 
     const finishCurrentShape = useCallback(() => {
+        if (draftToolVersion !== toolVersion) {
+            return;
+        }
+
         if (activeTool === "POLYLINE" && isDrawing) {
             setIsDrawing(false);
             addFeature({
@@ -213,7 +219,7 @@ export function useDrawingHandlers({
             });
             setCurrentLinePoints([]);
         }
-    }, [activeTool, addFeature, currentLinePoints, isDrawing]);
+    }, [activeTool, addFeature, currentLinePoints, draftToolVersion, isDrawing, toolVersion]);
 
     const handleStageDblClick = (event: Konva.KonvaEventObject<MouseEvent>) => {
         if (event.evt.button !== 0) return;
@@ -221,11 +227,11 @@ export function useDrawingHandlers({
     };
 
     return {
-        isDrawing,
-        currentLinePoints,
-        currentBBoxPos,
-        currentBBoxDims,
-        currentLinePos,
+        isDrawing: draftToolVersion === toolVersion ? isDrawing : false,
+        currentLinePoints: draftToolVersion === toolVersion ? currentLinePoints : [],
+        currentBBoxPos: draftToolVersion === toolVersion ? currentBBoxPos : null,
+        currentBBoxDims: draftToolVersion === toolVersion ? currentBBoxDims : null,
+        currentLinePos: draftToolVersion === toolVersion ? currentLinePos : null,
         updateDrawingOnMove,
         handleStageMouseDown,
         handleStageMouseUp,

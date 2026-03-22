@@ -63,16 +63,15 @@ function NavLinkItem({
 
 export default function Navbar() {
     const location = useLocation();
-    const [mobileOpen, setMobileOpen] = useState(false);
+    const [mobileOpenPath, setMobileOpenPath] = useState<string | null>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
     const navItems = useMemo(
         () => NAV_ITEMS.map((item) => ({ ...item, active: item.active(location.pathname) })),
         [location.pathname],
     );
-
-    useEffect(() => {
-        setMobileOpen(false);
-    }, [location.pathname]);
+    const mobileOpen = mobileOpenPath === location.pathname;
+    const openMobileNav = () => setMobileOpenPath(location.pathname);
+    const closeMobileNav = () => setMobileOpenPath(null);
 
     useEffect(() => {
         if (!mobileOpen) {
@@ -82,7 +81,7 @@ export default function Navbar() {
         const previousOverflow = document.body.style.overflow;
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
-                setMobileOpen(false);
+                closeMobileNav();
             }
         };
 
@@ -120,7 +119,7 @@ export default function Navbar() {
                     <ThemeToggle />
                     <button
                         type="button"
-                        onClick={() => setMobileOpen(true)}
+                        onClick={openMobileNav}
                         className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         aria-label="Open navigation"
                         aria-expanded={mobileOpen}
@@ -137,7 +136,7 @@ export default function Navbar() {
                         type="button"
                         className="absolute inset-0 bg-background/65 backdrop-blur-sm"
                         aria-label="Close navigation"
-                        onClick={() => setMobileOpen(false)}
+                        onClick={closeMobileNav}
                     />
                     <div
                         id="mobile-navigation"
@@ -158,7 +157,7 @@ export default function Navbar() {
                             <button
                                 ref={closeButtonRef}
                                 type="button"
-                                onClick={() => setMobileOpen(false)}
+                                onClick={closeMobileNav}
                                 className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                                 aria-label="Close navigation"
                             >
@@ -171,7 +170,7 @@ export default function Navbar() {
                                 <Link
                                     key={item.to}
                                     to={item.to}
-                                    onClick={() => setMobileOpen(false)}
+                                    onClick={closeMobileNav}
                                     className={`rounded-xl border px-4 py-3 text-sm font-medium transition-colors ${
                                         item.active
                                             ? "border-primary/30 bg-primary/10 text-foreground"

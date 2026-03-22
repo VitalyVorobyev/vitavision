@@ -261,7 +261,7 @@ export function NumberField(props: NumberFieldProps) {
         const handleWheel = (event: WheelEvent) => handleWheelEvent(event);
         el.addEventListener("wheel", handleWheel, { passive: false });
         return () => el.removeEventListener("wheel", handleWheel);
-    }, [handleWheelEvent]);
+    }, []);
 
     const startHold = (deltaSteps: number) => (event: React.PointerEvent<HTMLButtonElement>) => {
         if (disabled) {

@@ -19,6 +19,7 @@ export default function TargetGenerator() {
 
             {isTouchPrimary ? (
                 <TargetGeneratorWizard
+                    key={isPhone ? "phone" : "touch"}
                     state={state}
                     dispatch={dispatch}
                     isPhone={isPhone}

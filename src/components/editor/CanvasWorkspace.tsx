@@ -25,6 +25,7 @@ export default function CanvasWorkspace() {
         setPan,
         setImage,
         activeTool,
+        toolVersion,
         features,
         addFeature,
         updateFeature,
@@ -45,6 +46,7 @@ export default function CanvasWorkspace() {
         setPan: s.setPan,
         setImage: s.setImage,
         activeTool: s.activeTool,
+        toolVersion: s.toolVersion,
         features: s.features,
         addFeature: s.addFeature,
         updateFeature: s.updateFeature,
@@ -100,7 +102,13 @@ export default function CanvasWorkspace() {
         handleStageClick,
         handleStageDblClick,
         finishCurrentShape,
-    } = useDrawingHandlers({ activeTool, addFeature, setSelectedFeatureId, getRelativePointerPosition });
+    } = useDrawingHandlers({
+        activeTool,
+        toolVersion,
+        addFeature,
+        setSelectedFeatureId,
+        getRelativePointerPosition,
+    });
 
     /* ── Derived ── */
 

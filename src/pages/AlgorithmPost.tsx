@@ -1,35 +1,54 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { algorithmPages } from "../generated/content-index.ts";
+import { algorithmHtmlLoaders } from "../generated/algorithm-loaders.ts";
 import TagBadge from "../components/blog/TagBadge.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import { useMermaid } from "../hooks/useMermaid.ts";
 import RelatedPosts from "../components/blog/RelatedPosts.tsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
 import { proseClasses } from "../lib/prose-classes";
-
-const algoHtmlLoaders = (typeof import.meta.glob === "function"
-    ? import.meta.glob("../generated/content/algorithms/*.ts")
-    : {}) as Record<string, () => Promise<{ html: string }>>;
+import { useStaticContent } from "../lib/content/ssr-content.tsx";
 
 export default function AlgorithmPost() {
     const { slug } = useParams<{ slug: string }>();
     const page = algorithmPages.find((p) => p.slug === slug);
+    const staticContent = useStaticContent();
     const articleRef = useRef<HTMLElement>(null);
-    const [html, setHtml] = useState<string | null>(null);
+
+    // Resolve content synchronously from SSR context (postbuild prerender).
+    // On the client useStaticContent() returns null, so the async loader runs instead.
+    const syncHtml = slug
+        ? staticContent?.algorithmHtmlBySlug?.[slug] ?? null
+        : null;
+
+    // Async loading state — reset when slug changes (render-time state reset pattern).
+    const [trackedSlug, setTrackedSlug] = useState(slug);
+    const [asyncHtml, setAsyncHtml] = useState<string | null>(null);
+    const [asyncFailed, setAsyncFailed] = useState(false);
+    if (slug !== trackedSlug) {
+        setTrackedSlug(slug);
+        setAsyncHtml(null);
+        setAsyncFailed(false);
+    }
+
+    const html = syncHtml ?? asyncHtml;
+    const loadFailed = html === null && (!slug || !(slug in algorithmHtmlLoaders) || asyncFailed);
+
     useMermaid(articleRef, [html]);
 
+    // Load content asynchronously when not available from SSR or hydration.
     useEffect(() => {
-        if (!slug) return;
-        const key = `../generated/content/algorithms/${slug}.ts`;
-        const loader = algoHtmlLoaders[key];
+        if (syncHtml !== null || !slug) return;
+        const loader = algorithmHtmlLoaders[slug];
         if (!loader) return;
+
         let cancelled = false;
-        loader().then((mod) => {
-            if (!cancelled) setHtml(mod.html);
-        });
+        loader()
+            .then((mod) => { if (!cancelled) setAsyncHtml(mod.html); })
+            .catch(() => { if (!cancelled) setAsyncFailed(true); });
         return () => { cancelled = true; };
-    }, [slug]);
+    }, [slug, syncHtml]);
 
     if (!page) {
         return (
@@ -80,9 +99,15 @@ export default function AlgorithmPost() {
             <div className="border-t border-border mb-10" />
 
             {html === null ? (
-                <div className="flex items-center justify-center py-16">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                </div>
+                loadFailed ? (
+                    <div className="py-10 text-sm text-muted-foreground">
+                        Algorithm content failed to load.
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center py-16">
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    </div>
+                )
             ) : (
                 <ErrorBoundary>
                     <article

@@ -620,3 +620,73 @@ class TestStorageService:
         # Verify the cache path points to the expected location
         assert cache_path.name == sha
         assert cache_path.parent == tmp_path
+
+
+# ── CV / Ringgrid ─────────────────────────────────────────────────────────────
+
+
+def test_ringgrid_detect_basic():
+    png = _sample_bytes("ringgrid.png")
+    key = _content_addressed_key(png)
+    _upload(key, png)
+
+    resp = client.post(
+        "/api/v1/cv/ringgrid/detect",
+        json={
+            "key": key,
+            "storage_mode": "local",
+            "board": {
+                "rows": 15,
+                "long_row_cols": 14,
+                "pitch_mm": 8.0,
+                "marker_outer_radius_mm": 5.6,
+                "marker_inner_radius_mm": 3.2,
+                "marker_ring_width_mm": 0.8,
+            },
+        },
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "success"
+    assert body["storage_mode"] == "local"
+    assert isinstance(body["markers"], list)
+    assert body["summary"]["marker_count"] == len(body["markers"])
+
+
+def test_ringgrid_detect_missing_key_returns_404():
+    fake_sha = "f" * 64
+    resp = client.post(
+        "/api/v1/cv/ringgrid/detect",
+        json={
+            "key": f"uploads/{fake_sha}",
+            "storage_mode": "local",
+            "board": {
+                "rows": 5,
+                "long_row_cols": 5,
+                "pitch_mm": 8.0,
+                "marker_outer_radius_mm": 5.6,
+                "marker_inner_radius_mm": 3.2,
+                "marker_ring_width_mm": 0.8,
+            },
+        },
+    )
+    assert resp.status_code == 404
+
+
+def test_ringgrid_detect_invalid_key_rejected():
+    resp = client.post(
+        "/api/v1/cv/ringgrid/detect",
+        json={
+            "key": "uploads/not-a-hash",
+            "storage_mode": "local",
+            "board": {
+                "rows": 5,
+                "long_row_cols": 5,
+                "pitch_mm": 8.0,
+                "marker_outer_radius_mm": 5.6,
+                "marker_inner_radius_mm": 3.2,
+                "marker_ring_width_mm": 0.8,
+            },
+        },
+    )
+    assert resp.status_code == 422

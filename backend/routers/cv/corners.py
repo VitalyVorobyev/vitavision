@@ -13,7 +13,7 @@ from fastapi import APIRouter, HTTPException, Request
 from limiter import limiter
 from services import storage_service
 
-from ._shared import CV_TIMEOUT_SECONDS, decode_grayscale_image
+from ._shared import CV_TIMEOUT_SECONDS, cv_executor, decode_grayscale_image
 from .models import (
     ChessDetectorConfigOverrides,
     ChessCornersRequest,
@@ -129,7 +129,9 @@ async def detect_chess_corners(request: Request, payload: ChessCornersRequest):
     started = time.perf_counter()
     try:
         corners_raw = await asyncio.wait_for(
-            loop.run_in_executor(None, functools.partial(detect_fn, image_u8, cfg)),
+            loop.run_in_executor(
+                cv_executor, functools.partial(detect_fn, image_u8, cfg)
+            ),
             timeout=CV_TIMEOUT_SECONDS,
         )
     except TimeoutError:

@@ -11,6 +11,7 @@ from services import storage_service
 
 from ._shared import (
     CV_TIMEOUT_SECONDS,
+    cv_executor,
     decode_grayscale_image,
     finite_float,
     frame_point_from_pair,
@@ -144,7 +145,7 @@ async def detect_ringgrid(request: Request, payload: RinggridDetectRequest):
     try:
         result = await asyncio.wait_for(
             loop.run_in_executor(
-                None,
+                cv_executor,
                 functools.partial(
                     _run_detection,
                     image_u8,

@@ -114,6 +114,10 @@ async def lifespan(app: FastAPI):
     yield
     if task:
         task.cancel()
+    # Shut down the dedicated CV thread pool so worker threads are joined.
+    from routers.cv._shared import cv_executor
+
+    cv_executor.shutdown(wait=False)
 
 
 app = FastAPI(

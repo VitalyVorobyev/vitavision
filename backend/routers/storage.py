@@ -36,7 +36,7 @@ router = APIRouter(tags=["Storage"])
 class UploadTicketRequest(BaseModel):
     sha256: str = Field(..., pattern=r"^[0-9a-f]{64}$")
     content_type: str = Field(default="image/jpeg", min_length=1, max_length=128)
-    size: int | None = Field(default=None, gt=0)
+    size: int = Field(..., gt=0)
     storage_mode: Literal["r2", "local"] | None = None
 
     @field_validator("content_type")
@@ -76,7 +76,7 @@ class LocalUploadResponse(BaseModel):
 @limiter.limit("20/minute")
 async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
     max_bytes = storage_service.max_upload_bytes()
-    if payload.size is not None and payload.size > max_bytes:
+    if payload.size > max_bytes:
         raise HTTPException(
             status_code=413,
             detail=f"Declared size {payload.size} exceeds limit of {max_bytes} bytes",
@@ -103,11 +103,14 @@ async def create_upload_ticket(request: Request, payload: UploadTicketRequest):
             expires_in_seconds=0,
         )
 
-    upload_headers = {"Content-Type": payload.content_type}
+    upload_headers: dict[str, str] = {"Content-Type": payload.content_type}
 
     if storage_mode == "r2":
         expires = storage_service.presign_expiry_seconds()
-        upload_url = storage_service.create_r2_upload_url(key, payload.content_type)
+        upload_url = storage_service.create_r2_upload_url(
+            key, payload.content_type, payload.size
+        )
+        upload_headers["Content-Length"] = str(payload.size)
         preview_url = storage_service.build_r2_public_url(key)
     else:
         expires = 0

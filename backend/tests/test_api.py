@@ -80,7 +80,7 @@ def test_upload_ticket_returns_local_descriptor():
     sha = _sha256_hex(png)
     resp = client.post(
         "/api/v1/storage/upload-ticket",
-        json={"sha256": sha, "content_type": "image/png", "storage_mode": "local"},
+        json={"sha256": sha, "content_type": "image/png", "size": len(png), "storage_mode": "local"},
     )
     assert resp.status_code == 200
     body = resp.json()
@@ -182,7 +182,7 @@ def test_local_upload_ticket_includes_api_key_header_when_auth_enabled(monkeypat
 
     ticket_resp = client.post(
         "/api/v1/storage/upload-ticket",
-        json={"sha256": sha, "content_type": "image/png", "storage_mode": "local"},
+        json={"sha256": sha, "content_type": "image/png", "size": len(png), "storage_mode": "local"},
         headers={"X-API-Key": "ci-secret"},
     )
     assert ticket_resp.status_code == 200
@@ -331,7 +331,7 @@ class TestApiKeyEnforcement:
         monkeypatch.setattr(auth, "_api_key", "test-secret")
         resp = client.post(
             "/api/v1/storage/upload-ticket",
-            json={"sha256": "a" * 64, "content_type": "image/png"},
+            json={"sha256": "a" * 64, "content_type": "image/png", "size": 1024},
         )
         assert resp.status_code == 401
 
@@ -373,7 +373,7 @@ class TestApiKeyEnforcement:
         sha = _sha256_hex(png)
         resp = client.post(
             "/api/v1/storage/upload-ticket",
-            json={"sha256": sha, "content_type": "image/png", "storage_mode": "local"},
+            json={"sha256": sha, "content_type": "image/png", "size": len(png), "storage_mode": "local"},
             headers={"X-API-Key": "test-secret"},
         )
         assert resp.status_code == 200
@@ -384,7 +384,7 @@ class TestApiKeyEnforcement:
         sha = _sha256_hex(png)
         resp = client.post(
             "/api/v1/storage/upload-ticket",
-            json={"sha256": sha, "content_type": "image/png", "storage_mode": "local"},
+            json={"sha256": sha, "content_type": "image/png", "size": len(png), "storage_mode": "local"},
             headers={"X-API-Key": "wrong-key"},
         )
         assert resp.status_code == 403
@@ -469,7 +469,7 @@ class TestRateLimiting:
         limiter.reset()
         png = _make_checkerboard_png(size=20, cell=10)
         sha = _sha256_hex(png)
-        payload = {"sha256": sha, "content_type": "image/png", "storage_mode": "local"}
+        payload = {"sha256": sha, "content_type": "image/png", "size": len(png), "storage_mode": "local"}
 
         for _ in range(20):
             resp = client.post("/api/v1/storage/upload-ticket", json=payload)

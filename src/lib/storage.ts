@@ -5,7 +5,7 @@ export type StorageMode = "r2" | "local";
 export interface UploadTicketRequest {
     sha256: string;
     contentType: string;
-    size?: number;
+    size: number;
     storageMode?: StorageMode;
 }
 

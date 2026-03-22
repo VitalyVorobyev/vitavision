@@ -255,7 +255,12 @@ def local_media_type_for_key(key: str) -> str:
     return guessed or "application/octet-stream"
 
 
-def create_r2_upload_url(key: str, content_type: str) -> str:
+def create_r2_upload_url(key: str, content_type: str, content_length: int) -> str:
+    """Generate a presigned PUT URL with ContentLength signed into the signature.
+
+    R2/S3 will reject the upload if the actual Content-Length header doesn't
+    match the value baked into the URL, preventing oversized uploads.
+    """
     client = _r2_client()
     try:
         return client.generate_presigned_url(
@@ -264,6 +269,7 @@ def create_r2_upload_url(key: str, content_type: str) -> str:
                 "Bucket": bucket_name(),
                 "Key": key,
                 "ContentType": content_type,
+                "ContentLength": content_length,
             },
             ExpiresIn=presign_expiry_seconds(),
         )

@@ -85,11 +85,13 @@ def check_api_auth(cfg: TargetConfig) -> list[CheckResult]:
         # Test without API key — expect 401
         for method, path, body in endpoints:
             name = f"api-auth-no-key-{path.split('/')[-1]}"
+            check_sev = sev
             try:
                 resp = client.request(method, f"{cfg.api_url}{path}", json=body)
                 if resp.status_code == 429:
-                    passed = True
-                    msg = f"{method} {path} returns 429 (rate-limited — auth not testable)"
+                    passed = False
+                    check_sev = "info"
+                    msg = f"{method} {path} returns 429 (rate-limited — auth inconclusive)"
                 else:
                     passed = resp.status_code == 401
                     msg = f"{method} {path} returns {resp.status_code} without API key"
@@ -98,10 +100,11 @@ def check_api_auth(cfg: TargetConfig) -> list[CheckResult]:
             except httpx.RequestError as exc:
                 passed = False
                 msg = f"{method} {path} request failed: {exc}"
-            results.append(CheckResult(name, cat, passed, msg, sev))
+            results.append(CheckResult(name, cat, passed, msg, check_sev))
 
         # Test with wrong API key — expect 403
         name = "api-auth-wrong-key"
+        check_sev = sev
         try:
             resp = client.post(
                 f"{cfg.api_url}/api/v1/storage/upload-ticket",
@@ -109,8 +112,9 @@ def check_api_auth(cfg: TargetConfig) -> list[CheckResult]:
                 headers={"X-API-Key": "invalid-probe-key-00000"},
             )
             if resp.status_code == 429:
-                passed = True
-                msg = "POST /upload-ticket returns 429 (rate-limited before auth — auth likely ok)"
+                passed = False
+                check_sev = "info"
+                msg = "POST /upload-ticket returns 429 (rate-limited — auth inconclusive)"
             else:
                 passed = resp.status_code == 403
                 msg = f"POST /upload-ticket returns {resp.status_code} with invalid key"
@@ -119,7 +123,7 @@ def check_api_auth(cfg: TargetConfig) -> list[CheckResult]:
         except httpx.RequestError as exc:
             passed = False
             msg = f"Request failed: {exc}"
-        results.append(CheckResult(name, cat, passed, msg, sev))
+        results.append(CheckResult(name, cat, passed, msg, check_sev))
 
     return results
 

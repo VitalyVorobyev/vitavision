@@ -41,7 +41,12 @@
 | SEC-004 | done | P1 | security | Create public/_headers for Cloudflare Pages | Security headers + CSP as HTTP headers |
 | SEC-005 | done | P1 | security | Validate upload size in upload-ticket endpoint | Reject size > MAX_UPLOAD_BYTES with 413 |
 | SEC-006 | todo | P2 | security | Remove style-src unsafe-inline from CSP | Replace with hashes via vite-plugin-csp |
-| SEC-007 | todo | P3 | security | Add /.well-known/security.txt | Contact info for vulnerability reports |
+| SEC-007 | done | P3 | security | Add /.well-known/security.txt | Contact info for vulnerability reports |
+| SEC-008 | todo | P2 | security | Add CSP to subdomains | annotation, pong, scene3d have no CSP at all (separate repos) |
+| SEC-009 | done | P3 | security | Remove Via header from API responses | Caddyfile `-Via` directive; confirmed by live verification |
+| SEC-010 | done | P3 | security | Fix CORS credentials header for rejected origins | Set `allow_credentials=False` — API uses header auth, not cookies |
+| SEC-011 | todo | P3 | security | Resolve Cloudflare beacon CSP violation | Add to CSP or disable Cloudflare Web Analytics |
+| SEC-012 | done | P1 | security | Post-deployment security verification tool | scripts/verify-deployment.py — checks auth, headers, TLS, DNS |
 
 ## API / Interface Tracking
 

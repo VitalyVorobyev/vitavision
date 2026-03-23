@@ -1,0 +1,3 @@
+Contact: https://github.com/VitalyVorobyev/vitavision/issues
+Preferred-Languages: en, ru
+Canonical: https://vitavision.dev/.well-known/security.txt

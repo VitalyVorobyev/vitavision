@@ -94,9 +94,39 @@ backend/
 ```
 
 ### Security Model
-- **Auth**: All `/api/v1/*` require `X-API-Key` matching `API_KEY` env var. Unset = auth disabled (dev only).
-- **Rate limiting**: Per-IP via slowapi — CV endpoints 10/min, storage 20–60/min.
-- **Upload size**: 50 MB hard cap in middleware + endpoint; configurable via `MAX_UPLOAD_BYTES`.
-- **Supply chain**: Base images pinned to patch versions; production deploys by image digest, not tag.
+
+#### Authentication & Authorization
+- **API key**: All `/api/v1/*` routes require `X-API-Key` header matching `API_KEY` env var. Comparison uses `hmac.compare_digest` (timing-safe). Unset `API_KEY` = auth disabled (dev only).
+- **Startup guard** (`auth.py`): refuses to start when `CORS_ORIGINS` contains non-loopback origins and `API_KEY` is unset.
 - **Frontend key**: `VITE_API_KEY` is baked into the bundle (visible in source) — acceptable for a personal app.
-- **Open items**: See `SECURITY_TASKS.md` (gitignored) for remaining P2/P3 tasks.
+
+#### Rate Limiting
+- Per-IP via slowapi: CV endpoints 10/min, storage upload 20/min, storage read 60/min.
+
+#### Upload Security
+- 50 MB hard cap enforced in three layers: middleware (`Content-Length`), endpoint (declared `size`), and R2 presigned URL (`ContentLength` in signature).
+- Content-type whitelist: only `image/bmp`, `image/gif`, `image/jpeg`, `image/png`, `image/tiff`, `image/webp`.
+- Image magic-byte validation via `is_image_bytes()`.
+- Pixel-count limit: `MAX_IMAGE_PIXELS=64000000` + Pillow `DecompressionBombError` guard.
+
+#### HTTP Security Headers
+- **Backend** (`main.py` middleware): `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`, `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'`.
+- **Frontend** (`public/_headers`): HSTS, nosniff, DENY, Referrer-Policy, Permissions-Policy, full CSP with script SHA-256 hash and `frame-ancestors 'none'`.
+- **Caddy** (reverse proxy, not in this repo): adds HSTS, nosniff, Referrer-Policy, strips `Server` and `Via` headers.
+
+#### Infrastructure
+- **Caddy** reverse proxies to FastAPI on the backend server. Caddyfile is managed outside this repo on the deploy host.
+- **Cloudflare Pages** serves the frontend. Security headers come from `public/_headers`.
+- **Cloudflare edge**: HSTS, minimum TLS 1.2, Always Use HTTPS — configured in dashboard, not code.
+- **Supply chain**: base Docker images pinned to patch versions; production deploys by image digest.
+- Swagger UI / ReDoc / OpenAPI spec disabled when `API_KEY` is set (`docs_url=None`).
+
+#### Security Verification
+- Run `python scripts/verify-deployment.py` after each deploy to verify auth, headers, TLS, and DNS on the live site. See `--help` for options.
+- Security backlog items use `SEC-NNN` IDs in `docs/backlog.md`.
+
+#### When Modifying Security-Sensitive Code
+When changing auth, middleware, upload validation, CORS, CSP, or storage:
+1. Ensure `backend/tests/test_api.py` covers the change (auth enforcement, header presence, rate limits).
+2. Run the full verification checklist (see Commands above).
+3. After deploy, run `scripts/verify-deployment.py` against the live site.

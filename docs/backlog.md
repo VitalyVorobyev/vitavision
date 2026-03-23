@@ -42,6 +42,11 @@
 | SEC-005 | done | P1 | security | Validate upload size in upload-ticket endpoint | Reject size > MAX_UPLOAD_BYTES with 413 |
 | SEC-006 | todo | P2 | security | Remove style-src unsafe-inline from CSP | Replace with hashes via vite-plugin-csp |
 | SEC-007 | todo | P3 | security | Add /.well-known/security.txt | Contact info for vulnerability reports |
+| SEC-008 | todo | P2 | security | Add CSP to subdomains | annotation, pong, scene3d have no CSP at all |
+| SEC-009 | todo | P3 | security | Remove Via header from API responses | `via: 1.1 Caddy` leaks reverse proxy info |
+| SEC-010 | todo | P3 | security | Fix CORS credentials header for rejected origins | `access-control-allow-credentials: true` sent even without Allow-Origin |
+| SEC-011 | todo | P3 | security | Resolve Cloudflare beacon CSP violation | Add to CSP or disable Cloudflare Web Analytics |
+| SEC-012 | done | P1 | security | Post-deployment security verification tool | scripts/verify-deployment.py — checks auth, headers, TLS, DNS |
 
 ## API / Interface Tracking
 

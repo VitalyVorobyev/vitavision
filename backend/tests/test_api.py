@@ -551,6 +551,9 @@ def test_security_headers_present():
     assert resp.headers["X-Frame-Options"] == "DENY"
     assert resp.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
     assert "camera=()" in resp.headers["Permissions-Policy"]
+    assert resp.headers["Content-Security-Policy"] == (
+        "default-src 'none'; frame-ancestors 'none'; base-uri 'none'"
+    )
 
 
 def test_request_id_generated():

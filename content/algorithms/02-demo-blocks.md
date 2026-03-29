@@ -1,19 +1,21 @@
 ---
-title: "Rich Content Demo: Semantic Blocks, Math, and Code"
-date: 2026-03-22
-summary: "A demonstration of all supported content features including semantic blocks, math rendering, syntax highlighting, and typography."
-tags: ["meta", "demo"]
+title: "Rich Algorithm Content Demo"
+date: 2026-03-29
+summary: "A draft algorithm page that exercises semantic blocks, math, diagrams, code, and related-link metadata."
+tags: ["meta", "demo", "authoring"]
 author: "Vitaly Vorobyev"
 draft: true
+relatedPosts: ["00-intro"]
+relatedAlgorithms: ["harris-corner-detector"]
 ---
 
-This article demonstrates every content feature supported by the Vitavision blog pipeline. It serves as both a visual test and an authoring reference.
+This draft algorithm page mirrors the rich markdown feature coverage of the blog pipeline so the `/algorithms/*` route is exercised with the same authoring tools. It also provides explicit internal links to [the intro post](/blog/00-intro) and [the Harris detector page](/algorithms/harris-corner-detector).
 
 ## Typography Basics
 
 Body text is rendered in Source Serif 4 at 18px with a line height of 1.75. This creates comfortable reading rhythm for technical prose. The maximum line width is constrained to approximately 68 characters, which is optimal for sustained reading.
 
-Paragraphs have generous spacing between them. **Bold text** stands out clearly, while *italic text* provides subtle emphasis. Links like [this one](/blog) use a steel blue color with a subtle underline that becomes more prominent on hover.
+Paragraphs have generous spacing between them. **Bold text** stands out clearly, while *italic text* provides subtle emphasis. Links like [the algorithms index](/algorithms) use a steel blue color with a subtle underline that becomes more prominent on hover.
 
 ### Heading Hierarchy
 
@@ -64,7 +66,7 @@ $$
 \epsilon_i = \|x_i' - \hat{x}_i'\|^2 = \left\|x_i' - \frac{H x_i}{\mathbf{e}_3^\top H x_i}\right\|^2
 $$
 
-Equation \eqref{eq:dlt-system} is the linear system solved in Direct Linear Transform, and \ref{eq:dlt-system} is where the homogeneous constraint first appears in this article.
+Equation \eqref{eq:dlt-system} is the linear system solved in Direct Linear Transform, and \ref{eq:dlt-system} is where the homogeneous constraint first appears on the algorithm route.
 
 $$
 A\mathbf{h} = 0
@@ -215,4 +217,4 @@ graph TD
     F --> G[Image Warping]
 ```
 
-This concludes the content feature demonstration.
+This concludes the content feature demonstration for algorithm pages.

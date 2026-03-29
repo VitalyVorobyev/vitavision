@@ -43,6 +43,22 @@
     margin-bottom: 0;
 }
 
+.vv-embed {
+    margin-block: 2rem;
+}
+
+.vv-embed__fallback {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border: 1px dashed hsl(var(--border));
+    border-radius: 0.75rem;
+    background: hsl(var(--surface));
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: hsl(var(--muted-foreground));
+}
+
 /* --------------------------------------------------------------------------
    Group A: Formal math — theorem, lemma, proposition, statement
    -------------------------------------------------------------------------- */
@@ -359,6 +375,31 @@ article .katex-display {
     padding: 0.5rem 0;
 }
 
+article .vv-equation {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    scroll-margin-top: 5rem;
+}
+
+article .vv-equation__body {
+    min-width: 0;
+}
+
+article .vv-equation__number {
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+article .vv-equation .katex-display {
+    margin: 0;
+}
+
 article .katex {
     font-size: 1.1em;
 }
@@ -366,4 +407,15 @@ article .katex {
 /* Ensure KaTeX respects article text color */
 .dark article .katex {
     color: hsl(var(--article-body));
+}
+
+@media (max-width: 640px) {
+    article .vv-equation {
+        grid-template-columns: 1fr;
+        gap: 0.35rem;
+    }
+
+    article .vv-equation__number {
+        justify-self: end;
+    }
 }

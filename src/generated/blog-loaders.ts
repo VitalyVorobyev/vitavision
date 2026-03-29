@@ -3,4 +3,5 @@ export interface GeneratedHtmlModule { html: string; }
 
 export const blogHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
   "00-intro": () => import("./content/blog/00-intro.ts"),
+  "01-chesscorners": () => import("./content/blog/01-chesscorners.ts"),
 };

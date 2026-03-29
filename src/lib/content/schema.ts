@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-/** Zod schema for blog post frontmatter. */
-export const blogFrontmatterSchema = z.object({
+const publicationFrontmatterBaseObjectSchema = z.object({
     title: z.string().min(1),
     date: z.coerce.date(),
     summary: z.string().min(1),
@@ -12,28 +11,43 @@ export const blogFrontmatterSchema = z.object({
     coverImage: z.string().optional(),
     repoLinks: z.array(z.string().url()).optional(),
     demoLinks: z.array(z.string().url()).optional(),
+});
+
+/** Zod schema for blog post frontmatter. */
+export const blogFrontmatterSchema = publicationFrontmatterBaseObjectSchema.extend({
     relatedAlgorithms: z.array(z.string().min(1)).optional(),
 });
 
 export type BlogFrontmatter = z.infer<typeof blogFrontmatterSchema>;
 
 /** Zod schema for algorithm page frontmatter. */
-export const algorithmFrontmatterSchema = z.object({
-    title: z.string().min(1),
-    summary: z.string().min(1),
-    tags: z.array(z.string().min(1)).min(1),
-    demoLink: z.string().url().optional(),
-    repoLinks: z.array(z.string().url()).optional(),
-    relatedPosts: z.array(z.string().min(1)).optional(),
-});
+export const algorithmFrontmatterSchema = publicationFrontmatterBaseObjectSchema
+    .extend({
+        relatedPosts: z.array(z.string().min(1)).optional(),
+        relatedAlgorithms: z.array(z.string().min(1)).optional(),
+        // Transitional compatibility for older algorithm pages.
+        demoLink: z.string().url().optional(),
+    })
+    .transform(({ demoLink, demoLinks, ...rest }) => ({
+        ...rest,
+        ...(demoLinks
+            ? { demoLinks }
+            : demoLink
+                ? { demoLinks: [demoLink] }
+                : {}),
+    }));
 
 export type AlgorithmFrontmatter = z.infer<typeof algorithmFrontmatterSchema>;
 
-/** Serialized blog frontmatter (dates as ISO strings). */
-export type BlogFrontmatterSerialized = Omit<BlogFrontmatter, "date" | "updated"> & {
+type SerializedFrontmatter<T extends { date: Date; updated?: Date }> =
+    Omit<T, "date" | "updated"> & {
     date: string;
     updated?: string;
 };
+
+/** Serialized blog frontmatter (dates as ISO strings). */
+export type BlogFrontmatterSerialized = SerializedFrontmatter<BlogFrontmatter>;
+export type AlgorithmFrontmatterSerialized = SerializedFrontmatter<AlgorithmFrontmatter>;
 
 /** Index entry for a blog post (no html). Used by listing pages. */
 export interface BlogIndexEntry {
@@ -49,7 +63,7 @@ export interface BlogEntry extends BlogIndexEntry {
 /** Index entry for an algorithm page (no html). Used by listing pages. */
 export interface AlgorithmIndexEntry {
     slug: string;
-    frontmatter: AlgorithmFrontmatter;
+    frontmatter: AlgorithmFrontmatterSerialized;
 }
 
 /** Full algorithm entry including rendered html. */

@@ -10,6 +10,8 @@ import RelatedPosts from "../components/blog/RelatedPosts.tsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
 import { proseClasses } from "../lib/prose-classes";
 import { useStaticContent } from "../lib/content/ssr-content.tsx";
+import { buildBlogJsonLd } from "../lib/content/publication.ts";
+import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.tsx";
 
 export default function BlogPost() {
     const { slug } = useParams<{ slug: string }>();
@@ -37,6 +39,7 @@ export default function BlogPost() {
     const loadFailed = html === null && (!slug || !(slug in blogHtmlLoaders) || asyncFailed);
 
     useMermaid(articleRef, [html]);
+    useArticleIllustrations(articleRef, [html]);
 
     // Load content asynchronously when not available from SSR or hydration.
     useEffect(() => {
@@ -72,17 +75,7 @@ export default function BlogPost() {
 
     const { frontmatter } = post;
 
-    const jsonLd = {
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: frontmatter.title,
-        description: frontmatter.summary,
-        datePublished: frontmatter.date,
-        ...(frontmatter.updated && { dateModified: frontmatter.updated }),
-        author: { "@type": "Person", name: frontmatter.author },
-        ...(frontmatter.coverImage && { image: frontmatter.coverImage }),
-        keywords: frontmatter.tags.join(", "),
-    };
+    const jsonLd = buildBlogJsonLd(frontmatter, slug ?? post.slug);
 
     return (
         <div className="max-w-[760px] mx-auto py-16 px-4 sm:px-8 animate-in fade-in">

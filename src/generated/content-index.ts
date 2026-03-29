@@ -14,7 +14,148 @@ export const blogPosts: BlogIndexEntry[] = [
       "author": "Vitaly Vorobyev",
       "date": "2026-03-22"
     }
+  },
+  {
+    "slug": "01-chesscorners",
+    "frontmatter": {
+      "title": "ChESS Corners Detector",
+      "summary": "A chessboard-specific detector, from sampling geometry to a practical multiscale implementation.",
+      "tags": [
+        "computer-vision",
+        "rust",
+        "calibration",
+        "feature-detection"
+      ],
+      "author": "Vitaly Vorobyev",
+      "repoLinks": [
+        "https://github.com/vitalyvorobyev/chess-corners-rs"
+      ],
+      "relatedAlgorithms": [
+        "chess-corners"
+      ],
+      "date": "2026-03-20"
+    }
   }
 ];
 
-export const algorithmPages: AlgorithmIndexEntry[] = [];
+export const algorithmPages: AlgorithmIndexEntry[] = [
+  {
+    "slug": "fast-corner-detector",
+    "frontmatter": {
+      "title": "FAST Corner Detector",
+      "summary": "A very fast corner detector based on an intensity segment test around a Bresenham circle.",
+      "tags": [
+        "computer-vision",
+        "feature-detection",
+        "tracking",
+        "real-time"
+      ],
+      "author": "Vitaly Vorobyev",
+      "relatedPosts": [
+        "01-chesscorners",
+        "01-chess_ai"
+      ],
+      "relatedAlgorithms": [
+        "harris-corner-detector",
+        "shi-tomasi-corner-detector",
+        "chess-corners"
+      ],
+      "date": "2026-03-29"
+    }
+  },
+  {
+    "slug": "chess-corners",
+    "frontmatter": {
+      "title": "ChESS Corners Detector",
+      "summary": "A chessboard-specific corner detector that scores the X-junction structure of calibration-board intersections.",
+      "tags": [
+        "computer-vision",
+        "feature-detection",
+        "calibration",
+        "chessboard"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "relatedPosts": [
+        "01-chesscorners",
+        "01-chess_ai"
+      ],
+      "relatedAlgorithms": [
+        "harris-corner-detector"
+      ],
+      "date": "2026-03-29"
+    }
+  },
+  {
+    "slug": "shi-tomasi-corner-detector",
+    "frontmatter": {
+      "title": "Shi-Tomasi Corner Detector",
+      "summary": "A corner detector that keeps points whose weakest directional intensity change is still strong.",
+      "tags": [
+        "computer-vision",
+        "feature-detection",
+        "tracking",
+        "calibration"
+      ],
+      "author": "Vitaly Vorobyev",
+      "relatedPosts": [
+        "01-chesscorners",
+        "01-chess_ai"
+      ],
+      "relatedAlgorithms": [
+        "harris-corner-detector",
+        "fast-corner-detector",
+        "chess-corners"
+      ],
+      "date": "2026-03-29"
+    }
+  },
+  {
+    "slug": "harris-corner-detector",
+    "frontmatter": {
+      "title": "Harris Corner Detector",
+      "summary": "A classic local feature detector that scores pixels with strong intensity variation in two independent directions.",
+      "tags": [
+        "computer-vision",
+        "feature-detection",
+        "tracking",
+        "calibration"
+      ],
+      "author": "Vitaly Vorobyev",
+      "relatedPosts": [
+        "01-chesscorners",
+        "01-chess_ai"
+      ],
+      "relatedAlgorithms": [
+        "shi-tomasi-corner-detector",
+        "fast-corner-detector",
+        "chess-corners"
+      ],
+      "date": "2026-03-29"
+    }
+  },
+  {
+    "slug": "chess-response-design",
+    "frontmatter": {
+      "title": "ChESS Response Design",
+      "summary": "An interactive explainer for how SR, DR, MR, and the final ChESS score separate corners from edges and stripes.",
+      "tags": [
+        "computer-vision",
+        "feature-detection",
+        "calibration",
+        "interactive"
+      ],
+      "author": "Vitaly Vorobyev",
+      "relatedPosts": [
+        "01-chesscorners",
+        "01-chess_ai"
+      ],
+      "relatedAlgorithms": [
+        "chess-corners",
+        "harris-corner-detector",
+        "fast-corner-detector"
+      ],
+      "date": "2026-03-29"
+    }
+  }
+];

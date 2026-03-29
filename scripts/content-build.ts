@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync, rmSync } from "node:fs";
 import { join, basename } from "node:path";
 import matter from "gray-matter";
 import { unified } from "unified";
@@ -15,7 +15,10 @@ import { createHighlighter } from "shiki";
 import { visit } from "unist-util-visit";
 import type { Element, Root as HastRoot } from "hast";
 
+import remarkVvEmbeds from "./remark-vv-embeds.ts";
 import remarkVvBlocks from "./remark-vv-blocks.ts";
+import remarkEquationReferences from "./remark-equation-references.ts";
+import rehypeNumberedEquations from "./rehype-numbered-equations.ts";
 import {
     blogFrontmatterSchema,
     algorithmFrontmatterSchema,
@@ -35,9 +38,9 @@ function algoSlug(filename: string): string {
     return basename(filename, ".md");
 }
 
-/** Rewrite relative image paths (./images/*, ../images/*) to /content/images/*. */
+/** Rewrite relative image paths (./images/*, ../images/*, images/*) to /content/images/*. */
 function resolveContentImagePaths(html: string): string {
-    return html.replace(/src="\.{1,2}\/images\//g, 'src="/content/images/');
+    return html.replace(/src="(?:\.{1,2}\/)?images\//g, 'src="/content/images/');
 }
 
 // Extended sanitization schema to allow custom blocks, Shiki, and KaTeX output
@@ -82,8 +85,19 @@ const sanitizeSchema = {
         h4: [...(defaultSchema.attributes?.h4 ?? []), "id"],
         h5: [...(defaultSchema.attributes?.h5 ?? []), "id"],
         h6: [...(defaultSchema.attributes?.h6 ?? []), "id"],
+        p: [...(defaultSchema.attributes?.p ?? []), "className"],
         section: ["className", "data-kind", "dataKind"],
-        div: [...(defaultSchema.attributes?.div ?? []), "className"],
+        div: [
+            ...(defaultSchema.attributes?.div ?? []),
+            "id",
+            "className",
+            "data-vv-illustration",
+            "data-vv-preset",
+            "data-vv-pattern",
+            "data-vv-rotation",
+            "data-vv-controls",
+            "data-vv-animate-rotation",
+        ],
         span: [...(defaultSchema.attributes?.span ?? []), "className", "style", "aria-label", "ariaLabel", "aria-hidden", "ariaHidden"],
         code: [...(defaultSchema.attributes?.code ?? []), "className", "style"],
         pre: [...(defaultSchema.attributes?.pre ?? []), "className", "style", "tabindex", "tabIndex"],
@@ -124,9 +138,12 @@ async function renderMarkdown(content: string, highlighter: Awaited<ReturnType<t
         .use(remarkGfm)
         .use(remarkDirective)
         .use(remarkVvBlocks)
+        .use(remarkVvEmbeds)
         .use(remarkMath)
+        .use(remarkEquationReferences)
         .use(remarkRehype)
         .use(rehypeSlug)
+        .use(rehypeNumberedEquations)
         .use(rehypeKatex)
         .use(() => {
             // Add target="_blank" and rel="noopener noreferrer" to external links
@@ -238,6 +255,28 @@ function serializeBlogEntry(entry: { slug: string; frontmatter: Record<string, u
     };
 }
 
+function serializeAlgorithmEntry(entry: { slug: string; frontmatter: Record<string, unknown>; html: string }): AlgorithmEntry {
+    const { date, updated, ...rest } = entry.frontmatter;
+    return {
+        slug: entry.slug,
+        frontmatter: {
+            ...rest,
+            date: serializeDate(date),
+            ...(updated !== undefined ? { updated: serializeDate(updated) } : {}),
+        } as AlgorithmEntry["frontmatter"],
+        html: entry.html,
+    };
+}
+
+function cleanGeneratedHtmlModules(dir: string): void {
+    if (!existsSync(dir)) return;
+    for (const file of readdirSync(dir)) {
+        if (file.endsWith(".ts")) {
+            rmSync(join(dir, file));
+        }
+    }
+}
+
 function generateOutput(blogPosts: BlogEntry[], algorithmPages: AlgorithmEntry[]): void {
     if (!existsSync(GENERATED_DIR)) mkdirSync(GENERATED_DIR, { recursive: true });
 
@@ -246,6 +285,8 @@ function generateOutput(blogPosts: BlogEntry[], algorithmPages: AlgorithmEntry[]
     const algoHtmlDir = join(GENERATED_DIR, "content", "algorithms");
     if (!existsSync(blogHtmlDir)) mkdirSync(blogHtmlDir, { recursive: true });
     if (!existsSync(algoHtmlDir)) mkdirSync(algoHtmlDir, { recursive: true });
+    cleanGeneratedHtmlModules(blogHtmlDir);
+    cleanGeneratedHtmlModules(algoHtmlDir);
 
     for (const post of blogPosts) {
         const file = join(blogHtmlDir, `${post.slug}.ts`);
@@ -314,14 +355,19 @@ async function main(): Promise<void> {
         .filter((e) => includeDrafts || !e.frontmatter.draft)
         .sort((a, b) => b.frontmatter.date.localeCompare(a.frontmatter.date));
 
-    const algorithmPages = await processDirectory(
+    const rawAlgorithmPages = await processDirectory(
         join(CONTENT_DIR, "algorithms"),
         algorithmFrontmatterSchema,
         algoSlug,
         highlighter,
     );
 
-    generateOutput(blogPosts, algorithmPages as AlgorithmEntry[]);
+    const algorithmPages = rawAlgorithmPages
+        .map((e) => serializeAlgorithmEntry(e as { slug: string; frontmatter: Record<string, unknown>; html: string }))
+        .filter((e) => includeDrafts || !e.frontmatter.draft)
+        .sort((a, b) => b.frontmatter.date.localeCompare(a.frontmatter.date));
+
+    generateOutput(blogPosts, algorithmPages);
 
     console.log(
         `content:build — ${blogPosts.length} blog post(s), ${algorithmPages.length} algorithm page(s) → ${GENERATED_DIR}`,

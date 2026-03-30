@@ -4,7 +4,7 @@ python-multipart==0.0.22
 pydantic==2.12.5
 boto3==1.42.68
 python-dotenv==1.2.2
-numpy==2.4.3
+numpy==2.4.4
 pillow==12.1.1
 chess-corners==0.3.2
 calib-targets==0.3.2

@@ -1,6 +1,7 @@
 import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
 import type { CalibrationTargetResult } from "../../../../lib/api";
 import { detectCalibrationTarget } from "../../../../lib/api";
+import { detectCharucoWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 import { calibrationCornerFeatures, calibrationMarkerFeatures, calibrationSummary } from "./shared";
 import CharucoConfigForm, { type CharucoConfig } from "./CharucoConfigForm";
 import CharucoOverlay from "../../canvas/overlays/CharucoOverlay";
@@ -52,6 +53,7 @@ export const charucoAlgorithm: AlgorithmDefinition = {
     description: "Detect ChArUco board corners and embedded ArUco markers.",
     initialConfig,
     presets,
+    executionModes: ["wasm", "server"],
     sampleDefaults: {
         charuco: { ...initialConfig },
     },
@@ -82,6 +84,35 @@ export const charucoAlgorithm: AlgorithmDefinition = {
                     maxSpacingPix: c.graphMaxSpacingPix,
                     kNeighbors: c.graphKNeighbors,
                     orientationToleranceDeg: c.graphOrientationToleranceDeg,
+                },
+            },
+        });
+    },
+    runWasm: async ({ pixels, width, height, config }) => {
+        const c = config as CharucoConfig;
+        return detectCharucoWasm(pixels, width, height, {
+            chessCfg: { threshold_value: c.chessMinCornerStrength },
+            params: {
+                px_per_square: c.pxPerSquare,
+                board: {
+                    rows: c.rows,
+                    cols: c.cols,
+                    cell_size: c.cellSize,
+                    marker_size_rel: c.markerSizeRel,
+                    dictionary: c.dictionary,
+                    marker_layout: "opencv_charuco",
+                },
+                chessboard: {
+                    min_corner_strength: c.chessMinCornerStrength,
+                    expected_rows: c.chessExpectedRows,
+                    expected_cols: c.chessExpectedCols,
+                    completeness_threshold: c.chessCompletenessThreshold,
+                    graph: {
+                        min_spacing_pix: c.graphMinSpacingPix,
+                        max_spacing_pix: c.graphMaxSpacingPix,
+                        k_neighbors: c.graphKNeighbors,
+                        orientation_tolerance_deg: c.graphOrientationToleranceDeg,
+                    },
                 },
             },
         });

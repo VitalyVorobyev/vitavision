@@ -8,11 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
-      script-src 'self' 'sha256-gijGmP0apr2ZBJcPoG0x6G7OAf2QE7leHJ5s+2PXhdQ=';
+      script-src 'self' 'sha256-gijGmP0apr2ZBJcPoG0x6G7OAf2QE7leHJ5s+2PXhdQ=' 'wasm-unsafe-eval';
       style-src 'self' 'unsafe-inline';
       img-src 'self' data: blob:;
       font-src 'self' data:;
       connect-src 'self' https://api.vitavision.dev https://05e932e416cbc06b5d70942eb81887f1.eu.r2.cloudflarestorage.com;
+      worker-src 'self' blob:;
       object-src 'none';
       base-uri 'self';
     " />

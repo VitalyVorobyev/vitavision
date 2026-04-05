@@ -13,7 +13,11 @@ function devCspPlugin(): Plugin {
           "connect-src 'self'",
           "connect-src 'self' http://localhost:8000 http://127.0.0.1:8000",
         )
-        .replace("object-src 'none';", "object-src 'none'; worker-src blob:;")
+        .replace(
+          "script-src 'self'",
+          "script-src 'self' 'wasm-unsafe-eval'",
+        )
+        .replace("object-src 'none';", "object-src 'none'; worker-src 'self' blob:;")
     },
   }
 }

@@ -344,6 +344,12 @@ function RunSection({
                 </p>
             )}
 
+            {runner.executionMode && !runner.isRunning && (
+                <p className="text-[10px] text-center text-muted-foreground/50">
+                    {runner.executionMode === "wasm" ? "Client-side (WASM)" : "Server-side"}
+                </p>
+            )}
+
             {runner.error && (
                 <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
                     <AlertCircle size={13} className="text-destructive shrink-0 mt-0.5" />

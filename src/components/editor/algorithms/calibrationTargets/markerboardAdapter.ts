@@ -1,6 +1,7 @@
 import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
 import type { CalibrationTargetResult } from "../../../../lib/api";
 import { detectCalibrationTarget } from "../../../../lib/api";
+import { detectMarkerboardWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 import {
     calibrationCornerFeatures,
     calibrationCircleMatchFeatures,
@@ -64,6 +65,7 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
     description: "Detect checkerboard corners and fiducial circle markers.",
     initialConfig,
     presets,
+    executionModes: ["wasm", "server"],
     sampleDefaults: {
         markerboard: { ...initialConfig },
     },
@@ -100,6 +102,40 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
                     minContrast: c.circleScoreMinContrast,
                     samples: c.circleScoreSamples,
                     centerSearchPx: c.circleScoreCenterSearchPx,
+                },
+            },
+        });
+    },
+    runWasm: async ({ pixels, width, height, config }) => {
+        const c = config as MarkerBoardConfig;
+        return detectMarkerboardWasm(pixels, width, height, {
+            chessCfg: { threshold_value: c.minCornerStrength },
+            params: {
+                layout: {
+                    rows: c.boardRows,
+                    cols: c.boardCols,
+                    circles: c.circles,
+                },
+                chessboard: {
+                    min_corner_strength: c.minCornerStrength,
+                    expected_rows: c.expectedRows,
+                    expected_cols: c.expectedCols,
+                    completeness_threshold: c.completenessThreshold,
+                    graph: {
+                        min_spacing_pix: c.graphMinSpacingPix,
+                        max_spacing_pix: c.graphMaxSpacingPix,
+                        k_neighbors: c.graphKNeighbors,
+                        orientation_tolerance_deg: c.graphOrientationToleranceDeg,
+                    },
+                },
+                circle_score: {
+                    patch_size: c.circleScorePatchSize,
+                    diameter_frac: c.circleScoreDiameterFrac,
+                    ring_thickness_frac: c.circleScoreRingThicknessFrac,
+                    ring_radius_mul: c.circleScoreRingRadiusMul,
+                    min_contrast: c.circleScoreMinContrast,
+                    samples: c.circleScoreSamples,
+                    center_search_px: c.circleScoreCenterSearchPx,
                 },
             },
         });

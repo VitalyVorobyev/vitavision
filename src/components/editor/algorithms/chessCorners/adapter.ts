@@ -1,6 +1,7 @@
 import type { AlgorithmDefinition, AlgorithmPreset, AlgorithmSummaryEntry, DiagnosticEntry } from "../types";
 import type { DirectedPointFeature, Feature } from "../../../../store/editor/useEditorStore";
 import { detectChessCorners, type ChessCornersResult } from "../../../../lib/api";
+import { detectChessCornersWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 
 import ChessCornersConfigForm, { type ChessCornersConfig } from "./ChessCornersConfigForm";
 
@@ -60,6 +61,7 @@ export const chessCornersAlgorithm: AlgorithmDefinition = {
     blogSlug: "01-chess",
     initialConfig,
     presets,
+    executionModes: ["wasm", "server"],
     ConfigComponent: ChessCornersConfigForm as AlgorithmDefinition["ConfigComponent"],
     run: async ({ key, storageMode, config }) => {
         const typedConfig = config as ChessCornersConfig;
@@ -70,6 +72,15 @@ export const chessCornersAlgorithm: AlgorithmDefinition = {
             config: {
                 thresholdRel: typedConfig.thresholdRel,
             },
+        });
+    },
+    runWasm: async ({ pixels, width, height, config }) => {
+        const typedConfig = config as ChessCornersConfig;
+        if (typedConfig.useMlRefiner) {
+            throw new Error("ML refiner requires server-side execution");
+        }
+        return detectChessCornersWasm(pixels, width, height, {
+            thresholdRel: typedConfig.thresholdRel,
         });
     },
     toFeatures: (result, runId) => toFeatures(result as ChessCornersResult, runId),

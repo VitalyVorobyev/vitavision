@@ -4,6 +4,7 @@ import type { StorageMode } from "../../../lib/storage";
 import type { Feature, OverlayToggles, SampleId } from "../../../store/editor/useEditorStore";
 
 export type RequestedStorageMode = "auto" | StorageMode;
+export type ExecutionMode = "server" | "wasm";
 
 export interface AlgorithmSummaryEntry {
     label: string;
@@ -37,9 +38,18 @@ export interface AlgorithmDefinition {
     initialConfig: unknown;
     sampleDefaults?: Partial<Record<SampleId, unknown>>;
     ConfigComponent: ComponentType<AlgorithmConfigFormProps<unknown>>;
+    /** Supported execution modes. Defaults to ["server"] when omitted. */
+    executionModes?: ExecutionMode[];
     run: (args: {
         key: string;
         storageMode: StorageMode;
+        config: unknown;
+    }) => Promise<unknown>;
+    /** Client-side WASM execution path. Called with decoded image pixels. */
+    runWasm?: (args: {
+        pixels: Uint8Array;
+        width: number;
+        height: number;
         config: unknown;
     }) => Promise<unknown>;
     toFeatures: (result: unknown, runId: string) => Feature[];

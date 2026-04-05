@@ -1,6 +1,7 @@
 import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
 import type { CalibrationTargetResult } from "../../../../lib/api";
 import { detectCalibrationTarget } from "../../../../lib/api";
+import { detectChessboardWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 import { calibrationCornerFeatures, calibrationSummary } from "./shared";
 import ChessboardConfigForm, { type ChessboardConfig } from "./ChessboardConfigForm";
 import ChessboardOverlay from "../../canvas/overlays/ChessboardOverlay";
@@ -34,6 +35,7 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
     description: "Detect labeled chessboard corner grid with subpixel accuracy.",
     initialConfig,
     presets,
+    executionModes: ["wasm", "server"],
     sampleDefaults: {
         chessboard: {
             expectedRows: 7,
@@ -56,6 +58,18 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
                     minCornerStrength: c.minCornerStrength,
                     completenessThreshold: c.completenessThreshold,
                 },
+            },
+        });
+    },
+    runWasm: async ({ pixels, width, height, config }) => {
+        const c = config as ChessboardConfig;
+        return detectChessboardWasm(pixels, width, height, {
+            chessCfg: { threshold_value: c.minCornerStrength },
+            params: {
+                min_corner_strength: c.minCornerStrength,
+                expected_rows: c.expectedRows,
+                expected_cols: c.expectedCols,
+                completeness_threshold: c.completenessThreshold,
             },
         });
     },

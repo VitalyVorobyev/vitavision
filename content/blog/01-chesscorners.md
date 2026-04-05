@@ -14,7 +14,7 @@ Calibrating visual sensors in challenging setups is part of my job. In practice 
 
 The first question was simple: how should one detect chessboard corners?
 
-There are classical feature detectors such as [Harris](), [Shi-Tomasi](), and [FAST](). They are general-purpose tools, and they can certainly respond to chessboard corners. But a chessboard corner is not just any corner. It is a very specific local intensity pattern: an **X-junction**. Once this is taken seriously, a natural idea appears: instead of applying a general detector and hoping it behaves well, one can build a detector directly for this pattern.
+There are classical feature detectors such as [Harris](), [Shi-Tomasi](), and [FAST](algorithms/fast-corner-detector). They are general-purpose tools, and they can certainly respond to chessboard corners. But a chessboard corner is not just any corner. It is a very specific local intensity pattern: an **X-junction**. Once this is taken seriously, a natural idea appears: instead of applying a general detector and hoping it behaves well, one can build a detector directly for this pattern.
 
 OpenCV’s classical chessboard detector follows a different route: it starts from segmenting black squares and then derives corners from the recovered geometry. That can work well, but it also couples the problem to global board structure and to the stability of segmentation.
 

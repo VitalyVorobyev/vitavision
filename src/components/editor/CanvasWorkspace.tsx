@@ -4,8 +4,10 @@ import useImage from "use-image";
 import type Konva from "konva";
 
 import FeatureLayer from "./canvas/FeatureLayer";
+import HeatmapLayer from "./canvas/HeatmapLayer";
 import FeatureTooltip, { type DirectedPointTooltipState } from "./canvas/FeatureTooltip";
 import { isReadonlyFeature, useEditorStore } from "../../store/editor/useEditorStore";
+import { useRadsymHeatmap } from "./algorithms/radsym/useRadsymHeatmap";
 import { useShallow } from "zustand/react/shallow";
 import { getAlgorithmById } from "./algorithms/registry";
 import CanvasControlsHint from "../shared/CanvasControlsHint";
@@ -74,6 +76,8 @@ export default function CanvasWorkspace() {
         && !isReadonlyFeature(selectedFeature)
         && (selectedFeature.type === "bbox" || selectedFeature.type === "ellipse");
     /* ── Extracted hooks ── */
+
+    useRadsymHeatmap();
 
     const { hoverPixel, sampleAt, clearPixel } = usePixelSampler(imageSrc, imageWidth, imageHeight);
 
@@ -273,8 +277,13 @@ export default function CanvasWorkspace() {
             onContextMenu={(event) => event.preventDefault()}
         >
             {!imageSrc && (
-                <div className="absolute inset-0 flex items-center justify-center text-muted-foreground z-10 pointer-events-none">
-                    Drag & Drop an image here
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/40">
+                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                        <circle cx="9" cy="9" r="2" />
+                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                    </svg>
+                    <p className="text-sm text-muted-foreground/60">Drop an image here or use the gallery</p>
                 </div>
             )}
 
@@ -347,6 +356,8 @@ export default function CanvasWorkspace() {
                             />
                         )}
 
+                        <HeatmapLayer />
+
                         {activeTool === "POLYLINE" && isDrawing && currentLinePoints.length > 0 && (
                             <Line
                                 points={currentLinePoints}
@@ -414,6 +425,8 @@ export default function CanvasWorkspace() {
                                     result={lastAlgorithmResult.result}
                                     zoom={zoom}
                                     toggles={overlayToggles}
+                                    onSelectFeature={setSelectedFeatureId}
+                                    features={features}
                                 />
                             );
                         })()}

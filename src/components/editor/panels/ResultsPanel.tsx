@@ -8,15 +8,15 @@ import type { AlgorithmSummaryEntry, DiagnosticEntry } from "../algorithms/types
 
 import RailSection from "./RailSection";
 
-function SummaryGrid({ entries }: { entries: AlgorithmSummaryEntry[] }) {
+function SummaryStrip({ entries }: { entries: AlgorithmSummaryEntry[] }) {
     if (entries.length === 0) return null;
     return (
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs rounded-md border border-border bg-background/70 px-3 py-2">
             {entries.map((entry) => (
-                <div key={entry.label} className="rounded-md border border-border bg-background/70 px-2.5 py-2">
-                    <div className="text-sm font-semibold text-foreground leading-tight">{entry.value}</div>
-                    <div className="text-[11px] text-muted-foreground mt-0.5">{entry.label}</div>
-                </div>
+                <span key={entry.label}>
+                    <span className="text-muted-foreground">{entry.label}</span>{" "}
+                    <span className="font-semibold text-foreground tabular-nums">{entry.value}</span>
+                </span>
             ))}
         </div>
     );
@@ -52,9 +52,17 @@ function DiagnosticsList({ entries }: { entries: DiagnosticEntry[] }) {
 }
 
 export default function ResultsPanel() {
-    const { lastAlgorithmResult, setPanelMode } = useEditorStore(useShallow((s) => ({
+    const {
+        lastAlgorithmResult, setPanelMode,
+        heatmapData, heatmapVisible, setHeatmapVisible, heatmapOpacity, setHeatmapOpacity,
+    } = useEditorStore(useShallow((s) => ({
         lastAlgorithmResult: s.lastAlgorithmResult,
         setPanelMode: s.setPanelMode,
+        heatmapData: s.heatmapData,
+        heatmapVisible: s.heatmapVisible,
+        setHeatmapVisible: s.setHeatmapVisible,
+        heatmapOpacity: s.heatmapOpacity,
+        setHeatmapOpacity: s.setHeatmapOpacity,
     })));
 
     const algo = useMemo(() => {
@@ -92,8 +100,59 @@ export default function ResultsPanel() {
             {/* Run Summary */}
             {lastAlgorithmResult && (
                 <RailSection label={algo?.title ? `${algo.title} Results` : "Results"}>
-                    <SummaryGrid entries={summaryEntries} />
+                    <SummaryStrip entries={summaryEntries} />
                 </RailSection>
+            )}
+
+            {/* Heatmap overlay controls (radsym only) */}
+            {lastAlgorithmResult?.algorithmId === "radsym" && heatmapData && (
+                <RailSection label="FRST Heatmap">
+                    <div className="space-y-2">
+                        <button
+                            type="button"
+                            onClick={() => setHeatmapVisible(!heatmapVisible)}
+                            className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
+                                heatmapVisible
+                                    ? "border-primary/40 bg-primary/10 text-primary"
+                                    : "border-border text-muted-foreground hover:bg-muted/30"
+                            }`}
+                        >
+                            {heatmapVisible ? "Hide heatmap" : "Show heatmap"}
+                        </button>
+                        {heatmapVisible && (
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] text-muted-foreground whitespace-nowrap">Opacity</span>
+                                <input
+                                    type="range"
+                                    min={0}
+                                    max={1}
+                                    step={0.05}
+                                    value={heatmapOpacity}
+                                    onChange={(e) => setHeatmapOpacity(parseFloat(e.target.value))}
+                                    className="flex-1 h-1 accent-primary"
+                                />
+                                <span className="text-[10px] text-muted-foreground w-8 text-right">
+                                    {Math.round(heatmapOpacity * 100)}%
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                </RailSection>
+            )}
+
+            {/* Empty state */}
+            {!lastAlgorithmResult && (
+                <div className="flex flex-col items-center gap-3 py-8 text-center">
+                    <p className="text-sm text-muted-foreground/60">No results yet</p>
+                    <p className="text-xs text-muted-foreground/40">Run an algorithm to see results here.</p>
+                    <button
+                        type="button"
+                        onClick={() => setPanelMode("configure")}
+                        className="text-xs text-primary hover:text-primary/80 transition-colors"
+                    >
+                        Go to Configure
+                    </button>
+                </div>
             )}
         </>
     );

@@ -6,6 +6,7 @@ import {
     buildFeatureGroups,
     getFeatureGroupKey,
     isFeatureGroupVisible,
+    type FeatureGroup,
 } from "../../../store/editor/featureGroups";
 import { isReadonlyFeature, useEditorStore, type Feature, type FeatureMeta } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
@@ -80,30 +81,41 @@ function featureXY(feature: Feature): { x: number; y: number } | null {
 /* ── feature navigator ──────────────────────────────────────── */
 
 function FeatureNavigator({
-    flatFeatureIds,
+    groups,
     selectedFeatureId,
     setSelectedFeatureId,
 }: {
-    flatFeatureIds: string[];
+    groups: FeatureGroup[];
     selectedFeatureId: string | null;
     setSelectedFeatureId: (id: string) => void;
 }) {
-    const total = flatFeatureIds.length;
-    const currentIndex = selectedFeatureId
-        ? flatFeatureIds.indexOf(selectedFeatureId)
-        : -1;
+    // Find which group the selected feature belongs to
+    const activeGroupIndex = useMemo(() => {
+        if (!selectedFeatureId) return -1;
+        return groups.findIndex((g) => g.features.some((f) => f.id === selectedFeatureId));
+    }, [groups, selectedFeatureId]);
+
+    const group = activeGroupIndex >= 0 ? groups[activeGroupIndex] : null;
+
+    const indexInGroup = useMemo(() => {
+        if (!group || !selectedFeatureId) return -1;
+        return group.features.findIndex((f) => f.id === selectedFeatureId);
+    }, [group, selectedFeatureId]);
+
+    const ids = useMemo(() => group?.features.map((f) => f.id) ?? [], [group]);
+    const total = ids.length;
 
     const goPrev = useCallback(() => {
         if (total === 0) return;
-        const next = currentIndex > 0 ? currentIndex - 1 : total - 1;
-        setSelectedFeatureId(flatFeatureIds[next]);
-    }, [currentIndex, total, flatFeatureIds, setSelectedFeatureId]);
+        const next = indexInGroup > 0 ? indexInGroup - 1 : total - 1;
+        setSelectedFeatureId(ids[next]);
+    }, [indexInGroup, total, ids, setSelectedFeatureId]);
 
     const goNext = useCallback(() => {
         if (total === 0) return;
-        const next = currentIndex < total - 1 ? currentIndex + 1 : 0;
-        setSelectedFeatureId(flatFeatureIds[next]);
-    }, [currentIndex, total, flatFeatureIds, setSelectedFeatureId]);
+        const next = indexInGroup < total - 1 ? indexInGroup + 1 : 0;
+        setSelectedFeatureId(ids[next]);
+    }, [indexInGroup, total, ids, setSelectedFeatureId]);
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent) => {
@@ -120,7 +132,9 @@ function FeatureNavigator({
 
     if (total === 0) return null;
 
-    const display = currentIndex >= 0 ? `${currentIndex + 1} / ${total}` : `— / ${total}`;
+    const display = indexInGroup >= 0
+        ? `${indexInGroup + 1} / ${total}`
+        : `— / ${total}`;
 
     return (
         <div
@@ -137,8 +151,11 @@ function FeatureNavigator({
             >
                 <ChevronLeft size={16} />
             </button>
-            <span className="text-xs tabular-nums text-foreground font-medium min-w-[4rem] text-center">
-                {display}
+            <span className="text-xs text-foreground font-medium text-center">
+                {group && (
+                    <span className="text-muted-foreground">{group.label} </span>
+                )}
+                <span className="tabular-nums">{display}</span>
             </span>
             <button
                 type="button"
@@ -167,8 +184,12 @@ function SelectedFeatureCard({
     const meta = feature.meta;
     const xy = featureXY(feature);
 
+    // Resolve score from meta or directed_point feature
+    const score = meta?.score ?? (feature.type === "directed_point" ? feature.score : null);
+
     return (
-        <div className="rounded-lg border border-primary/25 bg-primary/5 p-3 space-y-1.5">
+        <div className="rounded-lg border border-primary/25 bg-primary/5 p-3 space-y-2">
+            {/* Header row */}
             <div className="flex items-center justify-between gap-2">
                 <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
                     Selected
@@ -187,56 +208,58 @@ function SelectedFeatureCard({
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-                {/* Grid coords prominently for corners */}
-                {meta?.grid && (
-                    <div>
-                        <span className="text-muted-foreground">grid </span>
-                        <span className="font-medium">({meta.grid.i}, {meta.grid.j})</span>
-                    </div>
-                )}
-                {/* Grid cell for markers */}
-                {meta?.gridCell && !meta?.grid && (
-                    <div>
-                        <span className="text-muted-foreground">cell </span>
-                        <span className="font-medium">({meta.gridCell.gx}, {meta.gridCell.gy})</span>
-                    </div>
-                )}
-                {/* Score */}
-                {meta?.score !== undefined && meta?.score !== null && (
-                    <div>
-                        <span className="text-muted-foreground">score </span>
-                        <span className="font-medium tabular-nums">{fmtScore(meta.score)}</span>
-                    </div>
-                )}
-                {/* Directed point score (from feature, not meta) */}
-                {feature.type === "directed_point" && (
-                    <div>
-                        <span className="text-muted-foreground">score </span>
-                        <span className="font-medium tabular-nums">{fmtScore(feature.score)}</span>
-                    </div>
-                )}
-                {/* Coordinates */}
+            {/* Structured rows — each row is a semantic unit */}
+            <div className="space-y-1 text-xs">
+                {/* Position: x, y always together on one line */}
                 {xy && (
-                    <>
-                        <div>
+                    <div className="flex gap-3 tabular-nums">
+                        <span>
                             <span className="text-muted-foreground">x </span>
-                            <span className="font-medium tabular-nums">{fmtCoord(xy.x)}</span>
-                        </div>
-                        <div>
+                            <span className="font-medium">{fmtCoord(xy.x)}</span>
+                        </span>
+                        <span>
                             <span className="text-muted-foreground">y </span>
-                            <span className="font-medium tabular-nums">{fmtCoord(xy.y)}</span>
-                        </div>
-                    </>
+                            <span className="font-medium">{fmtCoord(xy.y)}</span>
+                        </span>
+                    </div>
                 )}
-                {/* Remaining meta fields */}
-                {meta && renderDetailMeta(meta)}
+
+                {/* Grid / cell + score on one line */}
+                {(meta?.grid || (meta?.gridCell && !meta?.grid) || score !== null) && (
+                    <div className="flex gap-3 tabular-nums">
+                        {meta?.grid && (
+                            <span>
+                                <span className="text-muted-foreground">grid </span>
+                                <span className="font-medium">({meta.grid.i}, {meta.grid.j})</span>
+                            </span>
+                        )}
+                        {meta?.gridCell && !meta?.grid && (
+                            <span>
+                                <span className="text-muted-foreground">cell </span>
+                                <span className="font-medium">({meta.gridCell.gx}, {meta.gridCell.gy})</span>
+                            </span>
+                        )}
+                        {score !== null && (
+                            <span>
+                                <span className="text-muted-foreground">score </span>
+                                <span className="font-medium">{fmtScore(score)}</span>
+                            </span>
+                        )}
+                    </div>
+                )}
+
+                {/* Additional meta fields — one per line */}
+                {meta && renderDetailMeta(meta).length > 0 && (
+                    <div className="flex flex-wrap gap-x-3 gap-y-0.5 tabular-nums">
+                        {renderDetailMeta(meta)}
+                    </div>
+                )}
             </div>
 
             {!readonly && (
                 <button
                     onClick={onDelete}
-                    className="flex items-center gap-1 text-[11px] text-destructive hover:text-destructive/70 transition-colors mt-0.5"
+                    className="flex items-center gap-1 text-[11px] text-destructive hover:text-destructive/70 transition-colors"
                 >
                     <Trash2 size={11} /> Delete
                 </button>
@@ -301,17 +324,6 @@ export default function FeatureListPanel() {
 
     const groups = useMemo(() => buildFeatureGroups(features), [features]);
 
-    // Flat ordered list of all feature IDs for navigator
-    const flatFeatureIds = useMemo(() => {
-        const ids: string[] = [];
-        for (const group of groups) {
-            for (const f of group.features) {
-                ids.push(f.id);
-            }
-        }
-        return ids;
-    }, [groups]);
-
     const handleImport = useCallback(() => {
         promptFeatureImport({
             currentFeatureCount: features.length,
@@ -372,7 +384,7 @@ export default function FeatureListPanel() {
 
             {/* Feature navigator */}
             <FeatureNavigator
-                flatFeatureIds={flatFeatureIds}
+                groups={groups}
                 selectedFeatureId={selectedFeatureId}
                 setSelectedFeatureId={setSelectedFeatureId}
             />

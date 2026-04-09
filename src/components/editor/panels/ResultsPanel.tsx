@@ -11,13 +11,15 @@ import RailSection from "./RailSection";
 function SummaryStrip({ entries }: { entries: AlgorithmSummaryEntry[] }) {
     if (entries.length === 0) return null;
     return (
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs rounded-md border border-border bg-background/70 px-3 py-2">
-            {entries.map((entry) => (
-                <span key={entry.label}>
-                    <span className="text-muted-foreground">{entry.label}</span>{" "}
-                    <span className="font-semibold text-foreground tabular-nums">{entry.value}</span>
-                </span>
-            ))}
+        <div className="rounded-lg border border-border/80 bg-background/60 px-4 py-3">
+            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5">
+                {entries.map((entry) => (
+                    <div key={entry.label} className="flex items-baseline gap-1.5">
+                        <span className="text-[11px] text-muted-foreground">{entry.label}</span>
+                        <span className="text-sm font-semibold text-foreground tabular-nums">{entry.value}</span>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

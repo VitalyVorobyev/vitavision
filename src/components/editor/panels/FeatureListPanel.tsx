@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Download, Eye, EyeOff, Lock, Trash2, Upload } from "lucide-react";
 
 import { exportFeaturesAsJson, promptFeatureImport } from "../featureIo";
@@ -14,52 +14,53 @@ import { fmtCoord, fmtScore, fmtDistance } from "./formatNumber";
 
 /* ── helpers ─────────────────────────────────────────────────── */
 
-const renderMetaField = (
-    label: string,
-    value: string | number | boolean | null | undefined,
-): React.ReactNode | null => {
-    if (value === null || value === undefined) {
-        return null;
-    }
-    const formatted = typeof value === "boolean" ? (value ? "yes" : "no") : String(value);
-    return (
-        <div key={label}>
-            <span className="text-muted-foreground">{label} </span>
-            <span className="font-medium">{formatted}</span>
-        </div>
-    );
-};
+interface MetaRow {
+    label: string;
+    value: string;
+}
 
-/** Render meta fields for the selected-feature card, excluding fields already shown prominently. */
-const renderDetailMeta = (meta: FeatureMeta): React.ReactNode[] => {
-    const rows: (React.ReactNode | null)[] = [
-        renderMetaField("Corner ID", meta.cornerId),
-        renderMetaField("Marker ID", meta.markerId),
+/** Build meta field rows for the selected-feature card, excluding fields already shown prominently (position, score, grid). */
+function buildDetailMeta(meta: FeatureMeta): MetaRow[] {
+    const rows: (MetaRow | null)[] = [
+        meta.cornerId !== undefined && meta.cornerId !== null
+            ? { label: "Corner ID", value: String(meta.cornerId) }
+            : null,
+        meta.markerId !== undefined && meta.markerId !== null
+            ? { label: "Marker ID", value: String(meta.markerId) }
+            : null,
         meta.targetPosition !== undefined && meta.targetPosition !== null
-            ? renderMetaField("Target pos", `${fmtCoord(meta.targetPosition.x)}, ${fmtCoord(meta.targetPosition.y)}`)
+            ? { label: "Target pos", value: `${fmtCoord(meta.targetPosition.x)}, ${fmtCoord(meta.targetPosition.y)}` }
             : null,
         meta.rotation !== undefined
-            ? renderMetaField("Rotation", `${meta.rotation.toFixed(1)}°`)
+            ? { label: "Rotation", value: `${meta.rotation.toFixed(1)}°` }
             : null,
-        renderMetaField("Hamming", meta.hamming),
+        meta.hamming !== undefined && meta.hamming !== null
+            ? { label: "Hamming", value: String(meta.hamming) }
+            : null,
         meta.borderScore !== undefined && meta.borderScore !== null
-            ? renderMetaField("Border score", fmtScore(meta.borderScore))
+            ? { label: "Border score", value: fmtScore(meta.borderScore) }
             : null,
-        renderMetaField("Code", meta.code),
-        renderMetaField("Inverted", meta.inverted),
-        renderMetaField("Polarity", meta.polarity),
+        meta.code !== undefined && meta.code !== null
+            ? { label: "Code", value: String(meta.code) }
+            : null,
+        meta.inverted !== undefined && meta.inverted !== null
+            ? { label: "Inverted", value: meta.inverted ? "yes" : "no" }
+            : null,
+        meta.polarity !== undefined && meta.polarity !== null
+            ? { label: "Polarity", value: String(meta.polarity) }
+            : null,
         meta.contrast !== undefined && meta.contrast !== null
-            ? renderMetaField("Contrast", fmtScore(meta.contrast))
+            ? { label: "Contrast", value: fmtScore(meta.contrast) }
             : null,
         meta.distanceCells !== undefined && meta.distanceCells !== null
-            ? renderMetaField("Distance (cells)", fmtDistance(meta.distanceCells))
+            ? { label: "Distance", value: `${fmtDistance(meta.distanceCells)} cells` }
             : null,
         meta.offsetCells !== undefined && meta.offsetCells !== null
-            ? renderMetaField("Offset (cells)", `di=${meta.offsetCells.di}, dj=${meta.offsetCells.dj}`)
+            ? { label: "Offset", value: `di=${meta.offsetCells.di}, dj=${meta.offsetCells.dj}` }
             : null,
     ];
-    return rows.filter((row): row is React.ReactNode => row !== null);
-};
+    return rows.filter((r): r is MetaRow => r !== null);
+}
 
 /** Extract (x, y) from any spatial feature. */
 function featureXY(feature: Feature): { x: number; y: number } | null {
@@ -186,12 +187,13 @@ function SelectedFeatureCard({
 
     // Resolve score from meta or directed_point feature
     const score = meta?.score ?? (feature.type === "directed_point" ? feature.score : null);
+    const detailRows = meta ? buildDetailMeta(meta) : [];
 
     return (
-        <div className="rounded-lg border border-primary/25 bg-primary/5 p-3 space-y-2">
-            {/* Header row */}
-            <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+        <div className="rounded-lg border border-primary/30 bg-primary/6 px-4 py-3 space-y-2.5">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
                     Selected
                 </span>
                 <div className="flex items-center gap-1.5">
@@ -208,53 +210,41 @@ function SelectedFeatureCard({
                 </div>
             </div>
 
-            {/* Structured rows — each row is a semantic unit */}
-            <div className="space-y-1 text-xs">
-                {/* Position: x, y always together on one line */}
+            {/* Tabular key-value layout */}
+            <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
                 {xy && (
-                    <div className="flex gap-3 tabular-nums">
-                        <span>
-                            <span className="text-muted-foreground">x </span>
-                            <span className="font-medium">{fmtCoord(xy.x)}</span>
-                        </span>
-                        <span>
-                            <span className="text-muted-foreground">y </span>
-                            <span className="font-medium">{fmtCoord(xy.y)}</span>
-                        </span>
-                    </div>
+                    <>
+                        <dt className="text-muted-foreground whitespace-nowrap">Position</dt>
+                        <dd className="font-medium tabular-nums text-right">
+                            {fmtCoord(xy.x)}, {fmtCoord(xy.y)}
+                        </dd>
+                    </>
                 )}
-
-                {/* Grid / cell + score on one line */}
-                {(meta?.grid || (meta?.gridCell && !meta?.grid) || score !== null) && (
-                    <div className="flex gap-3 tabular-nums">
-                        {meta?.grid && (
-                            <span>
-                                <span className="text-muted-foreground">grid </span>
-                                <span className="font-medium">({meta.grid.i}, {meta.grid.j})</span>
-                            </span>
-                        )}
-                        {meta?.gridCell && !meta?.grid && (
-                            <span>
-                                <span className="text-muted-foreground">cell </span>
-                                <span className="font-medium">({meta.gridCell.gx}, {meta.gridCell.gy})</span>
-                            </span>
-                        )}
-                        {score !== null && (
-                            <span>
-                                <span className="text-muted-foreground">score </span>
-                                <span className="font-medium">{fmtScore(score)}</span>
-                            </span>
-                        )}
-                    </div>
+                {score !== null && (
+                    <>
+                        <dt className="text-muted-foreground">Score</dt>
+                        <dd className="font-medium tabular-nums text-right">{fmtScore(score)}</dd>
+                    </>
                 )}
-
-                {/* Additional meta fields — one per line */}
-                {meta && renderDetailMeta(meta).length > 0 && (
-                    <div className="flex flex-wrap gap-x-3 gap-y-0.5 tabular-nums">
-                        {renderDetailMeta(meta)}
-                    </div>
+                {meta?.grid && (
+                    <>
+                        <dt className="text-muted-foreground">Grid</dt>
+                        <dd className="font-medium tabular-nums text-right">({meta.grid.i}, {meta.grid.j})</dd>
+                    </>
                 )}
-            </div>
+                {meta?.gridCell && !meta?.grid && (
+                    <>
+                        <dt className="text-muted-foreground">Cell</dt>
+                        <dd className="font-medium tabular-nums text-right">({meta.gridCell.gx}, {meta.gridCell.gy})</dd>
+                    </>
+                )}
+                {detailRows.map((row) => (
+                    <Fragment key={row.label}>
+                        <dt className="text-muted-foreground whitespace-nowrap">{row.label}</dt>
+                        <dd className="font-medium tabular-nums text-right">{row.value}</dd>
+                    </Fragment>
+                ))}
+            </dl>
 
             {!readonly && (
                 <button
@@ -324,6 +314,9 @@ export default function FeatureListPanel() {
 
     const groups = useMemo(() => buildFeatureGroups(features), [features]);
 
+    // Active group derived from selected feature
+    const activeGroupKey = selectedFeature ? getFeatureGroupKey(selectedFeature) : null;
+
     const handleImport = useCallback(() => {
         promptFeatureImport({
             currentFeatureCount: features.length,
@@ -389,33 +382,51 @@ export default function FeatureListPanel() {
                 setSelectedFeatureId={setSelectedFeatureId}
             />
 
-            {/* Group visibility pills */}
+            {/* Group selector pills */}
             {groups.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                     {groups.map((group) => {
+                        const isActive = group.key === activeGroupKey;
                         const isVisible = isFeatureGroupVisible(group.key, featureGroupVisibility);
                         return (
-                            <button
+                            <div
                                 key={group.key}
-                                type="button"
-                                onClick={() => setFeatureGroupVisibility(group.key, !isVisible)}
-                                className={`inline-flex items-center gap-1.5 text-[11px] px-2 py-1 rounded-full border transition-colors ${
-                                    isVisible
-                                        ? "border-border bg-background text-foreground hover:bg-muted/50"
-                                        : "border-border/50 bg-muted/20 text-muted-foreground/60 hover:bg-muted/40"
+                                className={`inline-flex items-center rounded-full border text-[11px] transition-colors ${
+                                    isActive
+                                        ? "border-primary/40 bg-primary/8 text-primary"
+                                        : isVisible
+                                            ? "border-border bg-background text-foreground"
+                                            : "border-border/50 bg-muted/20 text-muted-foreground/60"
                                 }`}
-                                title={isVisible ? `Hide ${group.label}` : `Show ${group.label}`}
                             >
-                                <div
-                                    className="w-2 h-2 rounded-full shrink-0"
-                                    style={{ backgroundColor: group.color, opacity: isVisible ? 1 : 0.4 }}
-                                />
-                                <span className="font-medium">{group.label}</span>
-                                <span className="text-[10px] text-muted-foreground tabular-nums">
-                                    {group.features.length}
-                                </span>
-                                {isVisible ? <Eye size={10} /> : <EyeOff size={10} />}
-                            </button>
+                                {/* Main clickable area — selects group */}
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedFeatureId(group.features[0].id)}
+                                    className="inline-flex items-center gap-1.5 pl-2 pr-1 py-1 hover:opacity-80 transition-opacity"
+                                >
+                                    <div
+                                        className="w-2 h-2 rounded-full shrink-0"
+                                        style={{ backgroundColor: group.color, opacity: isVisible ? 1 : 0.4 }}
+                                    />
+                                    <span className="font-medium">{group.label}</span>
+                                    <span className="text-[10px] text-muted-foreground tabular-nums">
+                                        {group.features.length}
+                                    </span>
+                                </button>
+                                {/* Visibility toggle */}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setFeatureGroupVisibility(group.key, !isVisible);
+                                    }}
+                                    className="pr-2 pl-0.5 py-1 text-muted-foreground hover:text-foreground transition-colors"
+                                    title={isVisible ? `Hide ${group.label}` : `Show ${group.label}`}
+                                >
+                                    {isVisible ? <Eye size={10} /> : <EyeOff size={10} />}
+                                </button>
+                            </div>
                         );
                     })}
                 </div>

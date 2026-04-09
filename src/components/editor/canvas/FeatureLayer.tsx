@@ -5,8 +5,9 @@ import type Konva from "konva";
 import ArUcoMarkerGlyph from "./primitives/ArUcoMarkerGlyph";
 import DirectedPointGlyph from "./primitives/DirectedPointGlyph";
 import RingMarkerGlyph from "./primitives/RingMarkerGlyph";
+import CircleGlyph from "./primitives/CircleGlyph";
 import { isFeatureVisible } from "../../../store/editor/featureGroups";
-import { isReadonlyFeature, type ArUcoMarkerFeature, type DirectedPointFeature, type Feature, type RingMarkerFeature, type ToolType } from "../../../store/editor/useEditorStore";
+import { isReadonlyFeature, type ArUcoMarkerFeature, type CircleFeature, type DirectedPointFeature, type Feature, type RingMarkerFeature, type ToolType } from "../../../store/editor/useEditorStore";
 
 interface FeatureLayerProps {
     features: Feature[];
@@ -51,9 +52,14 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
         setSelectedFeatureId(featureId);
     };
 
-    return (
-        <>
-            {features.map((feature) => {
+    // Render area features (markers, polygons) first, then point-like features on top.
+    // This ensures point hit areas are above marker fills so clicking near a corner
+    // selects the corner, not the underlying marker polygon.
+    const AREA_TYPES = new Set(["aruco_marker", "bbox", "ellipse", "polygon"]);
+    const areaFeatures = features.filter((f) => AREA_TYPES.has(f.type));
+    const pointFeatures = features.filter((f) => !AREA_TYPES.has(f.type));
+
+    const renderFeature = (feature: Feature) => {
                 const groupVisible = isFeatureVisible(feature, featureGroupVisibility);
                 if (!groupVisible) {
                     return null;
@@ -66,6 +72,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
 
                 if (feature.type === "point") {
                     const pointRadius = 3 / zoom;
+                    const hitRadius = 8 / zoom;
                     const color = isSelected ? "#00ffff" : feature.color || "#ff0000";
                     return (
                         <Group
@@ -80,6 +87,13 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                             onClick={selectFeature}
                             onTap={selectFeature}
                         >
+                            {/* Invisible hit area — expands clickable region */}
+                            <Circle
+                                x={feature.x}
+                                y={feature.y}
+                                radius={hitRadius}
+                                fill="transparent"
+                            />
                             {isSelected && (
                                 <Circle
                                     x={feature.x}
@@ -252,8 +266,25 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                     );
                 }
 
+                if (feature.type === "circle") {
+                    return (
+                        <CircleGlyph
+                            key={feature.id}
+                            feature={feature as CircleFeature}
+                            zoom={zoom}
+                            selected={isSelected}
+                            onSelect={selectFeature}
+                        />
+                    );
+                }
+
                 return null;
-            })}
+    };
+
+    return (
+        <>
+            {areaFeatures.map(renderFeature)}
+            {pointFeatures.map(renderFeature)}
         </>
     );
 });

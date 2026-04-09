@@ -33,6 +33,13 @@ export default function RingMarkerGlyph({ feature, zoom, selected, onSelect }: R
 
     return (
         <Group onClick={onSelect} onTap={onSelect}>
+            {/* Invisible hit area — ensures click anywhere near marker selects it */}
+            <Circle
+                x={feature.x}
+                y={feature.y}
+                radius={Math.max(oe.a, ie.a)}
+                fill="transparent"
+            />
             {/* Outer ellipse halo */}
             <Ellipse
                 x={oe.cx} y={oe.cy}

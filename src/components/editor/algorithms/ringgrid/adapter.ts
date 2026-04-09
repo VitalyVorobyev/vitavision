@@ -1,6 +1,7 @@
 import type { AlgorithmDefinition, AlgorithmSummaryEntry, DiagnosticEntry } from "../types";
 import type { Feature, RingMarkerFeature } from "../../../../store/editor/useEditorStore";
-import { detectRinggrid, type RinggridDetectResult } from "../../../../lib/api";
+import type { RinggridDetectResult } from "../../../../lib/types";
+import { detectRinggridWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 
 import RinggridConfigForm, { type RinggridConfig } from "./RinggridConfigForm";
 
@@ -52,7 +53,16 @@ const toFeatures = (result: RinggridDetectResult, runId: string): Feature[] => {
             b: marker.ellipse_inner.b,
             angleDeg: marker.ellipse_inner.angle * RAD_TO_DEG,
         },
-        meta: { kind: "ringgrid", markerId: marker.id, score: marker.confidence },
+        meta: {
+            kind: "ringgrid",
+            markerId: marker.id,
+            score: marker.confidence,
+            rotation: marker.decode?.best_rotation,
+            hamming: marker.decode ? marker.decode.best_dist : undefined,
+            targetPosition: marker.board_xy_mm
+                ? { x: marker.board_xy_mm.x, y: marker.board_xy_mm.y }
+                : undefined,
+        },
     }));
 };
 
@@ -64,22 +74,24 @@ export const ringgridAlgorithm: AlgorithmDefinition = {
     sampleDefaults: {
         ringgrid: { ...initialConfig },
     },
+    executionModes: ["wasm"],
     ConfigComponent: RinggridConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async ({ key, storageMode, config }) => {
+    run: async () => {
+        throw new Error("Ring Grid detection is only available via client-side WASM.");
+    },
+    runWasm: async ({ pixels, width, height, config }) => {
         const c = config as RinggridConfig;
-        return detectRinggrid({
-            key,
-            storageMode,
-            board: {
-                rows: c.rows,
-                longRowCols: c.longRowCols,
-                pitchMm: c.pitchMm,
-                markerOuterRadiusMm: c.markerOuterRadiusMm,
-                markerInnerRadiusMm: c.markerInnerRadiusMm,
-                markerRingWidthMm: c.markerRingWidthMm,
-            },
-            profile: c.profile,
+        // Only override fields the user configured; the worker merges with
+        // WASM defaults (which provide schema, name, etc.)
+        const boardJson = JSON.stringify({
+            rows: c.rows,
+            long_row_cols: c.longRowCols,
+            pitch_mm: c.pitchMm,
+            marker_outer_radius_mm: c.markerOuterRadiusMm,
+            marker_inner_radius_mm: c.markerInnerRadiusMm,
+            marker_ring_width_mm: c.markerRingWidthMm,
         });
+        return detectRinggridWasm(pixels, width, height, { boardJson });
     },
     toFeatures: (result, runId) => toFeatures(result as RinggridDetectResult, runId),
     summary: (result) => toSummary(result as RinggridDetectResult),

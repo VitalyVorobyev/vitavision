@@ -73,23 +73,47 @@ export function isFeatureVisible(
     return isFeatureGroupVisible(getFeatureGroupKey(feature), visibility);
 }
 
+/** Extract (x, y) for spatial sorting. */
+function featurePosition(f: Feature): { x: number; y: number } | null {
+    if ("x" in f && "y" in f && typeof f.x === "number" && typeof f.y === "number") {
+        return { x: f.x, y: f.y };
+    }
+    return null;
+}
+
+/** Sort top-to-bottom, left-to-right (row-major scan order). */
+function sortByPosition(features: Feature[]): Feature[] {
+    return [...features].sort((a, b) => {
+        const pa = featurePosition(a);
+        const pb = featurePosition(b);
+        if (!pa || !pb) return 0;
+        const dy = pa.y - pb.y;
+        if (Math.abs(dy) > 1) return dy;
+        return pa.x - pb.x;
+    });
+}
+
 function sortFeaturesForDisplay(key: string, features: Feature[]): Feature[] {
-    if (key !== "algo:ringgrid" && key !== "type:ring_marker") {
-        return features;
+    if (key === "algo:ringgrid" || key === "type:ring_marker") {
+        return [...features].sort((left, right) => {
+            const leftMarkerId = left.meta?.markerId;
+            const rightMarkerId = right.meta?.markerId;
+
+            if (leftMarkerId === undefined || leftMarkerId === null) {
+                return rightMarkerId === undefined || rightMarkerId === null ? 0 : 1;
+            }
+            if (rightMarkerId === undefined || rightMarkerId === null) {
+                return -1;
+            }
+            return leftMarkerId - rightMarkerId;
+        });
     }
 
-    return [...features].sort((left, right) => {
-        const leftMarkerId = left.meta?.markerId;
-        const rightMarkerId = right.meta?.markerId;
+    if (key === "type:directed_point" || key === "type:point") {
+        return sortByPosition(features);
+    }
 
-        if (leftMarkerId === undefined || leftMarkerId === null) {
-            return rightMarkerId === undefined || rightMarkerId === null ? 0 : 1;
-        }
-        if (rightMarkerId === undefined || rightMarkerId === null) {
-            return -1;
-        }
-        return leftMarkerId - rightMarkerId;
-    });
+    return features;
 }
 
 export function buildFeatureGroups(features: Feature[]): FeatureGroup[] {

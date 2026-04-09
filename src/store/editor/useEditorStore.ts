@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { featureSchema } from './featureSchema';
 
 export type ToolType = 'SELECT' | 'POINT' | 'LINE' | 'POLYLINE' | 'POLYGON' | 'BBOX' | 'ELLIPSE';
-export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point' | 'ring_marker' | 'aruco_marker';
+export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point' | 'ring_marker' | 'aruco_marker' | 'circle';
 export type FeatureSource = 'manual' | 'algorithm';
 export type SampleId = 'chessboard' | 'charuco' | 'markerboard' | 'ringgrid' | 'upload';
 
@@ -133,6 +133,14 @@ export interface ArUcoMarkerFeature extends BaseFeature {
     corners: [number, number, number, number, number, number, number, number];
 }
 
+export interface CircleFeature extends BaseFeature {
+    type: 'circle';
+    x: number;
+    y: number;
+    radius: number;
+    score?: number;
+}
+
 export type Feature =
     | PointFeature
     | LineFeature
@@ -142,7 +150,8 @@ export type Feature =
     | EllipseFeature
     | DirectedPointFeature
     | RingMarkerFeature
-    | ArUcoMarkerFeature;
+    | ArUcoMarkerFeature
+    | CircleFeature;
 
 export interface GalleryImage {
     id: string;
@@ -236,6 +245,10 @@ interface EditorState {
     featureGroupVisibility: Record<string, boolean>;
     overlayToggles: OverlayToggles;
 
+    heatmapData: { rgba: Uint8Array; width: number; height: number } | null;
+    heatmapVisible: boolean;
+    heatmapOpacity: number;
+
     setImage: (src: string, width: number, height: number, name?: string, sampleId?: SampleId) => void;
     setActiveTool: (tool: ToolType) => void;
     setSelectedFeatureId: (id: string | null) => void;
@@ -262,6 +275,10 @@ interface EditorState {
     resetFeatureGroupVisibility: () => void;
     setOverlayVisibility: (key: OverlayVisibilityKey, visible: boolean) => void;
     setOverlayToggle: (key: keyof OverlayToggles, value: boolean) => void;
+
+    setHeatmapData: (data: { rgba: Uint8Array; width: number; height: number } | null) => void;
+    setHeatmapVisible: (visible: boolean) => void;
+    setHeatmapOpacity: (opacity: number) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -294,6 +311,9 @@ export const useEditorStore = create<EditorState>((set) => ({
         featureGroupVisibility: {},
         overlayToggles: DEFAULT_OVERLAY_TOGGLES,
         panelMode: 'configure',
+        heatmapData: null,
+        heatmapVisible: true,
+        heatmapOpacity: 0.5,
     }),
     setActiveTool: (tool) => set((state) => ({
         activeTool: tool,
@@ -418,6 +438,9 @@ export const useEditorStore = create<EditorState>((set) => ({
         featureGroupVisibility: {},
         overlayToggles: DEFAULT_OVERLAY_TOGGLES,
         panelMode: 'configure',
+        heatmapData: null,
+        heatmapVisible: true,
+        heatmapOpacity: 0.5,
     }),
     setFeatureGroupVisibility: (key, visible) => set((state) => ({
         featureGroupVisibility: { ...state.featureGroupVisibility, [key]: visible },
@@ -430,4 +453,11 @@ export const useEditorStore = create<EditorState>((set) => ({
     setOverlayToggle: (key, value) => set((state) => ({
         overlayToggles: { ...state.overlayToggles, [key]: value },
     })),
+
+    heatmapData: null,
+    heatmapVisible: true,
+    heatmapOpacity: 0.5,
+    setHeatmapData: (data) => set({ heatmapData: data }),
+    setHeatmapVisible: (visible) => set({ heatmapVisible: visible }),
+    setHeatmapOpacity: (opacity) => set({ heatmapOpacity: opacity }),
 }));

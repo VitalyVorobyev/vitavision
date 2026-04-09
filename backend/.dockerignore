@@ -1,7 +1,0 @@
-.venv/
-local_storage/
-__pycache__/
-*.pyc
-*.pyo
-.env
-.env.*

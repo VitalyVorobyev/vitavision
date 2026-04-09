@@ -1,6 +1,6 @@
 import type { AlgorithmDefinition, AlgorithmPreset, AlgorithmSummaryEntry, DiagnosticEntry } from "../types";
 import type { DirectedPointFeature, Feature } from "../../../../store/editor/useEditorStore";
-import { detectChessCorners, type ChessCornersResult } from "../../../../lib/api";
+import type { ChessCornersResult } from "../../../../lib/types";
 import { detectChessCornersWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 
 import ChessCornersConfigForm, { type ChessCornersConfig } from "./ChessCornersConfigForm";
@@ -61,18 +61,10 @@ export const chessCornersAlgorithm: AlgorithmDefinition = {
     blogSlug: "01-chess",
     initialConfig,
     presets,
-    executionModes: ["wasm", "server"],
+    executionModes: ["wasm"],
     ConfigComponent: ChessCornersConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async ({ key, storageMode, config }) => {
-        const typedConfig = config as ChessCornersConfig;
-        return detectChessCorners({
-            key,
-            storageMode,
-            useMlRefiner: typedConfig.useMlRefiner,
-            config: {
-                thresholdRel: typedConfig.thresholdRel,
-            },
-        });
+    run: async () => {
+        throw new Error("ChESS corner detection is only available via client-side WASM.");
     },
     runWasm: async ({ pixels, width, height, config }) => {
         const typedConfig = config as ChessCornersConfig;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { ChessCornersResult, CalibrationTargetResult } from "../../api";
+import type { ChessCornersResult, CalibrationTargetResult } from "../../types";
 
 /**
  * Tests for the WASM result adapter output shapes.
@@ -249,5 +249,157 @@ describe("Calibration Target WASM result shape", () => {
         const result = mockCalibTargetResult("chessboard", 0);
         expect(result.summary.corner_count).toBe(0);
         expect(result.detection.corners).toHaveLength(0);
+    });
+});
+
+// ── Radsym ───────────────────────────────────────────────────────────────────
+
+function mockRadsymResult(circleCount: number) {
+    const circles = Array.from({ length: circleCount }, (_, i) => ({
+        id: crypto.randomUUID(),
+        x: 100 + i * 30,
+        y: 150 + i * 20,
+        radius: 10 + i * 5,
+        score: 0.5 + i * 0.1,
+    }));
+
+    return {
+        status: "success" as const,
+        key: "wasm://local",
+        storage_mode: "local" as const,
+        image_width: 640,
+        image_height: 480,
+        frame: {
+            name: "image_px_center" as const,
+            origin: "top_left" as const,
+            x_axis: "right" as const,
+            y_axis: "down" as const,
+            units: "pixels" as const,
+        },
+        summary: {
+            count: circleCount,
+            runtime_ms: 33.7,
+        },
+        circles,
+    };
+}
+
+describe("Radsym WASM result shape", () => {
+    it("has all required RadsymResult fields", () => {
+        const result = mockRadsymResult(5);
+        expect(result.status).toBe("success");
+        expect(result.image_width).toBe(640);
+        expect(result.image_height).toBe(480);
+        expect(result.frame.name).toBe("image_px_center");
+        expect(result.summary.count).toBe(5);
+        expect(typeof result.summary.runtime_ms).toBe("number");
+    });
+
+    it("produces valid circle detections", () => {
+        const result = mockRadsymResult(3);
+        for (const circle of result.circles) {
+            expect(typeof circle.id).toBe("string");
+            expect(circle.id.length).toBeGreaterThan(0);
+            expect(typeof circle.x).toBe("number");
+            expect(typeof circle.y).toBe("number");
+            expect(typeof circle.radius).toBe("number");
+            expect(circle.radius).toBeGreaterThan(0);
+            expect(typeof circle.score).toBe("number");
+        }
+    });
+
+    it("handles empty detection", () => {
+        const result = mockRadsymResult(0);
+        expect(result.summary.count).toBe(0);
+        expect(result.circles).toHaveLength(0);
+    });
+
+    it("produces features compatible with toFeatures", () => {
+        const result = mockRadsymResult(2);
+        const circle = result.circles[0];
+        expect(circle).toHaveProperty("id");
+        expect(circle).toHaveProperty("x");
+        expect(circle).toHaveProperty("y");
+        expect(circle).toHaveProperty("radius");
+        expect(circle).toHaveProperty("score");
+    });
+});
+
+// ── Ringgrid WASM ────────────────────────────────────────────────────────────
+
+function mockRinggridWasmResult(markerCount: number) {
+    const markers = Array.from({ length: markerCount }, (_, i) => ({
+        id: i,
+        confidence: 0.8 + i * 0.02,
+        center: { x: 100 + i * 50, y: 200 + i * 30 },
+        ellipse_outer: { cx: 100 + i * 50, cy: 200 + i * 30, a: 20, b: 19, angle: 0.1 },
+        ellipse_inner: { cx: 100 + i * 50, cy: 200 + i * 30, a: 12, b: 11.5, angle: 0.1 },
+        decode: {
+            best_id: i,
+            best_rotation: 0,
+            best_dist: 1,
+            margin: 3,
+            decode_confidence: 0.9,
+        },
+        fit: {
+            rms_residual_outer: 0.5,
+            rms_residual_inner: 0.4,
+            ransac_inlier_ratio_outer: 0.95,
+            ransac_inlier_ratio_inner: 0.93,
+        },
+        board_xy_mm: { x: i * 8.0, y: 0 },
+    }));
+
+    return {
+        status: "success" as const,
+        key: "wasm://local",
+        storage_mode: "local" as const,
+        image_width: 1920,
+        image_height: 1080,
+        summary: {
+            marker_count: markerCount,
+            runtime_ms: 250.0,
+        },
+        markers,
+    };
+}
+
+describe("Ringgrid WASM result shape", () => {
+    it("has all required RinggridDetectResult fields", () => {
+        const result = mockRinggridWasmResult(10);
+        expect(result.status).toBe("success");
+        expect(result.image_width).toBe(1920);
+        expect(result.summary.marker_count).toBe(10);
+        expect(typeof result.summary.runtime_ms).toBe("number");
+    });
+
+    it("produces valid marker data", () => {
+        const result = mockRinggridWasmResult(3);
+        for (const marker of result.markers) {
+            expect(typeof marker.id).toBe("number");
+            expect(typeof marker.confidence).toBe("number");
+            expect(marker.center).toHaveProperty("x");
+            expect(marker.center).toHaveProperty("y");
+            expect(marker.ellipse_outer).toHaveProperty("cx");
+            expect(marker.ellipse_outer).toHaveProperty("a");
+            expect(marker.ellipse_outer).toHaveProperty("angle");
+            expect(marker.ellipse_inner).toHaveProperty("cx");
+        }
+    });
+
+    it("includes decode and fit data", () => {
+        const result = mockRinggridWasmResult(1);
+        const marker = result.markers[0];
+        expect(marker.decode).not.toBeNull();
+        expect(marker.decode!.best_id).toBe(0);
+        expect(typeof marker.decode!.decode_confidence).toBe("number");
+        expect(marker.fit).not.toBeNull();
+        expect(typeof marker.fit!.rms_residual_outer).toBe("number");
+    });
+
+    it("handles empty detection", () => {
+        const result = mockRinggridWasmResult(0);
+        expect(result.summary.marker_count).toBe(0);
+        expect(result.markers).toHaveLength(0);
     });
 });

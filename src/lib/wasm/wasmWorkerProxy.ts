@@ -5,7 +5,7 @@
  * for zero-copy pixel transfer.
  */
 
-import type { AlgorithmType, WorkerResponse } from "./wasmWorker";
+import type { AlgorithmType, WorkerCommand, WorkerResponse } from "./wasmWorker";
 
 let worker: Worker | null = null;
 let nextId = 0;
@@ -44,6 +44,7 @@ function postDetection(
     width: number,
     height: number,
     config: unknown,
+    command?: WorkerCommand,
 ): Promise<unknown> {
     return new Promise((resolve, reject) => {
         const id = nextId++;
@@ -51,7 +52,7 @@ function postDetection(
 
         const w = getWorker();
         w.postMessage(
-            { id, algorithm, pixels, width, height, config },
+            { id, command, algorithm, pixels, width, height, config },
             [pixels.buffer], // Transfer ownership for zero-copy
         );
     });
@@ -93,4 +94,35 @@ export async function detectMarkerboardWasm(
     config: unknown,
 ): Promise<unknown> {
     return postDetection("markerboard", pixels, width, height, config);
+}
+
+export async function detectRinggridWasm(
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    config: unknown,
+): Promise<unknown> {
+    return postDetection("ringgrid", pixels, width, height, config);
+}
+
+export async function detectRadsymWasm(
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    config: unknown,
+): Promise<unknown> {
+    return postDetection("radsym", pixels, width, height, config);
+}
+
+export async function generateRadsymHeatmap(
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    config: unknown,
+): Promise<{ rgba: Uint8Array; width: number; height: number }> {
+    return postDetection("radsym", pixels, width, height, config, "radsym-heatmap") as Promise<{
+        rgba: Uint8Array;
+        width: number;
+        height: number;
+    }>;
 }

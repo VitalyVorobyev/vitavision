@@ -11,10 +11,15 @@ export type AlgorithmType =
     | "chess-corners"
     | "chessboard"
     | "charuco"
-    | "markerboard";
+    | "markerboard"
+    | "ringgrid"
+    | "radsym";
+
+export type WorkerCommand = "detect" | "radsym-heatmap";
 
 export interface WorkerRequest {
     id: number;
+    command?: WorkerCommand;
     algorithm: AlgorithmType;
     pixels: Uint8Array;
     width: number;
@@ -51,6 +56,29 @@ async function getCalibModule() {
         });
     }
     return calibInit;
+}
+
+let ringgridInit: Promise<typeof import("@vitavision/ringgrid")> | null = null;
+let radsymInit: Promise<typeof import("@vitavision/radsym")> | null = null;
+
+async function getRinggridModule() {
+    if (!ringgridInit) {
+        ringgridInit = import("@vitavision/ringgrid").then(async (mod) => {
+            await mod.default();
+            return mod;
+        });
+    }
+    return ringgridInit;
+}
+
+async function getRadsymModule() {
+    if (!radsymInit) {
+        radsymInit = import("@vitavision/radsym").then(async (mod) => {
+            await mod.default();
+            return mod;
+        });
+    }
+    return radsymInit;
 }
 
 // ── Result adapters ──────────────────────────────────────────────────────────
@@ -156,6 +184,27 @@ function adaptChessCornersResult(
     };
 }
 
+/** Convert WASM point (which may be [x,y] array or {x,y} object) to {x,y}. */
+function toPoint(v: unknown): { x: number; y: number } {
+    if (Array.isArray(v)) return { x: v[0] as number, y: v[1] as number };
+    return v as { x: number; y: number };
+}
+
+function toPointOrNull(v: unknown): { x: number; y: number } | null {
+    if (v == null) return null;
+    return toPoint(v);
+}
+
+function toPointArray(v: unknown): Array<{ x: number; y: number }> {
+    const arr = v as Array<unknown>;
+    return arr.map(toPoint);
+}
+
+function toPointArrayOrNull(v: unknown): Array<{ x: number; y: number }> | null {
+    if (v == null) return null;
+    return toPointArray(v);
+}
+
 function adaptCalibTargetResult(
     raw: unknown,
     algorithm: "chessboard" | "charuco" | "markerboard",
@@ -200,12 +249,11 @@ function adaptCalibTargetResult(
     const detection = r.detection as { kind: string; corners: Array<Record<string, unknown>> };
     const kind = detection.kind;
 
-    // Map LabeledCorner { position: {x, y}, grid, id, target_position, score }
+    // Map LabeledCorner { position: [x, y], grid, id, target_position, score }
     // to CalibrationCorner { id, x, y, x_norm, y_norm, score, grid, corner_id, target_position }
     const corners = detection.corners.map((c, idx) => {
-        const pos = c.position as { x: number; y: number };
+        const pos = toPoint(c.position);
         const grid = c.grid as { i: number; j: number } | null;
-        const targetPos = c.target_position as { x: number; y: number } | null;
         return {
             id: crypto.randomUUID(),
             x: pos.x,
@@ -215,18 +263,16 @@ function adaptCalibTargetResult(
             score: (c.score as number) ?? 0,
             grid: grid ?? null,
             corner_id: (c.id as number) ?? idx,
-            target_position: targetPos ?? null,
+            target_position: toPointOrNull(c.target_position),
         };
     });
 
-    // Map markers for charuco
+    // Map markers for charuco — WASM returns corners as [[x,y], ...] arrays
     let markers = null;
     if (algorithm === "charuco" && r.markers) {
         const rawMarkers = r.markers as Array<Record<string, unknown>>;
         markers = rawMarkers.map((m) => {
             const gc = m.gc as { i: number; j: number };
-            const cornersRect = m.corners_rect as Array<{ x: number; y: number }>;
-            const cornersImg = m.corners_img as Array<{ x: number; y: number }> | null;
             return {
                 id: m.id as number,
                 grid_cell: { gx: gc.i, gy: gc.j },
@@ -236,8 +282,8 @@ function adaptCalibTargetResult(
                 border_score: m.border_score as number,
                 code: m.code as number,
                 inverted: m.inverted as boolean,
-                corners_rect: cornersRect,
-                corners_img: cornersImg,
+                corners_rect: toPointArray(m.corners_rect),
+                corners_img: toPointArrayOrNull(m.corners_img),
             };
         });
     }
@@ -249,7 +295,7 @@ function adaptCalibTargetResult(
     if (algorithm === "markerboard") {
         if (r.circle_candidates) {
             circleCandidates = (r.circle_candidates as Array<Record<string, unknown>>).map((cc) => ({
-                center_img: cc.center_img as { x: number; y: number },
+                center_img: toPoint(cc.center_img),
                 cell: cc.cell as { i: number; j: number },
                 polarity: cc.polarity as "white" | "black",
                 score: cc.score as number,
@@ -307,7 +353,201 @@ function adaptCalibTargetResult(
     };
 }
 
+function adaptRinggridResult(
+    jsonStr: string,
+    width: number,
+    height: number,
+    runtimeMs: number,
+) {
+    const raw = JSON.parse(jsonStr);
+    const detectedMarkers = raw.detected_markers as Array<Record<string, unknown>> ?? [];
+
+    const markers = detectedMarkers.map((m) => {
+        const center = m.center as number[];
+        const ellipseOuter = m.ellipse_outer as Record<string, number>;
+        const ellipseInner = m.ellipse_inner as Record<string, number> | undefined;
+        const decode = m.decode as Record<string, unknown> | null;
+        const fit = m.fit as Record<string, unknown> | null;
+        const boardXy = m.board_xy_mm as number[] | null;
+
+        return {
+            id: decode ? (decode.best_id as number) : 0,
+            confidence: (m.confidence as number) ?? 0,
+            center: { x: center[0], y: center[1] },
+            ellipse_outer: {
+                cx: ellipseOuter.cx,
+                cy: ellipseOuter.cy,
+                a: ellipseOuter.a,
+                b: ellipseOuter.b,
+                angle: ellipseOuter.angle,
+            },
+            ellipse_inner: ellipseInner ? {
+                cx: ellipseInner.cx,
+                cy: ellipseInner.cy,
+                a: ellipseInner.a,
+                b: ellipseInner.b,
+                angle: ellipseInner.angle,
+            } : { cx: center[0], cy: center[1], a: 0, b: 0, angle: 0 },
+            decode: decode ? {
+                best_id: decode.best_id as number,
+                best_rotation: decode.best_rotation as number,
+                best_dist: decode.best_dist as number,
+                margin: decode.margin as number,
+                decode_confidence: decode.confidence as number,
+            } : null,
+            fit: fit ? {
+                rms_residual_outer: (fit.rms_residual_outer as number) ?? null,
+                rms_residual_inner: (fit.rms_residual_inner as number) ?? null,
+                ransac_inlier_ratio_outer: (fit.ransac_inlier_ratio_outer as number) ?? null,
+                ransac_inlier_ratio_inner: (fit.ransac_inlier_ratio_inner as number) ?? null,
+            } : null,
+            board_xy_mm: boardXy ? { x: boardXy[0], y: boardXy[1] } : null,
+        };
+    });
+
+    return {
+        status: "success" as const,
+        key: "wasm://local",
+        storage_mode: "local" as const,
+        image_width: width,
+        image_height: height,
+        summary: {
+            marker_count: markers.length,
+            runtime_ms: runtimeMs,
+        },
+        markers,
+    };
+}
+
+function adaptRadsymResult(
+    raw: Float32Array,
+    width: number,
+    height: number,
+    runtimeMs: number,
+) {
+    const stride = 4; // x, y, radius, score
+    const count = raw.length / stride;
+    const circles = [];
+
+    for (let i = 0; i < count; i++) {
+        const x = raw[i * stride];
+        const y = raw[i * stride + 1];
+        const radius = raw[i * stride + 2];
+        const score = raw[i * stride + 3];
+
+        if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(radius)) continue;
+
+        circles.push({
+            id: crypto.randomUUID(),
+            x,
+            y,
+            radius,
+            score,
+        });
+    }
+
+    // Sort by score descending
+    circles.sort((a, b) => b.score - a.score);
+
+    return {
+        status: "success" as const,
+        key: "wasm://local",
+        storage_mode: "local" as const,
+        image_width: width,
+        image_height: height,
+        frame: {
+            name: "image_px_center" as const,
+            origin: "top_left" as const,
+            x_axis: "right" as const,
+            y_axis: "down" as const,
+            units: "pixels" as const,
+        },
+        summary: {
+            count: circles.length,
+            runtime_ms: runtimeMs,
+        },
+        circles,
+    };
+}
+
 // ── Detection handlers ───────────────────────────────────────────────────────
+
+async function handleRinggrid(
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    config: Record<string, unknown>,
+) {
+    const mod = await getRinggridModule();
+
+    // Start from WASM defaults, override with user-provided fields
+    const defaults = JSON.parse(mod.default_board_json()) as Record<string, unknown>;
+    const userBoard = config.boardJson
+        ? JSON.parse(config.boardJson as string) as Record<string, unknown>
+        : {};
+    const merged = { ...defaults, ...userBoard };
+    const boardJson = JSON.stringify(merged);
+
+    const detector = new mod.RinggridDetector(boardJson);
+
+    const t0 = performance.now();
+    const resultJson = detector.detect_adaptive_rgba(pixels, width, height);
+    const runtimeMs = performance.now() - t0;
+
+    return adaptRinggridResult(resultJson, width, height, runtimeMs);
+}
+
+async function handleRadsym(
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    config: Record<string, unknown>,
+) {
+    const mod = await getRadsymModule();
+    const processor = new mod.RadSymProcessor();
+
+    // Apply config
+    if (config.radii) processor.set_radii(config.radii as Uint32Array);
+    if (config.alpha != null) processor.set_alpha(config.alpha as number);
+    if (config.gradientThreshold != null) processor.set_gradient_threshold(config.gradientThreshold as number);
+    if (config.smoothingFactor != null) processor.set_smoothing_factor(config.smoothingFactor as number);
+    if (config.nmsRadius != null) processor.set_nms_radius(config.nmsRadius as number);
+    if (config.nmsThreshold != null) processor.set_nms_threshold(config.nmsThreshold as number);
+    if (config.maxDetections != null) processor.set_max_detections(config.maxDetections as number);
+    if (config.polarity) processor.set_polarity(config.polarity as string);
+    if (config.radiusHint != null) processor.set_radius_hint(config.radiusHint as number);
+    if (config.minScore != null) processor.set_min_score(config.minScore as number);
+    if (config.gradientOperator) processor.set_gradient_operator(config.gradientOperator as string);
+
+    const t0 = performance.now();
+    const result = processor.detect_circles(pixels, width, height);
+    const runtimeMs = performance.now() - t0;
+
+    return adaptRadsymResult(result, width, height, runtimeMs);
+}
+
+async function handleRadsymHeatmap(
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    config: Record<string, unknown>,
+): Promise<{ rgba: Uint8Array; width: number; height: number }> {
+    const mod = await getRadsymModule();
+    const processor = new mod.RadSymProcessor();
+
+    // Apply config (same as detection)
+    if (config.radii) processor.set_radii(config.radii as Uint32Array);
+    if (config.alpha != null) processor.set_alpha(config.alpha as number);
+    if (config.gradientThreshold != null) processor.set_gradient_threshold(config.gradientThreshold as number);
+    if (config.smoothingFactor != null) processor.set_smoothing_factor(config.smoothingFactor as number);
+    if (config.polarity) processor.set_polarity(config.polarity as string);
+    if (config.gradientOperator) processor.set_gradient_operator(config.gradientOperator as string);
+
+    const colormap = (config.colormap as string) ?? "magma";
+    const rgba = processor.response_heatmap(pixels, width, height, colormap);
+
+    return { rgba, width, height };
+}
 
 async function handleChessCorners(
     pixels: Uint8Array,
@@ -331,6 +571,24 @@ async function handleChessCorners(
     return adaptChessCornersResult(result, width, height, config, runtimeMs);
 }
 
+/**
+ * Deep-merge source into target, overwriting only leaf values present in source.
+ * Arrays are replaced entirely (not merged element-wise).
+ */
+function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
+    const out = { ...target };
+    for (const key of Object.keys(source)) {
+        const sv = source[key];
+        const tv = target[key];
+        if (sv !== null && typeof sv === "object" && !Array.isArray(sv) && tv !== null && typeof tv === "object" && !Array.isArray(tv)) {
+            out[key] = deepMerge(tv as Record<string, unknown>, sv as Record<string, unknown>);
+        } else {
+            out[key] = sv;
+        }
+    }
+    return out;
+}
+
 async function handleCalibTarget(
     algorithm: "chessboard" | "charuco" | "markerboard",
     pixels: Uint8Array,
@@ -343,19 +601,33 @@ async function handleCalibTarget(
     // Convert RGBA to grayscale
     const gray = mod.rgba_to_gray(pixels, width, height);
 
-    // Build chess config override
-    const chessCfg = config.chessCfg ?? undefined;
+    // Start from WASM defaults and merge user overrides
+    const chessCfg = config.chessCfg
+        ? deepMerge(mod.default_chess_config(), config.chessCfg as Record<string, unknown>)
+        : undefined;
 
     const t0 = performance.now();
     let result: unknown;
 
     if (algorithm === "chessboard") {
-        const params = config.params ?? mod.default_chessboard_params();
+        const defaults = mod.default_chessboard_params() as Record<string, unknown>;
+        const userParams = (config.params ?? {}) as Record<string, unknown>;
+        const params = deepMerge(defaults, userParams);
         result = mod.detect_chessboard(width, height, gray, chessCfg, params);
     } else if (algorithm === "charuco") {
-        result = mod.detect_charuco(width, height, gray, chessCfg, config.params);
+        // Charuco has no dedicated defaults function.
+        // Its `chessboard` sub-object uses the same schema as standalone chessboard params —
+        // merge user overrides on top of chessboard defaults for that section.
+        const userParams = (config.params ?? {}) as Record<string, unknown>;
+        const userChessboard = (userParams.chessboard ?? {}) as Record<string, unknown>;
+        const chessboardDefaults = mod.default_chessboard_params() as Record<string, unknown>;
+        const mergedChessboard = deepMerge(chessboardDefaults, userChessboard);
+        const params = { ...userParams, chessboard: mergedChessboard };
+        result = mod.detect_charuco(width, height, gray, chessCfg, params);
     } else {
-        const params = config.params ?? mod.default_marker_board_params();
+        const defaults = mod.default_marker_board_params() as Record<string, unknown>;
+        const userParams = (config.params ?? {}) as Record<string, unknown>;
+        const params = deepMerge(defaults, userParams);
         result = mod.detect_marker_board(width, height, gray, chessCfg, params);
     }
 
@@ -367,14 +639,27 @@ async function handleCalibTarget(
 // ── Message handler ──────────────────────────────────────────────────────────
 
 self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
-    const { id, algorithm, pixels, width, height, config } = event.data;
+    const { id, command, algorithm, pixels, width, height, config } = event.data;
     const typedConfig = config as Record<string, unknown>;
 
     try {
         let result: unknown;
 
+        if ((command ?? "detect") === "radsym-heatmap") {
+            const heatmap = await handleRadsymHeatmap(pixels, width, height, typedConfig);
+            (self as unknown as Worker).postMessage(
+                { id, result: heatmap } satisfies WorkerResponse,
+                [heatmap.rgba.buffer],
+            );
+            return;
+        }
+
         if (algorithm === "chess-corners") {
             result = await handleChessCorners(pixels, width, height, typedConfig);
+        } else if (algorithm === "ringgrid") {
+            result = await handleRinggrid(pixels, width, height, typedConfig);
+        } else if (algorithm === "radsym") {
+            result = await handleRadsym(pixels, width, height, typedConfig);
         } else {
             result = await handleCalibTarget(algorithm, pixels, width, height, typedConfig);
         }

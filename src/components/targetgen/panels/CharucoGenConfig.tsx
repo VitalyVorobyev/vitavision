@@ -1,6 +1,6 @@
 import { Section, NumberField, SelectField } from "../../editor/algorithms/formFields";
 import type { CharucoConfig, TargetGeneratorAction } from "../types";
-import type { DictionaryName } from "../../../lib/api";
+import type { DictionaryName } from "../../../lib/types";
 
 const DICTIONARY_OPTIONS: { value: DictionaryName; label: string }[] = [
     { value: "DICT_4X4_50", label: "4x4 (50)" },

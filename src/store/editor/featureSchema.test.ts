@@ -189,3 +189,71 @@ describe("featuresArraySchema", () => {
         expect(result.success).toBe(false);
     });
 });
+
+describe("circleFeatureSchema", () => {
+    it("accepts a valid circle feature", () => {
+        const result = featureSchema.safeParse({
+            type: "circle",
+            x: 100,
+            y: 200,
+            radius: 15.5,
+        });
+        expect(result.success).toBe(true);
+    });
+
+    it("accepts a circle with score", () => {
+        const result = featureSchema.safeParse({
+            type: "circle",
+            x: 50,
+            y: 75,
+            radius: 10,
+            score: 0.85,
+        });
+        expect(result.success).toBe(true);
+    });
+
+    it("rejects a circle with zero radius", () => {
+        const result = featureSchema.safeParse({
+            type: "circle",
+            x: 100,
+            y: 200,
+            radius: 0,
+        });
+        expect(result.success).toBe(false);
+    });
+
+    it("rejects a circle with negative radius", () => {
+        const result = featureSchema.safeParse({
+            type: "circle",
+            x: 100,
+            y: 200,
+            radius: -5,
+        });
+        expect(result.success).toBe(false);
+    });
+
+    it("rejects a circle without radius", () => {
+        const result = featureSchema.safeParse({
+            type: "circle",
+            x: 100,
+            y: 200,
+        });
+        expect(result.success).toBe(false);
+    });
+
+    it("accepts a circle with algorithm metadata", () => {
+        const result = featureSchema.safeParse({
+            type: "circle",
+            x: 100,
+            y: 200,
+            radius: 12,
+            score: 0.9,
+            source: "algorithm",
+            algorithmId: "radsym",
+            runId: "run-123",
+            readonly: true,
+            meta: { kind: "radsym", score: 0.9 },
+        });
+        expect(result.success).toBe(true);
+    });
+});

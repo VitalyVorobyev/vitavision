@@ -1,6 +1,6 @@
 import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
-import type { CalibrationTargetResult } from "../../../../lib/api";
-import { detectCalibrationTarget } from "../../../../lib/api";
+import type { CalibrationTargetResult } from "../../../../lib/types";
+import { detectMarkerboardWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 import {
     calibrationCornerFeatures,
     calibrationCircleMatchFeatures,
@@ -64,42 +64,47 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
     description: "Detect checkerboard corners and fiducial circle markers.",
     initialConfig,
     presets,
+    executionModes: ["wasm"],
     sampleDefaults: {
         markerboard: { ...initialConfig },
     },
     ConfigComponent: MarkerBoardConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async ({ key, storageMode, config }) => {
+    run: async () => {
+        throw new Error("Marker Board detection is only available via client-side WASM.");
+    },
+    runWasm: async ({ pixels, width, height, config }) => {
         const c = config as MarkerBoardConfig;
-        return detectCalibrationTarget({
-            algorithm: "markerboard",
-            key,
-            storageMode,
-            config: {
+        return detectMarkerboardWasm(pixels, width, height, {
+            chessCfg: { threshold_value: c.minCornerStrength },
+            params: {
                 layout: {
                     rows: c.boardRows,
                     cols: c.boardCols,
-                    circles: c.circles,
+                    circles: c.circles.map((circle) => ({
+                        cell: { i: circle.i, j: circle.j },
+                        polarity: circle.polarity,
+                    })),
                 },
                 chessboard: {
-                    expectedRows: c.expectedRows,
-                    expectedCols: c.expectedCols,
-                    minCornerStrength: c.minCornerStrength,
-                    completenessThreshold: c.completenessThreshold,
+                    min_corner_strength: c.minCornerStrength,
+                    expected_rows: c.expectedRows,
+                    expected_cols: c.expectedCols,
+                    completeness_threshold: c.completenessThreshold,
+                    graph: {
+                        min_spacing_pix: c.graphMinSpacingPix,
+                        max_spacing_pix: c.graphMaxSpacingPix,
+                        k_neighbors: c.graphKNeighbors,
+                        orientation_tolerance_deg: c.graphOrientationToleranceDeg,
+                    },
                 },
-                gridGraph: {
-                    minSpacingPix: c.graphMinSpacingPix,
-                    maxSpacingPix: c.graphMaxSpacingPix,
-                    kNeighbors: c.graphKNeighbors,
-                    orientationToleranceDeg: c.graphOrientationToleranceDeg,
-                },
-                circleScore: {
-                    patchSize: c.circleScorePatchSize,
-                    diameterFrac: c.circleScoreDiameterFrac,
-                    ringThicknessFrac: c.circleScoreRingThicknessFrac,
-                    ringRadiusMul: c.circleScoreRingRadiusMul,
-                    minContrast: c.circleScoreMinContrast,
+                circle_score: {
+                    patch_size: c.circleScorePatchSize,
+                    diameter_frac: c.circleScoreDiameterFrac,
+                    ring_thickness_frac: c.circleScoreRingThicknessFrac,
+                    ring_radius_mul: c.circleScoreRingRadiusMul,
+                    min_contrast: c.circleScoreMinContrast,
                     samples: c.circleScoreSamples,
-                    centerSearchPx: c.circleScoreCenterSearchPx,
+                    center_search_px: c.circleScoreCenterSearchPx,
                 },
             },
         });

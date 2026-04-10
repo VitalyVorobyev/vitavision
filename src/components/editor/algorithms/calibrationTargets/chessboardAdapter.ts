@@ -1,6 +1,6 @@
 import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
-import type { CalibrationTargetResult } from "../../../../lib/api";
-import { detectCalibrationTarget } from "../../../../lib/api";
+import type { CalibrationTargetResult } from "../../../../lib/types";
+import { detectChessboardWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 import { calibrationCornerFeatures, calibrationSummary } from "./shared";
 import ChessboardConfigForm, { type ChessboardConfig } from "./ChessboardConfigForm";
 import ChessboardOverlay from "../../canvas/overlays/ChessboardOverlay";
@@ -34,6 +34,7 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
     description: "Detect labeled chessboard corner grid with subpixel accuracy.",
     initialConfig,
     presets,
+    executionModes: ["wasm"],
     sampleDefaults: {
         chessboard: {
             expectedRows: 7,
@@ -43,18 +44,23 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
         },
     },
     ConfigComponent: ChessboardConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async ({ key, storageMode, config }) => {
+    run: async () => {
+        throw new Error("Chessboard detection is only available via client-side WASM.");
+    },
+    runWasm: async ({ pixels, width, height, config }) => {
         const c = config as ChessboardConfig;
-        return detectCalibrationTarget({
-            algorithm: "chessboard",
-            key,
-            storageMode,
-            config: {
-                detector: {
-                    expectedRows: c.expectedRows,
-                    expectedCols: c.expectedCols,
-                    minCornerStrength: c.minCornerStrength,
-                    completenessThreshold: c.completenessThreshold,
+        return detectChessboardWasm(pixels, width, height, {
+            chessCfg: { threshold_value: c.minCornerStrength },
+            params: {
+                min_corner_strength: c.minCornerStrength,
+                completeness_threshold: c.completenessThreshold,
+                expected_rows: c.expectedRows,
+                expected_cols: c.expectedCols,
+                graph: {
+                    min_spacing_pix: 5,
+                    max_spacing_pix: 50,
+                    k_neighbors: 8,
+                    orientation_tolerance_deg: 22.5,
                 },
             },
         });

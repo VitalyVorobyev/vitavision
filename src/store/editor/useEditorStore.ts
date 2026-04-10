@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { featureSchema } from './featureSchema';
 
 export type ToolType = 'SELECT' | 'POINT' | 'LINE' | 'POLYLINE' | 'POLYGON' | 'BBOX' | 'ELLIPSE';
-export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point' | 'ring_marker' | 'aruco_marker';
+export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point' | 'ring_marker' | 'aruco_marker' | 'circle';
 export type FeatureSource = 'manual' | 'algorithm';
 export type SampleId = 'chessboard' | 'charuco' | 'markerboard' | 'ringgrid' | 'upload';
 
@@ -133,6 +133,14 @@ export interface ArUcoMarkerFeature extends BaseFeature {
     corners: [number, number, number, number, number, number, number, number];
 }
 
+export interface CircleFeature extends BaseFeature {
+    type: 'circle';
+    x: number;
+    y: number;
+    radius: number;
+    score?: number;
+}
+
 export type Feature =
     | PointFeature
     | LineFeature
@@ -142,7 +150,8 @@ export type Feature =
     | EllipseFeature
     | DirectedPointFeature
     | RingMarkerFeature
-    | ArUcoMarkerFeature;
+    | ArUcoMarkerFeature
+    | CircleFeature;
 
 export interface GalleryImage {
     id: string;
@@ -230,11 +239,17 @@ interface EditorState {
     galleryImages: GalleryImage[];
 
     panelMode: PanelMode;
+    selectedAlgorithmId: string;
     lastAlgorithmResult: { algorithmId: string; result: unknown } | null;
     runHistory: RunHistoryEntry[];
     overlayVisibility: Record<OverlayVisibilityKey, boolean>;
     featureGroupVisibility: Record<string, boolean>;
     overlayToggles: OverlayToggles;
+
+    heatmapData: { rgba: Uint8Array; width: number; height: number } | null;
+    heatmapVisible: boolean;
+    heatmapOpacity: number;
+    heatmapColormap: "magma" | "jet" | "hot";
 
     setImage: (src: string, width: number, height: number, name?: string, sampleId?: SampleId) => void;
     setActiveTool: (tool: ToolType) => void;
@@ -254,6 +269,7 @@ interface EditorState {
     addGalleryImage: (img: GalleryImage) => void;
 
     setPanelMode: (mode: PanelMode) => void;
+    setSelectedAlgorithmId: (id: string) => void;
     setLastAlgorithmResult: (algorithmId: string, result: unknown) => void;
     addRunToHistory: (entry: RunHistoryEntry) => void;
     clearRunHistory: () => void;
@@ -262,6 +278,11 @@ interface EditorState {
     resetFeatureGroupVisibility: () => void;
     setOverlayVisibility: (key: OverlayVisibilityKey, visible: boolean) => void;
     setOverlayToggle: (key: keyof OverlayToggles, value: boolean) => void;
+
+    setHeatmapData: (data: { rgba: Uint8Array; width: number; height: number } | null) => void;
+    setHeatmapVisible: (visible: boolean) => void;
+    setHeatmapOpacity: (opacity: number) => void;
+    setHeatmapColormap: (colormap: "magma" | "jet" | "hot") => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -294,6 +315,10 @@ export const useEditorStore = create<EditorState>((set) => ({
         featureGroupVisibility: {},
         overlayToggles: DEFAULT_OVERLAY_TOGGLES,
         panelMode: 'configure',
+        heatmapData: null,
+        heatmapVisible: true,
+        heatmapOpacity: 0.5,
+        heatmapColormap: 'magma',
     }),
     setActiveTool: (tool) => set((state) => ({
         activeTool: tool,
@@ -387,13 +412,14 @@ export const useEditorStore = create<EditorState>((set) => ({
             name: 'Ring Grid',
             sampleId: 'ringgrid',
             description: 'Hex-lattice concentric ring markers with binary code bands.',
-            recommendedAlgorithms: ['Ring Grid'],
+            recommendedAlgorithms: ['Ring Grid', 'Radial Symmetry'],
         },
     ],
     setGalleryMode: (mode) => set({ galleryMode: mode }),
     addGalleryImage: (img) => set((state) => ({ galleryImages: [...state.galleryImages, img] })),
 
     panelMode: 'configure',
+    selectedAlgorithmId: 'chess-corners',
     lastAlgorithmResult: null,
     runHistory: [],
     overlayVisibility: { features: true, algorithmOverlay: true },
@@ -401,6 +427,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     overlayToggles: DEFAULT_OVERLAY_TOGGLES,
 
     setPanelMode: (mode) => set({ panelMode: mode }),
+    setSelectedAlgorithmId: (id) => set({ selectedAlgorithmId: id }),
     setLastAlgorithmResult: (algorithmId, result) => set({
         lastAlgorithmResult: { algorithmId, result },
     }),
@@ -418,6 +445,10 @@ export const useEditorStore = create<EditorState>((set) => ({
         featureGroupVisibility: {},
         overlayToggles: DEFAULT_OVERLAY_TOGGLES,
         panelMode: 'configure',
+        heatmapData: null,
+        heatmapVisible: true,
+        heatmapOpacity: 0.5,
+        heatmapColormap: 'magma',
     }),
     setFeatureGroupVisibility: (key, visible) => set((state) => ({
         featureGroupVisibility: { ...state.featureGroupVisibility, [key]: visible },
@@ -430,4 +461,13 @@ export const useEditorStore = create<EditorState>((set) => ({
     setOverlayToggle: (key, value) => set((state) => ({
         overlayToggles: { ...state.overlayToggles, [key]: value },
     })),
+
+    heatmapData: null,
+    heatmapVisible: true,
+    heatmapOpacity: 0.5,
+    heatmapColormap: 'magma',
+    setHeatmapData: (data) => set({ heatmapData: data }),
+    setHeatmapVisible: (visible) => set({ heatmapVisible: visible }),
+    setHeatmapOpacity: (opacity) => set({ heatmapOpacity: opacity }),
+    setHeatmapColormap: (colormap) => set({ heatmapColormap: colormap }),
 }));

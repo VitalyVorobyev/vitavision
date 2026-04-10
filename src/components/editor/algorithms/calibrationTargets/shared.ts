@@ -3,7 +3,7 @@ import type {
     CalibrationCircleMatch,
     CalibrationMarker,
     CalibrationTargetResult,
-} from "../../../../lib/api";
+} from "../../../../lib/types";
 import { overlayTheme } from "../../canvas/overlays/overlayTheme";
 import type { ArUcoMarkerFeature, Feature } from "../../../../store/editor/useEditorStore";
 

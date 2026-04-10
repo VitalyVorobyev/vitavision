@@ -1,6 +1,6 @@
 import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
-import type { CalibrationTargetResult } from "../../../../lib/api";
-import { detectCalibrationTarget } from "../../../../lib/api";
+import type { CalibrationTargetResult } from "../../../../lib/types";
+import { detectCharucoWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 import { calibrationCornerFeatures, calibrationMarkerFeatures, calibrationSummary } from "./shared";
 import CharucoConfigForm, { type CharucoConfig } from "./CharucoConfigForm";
 import CharucoOverlay from "../../canvas/overlays/CharucoOverlay";
@@ -52,36 +52,39 @@ export const charucoAlgorithm: AlgorithmDefinition = {
     description: "Detect ChArUco board corners and embedded ArUco markers.",
     initialConfig,
     presets,
+    executionModes: ["wasm"],
     sampleDefaults: {
         charuco: { ...initialConfig },
     },
     ConfigComponent: CharucoConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async ({ key, storageMode, config }) => {
+    run: async () => {
+        throw new Error("ChArUco detection is only available via client-side WASM.");
+    },
+    runWasm: async ({ pixels, width, height, config }) => {
         const c = config as CharucoConfig;
-        return detectCalibrationTarget({
-            algorithm: "charuco",
-            key,
-            storageMode,
-            config: {
+        return detectCharucoWasm(pixels, width, height, {
+            chessCfg: { threshold_value: c.chessMinCornerStrength },
+            params: {
+                px_per_square: c.pxPerSquare,
                 board: {
                     rows: c.rows,
                     cols: c.cols,
-                    cellSize: c.cellSize,
-                    markerSizeRel: c.markerSizeRel,
+                    cell_size: c.cellSize,
+                    marker_size_rel: c.markerSizeRel,
                     dictionary: c.dictionary,
+                    marker_layout: "opencv_charuco",
                 },
-                pxPerSquare: c.pxPerSquare,
                 chessboard: {
-                    expectedRows: c.chessExpectedRows,
-                    expectedCols: c.chessExpectedCols,
-                    minCornerStrength: c.chessMinCornerStrength,
-                    completenessThreshold: c.chessCompletenessThreshold,
-                },
-                graph: {
-                    minSpacingPix: c.graphMinSpacingPix,
-                    maxSpacingPix: c.graphMaxSpacingPix,
-                    kNeighbors: c.graphKNeighbors,
-                    orientationToleranceDeg: c.graphOrientationToleranceDeg,
+                    min_corner_strength: c.chessMinCornerStrength,
+                    expected_rows: c.chessExpectedRows,
+                    expected_cols: c.chessExpectedCols,
+                    completeness_threshold: c.chessCompletenessThreshold,
+                    graph: {
+                        min_spacing_pix: c.graphMinSpacingPix,
+                        max_spacing_pix: c.graphMaxSpacingPix,
+                        k_neighbors: c.graphKNeighbors,
+                        orientation_tolerance_deg: c.graphOrientationToleranceDeg,
+                    },
                 },
             },
         });

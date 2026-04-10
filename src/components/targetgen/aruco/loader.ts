@@ -1,4 +1,4 @@
-import type { DictionaryName } from "../../../lib/api";
+import type { DictionaryName } from "../../../lib/types";
 import type { ArucoDictionary } from "./types";
 
 const cache = new Map<string, ArucoDictionary>();

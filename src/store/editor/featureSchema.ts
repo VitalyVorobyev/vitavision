@@ -104,6 +104,14 @@ const arucoMarkerFeatureSchema = baseFeatureSchema.extend({
     ]),
 });
 
+const circleFeatureSchema = baseFeatureSchema.extend({
+    type: z.literal("circle"),
+    x: z.number(),
+    y: z.number(),
+    radius: z.number().positive(),
+    score: z.number().optional(),
+});
+
 export const featureSchema = z.discriminatedUnion("type", [
     pointFeatureSchema,
     lineFeatureSchema,
@@ -114,6 +122,7 @@ export const featureSchema = z.discriminatedUnion("type", [
     directedPointFeatureSchema,
     ringMarkerFeatureSchema,
     arucoMarkerFeatureSchema,
+    circleFeatureSchema,
 ]);
 
 export const featuresArraySchema = z.array(featureSchema);

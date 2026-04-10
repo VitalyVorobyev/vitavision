@@ -89,6 +89,7 @@ export default function EditorGallery() {
                                 <img
                                     src={img.src}
                                     alt={img.name}
+                                    loading="lazy"
                                     className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
                                 />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />

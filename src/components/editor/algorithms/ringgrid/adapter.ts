@@ -11,10 +11,18 @@ const initialConfig: RinggridConfig = {
     rows: 15,
     longRowCols: 14,
     pitchMm: 8.0,
-    markerOuterRadiusMm: 5.6,
+    markerOuterRadiusMm: 4.8,
     markerInnerRadiusMm: 3.2,
-    markerRingWidthMm: 0.8,
+    markerRingWidthMm: 1.152,
     profile: "baseline",
+    diameterMinPx: 14,
+    diameterMaxPx: 66,
+    gradThreshold: 0.05,
+    edgeThinning: true,
+    maxDecodeDist: 3,
+    minDecodeConfidence: 0.3,
+    enableCompletion: true,
+    enableSelfUndistort: false,
 };
 
 const toSummary = (result: RinggridDetectResult): AlgorithmSummaryEntry[] => [
@@ -30,8 +38,8 @@ const toDiagnostics = (result: RinggridDetectResult): DiagnosticEntry[] => {
 };
 
 const toFeatures = (result: RinggridDetectResult, runId: string): Feature[] => {
-    return result.markers.map((marker): RingMarkerFeature => ({
-        id: `rg-${marker.id}-${runId}`,
+    return result.markers.map((marker, index): RingMarkerFeature => ({
+        id: `rg-${index}-${runId}`,
         type: "ring_marker",
         source: "algorithm",
         algorithmId: "ringgrid",
@@ -54,7 +62,7 @@ const toFeatures = (result: RinggridDetectResult, runId: string): Feature[] => {
             angleDeg: marker.ellipse_inner.angle * RAD_TO_DEG,
         },
         meta: {
-            kind: "ringgrid",
+            kind: marker.decode ? "ringgrid_decoded" : "ringgrid_proposal",
             markerId: marker.id,
             score: marker.confidence,
             rotation: marker.decode?.best_rotation,
@@ -81,8 +89,6 @@ export const ringgridAlgorithm: AlgorithmDefinition = {
     },
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as RinggridConfig;
-        // Only override fields the user configured; the worker merges with
-        // WASM defaults (which provide schema, name, etc.)
         const boardJson = JSON.stringify({
             rows: c.rows,
             long_row_cols: c.longRowCols,
@@ -91,7 +97,24 @@ export const ringgridAlgorithm: AlgorithmDefinition = {
             marker_inner_radius_mm: c.markerInnerRadiusMm,
             marker_ring_width_mm: c.markerRingWidthMm,
         });
-        return detectRinggridWasm(pixels, width, height, { boardJson });
+        const configOverlay = JSON.stringify({
+            marker_scale: {
+                diameter_min_px: c.diameterMinPx,
+                diameter_max_px: c.diameterMaxPx,
+            },
+            proposal: {
+                grad_threshold: c.gradThreshold,
+                edge_thinning: c.edgeThinning,
+            },
+            decode: {
+                codebook_profile: c.profile === "extended" ? "extended" : "base",
+                max_decode_dist: c.maxDecodeDist,
+                min_decode_confidence: c.minDecodeConfidence,
+            },
+            completion: { enable: c.enableCompletion },
+            self_undistort: { enable: c.enableSelfUndistort },
+        });
+        return detectRinggridWasm(pixels, width, height, { boardJson, configOverlay });
     },
     toFeatures: (result, runId) => toFeatures(result as RinggridDetectResult, runId),
     summary: (result) => toSummary(result as RinggridDetectResult),

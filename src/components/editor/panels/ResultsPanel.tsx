@@ -34,11 +34,11 @@ function DiagnosticsList({ entries }: { entries: DiagnosticEntry[] }) {
     if (entries.length === 0) return null;
     return (
         <div className="space-y-1.5">
-            {entries.map((entry, i) => {
+            {entries.map((entry) => {
                 const style = diagnosticStyles[entry.level];
                 const Icon = style.icon;
                 return (
-                    <div key={i} className={`flex items-start gap-2 rounded-lg border ${style.border} ${style.bg} px-3 py-2`}>
+                    <div key={`${entry.level}-${entry.message}`} className={`flex items-start gap-2 rounded-lg border ${style.border} ${style.bg} px-3 py-2`}>
                         <Icon size={13} className={`${style.text} shrink-0 mt-0.5`} />
                         <div>
                             <p className={`text-xs font-medium ${style.text}`}>{entry.message}</p>
@@ -57,6 +57,7 @@ export default function ResultsPanel() {
     const {
         lastAlgorithmResult, setPanelMode,
         heatmapData, heatmapVisible, setHeatmapVisible, heatmapOpacity, setHeatmapOpacity,
+        heatmapColormap, setHeatmapColormap,
     } = useEditorStore(useShallow((s) => ({
         lastAlgorithmResult: s.lastAlgorithmResult,
         setPanelMode: s.setPanelMode,
@@ -65,6 +66,8 @@ export default function ResultsPanel() {
         setHeatmapVisible: s.setHeatmapVisible,
         heatmapOpacity: s.heatmapOpacity,
         setHeatmapOpacity: s.setHeatmapOpacity,
+        heatmapColormap: s.heatmapColormap,
+        setHeatmapColormap: s.setHeatmapColormap,
     })));
 
     const algo = useMemo(() => {
@@ -122,21 +125,35 @@ export default function ResultsPanel() {
                             {heatmapVisible ? "Hide heatmap" : "Show heatmap"}
                         </button>
                         {heatmapVisible && (
-                            <div className="flex items-center gap-2">
-                                <span className="text-[10px] text-muted-foreground whitespace-nowrap">Opacity</span>
-                                <input
-                                    type="range"
-                                    min={0}
-                                    max={1}
-                                    step={0.05}
-                                    value={heatmapOpacity}
-                                    onChange={(e) => setHeatmapOpacity(parseFloat(e.target.value))}
-                                    className="flex-1 h-1 accent-primary"
-                                />
-                                <span className="text-[10px] text-muted-foreground w-8 text-right">
-                                    {Math.round(heatmapOpacity * 100)}%
-                                </span>
-                            </div>
+                            <>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">Opacity</span>
+                                    <input
+                                        type="range"
+                                        min={0}
+                                        max={1}
+                                        step={0.05}
+                                        value={heatmapOpacity}
+                                        onChange={(e) => setHeatmapOpacity(parseFloat(e.target.value))}
+                                        className="flex-1 h-1 accent-primary"
+                                    />
+                                    <span className="text-[10px] text-muted-foreground w-8 text-right">
+                                        {Math.round(heatmapOpacity * 100)}%
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">Colormap</span>
+                                    <select
+                                        value={heatmapColormap}
+                                        onChange={(e) => setHeatmapColormap(e.target.value as "magma" | "jet" | "hot")}
+                                        className="flex-1 appearance-none rounded-md border border-border bg-background px-2 py-1 text-[11px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary/40"
+                                    >
+                                        <option value="magma">Magma</option>
+                                        <option value="jet">Jet</option>
+                                        <option value="hot">Hot</option>
+                                    </select>
+                                </div>
+                            </>
                         )}
                     </div>
                 </RailSection>

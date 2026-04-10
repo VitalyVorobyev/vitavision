@@ -1,14 +1,29 @@
-import { NumberField, Section, SelectField, type FieldOption } from "../formFields";
+import { CheckboxField, CollapsibleSection, NumberField, Section, SelectField, type FieldOption } from "../formFields";
 import type { AlgorithmConfigFormProps } from "../types";
 
 export interface RinggridConfig {
+    // Board layout
     rows: number;
     longRowCols: number;
     pitchMm: number;
     markerOuterRadiusMm: number;
     markerInnerRadiusMm: number;
     markerRingWidthMm: number;
+    // Codebook
     profile: "baseline" | "extended";
+    // Detection scale
+    diameterMinPx: number;
+    diameterMaxPx: number;
+    // Proposal
+    gradThreshold: number;
+    edgeThinning: boolean;
+    // Decode
+    maxDecodeDist: number;
+    minDecodeConfidence: number;
+    // Completion
+    enableCompletion: boolean;
+    // Self-undistort
+    enableSelfUndistort: boolean;
 }
 
 const RinggridConfigForm = (props: AlgorithmConfigFormProps<RinggridConfig>) => {
@@ -94,6 +109,85 @@ const RinggridConfigForm = (props: AlgorithmConfigFormProps<RinggridConfig>) => 
                     options={profileOptions}
                 />
             </Section>
+            <CollapsibleSection title="Detection scale" columns={modal ? 2 : undefined}>
+                <NumberField
+                    label="Min diameter (px)"
+                    tooltip="Minimum expected marker diameter in pixels."
+                    value={config.diameterMinPx}
+                    onChange={(v) => set("diameterMinPx", v ?? 14)}
+                    disabled={disabled}
+                    min={4}
+                    max={500}
+                    step={1}
+                />
+                <NumberField
+                    label="Max diameter (px)"
+                    tooltip="Maximum expected marker diameter in pixels."
+                    value={config.diameterMaxPx}
+                    onChange={(v) => set("diameterMaxPx", v ?? 66)}
+                    disabled={disabled}
+                    min={4}
+                    max={500}
+                    step={1}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Proposals" columns={modal ? 2 : undefined}>
+                <NumberField
+                    label="Gradient threshold"
+                    tooltip="Minimum gradient magnitude for proposal voting. Lower detects weaker features."
+                    value={config.gradThreshold}
+                    onChange={(v) => set("gradThreshold", v ?? 0.05)}
+                    disabled={disabled}
+                    min={0}
+                    max={1}
+                    step={0.01}
+                />
+                <CheckboxField
+                    label="Edge thinning"
+                    tooltip="Apply non-maximum suppression to gradient field before voting."
+                    checked={config.edgeThinning}
+                    onChange={(v) => set("edgeThinning", v)}
+                    disabled={disabled}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Decode" columns={modal ? 2 : undefined}>
+                <NumberField
+                    label="Max decode distance"
+                    tooltip="Maximum Hamming distance for codebook matching."
+                    value={config.maxDecodeDist}
+                    onChange={(v) => set("maxDecodeDist", v ?? 3)}
+                    disabled={disabled}
+                    min={0}
+                    max={10}
+                    step={1}
+                />
+                <NumberField
+                    label="Min confidence"
+                    tooltip="Minimum confidence score for decode acceptance."
+                    value={config.minDecodeConfidence}
+                    onChange={(v) => set("minDecodeConfidence", v ?? 0.3)}
+                    disabled={disabled}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Advanced">
+                <CheckboxField
+                    label="Marker completion"
+                    tooltip="Attempt to recover missing markers using homography reprojection."
+                    checked={config.enableCompletion}
+                    onChange={(v) => set("enableCompletion", v)}
+                    disabled={disabled}
+                />
+                <CheckboxField
+                    label="Self-undistort"
+                    tooltip="Estimate and compensate for radial lens distortion during detection."
+                    checked={config.enableSelfUndistort}
+                    onChange={(v) => set("enableSelfUndistort", v)}
+                    disabled={disabled}
+                />
+            </CollapsibleSection>
         </>
     );
 };

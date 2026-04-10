@@ -10,9 +10,10 @@ import { generateRadsymHeatmap } from "../../../../lib/wasm/wasmWorkerProxy";
  * Clears heatmap data when the algorithm changes or image changes.
  */
 export function useRadsymHeatmap() {
-    const { lastAlgorithmResult, imageSrc, setHeatmapData } = useEditorStore(useShallow((s) => ({
+    const { lastAlgorithmResult, imageSrc, heatmapColormap, setHeatmapData } = useEditorStore(useShallow((s) => ({
         lastAlgorithmResult: s.lastAlgorithmResult,
         imageSrc: s.imageSrc,
+        heatmapColormap: s.heatmapColormap,
         setHeatmapData: s.setHeatmapData,
     })));
 
@@ -31,7 +32,8 @@ export function useRadsymHeatmap() {
 
                 // Extract radsym config from the result to match detection parameters
                 const result = lastAlgorithmResult.result as Record<string, unknown>;
-                const config = (result as { _heatmapConfig?: unknown })._heatmapConfig ?? {};
+                const baseConfig = (result as { _heatmapConfig?: Record<string, unknown> })._heatmapConfig ?? {};
+                const config = { ...baseConfig, colormap: heatmapColormap };
 
                 const heatmap = await generateRadsymHeatmap(pixels, width, height, config);
                 if (cancelled) return;
@@ -43,5 +45,5 @@ export function useRadsymHeatmap() {
         })();
 
         return () => { cancelled = true; };
-    }, [lastAlgorithmResult, imageSrc, setHeatmapData]);
+    }, [lastAlgorithmResult, imageSrc, heatmapColormap, setHeatmapData]);
 }

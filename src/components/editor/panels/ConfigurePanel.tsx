@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { LoaderCircle, Sparkles, AlertCircle, Maximize2, ChevronDown, X } from "lucide-react";
@@ -13,6 +13,8 @@ import { useDeepLinkSync } from "../../../hooks/useEditorDeepLink";
 
 import RailSection from "./RailSection";
 import ConfigModal from "./ConfigModal";
+
+let didSeedFromUrl = false;
 
 type ConfigEntry = { value: unknown; sampleId: SampleId };
 
@@ -54,8 +56,10 @@ export default function ConfigurePanel() {
         imageName,
         imageSampleId,
         galleryImages,
+        selectedAlgorithmId,
         replaceAlgorithmFeatures,
         setSelectedFeatureId,
+        setSelectedAlgorithmId,
         setPanelMode,
         setLastAlgorithmResult,
         addRunToHistory,
@@ -64,8 +68,10 @@ export default function ConfigurePanel() {
         imageName: s.imageName,
         imageSampleId: s.imageSampleId,
         galleryImages: s.galleryImages,
+        selectedAlgorithmId: s.selectedAlgorithmId,
         replaceAlgorithmFeatures: s.replaceAlgorithmFeatures,
         setSelectedFeatureId: s.setSelectedFeatureId,
+        setSelectedAlgorithmId: s.setSelectedAlgorithmId,
         setPanelMode: s.setPanelMode,
         setLastAlgorithmResult: s.setLastAlgorithmResult,
         addRunToHistory: s.addRunToHistory,
@@ -76,7 +82,17 @@ export default function ConfigurePanel() {
         ? initialState.sampleId
         : imageSampleId;
 
-    const [selectedAlgorithmId, setSelectedAlgorithmId] = useState<string>(initialState.algorithmId);
+    // Seed store from deep link on first page load only (not on tab switches)
+    useEffect(() => {
+        if (!didSeedFromUrl) {
+            didSeedFromUrl = true;
+            if (initialState.algorithmId !== selectedAlgorithmId) {
+                setSelectedAlgorithmId(initialState.algorithmId);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- run once per page session
+    }, []);
+
     const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>(() => {
         if (initialState.config !== null) {
             return { [initialState.algorithmId]: { value: initialState.config, sampleId: initialState.sampleId ?? imageSampleId } };

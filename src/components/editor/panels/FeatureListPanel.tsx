@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useMemo } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
 import { ChevronLeft, ChevronRight, Download, Eye, EyeOff, Lock, Trash2, Upload } from "lucide-react";
 
 import { exportFeaturesAsJson, promptFeatureImport } from "../featureIo";
@@ -131,6 +131,15 @@ function FeatureNavigator({
         [goPrev, goNext],
     );
 
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Auto-focus navigator when the active group changes so arrow keys work immediately
+    useEffect(() => {
+        if (activeGroupIndex >= 0) {
+            containerRef.current?.focus();
+        }
+    }, [activeGroupIndex]);
+
     if (total === 0) return null;
 
     const display = indexInGroup >= 0
@@ -139,6 +148,7 @@ function FeatureNavigator({
 
     return (
         <div
+            ref={containerRef}
             tabIndex={0}
             onKeyDown={handleKeyDown}
             className="flex items-center justify-center gap-3 outline-none focus:ring-1 focus:ring-primary/30 rounded-md py-1"

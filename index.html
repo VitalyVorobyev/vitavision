@@ -2,17 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/icon-256-dark.svg" />
+    <link rel="icon" type="image/svg+xml" href="/vv-favicon-dark.svg" />
     <link rel="alternate" type="application/rss+xml" title="VitaVision RSS" href="/rss.xml" />
     <link rel="alternate" type="application/atom+xml" title="VitaVision Atom" href="/atom.xml" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
-      script-src 'self' 'sha256-gijGmP0apr2ZBJcPoG0x6G7OAf2QE7leHJ5s+2PXhdQ=' 'wasm-unsafe-eval';
+      script-src 'self' 'sha256-znd4R0XEo2yWSOYP1XBOpBdo7vp8M0E7tB+mHBto5U8=' 'wasm-unsafe-eval';
       style-src 'self' 'unsafe-inline';
       img-src 'self' data: blob:;
       font-src 'self' data:;
-      connect-src 'self' https://api.vitavision.dev https://05e932e416cbc06b5d70942eb81887f1.eu.r2.cloudflarestorage.com;
+      connect-src 'self' blob:;
       worker-src 'self' blob:;
       object-src 'none';
       base-uri 'self';
@@ -31,6 +31,14 @@
         try { stored = localStorage.getItem('theme-variant'); } catch (_) {}
         var variant = VARIANTS.includes(stored) ? stored : DEFAULT;
         document.documentElement.classList.add('theme-' + variant);
+
+        /* Theme-aware favicon */
+        var theme;
+        try { theme = localStorage.getItem('theme'); } catch (_) {}
+        var isDark = theme === 'dark' ||
+          (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var icon = document.querySelector('link[rel="icon"]');
+        if (icon) icon.href = isDark ? '/vv-favicon-light.svg' : '/vv-favicon-dark.svg';
       })();
     </script>
   </head>

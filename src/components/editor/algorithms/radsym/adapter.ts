@@ -1,10 +1,9 @@
 import type { AlgorithmDefinition, AlgorithmPreset, AlgorithmSummaryEntry, DiagnosticEntry } from "../types";
-import type { CircleFeature, Feature } from "../../../../store/editor/useEditorStore";
+import type { Feature, PointFeature } from "../../../../store/editor/useEditorStore";
 import type { RadsymResult } from "../../../../lib/types";
 import { detectRadsymWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 
 import RadsymConfigForm, { type RadsymConfig } from "./RadsymConfigForm";
-import RadsymOverlay from "./RadsymOverlay";
 
 const initialConfig: RadsymConfig = {
     minRadius: 5,
@@ -17,47 +16,55 @@ const initialConfig: RadsymConfig = {
     maxDetections: 50,
     polarity: "both",
     gradientOperator: "sobel",
+    algorithm: "frst",
 };
 
 const presets: AlgorithmPreset[] = [
     { label: "Default", description: "Balanced detection for general use", config: { ...initialConfig } },
-    { label: "Small circles", description: "Detect small features (1-15px)", config: { ...initialConfig, minRadius: 1, maxRadius: 15, nmsRadius: 3 } },
-    { label: "Large circles", description: "Detect large features (20-100px)", config: { ...initialConfig, minRadius: 20, maxRadius: 100, nmsRadius: 15 } },
-    { label: "Dark only", description: "Only dark circles on bright background", config: { ...initialConfig, polarity: "dark" as const } },
+    { label: "Small features", description: "Detect small features (1-15px)", config: { ...initialConfig, minRadius: 1, maxRadius: 15, nmsRadius: 3 } },
+    { label: "Large features", description: "Detect large features (20-100px)", config: { ...initialConfig, minRadius: 20, maxRadius: 100, nmsRadius: 15 } },
+    { label: "Dark only", description: "Only dark centers on bright background", config: { ...initialConfig, polarity: "dark" as const } },
+    { label: "Fast (RSD)", description: "RSD fused algorithm, ~2× faster", config: { ...initialConfig, algorithm: "rsd_fused" as const } },
 ];
 
 const toSummary = (result: RadsymResult): AlgorithmSummaryEntry[] => [
-    { label: "Circles", value: `${result.summary.count}` },
+    { label: "Proposals", value: `${result.summary.count}` },
     { label: "Runtime", value: `${result.summary.runtime_ms.toFixed(2)} ms` },
 ];
 
 const toDiagnostics = (result: RadsymResult): DiagnosticEntry[] => {
     if (result.summary.count === 0) {
-        return [{ level: "warning", message: "No circles detected", detail: "Try widening the radius range or lowering the gradient threshold." }];
+        return [{ level: "warning", message: "No proposals found", detail: "Try widening the radius range or lowering the gradient threshold." }];
     }
     return [];
 };
 
+/** Map score [0,1] to a color for point rendering. */
+function scoreColor(score: number): string {
+    if (score >= 0.66) return "#22c55e";
+    if (score >= 0.33) return "#f59e0b";
+    return "#ef4444";
+}
+
 const toFeatures = (result: RadsymResult, runId: string): Feature[] => {
-    return result.circles.map((circle): CircleFeature => ({
-        id: circle.id,
-        type: "circle",
+    return result.circles.map((c): PointFeature => ({
+        id: c.id,
+        type: "point",
         source: "algorithm",
         algorithmId: "radsym",
         runId,
         readonly: true,
-        x: circle.x + 0.5,
-        y: circle.y + 0.5,
-        radius: circle.radius,
-        score: circle.score,
-        label: `circle ${circle.id.slice(0, 8)}`,
+        x: c.x + 0.5,
+        y: c.y + 0.5,
+        color: scoreColor(c.score),
+        meta: { kind: "radsym_proposal", score: c.score },
     }));
 };
 
 export const radsymAlgorithm: AlgorithmDefinition = {
     id: "radsym",
     title: "Radial Symmetry",
-    description: "Detect circular features via Fast Radial Symmetry Transform (FRST).",
+    description: "Detect radial symmetry centers via response map voting (FRST / RSD).",
     initialConfig,
     presets,
     executionModes: ["wasm"],
@@ -81,6 +88,7 @@ export const radsymAlgorithm: AlgorithmDefinition = {
             maxDetections: c.maxDetections,
             polarity: c.polarity,
             gradientOperator: c.gradientOperator,
+            algorithm: c.algorithm,
         };
         const result = await detectRadsymWasm(pixels, width, height, wasmConfig);
         // Attach config for heatmap generation with matching parameters
@@ -91,11 +99,11 @@ export const radsymAlgorithm: AlgorithmDefinition = {
             smoothingFactor: c.smoothingFactor,
             polarity: c.polarity,
             gradientOperator: c.gradientOperator,
+            algorithm: c.algorithm,
         };
         return result;
     },
     toFeatures: (result, runId) => toFeatures(result as RadsymResult, runId),
     summary: (result) => toSummary(result as RadsymResult),
     diagnostics: (result) => toDiagnostics(result as RadsymResult),
-    OverlayComponent: RadsymOverlay,
 };

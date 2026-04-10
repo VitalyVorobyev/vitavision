@@ -12,6 +12,7 @@ export interface RadsymConfig {
     maxDetections: number;
     polarity: "bright" | "dark" | "both";
     gradientOperator: "sobel" | "scharr";
+    algorithm: "frst" | "frst_fused" | "rsd" | "rsd_fused";
 }
 
 const polarityOptions: FieldOption<RadsymConfig["polarity"]>[] = [
@@ -25,6 +26,13 @@ const gradientOptions: FieldOption<RadsymConfig["gradientOperator"]>[] = [
     { value: "scharr", label: "Scharr" },
 ];
 
+const algorithmOptions: FieldOption<RadsymConfig["algorithm"]>[] = [
+    { value: "frst", label: "FRST (multi-radius)" },
+    { value: "frst_fused", label: "FRST fused (faster)" },
+    { value: "rsd", label: "RSD (magnitude-only)" },
+    { value: "rsd_fused", label: "RSD fused (fastest)" },
+];
+
 const RadsymConfigForm = (props: AlgorithmConfigFormProps<RadsymConfig>) => {
     const { config, onChange, disabled, modal } = props;
 
@@ -33,10 +41,20 @@ const RadsymConfigForm = (props: AlgorithmConfigFormProps<RadsymConfig>) => {
 
     return (
         <>
+            <Section title="Response algorithm" columns={modal ? 2 : undefined}>
+                <SelectField
+                    label="Algorithm"
+                    tooltip="Voting algorithm for the response map. FRST uses orientation; RSD uses magnitude only (~2× faster)."
+                    value={config.algorithm}
+                    onChange={(v) => set("algorithm", v)}
+                    disabled={disabled}
+                    options={algorithmOptions}
+                />
+            </Section>
             <Section title="Radius range" columns={modal ? 2 : undefined}>
                 <NumberField
                     label="Min radius (px)"
-                    tooltip="Smallest circle radius to detect in pixels."
+                    tooltip="Smallest voting radius in pixels."
                     value={config.minRadius}
                     onChange={(v) => set("minRadius", v ?? 3)}
                     disabled={disabled}
@@ -46,7 +64,7 @@ const RadsymConfigForm = (props: AlgorithmConfigFormProps<RadsymConfig>) => {
                 />
                 <NumberField
                     label="Max radius (px)"
-                    tooltip="Largest circle radius to detect in pixels."
+                    tooltip="Largest voting radius in pixels."
                     value={config.maxRadius}
                     onChange={(v) => set("maxRadius", v ?? 50)}
                     disabled={disabled}
@@ -58,7 +76,7 @@ const RadsymConfigForm = (props: AlgorithmConfigFormProps<RadsymConfig>) => {
             <Section title="Detection" columns={modal ? 2 : undefined}>
                 <NumberField
                     label="Alpha"
-                    tooltip="Radial strictness exponent. Higher = stricter radial symmetry."
+                    tooltip="Radial strictness exponent. Higher = stricter radial symmetry. Only affects FRST."
                     value={config.alpha}
                     onChange={(v) => set("alpha", v ?? 2.0)}
                     disabled={disabled}
@@ -88,7 +106,7 @@ const RadsymConfigForm = (props: AlgorithmConfigFormProps<RadsymConfig>) => {
                 />
                 <SelectField
                     label="Polarity"
-                    tooltip="Detect bright circles, dark circles, or both."
+                    tooltip="Detect bright centers, dark centers, or both."
                     value={config.polarity}
                     onChange={(v) => set("polarity", v)}
                     disabled={disabled}
@@ -116,8 +134,8 @@ const RadsymConfigForm = (props: AlgorithmConfigFormProps<RadsymConfig>) => {
                     step={0.1}
                 />
                 <NumberField
-                    label="Max detections"
-                    tooltip="Maximum number of circles to return."
+                    label="Max proposals"
+                    tooltip="Maximum number of proposals to return."
                     value={config.maxDetections}
                     onChange={(v) => set("maxDetections", v ?? 50)}
                     disabled={disabled}

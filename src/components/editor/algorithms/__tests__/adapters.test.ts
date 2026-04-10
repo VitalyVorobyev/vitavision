@@ -400,6 +400,29 @@ describe("ringgridAlgorithm", () => {
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
         expect(features).toHaveLength(0);
     });
+
+    it("assigns ringgrid_decoded kind to decoded markers", () => {
+        const result = mockRinggridResult(1);
+        const features = ringgridAlgorithm.toFeatures(result, "run-1");
+        expect(features[0].meta?.kind).toBe("ringgrid_decoded");
+    });
+
+    it("assigns ringgrid_proposal kind to undecoded markers", () => {
+        const result = mockRinggridResult(1);
+        result.markers[0].decode = null;
+        const features = ringgridAlgorithm.toFeatures(result, "run-1");
+        expect(features[0].meta?.kind).toBe("ringgrid_proposal");
+    });
+
+    it("generates unique feature IDs even with duplicate marker IDs", () => {
+        const result = mockRinggridResult(3);
+        result.markers[0].decode = null;
+        result.markers[1].decode = null;
+        result.markers[2].decode = null;
+        const features = ringgridAlgorithm.toFeatures(result, "run-1");
+        const ids = features.map((f) => f.id);
+        expect(new Set(ids).size).toBe(ids.length);
+    });
 });
 
 // ── Radsym adapter ──────────────────────────────────────────────────────────
@@ -414,12 +437,12 @@ describe("radsymAlgorithm", () => {
             .rejects.toThrow("only available via client-side WASM");
     });
 
-    it("toFeatures maps circles to circle features", () => {
+    it("toFeatures maps proposals to point features", () => {
         const result = mockRadsymResult(4);
         const features = radsymAlgorithm.toFeatures(result, "run-1");
         expect(features).toHaveLength(4);
         for (const f of features) {
-            expect(f.type).toBe("circle");
+            expect(f.type).toBe("point");
             expect(f.source).toBe("algorithm");
             expect(f.algorithmId).toBe("radsym");
             expect(f.readonly).toBe(true);
@@ -429,24 +452,20 @@ describe("radsymAlgorithm", () => {
     it("applies +0.5 pixel offset", () => {
         const result = mockRadsymResult(1);
         const features = radsymAlgorithm.toFeatures(result, "run-1");
-        expect(features[0].type === "circle" && features[0].x).toBe(result.circles[0].x + 0.5);
+        expect(features[0].type === "point" && features[0].x).toBe(result.circles[0].x + 0.5);
     });
 
-    it("preserves radius and score", () => {
+    it("preserves score in meta", () => {
         const result = mockRadsymResult(1);
         const features = radsymAlgorithm.toFeatures(result, "run-1");
-        const f = features[0];
-        if (f.type === "circle") {
-            expect(f.radius).toBe(result.circles[0].radius);
-            expect(f.score).toBe(result.circles[0].score);
-        }
+        expect(features[0].meta?.score).toBe(result.circles[0].score);
     });
 
     it("summary returns count and runtime", () => {
         const result = mockRadsymResult(7);
         const summary = radsymAlgorithm.summary(result);
         expect(summary).toEqual([
-            { label: "Circles", value: "7" },
+            { label: "Proposals", value: "7" },
             { label: "Runtime", value: "18.70 ms" },
         ]);
     });

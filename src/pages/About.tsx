@@ -29,6 +29,7 @@ export default function About() {
                     <img
                         src="/AIAvatar.jpg"
                         alt="AI-stylized portrait of Vitaly Vorobyev"
+                        loading="lazy"
                         className="w-52 md:w-64 aspect-square object-cover object-[50%_15%] rounded-2xl border border-border"
                     />
                     <figcaption className="mt-3 max-w-52 md:max-w-64 text-center md:text-left text-xs leading-5 text-muted-foreground">

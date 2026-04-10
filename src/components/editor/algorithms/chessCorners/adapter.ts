@@ -13,7 +13,6 @@ const initialConfig: ChessCornersConfig = {
 const presets: AlgorithmPreset[] = [
     { label: "Sensitive", description: "Lower threshold, more corners", config: { thresholdRel: 0.08, useMlRefiner: false } },
     { label: "Balanced", description: "Default detection settings", config: { thresholdRel: 0.2, useMlRefiner: false } },
-    { label: "Precise", description: "ML-refined subpixel accuracy", config: { thresholdRel: 0.2, useMlRefiner: true } },
 ];
 
 const toDiagnostics = (result: ChessCornersResult): DiagnosticEntry[] => {

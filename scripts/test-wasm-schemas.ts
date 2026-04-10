@@ -191,7 +191,7 @@ proc.set_gradient_operator('sobel');
 proc.set_nms_radius(5);
 proc.set_max_detections(50);
 console.log('PASS: RadSymProcessor created with all setters');
-const hm = proc.response_heatmap(new Uint8Array(32 * 32 * 4).fill(128), 32, 32, 'magma');
+const hm = proc.response_heatmap(new Uint8Array(32 * 32 * 4).fill(128), 32, 32, 'frst', 'magma');
 if (hm instanceof Uint8Array && hm.length === 32 * 32 * 4) console.log('PASS: response_heatmap returns correct RGBA');
 else { console.error('FAIL: response_heatmap wrong output'); process.exit(1); }
 proc.free();

@@ -113,7 +113,7 @@ function adaptChessCornersResult(
         corners.push({ x, y, response, orientation });
     }
 
-    // Compute confidence from response range (same logic as backend)
+    // Compute confidence from response range
     const range = responseMax - responseMin;
     const cornersOut = corners.map((c, idx) => {
         const confidence = range > 0 ? (c.response - responseMin) / range : 1.0;
@@ -419,34 +419,33 @@ function adaptRinggridResult(
     };
 }
 
-function adaptRadsymResult(
+/** Adapt extract_proposals output (stride 3: x, y, score) to RadsymResult. */
+function adaptRadsymProposalResult(
     raw: Float32Array,
     width: number,
     height: number,
     runtimeMs: number,
 ) {
-    const stride = 4; // x, y, radius, score
+    const stride = 3;
     const count = raw.length / stride;
     const circles = [];
 
     for (let i = 0; i < count; i++) {
         const x = raw[i * stride];
         const y = raw[i * stride + 1];
-        const radius = raw[i * stride + 2];
-        const score = raw[i * stride + 3];
+        const score = raw[i * stride + 2];
 
-        if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(radius)) continue;
+        if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
 
         circles.push({
             id: crypto.randomUUID(),
             x,
             y,
-            radius,
+            radius: 0,
             score,
         });
     }
 
-    // Sort by score descending
     circles.sort((a, b) => b.score - a.score);
 
     return {
@@ -489,6 +488,9 @@ async function handleRinggrid(
     const boardJson = JSON.stringify(merged);
 
     const detector = new mod.RinggridDetector(boardJson);
+    if (config.configOverlay) {
+        detector.update_config(config.configOverlay as string);
+    }
 
     const t0 = performance.now();
     const resultJson = detector.detect_adaptive_rgba(pixels, width, height);
@@ -519,11 +521,13 @@ async function handleRadsym(
     if (config.minScore != null) processor.set_min_score(config.minScore as number);
     if (config.gradientOperator) processor.set_gradient_operator(config.gradientOperator as string);
 
+    const algorithm = (config.algorithm as string) ?? "frst";
+
     const t0 = performance.now();
-    const result = processor.detect_circles(pixels, width, height);
+    const result = processor.extract_proposals(pixels, width, height, algorithm);
     const runtimeMs = performance.now() - t0;
 
-    return adaptRadsymResult(result, width, height, runtimeMs);
+    return adaptRadsymProposalResult(result, width, height, runtimeMs);
 }
 
 async function handleRadsymHeatmap(
@@ -543,8 +547,9 @@ async function handleRadsymHeatmap(
     if (config.polarity) processor.set_polarity(config.polarity as string);
     if (config.gradientOperator) processor.set_gradient_operator(config.gradientOperator as string);
 
+    const algorithm = (config.algorithm as string) ?? "frst";
     const colormap = (config.colormap as string) ?? "magma";
-    const rgba = processor.response_heatmap(pixels, width, height, colormap);
+    const rgba = processor.response_heatmap(pixels, width, height, algorithm, colormap);
 
     return { rgba, width, height };
 }

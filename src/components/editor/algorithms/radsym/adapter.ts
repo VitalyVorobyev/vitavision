@@ -74,6 +74,9 @@ export const radsymAlgorithm: AlgorithmDefinition = {
     },
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as RadsymConfig;
+        if (c.minRadius > c.maxRadius) {
+            throw new Error(`Invalid radius range: minRadius (${c.minRadius}) > maxRadius (${c.maxRadius})`);
+        }
         const radii = new Uint32Array(c.maxRadius - c.minRadius + 1);
         for (let i = 0; i < radii.length; i++) {
             radii[i] = c.minRadius + i;

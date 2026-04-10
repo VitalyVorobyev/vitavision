@@ -488,15 +488,19 @@ async function handleRinggrid(
     const boardJson = JSON.stringify(merged);
 
     const detector = new mod.RinggridDetector(boardJson);
-    if (config.configOverlay) {
-        detector.update_config(config.configOverlay as string);
+    try {
+        if (config.configOverlay) {
+            detector.update_config(config.configOverlay as string);
+        }
+
+        const t0 = performance.now();
+        const resultJson = detector.detect_adaptive_rgba(pixels, width, height);
+        const runtimeMs = performance.now() - t0;
+
+        return adaptRinggridResult(resultJson, width, height, runtimeMs);
+    } finally {
+        detector.free();
     }
-
-    const t0 = performance.now();
-    const resultJson = detector.detect_adaptive_rgba(pixels, width, height);
-    const runtimeMs = performance.now() - t0;
-
-    return adaptRinggridResult(resultJson, width, height, runtimeMs);
 }
 
 async function handleRadsym(
@@ -507,27 +511,30 @@ async function handleRadsym(
 ) {
     const mod = await getRadsymModule();
     const processor = new mod.RadSymProcessor();
+    try {
+        // Apply config
+        if (config.radii) processor.set_radii(config.radii as Uint32Array);
+        if (config.alpha != null) processor.set_alpha(config.alpha as number);
+        if (config.gradientThreshold != null) processor.set_gradient_threshold(config.gradientThreshold as number);
+        if (config.smoothingFactor != null) processor.set_smoothing_factor(config.smoothingFactor as number);
+        if (config.nmsRadius != null) processor.set_nms_radius(config.nmsRadius as number);
+        if (config.nmsThreshold != null) processor.set_nms_threshold(config.nmsThreshold as number);
+        if (config.maxDetections != null) processor.set_max_detections(config.maxDetections as number);
+        if (config.polarity) processor.set_polarity(config.polarity as string);
+        if (config.radiusHint != null) processor.set_radius_hint(config.radiusHint as number);
+        if (config.minScore != null) processor.set_min_score(config.minScore as number);
+        if (config.gradientOperator) processor.set_gradient_operator(config.gradientOperator as string);
 
-    // Apply config
-    if (config.radii) processor.set_radii(config.radii as Uint32Array);
-    if (config.alpha != null) processor.set_alpha(config.alpha as number);
-    if (config.gradientThreshold != null) processor.set_gradient_threshold(config.gradientThreshold as number);
-    if (config.smoothingFactor != null) processor.set_smoothing_factor(config.smoothingFactor as number);
-    if (config.nmsRadius != null) processor.set_nms_radius(config.nmsRadius as number);
-    if (config.nmsThreshold != null) processor.set_nms_threshold(config.nmsThreshold as number);
-    if (config.maxDetections != null) processor.set_max_detections(config.maxDetections as number);
-    if (config.polarity) processor.set_polarity(config.polarity as string);
-    if (config.radiusHint != null) processor.set_radius_hint(config.radiusHint as number);
-    if (config.minScore != null) processor.set_min_score(config.minScore as number);
-    if (config.gradientOperator) processor.set_gradient_operator(config.gradientOperator as string);
+        const algorithm = (config.algorithm as string) ?? "frst";
 
-    const algorithm = (config.algorithm as string) ?? "frst";
+        const t0 = performance.now();
+        const result = processor.extract_proposals(pixels, width, height, algorithm);
+        const runtimeMs = performance.now() - t0;
 
-    const t0 = performance.now();
-    const result = processor.extract_proposals(pixels, width, height, algorithm);
-    const runtimeMs = performance.now() - t0;
-
-    return adaptRadsymProposalResult(result, width, height, runtimeMs);
+        return adaptRadsymProposalResult(result, width, height, runtimeMs);
+    } finally {
+        processor.free();
+    }
 }
 
 async function handleRadsymHeatmap(
@@ -538,20 +545,23 @@ async function handleRadsymHeatmap(
 ): Promise<{ rgba: Uint8Array; width: number; height: number }> {
     const mod = await getRadsymModule();
     const processor = new mod.RadSymProcessor();
+    try {
+        // Apply config (same as detection)
+        if (config.radii) processor.set_radii(config.radii as Uint32Array);
+        if (config.alpha != null) processor.set_alpha(config.alpha as number);
+        if (config.gradientThreshold != null) processor.set_gradient_threshold(config.gradientThreshold as number);
+        if (config.smoothingFactor != null) processor.set_smoothing_factor(config.smoothingFactor as number);
+        if (config.polarity) processor.set_polarity(config.polarity as string);
+        if (config.gradientOperator) processor.set_gradient_operator(config.gradientOperator as string);
 
-    // Apply config (same as detection)
-    if (config.radii) processor.set_radii(config.radii as Uint32Array);
-    if (config.alpha != null) processor.set_alpha(config.alpha as number);
-    if (config.gradientThreshold != null) processor.set_gradient_threshold(config.gradientThreshold as number);
-    if (config.smoothingFactor != null) processor.set_smoothing_factor(config.smoothingFactor as number);
-    if (config.polarity) processor.set_polarity(config.polarity as string);
-    if (config.gradientOperator) processor.set_gradient_operator(config.gradientOperator as string);
+        const algorithm = (config.algorithm as string) ?? "frst";
+        const colormap = (config.colormap as string) ?? "magma";
+        const rgba = processor.response_heatmap(pixels, width, height, algorithm, colormap);
 
-    const algorithm = (config.algorithm as string) ?? "frst";
-    const colormap = (config.colormap as string) ?? "magma";
-    const rgba = processor.response_heatmap(pixels, width, height, algorithm, colormap);
-
-    return { rgba, width, height };
+        return { rgba, width, height };
+    } finally {
+        processor.free();
+    }
 }
 
 async function handleChessCorners(

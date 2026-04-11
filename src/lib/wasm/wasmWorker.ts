@@ -5,6 +5,21 @@
  * postMessage and returns results (or errors) with correlation IDs.
  */
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+/** UUID generation with fallback for non-secure contexts (HTTP via --host). */
+function generateId(): string {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        return generateId();
+    }
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export type AlgorithmType =
@@ -119,7 +134,7 @@ function adaptChessCornersResult(
         const confidence = range > 0 ? (c.response - responseMin) / range : 1.0;
         const confidenceLevel: "low" | "medium" | "high" =
             confidence < 0.33 ? "low" : confidence < 0.66 ? "medium" : "high";
-        const id = crypto.randomUUID();
+        const id = generateId();
 
         return {
             id,
@@ -255,7 +270,7 @@ function adaptCalibTargetResult(
         const pos = toPoint(c.position);
         const grid = c.grid as { i: number; j: number } | null;
         return {
-            id: crypto.randomUUID(),
+            id: generateId(),
             x: pos.x,
             y: pos.y,
             x_norm: pos.x / width,
@@ -438,7 +453,7 @@ function adaptRadsymProposalResult(
         if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
 
         circles.push({
-            id: crypto.randomUUID(),
+            id: generateId(),
             x,
             y,
             radius: 0,

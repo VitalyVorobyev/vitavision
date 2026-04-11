@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+- fix(EDITOR-024): fix iPad editor canvas not rendering image (missing flex container on touch tablet canvas wrapper)
+- enhancement(EDITOR-025): add side-by-side landscape layout for touch tablet editor (canvas left, settings right)
+- feat(EDITOR-026): add floating feature navigator overlay on touch tablet canvas (prev/next, counter, clear)
+- fix(FE-016): add crypto.randomUUID fallback using crypto.getRandomValues for non-secure contexts (HTTP via --host)
+- enhancement(FE-017): add height and isLandscape to useViewportMode hook
+- enhancement(TGEN-009): compact Target Generator header on mobile (hide subtitle, reduce padding/gaps/button height)
 - refactor(FE-008): split content manifest into metadata index + per-slug lazy chunks for blog/algorithm pages
 - perf(FE-009): add Zustand shallow selectors to all 9 useEditorStore call sites to prevent unnecessary re-renders
 - perf(FE-010): conditionally load mermaid only when blog content contains mermaid code blocks

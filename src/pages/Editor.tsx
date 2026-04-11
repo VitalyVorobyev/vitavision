@@ -7,6 +7,7 @@ import ErrorBoundary from "../components/ui/ErrorBoundary";
 import EditorGallery from "../components/editor/EditorGallery";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import EditorRightPanel from "../components/editor/panels/EditorRightPanel";
+import TouchFeatureNav from "../components/editor/TouchFeatureNav";
 import Tooltip from "../components/ui/Tooltip";
 import { useEditorStore, type OverlayVisibilityKey, type ToolType } from "../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
@@ -170,7 +171,7 @@ export default function Editor() {
     const [annotationToolsOpen, setAnnotationToolsOpen] = useState(false);
     const [searchParams] = useSearchParams();
     const deepLinkApplied = useRef(false);
-    const { isPhone, isTouchTablet } = useViewportMode();
+    const { isPhone, isTouchTablet, isLandscape } = useViewportMode();
 
     useEffect(() => {
         if (deepLinkApplied.current || imageSrc !== null) {
@@ -382,31 +383,54 @@ export default function Editor() {
                     touchFriendly={isTouchTablet}
                 />
             </div>
+            <TouchFeatureNav />
         </div>
     );
 
     if (isTouchTablet) {
+        const touchTabletContent = isLandscape ? (
+            <div className="flex h-[calc(100vh-64px)] overflow-hidden animate-in fade-in">
+                <SeoHead
+                    title="Editor"
+                    description="Interactive image annotation editor with computer vision algorithm runner."
+                />
+                <div className="flex min-w-0 flex-1 flex-col">
+                    <div className="min-h-0 flex-1 flex flex-col">
+                        {canvasArea}
+                    </div>
+                    <div className="flex h-12 items-center gap-1 overflow-x-auto border-t border-border bg-muted/20 px-2">
+                        {toolbarContent}
+                    </div>
+                </div>
+                <div className="w-80 shrink-0 overflow-y-auto border-l border-border bg-background/70">
+                    <EditorRightPanel variant="touch" />
+                </div>
+            </div>
+        ) : (
+            <div className="flex h-[calc(100vh-64px)] flex-col overflow-hidden animate-in fade-in">
+                <SeoHead
+                    title="Editor"
+                    description="Interactive image annotation editor with computer vision algorithm runner."
+                />
+                <div className="min-h-0 flex-1 flex flex-col">
+                    {canvasArea}
+                </div>
+
+                <div className="border-t border-border bg-muted/20">
+                    <div className="flex h-16 items-center gap-1 overflow-x-auto px-2">
+                        {toolbarContent}
+                    </div>
+                    <div className="h-[20rem] border-t border-border bg-background/70">
+                        <EditorRightPanel variant="touch" />
+                    </div>
+                </div>
+            </div>
+        );
+
         return (
             <TooltipPrimitive.Provider delayDuration={200}>
                 <FormControlModeProvider mode="touch">
-                    <div className="flex h-[calc(100vh-64px)] flex-col overflow-hidden animate-in fade-in">
-                        <SeoHead
-                            title="Editor"
-                            description="Interactive image annotation editor with computer vision algorithm runner."
-                        />
-                        <div className="min-h-0 flex-1">
-                            {canvasArea}
-                        </div>
-
-                        <div className="border-t border-border bg-muted/20">
-                            <div className="flex h-16 items-center gap-1 overflow-x-auto px-2">
-                                {toolbarContent}
-                            </div>
-                            <div className="h-[20rem] border-t border-border bg-background/70">
-                                <EditorRightPanel variant="touch" />
-                            </div>
-                        </div>
-                    </div>
+                    {touchTabletContent}
                 </FormControlModeProvider>
             </TooltipPrimitive.Provider>
         );

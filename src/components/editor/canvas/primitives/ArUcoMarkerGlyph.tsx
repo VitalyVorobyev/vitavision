@@ -17,8 +17,17 @@ export default function ArUcoMarkerGlyph({ feature, zoom, selected, onSelect }: 
     const strokeWidth = (selected ? 2.4 : 1.6) / zoom;
     const centerRadius = 2.5 / zoom;
 
+    const hitRadius = 14 / zoom;
+
     return (
         <Group onClick={onSelect} onTap={onSelect}>
+            {/* Invisible enlarged hit area for easier clicking */}
+            <Circle
+                x={feature.x}
+                y={feature.y}
+                radius={hitRadius}
+                fill="transparent"
+            />
             <Line
                 points={[...feature.corners]}
                 closed

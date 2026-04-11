@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { useTheme } from "next-themes";
+import VitavisionLogo from "../shared/VitavisionLogo";
 
 const NAV_ITEMS = [
     { to: "/blog", label: "Blog", active: (pathname: string) => pathname.startsWith("/blog") },
@@ -98,8 +99,8 @@ export default function Navbar() {
     return (
         <>
             <nav className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-sm animate-in slide-in-from-top-4 duration-500 sm:px-6">
-                <Link to="/" className="font-bold text-xl tracking-tighter">
-                    VV.
+                <Link to="/" className="flex items-center" aria-label="Vitavision home">
+                    <VitavisionLogo variant="mark" className="h-9 w-auto text-foreground" />
                 </Link>
 
                 <div className="hidden items-center space-x-4 text-sm font-medium md:flex">

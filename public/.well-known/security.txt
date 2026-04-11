@@ -1,3 +1,4 @@
 Contact: https://github.com/VitalyVorobyev/vitavision/issues
 Preferred-Languages: en, ru
 Canonical: https://vitavision.dev/.well-known/security.txt
+Expires: 2027-04-10T00:00:00.000Z

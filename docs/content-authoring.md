@@ -148,41 +148,21 @@ Build with the same `bun run content:build` command. Preview at `/algorithms/<sl
 
 ## CV Algorithm Plugins (Editor)
 
-To add a new algorithm to the interactive editor:
+All algorithms run client-side via WASM in Web Workers. To add a new algorithm:
 
-### 1. Add the backend endpoint
+### 1. Add the WASM handler
 
-Create or extend a router in `backend/routers/`. The endpoint receives an image storage key and config, runs OpenCV/numpy logic, and returns JSON results.
+In `src/lib/wasm/wasmWorker.ts`, add a handler that loads your WASM module and calls the detection function. Start from WASM module defaults and deep-merge user overrides to avoid missing required fields.
 
-Example pattern (in `backend/routers/cv.py`):
+### 2. Add the worker proxy function
 
-```python
-@router.post("/api/v1/cv/my-algorithm")
-async def my_algorithm(body: MyAlgorithmRequest, _=Depends(verify_api_key)):
-    # load image, run detection, return results
-    ...
-```
-
-### 2. Add the API client function
-
-In `src/lib/api.ts`, add a typed function that calls your endpoint:
+In `src/lib/wasm/wasmWorkerProxy.ts`, add a typed function that sends pixels + config to the worker:
 
 ```typescript
-export interface MyAlgorithmResult {
-    // match your backend response shape
-    detections: { x: number; y: number; label: string }[];
-    summary: { count: number; runtime_ms: number };
-}
-
-export async function detectMyAlgorithm(params: {
-    key: string;
-    storageMode: StorageMode;
-    config: { threshold: number };
-}): Promise<MyAlgorithmResult> {
-    return apiFetch("/api/v1/cv/my-algorithm", {
-        method: "POST",
-        body: JSON.stringify({ ...params }),
-    });
+export async function detectMyAlgorithmWasm(
+    pixels: Uint8Array, width: number, height: number, config: object,
+): Promise<MyAlgorithmResult> {
+    return callWorker("detect", { algorithmId: "my-algorithm", pixels, width, height, config }, [pixels.buffer]);
 }
 ```
 
@@ -190,12 +170,13 @@ export async function detectMyAlgorithm(params: {
 
 Create a directory `src/components/editor/algorithms/myAlgorithm/` with:
 
-**`adapter.ts`** — implements `AlgorithmDefinition`:
+**`adapter.ts`** -- implements `AlgorithmDefinition`:
 
 ```typescript
 import type { AlgorithmDefinition, AlgorithmSummaryEntry } from "../types";
 import type { Feature } from "../../../../store/editor/useEditorStore";
-import { detectMyAlgorithm, type MyAlgorithmResult } from "../../../../lib/api";
+import type { MyAlgorithmResult } from "../../../../lib/types";
+import { detectMyAlgorithmWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 import MyAlgorithmConfigForm, { type MyAlgorithmConfig } from "./ConfigForm";
 
 const initialConfig: MyAlgorithmConfig = { threshold: 0.5 };
@@ -204,12 +185,15 @@ export const myAlgorithm: AlgorithmDefinition = {
     id: "my-algorithm",
     title: "My Algorithm",
     description: "Detects things in images.",
-    blogSlug: "02-my-topic",          // optional: links to blog post
     initialConfig,
+    executionModes: ["wasm"],
     ConfigComponent: MyAlgorithmConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async ({ key, storageMode, config }) => {
-        const typed = config as MyAlgorithmConfig;
-        return detectMyAlgorithm({ key, storageMode, config: typed });
+    run: async () => {
+        throw new Error("Only available via client-side WASM.");
+    },
+    runWasm: async ({ pixels, width, height, config }) => {
+        const c = config as MyAlgorithmConfig;
+        return detectMyAlgorithmWasm(pixels, width, height, c);
     },
     toFeatures: (result, runId) => {
         const r = result as MyAlgorithmResult;
@@ -222,7 +206,6 @@ export const myAlgorithm: AlgorithmDefinition = {
             readonly: true,
             x: d.x,
             y: d.y,
-            label: d.label,
         })) as Feature[];
     },
     summary: (result) => {
@@ -235,7 +218,7 @@ export const myAlgorithm: AlgorithmDefinition = {
 };
 ```
 
-**`ConfigForm.tsx`** — a React form for user-tunable parameters.
+**`ConfigForm.tsx`** -- a React form for user-tunable parameters.
 
 ### 4. Register the algorithm
 
@@ -245,15 +228,16 @@ In `src/components/editor/algorithms/registry.ts`:
 import { myAlgorithm } from "./myAlgorithm/adapter";
 
 export const ALGORITHM_REGISTRY: AlgorithmDefinition[] = [
-    chessCornersAlgorithm,
-    chessboardAlgorithm,
-    charucoAlgorithm,
-    markerboardAlgorithm,
-    myAlgorithm,  // ← add here
+    // ...existing algorithms,
+    myAlgorithm,  // <- add here
 ];
 ```
 
-That's it — the editor will automatically show it in the algorithm picker, render the config form, and display results on the canvas.
+### 5. Add WASM schema tests
+
+In `scripts/test-wasm-schemas.ts`, add a test that validates the config shape is accepted by the WASM module. Run with `bun run scripts/test-wasm-schemas.ts`.
+
+That's it -- the editor will automatically show it in the algorithm picker, render the config form, and display results on the canvas.
 
 ---
 
@@ -264,5 +248,5 @@ That's it — the editor will automatically show it in the algorithm picker, ren
 | Build content manifest | `bun run content:build` |
 | Dev server | `bun run dev` |
 | Lint frontend | `bun run lint` |
-| Backend tests | `cd backend && pytest tests/ -v` |
-| Backend quality | `ruff check . && ruff format --check . && mypy . --ignore-missing-imports` |
+| Unit tests | `npx vitest run` |
+| WASM schema tests | `bun run scripts/test-wasm-schemas.ts` |

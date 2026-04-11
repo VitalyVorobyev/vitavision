@@ -1,7 +1,7 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { LoaderCircle, Sparkles, AlertCircle, Maximize2 } from "lucide-react";
+import { LoaderCircle, Sparkles, AlertCircle, Maximize2, ChevronDown, X } from "lucide-react";
 
 import { useEditorStore } from "../../../store/editor/useEditorStore";
 import type { SampleId } from "../../../store/editor/useEditorStore";
@@ -13,6 +13,8 @@ import { useDeepLinkSync } from "../../../hooks/useEditorDeepLink";
 
 import RailSection from "./RailSection";
 import ConfigModal from "./ConfigModal";
+
+let didSeedFromUrl = false;
 
 type ConfigEntry = { value: unknown; sampleId: SampleId };
 
@@ -33,21 +35,17 @@ const resolveConfig = (
 
 function AlgorithmPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
     return (
-        <div className="rounded-lg border border-border overflow-hidden divide-y divide-border/70">
-            {ALGORITHM_REGISTRY.map((algo) => (
-                <button
-                    key={algo.id}
-                    type="button"
-                    onClick={() => onChange(algo.id)}
-                    className={`w-full text-left px-3 py-2 text-xs transition-colors ${
-                        value === algo.id
-                            ? "bg-primary/10 text-primary font-semibold"
-                            : "bg-background hover:bg-muted/60 text-foreground"
-                    }`}
-                >
-                    {algo.title}
-                </button>
-            ))}
+        <div className="relative">
+            <select
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-8 text-xs font-medium text-foreground transition-colors hover:bg-muted/60 focus:outline-none focus:ring-1 focus:ring-primary/40"
+            >
+                {ALGORITHM_REGISTRY.map((algo) => (
+                    <option key={algo.id} value={algo.id}>{algo.title}</option>
+                ))}
+            </select>
+            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
         </div>
     );
 }
@@ -58,8 +56,10 @@ export default function ConfigurePanel() {
         imageName,
         imageSampleId,
         galleryImages,
+        selectedAlgorithmId,
         replaceAlgorithmFeatures,
         setSelectedFeatureId,
+        setSelectedAlgorithmId,
         setPanelMode,
         setLastAlgorithmResult,
         addRunToHistory,
@@ -68,8 +68,10 @@ export default function ConfigurePanel() {
         imageName: s.imageName,
         imageSampleId: s.imageSampleId,
         galleryImages: s.galleryImages,
+        selectedAlgorithmId: s.selectedAlgorithmId,
         replaceAlgorithmFeatures: s.replaceAlgorithmFeatures,
         setSelectedFeatureId: s.setSelectedFeatureId,
+        setSelectedAlgorithmId: s.setSelectedAlgorithmId,
         setPanelMode: s.setPanelMode,
         setLastAlgorithmResult: s.setLastAlgorithmResult,
         addRunToHistory: s.addRunToHistory,
@@ -80,7 +82,17 @@ export default function ConfigurePanel() {
         ? initialState.sampleId
         : imageSampleId;
 
-    const [selectedAlgorithmId, setSelectedAlgorithmId] = useState<string>(initialState.algorithmId);
+    // Seed store from deep link on first page load only (not on tab switches)
+    useEffect(() => {
+        if (!didSeedFromUrl) {
+            didSeedFromUrl = true;
+            if (initialState.algorithmId !== selectedAlgorithmId) {
+                setSelectedAlgorithmId(initialState.algorithmId);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- run once per page session
+    }, []);
+
     const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>(() => {
         if (initialState.config !== null) {
             return { [initialState.algorithmId]: { value: initialState.config, sampleId: initialState.sampleId ?? imageSampleId } };
@@ -132,7 +144,6 @@ export default function ConfigurePanel() {
             config,
             imageSrc,
             imageName,
-            storageMode: "auto",
         });
 
         if (!output) return;
@@ -275,18 +286,32 @@ function PresetPicker({
     );
 }
 
-function HintCard({
+function HintCardInner({
     image,
     onSelectAlgorithm,
 }: {
     image: { name: string; description?: string; recommendedAlgorithms?: string[] };
     onSelectAlgorithm: (id: string) => void;
 }) {
+    const [dismissed, setDismissed] = useState(false);
+
+    if (dismissed) return null;
+
     return (
         <div className="rounded-lg border border-border bg-background p-3 space-y-2">
-            <p className="text-xs font-semibold text-foreground leading-tight">
-                {image.name}
-            </p>
+            <div className="flex items-start justify-between gap-2">
+                <p className="text-xs font-semibold text-foreground leading-tight">
+                    {image.name}
+                </p>
+                <button
+                    type="button"
+                    onClick={() => setDismissed(true)}
+                    className="text-muted-foreground/50 hover:text-foreground transition-colors shrink-0 -mt-0.5 -mr-0.5 p-0.5"
+                    title="Dismiss"
+                >
+                    <X size={14} />
+                </button>
+            </div>
             {image.description && (
                 <p className="text-xs text-muted-foreground leading-relaxed">
                     {image.description}
@@ -312,6 +337,14 @@ function HintCard({
             )}
         </div>
     );
+}
+
+/** Wrapper that resets dismissed state when the image changes via key prop. */
+function HintCard(props: {
+    image: { name: string; description?: string; recommendedAlgorithms?: string[] };
+    onSelectAlgorithm: (id: string) => void;
+}) {
+    return <HintCardInner key={props.image.name} {...props} />;
 }
 
 function RunSection({
@@ -344,6 +377,16 @@ function RunSection({
                 </p>
             )}
 
+            {!canRun && !runner.isRunning && (
+                <p className="text-[10px] text-center text-muted-foreground/50">Load an image to run</p>
+            )}
+
+            {!runner.isRunning && canRun && (
+                <p className="text-[10px] text-center text-muted-foreground/50">
+                    Client-side (WASM)
+                </p>
+            )}
+
             {runner.error && (
                 <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
                     <AlertCircle size={13} className="text-destructive shrink-0 mt-0.5" />
@@ -352,17 +395,19 @@ function RunSection({
             )}
 
             {runner.summary.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                     <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
                         Last Run
                     </span>
-                    <div className="grid grid-cols-2 gap-1.5">
-                        {runner.summary.map((entry) => (
-                            <div key={entry.label} className="rounded-md border border-border bg-background/70 px-2.5 py-2">
-                                <div className="text-sm font-semibold text-foreground leading-tight">{entry.value}</div>
-                                <div className="text-[11px] text-muted-foreground mt-0.5">{entry.label}</div>
-                            </div>
-                        ))}
+                    <div className="rounded-lg border border-border/80 bg-background/60 px-4 py-3">
+                        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5">
+                            {runner.summary.map((entry) => (
+                                <div key={entry.label} className="flex items-baseline gap-1.5">
+                                    <span className="text-[11px] text-muted-foreground">{entry.label}</span>
+                                    <span className="text-sm font-semibold text-foreground tabular-nums">{entry.value}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             )}

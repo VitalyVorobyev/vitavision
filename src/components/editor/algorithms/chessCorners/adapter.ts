@@ -1,6 +1,7 @@
 import type { AlgorithmDefinition, AlgorithmPreset, AlgorithmSummaryEntry, DiagnosticEntry } from "../types";
 import type { DirectedPointFeature, Feature } from "../../../../store/editor/useEditorStore";
-import { detectChessCorners, type ChessCornersResult } from "../../../../lib/api";
+import type { ChessCornersResult } from "../../../../lib/types";
+import { detectChessCornersWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 
 import ChessCornersConfigForm, { type ChessCornersConfig } from "./ChessCornersConfigForm";
 
@@ -12,7 +13,6 @@ const initialConfig: ChessCornersConfig = {
 const presets: AlgorithmPreset[] = [
     { label: "Sensitive", description: "Lower threshold, more corners", config: { thresholdRel: 0.08, useMlRefiner: false } },
     { label: "Balanced", description: "Default detection settings", config: { thresholdRel: 0.2, useMlRefiner: false } },
-    { label: "Precise", description: "ML-refined subpixel accuracy", config: { thresholdRel: 0.2, useMlRefiner: true } },
 ];
 
 const toDiagnostics = (result: ChessCornersResult): DiagnosticEntry[] => {
@@ -60,16 +60,18 @@ export const chessCornersAlgorithm: AlgorithmDefinition = {
     blogSlug: "01-chess",
     initialConfig,
     presets,
+    executionModes: ["wasm"],
     ConfigComponent: ChessCornersConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async ({ key, storageMode, config }) => {
+    run: async () => {
+        throw new Error("ChESS corner detection is only available via client-side WASM.");
+    },
+    runWasm: async ({ pixels, width, height, config }) => {
         const typedConfig = config as ChessCornersConfig;
-        return detectChessCorners({
-            key,
-            storageMode,
-            useMlRefiner: typedConfig.useMlRefiner,
-            config: {
-                thresholdRel: typedConfig.thresholdRel,
-            },
+        if (typedConfig.useMlRefiner) {
+            throw new Error("ML refiner requires server-side execution");
+        }
+        return detectChessCornersWasm(pixels, width, height, {
+            thresholdRel: typedConfig.thresholdRel,
         });
     },
     toFeatures: (result, runId) => toFeatures(result as ChessCornersResult, runId),

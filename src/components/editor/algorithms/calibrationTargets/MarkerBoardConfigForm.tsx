@@ -2,7 +2,7 @@ import { useState } from "react";
 import { X, Plus } from "lucide-react";
 import { CollapsibleSection, NumberField, Section } from "../formFields";
 import type { AlgorithmConfigFormProps } from "../types";
-import type { MarkerCircleSpec } from "../../../../lib/api";
+import type { MarkerCircleSpec } from "../../../../lib/types";
 
 export interface MarkerBoardConfig {
     boardRows: number;

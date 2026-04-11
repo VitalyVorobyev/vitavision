@@ -1,5 +1,18 @@
-import type { CalibrationCorner, CalibrationMarker, FramePoint } from "../../../../lib/api";
+import type { CalibrationCorner, CalibrationMarker, FramePoint } from "../../../../lib/types";
+import type { Feature } from "../../../../store/editor/useEditorStore";
 import { toCanvasCoordinate } from "./shared";
+
+/* ── feature lookup by grid coords ──────────────────────────── */
+
+export function buildFeatureIdByGrid(features: Feature[]): Map<string, string> {
+    const map = new Map<string, string>();
+    for (const f of features) {
+        if (f.meta?.grid) {
+            map.set(`${f.meta.grid.i}:${f.meta.grid.j}`, f.id);
+        }
+    }
+    return map;
+}
 
 /* ── corner grid ─────────────────────────────────────────────── */
 

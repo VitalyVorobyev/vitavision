@@ -1,63 +1,66 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-import { ChevronRight, Download, Eye, EyeOff, Lock, Trash2, Upload } from "lucide-react";
+import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
+import { ChevronLeft, ChevronRight, Download, Eye, EyeOff, Lock, Trash2, Upload } from "lucide-react";
 
 import { exportFeaturesAsJson, promptFeatureImport } from "../featureIo";
 import {
     buildFeatureGroups,
     getFeatureGroupKey,
     isFeatureGroupVisible,
+    type FeatureGroup,
 } from "../../../store/editor/featureGroups";
 import { isReadonlyFeature, useEditorStore, type Feature, type FeatureMeta } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
+import { fmtCoord, fmtScore, fmtDistance } from "./formatNumber";
 
 /* ── helpers ─────────────────────────────────────────────────── */
 
-const renderMetaField = (
-    label: string,
-    value: string | number | boolean | null | undefined,
-): React.ReactNode | null => {
-    if (value === null || value === undefined) {
-        return null;
-    }
-    const formatted = typeof value === "boolean" ? (value ? "yes" : "no") : String(value);
-    return (
-        <div key={label}>
-            <span className="text-muted-foreground">{label} </span>
-            <span className="font-medium">{formatted}</span>
-        </div>
-    );
-};
+interface MetaRow {
+    label: string;
+    value: string;
+}
 
-/** Render meta fields for the selected-feature card, excluding fields already shown prominently. */
-const renderDetailMeta = (meta: FeatureMeta): React.ReactNode[] => {
-    const rows: (React.ReactNode | null)[] = [
-        renderMetaField("Corner ID", meta.cornerId),
-        renderMetaField("Marker ID", meta.markerId),
+/** Build meta field rows for the selected-feature card, excluding fields already shown prominently (position, score, grid). */
+function buildDetailMeta(meta: FeatureMeta): MetaRow[] {
+    const rows: (MetaRow | null)[] = [
+        meta.cornerId !== undefined && meta.cornerId !== null
+            ? { label: "Corner ID", value: String(meta.cornerId) }
+            : null,
+        meta.markerId !== undefined && meta.markerId !== null
+            ? { label: "Marker ID", value: String(meta.markerId) }
+            : null,
         meta.targetPosition !== undefined && meta.targetPosition !== null
-            ? renderMetaField("Target pos", `${meta.targetPosition.x.toFixed(2)}, ${meta.targetPosition.y.toFixed(2)}`)
+            ? { label: "Target pos", value: `${fmtCoord(meta.targetPosition.x)}, ${fmtCoord(meta.targetPosition.y)}` }
             : null,
         meta.rotation !== undefined
-            ? renderMetaField("Rotation", `${meta.rotation.toFixed(1)}°`)
+            ? { label: "Rotation", value: `${meta.rotation.toFixed(1)}°` }
             : null,
-        renderMetaField("Hamming", meta.hamming),
+        meta.hamming !== undefined && meta.hamming !== null
+            ? { label: "Hamming", value: String(meta.hamming) }
+            : null,
         meta.borderScore !== undefined && meta.borderScore !== null
-            ? renderMetaField("Border score", meta.borderScore.toFixed(4))
+            ? { label: "Border score", value: fmtScore(meta.borderScore) }
             : null,
-        renderMetaField("Code", meta.code),
-        renderMetaField("Inverted", meta.inverted),
-        renderMetaField("Polarity", meta.polarity),
+        meta.code !== undefined && meta.code !== null
+            ? { label: "Code", value: String(meta.code) }
+            : null,
+        meta.inverted !== undefined && meta.inverted !== null
+            ? { label: "Inverted", value: meta.inverted ? "yes" : "no" }
+            : null,
+        meta.polarity !== undefined && meta.polarity !== null
+            ? { label: "Polarity", value: String(meta.polarity) }
+            : null,
         meta.contrast !== undefined && meta.contrast !== null
-            ? renderMetaField("Contrast", meta.contrast.toFixed(3))
+            ? { label: "Contrast", value: fmtScore(meta.contrast) }
             : null,
         meta.distanceCells !== undefined && meta.distanceCells !== null
-            ? renderMetaField("Distance (cells)", meta.distanceCells.toFixed(2))
+            ? { label: "Distance", value: `${fmtDistance(meta.distanceCells)} cells` }
             : null,
         meta.offsetCells !== undefined && meta.offsetCells !== null
-            ? renderMetaField("Offset (cells)", `di=${meta.offsetCells.di}, dj=${meta.offsetCells.dj}`)
+            ? { label: "Offset", value: `di=${meta.offsetCells.di}, dj=${meta.offsetCells.dj}` }
             : null,
     ];
-    return rows.filter((row): row is React.ReactNode => row !== null);
-};
+    return rows.filter((r): r is MetaRow => r !== null);
+}
 
 /** Extract (x, y) from any spatial feature. */
 function featureXY(feature: Feature): { x: number; y: number } | null {
@@ -76,50 +79,106 @@ function featureXY(feature: Feature): { x: number; y: number } | null {
     return null;
 }
 
-/** Compact one-line summary for a feature row in the list. */
-function featureRowSummary(feature: Feature): string {
-    const meta = feature.meta;
+/* ── feature navigator ──────────────────────────────────────── */
 
-    // Corners (chessboard / charuco / checkerboard_marker)
-    if (meta?.kind === "chessboard" || meta?.kind === "charuco" || meta?.kind === "checkerboard_marker") {
-        const grid = meta.grid ? `(${meta.grid.i},${meta.grid.j})` : "";
-        const score = meta.score !== undefined ? meta.score.toFixed(2) : "";
-        return [grid, score].filter(Boolean).join("  ");
-    }
+function FeatureNavigator({
+    groups,
+    selectedFeatureId,
+    setSelectedFeatureId,
+}: {
+    groups: FeatureGroup[];
+    selectedFeatureId: string | null;
+    setSelectedFeatureId: (id: string) => void;
+}) {
+    // Find which group the selected feature belongs to
+    const activeGroupIndex = useMemo(() => {
+        if (!selectedFeatureId) return -1;
+        return groups.findIndex((g) => g.features.some((f) => f.id === selectedFeatureId));
+    }, [groups, selectedFeatureId]);
 
-    // Markers
-    if (meta?.kind === "marker") {
-        const id = meta.markerId !== undefined && meta.markerId !== null ? `id:${meta.markerId}` : "";
-        const score = meta.score !== undefined ? meta.score.toFixed(2) : "";
-        return [id, score].filter(Boolean).join("  ");
-    }
+    const group = activeGroupIndex >= 0 ? groups[activeGroupIndex] : null;
 
-    // Circle candidates
-    if (meta?.kind === "circle_candidate") {
-        const grid = meta.grid ? `(${meta.grid.i},${meta.grid.j})` : "";
-        const pol = meta.polarity ?? "";
-        return [grid, pol].filter(Boolean).join("  ");
-    }
+    const indexInGroup = useMemo(() => {
+        if (!group || !selectedFeatureId) return -1;
+        return group.features.findIndex((f) => f.id === selectedFeatureId);
+    }, [group, selectedFeatureId]);
 
-    // Ring markers
-    if (meta?.kind === "ringgrid") {
-        const id = meta.markerId !== undefined && meta.markerId !== null ? `#${meta.markerId}` : "";
-        const score = meta.score !== undefined ? meta.score.toFixed(2) : "";
-        return [id, score].filter(Boolean).join("  ");
-    }
+    const ids = useMemo(() => group?.features.map((f) => f.id) ?? [], [group]);
+    const total = ids.length;
 
-    // Directed points
-    if (feature.type === "directed_point") {
-        return `(${feature.x.toFixed(1)}, ${feature.y.toFixed(1)})  ${feature.score.toFixed(2)}`;
-    }
+    const goPrev = useCallback(() => {
+        if (total === 0) return;
+        const next = indexInGroup > 0 ? indexInGroup - 1 : total - 1;
+        setSelectedFeatureId(ids[next]);
+    }, [indexInGroup, total, ids, setSelectedFeatureId]);
 
-    // Manual / other spatial features
-    const xy = featureXY(feature);
-    if (xy) {
-        return `(${xy.x.toFixed(1)}, ${xy.y.toFixed(1)})`;
-    }
+    const goNext = useCallback(() => {
+        if (total === 0) return;
+        const next = indexInGroup < total - 1 ? indexInGroup + 1 : 0;
+        setSelectedFeatureId(ids[next]);
+    }, [indexInGroup, total, ids, setSelectedFeatureId]);
 
-    return "";
+    const handleKeyDown = useCallback(
+        (e: React.KeyboardEvent) => {
+            if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+                e.preventDefault();
+                goPrev();
+            } else if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+                e.preventDefault();
+                goNext();
+            }
+        },
+        [goPrev, goNext],
+    );
+
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Auto-focus navigator when the active group changes so arrow keys work immediately
+    useEffect(() => {
+        if (activeGroupIndex >= 0) {
+            containerRef.current?.focus();
+        }
+    }, [activeGroupIndex]);
+
+    if (total === 0) return null;
+
+    const display = indexInGroup >= 0
+        ? `${indexInGroup + 1} / ${total}`
+        : `— / ${total}`;
+
+    return (
+        <div
+            ref={containerRef}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+            className="flex items-center justify-center gap-3 outline-none focus:ring-1 focus:ring-primary/30 rounded-md py-1"
+        >
+            <button
+                type="button"
+                onClick={goPrev}
+                disabled={total === 0}
+                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-30"
+                title="Previous feature"
+            >
+                <ChevronLeft size={16} />
+            </button>
+            <span className="text-xs text-foreground font-medium text-center">
+                {group && (
+                    <span className="text-muted-foreground">{group.label} </span>
+                )}
+                <span className="tabular-nums">{display}</span>
+            </span>
+            <button
+                type="button"
+                onClick={goNext}
+                disabled={total === 0}
+                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-30"
+                title="Next feature"
+            >
+                <ChevronRight size={16} />
+            </button>
+        </div>
+    );
 }
 /* ── selected feature card ───────────────────────────────────── */
 
@@ -136,15 +195,20 @@ function SelectedFeatureCard({
     const meta = feature.meta;
     const xy = featureXY(feature);
 
+    // Resolve score from meta or directed_point feature
+    const score = meta?.score ?? (feature.type === "directed_point" ? feature.score : null);
+    const detailRows = meta ? buildDetailMeta(meta) : [];
+
     return (
-        <div className="rounded-lg border border-primary/25 bg-primary/5 p-3 space-y-1.5">
-            <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+        <div className="rounded-lg border border-primary/30 bg-primary/6 px-4 py-3 space-y-2.5">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
                     Selected
                 </span>
                 <div className="flex items-center gap-1.5">
                     {hidden && (
-                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-slate-900 text-slate-100">
+                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
                             <EyeOff size={9} /> hidden
                         </span>
                     )}
@@ -156,56 +220,46 @@ function SelectedFeatureCard({
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-                {/* Grid coords prominently for corners */}
-                {meta?.grid && (
-                    <div>
-                        <span className="text-muted-foreground">grid </span>
-                        <span className="font-medium">({meta.grid.i}, {meta.grid.j})</span>
-                    </div>
-                )}
-                {/* Grid cell for markers */}
-                {meta?.gridCell && !meta?.grid && (
-                    <div>
-                        <span className="text-muted-foreground">cell </span>
-                        <span className="font-medium">({meta.gridCell.gx}, {meta.gridCell.gy})</span>
-                    </div>
-                )}
-                {/* Score */}
-                {meta?.score !== undefined && meta?.score !== null && (
-                    <div>
-                        <span className="text-muted-foreground">score </span>
-                        <span className="font-medium">{meta.score.toFixed(4)}</span>
-                    </div>
-                )}
-                {/* Directed point score (from feature, not meta) */}
-                {feature.type === "directed_point" && (
-                    <div>
-                        <span className="text-muted-foreground">score </span>
-                        <span className="font-medium">{feature.score.toFixed(3)}</span>
-                    </div>
-                )}
-                {/* Coordinates */}
+            {/* Tabular key-value layout */}
+            <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
                 {xy && (
                     <>
-                        <div>
-                            <span className="text-muted-foreground">x </span>
-                            <span className="font-medium">{xy.x.toFixed(2)}</span>
-                        </div>
-                        <div>
-                            <span className="text-muted-foreground">y </span>
-                            <span className="font-medium">{xy.y.toFixed(2)}</span>
-                        </div>
+                        <dt className="text-muted-foreground whitespace-nowrap">Position</dt>
+                        <dd className="font-medium tabular-nums text-right">
+                            {fmtCoord(xy.x)}, {fmtCoord(xy.y)}
+                        </dd>
                     </>
                 )}
-                {/* Remaining meta fields */}
-                {meta && renderDetailMeta(meta)}
-            </div>
+                {score !== null && (
+                    <>
+                        <dt className="text-muted-foreground">Score</dt>
+                        <dd className="font-medium tabular-nums text-right">{fmtScore(score)}</dd>
+                    </>
+                )}
+                {meta?.grid && (
+                    <>
+                        <dt className="text-muted-foreground">Grid</dt>
+                        <dd className="font-medium tabular-nums text-right">({meta.grid.i}, {meta.grid.j})</dd>
+                    </>
+                )}
+                {meta?.gridCell && !meta?.grid && (
+                    <>
+                        <dt className="text-muted-foreground">Cell</dt>
+                        <dd className="font-medium tabular-nums text-right">({meta.gridCell.gx}, {meta.gridCell.gy})</dd>
+                    </>
+                )}
+                {detailRows.map((row) => (
+                    <Fragment key={row.label}>
+                        <dt className="text-muted-foreground whitespace-nowrap">{row.label}</dt>
+                        <dd className="font-medium tabular-nums text-right">{row.value}</dd>
+                    </Fragment>
+                ))}
+            </dl>
 
             {!readonly && (
                 <button
                     onClick={onDelete}
-                    className="flex items-center gap-1 text-[11px] text-destructive hover:text-destructive/70 transition-colors mt-0.5"
+                    className="flex items-center gap-1 text-[11px] text-destructive hover:text-destructive/70 transition-colors"
                 >
                     <Trash2 size={11} /> Delete
                 </button>
@@ -269,8 +323,9 @@ export default function FeatureListPanel() {
         : false;
 
     const groups = useMemo(() => buildFeatureGroups(features), [features]);
-    const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
-    const listRef = useRef<HTMLDivElement>(null);
+
+    // Active group derived from selected feature
+    const activeGroupKey = selectedFeature ? getFeatureGroupKey(selectedFeature) : null;
 
     const handleImport = useCallback(() => {
         promptFeatureImport({
@@ -296,68 +351,12 @@ export default function FeatureListPanel() {
         clearFeatures();
     }, [clearFeatures, features.length]);
 
-    const toggleGroup = useCallback((key: string) => {
-        setCollapsed((prev) => {
-            const next = new Set(prev);
-            if (next.has(key)) {
-                next.delete(key);
-            } else {
-                next.add(key);
-            }
-            return next;
-        });
-    }, []);
-
-    // Build a flat ordered list of visible feature IDs for keyboard navigation
-    const flatVisible = useMemo(() => {
-        const result: { featureId: string; groupKey: string }[] = [];
-        for (const group of groups) {
-            if (!collapsed.has(group.key)) {
-                for (const f of group.features) {
-                    result.push({ featureId: f.id, groupKey: group.key });
-                }
-            }
-        }
-        return result;
-    }, [groups, collapsed]);
-
-    const handleKeyDown = useCallback(
-        (e: React.KeyboardEvent) => {
-            if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
-            e.preventDefault();
-
-            if (flatVisible.length === 0) return;
-
-            const currentIndex = selectedFeatureId
-                ? flatVisible.findIndex((entry) => entry.featureId === selectedFeatureId)
-                : -1;
-
-            let nextIndex: number;
-            if (e.key === "ArrowDown") {
-                nextIndex = currentIndex < flatVisible.length - 1 ? currentIndex + 1 : 0;
-            } else {
-                nextIndex = currentIndex > 0 ? currentIndex - 1 : flatVisible.length - 1;
-            }
-
-            const next = flatVisible[nextIndex];
-            if (collapsed.has(next.groupKey)) {
-                setCollapsed((prev) => {
-                    const updated = new Set(prev);
-                    updated.delete(next.groupKey);
-                    return updated;
-                });
-            }
-            setSelectedFeatureId(next.featureId);
-        },
-        [flatVisible, selectedFeatureId, collapsed, setSelectedFeatureId],
-    );
-
     return (
         <div className="flex flex-col gap-3">
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-3 gap-1.5">
                 <ActionButton title="Import feature JSON" onClick={handleImport}>
                     <Upload size={12} />
-                    Import JSON
+                    Import
                 </ActionButton>
                 <ActionButton
                     title="Export current features"
@@ -365,7 +364,7 @@ export default function FeatureListPanel() {
                     disabled={features.length === 0}
                 >
                     <Download size={12} />
-                    Export JSON
+                    Export
                 </ActionButton>
                 <ActionButton
                     title="Clear all features"
@@ -374,7 +373,7 @@ export default function FeatureListPanel() {
                     className="border-destructive/20 bg-destructive/5 text-destructive hover:bg-destructive/10"
                 >
                     <Trash2 size={12} />
-                    Clear features
+                    Clear
                 </ActionButton>
             </div>
 
@@ -386,105 +385,68 @@ export default function FeatureListPanel() {
                 />
             )}
 
-            {/* grouped feature list */}
-            <div
-                ref={listRef}
-                tabIndex={0}
-                onKeyDown={handleKeyDown}
-                className="flex flex-col gap-1 outline-none focus:ring-1 focus:ring-primary/30 rounded-md"
-            >
-                <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-[0.12em]">
-                        List
-                    </span>
-                    <span className="text-[10px] text-muted-foreground tabular-nums">{features.length}</span>
+            {/* Feature navigator */}
+            <FeatureNavigator
+                groups={groups}
+                selectedFeatureId={selectedFeatureId}
+                setSelectedFeatureId={setSelectedFeatureId}
+            />
+
+            {/* Group selector pills */}
+            {groups.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                    {groups.map((group) => {
+                        const isActive = group.key === activeGroupKey;
+                        const isVisible = isFeatureGroupVisible(group.key, featureGroupVisibility);
+                        return (
+                            <div
+                                key={group.key}
+                                className={`inline-flex items-center rounded-full border text-[11px] transition-colors ${
+                                    isActive
+                                        ? "border-primary/40 bg-primary/8 text-primary"
+                                        : isVisible
+                                            ? "border-border bg-background text-foreground"
+                                            : "border-border/50 bg-muted/20 text-muted-foreground/60"
+                                }`}
+                            >
+                                {/* Main clickable area — selects group */}
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedFeatureId(group.features[0].id)}
+                                    className="inline-flex items-center gap-1.5 pl-2 pr-1 py-1 hover:opacity-80 transition-opacity"
+                                >
+                                    <div
+                                        className="w-2 h-2 rounded-full shrink-0"
+                                        style={{ backgroundColor: group.color, opacity: isVisible ? 1 : 0.4 }}
+                                    />
+                                    <span className="font-medium">{group.label}</span>
+                                    <span className="text-[10px] text-muted-foreground tabular-nums">
+                                        {group.features.length}
+                                    </span>
+                                </button>
+                                {/* Visibility toggle */}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setFeatureGroupVisibility(group.key, !isVisible);
+                                    }}
+                                    className="pr-2 pl-0.5 py-1 text-muted-foreground hover:text-foreground transition-colors"
+                                    title={isVisible ? `Hide ${group.label}` : `Show ${group.label}`}
+                                >
+                                    {isVisible ? <Eye size={10} /> : <EyeOff size={10} />}
+                                </button>
+                            </div>
+                        );
+                    })}
                 </div>
+            )}
 
-                {features.length === 0 ? (
-                    <div className="rounded-lg border border-dashed border-border/60 py-6 text-center">
-                        <p className="text-xs text-muted-foreground">No features yet</p>
-                    </div>
-                ) : (
-                    <div className="space-y-1.5 pb-4">
-                        {groups.map((group) => {
-                            const isCollapsed = collapsed.has(group.key);
-                            const isVisible = isFeatureGroupVisible(group.key, featureGroupVisibility);
-                            return (
-                                <div key={group.key}>
-                                    {/* group header */}
-                                    <div className={`flex items-center gap-1 rounded-md transition-colors ${isVisible ? "hover:bg-muted/30" : "opacity-55 hover:bg-muted/20"}`}>
-                                        <button
-                                            type="button"
-                                            onClick={() => toggleGroup(group.key)}
-                                            className="flex min-w-0 flex-1 items-center gap-1.5 px-1 py-1 text-xs text-left"
-                                        >
-                                            <ChevronRight
-                                                size={12}
-                                                className={`text-muted-foreground/60 transition-transform duration-150 ${
-                                                    isCollapsed ? "" : "rotate-90"
-                                                }`}
-                                            />
-                                            <div
-                                                className="w-2 h-2 rounded-xs shrink-0"
-                                                style={{ backgroundColor: group.color }}
-                                            />
-                                            <span className="font-medium text-foreground truncate">{group.label}</span>
-                                            <span className="text-[10px] text-muted-foreground tabular-nums ml-auto">
-                                                {group.features.length}
-                                            </span>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setFeatureGroupVisibility(group.key, !isVisible)}
-                                            className="mr-1 rounded-md p-1 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
-                                            title={isVisible ? `Hide ${group.label}` : `Show ${group.label}`}
-                                        >
-                                            {isVisible ? <Eye size={12} /> : <EyeOff size={12} />}
-                                        </button>
-                                    </div>
-
-                                    {/* group items */}
-                                    {!isCollapsed && (
-                                        <div className={`space-y-0.5 mt-0.5 ml-3 ${isVisible ? "" : "opacity-50"}`}>
-                                            {group.features.map((feature, idx) => {
-                                                const isSelected = selectedFeatureId === feature.id;
-                                                const summary = featureRowSummary(feature);
-                                                return (
-                                                    <div
-                                                        key={feature.id}
-                                                        onClick={() => setSelectedFeatureId(feature.id)}
-                                                        className={`flex items-center gap-2 px-2 py-1 rounded-md border cursor-pointer text-xs transition-colors ${
-                                                            isSelected
-                                                                ? "border-primary/40 bg-primary/6 shadow-xs"
-                                                                : "border-transparent hover:border-muted-foreground/25 hover:bg-muted/30"
-                                                        }`}
-                                                    >
-                                                        <span className="text-[10px] text-muted-foreground tabular-nums w-5 shrink-0 text-right">
-                                                            {idx}
-                                                        </span>
-                                                        <span className="text-[11px] text-foreground/80 tabular-nums truncate">
-                                                            {summary}
-                                                        </span>
-                                                        {!isReadonlyFeature(feature) && (
-                                                            <button
-                                                                onClick={(e) => { e.stopPropagation(); deleteFeature(feature.id); }}
-                                                                className="p-0.5 text-muted-foreground/40 hover:text-destructive shrink-0 transition-colors ml-auto"
-                                                                title="Delete"
-                                                            >
-                                                                <Trash2 size={12} />
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
+            {features.length === 0 && (
+                <div className="rounded-lg border border-dashed border-border/60 py-6 text-center">
+                    <p className="text-xs text-muted-foreground">No features yet</p>
+                </div>
+            )}
         </div>
     );
 }

@@ -1,6 +1,6 @@
 import { CollapsibleSection, NumberField, Section, SelectField } from "../formFields";
 import type { AlgorithmConfigFormProps } from "../types";
-import type { DictionaryName } from "../../../../lib/api";
+import type { DictionaryName } from "../../../../lib/types";
 
 export interface CharucoConfig {
     rows: number;
@@ -92,10 +92,10 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     options={DICTIONARY_OPTIONS}
                 />
             </Section>
-            <CollapsibleSection title="Rendering">
+            <CollapsibleSection title="Marker decoding">
                 <NumberField
                     label="Pixels per square"
-                    tooltip="Expected size of one board square in pixels. Sets the detection scale for corner finding."
+                    tooltip="Size of the rectified cell (in pixels) used to read ArUco marker codes. Higher values improve decode accuracy at the cost of speed."
                     value={config.pxPerSquare}
                     onChange={(v) => set("pxPerSquare", v ?? 40)}
                     disabled={disabled}

@@ -12,6 +12,7 @@ import { proseClasses } from "../lib/prose-classes";
 import { useStaticContent } from "../lib/content/ssr-content.tsx";
 import { buildBlogJsonLd } from "../lib/content/publication.ts";
 import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.tsx";
+import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
 
 export default function BlogPost() {
     const { slug } = useParams<{ slug: string }>();
@@ -40,6 +41,7 @@ export default function BlogPost() {
 
     useMermaid(articleRef, [html]);
     useArticleIllustrations(articleRef, [html]);
+    useArticleImageZoom(articleRef, [html]);
 
     // Load content asynchronously when not available from SSR or hydration.
     useEffect(() => {

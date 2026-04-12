@@ -346,15 +346,13 @@ article pre code {
     tab-size: 4;
 }
 
-/* Shiki dual-theme: show correct theme based on dark/light class */
+/* Shiki dual-theme: set token color only; container paints background. */
 article pre.shiki span {
     color: var(--shiki-light);
-    background-color: var(--shiki-light-bg);
 }
 
 .dark article pre.shiki span {
     color: var(--shiki-dark);
-    background-color: var(--shiki-dark-bg);
 }
 
 article pre.shiki {
@@ -417,5 +415,46 @@ article .katex {
 
     article .vv-equation__number {
         justify-self: end;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Image zoom (Medium-style click-to-expand)
+   -------------------------------------------------------------------------- */
+article img {
+    transition: transform 250ms ease, box-shadow 250ms ease;
+}
+
+article img.vv-zoom-active {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    max-width: min(95vw, 1400px);
+    max-height: 92vh;
+    width: auto;
+    height: auto;
+    z-index: 60;
+    cursor: zoom-out;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+}
+
+.vv-zoom-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    z-index: 55;
+    transition: background 250ms ease;
+    cursor: zoom-out;
+}
+
+.vv-zoom-backdrop-active {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    article img,
+    .vv-zoom-backdrop {
+        transition: none;
     }
 }

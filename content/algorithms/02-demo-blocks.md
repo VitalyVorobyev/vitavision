@@ -3,8 +3,10 @@ title: "Rich Algorithm Content Demo"
 date: 2026-03-29
 summary: "A draft algorithm page that exercises semantic blocks, math, diagrams, code, and related-link metadata."
 tags: ["meta", "demo", "authoring"]
+category: explainers
 author: "Vitaly Vorobyev"
 draft: true
+difficulty: intermediate
 relatedPosts: ["00-intro"]
 relatedAlgorithms: ["harris-corner-detector"]
 ---
@@ -216,5 +218,17 @@ graph TD
     E --> |Outliers| C
     F --> G[Image Warping]
 ```
+
+## Inline Colored Text
+
+Use inline colour to mark semantic roles inside a paragraph — a :blue[variable], a :amber[warning], a :green[confirmed value], a :violet[symbolic identifier], or a :muted[secondary annotation]. Unknown directive names like `:rainbow[text]` are left as-is by the parser so authors get predictable fallback.
+
+## Emphasized Phrase Block
+
+For a single stand-alone idea that deserves a reader's full attention, use the `:::emph` container directive. It renders as a decorated pull-quote distinct from `:::quote` (which is attribution-oriented) and `:::note` (which is informational).
+
+:::emph
+Every subpixel estimator trades bias for variance. There are no exceptions — the best any method can do is shift where the error lives, not eliminate it.
+:::
 
 This concludes the content feature demonstration for algorithm pages.

@@ -3,6 +3,7 @@ title: "FAST Corner Detector"
 date: 2026-03-29
 summary: "A very fast corner detector based on an intensity segment test around a Bresenham circle."
 tags: ["computer-vision", "feature-detection", "tracking", "real-time"]
+category: corner-detection
 author: "Vitaly Vorobyev"
 relatedPosts: ["01-chesscorners", "01-chess_ai"]
 relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "chess-corners"]

@@ -328,6 +328,66 @@
 }
 
 /* --------------------------------------------------------------------------
+   Group F: Emphasis — pull-quote style, brand-cyan accent
+   Standalone decorated block for spotlighting a key idea.
+   -------------------------------------------------------------------------- */
+.vv-block--emph {
+    position: relative;
+    margin-block: 2.5rem;
+    padding: 1.5rem 2rem 1.5rem 2.25rem;
+    border-left: 4px solid hsl(var(--brand));
+    background: hsl(var(--brand) / 0.06);
+    border-radius: 0 6px 6px 0;
+}
+
+.vv-block--emph::before {
+    content: "⁂";
+    position: absolute;
+    top: 0.35rem;
+    left: 0.85rem;
+    font-size: 0.95rem;
+    color: hsl(var(--brand));
+    opacity: 0.75;
+    line-height: 1;
+}
+
+.vv-block--emph .vv-block__title { display: none; }
+
+.vv-block--emph .vv-block__body {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: hsl(var(--article-heading));
+}
+
+.vv-block--emph .vv-block__body > *:last-child {
+    margin-bottom: 0;
+}
+
+.dark .vv-block--emph {
+    background: hsl(var(--brand) / 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Inline colored text (:color[name]{text})
+   Muted palette aligned with the vv-block hue anchors above.
+   Unknown color name → plain <span> (no class applied, no style).
+   -------------------------------------------------------------------------- */
+.vv-color { padding: 0 .1em; border-radius: 2px; }
+.vv-color--blue   { color: hsl(215 60% 45%); }
+.vv-color--amber  { color: hsl(38  85% 40%); }
+.vv-color--green  { color: hsl(140 40% 38%); }
+.vv-color--violet { color: hsl(260 40% 50%); }
+.vv-color--muted  { color: hsl(215 16% 47%); }
+
+.dark .vv-color--blue   { color: hsl(215 60% 70%); }
+.dark .vv-color--amber  { color: hsl(38  70% 68%); }
+.dark .vv-color--green  { color: hsl(140 35% 62%); }
+.dark .vv-color--violet { color: hsl(260 35% 70%); }
+.dark .vv-color--muted  { color: hsl(215 20% 65%); }
+
+/* --------------------------------------------------------------------------
    Shiki code block styling
    -------------------------------------------------------------------------- */
 

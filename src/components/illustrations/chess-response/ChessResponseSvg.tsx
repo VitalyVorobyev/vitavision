@@ -4,8 +4,8 @@ import type { ChessResponseComputation } from "./types";
 const PHASE_COLORS = ["#0f766e", "#2563eb", "#9333ea", "#c2410c"];
 const DR_COLOR = "#b91c1c";
 const MR_COLOR = "#d97706";
-const VIEW_BOX_SIZE = 540;
-const GRID_ORIGIN = 83;
+const VIEW_BOX_SIZE = 420;
+const GRID_ORIGIN = 23;
 const CELL_SIZE = 22;
 const GRID_CENTER = GRID_ORIGIN + (CHESS_RESPONSE_GRID_SIZE * CELL_SIZE) / 2;
 const RING_RADIUS_SVG = CHESS_RESPONSE_RING_RADIUS * CELL_SIZE;
@@ -91,16 +91,6 @@ export default function ChessResponseSvg({
             role="img"
             aria-label={`ChESS detector response illustration for the ${patternLabel} case at ${rotationDeg.toFixed(1)} degrees.`}
         >
-            <rect
-                x="1"
-                y="1"
-                width={VIEW_BOX_SIZE - 2}
-                height={VIEW_BOX_SIZE - 2}
-                rx="28"
-                fill={palette.surface}
-                stroke={palette.border}
-            />
-
             <g aria-hidden="true">
                 {computation.grid.map((cell) => (
                     <rect
@@ -281,7 +271,7 @@ export default function ChessResponseSvg({
                 cx={GRID_CENTER}
                 cy={GRID_CENTER}
                 r="5"
-                fill={palette.background}
+                fill="none"
                 stroke="currentColor"
                 strokeWidth="1.5"
                 strokeOpacity="0.75"

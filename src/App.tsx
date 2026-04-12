@@ -14,6 +14,8 @@ const Blog = lazy(() => import('./pages/Blog'));
 const BlogPost = lazy(() => import('./pages/BlogPost'));
 const AlgorithmIndex = lazy(() => import('./pages/AlgorithmIndex'));
 const AlgorithmPost = lazy(() => import('./pages/AlgorithmPost'));
+const DemoIndex = lazy(() => import('./pages/DemoIndex'));
+const DemoPage = lazy(() => import('./pages/DemoPage'));
 const Editor = lazy(() => import('./pages/Editor'));
 const TargetGenerator = lazy(() => import('./pages/TargetGenerator'));
 const About = lazy(() => import('./pages/About'));
@@ -39,6 +41,8 @@ function AppLayout() {
                         <Route path="/blog/:slug" element={<BlogPost />} />
                         <Route path="/algorithms" element={<AlgorithmIndex />} />
                         <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
+                        <Route path="/demos" element={<DemoIndex />} />
+                        <Route path="/demos/:slug" element={<DemoPage />} />
                         <Route path="/editor" element={<Editor />} />
                         <Route path="/tools/target-generator" element={<TargetGenerator />} />
                         <Route path="/about" element={<About />} />

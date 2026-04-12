@@ -1,7 +1,6 @@
 import {
     CHESS_RESPONSE_GRID_SIZE,
     CHESS_RESPONSE_LOCAL_MEAN_OFFSETS,
-    CHESS_RESPONSE_RING_RADIUS,
     CHESS_RESPONSE_SAMPLE_COUNT,
     type ChessResponseControls,
     type ChessResponseGridCell,
@@ -82,24 +81,29 @@ export function createGrid(controls: ChessResponseControls): ChessResponseGridCe
     return grid;
 }
 
-export function createRingSamples(controls: ChessResponseControls): ChessResponsePoint[] {
-    const samples: ChessResponsePoint[] = [];
+// Canonical 16-sample integer offsets, clockwise from the top (y is screen-down).
+// The diagonals land at (±5, ±5) rather than the mathematical round of (±4, ±4) —
+// that keeps the ring visually uniform and matches how digital-circle detectors
+// rasterize a radius-6 ring.
+const RING_OFFSETS: readonly [number, number][] = [
+    [0, -5], [2, -5], [4, -4], [5, -2],
+    [5, 0], [5, 2], [4, 4], [2, 5],
+    [0, 5], [-2, 5], [-4, 4], [-5, 2],
+    [-5, 0], [-5, -2], [-4, -4], [-2, -5],
+];
 
-    for (let index = 0; index < CHESS_RESPONSE_SAMPLE_COUNT; index += 1) {
+export function createRingSamples(controls: ChessResponseControls): ChessResponsePoint[] {
+    return RING_OFFSETS.map(([x, y], index) => {
         const angleRad = (-Math.PI / 2) + (index * 2 * Math.PI) / CHESS_RESPONSE_SAMPLE_COUNT;
-        const x = Math.cos(angleRad) * CHESS_RESPONSE_RING_RADIUS;
-        const y = Math.sin(angleRad) * CHESS_RESPONSE_RING_RADIUS;
-        samples.push({
+        return {
             index,
             label: `I${index}`,
             angleRad,
             x,
             y,
             intensity: sampleIntensityAt(x, y, controls),
-        });
-    }
-
-    return samples;
+        };
+    });
 }
 
 export function createLocalMeanSamples(

@@ -21,6 +21,7 @@ const SUPPORTED_BLOCKS = new Set([
     "quote",
     "example",
     "algorithm",
+    "emph",
 ]);
 
 const BLOCK_TITLES: Record<string, string> = {
@@ -35,6 +36,7 @@ const BLOCK_TITLES: Record<string, string> = {
     quote: "Quote",
     example: "Example",
     algorithm: "Algorithm",
+    emph: "Emphasis",
 };
 
 interface DirectiveNode extends Parent {

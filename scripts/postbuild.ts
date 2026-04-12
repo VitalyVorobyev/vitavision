@@ -1,14 +1,16 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from "node:fs";
 import { join } from "node:path";
 import { Feed } from "feed";
-import { blogPosts, algorithmPages } from "../src/generated/content-index.ts";
+import { blogPosts, algorithmPages, demoPages } from "../src/generated/content-index.ts";
 import { blogHtmlLoaders } from "../src/generated/blog-loaders.ts";
 import { algorithmHtmlLoaders } from "../src/generated/algorithm-loaders.ts";
+import { demoHtmlLoaders } from "../src/generated/demo-loaders.ts";
 import { render } from "../src/entry-server.tsx";
 import type { StaticContentContextValue } from "../src/lib/content/ssr-content.tsx";
 import {
     buildAlgorithmJsonLd,
     buildBlogJsonLd,
+    buildDemoJsonLd,
     comparePublicationDateDesc,
     formatFeedTitle,
 } from "../src/lib/content/publication.ts";
@@ -112,6 +114,7 @@ async function main(): Promise<void> {
     const staticContent: StaticContentContextValue = {
         blogHtmlBySlug: await loadHtmlMap(blogHtmlLoaders),
         algorithmHtmlBySlug: await loadHtmlMap(algorithmHtmlLoaders),
+        demoHtmlBySlug: await loadHtmlMap(demoHtmlLoaders),
     };
     let count = 0;
 
@@ -158,6 +161,26 @@ async function main(): Promise<void> {
         count++;
     }
 
+    // Demo index
+    writePage(template, "/demos", "demos", {
+        title: "Demos",
+        description: "Interactive demos of computer vision algorithms.",
+    }, staticContent);
+    count++;
+
+    // Individual demo pages
+    for (const demo of demoPages) {
+        const { frontmatter } = demo;
+        const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildDemoJsonLd(frontmatter, demo.slug))}</script>`;
+        writePage(template, `/demos/${demo.slug}`, `demos/${demo.slug}`, {
+            title: frontmatter.title,
+            description: frontmatter.summary,
+            ogType: "article",
+            url: `/demos/${demo.slug}`,
+        }, staticContent, jsonLd);
+        count++;
+    }
+
     // Target generator
     writePage(template, "/tools/target-generator", "tools/target-generator", {
         title: "Target Generator",
@@ -169,6 +192,7 @@ async function main(): Promise<void> {
     const sitemapPaths = [
         "/", "/blog", ...blogPosts.map((p) => `/blog/${p.slug}`),
         "/algorithms", ...algorithmPages.map((p) => `/algorithms/${p.slug}`),
+        "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
         "/tools/target-generator",
     ];
     writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(sitemapPaths), "utf-8");
@@ -189,12 +213,15 @@ async function main(): Promise<void> {
     const feedEntries = [
         ...blogPosts.map((post) => ({ kind: "blog" as const, ...post })),
         ...algorithmPages.map((page) => ({ kind: "algorithm" as const, ...page })),
+        ...demoPages.map((demo) => ({ kind: "demo" as const, ...demo })),
     ].sort(comparePublicationDateDesc);
 
     for (const entry of feedEntries) {
         const path = entry.kind === "algorithm"
             ? `/algorithms/${entry.slug}`
-            : `/blog/${entry.slug}`;
+            : entry.kind === "demo"
+                ? `/demos/${entry.slug}`
+                : `/blog/${entry.slug}`;
         const { frontmatter } = entry;
         feed.addItem({
             title: formatFeedTitle(entry.kind, frontmatter.title),

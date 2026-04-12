@@ -1,6 +1,7 @@
 import type {
     AlgorithmFrontmatterSerialized,
     BlogFrontmatterSerialized,
+    DemoFrontmatterSerialized,
 } from "./schema.ts";
 
 interface StructuredArticleFrontmatter {
@@ -11,6 +12,8 @@ interface StructuredArticleFrontmatter {
     updated?: string;
     coverImage?: string;
     tags: string[];
+    difficulty?: "beginner" | "intermediate" | "advanced";
+    readingTimeMinutes?: number;
 }
 
 function buildStructuredArticleJsonLd(
@@ -28,6 +31,8 @@ function buildStructuredArticleJsonLd(
         author: { "@type": "Person", name: frontmatter.author },
         ...(frontmatter.coverImage && { image: frontmatter.coverImage }),
         keywords: frontmatter.tags.join(", "),
+        ...(frontmatter.readingTimeMinutes && { timeRequired: `PT${frontmatter.readingTimeMinutes}M` }),
+        ...(frontmatter.difficulty && { educationalLevel: frontmatter.difficulty }),
         mainEntityOfPage: { "@type": "WebPage", "@id": path },
     };
 }
@@ -54,6 +59,17 @@ export function buildAlgorithmJsonLd(
     );
 }
 
+export function buildDemoJsonLd(
+    frontmatter: DemoFrontmatterSerialized,
+    slug: string,
+): Record<string, unknown> {
+    return buildStructuredArticleJsonLd(
+        "TechArticle",
+        frontmatter,
+        `/demos/${slug}`,
+    );
+}
+
 export function comparePublicationDateDesc<T extends { frontmatter: { date: string } }>(
     a: T,
     b: T,
@@ -61,6 +77,8 @@ export function comparePublicationDateDesc<T extends { frontmatter: { date: stri
     return b.frontmatter.date.localeCompare(a.frontmatter.date);
 }
 
-export function formatFeedTitle(kind: "blog" | "algorithm", title: string): string {
-    return kind === "algorithm" ? `[Algorithm] ${title}` : title;
+export function formatFeedTitle(kind: "blog" | "algorithm" | "demo", title: string): string {
+    if (kind === "algorithm") return `[Algorithm] ${title}`;
+    if (kind === "demo") return `[Demo] ${title}`;
+    return title;
 }

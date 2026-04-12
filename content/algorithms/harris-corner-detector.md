@@ -3,6 +3,7 @@ title: "Harris Corner Detector"
 date: 2026-03-29
 summary: "A classic local feature detector that scores pixels with strong intensity variation in two independent directions."
 tags: ["computer-vision", "feature-detection", "tracking", "calibration"]
+category: corner-detection
 author: "Vitaly Vorobyev"
 relatedPosts: ["01-chesscorners", "01-chess_ai"]
 relatedAlgorithms: ["shi-tomasi-corner-detector", "fast-corner-detector", "chess-corners"]

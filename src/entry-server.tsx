@@ -5,6 +5,8 @@ import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import AlgorithmIndex from "./pages/AlgorithmIndex.tsx";
 import AlgorithmPost from "./pages/AlgorithmPost.tsx";
+import DemoIndex from "./pages/DemoIndex.tsx";
+import DemoPage from "./pages/DemoPage.tsx";
 import Navbar from "./components/layout/Navbar.tsx";
 import Footer from "./components/layout/Footer.tsx";
 import { StaticContentProvider, type StaticContentContextValue } from "./lib/content/ssr-content.tsx";
@@ -22,6 +24,8 @@ export function render(url: string, staticContent: StaticContentContextValue | n
                                 <Route path="/blog/:slug" element={<BlogPost />} />
                                 <Route path="/algorithms" element={<AlgorithmIndex />} />
                                 <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
+                                <Route path="/demos" element={<DemoIndex />} />
+                                <Route path="/demos/:slug" element={<DemoPage />} />
                                 <Route path="/tools/target-generator" element={
                                     <div className="max-w-3xl mx-auto px-6 py-16 text-center">
                                         <h1 className="text-3xl font-bold tracking-tight mb-4">Calibration Target Generator</h1>

@@ -31,26 +31,4 @@ describe("AlgorithmPost", () => {
         expect(jsonLd?.textContent).toContain('"headline":"Harris Corner Detector"');
     });
 
-    it("hydrates the chess response illustration inside generated article content", async () => {
-        render(
-            <HelmetProvider>
-                <MemoryRouter initialEntries={["/algorithms/chess-response-design"]}>
-                    <Routes>
-                        <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
-                    </Routes>
-                </MemoryRouter>
-            </HelmetProvider>,
-        );
-
-        expect(
-            screen.getByRole("heading", { name: "ChESS Response Design" }),
-        ).toBeInTheDocument();
-
-        expect(
-            await screen.findByText("ChESS detector response design"),
-        ).toBeInTheDocument();
-        expect(
-            screen.getByText(/R = SR - DR - 16 × MR/i),
-        ).toBeInTheDocument();
-    });
 });

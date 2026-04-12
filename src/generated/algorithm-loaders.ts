@@ -2,9 +2,8 @@
 export interface GeneratedHtmlModule { html: string; }
 
 export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
-  "fast-corner-detector": () => import("./content/algorithms/fast-corner-detector.ts"),
   "chess-corners": () => import("./content/algorithms/chess-corners.ts"),
-  "shi-tomasi-corner-detector": () => import("./content/algorithms/shi-tomasi-corner-detector.ts"),
+  "fast-corner-detector": () => import("./content/algorithms/fast-corner-detector.ts"),
   "harris-corner-detector": () => import("./content/algorithms/harris-corner-detector.ts"),
-  "chess-response-design": () => import("./content/algorithms/chess-response-design.ts"),
+  "shi-tomasi-corner-detector": () => import("./content/algorithms/shi-tomasi-corner-detector.ts"),
 };

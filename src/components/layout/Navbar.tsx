@@ -7,6 +7,7 @@ import VitavisionLogo from "../shared/VitavisionLogo";
 const NAV_ITEMS = [
     { to: "/blog", label: "Blog", active: (pathname: string) => pathname.startsWith("/blog") },
     { to: "/algorithms", label: "Algorithms", active: (pathname: string) => pathname.startsWith("/algorithms") },
+    { to: "/demos", label: "Demos", active: (pathname: string) => pathname.startsWith("/demos") },
     { to: "/editor", label: "Editor", active: (pathname: string) => pathname.startsWith("/editor") },
     { to: "/tools/target-generator", label: "Targets", active: (pathname: string) => pathname.startsWith("/tools") },
     { to: "/about", label: "About", active: (pathname: string) => pathname === "/about" },

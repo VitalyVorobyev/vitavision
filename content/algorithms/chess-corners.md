@@ -3,6 +3,7 @@ title: "ChESS Corners Detector"
 date: 2026-03-29
 summary: "A chessboard-specific corner detector that scores the X-junction structure of calibration-board intersections."
 tags: ["computer-vision", "feature-detection", "calibration", "chessboard"]
+category: corner-detection
 author: "Vitaly Vorobyev"
 draft: false
 relatedPosts: ["01-chesscorners", "01-chess_ai"]

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { BlogIndexEntry } from "../../lib/content/schema.ts";
 import TagBadge from "./TagBadge.tsx";
+import DifficultyBadge from "./DifficultyBadge.tsx";
 
 interface PostCardProps {
     post: BlogIndexEntry;
@@ -24,13 +25,15 @@ export default function PostCard({ post }: PostCardProps) {
             </h2>
             <p className="text-muted-foreground mt-2">{frontmatter.summary}</p>
             <div className="flex items-center justify-between mt-4">
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                    {frontmatter.difficulty && <DifficultyBadge level={frontmatter.difficulty} />}
                     {frontmatter.tags.map((tag) => (
                         <TagBadge key={tag} tag={tag} />
                     ))}
                 </div>
                 <time className="text-sm font-mono text-muted-foreground">
                     {frontmatter.date}
+                    {frontmatter.readingTimeMinutes ? ` · ${frontmatter.readingTimeMinutes} min` : ""}
                 </time>
             </div>
         </Link>

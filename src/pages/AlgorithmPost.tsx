@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { algorithmPages } from "../generated/content-index.ts";
 import { algorithmHtmlLoaders } from "../generated/algorithm-loaders.ts";
 import TagBadge from "../components/blog/TagBadge.tsx";
+import DifficultyBadge from "../components/blog/DifficultyBadge.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import { useMermaid } from "../hooks/useMermaid.ts";
 import RelatedPosts from "../components/blog/RelatedPosts.tsx";
@@ -117,7 +118,16 @@ export default function AlgorithmPost() {
                             <span>Updated {frontmatter.updated}</span>
                         </>
                     )}
+                    {frontmatter.readingTimeMinutes && (
+                        <>
+                            <span>&middot;</span>
+                            <span>{frontmatter.readingTimeMinutes} min read</span>
+                        </>
+                    )}
                 </div>
+                {frontmatter.difficulty && (
+                    <div><DifficultyBadge level={frontmatter.difficulty} /></div>
+                )}
                 <div className="flex flex-wrap gap-1.5">
                     {frontmatter.tags.map((tag) => (
                         <TagBadge key={tag} tag={tag} />

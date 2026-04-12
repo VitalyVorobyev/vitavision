@@ -23,6 +23,7 @@ describe("algorithmFrontmatterSchema", () => {
             date: "2026-03-29",
             summary: "Testing legacy demo link normalization.",
             tags: ["demo"],
+            category: "corner-detection",
             author: "Vitaly Vorobyev",
             demoLink: "https://vitavision.dev/editor?algo=demo",
         });
@@ -37,6 +38,7 @@ describe("algorithmFrontmatterSchema", () => {
             date: "2026-03-29",
             summary: "Testing demoLinks precedence.",
             tags: ["demo"],
+            category: "corner-detection",
             author: "Vitaly Vorobyev",
             demoLink: "https://vitavision.dev/editor?algo=legacy",
             demoLinks: ["https://vitavision.dev/editor?algo=current"],
@@ -51,6 +53,7 @@ describe("algorithmFrontmatterSchema", () => {
             date: "2026-03-29",
             summary: "Testing updated metadata.",
             tags: ["demo"],
+            category: "corner-detection",
             author: "Vitaly Vorobyev",
             updated: "2026-03-30",
         });

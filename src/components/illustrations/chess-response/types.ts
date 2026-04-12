@@ -1,6 +1,6 @@
 export const CHESS_RESPONSE_GRID_SIZE = 17;
 export const CHESS_RESPONSE_SAMPLE_COUNT = 16;
-export const CHESS_RESPONSE_RING_RADIUS = 6;
+export const CHESS_RESPONSE_RING_RADIUS = 5;
 export const CHESS_RESPONSE_LOCAL_MEAN_OFFSETS = [
     { x: 0, y: 0 },
     { x: -1, y: 0 },

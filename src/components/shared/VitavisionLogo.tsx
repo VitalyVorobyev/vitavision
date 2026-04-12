@@ -90,6 +90,7 @@ export default function VitavisionLogo({
             viewBox="0 0 1717 1091"
             className={className}
             xmlns="http://www.w3.org/2000/svg"
+            shapeRendering="geometricPrecision"
             aria-hidden="true"
         >
             {/* ── Decorative strips (full only) ── */}
@@ -118,6 +119,7 @@ export default function VitavisionLogo({
                 fill="none"
                 stroke="currentColor"
                 strokeLinecap={mark ? "round" : undefined}
+                strokeLinejoin={mark ? "round" : undefined}
             >
                 {animate
                     ? VV.map((p, i) => (
@@ -125,17 +127,30 @@ export default function VitavisionLogo({
                             key={i}
                             d={p.d}
                             strokeWidth={p.sw * swMul}
-                            strokeLinejoin={p.lj}
+                            strokeLinejoin={mark ? "round" : p.lj}
                             initial={{ pathLength: 0, opacity: 0.2 }}
                             animate={{ pathLength: 1, opacity: 1 }}
                             transition={{ duration: DRAW, ease: "easeInOut", delay: i * 0.06 }}
                         />
                     ))
                     : VV.map((p, i) => (
-                        <path key={i} d={p.d} strokeWidth={p.sw * swMul} strokeLinejoin={p.lj} />
+                        <path
+                            key={i}
+                            d={p.d}
+                            strokeWidth={p.sw * swMul}
+                            strokeLinejoin={mark ? "round" : p.lj}
+                        />
                     ))
                 }
             </g>
+
+            {/* ── Brand accent: focus dot (mark variant only) ──
+                Echoes the full logo's bullseye at the same horizontal center,
+                sitting in the negative space above the center valley. Small
+                enough to stay crisp at navbar size, bold enough to be seen. */}
+            {mark && (
+                <circle cx="858" cy="472" r="100" fill={DOT_COLOR} />
+            )}
 
             
 

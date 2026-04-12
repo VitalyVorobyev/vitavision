@@ -3,6 +3,7 @@ title: "Shi-Tomasi Corner Detector"
 date: 2026-03-29
 summary: "A corner detector that keeps points whose weakest directional intensity change is still strong."
 tags: ["computer-vision", "feature-detection", "tracking", "calibration"]
+category: corner-detection
 author: "Vitaly Vorobyev"
 relatedPosts: ["01-chesscorners", "01-chess_ai"]
 relatedAlgorithms: ["harris-corner-detector", "fast-corner-detector", "chess-corners"]

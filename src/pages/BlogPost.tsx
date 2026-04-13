@@ -3,8 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useAuth, SignInButton } from "@clerk/clerk-react";
 import { Lock } from "lucide-react";
+import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import { blogPosts } from "../generated/content-index.ts";
 import { blogHtmlLoaders } from "../generated/blog-loaders.ts";
+import NotFound from "./NotFound.tsx";
 import TagBadge from "../components/blog/TagBadge.tsx";
 import DifficultyBadge from "../components/blog/DifficultyBadge.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
@@ -40,6 +42,7 @@ export default function BlogPost() {
     const staticContent = useStaticContent();
     const articleRef = useRef<HTMLElement>(null);
     const { isLoaded, isSignedIn } = useAuth();
+    const isAdmin = useIsAdmin();
 
     // Resolve content synchronously from SSR context (postbuild prerender).
     // On the client useStaticContent() returns null, so the async loader runs instead.
@@ -97,6 +100,11 @@ export default function BlogPost() {
     }
 
     const { frontmatter } = post;
+
+    // Draft posts are invisible to non-admin users — treat as 404.
+    if (frontmatter.draft && !isAdmin) {
+        return <NotFound />;
+    }
 
     const jsonLd = buildBlogJsonLd(frontmatter, slug ?? post.slug);
 

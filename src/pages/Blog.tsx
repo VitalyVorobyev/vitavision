@@ -3,21 +3,28 @@ import { blogPosts } from "../generated/content-index.ts";
 import PostCard from "../components/blog/PostCard.tsx";
 import TagFilter from "../components/blog/TagFilter.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
+import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 
 export default function Blog() {
     const [selectedTag, setSelectedTag] = useState<string | null>(null);
+    const isAdmin = useIsAdmin();
+
+    const visiblePosts = useMemo(
+        () => blogPosts.filter((p) => isAdmin || !p.frontmatter.draft),
+        [isAdmin],
+    );
 
     const allTags = useMemo(() => {
         const tagSet = new Set<string>();
-        for (const post of blogPosts) {
+        for (const post of visiblePosts) {
             for (const tag of post.frontmatter.tags) tagSet.add(tag);
         }
         return [...tagSet].sort();
-    }, []);
+    }, [visiblePosts]);
 
     const filtered = selectedTag
-        ? blogPosts.filter((p) => p.frontmatter.tags.includes(selectedTag))
-        : blogPosts;
+        ? visiblePosts.filter((p) => p.frontmatter.tags.includes(selectedTag))
+        : visiblePosts;
 
     return (
         <div className="max-w-[800px] mx-auto py-16 space-y-8 animate-in fade-in px-4">
@@ -44,7 +51,7 @@ export default function Blog() {
                     filtered.map((post) => (
                         <PostCard key={post.slug} post={post} />
                     ))
-                ) : blogPosts.length === 0 ? (
+                ) : visiblePosts.length === 0 ? (
                     <p className="text-muted-foreground">
                         No posts yet. Stay tuned!
                     </p>

@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Navbar from './components/layout/Navbar';
@@ -25,6 +25,10 @@ const DemoPage = lazy(() => import('./pages/DemoPage'));
 const Editor = lazy(() => import('./pages/Editor'));
 const TargetGenerator = lazy(() => import('./pages/TargetGenerator'));
 const About = lazy(() => import('./pages/About'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const AdminDrafts = lazy(() => import('./pages/admin/Drafts'));
+const AdminUsers = lazy(() => import('./pages/admin/Users'));
+const AdminAnalytics = lazy(() => import('./pages/admin/Analytics'));
 
 function AppLayout() {
     const { pathname } = useLocation();
@@ -61,6 +65,12 @@ function AppLayout() {
                             }
                         />
                         <Route path="/sso-callback" element={<AuthenticateWithRedirectCallback />} />
+                        <Route path="/admin" element={<AdminLayout />}>
+                            <Route index element={<Navigate to="/admin/drafts" replace />} />
+                            <Route path="drafts" element={<AdminDrafts />} />
+                            <Route path="users" element={<AdminUsers />} />
+                            <Route path="analytics" element={<AdminAnalytics />} />
+                        </Route>
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </Suspense>

@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "bun run content:build && tsc -b && vite build",
+    "build": "INCLUDE_DRAFTS=true bun run content:build && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "content:build": "bun run scripts/content-build.ts",
+    "content:build": "INCLUDE_DRAFTS=true bun run scripts/content-build.ts",
     "content:validate": "bun run scripts/content-validate.ts",
     "postbuild": "bun run scripts/postbuild.ts",
     "test": "vitest run",

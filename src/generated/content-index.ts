@@ -40,6 +40,22 @@ export const blogPosts: BlogIndexEntry[] = [
       "access": "public",
       "date": "2026-03-22"
     }
+  },
+  {
+    "slug": "02-demo-blocks",
+    "frontmatter": {
+      "title": "Rich Content Demo: Semantic Blocks, Math, and Code",
+      "summary": "A demonstration of all supported content features including semantic blocks, math rendering, syntax highlighting, and typography.",
+      "tags": [
+        "meta",
+        "demo"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "date": "2026-03-22"
+    }
   }
 ];
 
@@ -120,6 +136,31 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "shi-tomasi-corner-detector",
         "fast-corner-detector",
         "chess-corners"
+      ],
+      "date": "2026-03-29"
+    }
+  },
+  {
+    "slug": "02-demo-blocks",
+    "frontmatter": {
+      "title": "Rich Algorithm Content Demo",
+      "summary": "A draft algorithm page that exercises semantic blocks, math, diagrams, code, and related-link metadata.",
+      "tags": [
+        "meta",
+        "demo",
+        "authoring"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "category": "explainers",
+      "relatedPosts": [
+        "00-intro"
+      ],
+      "relatedAlgorithms": [
+        "harris-corner-detector"
       ],
       "date": "2026-03-29"
     }

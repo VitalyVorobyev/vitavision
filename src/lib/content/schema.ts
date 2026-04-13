@@ -13,6 +13,7 @@ const publicationFrontmatterBaseObjectSchema = z.object({
     demoLinks: z.array(z.string().url()).optional(),
     difficulty: z.enum(["beginner", "intermediate", "advanced"]).optional(),
     readingTimeMinutes: z.number().int().positive().optional(),
+    access: z.enum(["public", "members"]).default("public"),
 });
 
 /** Zod schema for blog post frontmatter. */

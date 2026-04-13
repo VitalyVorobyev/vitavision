@@ -17,7 +17,9 @@ export const blogPosts: BlogIndexEntry[] = [
       "repoLinks": [
         "https://github.com/vitalyvorobyev/chess-corners-rs"
       ],
-      "readingTimeMinutes": 7,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 12,
+      "access": "public",
       "relatedAlgorithms": [
         "chess-corners"
       ],
@@ -35,6 +37,7 @@ export const blogPosts: BlogIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "readingTimeMinutes": 2,
+      "access": "public",
       "date": "2026-03-22"
     }
   }
@@ -54,7 +57,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "draft": false,
-      "readingTimeMinutes": 1,
+      "readingTimeMinutes": 2,
+      "access": "public",
       "category": "corner-detection",
       "relatedPosts": [
         "01-chesscorners",
@@ -78,7 +82,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "real-time"
       ],
       "author": "Vitaly Vorobyev",
-      "readingTimeMinutes": 2,
+      "readingTimeMinutes": 3,
+      "access": "public",
       "category": "corner-detection",
       "relatedPosts": [
         "01-chesscorners",
@@ -104,7 +109,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "calibration"
       ],
       "author": "Vitaly Vorobyev",
-      "readingTimeMinutes": 2,
+      "readingTimeMinutes": 4,
+      "access": "public",
       "category": "corner-detection",
       "relatedPosts": [
         "01-chesscorners",
@@ -130,7 +136,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "calibration"
       ],
       "author": "Vitaly Vorobyev",
-      "readingTimeMinutes": 2,
+      "readingTimeMinutes": 3,
+      "access": "public",
       "category": "corner-detection",
       "relatedPosts": [
         "01-chesscorners",
@@ -159,6 +166,7 @@ export const demoPages: DemoIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "readingTimeMinutes": 1,
+      "access": "public",
       "componentId": "chess-response",
       "category": "interactive-figure",
       "relatedAlgorithms": [

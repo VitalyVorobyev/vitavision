@@ -1,6 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useAuth, SignInButton } from "@clerk/clerk-react";
+import { Lock } from "lucide-react";
 import { blogPosts } from "../generated/content-index.ts";
 import { blogHtmlLoaders } from "../generated/blog-loaders.ts";
 import TagBadge from "../components/blog/TagBadge.tsx";
@@ -15,11 +17,29 @@ import { buildBlogJsonLd } from "../lib/content/publication.ts";
 import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.tsx";
 import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
 
+function MembersGate() {
+    return (
+        <div className="border border-border rounded-xl p-8 text-center space-y-4 my-10">
+            <Lock className="mx-auto h-8 w-8 text-muted-foreground" />
+            <h2 className="text-xl font-semibold">This post is for members</h2>
+            <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+                Sign in to read the full article. Membership is by invitation.
+            </p>
+            <SignInButton mode="modal">
+                <button className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+                    Sign in to continue
+                </button>
+            </SignInButton>
+        </div>
+    );
+}
+
 export default function BlogPost() {
     const { slug } = useParams<{ slug: string }>();
     const post = blogPosts.find((p) => p.slug === slug);
     const staticContent = useStaticContent();
     const articleRef = useRef<HTMLElement>(null);
+    const { isLoaded, isSignedIn } = useAuth();
 
     // Resolve content synchronously from SSR context (postbuild prerender).
     // On the client useStaticContent() returns null, so the async loader runs instead.
@@ -138,7 +158,13 @@ export default function BlogPost() {
 
             <div className="border-t border-border mb-10" />
 
-            {html === null ? (
+            {frontmatter.access === "members" && !isLoaded ? (
+                <div className="flex items-center justify-center py-16">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                </div>
+            ) : frontmatter.access === "members" && !isSignedIn ? (
+                <MembersGate />
+            ) : html === null ? (
                 loadFailed ? (
                     <div className="py-10 text-sm text-muted-foreground">
                         Post content failed to load.

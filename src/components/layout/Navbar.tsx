@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import VitavisionLogo from "../shared/VitavisionLogo";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 
 const NAV_ITEMS = [
     { to: "/blog", label: "Blog", active: (pathname: string) => pathname.startsWith("/blog") },
@@ -115,6 +116,19 @@ export default function Navbar() {
                     ))}
                     <NavDivider />
                     <ThemeToggle />
+                    <SignedOut>
+                        <SignInButton mode="modal">
+                            <button
+                                type="button"
+                                className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                            >
+                                Sign in
+                            </button>
+                        </SignInButton>
+                    </SignedOut>
+                    <SignedIn>
+                        <UserButton afterSignOutUrl="/" />
+                    </SignedIn>
                 </div>
 
                 <div className="flex items-center gap-1 md:hidden">
@@ -182,6 +196,24 @@ export default function Navbar() {
                                     {item.label}
                                 </Link>
                             ))}
+                            <div className="mt-2 border-t border-border pt-3">
+                                <SignedOut>
+                                    <SignInButton mode="modal">
+                                        <button
+                                            type="button"
+                                            className="w-full rounded-xl border border-border/70 bg-background px-4 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted/60"
+                                        >
+                                            Sign in
+                                        </button>
+                                    </SignInButton>
+                                </SignedOut>
+                                <SignedIn>
+                                    <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-background px-4 py-3">
+                                        <UserButton afterSignOutUrl="/" />
+                                        <span className="text-sm text-muted-foreground">Account</span>
+                                    </div>
+                                </SignedIn>
+                            </div>
                         </div>
                     </div>
                 </div>

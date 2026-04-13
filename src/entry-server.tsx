@@ -1,6 +1,7 @@
 import { renderToString } from "react-dom/server";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
+import { ClerkProvider } from "@clerk/clerk-react";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import AlgorithmIndex from "./pages/AlgorithmIndex.tsx";
@@ -11,8 +12,15 @@ import Navbar from "./components/layout/Navbar.tsx";
 import Footer from "./components/layout/Footer.tsx";
 import { StaticContentProvider, type StaticContentContextValue } from "./lib/content/ssr-content.tsx";
 
+// In SSR (postbuild), Vite doesn't substitute import.meta.env — read from process.env instead.
+// ClerkProvider is required because Navbar renders <SignedOut>/<SignedIn>.
+// In SSR there is no active session, so <SignedOut> renders and <SignedIn> is empty — correct for static HTML.
+const SSR_PUBLISHABLE_KEY =
+    process.env.VITE_CLERK_PUBLISHABLE_KEY ?? "pk_test_placeholder_for_ssr";
+
 export function render(url: string, staticContent: StaticContentContextValue | null = null): string {
     return renderToString(
+        <ClerkProvider publishableKey={SSR_PUBLISHABLE_KEY}>
         <StaticContentProvider value={staticContent}>
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
                 <MemoryRouter initialEntries={[url]}>
@@ -40,6 +48,7 @@ export function render(url: string, staticContent: StaticContentContextValue | n
                     </div>
                 </MemoryRouter>
             </ThemeProvider>
-        </StaticContentProvider>,
+        </StaticContentProvider>
+        </ClerkProvider>,
     );
 }

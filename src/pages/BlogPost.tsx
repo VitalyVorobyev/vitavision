@@ -18,6 +18,8 @@ import { useStaticContent } from "../lib/content/ssr-content.tsx";
 import { buildBlogJsonLd } from "../lib/content/publication.ts";
 import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.tsx";
 import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
+import ReadingProgress from "../components/blog/ReadingProgress.tsx";
+import TableOfContents from "../components/blog/TableOfContents.tsx";
 
 function MembersGate() {
     return (
@@ -109,7 +111,9 @@ export default function BlogPost() {
     const jsonLd = buildBlogJsonLd(frontmatter, slug ?? post.slug);
 
     return (
-        <div className="max-w-[760px] mx-auto py-16 px-4 sm:px-8 animate-in fade-in">
+        <div className="mx-auto max-w-[1120px] px-4 sm:px-8 py-16 animate-in fade-in xl:grid xl:grid-cols-[minmax(0,760px)_240px] xl:gap-16 xl:justify-center">
+            <ReadingProgress articleRef={articleRef} />
+            <div className="w-full max-w-[760px] mx-auto xl:mx-0 xl:max-w-none">
             <SeoHead
                 title={frontmatter.title}
                 description={frontmatter.summary}
@@ -193,6 +197,7 @@ export default function BlogPost() {
             )}
 
             <RelatedPosts slugs={frontmatter.relatedAlgorithms} type="algorithm" />
+            <RelatedPosts slugs={frontmatter.relatedDemos} type="demo" />
 
             {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (
                 <footer className="mt-12 pt-6 border-t border-border space-y-3">
@@ -220,6 +225,12 @@ export default function BlogPost() {
                     ))}
                 </footer>
             )}
+            </div>
+            <aside className="hidden xl:block">
+                <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">
+                    <TableOfContents articleRef={articleRef} deps={[html]} />
+                </div>
+            </aside>
         </div>
     );
 }

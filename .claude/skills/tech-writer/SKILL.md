@@ -5,63 +5,65 @@ description: Draft, outline, rewrite, and polish technical articles, algorithm p
 
 # Vitavision Tech Writer
 
-Use this skill to produce technical writing that sounds like an engineer explaining work he has actually built, measured, or debugged.
+Produce technical writing that sounds like an engineer explaining work he has actually built, measured, and shipped. The voice is first-person where judgment matters, third-person where mechanism does; opinionated without hedging; concrete without being dry.
+
+The canonical reference is `content/blog/01-chesscorners.md`. The style guide in [references/vitavision-writing-style-guide.md](references/vitavision-writing-style-guide.md) is built entirely from patterns visible in that post, with line-numbered quotes. Read it before drafting anything substantial.
 
 ## Workflow
 
-1. Identify the deliverable.
-- Decide whether the user needs an outline, a section rewrite, a full draft, a short introduction, page copy, or a review pass.
-- Identify the target reader, expected length, and whether the result should read like a post, an algorithm page, or product-facing technical copy.
-- Ask only the minimum missing questions. If the answer is already in the workspace or the prompt, use it.
+1. **Identify the deliverable.**
+   - Outline, section rewrite, full draft, short intro, algorithm-page copy, or review pass?
+   - Know the reader, the expected length, and where the piece will live (blog post, algorithm page, README section, product copy).
+   - Ask only the minimum missing questions. If the answer is in the workspace, read for it first.
 
-2. Build the technical context.
-- Read the relevant source material before writing: code, docs, benchmarks, API contracts, notes, screenshots, or prior drafts.
-- Prefer primary facts from the workspace over invented filler.
-- Do not invent performance numbers, implementation details, user pain points, or historical claims. Omit them or mark them as assumptions.
-- Read [the style guide](references/vitavision-writing-style-guide.md) before drafting or revising substantial text.
+2. **Build the technical context from the workspace.**
+   - Read the primary sources: the crate, the paper, the benchmark script, prior drafts, related algorithm pages.
+   - Do not invent performance numbers, implementation details, or historical claims. If a fact is not in the workspace, either ask or mark it as an assumption.
+   - Re-read the style guide's "signature moves" sections before writing.
 
-3. Shape the narrative.
-- Default to this flow unless the task clearly calls for another structure:
-  1. Problem context
-  2. Core idea
-  3. Failure cases or subtleties
-  4. Implementation
-  5. Performance or practical behavior
-  6. Takeaway
-- Move the central mechanism early. Do not bury the main idea behind background material.
-- Use failure cases to sharpen understanding whenever they are technically meaningful.
+3. **Draft using the signature moves.**
+   - The 19 sections of the style guide are a menu, not a template — pick the moves the material calls for, but preserve the overall shape.
+   - Move the central mechanism early. Never bury the main idea behind two paragraphs of background.
+   - Use layered failure cases when the method has real false-positive modes; each gets its own subsection with the five-beat pattern (§6 of the style guide).
+   - Every display formula sits between verbal intuition and verbal interpretation (§7).
+   - Close each section with a one-line practical implication, not a recap (§9).
 
-4. Write in voice.
-- Sound technical, direct, practical, and concise.
-- Use first person singular when motivation, engineering judgment, tradeoffs, or implementation choices matter.
-- Keep personal remarks in service of the technical argument.
-- Prefer explicit causal links such as `therefore`, `this means`, `this leads to`, and `for this reason`.
-- Prefer concrete nouns and simple verbs such as `compute`, `detect`, `reject`, `derive`, `sample`, `build`, `observe`, and `measure`.
-- Avoid marketing language, dramatic claims, vague abstractions, and neutral blandness.
+4. **Validate against the Signature Moves Checklist** below, then hand off.
 
-5. Keep exposition functional.
-- Define the object before discussing it.
-- Explain the intuition before or alongside formulas.
-- Keep mathematics only to the level needed for understanding and implementation.
-- Use code snippets sparingly and keep them real. Prefer one short Rust snippet and one short Python snippet when bindings exist and they directly support the point.
-- Keep examples easy to copy and directly connected to the surrounding explanation.
+## Signature Moves Checklist
 
-6. Validate the draft.
-- Check every strong claim against the source material.
-- Make performance writing concrete: workload, hardware, enabled features, and exact measurement scope.
-- State limits honestly. Use phrases such as `out of scope` when they improve precision.
-- Remove filler, repeated throat-clearing, and generic transitions.
+Run this pass after every substantive draft. Items come from the style guide; square-bracketed numbers reference its sections.
 
-## Revision Checklist
+- [ ] **Opening move** [§2] — opens from concrete professional context, not abstract problem framing.
+- [ ] **Framing question** [§3] — at most one, answered immediately.
+- [ ] **Existing tools acknowledged fairly** [§4] — state what they do well before explaining why they do not fit.
+- [ ] **Attribution with link** [§5] — named authors, primary source linked.
+- [ ] **Failure cases layered** [§6] — each subsection follows name → observation → remediation name → formula → interpretation.
+- [ ] **No naked formulas** [§7] — verbal intuition before, interpretation after; all math symbols in text are wrapped in `$...$`.
+- [ ] **Named building blocks** [§8] — every computed quantity has a short lowercase name.
+- [ ] **Section landings** [§9] — each section closes with a one-line practical implication.
+- [ ] **Deferrals include a promise** [§10] — "out of scope" comes with a pointer or a future-post commitment.
+- [ ] **Implementation block runs** [§11] — install command + minimal Rust snippet + minimal Python snippet, consistent aliases, language tags on every fence.
+- [ ] **Performance claims fully specified** [§12] — workload, hardware, enabled features, exact scope; partial comparisons marked partial.
+- [ ] **Final-thoughts bullets are full sentences** [§13] — each strength includes a reason.
+- [ ] **Illustrations introduced inline** [§14] — surrounding sentence explains what to look at.
+- [ ] **Related content in frontmatter, not in prose** [§15] — `relatedAlgorithms` / `relatedDemos` populated; no `## See also` section in the body.
+- [ ] **No softeners in closing lines** [§18] — strip `so`, `quite`, `fairly`, `really` from last sentences of sections.
+- [ ] **No marketing vocabulary** [§18] — no *cutting-edge*, *powerful*, *seamless*, *game-changing*.
+- [ ] **No recap closings** [§18] — "In this section we saw …" is wrong; replace with an implication.
 
-- Start from a real use case.
-- State the core idea early.
-- Explain at least one subtlety or failure case when relevant.
-- Connect the implementation section to a real crate, API, or system.
-- Keep performance claims concrete and defensible.
-- Preserve a personal engineering voice without turning the text into autobiography.
+## When not to use this skill
+
+This voice is narrative and opinionated. It is **not** the right register for:
+
+- API reference documentation (use neutral, declarative docstrings instead).
+- Commit messages and PR descriptions (see the `commit` workflow).
+- README files for open-source libraries aimed at a general audience.
+- Changelogs, issue templates, or support boilerplate.
+
+Use the skill for blog posts, algorithm pages, engineering notes, long-form READMEs that serve as introductions to a method, and product-facing technical copy that should read like a real engineer is behind it.
 
 ## Resources
 
-- Read [references/vitavision-writing-style-guide.md](references/vitavision-writing-style-guide.md) for the full voice, vocabulary, rhetorical moves, and default post template.
-- Follow the user's explicit request when they ask for a different tone or structure, but preserve clarity, honesty, and technical grounding.
+- [references/vitavision-writing-style-guide.md](references/vitavision-writing-style-guide.md) — full 19-section guide with line-numbered references into `content/blog/01-chesscorners.md`.
+- `content/blog/01-chesscorners.md` — the canonical example. When in doubt, read it.

@@ -19,6 +19,7 @@ const publicationFrontmatterBaseObjectSchema = z.object({
 /** Zod schema for blog post frontmatter. */
 export const blogFrontmatterSchema = publicationFrontmatterBaseObjectSchema.extend({
     relatedAlgorithms: z.array(z.string().min(1)).optional(),
+    relatedDemos: z.array(z.string().min(1)).optional(),
 });
 
 export type BlogFrontmatter = z.infer<typeof blogFrontmatterSchema>;

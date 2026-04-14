@@ -15,13 +15,19 @@ export const blogPosts: BlogIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "repoLinks": [
-        "https://github.com/vitalyvorobyev/chess-corners-rs"
+        "https://github.com/VitalyVorobyev/chess-corners-rs"
       ],
       "difficulty": "intermediate",
       "readingTimeMinutes": 12,
       "access": "public",
       "relatedAlgorithms": [
-        "chess-corners"
+        "chess-corners",
+        "harris-corner-detector",
+        "shi-tomasi-corner-detector",
+        "fast-corner-detector"
+      ],
+      "relatedDemos": [
+        "chess-response"
       ],
       "date": "2026-04-22"
     }

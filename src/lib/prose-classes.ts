@@ -21,7 +21,7 @@ export const proseClasses = [
     "prose-a:text-[hsl(var(--article-link))]",
     "prose-a:underline prose-a:underline-offset-[3px] prose-a:decoration-1",
     "prose-a:decoration-[hsl(var(--article-link)/0.45)]",
-    "hover:prose-a:decoration-[hsl(var(--article-link))]",
+    "prose-a:hover:decoration-[hsl(var(--article-link))]",
     "prose-a:transition-colors",
 
     // Lists
@@ -34,14 +34,10 @@ export const proseClasses = [
     "prose-blockquote:text-[hsl(var(--article-body))] prose-blockquote:pl-6",
     "prose-blockquote:font-serif prose-blockquote:italic",
 
-    // Inline code
-    "prose-code:font-mono prose-code:text-[0.875em]",
-    "prose-code:px-[0.4em] prose-code:py-[0.15em]",
-    "prose-code:rounded prose-code:border",
-    "prose-code:bg-[hsl(210_40%_93%)] prose-code:text-[hsl(215_60%_30%)]",
-    "prose-code:border-[hsl(215_25%_82%)]",
-    "dark:prose-code:bg-[hsl(217_33%_22%)] dark:prose-code:text-[hsl(175_55%_68%)]",
-    "dark:prose-code:border-[hsl(215_25%_28%)]",
+    // Inline code — no pseudo backticks, no background pill
+    "prose-code:font-mono prose-code:text-[0.9em] prose-code:font-medium",
+    "prose-code:text-[hsl(var(--article-heading))]",
+    "prose-code:before:content-none prose-code:after:content-none",
 
     // Code blocks (pre) — styled mainly via article.css for Shiki
     "prose-pre:bg-transparent prose-pre:p-0 prose-pre:border-0 prose-pre:rounded-none",

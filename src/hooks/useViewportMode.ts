@@ -4,6 +4,7 @@ export type ViewportMode = "phone" | "touch-tablet" | "desktop";
 
 export interface ViewportSnapshot {
     width: number;
+    height: number;
     hasTouch: boolean;
     hasFinePointer: boolean;
     canHover: boolean;
@@ -22,6 +23,7 @@ function readViewportSnapshot(): ViewportSnapshot {
     if (typeof window === "undefined") {
         return {
             width: 1280,
+            height: 800,
             hasTouch: false,
             hasFinePointer: true,
             canHover: true,
@@ -30,6 +32,7 @@ function readViewportSnapshot(): ViewportSnapshot {
 
     return {
         width: window.innerWidth,
+        height: window.innerHeight,
         hasTouch: navigator.maxTouchPoints > 0,
         hasFinePointer: window.matchMedia("(pointer: fine)").matches,
         canHover: window.matchMedia("(hover: hover)").matches,
@@ -61,10 +64,12 @@ export default function useViewportMode() {
     return {
         mode,
         width: snapshot.width,
+        height: snapshot.height,
         hasTouch: snapshot.hasTouch,
         isPhone: mode === "phone",
         isTouchTablet: mode === "touch-tablet",
         isDesktop: mode === "desktop",
         isTouchPrimary: mode !== "desktop",
+        isLandscape: snapshot.width > snapshot.height,
     };
 }

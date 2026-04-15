@@ -1,21 +1,50 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useAuth, SignInButton } from "@clerk/clerk-react";
+import { Lock } from "lucide-react";
+import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import { blogPosts } from "../generated/content-index.ts";
 import { blogHtmlLoaders } from "../generated/blog-loaders.ts";
+import NotFound from "./NotFound.tsx";
 import TagBadge from "../components/blog/TagBadge.tsx";
+import DifficultyBadge from "../components/blog/DifficultyBadge.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import { useMermaid } from "../hooks/useMermaid.ts";
 import RelatedPosts from "../components/blog/RelatedPosts.tsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
 import { proseClasses } from "../lib/prose-classes";
 import { useStaticContent } from "../lib/content/ssr-content.tsx";
+import { buildBlogJsonLd } from "../lib/content/publication.ts";
+import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.tsx";
+import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
+import ReadingProgress from "../components/blog/ReadingProgress.tsx";
+import TableOfContents from "../components/blog/TableOfContents.tsx";
+
+function MembersGate() {
+    return (
+        <div className="border border-border rounded-xl p-8 text-center space-y-4 my-10">
+            <Lock className="mx-auto h-8 w-8 text-muted-foreground" />
+            <h2 className="text-xl font-semibold">This post is for members</h2>
+            <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+                Sign in to read the full article. Membership is by invitation.
+            </p>
+            <SignInButton mode="modal">
+                <button className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+                    Sign in to continue
+                </button>
+            </SignInButton>
+        </div>
+    );
+}
 
 export default function BlogPost() {
     const { slug } = useParams<{ slug: string }>();
     const post = blogPosts.find((p) => p.slug === slug);
     const staticContent = useStaticContent();
     const articleRef = useRef<HTMLElement>(null);
+    const { isLoaded, isSignedIn } = useAuth();
+    const isAdmin = useIsAdmin();
 
     // Resolve content synchronously from SSR context (postbuild prerender).
     // On the client useStaticContent() returns null, so the async loader runs instead.
@@ -37,6 +66,8 @@ export default function BlogPost() {
     const loadFailed = html === null && (!slug || !(slug in blogHtmlLoaders) || asyncFailed);
 
     useMermaid(articleRef, [html]);
+    useArticleIllustrations(articleRef, [html]);
+    useArticleImageZoom(articleRef, [html]);
 
     // Load content asynchronously when not available from SSR or hydration.
     useEffect(() => {
@@ -72,20 +103,17 @@ export default function BlogPost() {
 
     const { frontmatter } = post;
 
-    const jsonLd = {
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: frontmatter.title,
-        description: frontmatter.summary,
-        datePublished: frontmatter.date,
-        ...(frontmatter.updated && { dateModified: frontmatter.updated }),
-        author: { "@type": "Person", name: frontmatter.author },
-        ...(frontmatter.coverImage && { image: frontmatter.coverImage }),
-        keywords: frontmatter.tags.join(", "),
-    };
+    // Draft posts are invisible to non-admin users — treat as 404.
+    if (frontmatter.draft && !isAdmin) {
+        return <NotFound />;
+    }
+
+    const jsonLd = buildBlogJsonLd(frontmatter, slug ?? post.slug);
 
     return (
-        <div className="max-w-[760px] mx-auto py-16 px-4 sm:px-8 animate-in fade-in">
+        <div className="mx-auto max-w-[1120px] px-4 sm:px-8 py-16 animate-in fade-in xl:grid xl:grid-cols-[minmax(0,760px)_240px] xl:gap-16 xl:justify-center">
+            <ReadingProgress articleRef={articleRef} />
+            <div className="w-full max-w-[760px] mx-auto xl:mx-0 xl:max-w-none">
             <SeoHead
                 title={frontmatter.title}
                 description={frontmatter.summary}
@@ -123,7 +151,16 @@ export default function BlogPost() {
                             <span>Updated {frontmatter.updated}</span>
                         </>
                     )}
+                    {frontmatter.readingTimeMinutes && (
+                        <>
+                            <span>&middot;</span>
+                            <span>{frontmatter.readingTimeMinutes} min read</span>
+                        </>
+                    )}
                 </div>
+                {frontmatter.difficulty && (
+                    <div><DifficultyBadge level={frontmatter.difficulty} /></div>
+                )}
                 <div className="flex flex-wrap gap-1.5">
                     {frontmatter.tags.map((tag) => (
                         <TagBadge key={tag} tag={tag} />
@@ -133,7 +170,13 @@ export default function BlogPost() {
 
             <div className="border-t border-border mb-10" />
 
-            {html === null ? (
+            {frontmatter.access === "members" && !isLoaded ? (
+                <div className="flex items-center justify-center py-16">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                </div>
+            ) : frontmatter.access === "members" && !isSignedIn ? (
+                <MembersGate />
+            ) : html === null ? (
                 loadFailed ? (
                     <div className="py-10 text-sm text-muted-foreground">
                         Post content failed to load.
@@ -154,6 +197,7 @@ export default function BlogPost() {
             )}
 
             <RelatedPosts slugs={frontmatter.relatedAlgorithms} type="algorithm" />
+            <RelatedPosts slugs={frontmatter.relatedDemos} type="demo" />
 
             {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (
                 <footer className="mt-12 pt-6 border-t border-border space-y-3">
@@ -181,6 +225,12 @@ export default function BlogPost() {
                     ))}
                 </footer>
             )}
+            </div>
+            <aside className="hidden xl:block">
+                <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">
+                    <TableOfContents articleRef={articleRef} deps={[html]} />
+                </div>
+            </aside>
         </div>
     );
 }

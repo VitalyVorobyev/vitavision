@@ -12,15 +12,19 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Development Workflow
 
-**All work is tracked through the backlog at `docs/backlog.md`.** Before starting any task:
+Work is driven from approved plan files (typically under `~/.claude/plans/`) — not from a tracked backlog.
 
-1. Check whether it already exists in the backlog. If not, add it.
-2. Run `/implement <backlog-id>` to execute the full Architect → Implementer → Reviewer → commit pipeline.
-3. Mark the task `done` in `docs/backlog.md` once merged.
+The main agent (Opus) acts as architect + reviewer. Implementation is delegated to a Sonnet subagent per discrete task.
 
-Backlog IDs follow the pattern `CV-NNN`, `EDITOR-NNN`, `DEV-NNN`, `DOCS-NNN`, `TEST-NNN`, etc.
-Handoff reports live in `docs/handoffs/<task-id>/` (separate files per role).
-Full handoff process is documented in `docs/handoffs.md`.
+For any substantive change:
+1. **Scope** a discrete task — one focused change, verifiable in isolation, with clear file targets.
+2. **Delegate** implementation to a Sonnet subagent via the Agent tool (`subagent_type: "general-purpose"`, `model: "sonnet"`). The prompt must be self-contained and include: goal, files to touch, reused utilities in the codebase, verification steps, explicit don'ts.
+3. **Review** the returned diff: run the verification checklist below; inspect for quality issues (dead code, scope creep, missing edge cases, missed reuse). Fix small issues directly; delegate a second pass for larger ones.
+4. **Commit** only after review passes.
+
+See the `impl` skill (`.claude/skills/impl/SKILL.md`) for the delegation template.
+
+Trivial edits (typos, one-line fixes, single-file renames) may be done directly by the main agent without delegation.
 
 For local dev setup see `README.dev.md`.
 

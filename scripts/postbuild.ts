@@ -1,11 +1,19 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from "node:fs";
 import { join } from "node:path";
 import { Feed } from "feed";
-import { blogPosts, algorithmPages } from "../src/generated/content-index.ts";
+import { blogPosts, algorithmPages, demoPages } from "../src/generated/content-index.ts";
 import { blogHtmlLoaders } from "../src/generated/blog-loaders.ts";
 import { algorithmHtmlLoaders } from "../src/generated/algorithm-loaders.ts";
+import { demoHtmlLoaders } from "../src/generated/demo-loaders.ts";
 import { render } from "../src/entry-server.tsx";
 import type { StaticContentContextValue } from "../src/lib/content/ssr-content.tsx";
+import {
+    buildAlgorithmJsonLd,
+    buildBlogJsonLd,
+    buildDemoJsonLd,
+    comparePublicationDateDesc,
+    formatFeedTitle,
+} from "../src/lib/content/publication.ts";
 
 const DIST = join(import.meta.dir, "..", "dist");
 const SITE_NAME = "VitaVision";
@@ -31,7 +39,7 @@ function buildHeadTags(meta: SeoMeta): string {
     const fullTitle = `${meta.title} | ${SITE_NAME}`;
     const twitterCard = meta.ogImage ? "summary_large_image" : "summary";
     const tags: string[] = [
-        `<title>${fullTitle}</title>`,
+        `<title>${esc(fullTitle)}</title>`,
         `<meta name="description" content="${esc(meta.description)}" />`,
         `<meta property="og:title" content="${esc(fullTitle)}" />`,
         `<meta property="og:description" content="${esc(meta.description)}" />`,
@@ -51,31 +59,6 @@ function buildHeadTags(meta: SeoMeta): string {
 
 function esc(s: string): string {
     return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-interface BlogPostingMeta {
-    title: string;
-    description: string;
-    author: string;
-    datePublished: string;
-    dateModified?: string;
-    image?: string;
-    keywords?: string;
-}
-
-function buildJsonLd(meta: BlogPostingMeta): string {
-    const data: Record<string, unknown> = {
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: meta.title,
-        description: meta.description,
-        datePublished: meta.datePublished,
-        author: { "@type": "Person", name: meta.author },
-    };
-    if (meta.dateModified) data.dateModified = meta.dateModified;
-    if (meta.image) data.image = meta.image;
-    if (meta.keywords) data.keywords = meta.keywords;
-    return `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
 }
 
 function writePage(
@@ -131,6 +114,7 @@ async function main(): Promise<void> {
     const staticContent: StaticContentContextValue = {
         blogHtmlBySlug: await loadHtmlMap(blogHtmlLoaders),
         algorithmHtmlBySlug: await loadHtmlMap(algorithmHtmlLoaders),
+        demoHtmlBySlug: await loadHtmlMap(demoHtmlLoaders),
     };
     let count = 0;
 
@@ -145,15 +129,7 @@ async function main(): Promise<void> {
     // Individual blog posts
     for (const post of blogPosts) {
         const { frontmatter } = post;
-        const jsonLd = buildJsonLd({
-            title: frontmatter.title,
-            description: frontmatter.summary,
-            author: frontmatter.author,
-            datePublished: frontmatter.date,
-            dateModified: frontmatter.updated,
-            image: frontmatter.coverImage,
-            keywords: frontmatter.tags.join(", "),
-        });
+        const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildBlogJsonLd(frontmatter, post.slug))}</script>`;
         writePage(template, `/blog/${post.slug}`, `blog/${post.slug}`, {
             title: frontmatter.title,
             description: frontmatter.summary,
@@ -174,12 +150,34 @@ async function main(): Promise<void> {
     // Individual algorithm pages
     for (const page of algorithmPages) {
         const { frontmatter } = page;
+        const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildAlgorithmJsonLd(frontmatter, page.slug))}</script>`;
         writePage(template, `/algorithms/${page.slug}`, `algorithms/${page.slug}`, {
             title: frontmatter.title,
             description: frontmatter.summary,
             ogType: "article",
+            ogImage: frontmatter.coverImage,
             url: `/algorithms/${page.slug}`,
-        }, staticContent);
+        }, staticContent, jsonLd);
+        count++;
+    }
+
+    // Demo index
+    writePage(template, "/demos", "demos", {
+        title: "Demos",
+        description: "Interactive demos of computer vision algorithms.",
+    }, staticContent);
+    count++;
+
+    // Individual demo pages
+    for (const demo of demoPages) {
+        const { frontmatter } = demo;
+        const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildDemoJsonLd(frontmatter, demo.slug))}</script>`;
+        writePage(template, `/demos/${demo.slug}`, `demos/${demo.slug}`, {
+            title: frontmatter.title,
+            description: frontmatter.summary,
+            ogType: "article",
+            url: `/demos/${demo.slug}`,
+        }, staticContent, jsonLd);
         count++;
     }
 
@@ -194,6 +192,7 @@ async function main(): Promise<void> {
     const sitemapPaths = [
         "/", "/blog", ...blogPosts.map((p) => `/blog/${p.slug}`),
         "/algorithms", ...algorithmPages.map((p) => `/algorithms/${p.slug}`),
+        "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
         "/tools/target-generator",
     ];
     writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(sitemapPaths), "utf-8");
@@ -211,12 +210,23 @@ async function main(): Promise<void> {
             atom: `${SITE_URL}/atom.xml`,
         },
     });
-    for (const post of blogPosts) {
-        const { frontmatter } = post;
+    const feedEntries = [
+        ...blogPosts.map((post) => ({ kind: "blog" as const, ...post })),
+        ...algorithmPages.map((page) => ({ kind: "algorithm" as const, ...page })),
+        ...demoPages.map((demo) => ({ kind: "demo" as const, ...demo })),
+    ].sort(comparePublicationDateDesc);
+
+    for (const entry of feedEntries) {
+        const path = entry.kind === "algorithm"
+            ? `/algorithms/${entry.slug}`
+            : entry.kind === "demo"
+                ? `/demos/${entry.slug}`
+                : `/blog/${entry.slug}`;
+        const { frontmatter } = entry;
         feed.addItem({
-            title: frontmatter.title,
-            id: `${SITE_URL}/blog/${post.slug}`,
-            link: `${SITE_URL}/blog/${post.slug}`,
+            title: formatFeedTitle(entry.kind, frontmatter.title),
+            id: `${SITE_URL}${path}`,
+            link: `${SITE_URL}${path}`,
             description: frontmatter.summary,
             date: new Date(frontmatter.date),
             author: [{ name: frontmatter.author }],

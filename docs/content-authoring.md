@@ -40,7 +40,57 @@ Required: `title`, `date`, `summary`, `tags` (≥1), `author`.
 
 Standard markdown + GFM (tables, strikethrough, task lists). Headings get auto-generated `id` attributes for anchor links.
 
+Both blog posts and algorithm pages share the same rich body renderer:
+- KaTeX math via `$...$` and `$$...$$`
+- Mermaid code fences
+- syntax-highlighted code blocks
+- semantic directive blocks such as `:::note`, `:::warning`, `:::definition`, and `:::algorithm`
+- interactive illustration mounts via `:::illustration[...]`
+
 **Images**: place files in `content/images/` and reference them as `./images/foo.png` — the build script rewrites paths to `/content/images/foo.png`.
+
+### Equation Numbering and References
+
+Display equations can carry LaTeX-style labels and be referenced later in prose:
+
+```md
+Equation \eqref{eq:dlt} is the homogeneous system solved by SVD.
+
+$$
+A \mathbf{h} = 0
+\label{eq:dlt}
+$$
+
+The null-space solution of \ref{eq:dlt} defines the homography parameters.
+```
+
+Supported commands:
+- `\label{eq:name}` inside a display-math block
+- `\eqref{eq:name}` for a linked reference like `(1)`
+- `\ref{eq:name}` for a linked reference like `1`
+
+Only labeled display equations are numbered. Unlabeled `$$...$$` blocks render normally without equation numbers.
+
+### Interactive illustrations
+
+For article pages that need a client-side React figure without switching the whole content system to MDX, use the illustration directive:
+
+```md
+:::illustration[chess-response]{preset="article" pattern="corner" rotation="22.5"}
+:::
+```
+
+Current supported value:
+- `chess-response` — the interactive ChESS SR/DR/MR explainer
+
+Supported attributes:
+- `preset="article|compact"`
+- `pattern="corner|edge|stripe"`
+- `rotation="<degrees>"`
+- `controls="true|false"`
+- `animate="true|false"`
+
+These directives render as safe HTML placeholders during `bun run content:build` and hydrate client-side on `/blog/:slug` and `/algorithms/:slug`.
 
 ### 4. Build the manifest
 
@@ -48,7 +98,7 @@ Standard markdown + GFM (tables, strikethrough, task lists). Headings get auto-g
 bun run content:build
 ```
 
-This generates `src/generated/content-manifest.ts` with all posts rendered to HTML. The dev server picks it up automatically.
+This generates `src/generated/content-index.ts` plus per-slug HTML modules in `src/generated/content/`. The dev server picks them up automatically.
 
 To include draft posts during development:
 
@@ -71,16 +121,24 @@ Algorithm pages live in `content/algorithms/` and follow the same workflow as bl
 ```yaml
 ---
 title: "Algorithm Name"
+date: 2026-03-16
 summary: "Brief description."
 tags: ["detection", "subpixel"]
-# Optional:
-demoLink: "https://vitavision.app/editor"
+author: "Vitaly Vorobyev"
+# Optional fields:
+draft: true
+updated: 2026-03-20
+coverImage: "/content/images/my-cover.jpg"
 repoLinks: ["https://github.com/user/repo"]
+demoLinks: ["https://vitavision.dev/editor"]
 relatedPosts: ["02-my-topic"]
+relatedAlgorithms: ["another-algorithm"]
 ---
 ```
 
-Required: `title`, `summary`, `tags` (≥1).
+Required: `title`, `date`, `summary`, `tags` (≥1), `author`.
+
+Legacy compatibility: `demoLink: "https://..."` is still accepted during migration, but new pages should use `demoLinks`.
 
 Slug is the filename without `.md` extension (no date stripping).
 

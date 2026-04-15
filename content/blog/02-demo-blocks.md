@@ -64,6 +64,13 @@ $$
 \epsilon_i = \|x_i' - \hat{x}_i'\|^2 = \left\|x_i' - \frac{H x_i}{\mathbf{e}_3^\top H x_i}\right\|^2
 $$
 
+Equation \eqref{eq:dlt-system} is the linear system solved in Direct Linear Transform, and \ref{eq:dlt-system} is where the homogeneous constraint first appears in this article.
+
+$$
+A\mathbf{h} = 0
+\label{eq:dlt-system}
+$$
+
 ## Code Blocks
 
 Python example with syntax highlighting:
@@ -165,8 +172,8 @@ The resulting $H$ maps any world point on the pattern plane to its image project
 ### Algorithm
 
 :::algorithm[Normalized DLT for Homography Estimation]
-:input: $n \geq 4$ point correspondences $\{(x_i, x_i')\}$
-:output: Homography matrix $H$ such that $x_i' \sim H x_i$
+::input[$n \geq 4$ point correspondences $\{(x_i, x_i')\}$]
+::output[Homography matrix $H$ such that $x_i' \sim H x_i$]
 
 1. Compute normalizing transforms $T$ and $T'$ for each set of points.
 2. Apply normalization: $\tilde{x}_i = T x_i$, $\tilde{x}_i' = T' x_i'$.

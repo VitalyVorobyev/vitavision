@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync, rmSync } from "node:fs";
 import { join, basename } from "node:path";
 import matter from "gray-matter";
 import { unified } from "unified";
@@ -15,12 +15,18 @@ import { createHighlighter } from "shiki";
 import { visit } from "unist-util-visit";
 import type { Element, Root as HastRoot } from "hast";
 
+import remarkVvEmbeds from "./remark-vv-embeds.ts";
 import remarkVvBlocks from "./remark-vv-blocks.ts";
+import remarkVvInline from "./remark-vv-inline.ts";
+import { computeReadingTimeMinutes } from "./reading-time.ts";
+import remarkEquationReferences from "./remark-equation-references.ts";
+import rehypeNumberedEquations from "./rehype-numbered-equations.ts";
 import {
     blogFrontmatterSchema,
     algorithmFrontmatterSchema,
+    demoFrontmatterSchema,
 } from "../src/lib/content/schema.ts";
-import type { BlogEntry, BlogIndexEntry, AlgorithmEntry, AlgorithmIndexEntry } from "../src/lib/content/schema.ts";
+import type { BlogEntry, BlogIndexEntry, AlgorithmEntry, AlgorithmIndexEntry, DemoEntry, DemoIndexEntry } from "../src/lib/content/schema.ts";
 import type { ZodType } from "zod";
 
 const CONTENT_DIR = join(import.meta.dir, "..", "content");
@@ -35,9 +41,13 @@ function algoSlug(filename: string): string {
     return basename(filename, ".md");
 }
 
-/** Rewrite relative image paths (./images/*, ../images/*) to /content/images/*. */
+function demoSlug(filename: string): string {
+    return basename(filename, ".md");
+}
+
+/** Rewrite relative image paths (./images/*, ../images/*, images/*) to /content/images/*. */
 function resolveContentImagePaths(html: string): string {
-    return html.replace(/src="\.{1,2}\/images\//g, 'src="/content/images/');
+    return html.replace(/src="(?:\.{1,2}\/)?images\//g, 'src="/content/images/');
 }
 
 // Extended sanitization schema to allow custom blocks, Shiki, and KaTeX output
@@ -82,8 +92,19 @@ const sanitizeSchema = {
         h4: [...(defaultSchema.attributes?.h4 ?? []), "id"],
         h5: [...(defaultSchema.attributes?.h5 ?? []), "id"],
         h6: [...(defaultSchema.attributes?.h6 ?? []), "id"],
+        p: [...(defaultSchema.attributes?.p ?? []), "className"],
         section: ["className", "data-kind", "dataKind"],
-        div: [...(defaultSchema.attributes?.div ?? []), "className"],
+        div: [
+            ...(defaultSchema.attributes?.div ?? []),
+            "id",
+            "className",
+            "data-vv-illustration",
+            "data-vv-preset",
+            "data-vv-pattern",
+            "data-vv-rotation",
+            "data-vv-controls",
+            "data-vv-animate-rotation",
+        ],
         span: [...(defaultSchema.attributes?.span ?? []), "className", "style", "aria-label", "ariaLabel", "aria-hidden", "ariaHidden"],
         code: [...(defaultSchema.attributes?.code ?? []), "className", "style"],
         pre: [...(defaultSchema.attributes?.pre ?? []), "className", "style", "tabindex", "tabIndex"],
@@ -123,10 +144,14 @@ async function renderMarkdown(content: string, highlighter: Awaited<ReturnType<t
         .use(remarkParse)
         .use(remarkGfm)
         .use(remarkDirective)
+        .use(remarkVvInline)
         .use(remarkVvBlocks)
+        .use(remarkVvEmbeds)
         .use(remarkMath)
+        .use(remarkEquationReferences)
         .use(remarkRehype)
         .use(rehypeSlug)
+        .use(rehypeNumberedEquations)
         .use(rehypeKatex)
         .use(() => {
             // Add target="_blank" and rel="noopener noreferrer" to external links
@@ -212,6 +237,9 @@ async function processDirectory<T>(
     for (const file of files) {
         const raw = readFileSync(join(dir, file), "utf-8");
         const { data, content } = matter(raw);
+        if (data.readingTimeMinutes === undefined) {
+            data.readingTimeMinutes = computeReadingTimeMinutes(content);
+        }
         const parsed = schema.parse(data);
         const html = await renderMarkdown(content, highlighter);
         entries.push({ slug: slugFn(file), frontmatter: parsed, html });
@@ -238,14 +266,54 @@ function serializeBlogEntry(entry: { slug: string; frontmatter: Record<string, u
     };
 }
 
-function generateOutput(blogPosts: BlogEntry[], algorithmPages: AlgorithmEntry[]): void {
+function serializeAlgorithmEntry(entry: { slug: string; frontmatter: Record<string, unknown>; html: string }): AlgorithmEntry {
+    const { date, updated, ...rest } = entry.frontmatter;
+    return {
+        slug: entry.slug,
+        frontmatter: {
+            ...rest,
+            date: serializeDate(date),
+            ...(updated !== undefined ? { updated: serializeDate(updated) } : {}),
+        } as AlgorithmEntry["frontmatter"],
+        html: entry.html,
+    };
+}
+
+function serializeDemoEntry(entry: { slug: string; frontmatter: Record<string, unknown>; html: string }): DemoEntry {
+    const { date, updated, ...rest } = entry.frontmatter;
+    return {
+        slug: entry.slug,
+        frontmatter: {
+            ...rest,
+            date: serializeDate(date),
+            ...(updated !== undefined ? { updated: serializeDate(updated) } : {}),
+        } as DemoEntry["frontmatter"],
+        html: entry.html,
+    };
+}
+
+function cleanGeneratedHtmlModules(dir: string): void {
+    if (!existsSync(dir)) return;
+    for (const file of readdirSync(dir)) {
+        if (file.endsWith(".ts")) {
+            rmSync(join(dir, file));
+        }
+    }
+}
+
+function generateOutput(blogPosts: BlogEntry[], algorithmPages: AlgorithmEntry[], demoPages: DemoEntry[]): void {
     if (!existsSync(GENERATED_DIR)) mkdirSync(GENERATED_DIR, { recursive: true });
 
     // 1. Per-slug html modules for lazy client-side loading.
     const blogHtmlDir = join(GENERATED_DIR, "content", "blog");
     const algoHtmlDir = join(GENERATED_DIR, "content", "algorithms");
+    const demoHtmlDir = join(GENERATED_DIR, "content", "demos");
     if (!existsSync(blogHtmlDir)) mkdirSync(blogHtmlDir, { recursive: true });
     if (!existsSync(algoHtmlDir)) mkdirSync(algoHtmlDir, { recursive: true });
+    if (!existsSync(demoHtmlDir)) mkdirSync(demoHtmlDir, { recursive: true });
+    cleanGeneratedHtmlModules(blogHtmlDir);
+    cleanGeneratedHtmlModules(algoHtmlDir);
+    cleanGeneratedHtmlModules(demoHtmlDir);
 
     for (const post of blogPosts) {
         const file = join(blogHtmlDir, `${post.slug}.ts`);
@@ -255,18 +323,25 @@ function generateOutput(blogPosts: BlogEntry[], algorithmPages: AlgorithmEntry[]
         const file = join(algoHtmlDir, `${page.slug}.ts`);
         writeFileSync(file, `// Auto-generated — do not edit manually.\nexport const html = ${JSON.stringify(page.html)};\n`, "utf-8");
     }
+    for (const demo of demoPages) {
+        const file = join(demoHtmlDir, `${demo.slug}.ts`);
+        writeFileSync(file, `// Auto-generated — do not edit manually.\nexport const html = ${JSON.stringify(demo.html)};\n`, "utf-8");
+    }
 
     // 2. Metadata-only index (no html)
     const blogIndex: BlogIndexEntry[] = blogPosts.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
     const algoIndex: AlgorithmIndexEntry[] = algorithmPages.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
+    const demoIndex: DemoIndexEntry[] = demoPages.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
 
     const indexLines = [
         '// Auto-generated by scripts/content-build.ts — do not edit manually.',
-        'import type { BlogIndexEntry, AlgorithmIndexEntry } from "../lib/content/schema.ts";',
+        'import type { BlogIndexEntry, AlgorithmIndexEntry, DemoIndexEntry } from "../lib/content/schema.ts";',
         "",
         `export const blogPosts: BlogIndexEntry[] = ${JSON.stringify(blogIndex, null, 2)};`,
         "",
         `export const algorithmPages: AlgorithmIndexEntry[] = ${JSON.stringify(algoIndex, null, 2)};`,
+        "",
+        `export const demoPages: DemoIndexEntry[] = ${JSON.stringify(demoIndex, null, 2)};`,
         "",
     ];
     const indexFile = join(GENERATED_DIR, "content-index.ts");
@@ -294,6 +369,17 @@ function generateOutput(blogPosts: BlogEntry[], algorithmPages: AlgorithmEntry[]
         "",
     ];
     writeFileSync(join(GENERATED_DIR, "algorithm-loaders.ts"), algorithmLoaderLines.join("\n"), "utf-8");
+
+    const demoLoaderLines = [
+        '// Auto-generated by scripts/content-build.ts — do not edit manually.',
+        'export interface GeneratedHtmlModule { html: string; }',
+        "",
+        "export const demoHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {",
+        ...demoPages.map((demo) => `  ${JSON.stringify(demo.slug)}: () => import(${JSON.stringify(`./content/demos/${demo.slug}.ts`)}),`),
+        "};",
+        "",
+    ];
+    writeFileSync(join(GENERATED_DIR, "demo-loaders.ts"), demoLoaderLines.join("\n"), "utf-8");
 }
 
 async function main(): Promise<void> {
@@ -314,17 +400,34 @@ async function main(): Promise<void> {
         .filter((e) => includeDrafts || !e.frontmatter.draft)
         .sort((a, b) => b.frontmatter.date.localeCompare(a.frontmatter.date));
 
-    const algorithmPages = await processDirectory(
+    const rawAlgorithmPages = await processDirectory(
         join(CONTENT_DIR, "algorithms"),
         algorithmFrontmatterSchema,
         algoSlug,
         highlighter,
     );
 
-    generateOutput(blogPosts, algorithmPages as AlgorithmEntry[]);
+    const algorithmPages = rawAlgorithmPages
+        .map((e) => serializeAlgorithmEntry(e as { slug: string; frontmatter: Record<string, unknown>; html: string }))
+        .filter((e) => includeDrafts || !e.frontmatter.draft)
+        .sort((a, b) => a.frontmatter.title.localeCompare(b.frontmatter.title));
+
+    const rawDemoPages = await processDirectory(
+        join(CONTENT_DIR, "demos"),
+        demoFrontmatterSchema,
+        demoSlug,
+        highlighter,
+    );
+
+    const demoPages = rawDemoPages
+        .map((e) => serializeDemoEntry(e as { slug: string; frontmatter: Record<string, unknown>; html: string }))
+        .filter((e) => includeDrafts || !e.frontmatter.draft)
+        .sort((a, b) => a.frontmatter.title.localeCompare(b.frontmatter.title));
+
+    generateOutput(blogPosts, algorithmPages, demoPages);
 
     console.log(
-        `content:build — ${blogPosts.length} blog post(s), ${algorithmPages.length} algorithm page(s) → ${GENERATED_DIR}`,
+        `content:build — ${blogPosts.length} blog post(s), ${algorithmPages.length} algorithm page(s), ${demoPages.length} demo page(s) → ${GENERATED_DIR}`,
     );
 
     highlighter.dispose();

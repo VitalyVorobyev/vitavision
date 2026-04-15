@@ -43,6 +43,22 @@
     margin-bottom: 0;
 }
 
+.vv-embed {
+    margin-block: 2rem;
+}
+
+.vv-embed__fallback {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border: 1px dashed hsl(var(--border));
+    border-radius: 0.75rem;
+    background: hsl(var(--surface));
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: hsl(var(--muted-foreground));
+}
+
 /* --------------------------------------------------------------------------
    Group A: Formal math — theorem, lemma, proposition, statement
    -------------------------------------------------------------------------- */
@@ -312,6 +328,66 @@
 }
 
 /* --------------------------------------------------------------------------
+   Group F: Emphasis — pull-quote style, brand-cyan accent
+   Standalone decorated block for spotlighting a key idea.
+   -------------------------------------------------------------------------- */
+.vv-block--emph {
+    position: relative;
+    margin-block: 2.5rem;
+    padding: 1.5rem 2rem 1.5rem 2.25rem;
+    border-left: 4px solid hsl(var(--brand));
+    background: hsl(var(--brand) / 0.06);
+    border-radius: 0 6px 6px 0;
+}
+
+.vv-block--emph::before {
+    content: "⁂";
+    position: absolute;
+    top: 0.35rem;
+    left: 0.85rem;
+    font-size: 0.95rem;
+    color: hsl(var(--brand));
+    opacity: 0.75;
+    line-height: 1;
+}
+
+.vv-block--emph .vv-block__title { display: none; }
+
+.vv-block--emph .vv-block__body {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: hsl(var(--article-heading));
+}
+
+.vv-block--emph .vv-block__body > *:last-child {
+    margin-bottom: 0;
+}
+
+.dark .vv-block--emph {
+    background: hsl(var(--brand) / 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Inline colored text (:color[name]{text})
+   Muted palette aligned with the vv-block hue anchors above.
+   Unknown color name → plain <span> (no class applied, no style).
+   -------------------------------------------------------------------------- */
+.vv-color { padding: 0 .1em; border-radius: 2px; }
+.vv-color--blue   { color: hsl(215 60% 45%); }
+.vv-color--amber  { color: hsl(38  85% 40%); }
+.vv-color--green  { color: hsl(140 40% 38%); }
+.vv-color--violet { color: hsl(260 40% 50%); }
+.vv-color--muted  { color: hsl(215 16% 47%); }
+
+.dark .vv-color--blue   { color: hsl(215 60% 70%); }
+.dark .vv-color--amber  { color: hsl(38  70% 68%); }
+.dark .vv-color--green  { color: hsl(140 35% 62%); }
+.dark .vv-color--violet { color: hsl(260 35% 70%); }
+.dark .vv-color--muted  { color: hsl(215 20% 65%); }
+
+/* --------------------------------------------------------------------------
    Shiki code block styling
    -------------------------------------------------------------------------- */
 
@@ -330,15 +406,13 @@ article pre code {
     tab-size: 4;
 }
 
-/* Shiki dual-theme: show correct theme based on dark/light class */
+/* Shiki dual-theme: set token color only; container paints background. */
 article pre.shiki span {
     color: var(--shiki-light);
-    background-color: var(--shiki-light-bg);
 }
 
 .dark article pre.shiki span {
     color: var(--shiki-dark);
-    background-color: var(--shiki-dark-bg);
 }
 
 article pre.shiki {
@@ -359,6 +433,31 @@ article .katex-display {
     padding: 0.5rem 0;
 }
 
+article .vv-equation {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    scroll-margin-top: 5rem;
+}
+
+article .vv-equation__body {
+    min-width: 0;
+}
+
+article .vv-equation__number {
+    color: hsl(var(--muted-foreground));
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+article .vv-equation .katex-display {
+    margin: 0;
+}
+
 article .katex {
     font-size: 1.1em;
 }
@@ -366,4 +465,56 @@ article .katex {
 /* Ensure KaTeX respects article text color */
 .dark article .katex {
     color: hsl(var(--article-body));
+}
+
+@media (max-width: 640px) {
+    article .vv-equation {
+        grid-template-columns: 1fr;
+        gap: 0.35rem;
+    }
+
+    article .vv-equation__number {
+        justify-self: end;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Image zoom (Medium-style click-to-expand)
+   -------------------------------------------------------------------------- */
+article img {
+    transition: transform 250ms ease, box-shadow 250ms ease;
+}
+
+article img.vv-zoom-active {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    max-width: min(95vw, 1400px);
+    max-height: 92vh;
+    width: auto;
+    height: auto;
+    z-index: 60;
+    cursor: zoom-out;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+}
+
+.vv-zoom-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    z-index: 55;
+    transition: background 250ms ease;
+    cursor: zoom-out;
+}
+
+.vv-zoom-backdrop-active {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    article img,
+    .vv-zoom-backdrop {
+        transition: none;
+    }
 }

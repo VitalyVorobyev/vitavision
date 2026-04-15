@@ -1,14 +1,19 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { algorithmPages } from "../generated/content-index.ts";
 import { algorithmHtmlLoaders } from "../generated/algorithm-loaders.ts";
 import TagBadge from "../components/blog/TagBadge.tsx";
+import DifficultyBadge from "../components/blog/DifficultyBadge.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import { useMermaid } from "../hooks/useMermaid.ts";
 import RelatedPosts from "../components/blog/RelatedPosts.tsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
 import { proseClasses } from "../lib/prose-classes";
 import { useStaticContent } from "../lib/content/ssr-content.tsx";
+import { buildAlgorithmJsonLd } from "../lib/content/publication.ts";
+import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.tsx";
+import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
 
 export default function AlgorithmPost() {
     const { slug } = useParams<{ slug: string }>();
@@ -36,6 +41,8 @@ export default function AlgorithmPost() {
     const loadFailed = html === null && (!slug || !(slug in algorithmHtmlLoaders) || asyncFailed);
 
     useMermaid(articleRef, [html]);
+    useArticleIllustrations(articleRef, [html]);
+    useArticleImageZoom(articleRef, [html]);
 
     // Load content asynchronously when not available from SSR or hydration.
     useEffect(() => {
@@ -70,15 +77,22 @@ export default function AlgorithmPost() {
     }
 
     const { frontmatter } = page;
+    const jsonLd = buildAlgorithmJsonLd(frontmatter, slug ?? page.slug);
 
     return (
         <div className="max-w-[760px] mx-auto py-16 px-4 sm:px-8 animate-in fade-in">
             <SeoHead
                 title={frontmatter.title}
                 description={frontmatter.summary}
+                ogImage={frontmatter.coverImage}
                 ogType="article"
                 url={`/algorithms/${slug}`}
             />
+            <Helmet>
+                <script type="application/ld+json">
+                    {JSON.stringify(jsonLd)}
+                </script>
+            </Helmet>
             <header className="space-y-4 mb-8">
                 <Link
                     to="/algorithms"
@@ -87,8 +101,33 @@ export default function AlgorithmPost() {
                     &larr; Back to algorithms
                 </Link>
                 <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
+                    {frontmatter.draft && (
+                        <span className="text-sm font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-2 py-1 mr-3 align-middle">
+                            draft
+                        </span>
+                    )}
                     {frontmatter.title}
                 </h1>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground font-sans">
+                    <span>{frontmatter.author}</span>
+                    <span>&middot;</span>
+                    <time>{frontmatter.date}</time>
+                    {frontmatter.updated && (
+                        <>
+                            <span>&middot;</span>
+                            <span>Updated {frontmatter.updated}</span>
+                        </>
+                    )}
+                    {frontmatter.readingTimeMinutes && (
+                        <>
+                            <span>&middot;</span>
+                            <span>{frontmatter.readingTimeMinutes} min read</span>
+                        </>
+                    )}
+                </div>
+                {frontmatter.difficulty && (
+                    <div><DifficultyBadge level={frontmatter.difficulty} /></div>
+                )}
                 <div className="flex flex-wrap gap-1.5">
                     {frontmatter.tags.map((tag) => (
                         <TagBadge key={tag} tag={tag} />
@@ -118,18 +157,49 @@ export default function AlgorithmPost() {
                 </ErrorBoundary>
             )}
 
-            <RelatedPosts slugs={frontmatter.relatedPosts} type="blog" />
+            {frontmatter.editorAlgorithmId && (() => {
+                const id = frontmatter.editorAlgorithmId;
+                // Default sample image per algorithm — keeps the CTA runnable in one click.
+                const sample = ({
+                    "chess-corners": "chessboard",
+                    "chessboard": "chessboard",
+                    "charuco": "charuco",
+                    "markerboard": "markerboard",
+                    "ringgrid": "ringgrid",
+                    "radsym": "ringgrid",
+                } as Record<string, string>)[id];
+                const qs = sample
+                    ? `algo=${id}&sample=${sample}`
+                    : `algo=${id}`;
+                return (
+                    <div className="mt-10">
+                        <Link
+                            to={`/editor?${qs}`}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
+                        >
+                            Try in the editor →
+                        </Link>
+                    </div>
+                );
+            })()}
 
-            {(frontmatter.repoLinks?.length || frontmatter.demoLink) && (
+            <RelatedPosts slugs={frontmatter.relatedPosts} type="blog" />
+            <RelatedPosts slugs={frontmatter.relatedDemos} type="demo" />
+            <RelatedPosts slugs={frontmatter.relatedAlgorithms} type="algorithm" />
+
+            {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (
                 <footer className="mt-12 pt-6 border-t border-border space-y-3">
-                    {frontmatter.demoLink && (
+                    {frontmatter.demoLinks?.map((url) => (
                         <a
-                            href={frontmatter.demoLink}
+                            key={url}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="block text-primary underline hover:text-primary/80 text-sm"
                         >
-                            Try it in the editor
+                            Demo: {url}
                         </a>
-                    )}
+                    ))}
                     {frontmatter.repoLinks?.map((url) => (
                         <a
                             key={url}

@@ -126,18 +126,18 @@ export default function TargetGeneratorWizard({
 
     return (
         <div className="flex h-[calc(100vh-64px)] flex-col overflow-hidden animate-in fade-in bg-background">
-            <div className="border-b border-border bg-muted/10 px-4 py-4 sm:px-6">
+            <div className="border-b border-border bg-muted/10 px-4 py-2 sm:py-4 sm:px-6">
                 <div className="flex items-start justify-between gap-3">
                     <div>
                         <h1 className="text-xl font-semibold tracking-tight">Target Generator</h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
+                        <p className="mt-1 hidden text-sm text-muted-foreground sm:block">
                             Progressive touch workflow with the live preview always within reach.
                         </p>
                     </div>
                     <button
                         type="button"
                         onClick={() => setPreviewOpen((open) => !open)}
-                        className="inline-flex min-h-14 min-w-[8.75rem] shrink-0 items-center justify-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-center text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                        className="inline-flex min-h-10 sm:min-h-14 min-w-[8.75rem] shrink-0 items-center justify-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 sm:py-2 text-center text-sm font-medium text-foreground transition-colors hover:bg-muted"
                         aria-expanded={previewOpen}
                     >
                         {previewOpen ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -145,7 +145,7 @@ export default function TargetGeneratorWizard({
                     </button>
                 </div>
 
-                <div className="mt-4 grid grid-cols-4 gap-2">
+                <div className="mt-2 grid grid-cols-4 gap-1.5 sm:mt-4 sm:gap-2">
                     {STEPS.map((step, index) => {
                         const active = step.key === activeStep;
                         return (
@@ -153,7 +153,7 @@ export default function TargetGeneratorWizard({
                                 key={step.key}
                                 type="button"
                                 onClick={() => setActiveStep(step.key)}
-                                className={`min-w-0 rounded-xl border px-3 py-2 text-left transition-colors ${
+                                className={`min-w-0 rounded-xl border px-2 py-1.5 text-left transition-colors sm:px-3 sm:py-2 ${
                                     active
                                         ? "border-primary/30 bg-primary/10 text-foreground"
                                         : "border-border bg-background text-muted-foreground hover:bg-muted/60 hover:text-foreground"
@@ -162,13 +162,13 @@ export default function TargetGeneratorWizard({
                                 <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">
                                     Step {index + 1}
                                 </div>
-                                <div className="mt-1 text-sm font-medium">{step.label}</div>
+                                <div className="mt-0.5 text-sm font-medium sm:mt-1">{step.label}</div>
                             </button>
                         );
                     })}
                 </div>
 
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground sm:mt-3">
                     <span>{summaryLine}</span>
                     {(errorCount > 0 || warningCount > 0) && (
                         <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 ${

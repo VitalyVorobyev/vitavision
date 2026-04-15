@@ -1,0 +1,67 @@
+# Authoritative source registry for the algorithms register.
+#
+# Each entry is a paper. Pages in content/algorithms/*.md reference papers
+# by `id` in their `sources:` frontmatter block. The `cites` field carries
+# the citation graph; query it with `bun papers:query <relation> <id>`.
+#
+# Id convention: firstauthorYEAR-keyword (lowercase, hyphenated). Stable
+# across paper versions; greppable. Same author + year disambiguated with
+# an `a`/`b` suffix.
+#
+# PDFs live in papers/.cache/ (gitignored), downloaded by `bun papers:fetch`.
+
+- id: bennett2013-chess
+  title: "ChESS — Quick and Robust Detection of Chess-board Features"
+  authors: ["S. Bennett", "J. Lasenby"]
+  year: 2013
+  venue: arXiv
+  url: https://arxiv.org/pdf/1301.5491v1
+  arxiv: "1301.5491"
+  pdf: bennett2013-chess.pdf
+  cites: [rosten2006-fast]
+  notes: |
+    Equations (1)-(4) define SR, DR, MR, R. Section §4 details the
+    detection algorithm; §4.1 the DFT interpretation; §4.2 the orientation
+    binning over the signed measure M_n.
+
+- id: rosten2006-fast
+  title: "Machine Learning for High-Speed Corner Detection"
+  authors: ["E. Rosten", "T. Drummond"]
+  year: 2006
+  venue: ECCV
+  url: https://www.edwardrosten.com/work/rosten_2006_machine.pdf
+  pdf: rosten2006-fast.pdf
+  cites: []
+  notes: |
+    Origin of the FAST-N corner detector and the 16-pixel ring sampling
+    pattern that ChESS reuses (RING5 = the FAST-16 pattern scaled to r=5).
+    Defines the segment-test criterion, the high-speed cardinal-point
+    rejection, and the decision-tree learner.
+
+- id: harris1988-corner
+  title: "A Combined Corner and Edge Detector"
+  authors: ["C. Harris", "M. J. Stephens"]
+  year: 1988
+  venue: Alvey Vision Conference
+  url: https://bmva-archive.org.uk/bmvc/1988/avc-88-023.pdf
+  doi: "10.5244/c.2.23"
+  pdf: harris1988-corner.pdf
+  cites: []
+  notes: |
+    Defines the structure-tensor M from Ix, Iy gradients summed over
+    a window, and the response R = det(M) - k*tr(M)^2 with k ≈ 0.04–0.06.
+
+- id: shi-tomasi1994-features
+  title: "Good Features to Track"
+  authors: ["J. Shi", "C. Tomasi"]
+  year: 1994
+  venue: IEEE CVPR
+  url: https://www.ces.clemson.edu/~stb/klt/shi-tomasi-good-features-cvpr1994.pdf
+  doi: "10.1109/cvpr.1994.323794"
+  pdf: shi-tomasi1994-features.pdf
+  cites: []
+  notes: |
+    Reuses Harris's structure tensor but replaces the Harris response
+    with R = min(λ₁, λ₂), the smaller eigenvalue. Corners are points
+    where R exceeds a threshold τ; the criterion is derived from a
+    feature-tracking quality argument, not corner-strength heuristics.

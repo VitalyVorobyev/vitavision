@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Navbar from './components/layout/Navbar';
@@ -9,14 +9,26 @@ import './index.css';
 import { ThemeProvider } from 'next-themes';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
+import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
+if (!PUBLISHABLE_KEY) {
+    throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY environment variable. Add it to .env.local.');
+}
 
 const Blog = lazy(() => import('./pages/Blog'));
 const BlogPost = lazy(() => import('./pages/BlogPost'));
 const AlgorithmIndex = lazy(() => import('./pages/AlgorithmIndex'));
 const AlgorithmPost = lazy(() => import('./pages/AlgorithmPost'));
+const DemoIndex = lazy(() => import('./pages/DemoIndex'));
+const DemoPage = lazy(() => import('./pages/DemoPage'));
 const Editor = lazy(() => import('./pages/Editor'));
 const TargetGenerator = lazy(() => import('./pages/TargetGenerator'));
 const About = lazy(() => import('./pages/About'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const AdminDrafts = lazy(() => import('./pages/admin/Drafts'));
+const AdminUsers = lazy(() => import('./pages/admin/Users'));
+const AdminAnalytics = lazy(() => import('./pages/admin/Analytics'));
 
 function AppLayout() {
     const { pathname } = useLocation();
@@ -39,9 +51,26 @@ function AppLayout() {
                         <Route path="/blog/:slug" element={<BlogPost />} />
                         <Route path="/algorithms" element={<AlgorithmIndex />} />
                         <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
+                        <Route path="/demos" element={<DemoIndex />} />
+                        <Route path="/demos/:slug" element={<DemoPage />} />
                         <Route path="/editor" element={<Editor />} />
                         <Route path="/tools/target-generator" element={<TargetGenerator />} />
                         <Route path="/about" element={<About />} />
+                        <Route
+                            path="/sign-in/*"
+                            element={
+                                <div className="flex flex-1 items-center justify-center py-20">
+                                    <SignIn routing="path" path="/sign-in" />
+                                </div>
+                            }
+                        />
+                        <Route path="/sso-callback" element={<AuthenticateWithRedirectCallback />} />
+                        <Route path="/admin" element={<AdminLayout />}>
+                            <Route index element={<Navigate to="/admin/drafts" replace />} />
+                            <Route path="drafts" element={<AdminDrafts />} />
+                            <Route path="users" element={<AdminUsers />} />
+                            <Route path="analytics" element={<AdminAnalytics />} />
+                        </Route>
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </Suspense>
@@ -53,14 +82,16 @@ function AppLayout() {
 
 function App() {
     return (
-        <HelmetProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-                <Router>
-                    <AppLayout />
-                </Router>
-                <Toaster richColors closeButton position="bottom-right" />
-            </ThemeProvider>
-        </HelmetProvider>
+        <ClerkProvider publishableKey={PUBLISHABLE_KEY!}>
+            <HelmetProvider>
+                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                    <Router>
+                        <AppLayout />
+                    </Router>
+                    <Toaster richColors closeButton position="bottom-right" />
+                </ThemeProvider>
+            </HelmetProvider>
+        </ClerkProvider>
     );
 }
 

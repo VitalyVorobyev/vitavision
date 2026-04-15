@@ -29,7 +29,7 @@ export const blogPosts: BlogIndexEntry[] = [
       "relatedDemos": [
         "chess-response"
       ],
-      "date": "2026-04-22"
+      "date": "2026-04-15"
     }
   },
   {

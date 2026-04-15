@@ -1,0 +1,5 @@
+# Source caches — fetched on demand by scripts/papers-fetch.ts and scripts/impls-fetch.ts.
+# Never committed: PDFs are reproducible from index.yaml `url`; impl files are reproducible
+# from each algorithm page's pinned `sources.impl` SHA.
+papers/.cache/
+impls/.cache/

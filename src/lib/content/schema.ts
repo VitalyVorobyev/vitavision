@@ -39,6 +39,18 @@ export const algorithmFrontmatterSchema = publicationFrontmatterBaseObjectSchema
         category: z.enum(algorithmCategoryValues),
         relatedPosts: z.array(z.string().min(1)).optional(),
         relatedAlgorithms: z.array(z.string().min(1)).optional(),
+        relatedDemos: z.array(z.string().min(1)).optional(),
+        editorAlgorithmId: z.string().min(1).optional(),
+        sources: z.object({
+            primary: z.string().min(1),
+            references: z.array(z.string().min(1)).optional(),
+            impl: z.object({
+                repo: z.string().url(),
+                commit: z.string().regex(/^[0-9a-f]{7,40}$/),
+                files: z.array(z.string().min(1)).min(1),
+            }).optional(),
+            notes: z.string().optional(),
+        }).optional(),
         // Transitional compatibility for older algorithm pages.
         demoLink: z.string().url().optional(),
     })

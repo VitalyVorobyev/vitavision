@@ -26,7 +26,7 @@ describe("entry-server algorithm prerender", () => {
         });
 
         expect(html).toContain("Harris Corner Detector");
-        expect(html).toContain("repeatable image points where intensity changes strongly");
+        expect(html).toContain("intensity varies strongly in two independent directions");
         expect(html).not.toContain("animate-spin");
     });
 });

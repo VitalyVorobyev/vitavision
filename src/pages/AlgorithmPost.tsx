@@ -157,7 +157,34 @@ export default function AlgorithmPost() {
                 </ErrorBoundary>
             )}
 
+            {frontmatter.editorAlgorithmId && (() => {
+                const id = frontmatter.editorAlgorithmId;
+                // Default sample image per algorithm — keeps the CTA runnable in one click.
+                const sample = ({
+                    "chess-corners": "chessboard",
+                    "chessboard": "chessboard",
+                    "charuco": "charuco",
+                    "markerboard": "markerboard",
+                    "ringgrid": "ringgrid",
+                    "radsym": "ringgrid",
+                } as Record<string, string>)[id];
+                const qs = sample
+                    ? `algo=${id}&sample=${sample}`
+                    : `algo=${id}`;
+                return (
+                    <div className="mt-10">
+                        <Link
+                            to={`/editor?${qs}`}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
+                        >
+                            Try in the editor →
+                        </Link>
+                    </div>
+                );
+            })()}
+
             <RelatedPosts slugs={frontmatter.relatedPosts} type="blog" />
+            <RelatedPosts slugs={frontmatter.relatedDemos} type="demo" />
             <RelatedPosts slugs={frontmatter.relatedAlgorithms} type="algorithm" />
 
             {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (

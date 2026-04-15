@@ -31,7 +31,6 @@ import {
     Square,
 } from "lucide-react";
 import ZoomControls from "../components/shared/ZoomControls";
-
 const OVERLAY_LAYERS: { key: OverlayVisibilityKey; label: string }[] = [
     { key: "features", label: "Features" },
     { key: "algorithmOverlay", label: "Grid overlay" },

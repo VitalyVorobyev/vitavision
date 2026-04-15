@@ -10,6 +10,10 @@
     "preview": "vite preview",
     "content:build": "INCLUDE_DRAFTS=true bun run scripts/content-build.ts",
     "content:validate": "bun run scripts/content-validate.ts",
+    "impls:fetch": "bun run scripts/impls-fetch.ts",
+    "papers:fetch": "bun run scripts/papers-fetch.ts",
+    "papers:fetch-meta": "bun run scripts/papers-fetch-meta.ts",
+    "papers:query": "bun run scripts/papers-query.ts",
     "postbuild": "bun run scripts/postbuild.ts",
     "test": "vitest run",
     "test:watch": "vitest"

@@ -27,3 +27,6 @@ setenv.sh
 secrets.txt
 SECURITY_TASKS.md
 SECURITY_AUDIT.md
+
+docs/papers/.cache/
+docs/impls/.cache/

@@ -21,10 +21,10 @@ describe("AlgorithmPost", () => {
         ).toBeInTheDocument();
 
         expect(
-            await screen.findByText(/repeatable image points where intensity changes strongly/i),
+            await screen.findByText(/intensity varies strongly in two independent directions/i),
         ).toBeInTheDocument();
         expect(screen.getByText("Vitaly Vorobyev")).toBeInTheDocument();
-        expect(screen.getByText("2026-03-29")).toBeInTheDocument();
+        expect(screen.getByText("2026-04-15")).toBeInTheDocument();
 
         const jsonLd = document.querySelector('script[type="application/ld+json"]');
         expect(jsonLd?.textContent).toContain('"@type":"TechArticle"');

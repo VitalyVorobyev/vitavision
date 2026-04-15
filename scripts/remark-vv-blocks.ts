@@ -97,25 +97,32 @@ function createTextDiv(
 }
 
 /**
- * Extract :input: and :output: metadata lines from algorithm block children.
+ * Extract ::input[...] and ::output[...] leaf-directive metadata rows from algorithm block children.
+ * Children are preserved as-is so inline math and other inline markdown render in the meta value.
  */
 function extractAlgorithmMeta(
     children: Parent["children"],
-): { meta: Array<{ key: string; value: string }>; remaining: Parent["children"] } {
-    const meta: Array<{ key: string; value: string }> = [];
+): { meta: Array<{ key: string; children: Parent["children"] }>; remaining: Parent["children"] } {
+    const meta: Array<{ key: string; children: Parent["children"] }> = [];
     const remaining: Parent["children"] = [];
 
     for (const child of children) {
         if (isDirectiveNode(child) && child.type === "leafDirective") {
             const name = child.name.toLowerCase();
             if (name === "input" || name === "output") {
-                const textParts: string[] = [];
-                visit(child as unknown as Root, "text", (textNode: { value: string }) => {
-                    textParts.push(textNode.value);
-                });
+                // For leaf directives the bracketed `[content]` is either a labelled
+                // wrapper or the raw children — unwrap defensively.
+                const rawChildren = child.children as Array<{
+                    data?: { directiveLabel?: boolean };
+                    children?: Parent["children"];
+                }>;
+                const labelChild = rawChildren.find((c) => c.data?.directiveLabel);
+                const content: Parent["children"] = labelChild?.children
+                    ? labelChild.children
+                    : (child.children as Parent["children"]);
                 meta.push({
                     key: name.charAt(0).toUpperCase() + name.slice(1),
-                    value: textParts.join("").trim(),
+                    children: content,
                 });
                 continue;
             }
@@ -179,9 +186,11 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
                             createHastMappedNode("span", { className: "vv-block__meta-key" }, [
                                 { type: "text", value: `${m.key}: ` } as PhrasingContent,
                             ]) as unknown as PhrasingContent,
-                            createHastMappedNode("span", { className: "vv-block__meta-value" }, [
-                                { type: "text", value: m.value } as PhrasingContent,
-                            ]) as unknown as PhrasingContent,
+                            createHastMappedNode(
+                                "span",
+                                { className: "vv-block__meta-value" },
+                                m.children,
+                            ) as unknown as PhrasingContent,
                         ]),
                     );
                     newChildren.push(createHastMappedNode("div", { className: "vv-block__meta" }, metaItems));

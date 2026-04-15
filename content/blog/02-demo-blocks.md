@@ -172,8 +172,8 @@ The resulting $H$ maps any world point on the pattern plane to its image project
 ### Algorithm
 
 :::algorithm[Normalized DLT for Homography Estimation]
-:input: $n \geq 4$ point correspondences $\{(x_i, x_i')\}$
-:output: Homography matrix $H$ such that $x_i' \sim H x_i$
+::input[$n \geq 4$ point correspondences $\{(x_i, x_i')\}$]
+::output[Homography matrix $H$ such that $x_i' \sim H x_i$]
 
 1. Compute normalizing transforms $T$ and $T'$ for each set of points.
 2. Apply normalization: $\tilde{x}_i = T x_i$, $\tilde{x}_i' = T' x_i'$.

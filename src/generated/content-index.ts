@@ -69,8 +69,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
   {
     "slug": "chess-corners",
     "frontmatter": {
-      "title": "ChESS Corners Detector",
-      "summary": "A chessboard-specific corner detector that scores the X-junction structure of calibration-board intersections.",
+      "title": "ChESS Corners",
+      "summary": "A chessboard-specific corner detector: scores each pixel by how well its local neighborhood matches an alternating bright-dark X-junction pattern, using 16 fixed integer offsets on a radius-5 ring.",
       "tags": [
         "computer-vision",
         "feature-detection",
@@ -78,17 +78,37 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "chessboard"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": false,
-      "readingTimeMinutes": 2,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 4,
       "access": "public",
       "category": "corner-detection",
       "relatedPosts": [
-        "01-chesscorners",
-        "01-chess_ai"
+        "01-chesscorners"
       ],
       "relatedAlgorithms": [
-        "harris-corner-detector"
+        "harris-corner-detector",
+        "shi-tomasi-corner-detector",
+        "fast-corner-detector"
       ],
+      "relatedDemos": [
+        "chess-response"
+      ],
+      "editorAlgorithmId": "chess-corners",
+      "sources": {
+        "primary": "bennett2013-chess",
+        "references": [
+          "rosten2006-fast"
+        ],
+        "impl": {
+          "repo": "https://github.com/VitalyVorobyev/chess-rs",
+          "commit": "efc2204b4190182ec059a3f6115cdd6217d1f855",
+          "files": [
+            "crates/chess-corners-core/src/ring.rs",
+            "crates/chess-corners-core/src/response.rs"
+          ]
+        },
+        "notes": "RING5 = FAST-16 sampling pattern scaled to r=5 (integer offsets only).\nLocal mean = 5-pixel cross at the candidate. Neighbour mean = 16 ring samples.\nEquations (1)–(4) of Bennett & Lasenby 2013 define SR, DR, MR, R.\n"
+      },
       "date": "2026-03-29"
     }
   },
@@ -96,54 +116,57 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "slug": "fast-corner-detector",
     "frontmatter": {
       "title": "FAST Corner Detector",
-      "summary": "A very fast corner detector based on an intensity segment test around a Bresenham circle.",
+      "summary": "Segment-test corner detector on a 16-pixel Bresenham ring of radius 3 around each candidate; classifies a point as a corner when N contiguous ring pixels are all brighter (or all darker) than the centre by a margin t.",
       "tags": [
         "computer-vision",
         "feature-detection",
-        "tracking",
-        "real-time"
+        "corner"
       ],
       "author": "Vitaly Vorobyev",
-      "readingTimeMinutes": 3,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
       "access": "public",
       "category": "corner-detection",
-      "relatedPosts": [
-        "01-chesscorners",
-        "01-chess_ai"
-      ],
       "relatedAlgorithms": [
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
         "chess-corners"
       ],
-      "date": "2026-03-29"
+      "sources": {
+        "primary": "rosten2006-fast",
+        "notes": "16-pixel Bresenham ring at radius 3. Segment-test parameter N\ntypically 9 or 12. The high-speed early-rejection test on the four\ncardinal points (indices 1, 5, 9, 13) is what makes the detector\nfast in practice; the full segment test runs only on candidates\nthat pass it. The decision-tree variant trained via ID3 on labeled\ncorners is described in §3 of the paper but is out of scope here\n(the page covers the segment test as the primitive).\n"
+      },
+      "date": "2026-04-15"
     }
   },
   {
     "slug": "harris-corner-detector",
     "frontmatter": {
       "title": "Harris Corner Detector",
-      "summary": "A classic local feature detector that scores pixels with strong intensity variation in two independent directions.",
+      "summary": "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum.",
       "tags": [
         "computer-vision",
         "feature-detection",
-        "tracking",
-        "calibration"
+        "corner"
       ],
       "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
       "readingTimeMinutes": 4,
       "access": "public",
       "category": "corner-detection",
-      "relatedPosts": [
-        "01-chesscorners",
-        "01-chess_ai"
-      ],
       "relatedAlgorithms": [
         "shi-tomasi-corner-detector",
         "fast-corner-detector",
         "chess-corners"
       ],
-      "date": "2026-03-29"
+      "sources": {
+        "primary": "harris1988-corner",
+        "references": [
+          "shi-tomasi1994-features"
+        ],
+        "notes": "Structure tensor M = sum_w [Ix^2, IxIy; IxIy, Iy^2] over a Gaussian-weighted\nwindow w. Response R = det(M) - k * tr(M)^2 with empirical k ~ 0.04-0.06.\n"
+      },
+      "date": "2026-04-15"
     }
   },
   {
@@ -175,27 +198,30 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "slug": "shi-tomasi-corner-detector",
     "frontmatter": {
       "title": "Shi-Tomasi Corner Detector",
-      "summary": "A corner detector that keeps points whose weakest directional intensity change is still strong.",
+      "summary": "Scores each pixel by the smaller eigenvalue of the gradient structure tensor M; returns integer pixel locations where that eigenvalue exceeds a threshold, derived from a feature-tracking quality criterion.",
       "tags": [
         "computer-vision",
         "feature-detection",
-        "tracking",
-        "calibration"
+        "corner"
       ],
       "author": "Vitaly Vorobyev",
-      "readingTimeMinutes": 3,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 4,
       "access": "public",
       "category": "corner-detection",
-      "relatedPosts": [
-        "01-chesscorners",
-        "01-chess_ai"
-      ],
       "relatedAlgorithms": [
         "harris-corner-detector",
         "fast-corner-detector",
         "chess-corners"
       ],
-      "date": "2026-03-29"
+      "sources": {
+        "primary": "shi-tomasi1994-features",
+        "references": [
+          "harris1988-corner"
+        ],
+        "notes": "Uses the same structure tensor M as Harris, but replaces the Harris\nresponse with R = min(λ₁, λ₂) — the smaller eigenvalue of M. The\nthreshold then encodes a feature-tracking quality criterion derived\nin §3 of the paper.\n"
+      },
+      "date": "2026-04-15"
     }
   }
 ];

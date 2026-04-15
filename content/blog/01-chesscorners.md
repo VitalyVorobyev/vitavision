@@ -1,6 +1,6 @@
 ---
 title: "ChESS Corners Detector"
-date: 2026-04-22
+date: 2026-04-15
 summary: "A chessboard-specific detector, from sampling geometry to a practical multiscale implementation."
 tags: ["computer-vision", "rust", "calibration", "feature-detection"]
 author: "Vitaly Vorobyev"

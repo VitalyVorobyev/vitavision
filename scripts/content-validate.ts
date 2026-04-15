@@ -98,8 +98,11 @@ function checkImageReferences(
         validateImageSrc(src);
     }
 
-    // Also check HTML img tags in markdown
-    const htmlImgRegex = /src="([^"]+)"/g;
+    // Also check HTML <img> tags in markdown. Restricted to actual <img> elements
+    // (the \b after `img` prevents matching other tags; the \s before src rules out
+    // unrelated attributes like `srcset`). Other tags with src attrs (<script>,
+    // <iframe>, etc.) are not image references and are skipped.
+    const htmlImgRegex = /<img\b[^>]*?\ssrc=["']([^"']+)["']/gi;
     while ((match = htmlImgRegex.exec(content)) !== null) {
         const src = match[1];
         validateImageSrc(src);

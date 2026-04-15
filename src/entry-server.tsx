@@ -15,8 +15,10 @@ import { StaticContentProvider, type StaticContentContextValue } from "./lib/con
 // In SSR (postbuild), Vite doesn't substitute import.meta.env — read from process.env instead.
 // ClerkProvider is required because Navbar renders <SignedOut>/<SignedIn>.
 // In SSR there is no active session, so <SignedOut> renders and <SignedIn> is empty — correct for static HTML.
+// The placeholder key must pass Clerk's format validation (third segment base64-decodes to
+// a `.`-containing hostname ending in `$`). `clerk.example.com$` encoded → pk_test_Y2xlcmsuZXhhbXBsZS5jb20k.
 const SSR_PUBLISHABLE_KEY =
-    process.env.VITE_CLERK_PUBLISHABLE_KEY ?? "pk_test_placeholder_for_ssr";
+    process.env.VITE_CLERK_PUBLISHABLE_KEY ?? "pk_test_Y2xlcmsuZXhhbXBsZS5jb20k";
 
 export function render(url: string, staticContent: StaticContentContextValue | null = null): string {
     return renderToString(

@@ -1,6 +1,25 @@
 // Strip order matters: remove structural noise before counting prose words.
-// Default 220 wpm reflects typical technical reading pace (vs. 250 for fiction).
-export function computeReadingTimeMinutes(markdown: string, wpm = 220): number {
+// Default 180 wpm reflects a math-heavy technical reading pace where readers
+// pause on equations and figures (vs. 220 for lighter technical prose).
+export interface ReadingTimeOptions {
+    wpm?: number;
+    displayMathSeconds?: number;
+    inlineMathSeconds?: number;
+    imageSeconds?: number;
+}
+
+export function computeReadingTimeMinutes(markdown: string, options: ReadingTimeOptions | number = {}): number {
+    const opts: ReadingTimeOptions = typeof options === "number" ? { wpm: options } : options;
+    const wpm = opts.wpm ?? 180;
+    const displayMathSeconds = opts.displayMathSeconds ?? 10;
+    const inlineMathSeconds = opts.inlineMathSeconds ?? 2;
+    const imageSeconds = opts.imageSeconds ?? 8;
+
+    // Count visual/structural elements before stripping them.
+    const displayMathCount = (markdown.match(/\$\$[\s\S]*?\$\$/g) ?? []).length;
+    const inlineMathCount = (markdown.match(/(?<!\$)\$[^$\n]+\$(?!\$)/g) ?? []).length;
+    const imageCount = (markdown.match(/!\[[^\]]*\]\([^)]*\)/g) ?? []).length;
+
     let text = markdown;
     // 1. Fenced code blocks
     text = text.replace(/```[\s\S]*?```/g, " ");
@@ -22,5 +41,11 @@ export function computeReadingTimeMinutes(markdown: string, wpm = 220): number {
     text = text.replace(/[*_~]+/g, " ");
 
     const words = text.trim().split(/\s+/).filter(Boolean).length;
-    return Math.max(1, Math.round(words / wpm));
+    const proseMinutes = words / wpm;
+    const extraMinutes =
+        (displayMathCount * displayMathSeconds +
+            inlineMathCount * inlineMathSeconds +
+            imageCount * imageSeconds) /
+        60;
+    return Math.max(1, Math.round(proseMinutes + extraMinutes));
 }

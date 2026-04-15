@@ -21,7 +21,7 @@ export const proseClasses = [
     "prose-a:text-[hsl(var(--article-link))]",
     "prose-a:underline prose-a:underline-offset-[3px] prose-a:decoration-1",
     "prose-a:decoration-[hsl(var(--article-link)/0.45)]",
-    "hover:prose-a:decoration-[hsl(var(--article-link))]",
+    "prose-a:hover:decoration-[hsl(var(--article-link))]",
     "prose-a:transition-colors",
 
     // Lists

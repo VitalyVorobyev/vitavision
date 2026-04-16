@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import type { DemoFrontmatterSerialized } from "../../lib/content/schema.ts";
 import TagBadge from "../blog/TagBadge.tsx";
-import DemoThumbnail from "./DemoThumbnail.tsx";
+import DemoCover from "./DemoCover.tsx";
 import { classNames } from "../../utils/helpers.ts";
 
 interface DemoCardProps {
@@ -25,7 +25,7 @@ export default function DemoCard({ slug, frontmatter }: DemoCardProps) {
                     className="w-full aspect-video object-cover"
                 />
             ) : (
-                <DemoThumbnail />
+                <DemoCover slug={slug} className="w-full aspect-video" />
             )}
             <div className="p-5 space-y-2">
                 <h2 className="text-xl font-semibold group-hover:underline">

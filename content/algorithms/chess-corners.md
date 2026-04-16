@@ -1,6 +1,6 @@
 ---
 title: "ChESS Corners"
-date: 2026-03-29
+date: 2026-04-15
 summary: "A chessboard-specific corner detector: scores each pixel by how well its local neighborhood matches an alternating bright-dark X-junction pattern, using 16 fixed integer offsets on a radius-5 ring."
 tags: ["computer-vision", "feature-detection", "calibration", "chessboard"]
 category: corner-detection

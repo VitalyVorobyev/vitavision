@@ -50,9 +50,13 @@ function resolveContentImagePaths(html: string): string {
     return html.replace(/src="(?:\.{1,2}\/)?images\//g, 'src="/content/images/');
 }
 
-// Extended sanitization schema to allow custom blocks, Shiki, and KaTeX output
+// Extended sanitization schema to allow custom blocks, Shiki, and KaTeX output.
+// clobberPrefix is disabled because all markdown content is authored in-repo (not user input),
+// so the DOM-clobbering protection is unnecessary and its prefix breaks in-page anchor links
+// (headings get `id="user-content-foo"` but `[link](#foo)` is not rewritten to match).
 const sanitizeSchema = {
     ...defaultSchema,
+    clobberPrefix: "",
     tagNames: [
         ...(defaultSchema.tagNames ?? []),
         "section",

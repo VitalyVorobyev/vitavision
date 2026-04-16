@@ -90,7 +90,7 @@ fn harris_response(img: &[f32], w: usize, h: usize, sigma: f32, k: f32) -> Vec<f
 }
 ```
 
-`gradients` and `gaussian_blur` are standard helpers; `gradients` returns central-difference derivatives and `gaussian_blur` applies a separable Gaussian kernel. Each line of the kernel corresponds directly to a step in `## Procedure`.
+`gradients` and `gaussian_blur` are standard helpers; `gradients` returns central-difference derivatives and `gaussian_blur` applies a separable Gaussian kernel. Each line of the kernel corresponds directly to a step in the [Procedure](#procedure) above.
 
 # Remarks
 
@@ -99,7 +99,6 @@ fn harris_response(img: &[f32], w: usize, h: usize, sigma: f32, k: f32) -> Vec<f
 - The response is rotation-invariant by construction: $\operatorname{tr}(M)$ and $\det(M)$ are both rotation-invariant quantities.
 - The detector is not scale-invariant. Response peaks at the scale of the integration window $\sigma$. Multi-scale detection requires running the detector on a Gaussian image pyramid.
 - The detector responds to general 2D intensity variation; it does not encode X-junction geometry. For chessboard calibration targets, a domain-specific detector yields higher selectivity.
-- Reference implementation: the `# Implementation` section above. No external Rust crate is published for this algorithm.
 
 # References
 

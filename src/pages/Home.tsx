@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { BookMarked, ImagePlus, Grid3x3, FileText } from "lucide-react";
+import { BookMarked, ImagePlus, Grid3X3, FileText } from "lucide-react";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import VitavisionLogo from "../components/shared/VitavisionLogo";
 
@@ -8,7 +8,7 @@ const tiles = [
     { label: "Blog", icon: FileText, href: "/blog" },
     { label: "Algorithms", icon: BookMarked, href: "/algorithms" },
     { label: "Editor", icon: ImagePlus, href: "/editor" },
-    { label: "Targets", icon: Grid3x3, href: "/tools/target-generator" },
+    { label: "Targets", icon: Grid3X3, href: "/tools/target-generator" },
 ];
 
 export default function Home() {

@@ -21,7 +21,7 @@ sources:
 
 # Goal
 
-Detect corners in a grayscale image $I: \Omega \to \mathbb{R}$ on pixel domain $\Omega \subset \mathbb{Z}^2$. Output: a set of integer pixel locations $\{(x_i, y_i)\} \subset \Omega$. Instead of computing a continuous response from gradients, FAST applies a binary segment test on a 16-pixel Bresenham ring of radius 3: an arc of $N$ contiguous ring pixels must all be brighter than $I(p) + t$ or all darker than $I(p) - t$. The test requires only integer comparisons; the high-speed cardinal-point early rejection reads only four ring pixels to discard the majority of candidates before the full ring is examined.
+Detect corners in a grayscale image $I: \Omega \to \mathbb{R}$ on pixel domain $\Omega \subset \mathbb{Z}^2$. Output: a set of integer pixel locations $\{(x_i, y_i)\} \subset \Omega$. Instead of computing a continuous response from gradients, FAST applies a binary segment test on a 16-pixel Bresenham ring (the integer-pixel discretisation of a circle produced by [Bresenham's midpoint circle algorithm](https://en.wikipedia.org/wiki/Midpoint_circle_algorithm)) of radius 3: an arc of $N$ contiguous ring pixels must all be brighter than $I(p) + t$ or all darker than $I(p) - t$. The test requires only integer comparisons; the high-speed cardinal-point early rejection reads only four ring pixels to discard the majority of candidates before the full ring is examined.
 
 # Algorithm
 

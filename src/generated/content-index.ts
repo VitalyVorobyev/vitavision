@@ -109,7 +109,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         },
         "notes": "RING5 = FAST-16 sampling pattern scaled to r=5 (integer offsets only).\nLocal mean = 5-pixel cross at the candidate. Neighbour mean = 16 ring samples.\nEquations (1)–(4) of Bennett & Lasenby 2013 define SR, DR, MR, R.\n"
       },
-      "date": "2026-03-29"
+      "date": "2026-04-15"
     }
   },
   {

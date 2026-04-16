@@ -114,7 +114,6 @@ fn shi_tomasi_response(img: &[f32], w: usize, h: usize, sigma: f32) -> Vec<f32> 
 - The response is rotation-invariant: $R$ is a function of $\operatorname{tr}(M)$ and $\det(M)$, both of which are rotation-invariant quantities.
 - The detector is not scale-invariant. Response peaks at the scale of the integration window $\sigma$. Multi-scale detection requires running the detector on a Gaussian image pyramid.
 - No free sensitivity parameter analogous to Harris's $k$: the threshold $\tau$ has a direct interpretation as a tracking-quality bound derived from the linear displacement system (equation (8) of the paper).
-- Reference implementation: the `# Implementation` section above. No external Rust crate is published for this algorithm.
 
 # References
 

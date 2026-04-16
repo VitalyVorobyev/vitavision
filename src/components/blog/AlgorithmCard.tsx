@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import type { AlgorithmIndexEntry } from "../../lib/content/schema.ts";
 import TagBadge from "./TagBadge.tsx";
 import DifficultyBadge from "./DifficultyBadge.tsx";
-import CategoryGlyph from "../algorithms/CategoryGlyph.tsx";
+import AlgorithmGlyph from "../algorithms/AlgorithmGlyph.tsx";
 
 interface AlgorithmCardProps {
     entry: AlgorithmIndexEntry;
@@ -23,7 +23,7 @@ export default function AlgorithmCard({ entry }: AlgorithmCardProps) {
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    <CategoryGlyph category={frontmatter.category} />
+                    <AlgorithmGlyph slug={slug} category={frontmatter.category} />
                 )}
             </div>
             <div className="min-w-0 flex-1 space-y-1">

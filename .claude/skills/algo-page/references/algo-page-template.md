@@ -93,5 +93,23 @@ with NumPy-style vectorization.>
 2. <Closest antecedent or extension, if relevant.>
 3. <At most 5 entries total.>
 
+<!-- Figures (illustration pass, SKILL §7.5). One per primitive below. Delete unused rows. -->
+
+<!-- Mermaid pipeline — inline, no asset file. Place after the Procedure block. -->
+
+```mermaid
+flowchart LR
+    A["Stage 1"] --> B["Stage 2"]
+    B --> C["Stage 3"]
+```
+
+<!-- Static SVG — store at content/images/<slug>/<name>.svg. Place near the defining formula. -->
+
+![Geometric arrangement described by the figure](./images/<slug>/<name>.svg)
+
+<!-- Placeholder — use only when the figure depends on rendered data. -->
+
+<!-- TODO figure: <one-line description of the missing figure> -->
+
 <!-- Template for content/algorithms/*.md only. For blog posts, use tech-writer.
      Delete the "Goal — example" block and any placeholder text before publishing. -->

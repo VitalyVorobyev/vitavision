@@ -42,6 +42,8 @@ $$
 
 arranged cyclically around the ring so that consecutive indices are adjacent on the ring and index $n+8$ is opposite $n$. The offsets are the FAST-16 pattern scaled to radius 5. The angular spacing alternates between 21.8° and 23.2°, close to the ideal 22.5°. Indices are taken modulo 16.
 
+![RING5 pattern: 16 ring samples on a radius-5 circle over a 2×2 checker, with the 5-pixel cross highlighted at the centre.](./images/chess-corners/ring-pattern.svg)
+
 Two local means anchor the response. The **local mean** $\mu_\ell$ averages the 5-pixel cross at the candidate:
 
 $$

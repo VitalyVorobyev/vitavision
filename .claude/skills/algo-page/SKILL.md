@@ -1,6 +1,6 @@
 ---
 name: algo-page
-description: Write reference entries for the Vitavision algorithms register under content/algorithms/*.md. Each entry is a compact, textbook-style card — goal, minimal algorithm declaration, core implementation snippet, remarks, references. This is NOT a blog-post voice and NOT the tech-writer skill.
+description: Write reference entries for the Vitavision algorithms register under content/algorithms/*.md. Accepts a bare `arxiv:<id>`, `doi:<doi>`, or paper URL and drives the full pipeline — fetches metadata, appends to docs/papers/index.yaml, chases direct antecedents, caches PDFs, synthesizes frontmatter, drafts the page. Each entry is a compact, textbook-style card — goal, minimal algorithm declaration, core implementation snippet, remarks, references. This is NOT a blog-post voice and NOT the tech-writer skill.
 ---
 
 # Vitavision Algorithm Reference
@@ -128,6 +128,46 @@ $$
 :::
 ```
 
+## Illustrations
+
+Math and code carry the content, but a figure earns its place when it encodes a geometric arrangement or a pipeline order that prose can only describe laboriously. Three native primitives are wired into the site; in preference order:
+
+| Primitive | Syntax | Use for |
+|---|---|---|
+| **Mermaid** | ` ```mermaid ` fence — `flowchart LR`, `graph`, `stateDiagram`, `sequenceDiagram` | Pipelines, procedure stages, control flow, state machines. Renders client-side to interactive SVG via `src/hooks/useMermaid.ts`. No asset file. |
+| **Static SVG / PNG** | `![alt](./images/<slug>/file.svg)` | Geometric schemes: sampling patterns on a pixel grid, eigenvalue-ellipse classifications, edge-bit placements, mesh-transformation stages. Store under `content/images/<slug>/`; the build (`scripts/content-build.ts`) rewrites relative paths to `/content/images/...`. |
+| **KaTeX** | `$...$`, `$$...$$` | All math. Already required for symbol lists and quantity definitions. |
+
+**Blocked.** Inline `<svg>` markup in markdown is stripped by `rehype-sanitize` (`scripts/content-build.ts:57-120`). Paste raw SVG into a `.svg` file under `content/images/<slug>/` and reference it with markdown image syntax; do not paste it into the page body. Interactive React components are possible but hardcoded per algorithm (`src/lib/content/useArticleIllustrations.tsx` currently only knows `chess-response`); do not invent new ones from a skill pass — request a code change.
+
+**When a figure earns its place** (good signals):
+
+- The procedure has $\geq 3$ stages in a definite order with branching or filtering steps → Mermaid pipeline.
+- The math references a geometric arrangement of samples, axes, or regions that a reader cannot reconstruct mentally from the formula alone (a 16-offset ring, an eigenvalue ellipse, a 1/3-edge circle placement) → static SVG.
+- A named quantity has a visual interpretation more compact than its formula (the shape of a saddle, the empty-circumcircle property) → static SVG.
+
+**When a figure is decoration** (drop it):
+
+- The figure restates what the formula already says (e.g. a bar chart of two numbers from a two-term definition).
+- The figure is an image of the algorithm's output on a real photograph — that belongs in the demo (`editorAlgorithmId`), not in the reference card.
+- The figure is a second restatement of Mermaid pipeline stages already written as the `:::algorithm[...]` procedure.
+
+**Static-SVG authoring rules:**
+
+- Hand-author the file under `content/images/<slug>/<name>.svg`. Match the existing style in `content/images/01-chess/*.svg`: `viewBox`, `class="h-auto w-full text-foreground"`, inline `style="color:#…"` fallback, `role="img"`, `aria-label` with a one-sentence description.
+- Every numerical label on the figure (offset coordinates, ellipse axes, ratios) must match the page's math verbatim. A `1/3` on the page must be `1/3` on the figure, not `0.33`.
+- Plain strokes on white background; small semantic colour accents only (e.g. ring samples in one hue, central cross in another). No decorative gradients.
+- Keep the viewBox aspect squareish (1:1 to 3:1 landscape). Tall-narrow figures overflow the content column badly on mobile.
+
+**Placeholder convention.** When a figure is genuinely valuable but depends on rendered data (heatmap, Gaussian response surface, real-image overlay), emit `<!-- TODO figure: <one-line description of the missing figure> -->` inline where it would go and add a bullet to working notes. Do not commit empty image files, broken image references, or "coming soon" captions.
+
+**Mermaid authoring notes.**
+
+- Prefer `flowchart LR` for left-to-right pipelines; `flowchart TB` when stages don't fit horizontally on mobile.
+- Use `<br/>` for line breaks inside node labels; keep each label ≤ 3 short lines.
+- Arithmetic symbols inside node labels can clash with Mermaid syntax; the usual fix is to wrap the label in double quotes: `A["s = f_xy² − f_xx·f_yy"] --> B`.
+- Preview at mobile width (≤ 360 px) — long single-line pipelines wrap awkwardly; split into two rows with `subgraph` or switch to `TB` if it does.
+
 ## Frontmatter
 
 Validates against `algorithmFrontmatterSchema` in `src/lib/content/schema.ts`.
@@ -180,27 +220,65 @@ A deep-link that leaves the user in gallery mode with no image is worse than no 
 
 This procedure is mandatory for any new or rewritten algorithm page. It codifies the chess-corners process: ground every claim in primary sources, fetched at pinned versions, queried via the citation graph.
 
-### Adding a new algorithm
+### Trigger
 
-For a brand-new page that does not yet exist, run this bootstrap before Workflow §1.
+- **Bootstrap mode** fires whenever the user supplies an input token — `arxiv:<id>`, `doi:<doi>`, or a PDF / publisher URL — without a pre-filled frontmatter file. Example triggers: "draft arxiv:1301.5491", "draft doi:10.1007/s00138-009-0202-2", "draft https://…/paper.pdf". Run Bootstrap §B1–B9 below, then continue with Workflow §4.
+- **Legacy mode** fires when a page file already exists with a filled `sources` frontmatter. Skip Bootstrap and start at Workflow §1.
 
-a. **Add the primary paper to the registry.** `bun papers:fetch-meta arxiv:<id>` (or `doi:<doi>`). The script prints a candidate yaml entry to stdout. Review the suggested `id` (`firstauthorYEAR-keyword`) and adjust if needed. Paste into `docs/papers/index.yaml`.
-b. **Close the citation graph.** Each `cites:` entry that emits a `<name>YEAR-???` placeholder is a paper not yet in the registry. Recurse: `bun papers:fetch-meta` on each, paste, repeat. Stop when every cite resolves to an existing id (or when the remaining cites are not relevant to algorithm pages — those can be left as `???` placeholders to drop later by hand).
-c. **Decide the impl pointer.** For algorithms backed by a sibling Rust crate (e.g. `chess-rs`), pin via `sources.impl` with the SHA from `git ls-remote <repo> HEAD` and the canonical algorithm files (the algorithm core, not glue or wrappers). For algorithms whose only Rust implementation is the kernel snippet on the page itself, omit `sources.impl` — the page's `# Implementation` section is the canonical reference.
-d. **Create `content/algorithms/<slug>.md`** with frontmatter only (no body): `title`, `date`, `summary`, `tags`, `category`, `author`, `difficulty`, `sources`, `editorAlgorithmId` (if applicable), `relatedDemos` (if applicable), and `relatedAlgorithms` derived by running `bun papers:query pages-using <ref-id>` for each cited paper.
-e. **Cache.** `bun papers:fetch && bun impls:fetch <slug>` (the latter only if `sources.impl` is set).
-f. **Proceed with Workflow §4 onward** (paper reading, drafting, quality gate, verify).
+### Bootstrap (Claude-driven, for entirely new pages)
+
+These steps are executed by Claude, not by the user. Narrate key decisions; stop and ask only when the primary's id, url, or scope is ambiguous.
+
+B1. **Resolve the input.** Parse the argument to `arxiv:<id>` or `doi:<doi>`. If the user pasted a URL, extract an arXiv id (e.g. `arxiv.org/abs/<id>` or `arxiv.org/pdf/<id>`) first; otherwise extract the DOI. `bun papers:fetch-meta` accepts both forms and the bare id.
+
+B2. **Fetch metadata.** `bun papers:fetch-meta <arg>`; capture stdout YAML. Review two fields:
+  - **`id`**: The script emits `firstauthor<year>-keyword` from the title. If the keyword is awkward (e.g. `shi1994-good` → `shi-tomasi1994-features`), rename now. The id is a hard identifier — rename before paste, not after.
+  - **`url`**: OpenAlex's best open-access link. If it looks fragile (preprint mirror, redirect chain, non-institutional host), run `curl -fLsI <url> | head -3` to confirm 200; replace with a stabler mirror if it 404s or 405s.
+
+B3. **Append to `docs/papers/index.yaml`.** Use the `Edit` tool to insert the stanza at the end of the file. Preserve the inline `# <title>` comments on unresolved `<name><year>-???` cite lines — they are the only hint about what each placeholder refers to. Show the user the diff after the write.
+
+B4. **Curate the cites list.** Each `<name><year>-???` entry is a paper the primary cites but the registry doesn't have yet. Decide per line:
+  - **Chase** if the placeholder is a direct algorithmic antecedent worth showing in the page's `# References` or as a `relatedAlgorithms` cross-link (the corner detector fed into this algorithm, the numerical method it builds on, the paper that introduced the same idea in a different context). Recurse on steps B2–B3 to fetch and append each one.
+  - **Drop** if the placeholder is tangential (cited in passing, a generic textbook, the venue's comparison survey, a self-citation from the authors). Delete the line from the primary's `cites:` block.
+  - Report the keep/drop decisions in the turn log. When in doubt between chase and drop, read the primary (after step B5) for context first.
+
+B5. **Cache PDFs + text + ar5iv HTML.** `bun papers:fetch`. The script walks `docs/papers/index.yaml`, downloads any missing PDFs into `docs/papers/.cache/`, runs `pdftotext -layout` into `<id>.txt`, and — for entries with an `arxiv:` field — also curls `https://ar5iv.labs.arxiv.org/html/<arxiv-id>` into `<id>.html`. Second run is all cache hits — no network.
+
+B6. **Read the primary.** For arxiv papers, prefer `docs/papers/.cache/<primary-id>.html` (ar5iv preserves LaTeX source in `<annotation encoding="application/x-tex">...</annotation>` blocks, and keeps section structure in `<section id="Sx…">` — equations transcribe directly without OCR artefacts). For non-arxiv papers, or when ar5iv returned 404, fall back to `<primary-id>.txt` (pdftotext -layout). Extract the abstract, method section(s), defining equations, and the symbol/constant table into working notes. Re-run B4 on any remaining `???` once the primary's bibliography is clearer.
+
+B7. **Choose the page slug.** Kebab-case, descriptive to a reader browsing the algorithms register — not an id echo. `shu-topological-grid`, not `shu2009`. `harris-corner-detector`, not `harris-combined`.
+
+B8. **Synthesize the frontmatter.** No body yet — just the yaml block.
+  - `title` (display name, quoted), `date: <today>`, `summary` (one sentence: what it computes, what it returns), `tags` (at least `computer-vision` + primary topic), `category` (one of `corner-detection | calibration-targets | subpixel-refinement | explainers`), `difficulty: intermediate` unless the content clearly warrants another tier, `author: "Vitaly Vorobyev"`.
+  - `sources.primary`: the paper id.
+  - `sources.references`: curated — direct antecedents from B4 plus any cross-link candidates from `bun papers:query pages-using <ref-id>`. These are the papers that will appear in `# References`.
+  - `sources.notes`: freeform summary of key equations, symbols, and constants grounding the page.
+  - `relatedAlgorithms`: union of `bun papers:query pages-using <ref-id>` over `sources.references`, plus judgment-based cross-links from the same algorithmic family.
+  - **Omit `sources.impl` and `editorAlgorithmId`.** Neither can be inferred safely. Add them only when the user supplies a repo URL or names an existing adapter id.
+
+B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no body. Then continue with Workflow §4.
+
+### What Bootstrap writes where
+
+| Artifact | Location | Writer |
+|---|---|---|
+| Paper metadata stanza | `docs/papers/index.yaml` | Edit tool (B3, B4) |
+| Cached PDF + `pdftotext` output | `docs/papers/.cache/<id>.{pdf,txt}` | `bun papers:fetch` (B5) |
+| Cached ar5iv HTML (arxiv papers) | `docs/papers/.cache/<id>.html` | `bun papers:fetch` (B5) |
+| Page frontmatter (no body) | `content/algorithms/<slug>.md` | Write tool (B9) |
+| Page body | `content/algorithms/<slug>.md` | Workflow §7 drafting |
 
 ### Workflow steps
 
-1. **Read `sources` from the page frontmatter.** If the page has none, follow the bootstrap above.
+1. **Read `sources` from the page frontmatter.** If the page has none, run Bootstrap above.
 2. **Cache the papers.** `bun papers:fetch <primary-id>` and `bun papers:fetch <ref-id>` for each entry in `sources.references`. The script downloads each PDF and runs `pdftotext -layout` into `docs/papers/.cache/<id>.txt`.
 3. **Cache the impl.** `bun impls:fetch <slug>` if `sources.impl` is set. The script fetches each file from `raw.githubusercontent.com/<owner>/<repo>/<sha>/<file>` into `docs/impls/.cache/<owner>/<repo>/<sha>/<file>`.
-4. **Read the primary paper.** Open `docs/papers/.cache/<primary-id>.txt`. Locate the algorithm's defining equations, named quantities, and the operational procedure. Note section/equation numbers — you will reference them in working notes.
+4. **Read the primary paper.** For arxiv papers, open `docs/papers/.cache/<primary-id>.html` (ar5iv rendering — LaTeX equations preserved, section structure clean). For non-arxiv papers or when the HTML is absent, open `<primary-id>.txt`. Locate the algorithm's defining equations, named quantities, and the operational procedure. Note section/equation numbers — you will reference them in working notes.
 5. **Read the impl.** Open the cached impl files. Locate the canonical constants — offset tables, threshold values, magic numbers — that the page must match exactly.
 6. **Query the citation graph.** `bun papers:query cites <primary-id>` returns ids that the primary references — these are candidates for `# References` and for `relatedAlgorithms`. `bun papers:query pages-using <ref-id>` for each cited paper finds existing algorithm pages that share a source — also candidates for `relatedAlgorithms`.
-7. **Draft.** Use the 5-section template (Goal, Algorithm, Implementation, Remarks, References) and the typography blocks (`:::definition[...]` for named quantities, `:::algorithm[...]` with `::input[...]`/`::output[...]` for the procedure).
-8. **Quality gate.** In working notes (not committed, not in the page), enumerate every numerical constant, symbol, and offset that appears in the drafted page. For each, write the source line: paper section/equation number, or impl file path + line. Anything not traceable to a source is either fabricated or implementation-detail noise — fix or remove. *This gate is what catches the failures: a "bilinear interpolation" claim with no paper citation; an "8-bit" qualifier whose only source is the impl's `u8` pixel type.*
+7. **Draft.** Use the 5-section template (Goal, Algorithm, Implementation, Remarks, References) and the typography blocks (`:::definition[...]` for named quantities, `:::algorithm[...]` with `::input[...]`/`::output[...]` for the procedure). When the algorithm depends heavily on a graph data structure not codeable in ≤ 40 lines, omit `# Implementation` and note this in one bullet in `# Remarks`.
+7.5. **Illustration pass.** Scan each section against the "good signals" in the Illustrations section above. Prefer Mermaid for control flow and pipelines (inline, no asset); author static SVG under `content/images/<slug>/` for geometric schemes; emit `<!-- TODO figure: ... -->` only when the figure depends on rendered data. At most two figures per page — one pipeline diagram plus one geometric scheme is the usual ceiling. Every label and constant in the figure must land on the working-notes list that step 8 audits.
+8. **Quality gate.** In working notes (not committed, not in the page), enumerate every numerical constant, symbol, and offset that appears in the drafted page — **including every label and coordinate in any figure added in step 7.5**. For each, write the source line: paper section/equation number, or impl file path + line. Anything not traceable to a source is either fabricated or implementation-detail noise — fix or remove. *This gate is what catches the failures: a "bilinear interpolation" claim with no paper citation; an "8-bit" qualifier whose only source is the impl's `u8` pixel type.*
 9. **Verify.** `bun run build && bun run lint && npx vitest run`.
 
 ## Voice rules (reference-entry voice)
@@ -254,6 +332,7 @@ Run before handing off a draft.
 - [ ] Working notes (ephemeral, not committed) trace every numerical constant on the page to a specific source line — paper §/equation or impl file/line. Anything untraceable was fixed or removed.
 - [ ] `# Remarks` contains no measured benchmarks and no "reference implementation: <crate>" pointers. Content is about the algorithm itself.
 - [ ] Every display-math formula fits within the content column. Long offset lists, matrix tables, and multi-term derivations use `\begin{aligned}...\end{aligned}` with explicit `\\` line breaks.
+- [ ] Illustration pass done: at least one figure is present (Mermaid fence or static SVG/PNG) or a `<!-- TODO figure: ... -->` placeholder documents what is missing and why. No figure is decorative; every label and constant inside a figure traces to the same source as the page's math.
 - [ ] If `editorAlgorithmId` is set, the sample-id mapping in `src/pages/AlgorithmPost.tsx` covers it and the "Try in the editor" button lands the user in editor mode with an image preloaded and the algorithm preselected — one click to Run.
 
 ## When not to use this skill

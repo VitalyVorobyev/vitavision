@@ -53,6 +53,8 @@ $$
 where $k$ is an empirical sensitivity constant, typically in the range $0.04$–$0.06$. $R > 0$ in corner regions, $R < 0$ on edges, and $|R|$ small in flat regions.
 :::
 
+![Harris response regions in the (λ₁, λ₂) plane: flat near the origin, edge along each axis (R < 0), corner along the diagonal (R > 0).](./images/harris-corner-detector/eigenvalue-classification.svg)
+
 ## Procedure
 
 :::algorithm[Harris corner detection]

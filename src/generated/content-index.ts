@@ -113,6 +113,41 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "laureano-topological-chessboard",
+    "frontmatter": {
+      "title": "Chessboard Detection via X-Corners and Topology",
+      "summary": "Detect every corner of a chessboard calibration pattern and assign it an integer grid coordinate by counting ring-alternations to locate X-junctions, Delaunay-triangulating the corner set, and keeping only triangles that respect the two-colour neighbourhood regularity of the pattern.",
+      "tags": [
+        "computer-vision",
+        "calibration",
+        "chessboard",
+        "corner-detection",
+        "topology",
+        "delaunay"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "category": "calibration-targets",
+      "relatedAlgorithms": [
+        "shu-topological-grid",
+        "chess-corners",
+        "fast-corner-detector"
+      ],
+      "sources": {
+        "primary": "laureano2013-topological",
+        "references": [
+          "shu2009-topological",
+          "rosten2006-fast"
+        ],
+        "notes": "Pipeline: (1) per-pixel x-corner detector — count sign alternations\nN_alt of I against Tl = m − gate, Th = m + gate on a 16-pixel\nBresenham ring (§2, Eq. 1); classify iff N_alt = 4 ∧ Tl < I(p_c) < Th\nwith gate = 10 empirical. (2) NMS under cost max(Σ_dark|I-m|,\nΣ_light|I-m|) (Eq. 2). (3) Adaptive integral-image binarization\n(Bradley-Roth, §3). (4) Delaunay triangulation of the corner set\n(§3). (5) Topological filter — triangles are legal iff uniform\ninterior ∧ ≥1 same-colour neighbour ∧ ≤2 same-colour neighbours;\niterate to fixed point, drop orphan vertices (§3). (6) Coordinate\npropagation from a seed same-colour triangle pair, reflection rule\nacross shared edges (§4, O(n)). (7) Chen-Zhang Hessian subpixel\nrefinement S = Ixx·Iyy − Ixy² at surviving vertices only (§5, Eq. 4).\nPositioned by the authors as a specification of FAST.\n"
+      },
+      "date": "2026-04-16"
+    }
+  },
+  {
     "slug": "fast-corner-detector",
     "frontmatter": {
       "title": "FAST Corner Detector",
@@ -170,6 +205,73 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "ocpad",
+    "frontmatter": {
+      "title": "OCPAD: Occluded Checkerboard Pattern Detection",
+      "summary": "Recover the largest visible checkerboard subgraph from a partially occluded pattern by running VF2 subgraph isomorphism against a model graph under a binary-search driver over vertex counts, then closing gaps by breadth-first region growing from a quad-density anchor.",
+      "tags": [
+        "computer-vision",
+        "calibration",
+        "checkerboard",
+        "graph-matching",
+        "subgraph-isomorphism"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "category": "calibration-targets",
+      "relatedAlgorithms": [
+        "shu-topological-grid",
+        "puzzleboard",
+        "laureano-topological-chessboard"
+      ],
+      "sources": {
+        "primary": "fuersattel2016-ocpad",
+        "references": [
+          "placht2014-rochade",
+          "cordella2004-vf2"
+        ],
+        "notes": "Input is a candidate graph G_d produced by an upstream corner-graph\nbuilder (Placht 2014 ROCHADE: Scharr gradient → magnitude threshold\n→ centreline thinning → saddle points → graph). Output is a partial\nmapping M : V_d → V_m onto the checkerboard model graph. Pipeline\n(§4): (1) reject if |V_d| < 0.5 |V_m|; (2) spatial consistency —\nmin inter-node distance ≥ subpixel-window size, and stdev of edge\nlength < mean edge length; (3) quad filter — keep vertices that lie\non some 4-cycle; (4) keep only the largest connected component;\n(5) VF2 (Cordella 2004) driven by binary search N_i = round(N_{i-1}\n± 2^{−i} N) over the N_i nearest-to-anchor vertices in BFS order,\nwhere the anchor is the vertex of maximum quad-density within\nBFS-depth 3; (6) breadth-first region growing vertex-by-vertex\naround the binary-search result. Algorithm 1 gives the driver.\n"
+      },
+      "date": "2026-04-17"
+    }
+  },
+  {
+    "slug": "puzzleboard",
+    "frontmatter": {
+      "title": "PuzzleBoard",
+      "summary": "Detect and decode a self-identifying checkerboard calibration pattern: saddle-point corners from a Hessian response, grid reconstruction via Kruskal minimum spanning forest on the 9-nearest-neighbour graph, absolute corner position on a $501 \\times 501$ grid from cross-correlation against two binary de Bruijn factor maps.",
+      "tags": [
+        "computer-vision",
+        "calibration",
+        "checkerboard",
+        "self-identifying-pattern",
+        "position-encoding"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "advanced",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "category": "calibration-targets",
+      "relatedAlgorithms": [
+        "chess-corners",
+        "harris-corner-detector",
+        "shu-topological-grid"
+      ],
+      "sources": {
+        "primary": "stelldinger2024-puzzleboard",
+        "references": [
+          "harris1988-corner"
+        ],
+        "notes": "Pattern: checkerboard overlaid with binary circles at every edge midpoint.\nThe circles encode a sub-perfect map of type (501, 501; 3, 3)_4 — every\n3×3 window of 2-bit codes is unique. The map is the superposition of two\nbinary (3, 3; 3, 3)_2 de Bruijn rings A (shape 3×167) and B (shape 167×3).\nDetection pipeline (§4): Hessian-based saddle response s = f_xy² − f_xx·f_yy\n− k(f_xx + f_yy)² with default k = 1 (§4.1); subpixel refinement by\ngrayscale centroid in 3×3 (§4.1); 9-nearest-neighbour graph with direct\nvs diagonal disambiguation via Hessian eigenvector directions (§4.2);\nminimum spanning forest by Kruskal with union-find (§4.2); bit read at\nthe middle third of each edge (§3 motivates the 1/3 circle diameter);\ncross-correlation decoding against A, A', B, B' at sizes 167×333 and\n333×167; absolute position (x_A + 167·[(x_A − x_B) mod 3], y_B + 167·[(y_B\n− y_A) mod 3]) on {0,…,500}^2 (§4.3). Bit repetition every three rows and\ncolumns gives majority-voting error correction tolerating up to 40 %\ncorrupted bits (§4.3).\n"
+      },
+      "date": "2026-04-16"
+    }
+  },
+  {
     "slug": "02-demo-blocks",
     "frontmatter": {
       "title": "Rich Algorithm Content Demo",
@@ -192,6 +294,43 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "harris-corner-detector"
       ],
       "date": "2026-03-29"
+    }
+  },
+  {
+    "slug": "rochade",
+    "frontmatter": {
+      "title": "ROCHADE: Robust Checkerboard Advanced Detection",
+      "summary": "Detect a full planar checkerboard in an image by reducing the gradient-magnitude edge set to a single-pixel centreline graph, extracting inner corners as graph saddle points, then refining each corner to subpixel accuracy by fitting a bivariate quadratic to a cone-filtered neighbourhood and solving for its stationary point.",
+      "tags": [
+        "computer-vision",
+        "calibration",
+        "checkerboard",
+        "subpixel-refinement",
+        "saddle-point"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "category": "calibration-targets",
+      "relatedAlgorithms": [
+        "ocpad",
+        "chess-corners",
+        "laureano-topological-chessboard",
+        "shu-topological-grid"
+      ],
+      "sources": {
+        "primary": "placht2014-rochade",
+        "references": [
+          "lucchese2003-saddle",
+          "niblack1992-skeleton",
+          "rufli2008-blurred",
+          "chen2005-xcorner"
+        ],
+        "notes": "Two-stage detector. Stage 1 (§2.1, steps 0–7): optional downsampling;\nScharr 3×3 gradient magnitude; local thresholding in (2τ+1)×(2τ+1)\nwindows with τ = 4 and a 60% upper-intensity rule; conditional\ndilation requiring ≥ 6 of 8 \"true\" neighbours; centreline extraction\nby Niblack 1992 distance-transform thinning; graph interpretation\nG = (V, E) with 8-connectivity (dist ≤ √2); saddle set S = {v : deg(v) ≥ 3};\nacyclic-path pruning + rethinning; clustering of nearby saddles with\ncombination distance α starting at 2 and growing to ≤ 5; grid\nverification by counting cluster-adjacent saddles in G. Stage 2\n(§2.2): cone-filter preprocessing with kernel c_{i,j} = max(0, γ + 1 −\n√((γ−i)² + (γ−j)²)); fit bivariate quadratic p(x,y) = a₁x² + a₂xy +\na₃y² + a₄x + a₅y + a₆ over a (2κ+1)×(2κ+1) window; refined corner is\nthe stationary point (∂p/∂x = ∂p/∂y = 0). The saddle condition is\n4a₁a₃ − a₂² < 0.\n"
+      },
+      "date": "2026-04-17"
     }
   },
   {
@@ -222,6 +361,39 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Uses the same structure tensor M as Harris, but replaces the Harris\nresponse with R = min(λ₁, λ₂) — the smaller eigenvalue of M. The\nthreshold then encodes a feature-tracking quality criterion derived\nin §3 of the paper.\n"
       },
       "date": "2026-04-15"
+    }
+  },
+  {
+    "slug": "shu-topological-grid",
+    "frontmatter": {
+      "title": "Topological Grid Finding",
+      "summary": "Recover the integer $(i, j)$ grid coordinate of every corner in a checkerboard calibration image by Delaunay-triangulating the corners, merging same-colour triangle pairs into quads, topologically and geometrically filtering illegal quads, and flood-filling coordinates through the resulting mesh.",
+      "tags": [
+        "computer-vision",
+        "calibration",
+        "chessboard",
+        "delaunay",
+        "topology"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "category": "calibration-targets",
+      "relatedAlgorithms": [
+        "harris-corner-detector",
+        "shi-tomasi-corner-detector",
+        "chess-corners"
+      ],
+      "sources": {
+        "primary": "shu2009-topological",
+        "references": [
+          "harris1988-corner"
+        ],
+        "notes": "Pipeline: (1) Harris corners with subpixel refinement (§2); (2) Delaunay\ntriangulation of the corner set, Watson's O(n log n) implementation (§2.1);\n(3) merge each triangle with its unique same-colour edge neighbour into a\nquadrilateral (§3); (4) topological filtering — drop quads with two nodes\nof edge-degree > 4 (§4); (5) geometric filtering — drop quads whose\nopposite-edge length ratio > 10 (§4); (6) flood-fill integer grid\ncoordinates from an arbitrary seed (§5). Complexity O(n) in the number of\ncorners. Pattern uses three marker circles to fix origin and x-axis.\n"
+      },
+      "date": "2026-04-16"
     }
   }
 ];

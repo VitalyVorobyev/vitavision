@@ -14,10 +14,13 @@ import { useStaticContent } from "../lib/content/ssr-content.tsx";
 import { buildAlgorithmJsonLd } from "../lib/content/publication.ts";
 import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.tsx";
 import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
+import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
+import NotFound from "./NotFound.tsx";
 
 export default function AlgorithmPost() {
     const { slug } = useParams<{ slug: string }>();
     const page = algorithmPages.find((p) => p.slug === slug);
+    const isAdmin = useIsAdmin();
     const staticContent = useStaticContent();
     const articleRef = useRef<HTMLElement>(null);
 
@@ -77,6 +80,9 @@ export default function AlgorithmPost() {
     }
 
     const { frontmatter } = page;
+    if (frontmatter.draft && !isAdmin) {
+        return <NotFound />;
+    }
     const jsonLd = buildAlgorithmJsonLd(frontmatter, slug ?? page.slug);
 
     return (

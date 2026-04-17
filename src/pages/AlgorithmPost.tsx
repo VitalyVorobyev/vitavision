@@ -40,8 +40,12 @@ export default function AlgorithmPost() {
         setAsyncFailed(false);
     }
 
-    const html = syncHtml ?? asyncHtml;
-    const loadFailed = html === null && (!slug || !(slug in algorithmHtmlLoaders) || asyncFailed);
+    // Draft gating must happen before the async loader fires, otherwise non-admins
+    // download the draft HTML chunk even when the UI renders NotFound.
+    const isDraftBlocked = Boolean(page?.frontmatter.draft) && !isAdmin;
+
+    const html = isDraftBlocked ? null : syncHtml ?? asyncHtml;
+    const loadFailed = !isDraftBlocked && html === null && (!slug || !(slug in algorithmHtmlLoaders) || asyncFailed);
 
     useMermaid(articleRef, [html]);
     useArticleIllustrations(articleRef, [html]);
@@ -49,6 +53,7 @@ export default function AlgorithmPost() {
 
     // Load content asynchronously when not available from SSR or hydration.
     useEffect(() => {
+        if (isDraftBlocked) return;
         if (syncHtml !== null || !slug) return;
         const loader = algorithmHtmlLoaders[slug];
         if (!loader) return;
@@ -58,7 +63,7 @@ export default function AlgorithmPost() {
             .then((mod) => { if (!cancelled) setAsyncHtml(mod.html); })
             .catch(() => { if (!cancelled) setAsyncFailed(true); });
         return () => { cancelled = true; };
-    }, [slug, syncHtml]);
+    }, [slug, syncHtml, isDraftBlocked]);
 
     if (!page) {
         return (
@@ -79,10 +84,11 @@ export default function AlgorithmPost() {
         );
     }
 
-    const { frontmatter } = page;
-    if (frontmatter.draft && !isAdmin) {
+    if (isDraftBlocked) {
         return <NotFound />;
     }
+
+    const { frontmatter } = page;
     const jsonLd = buildAlgorithmJsonLd(frontmatter, slug ?? page.slug);
 
     return (

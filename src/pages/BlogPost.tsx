@@ -62,8 +62,12 @@ export default function BlogPost() {
         setAsyncFailed(false);
     }
 
-    const html = syncHtml ?? asyncHtml;
-    const loadFailed = html === null && (!slug || !(slug in blogHtmlLoaders) || asyncFailed);
+    // Draft gating must happen before the async loader fires, otherwise non-admins
+    // download the draft HTML chunk even when the UI renders NotFound.
+    const isDraftBlocked = Boolean(post?.frontmatter.draft) && !isAdmin;
+
+    const html = isDraftBlocked ? null : syncHtml ?? asyncHtml;
+    const loadFailed = !isDraftBlocked && html === null && (!slug || !(slug in blogHtmlLoaders) || asyncFailed);
 
     useMermaid(articleRef, [html]);
     useArticleIllustrations(articleRef, [html]);
@@ -71,6 +75,7 @@ export default function BlogPost() {
 
     // Load content asynchronously when not available from SSR or hydration.
     useEffect(() => {
+        if (isDraftBlocked) return;
         if (syncHtml !== null || !slug) return;
         const loader = blogHtmlLoaders[slug];
         if (!loader) return;
@@ -80,7 +85,7 @@ export default function BlogPost() {
             .then((mod) => { if (!cancelled) setAsyncHtml(mod.html); })
             .catch(() => { if (!cancelled) setAsyncFailed(true); });
         return () => { cancelled = true; };
-    }, [slug, syncHtml]);
+    }, [slug, syncHtml, isDraftBlocked]);
 
     if (!post) {
         return (
@@ -101,13 +106,11 @@ export default function BlogPost() {
         );
     }
 
-    const { frontmatter } = post;
-
-    // Draft posts are invisible to non-admin users — treat as 404.
-    if (frontmatter.draft && !isAdmin) {
+    if (isDraftBlocked) {
         return <NotFound />;
     }
 
+    const { frontmatter } = post;
     const jsonLd = buildBlogJsonLd(frontmatter, slug ?? post.slug);
 
     return (

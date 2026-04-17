@@ -45,14 +45,16 @@ def configure_plot_style() -> None:
             "axes.labelcolor": "#111827",
             "axes.linewidth": 1.1,
             "font.family": "DejaVu Sans",
-            "font.size": 10.5,
+            "font.size": 13,
             "grid.color": "#cbd5e1",
             "grid.linewidth": 0.8,
             "mathtext.fontset": "dejavusans",
             "svg.fonttype": "none",
             "svg.hashsalt": "vitavision-harris-eigenvalue-regions",
             "xtick.color": "#475569",
+            "xtick.labelsize": 12,
             "ytick.color": "#475569",
+            "ytick.labelsize": 12,
         }
     )
 
@@ -98,7 +100,7 @@ def generate_harris_svg(
     low_slope, high_slope = harris_zero_slopes(k)
 
     fig, ax = plt.subplots(figsize=(7.2, 5.4), dpi=160)
-    fig.patch.set_facecolor("#ffffff")
+    fig.patch.set_facecolor("#f8fafc")
     ax.set_facecolor("#ffffff")
 
     edge_fill = "#bfdbfe"
@@ -151,7 +153,7 @@ def generate_harris_svg(
         0.68 * max_lambda,
         "corner\n$R > 0$",
         color=corner_stroke,
-        fontsize=13,
+        fontsize=15,
         fontweight="bold",
         ha="center",
         va="center",
@@ -161,9 +163,9 @@ def generate_harris_svg(
     ax.annotate(
         "edge\n$R < 0$",
         xy=(0.72 * max_lambda, low_slope * 0.72 * max_lambda),
-        xytext=(0.76 * max_lambda, 0.18 * max_lambda),
+        xytext=(0.78 * max_lambda, 0.20 * max_lambda),
         color=edge_stroke,
-        fontsize=10.5,
+        fontsize=13,
         fontweight="bold",
         ha="center",
         va="center",
@@ -180,9 +182,9 @@ def generate_harris_svg(
     ax.annotate(
         "edge\n$R < 0$",
         xy=(0.72 * max_lambda / high_slope, 0.72 * max_lambda),
-        xytext=(0.18 * max_lambda, 0.76 * max_lambda),
+        xytext=(0.20 * max_lambda, 0.78 * max_lambda),
         color=edge_stroke,
-        fontsize=10.5,
+        fontsize=13,
         fontweight="bold",
         ha="center",
         va="center",
@@ -197,33 +199,22 @@ def generate_harris_svg(
     )
 
     ax.text(
-        0.073 * max_lambda,
-        0.064 * max_lambda,
-        "flat\nsmall $\\lambda_1, \\lambda_2$",
+        0.078 * max_lambda,
+        0.068 * max_lambda,
+        "flat",
         color=muted,
-        fontsize=8.6,
+        fontsize=13,
         fontweight="bold",
         ha="center",
         va="center",
         zorder=7,
     )
 
-    ax.text(
-        0.55 * max_lambda,
-        0.49 * max_lambda,
-        "$\\lambda_1 = \\lambda_2$",
-        color="#64748b",
-        fontsize=9,
-        rotation=39,
-        ha="center",
-        va="center",
-    )
-
     ax.set_xlim(0.0, max_lambda)
     ax.set_ylim(0.0, max_lambda)
     ax.set_aspect("equal", adjustable="box")
-    ax.set_xlabel("$\\lambda_1$")
-    ax.set_ylabel("$\\lambda_2$", rotation=0, labelpad=16)
+    ax.set_xlabel("$\\lambda_1$", fontsize=15)
+    ax.set_ylabel("$\\lambda_2$", rotation=0, labelpad=16, fontsize=15)
 
     ticks = np.linspace(0.0, max_lambda, 5)
     ax.set_xticks(ticks)
@@ -236,35 +227,15 @@ def generate_harris_svg(
     ax.tick_params(length=0)
 
     ax.set_title(
-        "Harris response in eigenvalue space",
+        f"Harris response in eigenvalue space  (k = {k:.2f})",
         loc="left",
-        fontsize=15,
+        fontsize=17,
         fontweight="bold",
         color=text,
-        pad=22,
-    )
-    ax.text(
-        0.0,
-        1.035,
-        f"$R = \\lambda_1\\lambda_2 - k(\\lambda_1 + \\lambda_2)^2$,  $k = {k:.2f}$",
-        transform=ax.transAxes,
-        color=muted,
-        fontsize=10.5,
-        ha="left",
-        va="bottom",
-    )
-    ax.text(
-        0.0,
-        -0.17,
-        "Corners have two significant eigenvalues; edges have one dominant eigenvalue.",
-        transform=ax.transAxes,
-        color=muted,
-        fontsize=9.5,
-        ha="left",
-        va="top",
+        pad=18,
     )
 
-    fig.subplots_adjust(left=0.12, right=0.98, bottom=0.17, top=0.85)
+    fig.subplots_adjust(left=0.12, right=0.98, bottom=0.12, top=0.88)
     fig.savefig(
         out,
         format="svg",

@@ -213,9 +213,19 @@ Any tool is acceptable as long as the three requirements below are satisfied.
 
 **Colour palette.** Match the site's slate/indigo-on-white aesthetic. Good defaults: text `#111827`, muted text `#475569`, axis/tick `#475569`–`#64748b`, grid `#cbd5e1`, and fills from the Tailwind 200 / 300 family (`#bfdbfe`, `#bbf7d0`, `#e2e8f0`) with matched 600 / 700 strokes (`#2563eb`, `#047857`, `#64748b`). Never use a diverging viridis / plasma ramp unless the data is genuinely diverging.
 
+**Background.** Do not hard-code pure white for the figure patch — a large white rectangle clashes with the article's dark theme. Render the whole figure as a soft light card: `fig.patch.set_facecolor("#f8fafc")` (Tailwind slate-50) and `ax.set_facecolor("#ffffff")` so the axes card reads one step brighter than the figure margin. Save with `facecolor=fig.get_facecolor()`. Keeping the figure patch opaque is essential: the title, axis labels, and any outside-axes annotations live in that margin, and a transparent patch would render dark text on the dark page background. The slate-50 card reads well in both themes; the site's `border border-border rounded-md` supplies the card edge.
+
 **Every label is load-bearing.** A label on the figure is a claim, and the working-notes audit (Workflow §8) checks every label the same way it checks numerical constants in the page body. Prefer few, precisely-placed labels over dense annotation.
 
-**Mobile check.** Aspect ratio roughly 4:3 or squarer. Font sizes in the 9–13 pt range so labels stay legible when the SVG is scaled to the mobile content column (≈ 320 px wide).
+**Typography floor.** The smallest text on the figure must be ≥ 12 pt, not just the base `rcParams` size. Check each inner label, annotation, callout, and tick after `savefig`: anything under 12 pt in the rendered SVG will fall below 4 pt on a 320 px column and is illegible. If a label cannot fit at 12 pt, drop it or shrink what it annotates — do not downsize the type. Reserve 9–11 pt only for corner metadata (author tag on a standalone plot, etc.), never for load-bearing content. Axis labels and the title read at larger sizes (15 pt axes, 17 pt title are typical).
+
+**Label pruning.** Every label on the figure is a claim; every duplicate claim is noise. Before finalizing:
+
+- Drop any label that restates an axis label or the subtitle formula (e.g. a diagonal `$\lambda_1 = \lambda_2$` line when both axes are already labelled, or a footer caption that repeats the page's `# Goal`).
+- One word is better than a phrase; a phrase is better than a sentence. `flat` beats `flat\nsmall λ₁, λ₂`.
+- No inside-the-figure caption paragraph. Captions belong in the markdown prose immediately after the `![alt](...)` image reference.
+
+**Mobile check.** Aspect ratio roughly 4:3 or squarer. After rendering, view the SVG at 320 px wide and confirm every label is readable — not just the title.
 
 ### Placeholder convention
 
@@ -399,7 +409,7 @@ Run before handing off a draft.
 - [ ] `# Remarks` contains no measured benchmarks and no "reference implementation: <crate>" pointers. Content is about the algorithm itself.
 - [ ] Every display-math formula fits within the content column. Long offset lists, matrix tables, and multi-term derivations use `\begin{aligned}...\end{aligned}` with explicit `\\` line breaks.
 - [ ] Illustration pass done: at least one figure is present (Mermaid fence, hand-authored SVG, or generator-produced SVG) or a `<!-- TODO figure: ... -->` placeholder documents what is missing and why. No figure is decorative; every label and constant inside a figure traces to the same source as the page's math.
-- [ ] Every generated SVG under `content/images/<slug>/` has a sibling `py/generate_<slug>_<name>.py` committed alongside it. Re-running the script from `.venv/bin/python` produces byte-identical output, the `<svg>` element carries `role="img"` with `<title>` + `<desc>` children, and `svg.fonttype="none"` (or the tool's equivalent) keeps text as text.
+- [ ] Every generated SVG under `content/images/<slug>/` has a sibling `py/generate_<slug>_<name>.py` committed alongside it. Re-running the script from `.venv/bin/python` produces byte-identical output, the `<svg>` element carries `role="img"` with `<title>` + `<desc>` children, `svg.fonttype="none"` (or the tool's equivalent) keeps text as text, **every rendered label is ≥ 12 pt** (subscripts inside a math symbol excepted — they're part of the glyph), **the figure patch is an opaque light card** (`fig.patch.set_facecolor("#f8fafc")` with `ax.set_facecolor("#ffffff")`) so title and axis labels stay legible in both light and dark themes, and **there is no inside-the-figure caption paragraph** (captions live in the markdown next to the image).
 - [ ] If `editorAlgorithmId` is set, the sample-id mapping in `src/pages/AlgorithmPost.tsx` covers it and the "Try in the editor" button lands the user in editor mode with an image preloaded and the algorithm preselected — one click to Run.
 
 ## When not to use this skill

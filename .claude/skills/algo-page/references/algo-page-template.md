@@ -93,5 +93,33 @@ with NumPy-style vectorization.>
 2. <Closest antecedent or extension, if relevant.>
 3. <At most 5 entries total.>
 
+<!-- Figures (illustration pass, SKILL §7.5). One per primitive below. Delete unused rows. -->
+
+<!-- Mermaid pipeline — inline, no asset file. Place after the Procedure block.
+     Use for control flow / pipeline stages / state machines. -->
+
+```mermaid
+flowchart LR
+    A["Stage 1"] --> B["Stage 2"]
+    B --> C["Stage 3"]
+```
+
+<!-- Hand-authored SVG — store at content/images/<slug>/<name>.svg.
+     Use for small fixed geometric schemes (< ~15 primitives). Place near the defining formula. -->
+
+![Geometric arrangement described by the figure](./images/<slug>/<name>.svg)
+
+<!-- Generated SVG — sibling script at py/generate_<slug>_<name>.py writes content/images/<slug>/<name>.svg.
+     Use for data-driven figures: response surfaces, parametric regions, contour / density plots, etc.
+     Model the script on py/generate_harris_eigenvalue_regions.py (deterministic, accessible, Tailwind palette).
+     Run with: .venv/bin/python py/generate_<slug>_<name>.py -->
+
+![Caption describing what the generated plot shows](./images/<slug>/<name>.svg)
+
+<!-- Placeholder — use ONLY for figures that genuinely depend on algorithm output on real-image data.
+     For mathematical plots, write the generator script instead. -->
+
+<!-- TODO figure: <one-line description of the missing figure> -->
+
 <!-- Template for content/algorithms/*.md only. For blog posts, use tech-writer.
      Delete the "Goal — example" block and any placeholder text before publishing. -->

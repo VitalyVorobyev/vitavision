@@ -43,6 +43,18 @@ After any code change, run **all** of the following before committing:
 3. `npx vitest run` — unit tests
 4. `bun run scripts/test-wasm-schemas.ts` — WASM integration tests (when touching algorithm configs)
 
+### Secrets & Credentials
+
+`.env.local` holds runtime secrets. It is gitignored (`*.local` in `.gitignore`) and **must never be committed**. Bun auto-loads it for scripts; Vite exposes only `VITE_*` vars to the browser bundle.
+
+Currently present:
+
+- `VITE_CLERK_PUBLISHABLE_KEY` — Clerk dev publishable key (safe in client bundle).
+- `OPENALEX_EMAIL` — contact email for the OpenAlex polite pool; used by `bun papers:fetch-meta` (`scripts/papers-fetch-meta.ts`) to raise rate limits.
+- `OPENALEX_API_KEY` — OpenAlex premium API key; appended as `?api_key=…` by `withAuth()` in `scripts/papers-fetch-meta.ts` when set. Leave unset on the free tier.
+
+`.env.example` holds the shape and short explanations — keep it in sync when a new variable is introduced, but never paste a real secret there.
+
 ## Architecture Overview
 
 Static computer vision web app: image annotation editor + WASM algorithm runner. **No backend** — all processing is client-side.

@@ -1,15 +1,36 @@
 # Adding a new algorithm page
 
-Short recipe for adding a new entry to the algorithms register (`content/algorithms/*.md`). Follow the five steps below; hand off to Claude at step 5.
+The fast path is a single sentence to Claude. The manual fallback exists for cases where you want to inspect or drive each step yourself.
 
-For voice, structure, and per-section rules, see the authoring skill at `.claude/skills/algo-page/SKILL.md`. For exemplars of the finished shape, see `content/algorithms/chess-corners.md` or `harris-corner-detector.md`.
+## Fast path — one sentence
+
+Tell Claude:
+
+> draft `arxiv:<id>`
+> draft `doi:<doi>`
+> draft `<pdf-url>`
+
+Claude runs the `algo-page` skill in Bootstrap mode (see `.claude/skills/algo-page/SKILL.md`). It will:
+
+1. Fetch metadata via OpenAlex (`bun papers:fetch-meta`), review the candidate id and url, and **append the stanza to `docs/papers/index.yaml`** directly. It shows the diff.
+2. Curate the citation graph: chase direct algorithmic antecedents (recurse on step 1 for each), drop tangential placeholders. Report keep/drop decisions.
+3. Cache PDFs + `pdftotext` output (`bun papers:fetch`) into `docs/papers/.cache/`.
+4. Read the cached primary text; synthesize frontmatter for `content/algorithms/<slug>.md` (title, summary, tags, category, `sources`, `relatedAlgorithms`).
+5. Draft the five sections (Goal, Algorithm, Implementation, Remarks, References) using `:::definition[...]` and `:::algorithm[...]` typography blocks.
+6. Run the quality gate and `bun run build && bun run lint && npx vitest run`.
+
+Interrupt at any point to redirect. Claude omits `sources.impl` and `editorAlgorithmId` unless you supply them — they depend on state outside the paper (a sibling Rust crate, a registered editor adapter) that Claude can't infer.
 
 ## Prerequisites
 
 - `poppler` (provides `pdftotext`) and `curl` on `$PATH`. Install once: `brew install poppler`.
 - Optional: `export OPENALEX_EMAIL=you@example.com` to join OpenAlex's polite pool for higher rate limits.
 
-## Step 1 — bootstrap the primary paper
+## Manual fallback
+
+Use this when you want to drive the pipeline step-by-step instead of handing it to Claude. For voice, structure, and per-section rules, see `.claude/skills/algo-page/SKILL.md`. For exemplars of the finished shape, see `content/algorithms/chess-corners.md` or `harris-corner-detector.md`.
+
+### Step 1 — bootstrap the primary paper
 
 ```bash
 bun papers:fetch-meta arxiv:<id>          # e.g. arxiv:1301.5491
@@ -24,7 +45,7 @@ The script prints a candidate yaml entry to stdout. Review it:
 
 Paste the reviewed entry into `docs/papers/index.yaml`.
 
-### If OpenAlex can't find the paper
+#### If OpenAlex can't find the paper
 
 Search manually:
 
@@ -35,7 +56,7 @@ curl -fsS "https://api.openalex.org/works?filter=title.search:%22<title-words>%2
 
 Pick the DOI from the result and run `bun papers:fetch-meta doi:<doi>`. If still nothing (pre-DOI paper, obscure venue), hand-enter a stanza using existing `index.yaml` entries as a template — at minimum `id`, `title`, `authors`, `year`, `venue`, `url`, `pdf: <id>.pdf`, `cites: []`.
 
-## Step 2 — close the citation graph
+### Step 2 — close the citation graph
 
 The candidate yaml's `cites:` list contains placeholders like `<name><year>-???` for papers not yet in the registry. Decide which matter:
 
@@ -44,7 +65,7 @@ The candidate yaml's `cites:` list contains placeholders like `<name><year>-???`
 
 A paper's `cites:` should reflect what actually appears in its bibliography. An algorithm page's `sources.references` is curated separately — it can include papers the primary doesn't cite (e.g. the Shi-Tomasi page's `sources.references: [harris1988-corner]` even though Shi-Tomasi doesn't cite Harris directly).
 
-## Step 3 — cache the PDFs
+### Step 3 — cache the PDFs
 
 ```bash
 bun papers:fetch
@@ -62,7 +83,7 @@ OK n/n
 
 If a fetch fails, `curl` returned a non-200. Fix the `url` in `index.yaml` and re-run.
 
-## Step 4 — create the page file with frontmatter only
+### Step 4 — create the page file with frontmatter only
 
 Create `content/algorithms/<slug>.md` with only the frontmatter block. No body — that's step 5.
 
@@ -95,7 +116,7 @@ sources:
 ---
 ```
 
-### Populating `relatedAlgorithms`
+#### Populating `relatedAlgorithms`
 
 For each paper id in `sources.references`:
 
@@ -105,7 +126,7 @@ bun papers:query pages-using <cite-id>
 
 Every returned path is a candidate sibling. Also add algorithmically-adjacent pages by hand if the citation graph misses them (e.g. Shi-Tomasi and Harris cross-link even though Shi-Tomasi doesn't actually cite Harris).
 
-### Pinning the impl — only if you have one
+#### Pinning the impl — only if you have one
 
 If a sibling Rust crate already implements the algorithm (`chess-rs` for ChESS), pin it:
 
@@ -117,7 +138,7 @@ Copy the full SHA into `sources.impl.commit`. List only the canonical algorithm 
 
 If no external crate exists yet, omit `sources.impl` entirely. The Rust kernel in the page's `# Implementation` section IS the canonical implementation.
 
-## Step 5 — hand it to Claude
+### Step 5 — hand it to Claude
 
 Say "draft `<slug>`" (or similar). Claude follows the `algo-page` skill Workflow:
 

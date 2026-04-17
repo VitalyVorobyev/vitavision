@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { blogPosts, algorithmPages, demoPages } from "../../generated/content-index.ts";
+import { useIsAdmin } from "../../lib/auth/useIsAdmin.ts";
 
 interface RelatedPostsProps {
     slugs?: string[];
@@ -7,20 +8,28 @@ interface RelatedPostsProps {
 }
 
 export default function RelatedPosts({ slugs, type }: RelatedPostsProps) {
+    const isAdmin = useIsAdmin();
+
     if (!slugs || slugs.length === 0) return null;
 
     const items = slugs
         .map((slug) => {
             if (type === "blog") {
-                const post = blogPosts.find((p) => p.slug === slug);
-                return post ? { slug, title: post.frontmatter.title, path: `/blog/${slug}` } : null;
+                const entity = blogPosts.find((p) => p.slug === slug);
+                if (!entity) return null;
+                if (entity.frontmatter.draft && !isAdmin) return null;
+                return { slug, title: entity.frontmatter.title, path: `/blog/${slug}` };
             }
             if (type === "demo") {
-                const demo = demoPages.find((p) => p.slug === slug);
-                return demo ? { slug, title: demo.frontmatter.title, path: `/demos/${slug}` } : null;
+                const entity = demoPages.find((p) => p.slug === slug);
+                if (!entity) return null;
+                if (entity.frontmatter.draft && !isAdmin) return null;
+                return { slug, title: entity.frontmatter.title, path: `/demos/${slug}` };
             }
-            const page = algorithmPages.find((p) => p.slug === slug);
-            return page ? { slug, title: page.frontmatter.title, path: `/algorithms/${slug}` } : null;
+            const entity = algorithmPages.find((p) => p.slug === slug);
+            if (!entity) return null;
+            if (entity.frontmatter.draft && !isAdmin) return null;
+            return { slug, title: entity.frontmatter.title, path: `/algorithms/${slug}` };
         })
         .filter((item): item is NonNullable<typeof item> => item !== null);
 

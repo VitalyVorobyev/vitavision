@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import type { AlgorithmIndexEntry } from "../../lib/content/schema.ts";
-import TagBadge from "./TagBadge.tsx";
 import DifficultyBadge from "./DifficultyBadge.tsx";
 import AlgorithmGlyph from "../algorithms/AlgorithmGlyph.tsx";
 
@@ -40,12 +39,7 @@ export default function AlgorithmCard({ entry }: AlgorithmCardProps) {
                         {frontmatter.summary}
                     </p>
                 )}
-                <div className="flex flex-wrap items-center gap-1 pt-0.5">
-                    {frontmatter.difficulty && <DifficultyBadge level={frontmatter.difficulty} />}
-                    {frontmatter.tags.slice(0, 3).map((tag) => (
-                        <TagBadge key={tag} tag={tag} />
-                    ))}
-                </div>
+                {frontmatter.difficulty && <DifficultyBadge level={frontmatter.difficulty} />}
             </div>
         </Link>
     );

@@ -10,6 +10,7 @@ interface PaperEntry {
     id: string;
     url: string;
     pdf?: string;
+    arxiv?: string;
 }
 
 async function spawnAndWait(cmd: string[]): Promise<{ ok: boolean; stderr: string }> {
@@ -22,10 +23,17 @@ async function spawnAndWait(cmd: string[]): Promise<{ ok: boolean; stderr: strin
 async function fetchEntry(entry: PaperEntry): Promise<boolean> {
     const pdfName = entry.pdf ?? `${entry.id}.pdf`;
     const txtName = `${entry.id}.txt`;
+    const htmlName = `${entry.id}.html`;
     const pdfPath = join(CACHE_DIR, pdfName);
     const txtPath = join(CACHE_DIR, txtName);
+    const htmlPath = join(CACHE_DIR, htmlName);
 
-    if (existsSync(pdfPath) && existsSync(txtPath)) {
+    const pdfCached = existsSync(pdfPath);
+    const txtCached = existsSync(txtPath);
+    const htmlNeeded = Boolean(entry.arxiv);
+    const htmlCached = !htmlNeeded || existsSync(htmlPath);
+
+    if (pdfCached && txtCached && htmlCached) {
         console.log(`[cache] ${entry.id}`);
         return true;
     }
@@ -34,7 +42,7 @@ async function fetchEntry(entry: PaperEntry): Promise<boolean> {
         mkdirSync(CACHE_DIR, { recursive: true });
     }
 
-    if (!existsSync(pdfPath)) {
+    if (!pdfCached) {
         const result = await spawnAndWait(["curl", "-fLsS", "-o", pdfPath, entry.url]);
         if (!result.ok) {
             console.log(`[error] ${entry.id}: curl failed${result.stderr ? ": " + result.stderr : ""}`);
@@ -42,11 +50,19 @@ async function fetchEntry(entry: PaperEntry): Promise<boolean> {
         }
     }
 
-    if (!existsSync(txtPath)) {
+    if (!txtCached) {
         const result = await spawnAndWait(["pdftotext", "-layout", pdfPath, txtPath]);
         if (!result.ok) {
             console.log(`[error] ${entry.id}: pdftotext failed${result.stderr ? ": " + result.stderr : ""}`);
             return false;
+        }
+    }
+
+    if (htmlNeeded && !existsSync(htmlPath)) {
+        const ar5ivUrl = `https://ar5iv.labs.arxiv.org/html/${entry.arxiv}`;
+        const result = await spawnAndWait(["curl", "-fLsS", "-o", htmlPath, ar5ivUrl]);
+        if (!result.ok) {
+            console.log(`[warn] ${entry.id}: ar5iv html fetch failed (non-fatal)${result.stderr ? ": " + result.stderr : ""}`);
         }
     }
 

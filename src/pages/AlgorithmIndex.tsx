@@ -9,24 +9,31 @@ import {
     type AlgorithmIndexEntry,
 } from "../lib/content/schema.ts";
 import { categoryLabel } from "../components/algorithms/categoryLabels.ts";
+import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 
 export default function AlgorithmIndex() {
     const [selectedTag, setSelectedTag] = useState<string | null>(null);
+    const isAdmin = useIsAdmin();
+
+    const visiblePages = useMemo(
+        () => algorithmPages.filter((p) => isAdmin || !p.frontmatter.draft),
+        [isAdmin],
+    );
 
     const allTags = useMemo(() => {
         const tagSet = new Set<string>();
-        for (const page of algorithmPages) {
+        for (const page of visiblePages) {
             for (const tag of page.frontmatter.tags) tagSet.add(tag);
         }
         return [...tagSet].sort();
-    }, []);
+    }, [visiblePages]);
 
     const filtered = useMemo(
         () =>
             selectedTag
-                ? algorithmPages.filter((p) => p.frontmatter.tags.includes(selectedTag))
-                : algorithmPages,
-        [selectedTag],
+                ? visiblePages.filter((p) => p.frontmatter.tags.includes(selectedTag))
+                : visiblePages,
+        [selectedTag, visiblePages],
     );
 
     const grouped = useMemo(() => {
@@ -74,7 +81,7 @@ export default function AlgorithmIndex() {
                         </div>
                     </section>
                 ))
-            ) : algorithmPages.length === 0 ? (
+            ) : visiblePages.length === 0 ? (
                 <p className="text-muted-foreground">
                     No algorithm pages yet. Stay tuned!
                 </p>

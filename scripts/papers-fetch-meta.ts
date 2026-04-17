@@ -183,9 +183,16 @@ function userAgent(): string {
     return `vitavision/0.1 (mailto:${email})`;
 }
 
+function withAuth(url: string): string {
+    const apiKey = process.env.OPENALEX_API_KEY;
+    if (!apiKey) return url;
+    const sep = url.includes("?") ? "&" : "?";
+    return `${url}${sep}api_key=${encodeURIComponent(apiKey)}`;
+}
+
 async function fetchWork(url: string, ua: string): Promise<OAWork> {
     process.stderr.write(`Fetching ${url}\n`);
-    const resp = await fetch(url, { headers: { "User-Agent": ua } });
+    const resp = await fetch(withAuth(url), { headers: { "User-Agent": ua } });
     if (resp.status === 404) {
         process.stderr.write(`papers:fetch-meta — paper not found (404): ${url}\n`);
         process.exit(1);
@@ -209,7 +216,7 @@ async function batchFetchRefs(workUrls: string[], ua: string): Promise<RefInfo[]
         const url = `${OPENALEX_BASE}/works?filter=openalex:${ids}&per-page=200&select=id,doi,title,publication_year,authorships,ids`;
         process.stderr.write(`Fetching references batch ${Math.floor(i / BATCH) + 1}: ${url}\n`);
 
-        const resp = await fetch(url, { headers: { "User-Agent": ua } });
+        const resp = await fetch(withAuth(url), { headers: { "User-Agent": ua } });
         if (!resp.ok) {
             process.stderr.write(`papers:fetch-meta — refs batch error ${resp.status}: ${await resp.text()}\n`);
             process.exit(1);

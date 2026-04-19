@@ -1,14 +1,27 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { BookMarked, ImagePlus, Grid3X3, FileText } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import VitavisionLogo from "../components/shared/VitavisionLogo";
+import {
+    SpecBlog,
+    SpecAlgorithms,
+    SpecEditor,
+    SpecTargets,
+    type SpecProps,
+} from "../components/home/specimens";
 
-const tiles = [
-    { label: "Blog", icon: FileText, href: "/blog" },
-    { label: "Algorithms", icon: BookMarked, href: "/algorithms" },
-    { label: "Editor", icon: ImagePlus, href: "/editor" },
-    { label: "Targets", icon: Grid3X3, href: "/tools/target-generator" },
+type Tile = {
+    label: string;
+    href: string;
+    Spec: React.ComponentType<SpecProps>;
+};
+
+const tiles: Tile[] = [
+    { label: "Blog",       href: "/blog",                   Spec: SpecBlog },
+    { label: "Algorithms", href: "/algorithms",             Spec: SpecAlgorithms },
+    { label: "Editor",     href: "/editor",                 Spec: SpecEditor },
+    { label: "Targets",    href: "/tools/target-generator", Spec: SpecTargets },
 ];
 
 export default function Home() {
@@ -43,26 +56,34 @@ export default function Home() {
                 className="w-full max-w-2xl"
             >
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    {tiles.map(({ label, icon: Icon, href }) => (
+                    {tiles.map(({ label, href, Spec }) => (
                         <Link
                             key={href}
                             to={href}
-                            className="group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border border-border/70 bg-gradient-to-b from-surface/70 to-surface/20 px-4 py-7 transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/40 hover:from-surface/90 hover:to-surface/40 hover:shadow-[0_8px_30px_-12px_hsl(var(--brand)/0.35)]"
+                            className="group relative flex min-h-[116px] flex-col overflow-hidden rounded-xl border border-border/70 bg-surface/80 px-3.5 pb-3.5 pt-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/45 hover:shadow-[0_10px_28px_-16px_hsl(var(--brand)/0.5)] focus-visible:border-brand/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
                         >
                             <span
                                 aria-hidden
-                                className="pointer-events-none absolute right-3 top-3 h-1 w-1 rounded-full bg-brand/30 transition-all duration-300 group-hover:bg-brand group-hover:shadow-[0_0_8px_hsl(var(--brand))]"
+                                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
+                                style={{
+                                    background:
+                                        "radial-gradient(120% 80% at 100% 0%, hsl(var(--brand) / 0.14), transparent 60%)",
+                                }}
                             />
-                            <span className="flex h-11 w-11 items-center justify-center rounded-lg border border-border/60 bg-surface/70 transition-all duration-300 group-hover:border-brand/40 group-hover:bg-surface">
-                                <Icon
-                                    size={20}
-                                    strokeWidth={1.75}
-                                    className="text-foreground/80 transition-colors duration-300 group-hover:text-brand"
+                            <div className="relative flex h-10 items-center">
+                                <Spec />
+                            </div>
+                            <div className="relative mt-auto flex items-end justify-between pt-3">
+                                <span className="text-[13px] font-semibold tracking-tight text-foreground">
+                                    {label}
+                                </span>
+                                <ArrowRight
+                                    size={14}
+                                    strokeWidth={2}
+                                    aria-hidden
+                                    className="-translate-x-1 text-muted-foreground/80 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:text-brand group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:text-brand group-focus-visible:opacity-100"
                                 />
-                            </span>
-                            <span className="text-sm font-semibold tracking-tight text-foreground/90 transition-colors duration-300 group-hover:text-foreground">
-                                {label}
-                            </span>
+                            </div>
                         </Link>
                     ))}
                 </div>

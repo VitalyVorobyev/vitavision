@@ -6,7 +6,7 @@ tags: ["computer-vision", "calibration", "checkerboard", "self-identifying-patte
 category: calibration-targets
 author: "Vitaly Vorobyev"
 difficulty: advanced
-draft: true
+editorAlgorithmId: puzzleboard
 relatedAlgorithms: ["chess-corners", "harris-corner-detector", "shu-topological-grid"]
 sources:
   primary: stelldinger2024-puzzleboard

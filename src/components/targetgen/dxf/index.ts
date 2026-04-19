@@ -41,6 +41,8 @@ export async function generateDxf(target: TargetConfig, page: PageConfig): Promi
         case "ringgrid":
             entities = await ringgridDxf(target.config, dims);
             break;
+        case "puzzleboard":
+            throw new Error("DXF export is not available for PuzzleBoard.");
     }
 
     if (page.showScaleLine) {

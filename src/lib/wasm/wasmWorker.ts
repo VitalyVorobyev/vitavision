@@ -28,9 +28,10 @@ export type AlgorithmType =
     | "charuco"
     | "markerboard"
     | "ringgrid"
-    | "radsym";
+    | "radsym"
+    | "puzzleboard";
 
-export type WorkerCommand = "detect" | "radsym-heatmap";
+export type WorkerCommand = "detect" | "radsym-heatmap" | "puzzleboard-gen-png";
 
 export interface WorkerRequest {
     id: number;
@@ -105,7 +106,10 @@ function adaptChessCornersResult(
     config: Record<string, unknown>,
     runtimeMs: number,
 ) {
-    const stride = 4; // x, y, response, orientation
+    const stride = 9; // x, y, response, contrast, fit_rms, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma
+    if (raw.length % stride !== 0) {
+        throw new Error(`chess-corners: unexpected output length ${raw.length} (expected multiple of ${stride})`);
+    }
     const count = raw.length / stride;
     const corners = [];
 
@@ -117,7 +121,12 @@ function adaptChessCornersResult(
         const x = raw[i * stride];
         const y = raw[i * stride + 1];
         const response = raw[i * stride + 2];
-        const orientation = raw[i * stride + 3];
+        const contrast = raw[i * stride + 3];
+        const fit_rms = raw[i * stride + 4];
+        const axis0_angle = raw[i * stride + 5];
+        const axis0_sigma = raw[i * stride + 6];
+        const axis1_angle = raw[i * stride + 7];
+        const axis1_sigma = raw[i * stride + 8];
 
         if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(response)) continue;
 
@@ -125,34 +134,37 @@ function adaptChessCornersResult(
         responseMax = Math.max(responseMax, response);
         responseSum += response;
 
-        corners.push({ x, y, response, orientation });
+        corners.push({ x, y, response, contrast, fit_rms, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma });
     }
 
-    // Compute confidence from response range
+    type AxisOut = { angle_rad: number; angle_deg: number; sigma_rad: number; direction: { dx: number; dy: number } };
+
+    const makeAxis = (angle: number, sigma: number): AxisOut => ({
+        angle_rad: angle,
+        angle_deg: angle * 180 / Math.PI,
+        sigma_rad: sigma,
+        direction: { dx: Math.cos(angle), dy: Math.sin(angle) },
+    });
+
     const range = responseMax - responseMin;
     const cornersOut = corners.map((c, idx) => {
         const confidence = range > 0 ? (c.response - responseMin) / range : 1.0;
         const confidenceLevel: "low" | "medium" | "high" =
             confidence < 0.33 ? "low" : confidence < 0.66 ? "medium" : "high";
-        const id = generateId();
 
         return {
-            id,
+            id: generateId(),
             x: c.x,
             y: c.y,
             x_norm: c.x / width,
             y_norm: c.y / height,
             response: c.response,
-            orientation_rad: c.orientation,
-            orientation_deg: (c.orientation * 180) / Math.PI,
-            direction: {
-                dx: Math.cos(c.orientation),
-                dy: Math.sin(c.orientation),
-            },
+            contrast: c.contrast,
+            fit_rms: c.fit_rms,
+            axes: [makeAxis(c.axis0_angle, c.axis0_sigma), makeAxis(c.axis1_angle, c.axis1_sigma)] as [AxisOut, AxisOut],
             confidence,
             confidence_level: confidenceLevel,
-            subpixel_offset_px: 0, // Not available from WASM
-            _index: idx, // for sorting
+            _index: idx,
         };
     });
 
@@ -173,18 +185,14 @@ function adaptChessCornersResult(
             units: "pixels" as const,
         },
         config: {
-            use_ml_refiner: false,
-            threshold_rel: (config.thresholdRel as number) ?? null,
-            threshold_abs: null,
-            nms_radius: 2,
-            min_cluster_size: 2,
-            pyramid_num_levels: 4,
-            pyramid_min_size: 128,
-            refinement_radius: 4,
-            merge_radius: 4.0,
-            use_radius10: false,
-            descriptor_use_radius10: null,
-            refiner: "center_of_mass",
+            threshold_rel: (config.thresholdRel as number) ?? 0.2,
+            nms_radius: (config.nmsRadius as number) ?? 2,
+            broad_mode: (config.broadMode as boolean) ?? false,
+            min_cluster_size: (config.minClusterSize as number) ?? 2,
+            pyramid_levels: (config.pyramidLevels as number) ?? 4,
+            pyramid_min_size: (config.pyramidMinSize as number) ?? 128,
+            upscale_factor: (config.upscaleFactor as number) ?? 0,
+            refiner: (config.refiner as string) ?? "center_of_mass",
         },
         summary: {
             count: cornersOut.length,
@@ -588,17 +596,42 @@ async function handleChessCorners(
     const mod = await getChessModule();
     const detector = mod.ChessDetector.multiscale();
 
-    if (config.thresholdRel != null) {
-        detector.set_threshold(config.thresholdRel as number);
+    try {
+        if (typeof config.thresholdRel === "number") detector.set_threshold(config.thresholdRel);
+        if (typeof config.nmsRadius === "number") detector.set_nms_radius(config.nmsRadius);
+        if (typeof config.broadMode === "boolean") detector.set_broad_mode(config.broadMode);
+        if (typeof config.minClusterSize === "number") detector.set_min_cluster_size(config.minClusterSize);
+        if (typeof config.pyramidLevels === "number") {
+            try {
+                detector.set_pyramid_levels(config.pyramidLevels);
+            } catch (e) {
+                throw new Error(`chess-corners config: set_pyramid_levels(${config.pyramidLevels}) failed`, { cause: e });
+            }
+        }
+        if (typeof config.pyramidMinSize === "number") detector.set_pyramid_min_size(config.pyramidMinSize);
+        if (typeof config.upscaleFactor === "number") {
+            try {
+                detector.set_upscale_factor(config.upscaleFactor);
+            } catch (e) {
+                throw new Error(`chess-corners config: set_upscale_factor(${config.upscaleFactor}) failed`, { cause: e });
+            }
+        }
+        if (typeof config.refiner === "string") {
+            try {
+                detector.set_refiner(config.refiner);
+            } catch (e) {
+                throw new Error(`chess-corners config: set_refiner("${config.refiner}") failed`, { cause: e });
+            }
+        }
+
+        const t0 = performance.now();
+        const result = detector.detect_rgba(pixels, width, height);
+        const runtimeMs = performance.now() - t0;
+
+        return adaptChessCornersResult(result, width, height, config, runtimeMs);
+    } finally {
+        detector.free();
     }
-
-    const t0 = performance.now();
-    const result = detector.detect_rgba(pixels, width, height);
-    const runtimeMs = performance.now() - t0;
-
-    detector.free();
-
-    return adaptChessCornersResult(result, width, height, config, runtimeMs);
 }
 
 /**
@@ -666,6 +699,151 @@ async function handleCalibTarget(
     return adaptCalibTargetResult(result, algorithm, width, height, runtimeMs);
 }
 
+function adaptPuzzleboardResult(
+    raw: unknown,
+    runtimeMs: number,
+    width: number,
+    height: number,
+    _config: unknown,
+) {
+    if (raw === null || raw === undefined) {
+        return {
+            status: "success" as const,
+            key: "wasm://local",
+            storage_mode: "local" as const,
+            image_width: width,
+            image_height: height,
+            frame: {
+                name: "image_px_center" as const,
+                origin: "top_left" as const,
+                x_axis: "right" as const,
+                y_axis: "down" as const,
+                units: "pixels" as const,
+            },
+            summary: {
+                corner_count: 0,
+                mean_confidence: 0,
+                bit_error_rate: 0,
+                master_origin: [0, 0] as [number, number],
+                runtime_ms: runtimeMs,
+            },
+            detection: { kind: "puzzleboard" as const, corners: [] },
+            alignment: { transform: { a: 1, b: 0, c: 0, d: 1 }, translation: [0, 0] as [number, number] },
+            decode: { edges_observed: 0, edges_matched: 0, mean_confidence: 0, bit_error_rate: 0, master_origin_row: 0, master_origin_col: 0 },
+            observed_edges: [],
+        };
+    }
+
+    const r = raw as Record<string, unknown>;
+    const detection = r.detection as { kind: string; corners: Array<Record<string, unknown>> };
+    const decodeRaw = r.decode as Record<string, unknown>;
+    const alignmentRaw = r.alignment as { transform: Record<string, number>; translation: number[] } | null;
+    const observedEdgesRaw = (r.observed_edges as Array<Record<string, unknown>>) ?? [];
+
+    const corners = detection.corners.map((c) => {
+        const pos = toPoint(c.position);
+        const grid = c.grid as { i: number; j: number } | null;
+        const tp = toPointOrNull(c.target_position);
+        return {
+            id: generateId(),
+            // +0.5: corner detector uses pixel-center coords; canvas expects pixel-corner coords
+            x: pos.x + 0.5,
+            y: pos.y + 0.5,
+            score: (c.score as number) ?? 0,
+            grid: grid ?? null,
+            master_id: (c.id as number) ?? null,
+            target_position: tp ? { x: tp.x, y: tp.y } : null,
+        };
+    });
+
+    const alignment = alignmentRaw
+        ? { transform: alignmentRaw.transform as { a: number; b: number; c: number; d: number }, translation: alignmentRaw.translation as [number, number] }
+        : { transform: { a: 1, b: 0, c: 0, d: 1 }, translation: [0, 0] as [number, number] };
+
+    const decode = {
+        edges_observed: (decodeRaw?.edges_observed as number) ?? 0,
+        edges_matched: (decodeRaw?.edges_matched as number) ?? 0,
+        mean_confidence: (decodeRaw?.mean_confidence as number) ?? 0,
+        bit_error_rate: (decodeRaw?.bit_error_rate as number) ?? 0,
+        master_origin_row: (decodeRaw?.master_origin_row as number) ?? 0,
+        master_origin_col: (decodeRaw?.master_origin_col as number) ?? 0,
+    };
+
+    const observedEdges = observedEdgesRaw.map((e) => ({
+        row: e.row as number,
+        col: e.col as number,
+        orientation: e.orientation as "horizontal" | "vertical",
+        bit: e.bit as 0 | 1,
+        confidence: e.confidence as number,
+    }));
+
+    return {
+        status: "success" as const,
+        key: "wasm://local",
+        storage_mode: "local" as const,
+        image_width: width,
+        image_height: height,
+        frame: {
+            name: "image_px_center" as const,
+            origin: "top_left" as const,
+            x_axis: "right" as const,
+            y_axis: "down" as const,
+            units: "pixels" as const,
+        },
+        summary: {
+            corner_count: corners.length,
+            mean_confidence: decode.mean_confidence,
+            bit_error_rate: decode.bit_error_rate,
+            master_origin: [decode.master_origin_row, decode.master_origin_col] as [number, number],
+            runtime_ms: runtimeMs,
+        },
+        detection: { kind: "puzzleboard" as const, corners },
+        alignment,
+        decode,
+        observed_edges: observedEdges,
+    };
+}
+
+async function handlePuzzleboard(
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    config: Record<string, unknown>,
+) {
+    const mod = await getCalibModule();
+
+    const gray = mod.rgba_to_gray(pixels, width, height);
+
+    // Read board dimensions for defaults
+    const board = (config.board ?? {}) as Record<string, unknown>;
+    const rows = (board.rows as number) ?? 7;
+    const cols = (board.cols as number) ?? 10;
+
+    const defaults = mod.default_puzzleboard_params(rows, cols) as Record<string, unknown>;
+    const merged = deepMerge(defaults, config);
+
+    // Defence-in-depth: always run in fixed_board mode (full-scan is too slow for interactive use)
+    const decode = (merged.decode ?? {}) as Record<string, unknown>;
+    merged.decode = { ...decode, search_mode: { kind: "fixed_board" } };
+
+    const t0 = performance.now();
+    const result = mod.detect_puzzleboard(width, height, gray, null, merged);
+    const runtimeMs = performance.now() - t0;
+
+    return adaptPuzzleboardResult(result, runtimeMs, width, height, merged);
+}
+
+async function handlePuzzleboardGenPng(
+    rows: number,
+    cols: number,
+    cellSizeMm: number,
+    dpi: number,
+): Promise<{ png: Uint8Array; mimeType: string }> {
+    const mod = await getCalibModule();
+    const png = mod.render_puzzleboard_png(rows, cols, cellSizeMm, dpi);
+    return { png, mimeType: "image/png" };
+}
+
 // ── Message handler ──────────────────────────────────────────────────────────
 
 self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
@@ -684,12 +862,27 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
             return;
         }
 
+        if (command === "puzzleboard-gen-png") {
+            const rows = (typedConfig.rows as number) ?? 7;
+            const cols = (typedConfig.cols as number) ?? 10;
+            const cellSizeMm = (typedConfig.cellSizeMm as number) ?? 15;
+            const dpi = (typedConfig.pngDpi as number) ?? 300;
+            const genResult = await handlePuzzleboardGenPng(rows, cols, cellSizeMm, dpi);
+            (self as unknown as Worker).postMessage(
+                { id, result: genResult } satisfies WorkerResponse,
+                [genResult.png.buffer],
+            );
+            return;
+        }
+
         if (algorithm === "chess-corners") {
             result = await handleChessCorners(pixels, width, height, typedConfig);
         } else if (algorithm === "ringgrid") {
             result = await handleRinggrid(pixels, width, height, typedConfig);
         } else if (algorithm === "radsym") {
             result = await handleRadsym(pixels, width, height, typedConfig);
+        } else if (algorithm === "puzzleboard") {
+            result = await handlePuzzleboard(pixels, width, height, typedConfig);
         } else {
             result = await handleCalibTarget(algorithm, pixels, width, height, typedConfig);
         }

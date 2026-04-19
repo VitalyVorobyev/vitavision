@@ -2,6 +2,7 @@ import type {
     AlgorithmFrontmatterSerialized,
     BlogFrontmatterSerialized,
     DemoFrontmatterSerialized,
+    ModelFrontmatterSerialized,
 } from "./schema.ts";
 
 interface StructuredArticleFrontmatter {
@@ -70,6 +71,17 @@ export function buildDemoJsonLd(
     );
 }
 
+export function buildModelJsonLd(
+    frontmatter: ModelFrontmatterSerialized,
+    slug: string,
+): Record<string, unknown> {
+    return buildStructuredArticleJsonLd(
+        "TechArticle",
+        frontmatter,
+        `/algorithms/models/${slug}`,
+    );
+}
+
 export function comparePublicationDateDesc<T extends { frontmatter: { date: string } }>(
     a: T,
     b: T,
@@ -77,8 +89,9 @@ export function comparePublicationDateDesc<T extends { frontmatter: { date: stri
     return b.frontmatter.date.localeCompare(a.frontmatter.date);
 }
 
-export function formatFeedTitle(kind: "blog" | "algorithm" | "demo", title: string): string {
+export function formatFeedTitle(kind: "blog" | "algorithm" | "demo" | "model", title: string): string {
     if (kind === "algorithm") return `[Algorithm] ${title}`;
     if (kind === "demo") return `[Demo] ${title}`;
+    if (kind === "model") return `[Model] ${title}`;
     return title;
 }

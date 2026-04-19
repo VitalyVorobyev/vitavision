@@ -102,6 +102,14 @@ export function validateConfig(
             if (c.pitchMm < 4) smallFeatureWarning = true;
             break;
         }
+        case "puzzleboard": {
+            const c = target.config;
+            const MARGIN_MM = 5;
+            boardW = c.cols * c.cellSizeMm + 2 * MARGIN_MM;
+            boardH = c.rows * c.cellSizeMm + 2 * MARGIN_MM;
+            if (c.cellSizeMm < 5) smallFeatureWarning = true;
+            break;
+        }
     }
 
     if (boardW > drawW || boardH > drawH) {

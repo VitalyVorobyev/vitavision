@@ -4,6 +4,7 @@ import { chessboardSvg } from "./chessboardSvg";
 import { markerboardSvg } from "./markerboardSvg";
 import { charucoSvg } from "./charucoSvg";
 import { ringgridSvg } from "./ringgridSvg";
+import { puzzleboardSvg } from "./puzzleboardSvg";
 import { renderScaleLine } from "./scaleLine";
 
 export async function generatePreviewSvg(target: TargetConfig, page: PageConfig): Promise<string> {
@@ -22,6 +23,9 @@ export async function generatePreviewSvg(target: TargetConfig, page: PageConfig)
             break;
         case "ringgrid":
             svg = await ringgridSvg(target.config, dims);
+            break;
+        case "puzzleboard":
+            svg = await puzzleboardSvg(target.config, dims);
             break;
     }
 

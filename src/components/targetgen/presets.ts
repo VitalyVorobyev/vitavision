@@ -3,7 +3,7 @@ import type {
     TargetConfig,
     PageConfig,
 } from "./types";
-import { defaultCircles, DEFAULT_RINGGRID } from "./reducer";
+import { defaultCircles, DEFAULT_RINGGRID, DEFAULT_PUZZLEBOARD } from "./reducer";
 
 export interface Preset {
     id: string;
@@ -199,6 +199,19 @@ export const RINGGRID_PRESETS: Preset[] = [
     },
 ];
 
+// ── PuzzleBoard presets ──────────────────────────────────────────────────────
+
+export const PUZZLEBOARD_PRESETS: Preset[] = [
+    {
+        id: "puzzleboard-default",
+        label: "Default 7×10",
+        description: "Standard 7×10 board with 15 mm cells at 300 DPI",
+        targetType: "puzzleboard",
+        target: { targetType: "puzzleboard", config: { ...DEFAULT_PUZZLEBOARD } },
+        page: A4_LANDSCAPE,
+    },
+];
+
 export function presetsForType(targetType: TargetType): Preset[] {
     switch (targetType) {
         case "chessboard":
@@ -209,5 +222,7 @@ export function presetsForType(targetType: TargetType): Preset[] {
             return MARKERBOARD_PRESETS;
         case "ringgrid":
             return RINGGRID_PRESETS;
+        case "puzzleboard":
+            return PUZZLEBOARD_PRESETS;
     }
 }

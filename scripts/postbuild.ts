@@ -1,16 +1,18 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from "node:fs";
 import { join } from "node:path";
 import { Feed } from "feed";
-import { blogPosts, algorithmPages, demoPages } from "../src/generated/content-index.ts";
+import { blogPosts, algorithmPages, demoPages, modelPages } from "../src/generated/content-index.ts";
 import { blogHtmlLoaders } from "../src/generated/blog-loaders.ts";
 import { algorithmHtmlLoaders } from "../src/generated/algorithm-loaders.ts";
 import { demoHtmlLoaders } from "../src/generated/demo-loaders.ts";
+import { modelHtmlLoaders } from "../src/generated/model-loaders.ts";
 import { render } from "../src/entry-server.tsx";
 import type { StaticContentContextValue } from "../src/lib/content/ssr-content.tsx";
 import {
     buildAlgorithmJsonLd,
     buildBlogJsonLd,
     buildDemoJsonLd,
+    buildModelJsonLd,
     comparePublicationDateDesc,
     formatFeedTitle,
 } from "../src/lib/content/publication.ts";
@@ -115,6 +117,7 @@ async function main(): Promise<void> {
         blogHtmlBySlug: await loadHtmlMap(blogHtmlLoaders),
         algorithmHtmlBySlug: await loadHtmlMap(algorithmHtmlLoaders),
         demoHtmlBySlug: await loadHtmlMap(demoHtmlLoaders),
+        modelHtmlBySlug: await loadHtmlMap(modelHtmlLoaders),
     };
     let count = 0;
 
@@ -181,6 +184,27 @@ async function main(): Promise<void> {
         count++;
     }
 
+    // Model index
+    writePage(template, "/algorithms/models", "algorithms/models", {
+        title: "Models",
+        description: "Deep-learning models for computer vision — reference cards.",
+    }, staticContent);
+    count++;
+
+    // Individual model pages
+    for (const model of modelPages) {
+        const { frontmatter } = model;
+        const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildModelJsonLd(frontmatter, model.slug))}</script>`;
+        writePage(template, `/algorithms/models/${model.slug}`, `algorithms/models/${model.slug}`, {
+            title: frontmatter.title,
+            description: frontmatter.summary,
+            ogType: "article",
+            ogImage: frontmatter.coverImage,
+            url: `/algorithms/models/${model.slug}`,
+        }, staticContent, jsonLd);
+        count++;
+    }
+
     // Target generator
     writePage(template, "/tools/target-generator", "tools/target-generator", {
         title: "Target Generator",
@@ -193,6 +217,7 @@ async function main(): Promise<void> {
         "/", "/blog", ...blogPosts.map((p) => `/blog/${p.slug}`),
         "/algorithms", ...algorithmPages.map((p) => `/algorithms/${p.slug}`),
         "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
+        "/algorithms/models", ...modelPages.map((m) => `/algorithms/models/${m.slug}`),
         "/tools/target-generator",
     ];
     writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(sitemapPaths), "utf-8");
@@ -214,6 +239,7 @@ async function main(): Promise<void> {
         ...blogPosts.map((post) => ({ kind: "blog" as const, ...post })),
         ...algorithmPages.map((page) => ({ kind: "algorithm" as const, ...page })),
         ...demoPages.map((demo) => ({ kind: "demo" as const, ...demo })),
+        ...modelPages.map((model) => ({ kind: "model" as const, ...model })),
     ].sort(comparePublicationDateDesc);
 
     for (const entry of feedEntries) {
@@ -221,7 +247,9 @@ async function main(): Promise<void> {
             ? `/algorithms/${entry.slug}`
             : entry.kind === "demo"
                 ? `/demos/${entry.slug}`
-                : `/blog/${entry.slug}`;
+                : entry.kind === "model"
+                    ? `/algorithms/models/${entry.slug}`
+                    : `/blog/${entry.slug}`;
         const { frontmatter } = entry;
         feed.addItem({
             title: formatFeedTitle(entry.kind, frontmatter.title),

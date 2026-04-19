@@ -37,6 +37,13 @@ export type DictionaryName =
 
 // ── Chess Corners ───────────────────────────────────────────────────────────
 
+export interface ChessCornerAxis {
+    angle_rad: number;
+    angle_deg: number;
+    sigma_rad: number;
+    direction: { dx: number; dy: number };
+}
+
 export interface ChessCornerFeature {
     id: string;
     x: number;
@@ -44,12 +51,11 @@ export interface ChessCornerFeature {
     x_norm: number;
     y_norm: number;
     response: number;
-    orientation_rad: number;
-    orientation_deg: number;
-    direction: { dx: number; dy: number };
+    contrast: number;
+    fit_rms: number;
+    axes: [ChessCornerAxis, ChessCornerAxis];
     confidence: number;
     confidence_level: ConfidenceLevel;
-    subpixel_offset_px: number;
 }
 
 export interface ChessCornersResult {
@@ -66,17 +72,13 @@ export interface ChessCornersResult {
         units: "pixels";
     };
     config: {
-        use_ml_refiner: boolean;
-        threshold_rel: number | null;
-        threshold_abs: number | null;
+        threshold_rel: number;
         nms_radius: number;
+        broad_mode: boolean;
         min_cluster_size: number;
-        pyramid_num_levels: number;
+        pyramid_levels: number;
         pyramid_min_size: number;
-        refinement_radius: number;
-        merge_radius: number;
-        use_radius10: boolean;
-        descriptor_use_radius10: boolean | null;
+        upscale_factor: number;
         refiner: string;
     };
     summary: {
@@ -229,6 +231,104 @@ export interface RinggridDetectResult {
         runtime_ms: number;
     };
     markers: RinggridDetectedMarker[];
+}
+
+// ── Puzzleboard ─────────────────────────────────────────────────────────────
+
+export interface PuzzleBoardSpec {
+    rows: number;
+    cols: number;
+    cell_size: number;
+    origin_row: number;
+    origin_col: number;
+}
+
+export type PuzzleBoardSearchMode =
+    | { kind: "full" }
+    | { kind: "fixed_board" };
+
+export interface PuzzleBoardDecodeConfig {
+    min_window: number;
+    min_bit_confidence: number;
+    max_bit_error_rate: number;
+    search_all_components: boolean;
+    sample_radius_rel: number;
+    search_mode: PuzzleBoardSearchMode;
+}
+
+export interface PuzzleBoardParams {
+    px_per_square: number;
+    chessboard: Record<string, unknown>;
+    board: PuzzleBoardSpec;
+    decode: PuzzleBoardDecodeConfig;
+}
+
+export interface GridTransform {
+    a: number;
+    b: number;
+    c: number;
+    d: number;
+}
+
+export interface GridAlignment {
+    transform: GridTransform;
+    translation: [number, number];
+}
+
+export interface PuzzleBoardDecodeInfo {
+    edges_observed: number;
+    edges_matched: number;
+    mean_confidence: number;
+    bit_error_rate: number;
+    master_origin_row: number;
+    master_origin_col: number;
+}
+
+export interface PuzzleBoardObservedEdge {
+    row: number;
+    col: number;
+    orientation: "horizontal" | "vertical";
+    bit: 0 | 1;
+    confidence: number;
+}
+
+export interface PuzzleBoardLabeledCorner {
+    id: string;
+    x: number;
+    y: number;
+    score: number;
+    grid: { i: number; j: number } | null;
+    master_id: number | null;
+    target_position: FramePoint | null;
+}
+
+export interface PuzzleBoardDetectResult {
+    status: "success";
+    key: string;
+    storage_mode: StorageMode;
+    image_width: number;
+    image_height: number;
+    frame: {
+        name: "image_px_center";
+        origin: "top_left";
+        x_axis: "right";
+        y_axis: "down";
+        units: "pixels";
+    };
+    summary: {
+        corner_count: number;
+        mean_confidence: number;
+        bit_error_rate: number;
+        master_origin: [number, number];
+        runtime_ms: number;
+    };
+    detection: {
+        kind: "puzzleboard";
+        corners: PuzzleBoardLabeledCorner[];
+    };
+    alignment: GridAlignment;
+    decode: PuzzleBoardDecodeInfo;
+    observed_edges: PuzzleBoardObservedEdge[];
 }
 
 // ── Radsym ──────────────────────────────────────────────────────────────────

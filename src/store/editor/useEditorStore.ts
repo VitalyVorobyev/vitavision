@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { featureSchema } from './featureSchema';
 
 export type ToolType = 'SELECT' | 'POINT' | 'LINE' | 'POLYLINE' | 'POLYGON' | 'BBOX' | 'ELLIPSE';
-export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point' | 'ring_marker' | 'aruco_marker' | 'circle';
+export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point' | 'ring_marker' | 'aruco_marker' | 'circle' | 'labeled_point';
 export type FeatureSource = 'manual' | 'algorithm';
 export type SampleId = 'chessboard' | 'charuco' | 'markerboard' | 'ringgrid' | 'upload';
 
@@ -98,16 +98,21 @@ export interface EllipseFeature extends BaseFeature {
     rotation: number;
 }
 
+export interface DirectedAxis {
+    dx: number;
+    dy: number;
+    sigmaRad?: number;
+    angleRad?: number;
+}
+
 export interface DirectedPointFeature extends BaseFeature {
     type: 'directed_point';
     x: number;
     y: number;
-    direction: {
-        dx: number;
-        dy: number;
-    };
+    axes: [DirectedAxis, DirectedAxis];
     score: number;
-    orientationRad?: number;
+    contrast?: number;
+    fitRms?: number;
 }
 
 export interface RingMarkerEllipse {
@@ -141,6 +146,16 @@ export interface CircleFeature extends BaseFeature {
     score?: number;
 }
 
+export interface LabeledPointFeature extends BaseFeature {
+    type: 'labeled_point';
+    x: number;
+    y: number;
+    score: number;
+    gridIndex: { i: number; j: number };
+    masterId: number;
+    targetPosMm?: { x: number; y: number };
+}
+
 export type Feature =
     | PointFeature
     | LineFeature
@@ -151,7 +166,8 @@ export type Feature =
     | DirectedPointFeature
     | RingMarkerFeature
     | ArUcoMarkerFeature
-    | CircleFeature;
+    | CircleFeature
+    | LabeledPointFeature;
 
 export interface GalleryImage {
     id: string;

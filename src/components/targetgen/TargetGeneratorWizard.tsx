@@ -21,6 +21,7 @@ const TARGET_LABELS: Record<TargetType, string> = {
     charuco: "ChArUco",
     markerboard: "Marker Board",
     ringgrid: "Ring Grid",
+    puzzleboard: "PuzzleBoard",
 };
 
 function WizardStepCard({

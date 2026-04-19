@@ -3,6 +3,7 @@ import ChessboardGenConfig from "./ChessboardGenConfig";
 import CharucoGenConfig from "./CharucoGenConfig";
 import MarkerBoardGenConfig from "./MarkerBoardGenConfig";
 import RingGridGenConfig from "./RingGridGenConfig";
+import PuzzleboardGenConfig from "./PuzzleboardGenConfig";
 import PaperConfig from "./PaperConfig";
 import DownloadBar from "./DownloadBar";
 import type { TargetGeneratorState, TargetGeneratorAction } from "../types";
@@ -35,6 +36,9 @@ export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECT
             )}
             {visibleSections.has("pattern") && target.targetType === "ringgrid" && (
                 <RingGridGenConfig config={target.config} dispatch={dispatch} />
+            )}
+            {visibleSections.has("pattern") && target.targetType === "puzzleboard" && (
+                <PuzzleboardGenConfig config={target.config} dispatch={dispatch} />
             )}
 
             {/* Page config */}

@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { blogPosts, algorithmPages, demoPages } from "../../generated/content-index.ts";
+import { blogPosts, algorithmPages, demoPages, modelPages } from "../../generated/content-index.ts";
 import { useIsAdmin } from "../../lib/auth/useIsAdmin.ts";
 
 interface RelatedPostsProps {
     slugs?: string[];
-    type: "blog" | "algorithm" | "demo";
+    type: "blog" | "algorithm" | "demo" | "model";
 }
 
 export default function RelatedPosts({ slugs, type }: RelatedPostsProps) {
@@ -26,6 +26,12 @@ export default function RelatedPosts({ slugs, type }: RelatedPostsProps) {
                 if (entity.frontmatter.draft && !isAdmin) return null;
                 return { slug, title: entity.frontmatter.title, path: `/demos/${slug}` };
             }
+            if (type === "model") {
+                const entity = modelPages.find((p) => p.slug === slug);
+                if (!entity) return null;
+                if (entity.frontmatter.draft && !isAdmin) return null;
+                return { slug, title: entity.frontmatter.title, path: `/algorithms/models/${slug}` };
+            }
             const entity = algorithmPages.find((p) => p.slug === slug);
             if (!entity) return null;
             if (entity.frontmatter.draft && !isAdmin) return null;
@@ -35,7 +41,11 @@ export default function RelatedPosts({ slugs, type }: RelatedPostsProps) {
 
     if (items.length === 0) return null;
 
-    const heading = type === "blog" ? "Related Posts" : type === "demo" ? "Related Demos" : "Related Algorithms";
+    const heading =
+        type === "blog" ? "Related Posts" :
+        type === "demo" ? "Related Demos" :
+        type === "model" ? "Related Models" :
+        "Related Algorithms";
 
     return (
         <section className="mt-12 pt-6 border-t border-border">

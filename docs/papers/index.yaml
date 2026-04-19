@@ -266,3 +266,120 @@
     with a sequential connectivity-preserving pass. ROCHADE uses this
     to reduce thick gradient-magnitude ridges into one-pixel-wide
     centrelines before saddle detection.
+
+- id: abeles2021-pyramidal
+  title: "Pyramidal Blur Aware X-Corner Chessboard Detector"
+  authors: ["P. Abeles"]
+  year: 2021
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2110.13793
+  arxiv: "2110.13793"
+  doi: "10.48550/arxiv.2110.13793"
+  pdf: abeles2021-pyramidal.pdf
+  cites:
+  - placht2014-rochade
+  - lucchese2003-saddle
+  - niblack1992-skeleton
+  - harris1988-corner
+  - rufli2008-blurred
+  - shi-tomasi1994-features
+  - bennett2013-chess
+
+- id: chen2023-ccdn
+  title: "CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration"
+  authors: ["B. Chen", "C. Xiong", "Q. Zhang"]
+  year: 2023
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2302.05097
+  arxiv: "2302.05097"
+  doi: "10.48550/arxiv.2302.05097"
+  pdf: chen2023-ccdn.pdf
+  cites:
+  - donne2016-mate
+  - bennett2013-chess
+  - placht2014-rochade
+  - rufli2008-blurred
+  - harris1988-corner
+  - rosten2006-fast
+  notes: |
+    Section §2.1 details the 6-layer FCN architecture (eqs. 1-3) with stride-1
+    conv + stride-1 max-pool (no spatial downsampling). Eq. (4) is the weighted
+    cross-entropy + L2 loss; eq. (5) the clipping of the output. Eq. (6) the
+    exponential staircase LR schedule. Parameter count 16,301 (§2.1). Post-
+    processing pipeline §2.2: adaptive threshold at 0.5·max response, NMS with
+    4×4 boxes, k-means++ clustering k=10 dropping clusters with N_i<2. Training
+    set: 8900 images @ 640×480 (§3); Table 1 (uEye) and Table 2 (GoPro) carry
+    the headline benchmark numbers against MATE, ChESS, ROCHADE, OCamCalib.
+
+- id: donne2016-mate
+  title: "MATE: Machine Learning for Adaptive Calibration Template Detection"
+  authors: ["S. Donné", "J. De Vylder", "B. Goossens", "W. Philips"]
+  year: 2016
+  venue: Sensors
+  url: https://www.mdpi.com/1424-8220/16/11/1858/pdf
+  doi: "10.3390/s16111858"
+  pdf: donne2016-mate.pdf
+  cites:
+  - placht2014-rochade
+  - rosten2006-fast
+  - lucchese2003-saddle
+  - bennett2013-chess
+  - rufli2008-blurred
+  notes: |
+    Direct antecedent to CCDN: three-convolutional-layer CNN for checkerboard
+    corner detection with mean-squared-error loss and fixed 0.5 threshold,
+    2939 parameters. CCDN extends MATE to six layers, swaps MSE for weighted
+    cross-entropy, and adds threshold/NMS/clustering post-processing.
+
+- id: potje2024-xfeat
+  title: "XFeat: Accelerated Features for Lightweight Image Matching"
+  authors:
+    - "G. Potje"
+    - "F. Cadar"
+    - "A. Araujo"
+    - "R. Martins"
+    - "E. R. Nascimento"
+  year: 2024
+  venue: CVPR
+  url: https://arxiv.org/pdf/2404.19174
+  arxiv: "2404.19174"
+  doi: "10.48550/arxiv.2404.19174"
+  pdf: potje2024-xfeat.pdf
+  cites:
+  - detone2018-superpoint
+  notes: |
+    §3.1 featherweight backbone — triple-rate channel progression
+    {4,8,24,64,64,128} across six basic blocks, halving spatial resolution
+    per block (stride-2 first basic layer). §3.2 parallel keypoint head on
+    8×8 image cells with 64-way + dustbin classification (K ∈ R^(H/8 × W/8 × 65)),
+    descriptor head F ∈ R^(H/8 × W/8 × 64) merging scales {1/8, 1/16, 1/32},
+    reliability head R ∈ R^(H/8 × W/8). §3.2 match refinement MLP predicts
+    an 8×8 offset distribution from concatenated coarse descriptor pairs
+    (Eq. 2). §3.3 training: dual-softmax descriptor NLL (Eq. 3) + L1 on
+    reliability (Eq. 4) + NLL on fine offsets (Eq. 5) + NLL on keypoint
+    cell logits with ALIKE-tiny distillation (Eq. 6); total loss Eq. 7.
+    Adam, lr 3e-4, exponential decay 0.5 every 30k updates, 160k iterations
+    on MegaDepth + synthetic COCO (6:4). Headline metrics: Table 1
+    Megadepth-1500 pose AUC@5° 42.6 / @10° 56.4 (XFeat sparse) and
+    50.2 / 65.4 (XFeat* semi-dense) at 27.1 / 19.2 FPS on i5-1135G7 CPU
+    vs SuperPoint 37.3 / 50.1 @ 3.0 FPS, DISK 53.8 / 65.9 @ 1.2 FPS.
+
+- id: detone2018-superpoint
+  title: "SuperPoint: Self-Supervised Interest Point Detection and Description"
+  authors: ["D. DeTone", "T. Malisiewicz", "A. Rabinovich"]
+  year: 2018
+  venue: CVPR Workshop (Deep Learning for Visual SLAM)
+  url: https://arxiv.org/pdf/1712.07629
+  arxiv: "1712.07629"
+  doi: "10.1109/cvprw.2018.00060"
+  pdf: detone2018-superpoint.pdf
+  cites:
+  - rosten2006-fast
+  notes: |
+    Antecedent to XFeat. Shared VGG-like encoder with a keypoint decoder
+    head (1/8 resolution output, 8×8 cell classifier with a dustbin class)
+    and a dense descriptor decoder. Self-supervised training via
+    homographic adaptation from MagicPoint on synthetic data then
+    on MS-COCO. XFeat reuses the 8×8-cell + dustbin output shape but
+    splits detection into a parallel branch operating on 8×8 raw-pixel
+    tensor blocks rather than sharing the encoder.

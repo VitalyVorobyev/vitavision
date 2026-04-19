@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { algorithmPages } from "../generated/content-index.ts";
+import { Link } from "react-router-dom";
+import { algorithmPages, modelPages } from "../generated/content-index.ts";
 import TagFilter from "../components/blog/TagFilter.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import AlgorithmCard from "../components/blog/AlgorithmCard.tsx";
@@ -17,6 +18,11 @@ export default function AlgorithmIndex() {
 
     const visiblePages = useMemo(
         () => algorithmPages.filter((p) => isAdmin || !p.frontmatter.draft),
+        [isAdmin],
+    );
+
+    const visibleModelPages = useMemo(
+        () => modelPages.filter((p) => isAdmin || !p.frontmatter.draft),
         [isAdmin],
     );
 
@@ -67,6 +73,25 @@ export default function AlgorithmIndex() {
                 selected={selectedTag}
                 onSelect={setSelectedTag}
             />
+
+            <Link
+                to="/algorithms/models"
+                className="flex gap-4 items-center rounded-xl border border-border hover:border-foreground/20 transition-colors p-4 group"
+            >
+                <div className="min-w-0 flex-1">
+                    <p className="text-base font-semibold group-hover:underline">
+                        Deep-learning models &rarr;
+                    </p>
+                    <p className="text-muted-foreground text-sm mt-0.5">
+                        Architecture, parameters, licenses, open-source impls.
+                    </p>
+                </div>
+                <div className="shrink-0 text-sm text-muted-foreground font-mono">
+                    {visibleModelPages.length >= 1
+                        ? `${visibleModelPages.length} model${visibleModelPages.length === 1 ? "" : "s"}`
+                        : "(coming soon)"}
+                </div>
+            </Link>
 
             {grouped.length > 0 ? (
                 grouped.map(({ category, entries }) => (

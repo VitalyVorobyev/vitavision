@@ -15,27 +15,40 @@ import type { ChessCornersResult, CalibrationTargetResult } from "../../types";
 // ── Chess Corners ────────────────────────────────────────────────────────────
 
 function mockChessCornersResult(cornerCount: number): ChessCornersResult {
-    const corners = Array.from({ length: cornerCount }, (_, i) => ({
-        id: crypto.randomUUID(),
-        x: 100 + i * 10,
-        y: 200 + i * 5,
-        x_norm: (100 + i * 10) / 640,
-        y_norm: (200 + i * 5) / 480,
-        response: 0.5 + i * 0.1,
-        orientation_rad: (i * Math.PI) / cornerCount,
-        orientation_deg: (i * 180) / cornerCount,
-        direction: {
-            dx: Math.cos((i * Math.PI) / cornerCount),
-            dy: Math.sin((i * Math.PI) / cornerCount),
-        },
-        confidence: i / Math.max(cornerCount - 1, 1),
-        confidence_level: (i / Math.max(cornerCount - 1, 1) < 0.33
-            ? "low"
-            : i / Math.max(cornerCount - 1, 1) < 0.66
-              ? "medium"
-              : "high") as "low" | "medium" | "high",
-        subpixel_offset_px: 0,
-    }));
+    const corners = Array.from({ length: cornerCount }, (_, i) => {
+        const axis0Angle = (i * Math.PI) / Math.max(cornerCount, 1);
+        const axis1Angle = axis0Angle + Math.PI / 2;
+        return {
+            id: crypto.randomUUID(),
+            x: 100 + i * 10,
+            y: 200 + i * 5,
+            x_norm: (100 + i * 10) / 640,
+            y_norm: (200 + i * 5) / 480,
+            response: 0.5 + i * 0.1,
+            contrast: 0.3 + i * 0.02,
+            fit_rms: 0.05 + i * 0.01,
+            axes: [
+                {
+                    angle_rad: axis0Angle,
+                    angle_deg: axis0Angle * 180 / Math.PI,
+                    sigma_rad: 0.05,
+                    direction: { dx: Math.cos(axis0Angle), dy: Math.sin(axis0Angle) },
+                },
+                {
+                    angle_rad: axis1Angle,
+                    angle_deg: axis1Angle * 180 / Math.PI,
+                    sigma_rad: 0.06,
+                    direction: { dx: Math.cos(axis1Angle), dy: Math.sin(axis1Angle) },
+                },
+            ] as [ChessCornersResult["corners"][0]["axes"][0], ChessCornersResult["corners"][0]["axes"][0]],
+            confidence: i / Math.max(cornerCount - 1, 1),
+            confidence_level: (i / Math.max(cornerCount - 1, 1) < 0.33
+                ? "low"
+                : i / Math.max(cornerCount - 1, 1) < 0.66
+                  ? "medium"
+                  : "high") as "low" | "medium" | "high",
+        };
+    });
 
     return {
         status: "success",
@@ -51,17 +64,13 @@ function mockChessCornersResult(cornerCount: number): ChessCornersResult {
             units: "pixels",
         },
         config: {
-            use_ml_refiner: false,
             threshold_rel: 0.2,
-            threshold_abs: null,
             nms_radius: 2,
+            broad_mode: false,
             min_cluster_size: 2,
-            pyramid_num_levels: 4,
+            pyramid_levels: 4,
             pyramid_min_size: 128,
-            refinement_radius: 4,
-            merge_radius: 4.0,
-            use_radius10: false,
-            descriptor_use_radius10: null,
+            upscale_factor: 0,
             refiner: "center_of_mass",
         },
         summary: {
@@ -101,11 +110,24 @@ describe("Chess Corners WASM result shape", () => {
             expect(corner.y_norm).toBeGreaterThanOrEqual(0);
             expect(corner.y_norm).toBeLessThanOrEqual(1);
             expect(typeof corner.response).toBe("number");
-            expect(typeof corner.orientation_rad).toBe("number");
-            expect(typeof corner.direction.dx).toBe("number");
-            expect(typeof corner.direction.dy).toBe("number");
+            expect(typeof corner.contrast).toBe("number");
+            expect(typeof corner.fit_rms).toBe("number");
+            expect(corner.axes).toHaveLength(2);
+            expect(typeof corner.axes[0].angle_rad).toBe("number");
+            expect(typeof corner.axes[0].direction.dx).toBe("number");
+            expect(typeof corner.axes[0].direction.dy).toBe("number");
+            expect(typeof corner.axes[1].angle_rad).toBe("number");
+            expect(typeof corner.axes[1].direction.dx).toBe("number");
             expect(typeof corner.confidence).toBe("number");
             expect(["low", "medium", "high"]).toContain(corner.confidence_level);
+        }
+    });
+
+    it("axes[0].direction matches cos/sin of angle_rad", () => {
+        const result = mockChessCornersResult(3);
+        for (const corner of result.corners) {
+            expect(corner.axes[0].direction.dx).toBeCloseTo(Math.cos(corner.axes[0].angle_rad), 5);
+            expect(corner.axes[0].direction.dy).toBeCloseTo(Math.sin(corner.axes[0].angle_rad), 5);
         }
     });
 
@@ -117,18 +139,17 @@ describe("Chess Corners WASM result shape", () => {
     });
 
     it("produces features compatible with toFeatures", () => {
-        // Import the actual adapter to verify compatibility
         const result = mockChessCornersResult(3);
-        // Verify the shape matches what toFeatures expects
         const corner = result.corners[0];
         expect(corner).toHaveProperty("id");
         expect(corner).toHaveProperty("x");
         expect(corner).toHaveProperty("y");
-        expect(corner).toHaveProperty("direction");
-        expect(corner.direction).toHaveProperty("dx");
-        expect(corner.direction).toHaveProperty("dy");
+        expect(corner).toHaveProperty("axes");
+        expect(corner.axes[0]).toHaveProperty("direction");
+        expect(corner.axes[0].direction).toHaveProperty("dx");
+        expect(corner.axes[0].direction).toHaveProperty("dy");
         expect(corner).toHaveProperty("confidence");
-        expect(corner).toHaveProperty("orientation_rad");
+        expect(corner.axes[0]).toHaveProperty("angle_rad");
     });
 });
 

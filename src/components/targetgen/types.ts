@@ -2,7 +2,7 @@ import type { DictionaryName } from "../../lib/types";
 
 // ── Target type discriminator ────────────────────────────────────────────────
 
-export type TargetType = "chessboard" | "charuco" | "markerboard" | "ringgrid";
+export type TargetType = "chessboard" | "charuco" | "markerboard" | "ringgrid" | "puzzleboard";
 
 // ── Per-type config ──────────────────────────────────────────────────────────
 
@@ -38,6 +38,13 @@ export interface MarkerBoardConfig {
 
 export type RingGridProfile = "baseline" | "extended";
 
+export interface PuzzleboardConfig {
+    rows: number;
+    cols: number;
+    cellSizeMm: number;
+    pngDpi: number;
+}
+
 export interface RingGridConfig {
     rows: number;
     longRowCols: number;
@@ -52,7 +59,8 @@ export type TargetConfig =
     | { targetType: "chessboard"; config: ChessboardConfig }
     | { targetType: "charuco"; config: CharucoConfig }
     | { targetType: "markerboard"; config: MarkerBoardConfig }
-    | { targetType: "ringgrid"; config: RingGridConfig };
+    | { targetType: "ringgrid"; config: RingGridConfig }
+    | { targetType: "puzzleboard"; config: PuzzleboardConfig };
 
 // ── Page config ──────────────────────────────────────────────────────────────
 
@@ -83,6 +91,7 @@ export interface ConfigCache {
     charuco?: CharucoConfig;
     markerboard?: MarkerBoardConfig;
     ringgrid?: RingGridConfig;
+    puzzleboard?: PuzzleboardConfig;
 }
 
 export interface TargetGeneratorState {

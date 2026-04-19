@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { toast } from "sonner";
-import { Grid3X3, QrCode, CircleDot, Target, Upload } from "lucide-react";
+import { Grid3X3, QrCode, CircleDot, Target, Puzzle, Upload } from "lucide-react";
 import type { TargetType, TargetGeneratorAction } from "../types";
 import { presetsForType } from "../presets";
 
@@ -33,6 +33,12 @@ const TARGET_TYPES: {
         label: "Ring Grid",
         description: "Hex-lattice concentric ring markers with binary code bands",
         icon: <Target size={24} />,
+    },
+    {
+        id: "puzzleboard",
+        label: "PuzzleBoard",
+        description: "Self-identifying checkerboard with embedded edge-bit position code.",
+        icon: <Puzzle size={24} />,
     },
 ];
 

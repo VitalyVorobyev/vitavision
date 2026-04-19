@@ -5,6 +5,7 @@ import type {
     CharucoConfig,
     MarkerBoardConfig,
     RingGridConfig,
+    PuzzleboardConfig,
     CircleSpec,
     TargetType,
 } from "./types";
@@ -59,6 +60,13 @@ export const DEFAULT_RINGGRID: RingGridConfig = {
     profile: "baseline",
 };
 
+export const DEFAULT_PUZZLEBOARD: PuzzleboardConfig = {
+    rows: 7,
+    cols: 10,
+    cellSizeMm: 15,
+    pngDpi: 300,
+};
+
 export function defaultConfigForType(targetType: string) {
     switch (targetType) {
         case "chessboard":
@@ -69,6 +77,8 @@ export function defaultConfigForType(targetType: string) {
             return { ...DEFAULT_MARKERBOARD, circles: [...DEFAULT_MARKERBOARD.circles] };
         case "ringgrid":
             return { ...DEFAULT_RINGGRID };
+        case "puzzleboard":
+            return { ...DEFAULT_PUZZLEBOARD };
         default:
             return { ...DEFAULT_CHESSBOARD };
     }

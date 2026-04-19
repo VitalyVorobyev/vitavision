@@ -8,6 +8,7 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "harris-corner-detector": () => import("./content/algorithms/harris-corner-detector.ts"),
   "ocpad": () => import("./content/algorithms/ocpad.ts"),
   "puzzleboard": () => import("./content/algorithms/puzzleboard.ts"),
+  "pyramidal-blur-aware-xcorner": () => import("./content/algorithms/pyramidal-blur-aware-xcorner.ts"),
   "02-demo-blocks": () => import("./content/algorithms/02-demo-blocks.ts"),
   "rochade": () => import("./content/algorithms/rochade.ts"),
   "shi-tomasi-corner-detector": () => import("./content/algorithms/shi-tomasi-corner-detector.ts"),

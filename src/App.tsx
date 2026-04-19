@@ -20,7 +20,6 @@ const Blog = lazy(() => import('./pages/Blog'));
 const BlogPost = lazy(() => import('./pages/BlogPost'));
 const AlgorithmIndex = lazy(() => import('./pages/AlgorithmIndex'));
 const AlgorithmPost = lazy(() => import('./pages/AlgorithmPost'));
-const ModelIndex = lazy(() => import('./pages/ModelIndex'));
 const ModelPost = lazy(() => import('./pages/ModelPost'));
 const DemoIndex = lazy(() => import('./pages/DemoIndex'));
 const DemoPage = lazy(() => import('./pages/DemoPage'));
@@ -52,7 +51,7 @@ function AppLayout() {
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:slug" element={<BlogPost />} />
                         <Route path="/algorithms" element={<AlgorithmIndex />} />
-                        <Route path="/algorithms/models" element={<ModelIndex />} />
+                        <Route path="/algorithms/models" element={<Navigate to="/algorithms?tab=models" replace />} />
                         <Route path="/algorithms/models/:slug" element={<ModelPost />} />
                         <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
                         <Route path="/demos" element={<DemoIndex />} />

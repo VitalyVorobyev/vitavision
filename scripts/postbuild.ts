@@ -184,14 +184,7 @@ async function main(): Promise<void> {
         count++;
     }
 
-    // Model index
-    writePage(template, "/algorithms/models", "algorithms/models", {
-        title: "Models",
-        description: "Deep-learning models for computer vision — reference cards.",
-    }, staticContent);
-    count++;
-
-    // Individual model pages
+    // Individual model pages (the index at /algorithms/models is served from /algorithms?tab=models)
     for (const model of modelPages) {
         const { frontmatter } = model;
         const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildModelJsonLd(frontmatter, model.slug))}</script>`;
@@ -217,7 +210,7 @@ async function main(): Promise<void> {
         "/", "/blog", ...blogPosts.map((p) => `/blog/${p.slug}`),
         "/algorithms", ...algorithmPages.map((p) => `/algorithms/${p.slug}`),
         "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
-        "/algorithms/models", ...modelPages.map((m) => `/algorithms/models/${m.slug}`),
+        ...modelPages.map((m) => `/algorithms/models/${m.slug}`),
         "/tools/target-generator",
     ];
     writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(sitemapPaths), "utf-8");

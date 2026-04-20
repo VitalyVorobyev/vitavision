@@ -28,7 +28,7 @@
     "@vitavision/radsym": "^0.1.4",
     "@vitavision/ringgrid": "^0.5.6",
     "calib-targets-wasm": "^0.5.1",
-    "chess-corners-wasm": "^0.5.0",
+    "chess-corners-wasm": "^0.6.0",
     "feed": "^5.2.0",
     "framer-motion": "^12.38.0",
     "jszip": "^3.10.1",

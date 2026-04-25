@@ -439,6 +439,7 @@ export default function CanvasWorkspace() {
                             activeTool={activeTool}
                             selectedFeatureId={selectedFeatureId}
                             hoveredDirectedPointId={hoveredDirectedPointId}
+                            overlayToggles={overlayToggles}
                             setSelectedFeatureId={setSelectedFeatureId}
                             updateFeature={updateFeature}
                             onTransformEnd={handleTransformEnd}

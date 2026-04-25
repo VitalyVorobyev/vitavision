@@ -18,8 +18,15 @@ const mod = await import('chess-corners-wasm');
 await mod.default();
 const d = mod.ChessDetector.multiscale();
 d.set_threshold(0.2);
+d.set_nms_radius(2);
+d.set_broad_mode(false);
+d.set_min_cluster_size(2);
+try { d.set_pyramid_levels(4); } catch(e) { throw new Error('set_pyramid_levels failed: ' + e); }
+d.set_pyramid_min_size(128);
+try { d.set_upscale_factor(0); } catch(e) { throw new Error('set_upscale_factor failed: ' + e); }
+try { d.set_refiner('center_of_mass'); } catch(e) { throw new Error('set_refiner failed: ' + e); }
 d.free();
-console.log('PASS: multiscale detector created with threshold');
+console.log('PASS: multiscale detector created with all setters');
 process.exit(0);
 `,
     },
@@ -175,6 +182,27 @@ if (typeof x !== 'number' || typeof y !== 'number' || isNaN(x) || isNaN(y))
 if (x < 0 || x > png.width || y < 0 || y > png.height)
     throw new Error('corner coordinates out of image bounds: ' + x + ', ' + y);
 console.log('PASS: corner coordinates are valid [x,y] arrays within image bounds');
+process.exit(0);
+`,
+    },
+    {
+        name: "calib-targets: puzzleboard defaults",
+        code: `
+const mod = await import('calib-targets-wasm');
+await mod.default();
+const params = mod.default_puzzleboard_params(7, 10);
+if (typeof params !== 'object' || params === null)
+    throw new Error('default_puzzleboard_params returned non-object: ' + typeof params);
+const keys = Object.keys(params);
+for (const k of ['px_per_square', 'chessboard', 'board', 'decode']) {
+    if (!keys.includes(k))
+        throw new Error('missing key: ' + k + ' in ' + JSON.stringify(keys));
+}
+console.log('PASS: default_puzzleboard_params(7,10) returns object with px_per_square, chessboard, board, decode');
+const board = params.board;
+if (board.rows !== 7 || board.cols !== 10)
+    throw new Error('board rows/cols mismatch: ' + JSON.stringify(board));
+console.log('PASS: board.rows=7, board.cols=10');
 process.exit(0);
 `,
     },

@@ -4,6 +4,7 @@ import { charucoAlgorithm } from "./calibrationTargets/charucoAdapter";
 import { markerboardAlgorithm } from "./calibrationTargets/markerboardAdapter";
 import { ringgridAlgorithm } from "./ringgrid/adapter";
 import { radsymAlgorithm } from "./radsym/adapter";
+import { puzzleboardAlgorithm } from "./puzzleboard/adapter";
 import type { AlgorithmDefinition } from "./types";
 
 export const ALGORITHM_REGISTRY: AlgorithmDefinition[] = [
@@ -13,6 +14,7 @@ export const ALGORITHM_REGISTRY: AlgorithmDefinition[] = [
     markerboardAlgorithm,
     ringgridAlgorithm,
     radsymAlgorithm,
+    puzzleboardAlgorithm,
 ];
 
 export const DEFAULT_ALGORITHM_ID = chessCornersAlgorithm.id;

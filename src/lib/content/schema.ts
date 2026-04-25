@@ -30,6 +30,7 @@ export const algorithmCategoryValues = [
     "calibration-targets",
     "subpixel-refinement",
     "explainers",
+    "calibration"
 ] as const;
 export type AlgorithmCategory = (typeof algorithmCategoryValues)[number];
 
@@ -117,5 +118,55 @@ export interface DemoIndexEntry {
 
 /** Full demo entry including rendered html. */
 export interface DemoEntry extends DemoIndexEntry {
+    html: string;
+}
+
+/** Model category — used to group cards on the /algorithms/models index. */
+export const modelCategoryValues = [
+    "detection",
+    "depth-stereo",
+    "pose-geometry",
+    "segmentation-flow",
+    "foundation-ssl",
+    "calibration-learning",
+] as const;
+export type ModelCategory = (typeof modelCategoryValues)[number];
+
+/** Zod schema for model page frontmatter. */
+export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema.extend({
+    category: z.enum(modelCategoryValues),
+    arch_family: z.enum(["cnn", "vit", "encoder-decoder", "diffusion", "gan", "hybrid"]).optional(),
+    params: z.string().optional(),
+    flops: z.string().optional(),
+    sources: z.object({
+        primary: z.string().min(1),
+        references: z.array(z.string().min(1)).optional(),
+        notes: z.string().optional(),
+    }).optional(),
+    implementations: z.array(z.object({
+        role: z.enum(["official", "community", "port"]),
+        repo: z.string().url(),
+        commit: z.string().regex(/^[0-9a-f]{7,40}$/),
+        framework: z.enum(["pytorch", "tensorflow", "jax", "caffe", "other"]),
+        license: z.string().min(1),
+        weights_url: z.string().url().optional(),
+        weights_license: z.string().min(1).optional(),
+    })).min(1).optional(), // required on non-drafts; enforced in content-build
+    relatedPosts: z.array(z.string().min(1)).optional(),
+    relatedAlgorithms: z.array(z.string().min(1)).optional(),
+    relatedDemos: z.array(z.string().min(1)).optional(),
+});
+
+export type ModelFrontmatter = z.infer<typeof modelFrontmatterSchema>;
+export type ModelFrontmatterSerialized = SerializedFrontmatter<ModelFrontmatter>;
+
+/** Index entry for a model page (no html). Used by listing pages. */
+export interface ModelIndexEntry {
+    slug: string;
+    frontmatter: ModelFrontmatterSerialized;
+}
+
+/** Full model entry including rendered html. */
+export interface ModelEntry extends ModelIndexEntry {
     html: string;
 }

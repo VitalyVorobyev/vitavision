@@ -52,7 +52,23 @@ describe("featureSchema", () => {
         expect(result.success).toBe(true);
     });
 
-    it("accepts a valid directed_point feature", () => {
+    it("accepts a valid directed_point feature with two axes", () => {
+        const result = featureSchema.safeParse({
+            type: "directed_point",
+            x: 10,
+            y: 20,
+            axes: [
+                { dx: 1, dy: 0, angleRad: 0, sigmaRad: 0.05 },
+                { dx: 0, dy: 1, angleRad: Math.PI / 2, sigmaRad: 0.06 },
+            ],
+            score: 0.95,
+            contrast: 0.3,
+            fitRms: 0.1,
+        });
+        expect(result.success).toBe(true);
+    });
+
+    it("rejects a legacy directed_point feature with direction but no axes", () => {
         const result = featureSchema.safeParse({
             type: "directed_point",
             x: 10,
@@ -60,7 +76,18 @@ describe("featureSchema", () => {
             direction: { dx: 1, dy: 0 },
             score: 0.95,
         });
-        expect(result.success).toBe(true);
+        expect(result.success).toBe(false);
+    });
+
+    it("rejects a directed_point with only one axis", () => {
+        const result = featureSchema.safeParse({
+            type: "directed_point",
+            x: 10,
+            y: 20,
+            axes: [{ dx: 1, dy: 0 }],
+            score: 0.95,
+        });
+        expect(result.success).toBe(false);
     });
 
     it("accepts a valid ring_marker feature", () => {
@@ -161,6 +188,55 @@ describe("featureSchema", () => {
             expect(result.data.meta?.kind).toBe("corner");
             expect(result.data.meta?.grid?.i).toBe(3);
         }
+    });
+});
+
+describe("labeledPointFeatureSchema", () => {
+    it("accepts a valid labeled_point feature", () => {
+        const result = featureSchema.safeParse({
+            type: "labeled_point",
+            x: 150,
+            y: 200,
+            score: 0.88,
+            gridIndex: { i: 3, j: 5 },
+            masterId: 42,
+        });
+        expect(result.success).toBe(true);
+    });
+
+    it("accepts labeled_point with optional targetPosMm", () => {
+        const result = featureSchema.safeParse({
+            type: "labeled_point",
+            x: 150,
+            y: 200,
+            score: 0.88,
+            gridIndex: { i: 3, j: 5 },
+            masterId: 42,
+            targetPosMm: { x: 45, y: 75 },
+        });
+        expect(result.success).toBe(true);
+    });
+
+    it("rejects labeled_point missing gridIndex", () => {
+        const result = featureSchema.safeParse({
+            type: "labeled_point",
+            x: 150,
+            y: 200,
+            score: 0.88,
+            masterId: 42,
+        });
+        expect(result.success).toBe(false);
+    });
+
+    it("rejects labeled_point missing masterId", () => {
+        const result = featureSchema.safeParse({
+            type: "labeled_point",
+            x: 150,
+            y: 200,
+            score: 0.88,
+            gridIndex: { i: 3, j: 5 },
+        });
+        expect(result.success).toBe(false);
     });
 });
 

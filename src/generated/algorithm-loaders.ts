@@ -4,12 +4,18 @@ export interface GeneratedHtmlModule { html: string; }
 export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
   "chess-corners": () => import("./content/algorithms/chess-corners.ts"),
   "laureano-topological-chessboard": () => import("./content/algorithms/laureano-topological-chessboard.ts"),
+  "daniilidis-dual-quaternion-handeye": () => import("./content/algorithms/daniilidis-dual-quaternion-handeye.ts"),
   "fast-corner-detector": () => import("./content/algorithms/fast-corner-detector.ts"),
   "harris-corner-detector": () => import("./content/algorithms/harris-corner-detector.ts"),
+  "kumar-generalized-rac": () => import("./content/algorithms/kumar-generalized-rac.ts"),
+  "duda-radon-corners": () => import("./content/algorithms/duda-radon-corners.ts"),
   "ocpad": () => import("./content/algorithms/ocpad.ts"),
   "puzzleboard": () => import("./content/algorithms/puzzleboard.ts"),
+  "pyramidal-blur-aware-xcorner": () => import("./content/algorithms/pyramidal-blur-aware-xcorner.ts"),
   "02-demo-blocks": () => import("./content/algorithms/02-demo-blocks.ts"),
   "rochade": () => import("./content/algorithms/rochade.ts"),
   "shi-tomasi-corner-detector": () => import("./content/algorithms/shi-tomasi-corner-detector.ts"),
   "shu-topological-grid": () => import("./content/algorithms/shu-topological-grid.ts"),
+  "tsai-lenz-handeye": () => import("./content/algorithms/tsai-lenz-handeye.ts"),
+  "zhang-planar-calibration": () => import("./content/algorithms/zhang-planar-calibration.ts"),
 };

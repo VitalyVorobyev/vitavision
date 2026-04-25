@@ -266,3 +266,389 @@
     with a sequential connectivity-preserving pass. ROCHADE uses this
     to reduce thick gradient-magnitude ridges into one-pixel-wide
     centrelines before saddle detection.
+
+- id: abeles2021-pyramidal
+  title: "Pyramidal Blur Aware X-Corner Chessboard Detector"
+  authors: ["P. Abeles"]
+  year: 2021
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2110.13793
+  arxiv: "2110.13793"
+  doi: "10.48550/arxiv.2110.13793"
+  pdf: abeles2021-pyramidal.pdf
+  cites:
+  - placht2014-rochade
+  - lucchese2003-saddle
+  - niblack1992-skeleton
+  - harris1988-corner
+  - rufli2008-blurred
+  - shi-tomasi1994-features
+  - bennett2013-chess
+
+- id: chen2023-ccdn
+  title: "CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration"
+  authors: ["B. Chen", "C. Xiong", "Q. Zhang"]
+  year: 2023
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2302.05097
+  arxiv: "2302.05097"
+  doi: "10.48550/arxiv.2302.05097"
+  pdf: chen2023-ccdn.pdf
+  cites:
+  - donne2016-mate
+  - bennett2013-chess
+  - placht2014-rochade
+  - rufli2008-blurred
+  - harris1988-corner
+  - rosten2006-fast
+  notes: |
+    Section §2.1 details the 6-layer FCN architecture (eqs. 1-3) with stride-1
+    conv + stride-1 max-pool (no spatial downsampling). Eq. (4) is the weighted
+    cross-entropy + L2 loss; eq. (5) the clipping of the output. Eq. (6) the
+    exponential staircase LR schedule. Parameter count 16,301 (§2.1). Post-
+    processing pipeline §2.2: adaptive threshold at 0.5·max response, NMS with
+    4×4 boxes, k-means++ clustering k=10 dropping clusters with N_i<2. Training
+    set: 8900 images @ 640×480 (§3); Table 1 (uEye) and Table 2 (GoPro) carry
+    the headline benchmark numbers against MATE, ChESS, ROCHADE, OCamCalib.
+
+- id: donne2016-mate
+  title: "MATE: Machine Learning for Adaptive Calibration Template Detection"
+  authors: ["S. Donné", "J. De Vylder", "B. Goossens", "W. Philips"]
+  year: 2016
+  venue: Sensors
+  url: https://www.mdpi.com/1424-8220/16/11/1858/pdf
+  doi: "10.3390/s16111858"
+  pdf: donne2016-mate.pdf
+  cites:
+  - placht2014-rochade
+  - rosten2006-fast
+  - lucchese2003-saddle
+  - bennett2013-chess
+  - rufli2008-blurred
+  notes: |
+    Direct antecedent to CCDN: three-convolutional-layer CNN for checkerboard
+    corner detection with mean-squared-error loss and fixed 0.5 threshold,
+    2939 parameters. CCDN extends MATE to six layers, swaps MSE for weighted
+    cross-entropy, and adds threshold/NMS/clustering post-processing.
+
+- id: potje2024-xfeat
+  title: "XFeat: Accelerated Features for Lightweight Image Matching"
+  authors:
+    - "G. Potje"
+    - "F. Cadar"
+    - "A. Araujo"
+    - "R. Martins"
+    - "E. R. Nascimento"
+  year: 2024
+  venue: CVPR
+  url: https://arxiv.org/pdf/2404.19174
+  arxiv: "2404.19174"
+  doi: "10.48550/arxiv.2404.19174"
+  pdf: potje2024-xfeat.pdf
+  cites:
+  - detone2018-superpoint
+  notes: |
+    §3.1 featherweight backbone — triple-rate channel progression
+    {4,8,24,64,64,128} across six basic blocks, halving spatial resolution
+    per block (stride-2 first basic layer). §3.2 parallel keypoint head on
+    8×8 image cells with 64-way + dustbin classification (K ∈ R^(H/8 × W/8 × 65)),
+    descriptor head F ∈ R^(H/8 × W/8 × 64) merging scales {1/8, 1/16, 1/32},
+    reliability head R ∈ R^(H/8 × W/8). §3.2 match refinement MLP predicts
+    an 8×8 offset distribution from concatenated coarse descriptor pairs
+    (Eq. 2). §3.3 training: dual-softmax descriptor NLL (Eq. 3) + L1 on
+    reliability (Eq. 4) + NLL on fine offsets (Eq. 5) + NLL on keypoint
+    cell logits with ALIKE-tiny distillation (Eq. 6); total loss Eq. 7.
+    Adam, lr 3e-4, exponential decay 0.5 every 30k updates, 160k iterations
+    on MegaDepth + synthetic COCO (6:4). Headline metrics: Table 1
+    Megadepth-1500 pose AUC@5° 42.6 / @10° 56.4 (XFeat sparse) and
+    50.2 / 65.4 (XFeat* semi-dense) at 27.1 / 19.2 FPS on i5-1135G7 CPU
+    vs SuperPoint 37.3 / 50.1 @ 3.0 FPS, DISK 53.8 / 65.9 @ 1.2 FPS.
+
+- id: detone2018-superpoint
+  title: "SuperPoint: Self-Supervised Interest Point Detection and Description"
+  authors: ["D. DeTone", "T. Malisiewicz", "A. Rabinovich"]
+  year: 2018
+  venue: CVPR Workshop (Deep Learning for Visual SLAM)
+  url: https://arxiv.org/pdf/1712.07629
+  arxiv: "1712.07629"
+  doi: "10.1109/cvprw.2018.00060"
+  pdf: detone2018-superpoint.pdf
+  cites:
+  - rosten2006-fast
+  notes: |
+    Antecedent to XFeat. Shared VGG-like encoder with a keypoint decoder
+    head (1/8 resolution output, 8×8 cell classifier with a dustbin class)
+    and a dense descriptor decoder. Self-supervised training via
+    homographic adaptation from MagicPoint on synthetic data then
+    on MS-COCO. XFeat reuses the 8×8-cell + dustbin output shape but
+    splits detection into a parallel branch operating on 8×8 raw-pixel
+    tensor blocks rather than sharing the encoder.
+
+- id: zhang2000-flexible
+  title: "A Flexible New Technique for Camera Calibration"
+  authors: ["Z. Zhang"]
+  year: 2000
+  venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
+  url: https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr98-71.pdf
+  doi: "10.1109/34.888718"
+  pdf: zhang2000-flexible.pdf
+  cites:
+  - tsai1987-versatile
+  - weng1992-camera
+  - sturm2003-plane-based
+  notes: |
+    §2 notation: homography H = [h1 h2 h3] = λK[r1 r2 t]; B = K^{-T}K^{-1}
+    (image of the absolute conic, symmetric 3×3). §3.1 the two constraints
+    per homography: h1^T B h2 = 0 and h1^T B h1 = h2^T B h2; stack into
+    V b = 0 where b = (B11,B12,B22,B13,B23,B33)^T and each row is v_{ij}
+    built from columns of H (Eq. 8). §3.2 closed-form K from b: five
+    scalar formulas for (v0, λ, α, β, γ, u0) via Cholesky of B (App. B).
+    §3.3 extrinsics per view: λ = 1/||K^{-1}h1||, r1 = λK^{-1}h1,
+    r2 = λK^{-1}h2, r3 = r1 × r2, t = λK^{-1}h3; R refined to nearest
+    rotation by SVD. §3.4 maximum-likelihood refinement — LM minimization
+    of Σ_{i,j} ||m_{ij} - m̂(K, k1, k2, R_i, t_i, M_j)||^2 (Eq. 10).
+    §3.5 radial distortion: u_d = u + (u-u0)(k1 r^2 + k2 r^4) (Eq. 11,12);
+    closed-form linear estimate from residuals of the distortion-free
+    model then joint LM refinement. §3.6 degenerate configurations:
+    parallel planes give rank-deficient V. Minimum two views if one
+    intrinsic (e.g. skew = 0) is fixed; three views for full K.
+
+- id: tsai1987-versatile
+  title: "A versatile camera calibration technique for high-accuracy 3D machine vision metrology using off-the-shelf TV cameras and lenses"
+  authors: ["R. Y. Tsai"]
+  year: 1987
+  venue: IEEE Journal on Robotics and Automation
+  url: https://cecas.clemson.edu/~stb/ece847/internal/classic_vision_papers/tsai_calibration1987.pdf
+  doi: "10.1109/jra.1987.1087109"
+  pdf: tsai1987-versatile.pdf
+  cites: []
+  notes: |
+    Two-stage calibration: (1) closed-form radial-alignment constraint on
+    monocoplanar points to get R and t_x, t_y up to scale; (2) nonlinear
+    refinement of the remaining intrinsics (f, κ1, t_z). Requires a
+    coplanar target with known 3D metric layout and a separate non-coplanar
+    calibration object (or mechanically controlled translation) to break
+    the focal-length / z-translation ambiguity. Pre-Zhang baseline.
+
+- id: weng1992-camera
+  title: "Camera calibration with distortion models and accuracy evaluation"
+  authors: ["J. Weng", "P. Cohen", "M. Herniou"]
+  year: 1992
+  venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
+  url: https://www.cs.auckland.ac.nz/courses/compsci773s1c/lectures/camera%20distortion.pdf
+  doi: "10.1109/34.159901"
+  pdf: weng1992-camera.pdf
+  cites: []
+  notes: |
+    Distortion model: radial + decentering (tangential) + thin-prism,
+    parameterised by (k1, k2) radial, (p1, p2) decentering, (s1, s2)
+    prism. Closed-form initial estimate from a distortion-free linear
+    model, followed by nonlinear refinement of all parameters jointly.
+    Cited by Zhang for the two-term radial distortion formulation
+    reused in §3.5.
+
+- id: sturm2003-plane-based
+  title: "On plane-based camera calibration: A general algorithm, singularities, applications"
+  authors: ["P. Sturm", "S. J. Maybank"]
+  year: 1999
+  venue: IEEE CVPR
+  url: https://inria.hal.science/inria-00525681/document
+  doi: "10.1109/cvpr.1999.786974"
+  pdf: sturm2003-plane-based.pdf
+  cites: []
+  notes: |
+    Concurrent with Zhang's tech report. Same two linear constraints per
+    plane homography on the dual image of the absolute conic (ω*), stacked
+    across views and solved by SVD. Adds a full catalogue of degenerate
+    plane configurations: parallel planes (all views of the same plane up
+    to translation along its normal), planes whose vanishing lines are
+    parallel in the image, and orbit-like motions where the plane's
+    circular points project to the same image points in every view.
+
+- id: tsai1989-handeye
+  title: "A new technique for fully autonomous and efficient 3D robotics hand/eye calibration"
+  authors: ["R. Y. Tsai", "R. K. Lenz"]
+  year: 1989
+  venue: IEEE Transactions on Robotics and Automation
+  url: https://kmlee.gatech.edu/me6406/handeye.pdf
+  doi: "10.1109/70.34770"
+  pdf: tsai1989-handeye.pdf
+  cites:
+  - tsai1987-versatile
+  - shiu1989-calibration
+  notes: |
+    Solves AX=XB for the unknown gripper-to-camera transform X = H_cg
+    given pairs of robot motions A_ij = H_g_ij (gripper-to-gripper) and
+    camera motions B_ij = H_c_ij (camera-to-camera) recovered from
+    extrinsic calibration of N≥3 stations imaging a fixed calibration
+    target. §II.B parametrises rotations by the modified Rodrigues vector
+    Pr = 2 sin(θ/2) [n1 n2 n3]^T (Eq. 9, range 0≤θ≤π); the rotation matrix
+    is R = (1 - |Pr|^2/2) I + (1/2)(Pr Pr^T + α Skew(Pr)) with
+    α = sqrt(4 - |Pr|^2) (Eq. 10). Two-stage solver: (a) rotation —
+    Lemma VI gives Skew(Pg_ij + Pc_ij) Pcg' = Pc_ij - Pg_ij (Eq. 12),
+    where Pcg' is an unscaled axis; stack ≥2 station pairs and solve
+    by linear least squares; recover the true Rodrigues vector via
+    Pcg = 2 Pcg' / sqrt(1 + |Pcg'|^2) (Eq. 14) and θ_Rcg = 2 arctan|Pcg'|
+    (Eq. 13). (b) translation — Lemma VIII: (R_g_ij - I) T_cg =
+    R_cg T_c_ij - T_g_ij (Eq. 15); stack ≥2 pairs and solve by linear
+    least squares for T_cg. Uniqueness holds when interstation rotation
+    axes are non-collinear across pairs (necessary because Skew(P) and
+    R - I are each rank-2). Special case: when Pg_ij + Pc_ij is
+    collinear across pairs the rotation angle is exactly π and the axis
+    is taken parallel to the sum directly. Total cost ~100 + 60N scalar
+    operations after extrinsic calibration. Eleven lemmas (I–XI) carry
+    the proofs; Lemma I R_g_ij = R_cg R_c_ij R_cg^T is the underlying
+    AX=XB structure on the rotation block.
+
+- id: shiu1989-calibration
+  title: "Calibration of wrist-mounted robotic sensors by solving homogeneous transform equations of the form AX=XB"
+  authors: ["Y. C. Shiu", "S. Ahmad"]
+  year: 1989
+  venue: IEEE Transactions on Robotics and Automation
+  url: https://doi.org/10.1109/70.88014
+  doi: "10.1109/70.88014"
+  pdf: shiu1989-calibration.pdf
+  cites: []
+  notes: |
+    Defining formulation of the hand-eye problem as the homogeneous
+    matrix equation AX = XB, where A and B are pairs of relative motions
+    of the robot hand and the wrist-mounted sensor, and X is the
+    constant rigid transform between them. Decomposes the equation
+    into a rotation part and a translation part; shows that one motion
+    pair is insufficient (the axes of A and B alone leave a 1-parameter
+    family of solutions), and that two motion pairs with non-parallel
+    rotation axes determine X uniquely. Closed-form linear solution per
+    motion pair plus least-squares combination across pairs. Tsai and
+    Lenz (1989) cite this as the prior baseline and replace its
+    angle-axis-with-extra-unknowns parametrisation with a modified
+    Rodrigues vector that keeps the unknown count fixed at six.
+
+- id: daniilidis1999-hand-eye
+  title: "Hand-Eye Calibration Using Dual Quaternions"
+  authors: ["K. Daniilidis"]
+  year: 1999
+  venue: The International Journal of Robotics Research
+  url: https://doi.org/10.1177/02783649922066213
+  doi: "10.1177/02783649922066213"
+  cites:
+  - shiu1989-calibration
+  - tsai1989-handeye
+  notes: |
+    Solves AX=XB jointly for rotation and translation by parametrising
+    rigid motions as unit dual quaternions and extracting the unknown
+    hand-eye dual quaternion from the right null space of a single
+    linear system. §3 reviews dual quaternions: a rigid motion is a
+    unit dual quaternion q̂ = q + εq′ with q ∈ ℝ⁴ a unit quaternion
+    encoding rotation (θ, n) as q = (cos θ/2, sin(θ/2) n), and
+    q′ = (1/2) t ⊗ q where t = (0, t_vec) is the translation as a pure
+    quaternion; equivalently the screw form q̂ = cos(θ̂/2) + sin(θ̂/2) l̂
+    with dual angle θ̂ = θ + εd and dual axis l̂ = l + εm (§3.2).
+    Screw congruence (§4.2): hand and eye motions share the same screw
+    angle θ and pitch d, so the scalar parts of â and b̂ coincide and
+    the problem reduces to the imaginary parts. §5 derives the linear
+    constraint
+        | a − b   [a+b]_×    0_{3}   0_{3×3} |  | q_0  |
+        | a′ − b′ [a′+b′]_×  a − b   [a+b]_× |  | q    | = 0
+                                               | q′_0 |
+                                               | q′   |
+    per motion pair (Eq. 31), where (a_0, a) and (a′_0, a′) are the
+    real and dual imaginary parts of â (and similarly b̂). Stacking
+    ≥2 pairs yields a 6N×8 matrix T; SVD gives a two-dimensional
+    right null space span{v_7, v_8}. §6 picks the physically valid
+    combination x̂ = λ_1 v_7 + λ_2 v_8 by enforcing |q|² = 1 and
+    q·q′ = 0: the second constraint is quadratic in s = λ_1/λ_2 and
+    has two roots; the root that makes the first constraint positive
+    determines λ_2. Rigid transform recovered by R(q) and t = 2 q′ q*
+    (real part discarded). Joint rotation+translation solution avoids
+    the error propagation of Tsai-Lenz's two-stage decoupling and uses
+    one SVD instead of two least-squares solves.
+
+- id: kumar2014-grac
+  title: "Generalized Radial Alignment Constraint for Camera Calibration"
+  authors: ["A. Kumar", "N. Ahuja"]
+  year: 2014
+  venue: International Conference on Pattern Recognition (ICPR)
+  url: https://vision.ai.illinois.edu/html-files-to-import/avi_papers/Kumar_GeneralizedRAC_ICPR_2104.pdf
+  doi: "10.1109/icpr.2014.41"
+  pdf: kumar2014-grac.pdf
+  cites:
+  - tsai1987-versatile
+  - weng1992-camera
+  notes: |
+    Extends Tsai's Radial Alignment Constraint (RAC) to a sensor that is
+    not orthogonal to the optic axis. Adds a 2-DoF rotation R(ρ, σ)
+    between lens and sensor coordinate systems (z-rotation is redundant
+    because the lens is rotationally symmetric about its optic axis).
+    §IV derives the gRAC: project the observed non-frontal image point
+    P_nf onto a hypothesized frontal sensor P_f = (x_df, y_df) along the
+    ray through the lens centre (Eq. 4), then apply Tsai's RAC to P_f
+    and the world point's lens-frame projection — x_df · y_l = y_df · x_l
+    (Eq. 5). §IV shows this reduces to a linear equation A q = b in
+    seven unknown combinations q_1 … q_7 of extrinsic rotation S, tilt
+    R, and translation (t_x, t_y) (Eqs. 7–15); ≥4 world-image
+    correspondences solve it in least squares. §V-A decomposes q into
+    sign-ambiguous estimates of S, R, (t_x, t_y): |t_x| from Eq. 17 via
+    row-orthonormality; s_1j from Eqs. 18; s_2j from Eqs. 23–25; s_3j
+    via cross product; (ρ, σ) from Eqs. 29–30 with relative sign from
+    sign(L) (Eq. 27). §V-B resolves the four-way ambiguity by recovering
+    λ and t_z from Eq. 35 ([−x_l v] [λ; t_z]^T = −u x_l − v w) under a
+    no-distortion assumption; rejects λ < 0 hypotheses; picks between
+    the remaining two by which one admits a better symmetric
+    radial-distortion fit. §V-C iteratively refines the CoD (I_0, J_0)
+    by sampling image locations, solving gRAC at each, and minimising
+    the residual RAC error on the frontal-projected points; this
+    extends Lenz-Tsai's quadratic-residual CoD estimator (which assumed
+    frontal sensor) to the non-frontal case.
+
+- id: duda2018-accurate
+  title: "Accurate Detection and Localization of Checkerboard Corners for Calibration"
+  authors: ["A. Duda", "U. Frese"]
+  year: 2018
+  venue: British Machine Vision Conference (BMVC)
+  url: https://bmvc2018.org/contents/papers/0508.pdf
+  doi: "openalex:W2894330449"
+  pdf: duda2018-accurate.pdf
+  cites: [harris1988-corner, rufli2008-blurred, zhang2000-flexible, sinzinger2007-model-based]
+  notes: |
+    Checkerboard corner detector built on a localized Radon transform
+    approximated by two 1-D box filters on rotated copies of the image.
+    §3 defines the core: R_f^local[x,y,α] = Σ_{k=-m..m} f(x+k·cos α,
+    y+k·sin α) is a directional line integral through (x,y); the detector
+    response f_c[x,y] = [max_α R - min_α R]² is maximised where a true
+    X-junction's point symmetry makes the bright centreline integral
+    much larger than the dark one (Eq. 2). §3 restricts α to
+    {0, π/4, π/2, 3π/4} using the sine-like periodicity of R over α at
+    an X-junction (Fig. 3a). §3.1 the implementation: the image is
+    rotated by α ∈ {0, π/4} and convolved with an n×m box filter plus
+    an m×n box filter; rotated back; the four directional blurs are
+    joined via f_c = [max − min]² (Eq. 3); box smooth of the response
+    accounts for discretisation; local maxima over a threshold + NMS
+    give integer corners. Subpixel refinement: Gaussian peak fit on the
+    response map, with 2× supersampling before rotation recommended for
+    antialiasing. Default parameters: blur kernel size 1×9 pixels, 9×9
+    baseline window for Förstner comparison, 1000-run evaluation over
+    uniform-random subpixel positions. §4 reports ≈ 1/100-pixel
+    accuracy on crisp synthetic corners (Fig. 4b), parity with Förstner
+    under strong Gaussian blur, and superiority under Gaussian image
+    noise (Figs. 5-6) and on real outdoor data (Fig. 9, Tables 1-2).
+    Processing time linear in pixel count (§4.1, Fig. 7b).
+
+- id: sinzinger2007-model-based
+  title: "A model-based approach to junction detection using radial energy"
+  authors: ["E. D. Sinzinger"]
+  year: 2008
+  venue: Pattern Recognition
+  url: https://www.sciencedirect.com/science/article/abs/pii/S0031320307002889
+  doi: "10.1016/j.patcog.2007.06.032"
+  pdf: sinzinger2007-model-based.pdf
+  cites: [harris1988-corner]
+  notes: |
+    Models an image junction as a superposition of sectors separated
+    by centrelines radiating from the junction centre and scores it
+    by "radial energy" — the variance of pixel intensities along
+    concentric circles around the candidate. Duda & Frese 2018 cite
+    this as the canonical sector/centreline corner model, contrasting
+    it with the edge/gradient view used by Harris and by Förstner's
+    subpixel operator. The Radon-transform-via-box-filters detector
+    in Duda 2018 realises the same sector model with integer-rotated
+    blurs rather than concentric sampling.

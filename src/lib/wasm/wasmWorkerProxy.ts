@@ -114,6 +114,31 @@ export async function detectRadsymWasm(
     return postDetection("radsym", pixels, width, height, config);
 }
 
+export async function detectPuzzleboardWasm(
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    config: unknown,
+): Promise<unknown> {
+    return postDetection("puzzleboard", pixels, width, height, config);
+}
+
+export async function generatePuzzleboardPngWasm(
+    rows: number,
+    cols: number,
+    cellSizeMm: number,
+    pngDpi: number,
+): Promise<{ png: Uint8Array; mimeType: string }> {
+    return postDetection(
+        "puzzleboard",
+        new Uint8Array(0),
+        0,
+        0,
+        { rows, cols, cellSizeMm, pngDpi },
+        "puzzleboard-gen-png",
+    ) as Promise<{ png: Uint8Array; mimeType: string }>;
+}
+
 export async function generateRadsymHeatmap(
     pixels: Uint8Array,
     width: number,

@@ -1,15 +1,18 @@
 import { describe, it, expect } from "vitest";
-import type { ChessCornersResult, CalibrationTargetResult, CalibrationTargetAlgorithm, CalibrationTargetKind, RinggridDetectResult, RadsymResult } from "../../../../lib/types";
+import type { ChessCornersResult, CalibrationTargetResult, CalibrationTargetAlgorithm, CalibrationTargetKind, RinggridDetectResult, RadsymResult, PuzzleBoardDetectResult } from "../../../../lib/types";
 import { chessCornersAlgorithm } from "../chessCorners/adapter";
 import { chessboardAlgorithm } from "../calibrationTargets/chessboardAdapter";
 import { charucoAlgorithm } from "../calibrationTargets/charucoAdapter";
 import { markerboardAlgorithm } from "../calibrationTargets/markerboardAdapter";
 import { ringgridAlgorithm } from "../ringgrid/adapter";
 import { radsymAlgorithm } from "../radsym/adapter";
+import { puzzleboardAlgorithm } from "../puzzleboard/adapter";
 
 // ── Mock result builders ────────────────────────────────────────────────────
 
 function mockChessCornersResult(count: number): ChessCornersResult {
+    const axis0Angle = Math.PI / 4;
+    const axis1Angle = axis0Angle + Math.PI / 2;
     return {
         status: "success",
         key: "wasm://local",
@@ -18,17 +21,13 @@ function mockChessCornersResult(count: number): ChessCornersResult {
         image_height: 480,
         frame: { name: "image_px_center", origin: "top_left", x_axis: "right", y_axis: "down", units: "pixels" },
         config: {
-            use_ml_refiner: false,
             threshold_rel: 0.2,
-            threshold_abs: null,
             nms_radius: 2,
+            broad_mode: false,
             min_cluster_size: 2,
-            pyramid_num_levels: 4,
+            pyramid_levels: 4,
             pyramid_min_size: 128,
-            refinement_radius: 4,
-            merge_radius: 4.0,
-            use_radius10: false,
-            descriptor_use_radius10: null,
+            upscale_factor: 0,
             refiner: "center_of_mass",
         },
         summary: {
@@ -47,12 +46,14 @@ function mockChessCornersResult(count: number): ChessCornersResult {
             x_norm: (50 + i * 20) / 640,
             y_norm: (60 + i * 15) / 480,
             response: 0.5,
-            orientation_rad: Math.PI / 4,
-            orientation_deg: 45,
-            direction: { dx: 0.707, dy: 0.707 },
+            contrast: 0.3,
+            fit_rms: 0.1,
+            axes: [
+                { angle_rad: axis0Angle, angle_deg: 45, sigma_rad: 0.05, direction: { dx: Math.cos(axis0Angle), dy: Math.sin(axis0Angle) } },
+                { angle_rad: axis1Angle, angle_deg: 135, sigma_rad: 0.06, direction: { dx: Math.cos(axis1Angle), dy: Math.sin(axis1Angle) } },
+            ],
             confidence: 0.8,
             confidence_level: "high" as const,
-            subpixel_offset_px: 0,
         })),
     };
 }
@@ -177,6 +178,33 @@ describe("chessCornersAlgorithm", () => {
         const result = mockChessCornersResult(1);
         const features = chessCornersAlgorithm.toFeatures(result, "run-1");
         expect(features[0].type === "directed_point" && features[0].x).toBe(result.corners[0].x + 0.5);
+    });
+
+    it("emits two axes with dx/dy/angleRad/sigmaRad", () => {
+        const result = mockChessCornersResult(1);
+        const features = chessCornersAlgorithm.toFeatures(result, "run-1");
+        const f = features[0];
+        if (f.type === "directed_point") {
+            expect(f.axes).toHaveLength(2);
+            expect(f.axes[0].dx).toBeCloseTo(result.corners[0].axes[0].direction.dx, 5);
+            expect(f.axes[0].dy).toBeCloseTo(result.corners[0].axes[0].direction.dy, 5);
+            expect(f.axes[0].angleRad).toBeCloseTo(result.corners[0].axes[0].angle_rad, 5);
+            expect(f.axes[0].sigmaRad).toBeCloseTo(result.corners[0].axes[0].sigma_rad, 5);
+            expect(f.axes[1].dx).toBeCloseTo(result.corners[0].axes[1].direction.dx, 5);
+            expect(f.axes[1].dy).toBeCloseTo(result.corners[0].axes[1].direction.dy, 5);
+            expect(f.axes[1].angleRad).toBeCloseTo(result.corners[0].axes[1].angle_rad, 5);
+            expect(f.axes[1].sigmaRad).toBeCloseTo(result.corners[0].axes[1].sigma_rad, 5);
+            expect(f.contrast).toBeCloseTo(result.corners[0].contrast, 5);
+            expect(f.fitRms).toBeCloseTo(result.corners[0].fit_rms, 5);
+        }
+    });
+
+    it("does not emit direction or orientationRad fields", () => {
+        const result = mockChessCornersResult(1);
+        const features = chessCornersAlgorithm.toFeatures(result, "run-1");
+        const f = features[0] as unknown as Record<string, unknown>;
+        expect(f["direction"]).toBeUndefined();
+        expect(f["orientationRad"]).toBeUndefined();
     });
 
     it("handles empty result", () => {
@@ -481,5 +509,114 @@ describe("radsymAlgorithm", () => {
         const result = mockRadsymResult(0);
         const features = radsymAlgorithm.toFeatures(result, "run-1");
         expect(features).toHaveLength(0);
+    });
+});
+
+// ── PuzzleBoard adapter ─────────────────────────────────────────────────────
+
+function mockPuzzleboardResult(cornerCount: number, bitErrorRate = 0.05): PuzzleBoardDetectResult {
+    return {
+        status: "success",
+        key: "wasm://local",
+        storage_mode: "local",
+        image_width: 1280,
+        image_height: 960,
+        frame: { name: "image_px_center", origin: "top_left", x_axis: "right", y_axis: "down", units: "pixels" },
+        summary: {
+            corner_count: cornerCount,
+            mean_confidence: 0.82,
+            bit_error_rate: bitErrorRate,
+            master_origin: [3, 2],
+            runtime_ms: 55.3,
+        },
+        detection: {
+            kind: "puzzleboard",
+            corners: Array.from({ length: cornerCount }, (_, idx) => ({
+                id: `pb-corner-${idx}`,
+                x: 100 + idx * 12 + 0.5,
+                y: 200 + idx * 9 + 0.5,
+                score: 0.88,
+                grid: { i: Math.floor(idx / 5), j: idx % 5 },
+                master_id: idx + 10,
+                target_position: null,
+            })),
+        },
+        alignment: {
+            transform: { a: 1, b: 0, c: 0, d: 1 },
+            translation: [0, 0],
+        },
+        decode: {
+            edges_observed: 40,
+            edges_matched: 38,
+            mean_confidence: 0.82,
+            bit_error_rate: bitErrorRate,
+            master_origin_row: 3,
+            master_origin_col: 2,
+        },
+        observed_edges: [],
+    };
+}
+
+describe("puzzleboardAlgorithm", () => {
+    it("is WASM-only", () => {
+        expect(puzzleboardAlgorithm.executionModes).toEqual(["wasm"]);
+    });
+
+    it("run() throws", async () => {
+        await expect(puzzleboardAlgorithm.run({ key: "", storageMode: "local", config: {} }))
+            .rejects.toThrow("only available via client-side WASM");
+    });
+
+    it("toFeatures emits labeled_point features with gridIndex and masterId", () => {
+        const result = mockPuzzleboardResult(6);
+        const features = puzzleboardAlgorithm.toFeatures(result, "run-pb");
+        expect(features).toHaveLength(6);
+        for (const f of features) {
+            expect(f.type).toBe("labeled_point");
+            expect(f.source).toBe("algorithm");
+            expect(f.algorithmId).toBe("puzzleboard");
+            expect(f.runId).toBe("run-pb");
+            expect(f.readonly).toBe(true);
+        }
+        const first = features[0] as import("../../../../store/editor/useEditorStore").LabeledPointFeature;
+        expect(first.gridIndex).toEqual({ i: 0, j: 0 });
+        expect(first.masterId).toBe(10);
+    });
+
+    it("skips corners with null grid or null master_id", () => {
+        const result = mockPuzzleboardResult(3);
+        result.detection.corners[1].grid = null;
+        result.detection.corners[2].master_id = null;
+        const features = puzzleboardAlgorithm.toFeatures(result, "run-pb");
+        expect(features).toHaveLength(1);
+    });
+
+    it("summary returns five entries", () => {
+        const result = mockPuzzleboardResult(10);
+        const summary = puzzleboardAlgorithm.summary(result);
+        expect(summary).toHaveLength(5);
+        expect(summary[0]).toEqual({ label: "Corners", value: "10" });
+        expect(summary[1].label).toBe("Mean confidence");
+        expect(summary[2].label).toBe("Bit error rate");
+        expect(summary[3]).toEqual({ label: "Master origin", value: "(3, 2)" });
+        expect(summary[4].label).toBe("Runtime");
+    });
+
+    it("diagnostics warns on high bit error rate", () => {
+        const result = mockPuzzleboardResult(10, 0.25);
+        const diags = puzzleboardAlgorithm.diagnostics!(result);
+        expect(diags.some((d) => d.level === "warning" && d.message.includes("bit error rate"))).toBe(true);
+    });
+
+    it("diagnostics errors on zero corners", () => {
+        const result = mockPuzzleboardResult(0);
+        const diags = puzzleboardAlgorithm.diagnostics!(result);
+        expect(diags.some((d) => d.level === "error")).toBe(true);
+    });
+
+    it("diagnostics is clean on normal result", () => {
+        const result = mockPuzzleboardResult(50, 0.05);
+        const diags = puzzleboardAlgorithm.diagnostics!(result);
+        expect(diags.filter((d) => d.level !== "info")).toHaveLength(0);
     });
 });

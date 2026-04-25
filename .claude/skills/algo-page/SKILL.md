@@ -248,7 +248,7 @@ title: "..."          # Display title
 date: YYYY-MM-DD
 summary: "..."        # One sentence, index-card length
 tags: [...]           # At least one
-category: ...         # corner-detection | calibration-targets | subpixel-refinement | explainers
+category: ...         # corner-detection | calibration-targets | subpixel-refinement | calibration
 author: "..."
 
 # Optional
@@ -319,7 +319,7 @@ B6. **Read the primary.** For arxiv papers, prefer `docs/papers/.cache/<primary-
 B7. **Choose the page slug.** Kebab-case, descriptive to a reader browsing the algorithms register — not an id echo. `shu-topological-grid`, not `shu2009`. `harris-corner-detector`, not `harris-combined`.
 
 B8. **Synthesize the frontmatter.** No body yet — just the yaml block.
-  - `title` (display name, quoted), `date: <today>`, `summary` (one sentence: what it computes, what it returns), `tags` (at least `computer-vision` + primary topic), `category` (one of `corner-detection | calibration-targets | subpixel-refinement | explainers`), `difficulty: intermediate` unless the content clearly warrants another tier, `author: "Vitaly Vorobyev"`.
+  - `title` (display name, quoted), `date: <today>`, `summary` (one sentence: what it computes, what it returns), `tags` (at least `computer-vision` + primary topic), `category` (one of `corner-detection | calibration-targets | subpixel-refinement | calibration`), `difficulty: intermediate` unless the content clearly warrants another tier, `author: "Vitaly Vorobyev"`.
   - `sources.primary`: the paper id.
   - `sources.references`: curated — direct antecedents from B4 plus any cross-link candidates from `bun papers:query pages-using <ref-id>`. These are the papers that will appear in `# References`.
   - `sources.notes`: freeform summary of key equations, symbols, and constants grounding the page.

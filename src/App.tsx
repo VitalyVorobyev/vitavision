@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import ScrollToTop from './components/layout/ScrollToTop';
 import './index.css';
 
 import { ThemeProvider } from 'next-themes';
@@ -20,6 +21,7 @@ const Blog = lazy(() => import('./pages/Blog'));
 const BlogPost = lazy(() => import('./pages/BlogPost'));
 const AlgorithmIndex = lazy(() => import('./pages/AlgorithmIndex'));
 const AlgorithmPost = lazy(() => import('./pages/AlgorithmPost'));
+const ModelPost = lazy(() => import('./pages/ModelPost'));
 const DemoIndex = lazy(() => import('./pages/DemoIndex'));
 const DemoPage = lazy(() => import('./pages/DemoPage'));
 const Editor = lazy(() => import('./pages/Editor'));
@@ -36,6 +38,7 @@ function AppLayout() {
 
     return (
         <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
+            <ScrollToTop />
             <a
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm focus:font-medium focus:shadow-lg"
@@ -50,6 +53,8 @@ function AppLayout() {
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:slug" element={<BlogPost />} />
                         <Route path="/algorithms" element={<AlgorithmIndex />} />
+                        <Route path="/algorithms/models" element={<Navigate to="/algorithms?kind=models" replace />} />
+                        <Route path="/algorithms/models/:slug" element={<ModelPost />} />
                         <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
                         <Route path="/demos" element={<DemoIndex />} />
                         <Route path="/demos/:slug" element={<DemoPage />} />

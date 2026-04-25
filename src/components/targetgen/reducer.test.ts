@@ -4,7 +4,9 @@ import {
     INITIAL_STATE,
     defaultConfigForType,
     defaultCircles,
+    DEFAULT_PUZZLEBOARD,
 } from "./reducer";
+import type { PuzzleboardConfig } from "./types";
 
 describe("defaultCircles", () => {
     it("returns 3 circles centered on the board", () => {
@@ -39,6 +41,14 @@ describe("defaultConfigForType", () => {
     it("returns chessboard as default for unknown type", () => {
         const config = defaultConfigForType("nonexistent");
         expect(config).toHaveProperty("innerRows");
+    });
+
+    it("returns puzzleboard config for 'puzzleboard'", () => {
+        const config = defaultConfigForType("puzzleboard") as PuzzleboardConfig;
+        expect(config.rows).toBe(DEFAULT_PUZZLEBOARD.rows);
+        expect(config.cols).toBe(DEFAULT_PUZZLEBOARD.cols);
+        expect(config.cellSizeMm).toBe(DEFAULT_PUZZLEBOARD.cellSizeMm);
+        expect(config.pngDpi).toBe(DEFAULT_PUZZLEBOARD.pngDpi);
     });
 });
 
@@ -107,6 +117,35 @@ describe("targetGeneratorReducer", () => {
         });
         expect(next.previewSvg).toBe("<svg></svg>");
         expect(next.validation.errors).toContain("too small");
+    });
+
+    it("SET_TARGET_TYPE('puzzleboard') yields default puzzleboard config", () => {
+        const next = targetGeneratorReducer(INITIAL_STATE, {
+            type: "SET_TARGET_TYPE",
+            targetType: "puzzleboard",
+        });
+        expect(next.target.targetType).toBe("puzzleboard");
+        const config = next.target.config as PuzzleboardConfig;
+        expect(config.rows).toBe(7);
+        expect(config.cols).toBe(10);
+        expect(config.cellSizeMm).toBe(15);
+        expect(config.pngDpi).toBe(300);
+        // Previous chessboard config is cached
+        expect(next.configCache.chessboard).toBeDefined();
+    });
+
+    it("UPDATE_CONFIG updates puzzleboard rows", () => {
+        const pb = targetGeneratorReducer(INITIAL_STATE, {
+            type: "SET_TARGET_TYPE",
+            targetType: "puzzleboard",
+        });
+        const updated = targetGeneratorReducer(pb, {
+            type: "UPDATE_CONFIG",
+            partial: { rows: 9 },
+        });
+        expect((updated.target.config as PuzzleboardConfig).rows).toBe(9);
+        // Other fields unchanged
+        expect((updated.target.config as PuzzleboardConfig).cols).toBe(10);
     });
 
     it("auto-centers circles when markerboard dimensions change", () => {

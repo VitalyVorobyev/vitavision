@@ -44,6 +44,13 @@ describe("ALGORITHM_REGISTRY", () => {
         expect(typeof radsym!.runWasm).toBe("function");
     });
 
+    it("puzzleboard is registered as WASM-only", () => {
+        const puzzleboard = ALGORITHM_REGISTRY.find((a) => a.id === "puzzleboard");
+        expect(puzzleboard).toBeDefined();
+        expect(puzzleboard!.executionModes).toEqual(["wasm"]);
+        expect(typeof puzzleboard!.runWasm).toBe("function");
+    });
+
     it("all algorithms are WASM-only", () => {
         for (const algo of ALGORITHM_REGISTRY) {
             expect(algo.executionModes).toEqual(["wasm"]);

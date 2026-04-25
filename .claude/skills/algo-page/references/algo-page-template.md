@@ -4,7 +4,7 @@ title: "<Display name of the algorithm>"
 date: YYYY-MM-DD
 summary: "<One sentence, index-card length. Declarative. No narrative opening.>"
 tags: ["<primary>", "<secondary>"]
-category: <corner-detection|calibration-targets|subpixel-refinement|explainers>
+category: <corner-detection|calibration-targets|subpixel-refinement|explainers|calibration>
 author: "Vitaly Vorobyev"
 
 # Optional

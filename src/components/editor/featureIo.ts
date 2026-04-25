@@ -31,6 +31,32 @@ function stripForExport(feature: Feature): Record<string, unknown> {
     return out;
 }
 
+// Migrate features exported before chess-corners v0.6 changed directed_point
+// from a single `direction` to a two-axis `axes` tuple. Synthesizes the second
+// axis as the perpendicular of the first.
+function migrateLegacyFeatures(parsed: unknown): unknown {
+    if (!Array.isArray(parsed)) return parsed;
+    return parsed.map((entry) => {
+        if (!entry || typeof entry !== "object") return entry;
+        const f = entry as Record<string, unknown>;
+        if (f.type !== "directed_point" || f.axes !== undefined) return entry;
+        const direction = f.direction as { dx?: unknown; dy?: unknown } | undefined;
+        if (!direction || typeof direction.dx !== "number" || typeof direction.dy !== "number") {
+            return entry;
+        }
+        const { dx, dy } = direction;
+        const orientationRad = typeof f.orientationRad === "number" ? f.orientationRad : undefined;
+        const { direction: _direction, orientationRad: _orientationRad, ...rest } = f;
+        return {
+            ...rest,
+            axes: [
+                { dx, dy, ...(orientationRad !== undefined ? { angleRad: orientationRad } : {}) },
+                { dx: -dy, dy: dx },
+            ],
+        };
+    });
+}
+
 export function exportFeaturesAsJson(features: Feature[]) {
     const exported = features.map(stripForExport);
     const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(exported, null, 2))}`;
@@ -70,7 +96,8 @@ export function promptFeatureImport({
         reader.onload = (readerEvent) => {
             try {
                 const parsed = JSON.parse((readerEvent.target?.result as string) || "null");
-                const result = featuresArraySchema.safeParse(parsed);
+                const migrated = migrateLegacyFeatures(parsed);
+                const result = featuresArraySchema.safeParse(migrated);
                 if (!result.success) {
                     toast.error(`Invalid feature file: ${result.error.issues[0]?.message ?? "unknown error"}`);
                     return;

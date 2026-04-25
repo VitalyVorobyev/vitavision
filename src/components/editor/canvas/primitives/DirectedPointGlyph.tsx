@@ -27,18 +27,26 @@ interface DirectedPointGlyphProps {
 export default function DirectedPointGlyph(props: DirectedPointGlyphProps) {
     const { feature, zoom, selected, hovered, onSelect, onHover, onHoverEnd } = props;
     const color = scoreColor(feature.score, selected, hovered);
-    const arrowX = feature.x + feature.direction.dx * ARROW_LENGTH_PX;
-    const arrowY = feature.y + feature.direction.dy * ARROW_LENGTH_PX;
+    const strokeWidth = selected ? 2.4 / zoom : 1.4 / zoom;
+    const opacity = selected ? 1 : 0.85;
 
     return (
         <Group>
-            <Line
-                points={[feature.x, feature.y, arrowX, arrowY]}
-                stroke={color}
-                strokeWidth={selected ? 2.4 / zoom : 1.4 / zoom}
-                opacity={selected ? 1 : 0.85}
-                listening={false}
-            />
+            {feature.axes.map((axis, i) => (
+                <Line
+                    key={i}
+                    points={[
+                        feature.x - axis.dx * ARROW_LENGTH_PX,
+                        feature.y - axis.dy * ARROW_LENGTH_PX,
+                        feature.x + axis.dx * ARROW_LENGTH_PX,
+                        feature.y + axis.dy * ARROW_LENGTH_PX,
+                    ]}
+                    stroke={color}
+                    strokeWidth={strokeWidth}
+                    opacity={opacity}
+                    listening={false}
+                />
+            ))}
             <Circle
                 x={feature.x}
                 y={feature.y}

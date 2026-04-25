@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Circle, Ellipse, Group, Line, Rect } from "react-konva";
+import { Circle, Ellipse, Group, Label, Line, Rect, Tag, Text } from "react-konva";
 import type Konva from "konva";
 
 import ArUcoMarkerGlyph from "./primitives/ArUcoMarkerGlyph";
@@ -7,7 +7,8 @@ import DirectedPointGlyph from "./primitives/DirectedPointGlyph";
 import RingMarkerGlyph from "./primitives/RingMarkerGlyph";
 import CircleGlyph from "./primitives/CircleGlyph";
 import { isFeatureVisible } from "../../../store/editor/featureGroups";
-import { isReadonlyFeature, type ArUcoMarkerFeature, type CircleFeature, type DirectedPointFeature, type Feature, type RingMarkerFeature, type ToolType } from "../../../store/editor/useEditorStore";
+import { overlayTheme } from "./overlays/overlayTheme";
+import { isReadonlyFeature, type ArUcoMarkerFeature, type CircleFeature, type DirectedPointFeature, type Feature, type LabeledPointFeature, type OverlayToggles, type RingMarkerFeature, type ToolType } from "../../../store/editor/useEditorStore";
 
 interface FeatureLayerProps {
     features: Feature[];
@@ -17,6 +18,7 @@ interface FeatureLayerProps {
     activeTool: ToolType;
     selectedFeatureId: string | null;
     hoveredDirectedPointId: string | null;
+    overlayToggles?: OverlayToggles;
     setSelectedFeatureId: (id: string) => void;
     updateFeature: (id: string, partial: Partial<Feature>) => void;
     onTransformEnd: (event: Konva.KonvaEventObject<Event>) => void;
@@ -33,12 +35,15 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
         activeTool,
         selectedFeatureId,
         hoveredDirectedPointId,
+        overlayToggles,
         setSelectedFeatureId,
         updateFeature,
         onTransformEnd,
         onDirectedPointHover,
         onDirectedPointLeave,
     } = props;
+
+    const LABEL_MIN_ZOOM = 0.5;
 
     if (!showFeatures) {
         return null;
@@ -275,6 +280,62 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                             selected={isSelected}
                             onSelect={selectFeature}
                         />
+                    );
+                }
+
+                if (feature.type === "labeled_point") {
+                    const lp = feature as LabeledPointFeature;
+                    const pointRadius = 3 / zoom;
+                    const hitRadius = 8 / zoom;
+                    const color = isSelected ? "#00ffff" : feature.color || overlayTheme.cornerAccent;
+                    const showLabel = (overlayToggles?.labels ?? false) && zoom >= LABEL_MIN_ZOOM;
+                    const fontSize = 9 / zoom;
+                    const labelPad = 2 / zoom;
+                    return (
+                        <Group
+                            key={feature.id}
+                            onClick={selectFeature}
+                            onTap={selectFeature}
+                        >
+                            <Circle
+                                x={lp.x}
+                                y={lp.y}
+                                radius={hitRadius}
+                                fill="transparent"
+                            />
+                            {isSelected && (
+                                <Circle
+                                    x={lp.x}
+                                    y={lp.y}
+                                    radius={10 / zoom}
+                                    fill="rgba(0, 255, 255, 0.18)"
+                                    stroke="#00ffff"
+                                    strokeWidth={1.2 / zoom}
+                                    opacity={0.9}
+                                />
+                            )}
+                            <Circle
+                                x={lp.x}
+                                y={lp.y}
+                                radius={pointRadius}
+                                fill={color}
+                            />
+                            {showLabel && (
+                                <Label
+                                    x={lp.x + 4 / zoom}
+                                    y={lp.y - fontSize - 2 / zoom}
+                                    listening={false}
+                                >
+                                    <Tag fill={overlayTheme.labelBg} cornerRadius={2 / zoom} />
+                                    <Text
+                                        text={`(${lp.gridIndex.i},${lp.gridIndex.j})`}
+                                        fontSize={fontSize}
+                                        fill={overlayTheme.labelText}
+                                        padding={labelPad}
+                                    />
+                                </Label>
+                            )}
+                        </Group>
                     );
                 }
 

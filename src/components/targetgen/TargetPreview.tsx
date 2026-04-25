@@ -36,6 +36,13 @@ function computeBoardDims(state: TargetGeneratorState) {
                 h: (maxY - minY) + 2 * drawRadius,
             };
         }
+        case "puzzleboard": {
+            const MARGIN_MM = 5;
+            return {
+                w: target.config.cols * target.config.cellSizeMm + 2 * MARGIN_MM,
+                h: target.config.rows * target.config.cellSizeMm + 2 * MARGIN_MM,
+            };
+        }
     }
 }
 

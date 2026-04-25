@@ -7,12 +7,26 @@ import ChessCornersConfigForm, { type ChessCornersConfig } from "./ChessCornersC
 
 const initialConfig: ChessCornersConfig = {
     thresholdRel: 0.2,
-    useMlRefiner: false,
+    nmsRadius: 2,
+    minClusterSize: 2,
+    broadMode: false,
+    pyramidLevels: 4,
+    pyramidMinSize: 128,
+    upscaleFactor: 0,
+    refiner: "center_of_mass",
 };
 
 const presets: AlgorithmPreset[] = [
-    { label: "Sensitive", description: "Lower threshold, more corners", config: { thresholdRel: 0.08, useMlRefiner: false } },
-    { label: "Balanced", description: "Default detection settings", config: { thresholdRel: 0.2, useMlRefiner: false } },
+    {
+        label: "Sensitive",
+        description: "Lower threshold, broad mode, more pyramid levels",
+        config: { thresholdRel: 0.1, nmsRadius: 2, minClusterSize: 2, broadMode: true, pyramidLevels: 5, pyramidMinSize: 128, upscaleFactor: 0, refiner: "center_of_mass" },
+    },
+    {
+        label: "Balanced",
+        description: "Default detection settings",
+        config: { ...initialConfig },
+    },
 ];
 
 const toDiagnostics = (result: ChessCornersResult): DiagnosticEntry[] => {
@@ -41,12 +55,13 @@ const toFeatures = (result: ChessCornersResult, runId: string): Feature[] => {
         // Detector origin is center of top-left pixel; canvas origin is its top-left corner.
         x: corner.x + 0.5,
         y: corner.y + 0.5,
-        direction: {
-            dx: corner.direction.dx,
-            dy: corner.direction.dy,
-        },
+        axes: [
+            { dx: corner.axes[0].direction.dx, dy: corner.axes[0].direction.dy, angleRad: corner.axes[0].angle_rad, sigmaRad: corner.axes[0].sigma_rad },
+            { dx: corner.axes[1].direction.dx, dy: corner.axes[1].direction.dy, angleRad: corner.axes[1].angle_rad, sigmaRad: corner.axes[1].sigma_rad },
+        ],
         score: corner.confidence,
-        orientationRad: corner.orientation_rad,
+        contrast: corner.contrast,
+        fitRms: corner.fit_rms,
         label: `corner ${corner.id.slice(0, 8)}`,
     }));
 
@@ -56,8 +71,8 @@ const toFeatures = (result: ChessCornersResult, runId: string): Feature[] => {
 export const chessCornersAlgorithm: AlgorithmDefinition = {
     id: "chess-corners",
     title: "ChESS Corners",
-    description: "Detect ChESS X-junction keypoints with subpixel positions and orientation vectors.",
-    blogSlug: "01-chess",
+    description: "Detect ChESS X-junction keypoints with subpixel positions and two-axis orientation descriptors.",
+    blogSlug: "pyramidal-blur-aware-xcorner",
     initialConfig,
     presets,
     executionModes: ["wasm"],
@@ -67,11 +82,15 @@ export const chessCornersAlgorithm: AlgorithmDefinition = {
     },
     runWasm: async ({ pixels, width, height, config }) => {
         const typedConfig = config as ChessCornersConfig;
-        if (typedConfig.useMlRefiner) {
-            throw new Error("ML refiner requires server-side execution");
-        }
         return detectChessCornersWasm(pixels, width, height, {
             thresholdRel: typedConfig.thresholdRel,
+            nmsRadius: typedConfig.nmsRadius,
+            minClusterSize: typedConfig.minClusterSize,
+            broadMode: typedConfig.broadMode,
+            pyramidLevels: typedConfig.pyramidLevels,
+            pyramidMinSize: typedConfig.pyramidMinSize,
+            upscaleFactor: typedConfig.upscaleFactor,
+            refiner: typedConfig.refiner,
         });
     },
     toFeatures: (result, runId) => toFeatures(result as ChessCornersResult, runId),

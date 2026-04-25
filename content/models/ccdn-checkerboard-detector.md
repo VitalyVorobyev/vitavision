@@ -2,11 +2,12 @@
 title: "CCDN"
 date: 2026-04-18
 summary: "Fully convolutional network that regresses a per-pixel checkerboard-corner response map; trained with weighted cross-entropy and paired with threshold + NMS + k-means post-processing."
-tags: ["computer-vision", "calibration", "corner-detection", "cnn"]
+tags: ["calibration", "corner-detection", "cnn"]
 category: calibration-learning
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: cnn
+draft: true
 params: "16,301"
 sources:
   primary: chen2023-ccdn

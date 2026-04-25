@@ -2,9 +2,10 @@
 title: "Pyramidal Blur-Aware X-Corner Chessboard Detector"
 date: 2026-04-18
 summary: "Detect chessboard X-junctions in heavily blurred or high-resolution images by computing a 16-sample circular x-corner intensity at every level of an image pyramid, selecting per corner the level that maximises intensity per resolution, then assembling a chessboard graph with blur-aware edge validation."
-tags: ["computer-vision", "calibration", "chessboard", "scale-space", "corner-detection"]
+tags: ["calibration", "chessboard", "corner-detection"]
 category: corner-detection
 author: "Vitaly Vorobyev"
+draft: true
 difficulty: intermediate
 editorAlgorithmId: chess-corners
 relatedAlgorithms: ["chess-corners", "rochade", "shu-topological-grid", "shi-tomasi-corner-detector"]

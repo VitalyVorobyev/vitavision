@@ -2,11 +2,12 @@
 title: "XFeat"
 date: 2026-04-18
 summary: "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices."
-tags: ["computer-vision", "image-matching", "keypoint-detection", "local-descriptors", "cnn"]
+tags: ["image-matching", "keypoint-detection", "local-descriptors", "cnn"]
 category: detection
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: cnn
+draft: true
 flops: "64-D descriptors at H/8 × W/8 resolution"
 sources:
   primary: potje2024-xfeat

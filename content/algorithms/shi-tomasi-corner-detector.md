@@ -2,8 +2,9 @@
 title: "Shi-Tomasi Corner Detector"
 date: 2026-04-15
 summary: "Scores each pixel by the smaller eigenvalue of the gradient structure tensor M; returns integer pixel locations where that eigenvalue exceeds a threshold, derived from a feature-tracking quality criterion."
-tags: ["computer-vision", "feature-detection", "corner"]
+tags: ["feature-detection", "corner"]
 category: corner-detection
+draft: true
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["harris-corner-detector", "fast-corner-detector", "chess-corners"]

@@ -2,7 +2,7 @@
 title: "ROCHADE: Robust Checkerboard Advanced Detection"
 date: 2026-04-17
 summary: "Detect a full planar checkerboard in an image by reducing the gradient-magnitude edge set to a single-pixel centreline graph, extracting inner corners as graph saddle points, then refining each corner to subpixel accuracy by fitting a bivariate quadratic to a cone-filtered neighbourhood and solving for its stationary point."
-tags: ["computer-vision", "calibration", "checkerboard", "subpixel-refinement", "saddle-point"]
+tags: ["calibration", "chessboard"]
 category: calibration-targets
 author: "Vitaly Vorobyev"
 difficulty: intermediate

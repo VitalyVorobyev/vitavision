@@ -72,7 +72,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "title": "ChESS Corners",
       "summary": "A chessboard-specific corner detector: scores each pixel by how well its local neighborhood matches an alternating bright-dark X-junction pattern, using 16 fixed integer offsets on a radius-5 ring.",
       "tags": [
-        "computer-vision",
         "feature-detection",
         "calibration",
         "chessboard"
@@ -118,12 +117,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "title": "Chessboard Detection via X-Corners and Topology",
       "summary": "Detect every corner of a chessboard calibration pattern and assign it an integer grid coordinate by counting ring-alternations to locate X-junctions, Delaunay-triangulating the corner set, and keeping only triangles that respect the two-colour neighbourhood regularity of the pattern.",
       "tags": [
-        "computer-vision",
         "calibration",
         "chessboard",
-        "corner-detection",
-        "topology",
-        "delaunay"
+        "corner-detection"
       ],
       "author": "Vitaly Vorobyev",
       "draft": true,
@@ -148,16 +144,47 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "daniilidis-dual-quaternion-handeye",
+    "frontmatter": {
+      "title": "Daniilidis Dual-Quaternion Hand-Eye Calibration",
+      "summary": "Solve the hand-eye equation AX=XB jointly for rotation and translation by parametrising rigid motions as unit dual quaternions and extracting X from the right null space of a single linear system.",
+      "tags": [
+        "calibration",
+        "hand-eye",
+        "robotics"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "advanced",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "category": "calibration",
+      "relatedAlgorithms": [
+        "tsai-lenz-handeye",
+        "zhang-planar-calibration"
+      ],
+      "sources": {
+        "primary": "daniilidis1999-hand-eye",
+        "references": [
+          "tsai1989-handeye",
+          "shiu1989-calibration"
+        ],
+        "notes": "Page tracks Daniilidis 1999 §3–§6. Rigid motion encoded as unit dual\nquaternion q̂ = q + εq′ with q = (cos θ/2, sin(θ/2) n) and\nq′ = (1/2) t ⊗ q (screw form q̂ = cos(θ̂/2) + sin(θ̂/2) l̂ with\nθ̂ = θ + εd, l̂ = l + εm). Screw congruence: corresponding hand and\neye motions share (θ, d); the scalar parts of â and b̂ coincide and\ncancel from the constraint â x̂ = x̂ b̂. Remaining imaginary-part\nequations stack into the 6×8 system (Eq. 31)\n    | a − b   [a+b]_×    0   0_{3×3} |\n    | a′ − b′ [a′+b′]_×  a−b [a+b]_× |\nper motion pair. SVD of the stacked ≥6M×8 matrix T yields a\ntwo-dim null space span{v₇, v₈}; the physical x̂ = λ₁ v₇ + λ₂ v₈\nis fixed by |q|² = 1 and q·q′ = 0 (a quadratic in s = λ₁/λ₂).\nRecover R from q and t = 2 q′ q*.\n"
+      },
+      "date": "2026-04-20"
+    }
+  },
+  {
     "slug": "fast-corner-detector",
     "frontmatter": {
       "title": "FAST Corner Detector",
       "summary": "Segment-test corner detector on a 16-pixel Bresenham ring of radius 3 around each candidate; classifies a point as a corner when N contiguous ring pixels are all brighter (or all darker) than the centre by a margin t.",
       "tags": [
-        "computer-vision",
         "feature-detection",
         "corner"
       ],
       "author": "Vitaly Vorobyev",
+      "draft": false,
       "difficulty": "intermediate",
       "readingTimeMinutes": 5,
       "access": "public",
@@ -180,7 +207,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "title": "Harris Corner Detector",
       "summary": "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum.",
       "tags": [
-        "computer-vision",
         "feature-detection",
         "corner"
       ],
@@ -205,16 +231,76 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "kumar-generalized-rac",
+    "frontmatter": {
+      "title": "Kumar-Ahuja Generalized Radial Alignment Constraint",
+      "summary": "Extend Tsai's radial alignment constraint to a non-frontal sensor by modelling lens–sensor tilt as a 2-DoF rotation, projecting observations onto a hypothesized frontal sensor, and solving a seven-parameter linear system for the extrinsic rotation and tilt.",
+      "tags": [
+        "camera-calibration",
+        "lens-sensor-tilt"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "advanced",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "category": "calibration",
+      "relatedAlgorithms": [
+        "zhang-planar-calibration"
+      ],
+      "sources": {
+        "primary": "kumar2014-grac",
+        "references": [
+          "tsai1987-versatile",
+          "weng1992-camera"
+        ],
+        "notes": "Page tracks Kumar & Ahuja 2014 §II–§V. Lens–sensor tilt parametrised\nby R(ρ, σ, 0) with Euler angles (ρ, σ) about the lens x and y axes\n(Eq. 1); z-rotation is redundant because the lens is rotationally\nsymmetric about the optic axis. gRAC (Eq. 5) applies Tsai's RAC to\nthe frontal-projected point P_f = (x_df, y_df) obtained by casting\nP_nf through the lens centre (Eq. 4). Linear form A q = b (Eq. 7)\nwith q = (q_1,…,q_7) encoding (R, S, t_x, t_y) via Eqs. 9–15.\nDecomposition (§V-A): |t_x| from row orthonormality of S (Eq. 17);\nfirst row s_{1j} = −q_{4+j} t_x (Eq. 18); L = t_x² M, P = √(N t_x² −\nM² t_x⁴) via Eqs. 19–22; second row from Eqs. 23–25; third row by\nright-hand cross product; (ρ, σ) from Eqs. 29–30 with relative sign\nfrom sign(L); t_y from Eq. 26. Sign disambiguation (§V-B): assume no\ndistortion, solve Eq. 35 for (λ, t_z), reject λ < 0, pick between\nremaining two by symmetric radial-distortion fit error. CoD estimate\n(§V-C) by iterative image-plane sampling minimising residual RAC on\nfrontal-projected coordinates — extends Lenz-Tsai's CoD search to\nthe non-frontal case.\n"
+      },
+      "date": "2026-04-23"
+    }
+  },
+  {
+    "slug": "duda-radon-corners",
+    "frontmatter": {
+      "title": "Localized Radon Checkerboard Corners",
+      "summary": "Detect checkerboard X-junctions by approximating a localized Radon transform with 1-D box filters on rotated copies of the image; the per-pixel response is the squared difference between the maximum and minimum directional line integrals over four discrete angles.",
+      "tags": [
+        "feature-detection",
+        "calibration",
+        "chessboard"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "category": "corner-detection",
+      "relatedAlgorithms": [
+        "chess-corners",
+        "harris-corner-detector",
+        "rochade",
+        "pyramidal-blur-aware-xcorner"
+      ],
+      "sources": {
+        "primary": "duda2018-accurate",
+        "references": [
+          "harris1988-corner",
+          "rufli2008-blurred",
+          "sinzinger2007-model-based"
+        ],
+        "notes": "§3 defines the per-angle line integral R_f^local[x,y,α] = Σ_{k=-m..m}\nf(x+k·cos α, y+k·sin α) and the detector response f_c = (max_α R −\nmin_α R)². §3 restricts α to {0, π/4, π/2, 3π/4}. §3.1 approximates\neach line integral by rotating the image by −α, applying a 1-D box\nblur of half-width m along the x-axis, and rotating back; with the\nfour-angle approximation this reduces to two image rotations\n({0, π/4}) and two blur orientations per rotation (horizontal and\nvertical), yielding four directional integrals. Post-processing:\nbox smoothing of the response, thresholding + NMS, Gaussian peak\nfit for subpixel localisation. §4 uses 1×9 box filter (m=4) and\n2× supersampling before rotation for antialiasing; baseline\ncomparison is Förstner's subpixel operator (Eq. 1) with a 9×9\nwindow and ≥20 iterations. Performance: ≈1/100-pixel accuracy on\ncrisp synthetic corners (§4.1, Fig. 4b); superior to Förstner under\nGaussian image noise (Fig. 5b, 7a).\n"
+      },
+      "date": "2026-04-23"
+    }
+  },
+  {
     "slug": "ocpad",
     "frontmatter": {
       "title": "OCPAD: Occluded Checkerboard Pattern Detection",
       "summary": "Recover the largest visible checkerboard subgraph from a partially occluded pattern by running VF2 subgraph isomorphism against a model graph under a binary-search driver over vertex counts, then closing gaps by breadth-first region growing from a quad-density anchor.",
       "tags": [
-        "computer-vision",
         "calibration",
-        "checkerboard",
-        "graph-matching",
-        "subgraph-isomorphism"
+        "chessboard"
       ],
       "author": "Vitaly Vorobyev",
       "draft": true,
@@ -244,13 +330,12 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "title": "PuzzleBoard",
       "summary": "Detect and decode a self-identifying checkerboard calibration pattern: saddle-point corners from a Hessian response, grid reconstruction via Kruskal minimum spanning forest on the 9-nearest-neighbour graph, absolute corner position on a $501 \\times 501$ grid from cross-correlation against two binary de Bruijn factor maps.",
       "tags": [
-        "computer-vision",
         "calibration",
-        "checkerboard",
-        "self-identifying-pattern",
-        "position-encoding"
+        "chessboard",
+        "self-identifying-pattern"
       ],
       "author": "Vitaly Vorobyev",
+      "draft": true,
       "difficulty": "advanced",
       "readingTimeMinutes": 6,
       "access": "public",
@@ -277,13 +362,12 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "title": "Pyramidal Blur-Aware X-Corner Chessboard Detector",
       "summary": "Detect chessboard X-junctions in heavily blurred or high-resolution images by computing a 16-sample circular x-corner intensity at every level of an image pyramid, selecting per corner the level that maximises intensity per resolution, then assembling a chessboard graph with blur-aware edge validation.",
       "tags": [
-        "computer-vision",
         "calibration",
         "chessboard",
-        "scale-space",
         "corner-detection"
       ],
       "author": "Vitaly Vorobyev",
+      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
@@ -339,11 +423,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "title": "ROCHADE: Robust Checkerboard Advanced Detection",
       "summary": "Detect a full planar checkerboard in an image by reducing the gradient-magnitude edge set to a single-pixel centreline graph, extracting inner corners as graph saddle points, then refining each corner to subpixel accuracy by fitting a bivariate quadratic to a cone-filtered neighbourhood and solving for its stationary point.",
       "tags": [
-        "computer-vision",
         "calibration",
-        "checkerboard",
-        "subpixel-refinement",
-        "saddle-point"
+        "chessboard"
       ],
       "author": "Vitaly Vorobyev",
       "draft": true,
@@ -376,11 +457,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "title": "Shi-Tomasi Corner Detector",
       "summary": "Scores each pixel by the smaller eigenvalue of the gradient structure tensor M; returns integer pixel locations where that eigenvalue exceeds a threshold, derived from a feature-tracking quality criterion.",
       "tags": [
-        "computer-vision",
         "feature-detection",
         "corner"
       ],
       "author": "Vitaly Vorobyev",
+      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 4,
       "access": "public",
@@ -406,11 +487,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "title": "Topological Grid Finding",
       "summary": "Recover the integer $(i, j)$ grid coordinate of every corner in a checkerboard calibration image by Delaunay-triangulating the corners, merging same-colour triangle pairs into quads, topologically and geometrically filtering illegal quads, and flood-filling coordinates through the resulting mesh.",
       "tags": [
-        "computer-vision",
         "calibration",
-        "chessboard",
-        "delaunay",
-        "topology"
+        "chessboard"
       ],
       "author": "Vitaly Vorobyev",
       "draft": true,
@@ -431,6 +509,70 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Pipeline: (1) Harris corners with subpixel refinement (§2); (2) Delaunay\ntriangulation of the corner set, Watson's O(n log n) implementation (§2.1);\n(3) merge each triangle with its unique same-colour edge neighbour into a\nquadrilateral (§3); (4) topological filtering — drop quads with two nodes\nof edge-degree > 4 (§4); (5) geometric filtering — drop quads whose\nopposite-edge length ratio > 10 (§4); (6) flood-fill integer grid\ncoordinates from an arbitrary seed (§5). Complexity O(n) in the number of\ncorners. Pattern uses three marker circles to fix origin and x-axis.\n"
       },
       "date": "2026-04-16"
+    }
+  },
+  {
+    "slug": "tsai-lenz-handeye",
+    "frontmatter": {
+      "title": "Tsai-Lenz Hand-Eye Calibration",
+      "summary": "Recover the constant rigid transform from a robot gripper to a rigidly mounted camera by solving the AX=XB equation in two stages — modified Rodrigues rotation, then translation.",
+      "tags": [
+        "calibration",
+        "hand-eye",
+        "robotics"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "category": "calibration",
+      "relatedAlgorithms": [
+        "daniilidis-dual-quaternion-handeye",
+        "zhang-planar-calibration"
+      ],
+      "sources": {
+        "primary": "tsai1989-handeye",
+        "references": [
+          "shiu1989-calibration",
+          "tsai1987-versatile"
+        ],
+        "notes": "Page tracks Tsai & Lenz 1989 §II.B–II.C. Rotation parametrised by the\nmodified Rodrigues vector P_r = 2 sin(θ/2) n (Eq. 9), with recovery\nR = (1 - |P_r|²/2) I + ½(P_r P_r^T + α [P_r]_×), α = √(4 - |P_r|²)\n(Eq. 10). Two-stage solver: (a) rotation — Lemma VI gives\n[P_g_ij + P_c_ij]_× P_cg' = P_c_ij - P_g_ij (Eq. 12); recover\nP_cg = 2 P_cg' / √(1 + |P_cg'|²) (Eq. 14). (b) translation —\nLemma VIII gives (R_g_ij - I) T_cg = R_cg T_c_ij - T_g_ij (Eq. 15).\nUniqueness: rotation axes of station pairs must be non-collinear\n(Lemmas X, XI). Special case: when P_g_ij + P_c_ij is collinear\nacross pairs, θ_Rcg = π and the axis is taken as P_g_ij + P_c_ij.\n"
+      },
+      "date": "2026-04-20"
+    }
+  },
+  {
+    "slug": "zhang-planar-calibration",
+    "frontmatter": {
+      "title": "Zhang's Planar Camera Calibration",
+      "summary": "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations.",
+      "tags": [
+        "calibration",
+        "intrinsics",
+        "homography"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "category": "calibration",
+      "relatedAlgorithms": [
+        "chess-corners",
+        "rochade",
+        "puzzleboard"
+      ],
+      "sources": {
+        "primary": "zhang2000-flexible",
+        "references": [
+          "tsai1987-versatile",
+          "weng1992-camera",
+          "sturm2003-plane-based"
+        ],
+        "notes": "Page follows the MSR-TR-98-71 (Zhang, updated 2008) presentation:\n§2 basic equations; §3.1 closed-form linear initialization from\nhomographies; Appendix B closed-form K from the IAC vector b;\n§3.2 ML refinement (Eq. 10); §3.3 radial distortion (Eq. 11-12, 14);\n§4 parallel-plane degeneracy.\n"
+      },
+      "date": "2026-04-20"
     }
   }
 ];
@@ -469,12 +611,12 @@ export const modelPages: ModelIndexEntry[] = [
       "title": "CCDN",
       "summary": "Fully convolutional network that regresses a per-pixel checkerboard-corner response map; trained with weighted cross-entropy and paired with threshold + NMS + k-means post-processing.",
       "tags": [
-        "computer-vision",
         "calibration",
         "corner-detection",
         "cnn"
       ],
       "author": "Vitaly Vorobyev",
+      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
@@ -515,13 +657,13 @@ export const modelPages: ModelIndexEntry[] = [
       "title": "XFeat",
       "summary": "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices.",
       "tags": [
-        "computer-vision",
         "image-matching",
         "keypoint-detection",
         "local-descriptors",
         "cnn"
       ],
       "author": "Vitaly Vorobyev",
+      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",

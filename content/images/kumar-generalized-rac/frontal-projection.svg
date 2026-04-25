@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 320" class="h-auto w-full text-foreground" style="color:#1e293b" width="700" height="400" role="img" aria-label="Side view of the generalized radial alignment constraint: lens centre O_l on the optic axis, world point P_w with its foot P_oz on the axis, a non-frontal physical sensor (tilted) carrying P_nf, and a hypothesized frontal sensor (normal to the optic axis) carrying the projected point P_f. The vector from O_p to P_f is parallel to the vector from P_oz to P_l.">
+  <defs>
+    <marker id="rac-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+    <marker id="rac-arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b91c1c"/>
+    </marker>
+  </defs>
+
+  <!-- optic axis -->
+  <g stroke-width="1.4" fill="none">
+    <line x1="30" y1="180" x2="530" y2="180" stroke="#64748b" stroke-dasharray="6 4"/>
+  </g>
+  <g font-family="Geist Mono, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#64748b">
+    <text x="520" y="200" text-anchor="end">optic axis (z_l)</text>
+  </g>
+
+  <!-- lens body -->
+  <g fill="none" stroke="currentColor" stroke-width="1.8">
+    <path d="M 210 140 Q 230 180 210 220"/>
+    <path d="M 230 140 Q 210 180 230 220"/>
+  </g>
+  <!-- lens centre O_l -->
+  <g>
+    <circle cx="220" cy="180" r="3.5" fill="currentColor"/>
+  </g>
+  <g font-family="Geist Mono, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" fill="currentColor">
+    <text x="220" y="138" text-anchor="middle">O_l</text>
+  </g>
+
+  <!-- world side: P_w / P_l and P_oz -->
+  <g>
+    <circle cx="90" cy="108" r="4" fill="currentColor"/>
+    <circle cx="90" cy="180" r="3" fill="#64748b"/>
+    <line x1="90" y1="108" x2="90" y2="180" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3 3"/>
+  </g>
+  <g font-family="Geist Mono, SFMono-Regular, Menlo, Consolas, monospace" font-size="15">
+    <text x="82" y="100" text-anchor="end" fill="currentColor">P_w = P_l</text>
+    <text x="82" y="188" text-anchor="end" fill="#64748b">P_oz</text>
+  </g>
+
+  <!-- P_oz -> P_l red arrow -->
+  <g stroke="#b91c1c" stroke-width="2" fill="none">
+    <line x1="90" y1="176" x2="90" y2="116" marker-end="url(#rac-arrow-red)"/>
+  </g>
+
+  <!-- hypothesized frontal sensor (vertical, normal to axis) -->
+  <g fill="none" stroke="#1d4ed8" stroke-width="2">
+    <line x1="430" y1="78" x2="430" y2="282"/>
+  </g>
+  <g font-family="Geist, Inter, system-ui, sans-serif" font-size="13" fill="#1d4ed8">
+    <text x="438" y="94" text-anchor="start">hypothesized frontal sensor</text>
+  </g>
+
+  <!-- non-frontal (physical) sensor, tilted clockwise -->
+  <g fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="402" y1="78" x2="462" y2="282"/>
+  </g>
+  <g font-family="Geist, Inter, system-ui, sans-serif" font-size="13" fill="currentColor">
+    <text x="470" y="286" text-anchor="start">non-frontal sensor (tilt R(ρ,σ))</text>
+  </g>
+
+  <!-- ray from P_w through O_l to P_nf on non-frontal sensor -->
+  <g fill="none" stroke="#0f766e" stroke-width="1.6" stroke-dasharray="4 3">
+    <line x1="90" y1="108" x2="451" y2="245"/>
+  </g>
+
+  <!-- O_p on axis at frontal sensor -->
+  <g>
+    <circle cx="430" cy="180" r="3" fill="#1d4ed8"/>
+  </g>
+  <g font-family="Geist Mono, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" fill="#1d4ed8">
+    <text x="424" y="172" text-anchor="end">O_p</text>
+  </g>
+
+  <!-- P_f on frontal sensor (where ray crosses x = 430) -->
+  <!-- ray parametric: from (90,108) to (451,245): at x=430, y = 108 + (430-90)/(451-90)*(245-108) = 108 + 340/361*137 ≈ 237 -->
+  <g>
+    <circle cx="430" cy="237" r="4" fill="#1d4ed8"/>
+  </g>
+  <g font-family="Geist Mono, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" fill="#1d4ed8">
+    <text x="422" y="242" text-anchor="end">P_f</text>
+  </g>
+
+  <!-- P_nf on non-frontal sensor where same ray crosses it -->
+  <g>
+    <circle cx="451" cy="245" r="4" fill="currentColor"/>
+  </g>
+  <g font-family="Geist Mono, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" fill="currentColor">
+    <text x="459" y="250" text-anchor="start">P_nf</text>
+  </g>
+
+  <!-- O_p -> P_f red arrow -->
+  <g stroke="#b91c1c" stroke-width="2" fill="none">
+    <line x1="430" y1="184" x2="430" y2="233" marker-end="url(#rac-arrow-red)"/>
+  </g>
+
+  <!-- gRAC label -->
+  <g font-family="Geist, Inter, system-ui, sans-serif" font-size="14" fill="#b91c1c">
+    <text x="260" y="50" text-anchor="middle">gRAC:  vec(O_p P_f)  ‖  vec(P_oz P_l)</text>
+  </g>
+</svg>

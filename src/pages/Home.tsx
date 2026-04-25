@@ -45,7 +45,7 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.7, delay: 1.0 }}
-                className="max-w-[480px] text-sm text-muted-foreground sm:text-base"
+                className="max-w-[420px] text-sm text-muted-foreground sm:text-base"
             >
                 Computer Vision algorithms, interactive tools, technical deep dives.
             </motion.p>

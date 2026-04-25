@@ -304,22 +304,23 @@ export function NumberField(props: NumberFieldProps) {
         return () => el.removeEventListener("wheel", handleWheel);
     }, []);
 
-    const startHold = (deltaSteps: number) => (event: React.PointerEvent<HTMLButtonElement>) => {
+    const startHold = useCallback((event: React.PointerEvent<HTMLButtonElement>) => {
         if (disabled) {
             return;
         }
 
+        const deltaSteps = Number(event.currentTarget.dataset.delta ?? 0);
         event.preventDefault();
         clearHoldTimers();
         nudgeValue(deltaSteps);
         holdTimeoutRef.current = window.setTimeout(() => {
             holdIntervalRef.current = window.setInterval(() => nudgeValue(deltaSteps), 120);
         }, 260);
-    };
+    }, [clearHoldTimers, disabled, nudgeValue]);
 
-    const stopHold = () => {
+    const stopHold = useCallback(() => {
         clearHoldTimers();
-    };
+    }, [clearHoldTimers]);
 
     const handleScrubPointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
         if (disabled) {
@@ -410,7 +411,8 @@ export function NumberField(props: NumberFieldProps) {
                 <div className="flex items-stretch">
                     <button
                         type="button"
-                        onPointerDown={startHold(-1)}
+                        data-delta={-1}
+                        onPointerDown={startHold}
                         onPointerUp={stopHold}
                         onPointerLeave={stopHold}
                         onPointerCancel={stopHold}
@@ -446,7 +448,8 @@ export function NumberField(props: NumberFieldProps) {
                     />
                     <button
                         type="button"
-                        onPointerDown={startHold(1)}
+                        data-delta={1}
+                        onPointerDown={startHold}
                         onPointerUp={stopHold}
                         onPointerLeave={stopHold}
                         onPointerCancel={stopHold}

@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import ScrollToTop from './components/layout/ScrollToTop';
 import './index.css';
 
 import { ThemeProvider } from 'next-themes';
@@ -37,6 +38,7 @@ function AppLayout() {
 
     return (
         <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
+            <ScrollToTop />
             <a
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm focus:font-medium focus:shadow-lg"

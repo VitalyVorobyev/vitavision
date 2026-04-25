@@ -72,7 +72,7 @@ function Glyph({ category }: { category: AlgorithmCategory }) {
         );
     }
 
-    // explainers
+    // calibration
     return (
         <span className="text-[clamp(1.5rem,60%,3rem)] font-serif italic text-muted-foreground/40 select-none leading-none" aria-hidden="true">
             ƒ

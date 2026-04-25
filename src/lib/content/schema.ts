@@ -30,6 +30,7 @@ export const algorithmCategoryValues = [
     "calibration-targets",
     "subpixel-refinement",
     "explainers",
+    "calibration"
 ] as const;
 export type AlgorithmCategory = (typeof algorithmCategoryValues)[number];
 

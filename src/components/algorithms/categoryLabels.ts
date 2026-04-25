@@ -5,6 +5,7 @@ const CATEGORY_LABELS: Record<AlgorithmCategory, string> = {
     "calibration-targets": "Calibration targets",
     "subpixel-refinement": "Subpixel refinement",
     explainers: "Explainers",
+    calibration: "Calibration",
 };
 
 export function categoryLabel(category: AlgorithmCategory): string {

@@ -53,7 +53,7 @@ function AppLayout() {
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:slug" element={<BlogPost />} />
                         <Route path="/algorithms" element={<AlgorithmIndex />} />
-                        <Route path="/algorithms/models" element={<Navigate to="/algorithms?tab=models" replace />} />
+                        <Route path="/algorithms/models" element={<Navigate to="/algorithms?kind=models" replace />} />
                         <Route path="/algorithms/models/:slug" element={<ModelPost />} />
                         <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
                         <Route path="/demos" element={<DemoIndex />} />

@@ -22,6 +22,9 @@
 
   --color-brand: hsl(var(--brand));
 
+  --color-bg-soft:    hsl(var(--bg-soft));
+  --color-surface-hi: hsl(var(--surface-hi));
+
   --font-sans: Inter, system-ui, sans-serif;
   --font-serif: 'Source Serif 4 Variable', Georgia, serif;
   --font-mono: Geist Mono, ui-monospace, monospace;
@@ -54,6 +57,10 @@
     /* Brand accent — logo pupil */
     --brand:             191 75% 55%;
 
+    /* Layered surface tokens */
+    --bg-soft:           210 40% 96%;   /* between --background and --muted */
+    --surface-hi:        214 32% 91%;   /* matches --border for a subtle "raised" feel */
+
     /* Article reading tokens */
     --article-body:      215 25% 22%;
     --article-heading:   215 30% 12%;
@@ -76,6 +83,10 @@
 
     /* Brand accent — logo pupil */
     --brand:             191 75% 55%;
+
+    /* Layered surface tokens */
+    --bg-soft:           222 40% 13%;   /* between --background and --surface */
+    --surface-hi:        217 33% 21%;   /* one step brighter than --surface */
 
     /* Article reading tokens */
     --article-body:      210 30% 83%;

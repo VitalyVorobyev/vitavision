@@ -20,6 +20,13 @@ const initialConfig: CharucoConfig = {
     graphMaxSpacingPix: 160,
     graphKNeighbors: 8,
     graphOrientationToleranceDeg: 12.5,
+    scanBorderBits: 1,
+    scanInsetFrac: 0.06,
+    scanMinBorderScore: 0.75,
+    scanDedupById: true,
+    scanMultiThreshold: true,
+    maxHamming: 1,
+    minMarkerInliers: 8,
 };
 
 const presets: AlgorithmPreset[] = [
@@ -86,6 +93,15 @@ export const charucoAlgorithm: AlgorithmDefinition = {
                         orientation_tolerance_deg: c.graphOrientationToleranceDeg,
                     },
                 },
+                scan: {
+                    border_bits: c.scanBorderBits,
+                    inset_frac: c.scanInsetFrac,
+                    min_border_score: c.scanMinBorderScore,
+                    dedup_by_id: c.scanDedupById,
+                    multi_threshold: c.scanMultiThreshold,
+                },
+                max_hamming: c.maxHamming,
+                min_marker_inliers: c.minMarkerInliers,
             },
         });
     },

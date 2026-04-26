@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Circle, Group, Label, Tag, Text } from "react-konva";
 
-import type { PuzzleBoardDetectResult } from "../../../../lib/types";
+import type { PuzzleBoardDetectResult, PuzzleBoardLabeledCorner, PuzzleBoardObservedEdge } from "../../../../lib/types";
 import type { Feature, LabeledPointFeature, OverlayToggles } from "../../../../store/editor/useEditorStore";
 import type { GridEdge, GridNode } from "../../algorithms/calibrationTargets/overlayData";
 import GridEdgesGroup from "../../canvas/overlays/GridEdgesGroup";
@@ -16,6 +16,77 @@ interface PuzzleboardOverlayProps {
 }
 
 const LABEL_MIN_ZOOM = 0.5;
+const MASTER_PERIOD = 501;
+const WHITE_BIT_STROKE = "#38bdf8"; // sky-400 — outlines white puzzle dots (bit=1)
+const BLACK_BIT_STROKE = "#f97316"; // orange-500 — outlines black puzzle dots (bit=0)
+
+interface EdgeMarker {
+    key: string;
+    x: number;
+    y: number;
+    radius: number;
+    stroke: string;
+    opacity: number;
+}
+
+/**
+ * Build marker circles for observed_edges.
+ * Each edge sits at the midpoint between two adjacent corners. Local pre-alignment
+ * coords (e.row, e.col) are mapped into master indices via `alignment.transform`
+ * (mod 501); the corresponding corners are then looked up by their published master
+ * indices. Mirrors the calib-targets demo's ImageCanvas rendering.
+ */
+function buildEdgeMarkers(
+    edges: PuzzleBoardObservedEdge[],
+    corners: PuzzleBoardLabeledCorner[],
+    alignment: PuzzleBoardDetectResult["alignment"],
+): EdgeMarker[] {
+    if (!edges.length || !corners.length || !alignment) return [];
+
+    const byGrid = new Map<string, PuzzleBoardLabeledCorner>();
+    for (const c of corners) {
+        if (c.grid) byGrid.set(`${c.grid.i},${c.grid.j}`, c);
+    }
+
+    const { a, b, c: tc, d } = alignment.transform;
+    const [tx, ty] = alignment.translation;
+    const toMaster = (i: number, j: number): [number, number] => [
+        ((a * i + b * j + tx) % MASTER_PERIOD + MASTER_PERIOD) % MASTER_PERIOD,
+        ((tc * i + d * j + ty) % MASTER_PERIOD + MASTER_PERIOD) % MASTER_PERIOD,
+    ];
+
+    const markers: EdgeMarker[] = [];
+    for (let idx = 0; idx < edges.length; idx++) {
+        const e = edges[idx];
+        // Horizontal edge at (row=r, col=c): connects local (i=c, j=r) → (i=c+1, j=r).
+        // Vertical   edge at (row=r, col=c): connects local (i=c, j=r) → (i=c,   j=r+1).
+        const [ai, aj] = toMaster(e.col, e.row);
+        const [bi, bj] = e.orientation === "horizontal"
+            ? toMaster(e.col + 1, e.row)
+            : toMaster(e.col, e.row + 1);
+        const ca = byGrid.get(`${ai},${aj}`);
+        const cb = byGrid.get(`${bi},${bj}`);
+        if (!ca || !cb) continue;
+
+        const mx = 0.5 * (ca.x + cb.x);
+        const my = 0.5 * (ca.y + cb.y);
+        const dx = cb.x - ca.x;
+        const dy = cb.y - ca.y;
+        const edgeLen = Math.hypot(dx, dy);
+        // The puzzle bump diameter ≈ half the edge length, so radius ≈ 0.25 · edgeLen.
+        const radius = Math.max(3, 0.25 * edgeLen);
+        const conf = Math.min(1, Math.max(0, e.confidence));
+        markers.push({
+            key: `${e.orientation}-${e.row}-${e.col}-${idx}`,
+            x: mx,
+            y: my,
+            radius,
+            stroke: e.bit === 1 ? WHITE_BIT_STROKE : BLACK_BIT_STROKE,
+            opacity: 0.35 + 0.65 * conf,
+        });
+    }
+    return markers;
+}
 
 function buildPuzzleGrid(corners: PuzzleBoardDetectResult["detection"]["corners"]): {
     nodes: Map<string, GridNode & { featureId?: string }>;
@@ -91,11 +162,16 @@ export default function PuzzleboardOverlay({
         () => buildFeatureIdMap(features ?? []),
         [features],
     );
+    const edgeMarkers = useMemo(
+        () => buildEdgeMarkers(data.observed_edges, data.detection.corners, data.alignment),
+        [data],
+    );
 
     const showLabels = toggles.labels && zoom >= LABEL_MIN_ZOOM;
     const fontSize = 10 / zoom;
     const labelPad = 2 / zoom;
     const hitRadius = 8 / zoom;
+    const edgeStrokeWidth = Math.max(1.2, 1.6 / zoom);
 
     return (
         <Group>
@@ -106,6 +182,20 @@ export default function PuzzleboardOverlay({
                     zoom={zoom}
                 />
             )}
+
+            <Group listening={false}>
+                {edgeMarkers.map((m) => (
+                    <Circle
+                        key={m.key}
+                        x={m.x}
+                        y={m.y}
+                        radius={m.radius}
+                        stroke={m.stroke}
+                        strokeWidth={edgeStrokeWidth}
+                        opacity={m.opacity}
+                    />
+                ))}
+            </Group>
 
             <Group>
                 {Array.from(nodes.values()).map((node) => {

@@ -11,10 +11,10 @@
         "@fontsource/inter": "^5.2.8",
         "@radix-ui/react-tooltip": "^1.2.8",
         "@types/uuid": "^11.0.0",
+        "@vitavision/calib-targets": "^0.7.0",
+        "@vitavision/chess-corners": "^0.7.0",
         "@vitavision/radsym": "^0.1.4",
         "@vitavision/ringgrid": "^0.5.6",
-        "calib-targets-wasm": "^0.6.0",
-        "chess-corners-wasm": "^0.6.0",
         "feed": "^5.2.1",
         "framer-motion": "^12.38.0",
         "jszip": "^3.10.1",
@@ -482,6 +482,10 @@
 
     "@upsetjs/venn.js": ["@upsetjs/venn.js@2.0.0", "", { "optionalDependencies": { "d3-selection": "^3.0.0", "d3-transition": "^3.0.1" } }, "sha512-WbBhLrooyePuQ1VZxrJjtLvTc4NVfpOyKx0sKqioq9bX1C1m7Jgykkn8gLrtwumBioXIqam8DLxp88Adbue6Hw=="],
 
+    "@vitavision/calib-targets": ["@vitavision/calib-targets@0.7.3", "", {}, "sha512-jeEOi5ERMYgxAWuyoZeg5LNSieSRDTFJmnPXzLavu5oIgrlauZ29W2m3+XkE4wldP84S+3DFPWZg3G/Sabx4BA=="],
+
+    "@vitavision/chess-corners": ["@vitavision/chess-corners@0.7.0", "", {}, "sha512-2/Hy6A/5jSTcx6ye2HH4pfI2eJonDEYRRMMzWA6+x0Foj5e3wOXhvxaAKp2jAiLwyKjXi/zkllaOnL8tcbHGgA=="],
+
     "@vitavision/radsym": ["@vitavision/radsym@0.1.4", "", {}, "sha512-hq7zmO2Y9FkLwvIT3apWGRHATh3H+NGZIyWbyghicM7FylTTU8sVvH9diHYp3Uy2ZGtHQPKyvKA/Odmq71AiQQ=="],
 
     "@vitavision/ringgrid": ["@vitavision/ringgrid@0.5.6", "", {}, "sha512-Imp8D/gxI3llYcfiBt1DEICOgs0eDINDmT0+08ZmNExJORYbQlEPpca35F0Ie9pse6mxLvnmK+ZQgBpUalDPjQ=="],
@@ -530,8 +534,6 @@
 
     "browserslist": ["browserslist@4.28.1", "", { "dependencies": { "baseline-browser-mapping": "^2.9.0", "caniuse-lite": "^1.0.30001759", "electron-to-chromium": "^1.5.263", "node-releases": "^2.0.27", "update-browserslist-db": "^1.2.0" }, "bin": { "browserslist": "cli.js" } }, "sha512-ZC5Bd0LgJXgwGqUknZY/vkUQ04r8NXnJZ3yYi4vDmSiZmC/pdSN0NbNRPxZpbtO4uAfDUAFffO8IZoM3Gj8IkA=="],
 
-    "calib-targets-wasm": ["calib-targets-wasm@0.6.0", "", {}, "sha512-tWeGKL2AeZV9gvxnsx7mC6SaTv9USYAynCewwpOo5N5atmekv83H/eOXsQ0syWDrrmSi8wIiuRYbkq6g2PHCaw=="],
-
     "caniuse-lite": ["caniuse-lite@1.0.30001770", "", {}, "sha512-x/2CLQ1jHENRbHg5PSId2sXq1CIO1CISvwWAj027ltMVG2UNgW+w9oH2+HzgEIRFembL8bUlXtfbBHR1fCg2xw=="],
 
     "ccount": ["ccount@2.0.1", "", {}, "sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg=="],
@@ -545,8 +547,6 @@
     "character-entities-legacy": ["character-entities-legacy@3.0.0", "", {}, "sha512-RpPp0asT/6ufRm//AJVwpViZbGM/MkjQFxJccQRHmISF/22NBtsHqAWmL+/pmkPWoIUJdWyeVleTl1wydHATVQ=="],
 
     "character-reference-invalid": ["character-reference-invalid@2.0.1", "", {}, "sha512-iBZ4F4wRbyORVsu0jPV7gXkOsGYjGHPmAyv+HiHG8gi5PtC9KI2j1+v8/tlibRvjoWX027ypmG/n0HtO5t7unw=="],
-
-    "chess-corners-wasm": ["chess-corners-wasm@0.6.0", "", {}, "sha512-s4G4uR1+/c3xMGDcv3RsvI/GW5b+cIcdjuG5rDPmfhSOvJg5gubrxSKu0jUlIjZQyq6bJf/yAl3W93slkxCgMw=="],
 
     "chevrotain": ["chevrotain@11.1.2", "", { "dependencies": { "@chevrotain/cst-dts-gen": "11.1.2", "@chevrotain/gast": "11.1.2", "@chevrotain/regexp-to-ast": "11.1.2", "@chevrotain/types": "11.1.2", "@chevrotain/utils": "11.1.2", "lodash-es": "4.17.23" } }, "sha512-opLQzEVriiH1uUQ4Kctsd49bRoFDXGGSC4GUqj7pGyxM3RehRhvTlZJc1FL/Flew2p5uwxa1tUDWKzI4wNM8pg=="],
 

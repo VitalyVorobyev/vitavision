@@ -10,6 +10,9 @@ const initialConfig: ChessboardConfig = {
     expectedCols: 11,
     minCornerStrength: 0.2,
     completenessThreshold: 0.1,
+    maxFitRmsRatio: 0.5,
+    peakMinSeparationDeg: 60,
+    minPeakWeightFraction: 0.02,
 };
 
 const presets: AlgorithmPreset[] = [
@@ -41,6 +44,9 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
             expectedCols: 11,
             minCornerStrength: 0.2,
             completenessThreshold: 0.1,
+            maxFitRmsRatio: 0.5,
+            peakMinSeparationDeg: 60,
+            minPeakWeightFraction: 0.02,
         },
     },
     ConfigComponent: ChessboardConfigForm as AlgorithmDefinition["ConfigComponent"],
@@ -56,6 +62,9 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
                 completeness_threshold: c.completenessThreshold,
                 expected_rows: c.expectedRows,
                 expected_cols: c.expectedCols,
+                max_fit_rms_ratio: c.maxFitRmsRatio,
+                peak_min_separation_deg: c.peakMinSeparationDeg,
+                min_peak_weight_fraction: c.minPeakWeightFraction,
                 graph: {
                     min_spacing_pix: 5,
                     max_spacing_pix: 50,

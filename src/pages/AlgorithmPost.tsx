@@ -179,6 +179,7 @@ export default function AlgorithmPost() {
                     "markerboard": "markerboard",
                     "ringgrid": "ringgrid",
                     "radsym": "ringgrid",
+                    "puzzleboard": "puzzleboard",
                 } as Record<string, string>)[id];
                 const qs = sample
                     ? `algo=${id}&sample=${sample}`

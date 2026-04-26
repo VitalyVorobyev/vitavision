@@ -28,6 +28,7 @@ export default function VitavisionLogo({
         stroke: "currentColor",
         strokeWidth,
         strokeLinecap: "round" as const,
+        strokeLinejoin: "round" as const,
     };
 
     return (
@@ -57,7 +58,6 @@ export default function VitavisionLogo({
                     <motion.path
                         d={V_INNER}
                         {...strokeProps}
-                        strokeLinejoin="round"
                         initial={{ pathLength: 0, opacity: 0 }}
                         animate={{ pathLength: 1, opacity: 1 }}
                         transition={{
@@ -66,7 +66,7 @@ export default function VitavisionLogo({
                         }}
                     />
                 ) : (
-                    <path d={V_INNER} {...strokeProps} strokeLinejoin="round" />
+                    <path d={V_INNER} {...strokeProps} />
                 )}
 
                 {/* PUPIL_HALO — fades in once the inner V is nearly complete */}

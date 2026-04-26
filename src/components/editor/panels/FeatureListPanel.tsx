@@ -64,7 +64,7 @@ function buildDetailMeta(meta: FeatureMeta): MetaRow[] {
 
 /** Extract (x, y) from any spatial feature. */
 function featureXY(feature: Feature): { x: number; y: number } | null {
-    if (feature.type === "point" || feature.type === "directed_point") {
+    if (feature.type === "point" || feature.type === "directed_point" || feature.type === "labeled_point") {
         return { x: feature.x, y: feature.y };
     }
     if (feature.type === "bbox" || feature.type === "ellipse" || feature.type === "ring_marker" || feature.type === "aruco_marker") {
@@ -195,9 +195,21 @@ function SelectedFeatureCard({
     const meta = feature.meta;
     const xy = featureXY(feature);
 
-    // Resolve score from meta or directed_point feature
-    const score = meta?.score ?? (feature.type === "directed_point" ? feature.score : null);
+    // Resolve score from meta or features that carry it directly.
+    const score = meta?.score
+        ?? (feature.type === "directed_point" ? feature.score : null)
+        ?? (feature.type === "labeled_point" ? feature.score : null);
     const detailRows = meta ? buildDetailMeta(meta) : [];
+
+    // labeled_point (puzzleboard / charuco corners) carries its grid + target-board
+    // info directly on the feature, not inside meta — surface it here.
+    const labeledPointInfo = feature.type === "labeled_point"
+        ? {
+            gridIndex: feature.gridIndex,
+            masterId: feature.masterId,
+            targetPosMm: feature.targetPosMm,
+        }
+        : null;
 
     return (
         <div className="rounded-lg border border-primary/30 bg-primary/6 px-4 py-3 space-y-2.5">
@@ -246,6 +258,24 @@ function SelectedFeatureCard({
                     <>
                         <dt className="text-muted-foreground">Cell</dt>
                         <dd className="font-medium tabular-nums text-right">({meta.gridCell.gx}, {meta.gridCell.gy})</dd>
+                    </>
+                )}
+                {labeledPointInfo && (
+                    <>
+                        <dt className="text-muted-foreground whitespace-nowrap">Master idx</dt>
+                        <dd className="font-medium tabular-nums text-right">
+                            ({labeledPointInfo.gridIndex.i}, {labeledPointInfo.gridIndex.j})
+                        </dd>
+                        <dt className="text-muted-foreground whitespace-nowrap">Master ID</dt>
+                        <dd className="font-medium tabular-nums text-right">{labeledPointInfo.masterId}</dd>
+                        {labeledPointInfo.targetPosMm && (
+                            <>
+                                <dt className="text-muted-foreground whitespace-nowrap">Target (mm)</dt>
+                                <dd className="font-medium tabular-nums text-right">
+                                    {fmtCoord(labeledPointInfo.targetPosMm.x)}, {fmtCoord(labeledPointInfo.targetPosMm.y)}
+                                </dd>
+                            </>
+                        )}
                     </>
                 )}
                 {detailRows.map((row) => (

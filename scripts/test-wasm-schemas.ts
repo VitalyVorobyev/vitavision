@@ -186,11 +186,14 @@ process.exit(0);
 `,
     },
     {
-        name: "calib-targets: puzzleboard defaults",
+        name: "@vitavision/calib-targets: puzzleboard defaults + real image",
         code: `
-const mod = await import('calib-targets-wasm');
+const { PNG } = await import('pngjs');
+const { readFileSync } = await import('fs');
+const mod = await import('@vitavision/calib-targets');
 await mod.default();
-const params = mod.default_puzzleboard_params(7, 10);
+
+const params = mod.default_puzzleboard_params(10, 10);
 if (typeof params !== 'object' || params === null)
     throw new Error('default_puzzleboard_params returned non-object: ' + typeof params);
 const keys = Object.keys(params);
@@ -198,11 +201,25 @@ for (const k of ['px_per_square', 'chessboard', 'board', 'decode']) {
     if (!keys.includes(k))
         throw new Error('missing key: ' + k + ' in ' + JSON.stringify(keys));
 }
-console.log('PASS: default_puzzleboard_params(7,10) returns object with px_per_square, chessboard, board, decode');
-const board = params.board;
-if (board.rows !== 7 || board.cols !== 10)
-    throw new Error('board rows/cols mismatch: ' + JSON.stringify(board));
-console.log('PASS: board.rows=7, board.cols=10');
+console.log('PASS: default_puzzleboard_params(10,10) returns object with px_per_square, chessboard, board, decode');
+if (params.board.rows !== 10 || params.board.cols !== 10)
+    throw new Error('board rows/cols mismatch: ' + JSON.stringify(params.board));
+if (params.decode?.search_mode?.kind !== 'full')
+    throw new Error('expected default decode.search_mode.kind=full, got: ' + JSON.stringify(params.decode?.search_mode));
+console.log('PASS: board=10x10 and decode.search_mode.kind=full');
+
+const png = PNG.sync.read(readFileSync('public/puzzleboard.png'));
+const gray = mod.rgba_to_gray(new Uint8Array(png.data), png.width, png.height);
+const result = mod.detect_puzzleboard(png.width, png.height, gray, null, params);
+if (!result?.detection?.corners?.length)
+    throw new Error('no corners detected on public/puzzleboard.png');
+console.log('PASS: detected ' + result.detection.corners.length + ' puzzleboard corners on real image (mean conf ' + result.decode.mean_confidence.toFixed(3) + ')');
+const c = result.detection.corners[0];
+if (!Array.isArray(c.position) || c.position.length !== 2)
+    throw new Error('corner.position is not [x,y] array: ' + JSON.stringify(c.position));
+if (!c.grid || typeof c.grid.i !== 'number' || typeof c.grid.j !== 'number')
+    throw new Error('corner.grid is missing or malformed: ' + JSON.stringify(c.grid));
+console.log('PASS: corner has [x,y] position and {i,j} grid index');
 process.exit(0);
 `,
     },

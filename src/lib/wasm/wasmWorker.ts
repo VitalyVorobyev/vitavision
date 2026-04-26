@@ -10,7 +10,7 @@
 /** UUID generation with fallback for non-secure contexts (HTTP via --host). */
 function generateId(): string {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-        return generateId();
+        return crypto.randomUUID();
     }
     const bytes = new Uint8Array(16);
     crypto.getRandomValues(bytes);
@@ -53,6 +53,7 @@ export interface WorkerResponse {
 
 let chessInit: Promise<typeof import("chess-corners-wasm")> | null = null;
 let calibInit: Promise<typeof import("calib-targets-wasm")> | null = null;
+let puzzleInit: Promise<typeof import("@vitavision/calib-targets")> | null = null;
 
 async function getChessModule() {
     if (!chessInit) {
@@ -72,6 +73,22 @@ async function getCalibModule() {
         });
     }
     return calibInit;
+}
+
+// PuzzleBoard uses the newer @vitavision/calib-targets (0.7+) — its detector
+// reliably finds the puzzleboard chessboard on real images, where the older
+// calib-targets-wasm 0.6 fails ("chessboard not detected"). The two packages
+// share most of the surface but diverge in puzzleboard internals and the
+// `puzzleboard.chessboard` schema; the older package is kept for chessboard /
+// charuco / markerboard whose adapters target the 0.6 schema.
+async function getPuzzleboardModule() {
+    if (!puzzleInit) {
+        puzzleInit = import("@vitavision/calib-targets").then(async (mod) => {
+            await mod.default();
+            return mod;
+        });
+    }
+    return puzzleInit;
 }
 
 let ringgridInit: Promise<typeof import("@vitavision/ringgrid")> | null = null;
@@ -810,21 +827,17 @@ async function handlePuzzleboard(
     height: number,
     config: Record<string, unknown>,
 ) {
-    const mod = await getCalibModule();
+    const mod = await getPuzzleboardModule();
 
     const gray = mod.rgba_to_gray(pixels, width, height);
 
     // Read board dimensions for defaults
     const board = (config.board ?? {}) as Record<string, unknown>;
-    const rows = (board.rows as number) ?? 7;
+    const rows = (board.rows as number) ?? 10;
     const cols = (board.cols as number) ?? 10;
 
     const defaults = mod.default_puzzleboard_params(rows, cols) as Record<string, unknown>;
     const merged = deepMerge(defaults, config);
-
-    // Defence-in-depth: always run in fixed_board mode (full-scan is too slow for interactive use)
-    const decode = (merged.decode ?? {}) as Record<string, unknown>;
-    merged.decode = { ...decode, search_mode: { kind: "fixed_board" } };
 
     const t0 = performance.now();
     const result = mod.detect_puzzleboard(width, height, gray, null, merged);
@@ -839,7 +852,7 @@ async function handlePuzzleboardGenPng(
     cellSizeMm: number,
     dpi: number,
 ): Promise<{ png: Uint8Array; mimeType: string }> {
-    const mod = await getCalibModule();
+    const mod = await getPuzzleboardModule();
     const png = mod.render_puzzleboard_png(rows, cols, cellSizeMm, dpi);
     return { png, mimeType: "image/png" };
 }

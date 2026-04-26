@@ -32,6 +32,8 @@ const initialConfig: MarkerBoardConfig = {
     circleScoreMinContrast: 10,
     circleScoreSamples: 48,
     circleScoreCenterSearchPx: 2,
+    matchMaxCandidatesPerPolarity: 6,
+    matchMinOffsetInliers: 1,
 };
 
 const presets: AlgorithmPreset[] = [
@@ -105,6 +107,10 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
                     min_contrast: c.circleScoreMinContrast,
                     samples: c.circleScoreSamples,
                     center_search_px: c.circleScoreCenterSearchPx,
+                },
+                match_params: {
+                    max_candidates_per_polarity: c.matchMaxCandidatesPerPolarity,
+                    min_offset_inliers: c.matchMinOffsetInliers,
                 },
             },
         });

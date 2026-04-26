@@ -25,6 +25,8 @@ export interface MarkerBoardConfig {
     circleScoreMinContrast: number;
     circleScoreSamples: number;
     circleScoreCenterSearchPx: number;
+    matchMaxCandidatesPerPolarity: number;
+    matchMinOffsetInliers: number;
 }
 
 const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig>) => {
@@ -277,6 +279,28 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                     disabled={disabled}
                     min={0}
                     max={256}
+                    step={1}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Advanced" columns={cols}>
+                <NumberField
+                    label="Max candidates per polarity"
+                    tooltip="Maximum number of circle candidates kept per polarity (white/black) before matching. Higher → more thorough but slower. WASM default: 6."
+                    value={config.matchMaxCandidatesPerPolarity}
+                    onChange={(v) => set("matchMaxCandidatesPerPolarity", v ?? 6)}
+                    disabled={disabled}
+                    min={1}
+                    max={32}
+                    step={1}
+                />
+                <NumberField
+                    label="Min offset inliers"
+                    tooltip="Minimum number of circle-pair offsets that must agree for the alignment to be accepted. WASM default: 1."
+                    value={config.matchMinOffsetInliers}
+                    onChange={(v) => set("matchMinOffsetInliers", v ?? 1)}
+                    disabled={disabled}
+                    min={1}
+                    max={16}
                     step={1}
                 />
             </CollapsibleSection>

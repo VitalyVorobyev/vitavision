@@ -51,13 +51,12 @@ export interface WorkerResponse {
 
 // ── WASM module singletons ───────────────────────────────────────────────────
 
-let chessInit: Promise<typeof import("chess-corners-wasm")> | null = null;
-let calibInit: Promise<typeof import("calib-targets-wasm")> | null = null;
-let puzzleInit: Promise<typeof import("@vitavision/calib-targets")> | null = null;
+let chessInit: Promise<typeof import("@vitavision/chess-corners")> | null = null;
+let calibInit: Promise<typeof import("@vitavision/calib-targets")> | null = null;
 
 async function getChessModule() {
     if (!chessInit) {
-        chessInit = import("chess-corners-wasm").then(async (mod) => {
+        chessInit = import("@vitavision/chess-corners").then(async (mod) => {
             await mod.default();
             return mod;
         });
@@ -67,28 +66,12 @@ async function getChessModule() {
 
 async function getCalibModule() {
     if (!calibInit) {
-        calibInit = import("calib-targets-wasm").then(async (mod) => {
+        calibInit = import("@vitavision/calib-targets").then(async (mod) => {
             await mod.default();
             return mod;
         });
     }
     return calibInit;
-}
-
-// PuzzleBoard uses the newer @vitavision/calib-targets (0.7+) — its detector
-// reliably finds the puzzleboard chessboard on real images, where the older
-// calib-targets-wasm 0.6 fails ("chessboard not detected"). The two packages
-// share most of the surface but diverge in puzzleboard internals and the
-// `puzzleboard.chessboard` schema; the older package is kept for chessboard /
-// charuco / markerboard whose adapters target the 0.6 schema.
-async function getPuzzleboardModule() {
-    if (!puzzleInit) {
-        puzzleInit = import("@vitavision/calib-targets").then(async (mod) => {
-            await mod.default();
-            return mod;
-        });
-    }
-    return puzzleInit;
 }
 
 let ringgridInit: Promise<typeof import("@vitavision/ringgrid")> | null = null;
@@ -693,7 +676,17 @@ async function handleCalibTarget(
         const defaults = mod.default_chessboard_params() as Record<string, unknown>;
         const userParams = (config.params ?? {}) as Record<string, unknown>;
         const params = deepMerge(defaults, userParams);
-        result = mod.detect_chessboard(width, height, gray, chessCfg, params);
+        const raw = mod.detect_chessboard(width, height, gray, chessCfg, params);
+        // 0.7+ returns { target, grid_directions, cell_size, strong_indices }; older
+        // detectors and adaptCalibTargetResult expect the corners under `detection`.
+        // Normalise so downstream consumers stay schema-stable.
+        if (raw && typeof raw === "object") {
+            const r = raw as Record<string, unknown>;
+            if (r.detection === undefined && r.target !== undefined) {
+                r.detection = r.target;
+            }
+        }
+        result = raw;
     } else if (algorithm === "charuco") {
         // Charuco has no dedicated defaults function.
         // Its `chessboard` sub-object uses the same schema as standalone chessboard params —
@@ -827,7 +820,7 @@ async function handlePuzzleboard(
     height: number,
     config: Record<string, unknown>,
 ) {
-    const mod = await getPuzzleboardModule();
+    const mod = await getCalibModule();
 
     const gray = mod.rgba_to_gray(pixels, width, height);
 
@@ -852,7 +845,7 @@ async function handlePuzzleboardGenPng(
     cellSizeMm: number,
     dpi: number,
 ): Promise<{ png: Uint8Array; mimeType: string }> {
-    const mod = await getPuzzleboardModule();
+    const mod = await getCalibModule();
     const png = mod.render_puzzleboard_png(rows, cols, cellSizeMm, dpi);
     return { png, mimeType: "image/png" };
 }

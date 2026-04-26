@@ -99,7 +99,7 @@ WASM config schema validation: run `bun run scripts/test-wasm-schemas.ts` to ver
 ### WASM Execution Architecture
 - **Worker proxy** (`src/lib/wasm/wasmWorkerProxy.ts`): Main-thread typed API, lazy Worker spawn, zero-copy pixel transfer via `Transferable`
 - **Web Worker** (`src/lib/wasm/wasmWorker.ts`): Lazy-loads WASM modules, runs detection handlers, returns results via `postMessage`
-- **WASM packages**: `chess-corners-wasm`, `calib-targets-wasm`, `@vitavision/ringgrid`, `@vitavision/radsym`
+- **WASM packages**: `@vitavision/chess-corners`, `@vitavision/calib-targets`, `@vitavision/ringgrid`, `@vitavision/radsym`
 
 ### Type Definitions
 Shared result/config types live in `src/lib/types.ts`. These describe WASM detection result shapes consumed by adapters, overlays, and UI components.

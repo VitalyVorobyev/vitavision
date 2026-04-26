@@ -69,7 +69,7 @@ src/
 
 | Package | Algorithm |
 |---------|-----------|
-| `chess-corners-wasm` | ChESS X-junction keypoints |
-| `calib-targets-wasm` | Chessboard, ChArUco, Marker Board |
+| `@vitavision/chess-corners` | ChESS X-junction keypoints |
+| `@vitavision/calib-targets` | Chessboard, ChArUco, Marker Board |
 | `@vitavision/ringgrid` | Concentric ring markers |
 | `@vitavision/radsym` | Fast Radial Symmetry Transform |

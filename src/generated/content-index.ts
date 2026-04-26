@@ -634,6 +634,26 @@ export const demoPages: DemoIndexEntry[] = [
       ],
       "date": "2026-04-12"
     }
+  },
+  {
+    "slug": "delaunay-voronoi",
+    "frontmatter": {
+      "title": "Delaunay Triangulation & Voronoi Diagrams",
+      "summary": "Interactive construction of Delaunay triangulations and dual Voronoi diagrams, with a draggable projective grid to explore how calibration patterns deform under perspective.",
+      "tags": [
+        "computer-vision",
+        "geometry",
+        "interactive"
+      ],
+      "author": "Vitaly Vorobyev",
+      "readingTimeMinutes": 1,
+      "access": "public",
+      "componentId": "delaunay-voronoi",
+      "category": "interactive-figure",
+      "relatedAlgorithms": [],
+      "relatedPosts": [],
+      "date": "2026-04-26"
+    }
   }
 ];
 

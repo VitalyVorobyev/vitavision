@@ -652,3 +652,126 @@
     subpixel operator. The Radon-transform-via-box-filters detector
     in Duda 2018 realises the same sector model with integer-rotated
     blurs rather than concentric sampling.
+
+- id: zaragoza2013-apap
+  title: "As-Projective-As-Possible Image Stitching with Moving DLT"
+  authors: ["J. Zaragoza", "T.-J. Chin", "M. S. Brown", "D. Suter"]
+  year: 2013
+  venue: IEEE CVPR
+  url: https://www.cv-foundation.org/openaccess/content_cvpr_2013/papers/Zaragoza_As-Projective-As-Possible_Image_Stitching_2013_CVPR_paper.pdf
+  doi: "10.1109/cvpr.2013.303"
+  pdf: zaragoza2013-apap.pdf
+  cites: [hartley1997-eight-point, schaefer2006-mls, gao2011-dual-homography, lin2011-svastitching, igarashi2005-arap]
+  notes: |
+    §3.1 reviews the global DLT homography. Each correspondence
+    (x_i, x'_i) yields two rows a_{i,1}, a_{i,2} of a 2N×9 matrix A
+    so that A·h = 0; the homography vector h = vec(H) is the
+    right singular vector of A with smallest singular value (Eq. 3-4).
+    §4 introduces Moving DLT: at every target pixel x_*, solve the
+    weighted system W_* A·h = 0 where the diagonal weight for
+    correspondence i is w_*^i = max(exp(-‖x_* - x_i‖² / σ²), γ).
+    σ controls locality; γ ∈ [0,1] is an offset that bounds the
+    weight away from zero so distant cells still receive a stable
+    homography (Eq. 6). The per-cell H_* is again the smallest right
+    singular vector, of W_* A. §4.2 the partition: the target image
+    is overlaid with a uniform C₁ × C₂ grid (paper uses 100×100);
+    one MDLT homography per cell. §4.3 the offline speedup: A is
+    normalised once via Hartley's data-conditioning matrices T, T'
+    (Eq. 8); each W_* A SVD reuses the conditioned A and only varies
+    weights. Defaults from §6: σ = 8.5, γ = 0.01 / 0.025 (range
+    explored γ ∈ [0, 0.05]); SIFT correspondences filtered by
+    multi-GS RANSAC; bundle adjustment refines a global similarity
+    after MDLT for cells with no correspondences. §6 reports lower
+    RMSE alignment error than DLT, dual-homography, and SVA on six
+    datasets (Tables 2-3).
+
+- id: hartley1997-eight-point
+  title: "In Defense of the Eight-Point Algorithm"
+  authors: ["R. I. Hartley"]
+  year: 1997
+  venue: IEEE TPAMI
+  url: https://users.cecs.anu.edu.au/~hartley/Papers/fundamental/ICCV-final/fundamental.pdf
+  doi: "10.1109/34.601246"
+  pdf: hartley1997-eight-point.pdf
+  cites: []
+  notes: |
+    Source of the data-conditioning step that precedes DLT: translate
+    each point set so its centroid is at the origin and isotropically
+    scale so the mean distance from the origin is √2. The resulting
+    similarities T (source) and T' (target) condition the design
+    matrix A to a moderate condition number; the recovered homography
+    is then de-normalised as H = T'⁻¹ Ĥ T. APAP (§4.3) reuses this
+    pre-conditioning before the Moving-DLT weights are applied so
+    every per-cell SVD operates on a numerically well-scaled A.
+
+- id: schaefer2006-mls
+  title: "Image Deformation Using Moving Least Squares"
+  authors: ["S. Schaefer", "T. McPhail", "J. Warren"]
+  year: 2006
+  venue: ACM SIGGRAPH
+  url: https://people.engr.tamu.edu/schaefer/research/mls.pdf
+  doi: "10.1145/1141911.1141920"
+  pdf: schaefer2006-mls.pdf
+  cites: []
+  notes: |
+    Defines the moving-least-squares image warp: at every output pixel
+    v, solve a weighted least-squares fit l_v(x) = M_v·x + T_v over
+    user-supplied control points {p_i, q_i}, with Gaussian weights
+    w_i(v) = 1 / ‖p_i - v‖^{2α}. The deformation v ↦ l_v(v) is smooth
+    in v and interpolates the controls. APAP transplants the moving-
+    weights idea from MLS (Euclidean / similarity / affine) to the
+    projective setting: per-pixel weighted DLT instead of per-pixel
+    weighted least squares.
+
+- id: gao2011-dual-homography
+  title: "Constructing Image Panoramas Using Dual-Homography Warping"
+  authors: ["J. Gao", "S. J. Kim", "M. S. Brown"]
+  year: 2011
+  venue: IEEE CVPR
+  url: http://www.cse.yorku.ca/~mbrown/pdf/cvpr_dualhomography2011.pdf
+  doi: "10.1109/cvpr.2011.5995433"
+  pdf: gao2011-dual-homography.pdf
+  cites: []
+  notes: |
+    Two-plane scene model: fit two homographies H_distant, H_ground
+    by clustering matched features, then blend them per pixel by a
+    weight derived from feature-cluster proximity. APAP generalises
+    this two-homography blend to a continuous spatially-varying
+    field of homographies driven by per-pixel weighted DLT.
+
+- id: lin2011-svastitching
+  title: "Smoothly Varying Affine Stitching"
+  authors: ["W.-Y. Lin", "S. Liu", "Y. Matsushita", "T.-T. Ng", "L.-F. Cheong"]
+  year: 2011
+  venue: IEEE CVPR
+  url: https://www.ece.nus.edu.sg/stfpage/eleclf/Lin_CVPR11.pdf
+  doi: "10.1109/cvpr.2011.5995314"
+  pdf: lin2011-svastitching.pdf
+  cites: []
+  notes: |
+    Replaces the global homography with a smoothly-varying affine
+    field obtained by alternately fitting per-feature affines and
+    smoothing them across the image. APAP (§2) names SVA as its
+    closest precedent in the spatially-varying-warp family, but
+    notes SVA only models affine deformations and cannot represent
+    perspective parallax. APAP keeps the spatially-varying idea but
+    upgrades the local model to a full projective transformation
+    via per-cell weighted DLT.
+
+- id: igarashi2005-arap
+  title: "As-Rigid-As-Possible Shape Manipulation"
+  authors: ["T. Igarashi", "T. Moscovich", "J. F. Hughes"]
+  year: 2005
+  venue: ACM SIGGRAPH
+  url: https://www.moscovich.net/papers/rigid2005.pdf
+  doi: "10.1145/1186822.1073323"
+  pdf: igarashi2005-arap.pdf
+  cites: []
+  notes: |
+    Origin of the "as-X-as-possible" naming pattern. Computes a 2-D
+    triangle-mesh deformation that interpolates user handles and is
+    as close to a global rigid transform as possible, by minimising
+    a quadratic that penalises non-rigid local Jacobians. APAP
+    inherits the naming convention and the philosophy: choose a
+    nominal global model, allow per-element deviation only as needed
+    to satisfy correspondences.

@@ -2,6 +2,7 @@
 export interface GeneratedHtmlModule { html: string; }
 
 export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
+  "apap-image-stitching": () => import("./content/algorithms/apap-image-stitching.ts"),
   "chess-corners": () => import("./content/algorithms/chess-corners.ts"),
   "laureano-topological-chessboard": () => import("./content/algorithms/laureano-topological-chessboard.ts"),
   "daniilidis-dual-quaternion-handeye": () => import("./content/algorithms/daniilidis-dual-quaternion-handeye.ts"),

@@ -4,7 +4,7 @@ import { featureSchema } from './featureSchema';
 export type ToolType = 'SELECT' | 'POINT' | 'LINE' | 'POLYLINE' | 'POLYGON' | 'BBOX' | 'ELLIPSE';
 export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point' | 'ring_marker' | 'aruco_marker' | 'circle' | 'labeled_point';
 export type FeatureSource = 'manual' | 'algorithm';
-export type SampleId = 'chessboard' | 'charuco' | 'markerboard' | 'ringgrid' | 'upload';
+export type SampleId = 'chessboard' | 'charuco' | 'markerboard' | 'ringgrid' | 'puzzleboard' | 'upload';
 
 export interface Point2D {
     x: number;
@@ -429,6 +429,14 @@ export const useEditorStore = create<EditorState>((set) => ({
             sampleId: 'ringgrid',
             description: 'Hex-lattice concentric ring markers with binary code bands.',
             recommendedAlgorithms: ['Ring Grid', 'Radial Symmetry'],
+        },
+        {
+            id: 'sample-puzzleboard',
+            src: '/puzzleboard.png',
+            name: 'PuzzleBoard',
+            sampleId: 'puzzleboard',
+            description: 'Self-identifying checkerboard with embedded edge-bit pattern for absolute (u,v) grid.',
+            recommendedAlgorithms: ['PuzzleBoard'],
         },
     ],
     setGalleryMode: (mode) => set({ galleryMode: mode }),

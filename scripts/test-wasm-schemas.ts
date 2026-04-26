@@ -12,9 +12,9 @@ import { $ } from "bun";
 
 const tests: Array<{ name: string; code: string }> = [
     {
-        name: "chess-corners-wasm",
+        name: "@vitavision/chess-corners",
         code: `
-const mod = await import('chess-corners-wasm');
+const mod = await import('@vitavision/chess-corners');
 await mod.default();
 const d = mod.ChessDetector.multiscale();
 d.set_threshold(0.2);
@@ -48,7 +48,7 @@ process.exit(0);
 `,
     },
     {
-        name: "calib-targets: chessboard",
+        name: "@vitavision/calib-targets: chessboard schema",
         code: `
 function deepMerge(t, s) {
     const o = { ...t };
@@ -60,22 +60,28 @@ function deepMerge(t, s) {
     }
     return o;
 }
-const mod = await import('calib-targets-wasm');
+const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
 const chessCfg = deepMerge(mod.default_chess_config(), { threshold_value: 0.2 });
+// 0.7+ schema: top-level fields like min_corner_strength / max_fit_rms_ratio /
+// peak_min_separation_deg / min_peak_weight_fraction. The legacy fields
+// (expected_rows, completeness_threshold, graph, chess) are silently ignored —
+// keep them in the merge to confirm forward compatibility from the editor's
+// adapter payload.
 const params = deepMerge(mod.default_chessboard_params(), {
     min_corner_strength: 0.2, completeness_threshold: 0.1,
     expected_rows: 7, expected_cols: 11,
+    max_fit_rms_ratio: 0.5, peak_min_separation_deg: 60, min_peak_weight_fraction: 0.02,
     graph: { min_spacing_pix: 5, max_spacing_pix: 50 },
 });
 mod.detect_chessboard(32, 32, gray, chessCfg, params);
-console.log('PASS: detect_chessboard accepts merged params');
+console.log('PASS: detect_chessboard accepts merged params (forward-compatible with legacy fields)');
 process.exit(0);
 `,
     },
     {
-        name: "calib-targets: charuco",
+        name: "@vitavision/calib-targets: charuco",
         code: `
 function deepMerge(t, s) {
     const o = { ...t };
@@ -87,7 +93,7 @@ function deepMerge(t, s) {
     }
     return o;
 }
-const mod = await import('calib-targets-wasm');
+const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
 const chessCfg = deepMerge(mod.default_chess_config(), { threshold_value: 0.2 });
@@ -117,7 +123,7 @@ process.exit(0);
 `,
     },
     {
-        name: "calib-targets: markerboard",
+        name: "@vitavision/calib-targets: markerboard",
         code: `
 function deepMerge(t, s) {
     const o = { ...t };
@@ -129,7 +135,7 @@ function deepMerge(t, s) {
     }
     return o;
 }
-const mod = await import('calib-targets-wasm');
+const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
 const chessCfg = deepMerge(mod.default_chess_config(), { threshold_value: 0.2 });
@@ -144,36 +150,23 @@ process.exit(0);
 `,
     },
     {
-        name: "calib-targets: chessboard coordinates (real image)",
+        name: "@vitavision/calib-targets: chessboard coordinates (real image)",
         code: `
-function deepMerge(t, s) {
-    const o = { ...t };
-    for (const k of Object.keys(s)) {
-        const sv = s[k], tv = t[k];
-        if (sv && typeof sv === 'object' && !Array.isArray(sv) && tv && typeof tv === 'object' && !Array.isArray(tv))
-            o[k] = deepMerge(tv, sv);
-        else o[k] = sv;
-    }
-    return o;
-}
 const { PNG } = await import('pngjs');
 const { readFileSync } = await import('fs');
 const png = PNG.sync.read(readFileSync('public/chessboard.png'));
-const mod = await import('calib-targets-wasm');
+const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = mod.rgba_to_gray(new Uint8Array(png.data), png.width, png.height);
-const chessCfg = deepMerge(mod.default_chess_config(), { threshold_value: 0.2 });
-const params = deepMerge(mod.default_chessboard_params(), {
-    min_corner_strength: 0.2, completeness_threshold: 0.1,
-    expected_rows: 7, expected_cols: 11,
-    graph: { min_spacing_pix: 5, max_spacing_pix: 50 },
-});
-const result = mod.detect_chessboard(png.width, png.height, gray, chessCfg, params);
-if (!result || !result.detection || result.detection.corners.length === 0)
+// 0.7+ returns { target: { kind, corners }, grid_directions, cell_size, strong_indices }.
+// The worker normalises target → detection before consumers see it; here we
+// validate the raw shape so a future package change is caught early.
+const result = mod.detect_chessboard(png.width, png.height, gray, mod.default_chess_config(), mod.default_chessboard_params());
+const corners = result?.target?.corners ?? result?.detection?.corners;
+if (!corners || corners.length === 0)
     throw new Error('no corners detected on real chessboard image');
-console.log('PASS: detected ' + result.detection.corners.length + ' corners');
-const c = result.detection.corners[0];
-// Verify position is [x,y] array — the adapter must handle this
+console.log('PASS: detected ' + corners.length + ' corners');
+const c = corners[0];
 if (!Array.isArray(c.position) || c.position.length !== 2)
     throw new Error('corner.position is not [x,y] array: ' + JSON.stringify(c.position));
 const [x, y] = c.position;
@@ -186,11 +179,14 @@ process.exit(0);
 `,
     },
     {
-        name: "calib-targets: puzzleboard defaults",
+        name: "@vitavision/calib-targets: puzzleboard defaults + real image",
         code: `
-const mod = await import('calib-targets-wasm');
+const { PNG } = await import('pngjs');
+const { readFileSync } = await import('fs');
+const mod = await import('@vitavision/calib-targets');
 await mod.default();
-const params = mod.default_puzzleboard_params(7, 10);
+
+const params = mod.default_puzzleboard_params(10, 10);
 if (typeof params !== 'object' || params === null)
     throw new Error('default_puzzleboard_params returned non-object: ' + typeof params);
 const keys = Object.keys(params);
@@ -198,11 +194,25 @@ for (const k of ['px_per_square', 'chessboard', 'board', 'decode']) {
     if (!keys.includes(k))
         throw new Error('missing key: ' + k + ' in ' + JSON.stringify(keys));
 }
-console.log('PASS: default_puzzleboard_params(7,10) returns object with px_per_square, chessboard, board, decode');
-const board = params.board;
-if (board.rows !== 7 || board.cols !== 10)
-    throw new Error('board rows/cols mismatch: ' + JSON.stringify(board));
-console.log('PASS: board.rows=7, board.cols=10');
+console.log('PASS: default_puzzleboard_params(10,10) returns object with px_per_square, chessboard, board, decode');
+if (params.board.rows !== 10 || params.board.cols !== 10)
+    throw new Error('board rows/cols mismatch: ' + JSON.stringify(params.board));
+if (params.decode?.search_mode?.kind !== 'full')
+    throw new Error('expected default decode.search_mode.kind=full, got: ' + JSON.stringify(params.decode?.search_mode));
+console.log('PASS: board=10x10 and decode.search_mode.kind=full');
+
+const png = PNG.sync.read(readFileSync('public/puzzleboard.png'));
+const gray = mod.rgba_to_gray(new Uint8Array(png.data), png.width, png.height);
+const result = mod.detect_puzzleboard(png.width, png.height, gray, null, params);
+if (!result?.detection?.corners?.length)
+    throw new Error('no corners detected on public/puzzleboard.png');
+console.log('PASS: detected ' + result.detection.corners.length + ' puzzleboard corners on real image (mean conf ' + result.decode.mean_confidence.toFixed(3) + ')');
+const c = result.detection.corners[0];
+if (!Array.isArray(c.position) || c.position.length !== 2)
+    throw new Error('corner.position is not [x,y] array: ' + JSON.stringify(c.position));
+if (!c.grid || typeof c.grid.i !== 'number' || typeof c.grid.j !== 'number')
+    throw new Error('corner.grid is missing or malformed: ' + JSON.stringify(c.grid));
+console.log('PASS: corner has [x,y] position and {i,j} grid index');
 process.exit(0);
 `,
     },

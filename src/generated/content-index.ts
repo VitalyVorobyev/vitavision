@@ -67,6 +67,39 @@ export const blogPosts: BlogIndexEntry[] = [
 
 export const algorithmPages: AlgorithmIndexEntry[] = [
   {
+    "slug": "apap-image-stitching",
+    "frontmatter": {
+      "title": "As-Projective-As-Possible Image Stitching",
+      "summary": "Replace a global homography with a spatially varying field of homographies, each fit by a per-cell weighted DLT (Moving DLT) on the same point correspondences, so the warp stays globally projective but adapts locally where the projective model is inadequate.",
+      "tags": [
+        "image-stitching",
+        "homography",
+        "projective-warp",
+        "dlt"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "category": "explainers",
+      "relatedAlgorithms": [
+        "zhang-planar-calibration"
+      ],
+      "sources": {
+        "primary": "zaragoza2013-apap",
+        "references": [
+          "hartley1997-eight-point",
+          "schaefer2006-mls",
+          "gao2011-dual-homography",
+          "lin2011-svastitching"
+        ],
+        "notes": "§2.1 reviews DLT homography (Eq. 1-4): the design matrix A ∈ R^{2N×9}\nis built from cross-product linearisation 0 = x̃' × H x̃; ĥ is the\nsmallest right singular vector of A. §2.2 introduces Moving DLT\n(Eq. 6-11): per-query weights w_*^i = max(exp(-‖x_* - x_i‖² / σ²), γ)\nform a diagonal W_* (Eq. 10, each weight repeated twice for the two\nrows of a_i), and h_* is the smallest right singular vector of\nW_* A (Eq. 9). γ is a weight floor that bounds the warp away from\ndegeneracy in data-poor regions and forces graceful reduction to\nthe global homography as γ → 1. §3 partitions the source image into\nC₁ × C₂ cells (default 100×100 for 1500×2000 images), one MDLT per\ncell. Hartley pre-conditioning (Eq. T, T') is applied once before\nthe per-cell SVDs. §6 defaults: σ ∈ [8, 12], γ ∈ [0.0025, 0.025],\ngrid 50–100 cells per axis.\n"
+      },
+      "date": "2026-04-26"
+    }
+  },
+  {
     "slug": "chess-corners",
     "frontmatter": {
       "title": "ChESS Corners",

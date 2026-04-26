@@ -1,4 +1,4 @@
-import { CollapsibleSection, NumberField, Section, SelectField } from "../formFields";
+import { CheckboxField, CollapsibleSection, NumberField, Section, SelectField } from "../formFields";
 import type { AlgorithmConfigFormProps } from "../types";
 import type { DictionaryName } from "../../../../lib/types";
 
@@ -19,6 +19,13 @@ export interface CharucoConfig {
     graphMaxSpacingPix: number;
     graphKNeighbors: number;
     graphOrientationToleranceDeg: number;
+    scanBorderBits: number;
+    scanInsetFrac: number;
+    scanMinBorderScore: number;
+    scanDedupById: boolean;
+    scanMultiThreshold: boolean;
+    maxHamming: number;
+    minMarkerInliers: number;
 }
 
 const DICTIONARY_OPTIONS: Array<{ value: DictionaryName; label: string }> = [
@@ -181,6 +188,72 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     min={0}
                     max={180}
                     step={0.5}
+                />
+            </CollapsibleSection>
+            <CollapsibleSection title="Advanced" columns={modal ? 2 : undefined}>
+                <NumberField
+                    label="Scan: border bits"
+                    tooltip="ArUco quiet-zone width in marker bits. Bigger → stricter border test. WASM default: 1."
+                    value={config.scanBorderBits}
+                    onChange={(v) => set("scanBorderBits", v ?? 1)}
+                    disabled={disabled}
+                    min={0}
+                    max={4}
+                    step={1}
+                />
+                <NumberField
+                    label="Scan: inset fraction"
+                    tooltip="Fraction of the cell inset before sampling marker pixels. Higher → safer sampling, less likely to overlap chessboard ink. WASM default: 0.06."
+                    value={config.scanInsetFrac}
+                    onChange={(v) => set("scanInsetFrac", v ?? 0.06)}
+                    disabled={disabled}
+                    min={0}
+                    max={0.4}
+                    step={0.01}
+                />
+                <NumberField
+                    label="Scan: min border score"
+                    tooltip="Minimum quiet-zone score required to accept a candidate marker (0–1). Lower → more permissive. WASM default: 0.75."
+                    value={config.scanMinBorderScore}
+                    onChange={(v) => set("scanMinBorderScore", v ?? 0.75)}
+                    disabled={disabled}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                />
+                <CheckboxField
+                    label="Scan: dedup by ID"
+                    tooltip="Drop duplicate detections sharing the same marker ID. WASM default: on."
+                    checked={config.scanDedupById}
+                    onChange={(v) => set("scanDedupById", v)}
+                    disabled={disabled}
+                />
+                <CheckboxField
+                    label="Scan: multi-threshold"
+                    tooltip="Try several adaptive thresholds when scanning marker bits — slower but more robust. WASM default: on."
+                    checked={config.scanMultiThreshold}
+                    onChange={(v) => set("scanMultiThreshold", v)}
+                    disabled={disabled}
+                />
+                <NumberField
+                    label="Max hamming"
+                    tooltip="Maximum Hamming distance allowed when matching a candidate against the dictionary. Higher → tolerates more bit errors. WASM default: 1."
+                    value={config.maxHamming}
+                    onChange={(v) => set("maxHamming", v ?? 1)}
+                    disabled={disabled}
+                    min={0}
+                    max={8}
+                    step={1}
+                />
+                <NumberField
+                    label="Min marker inliers"
+                    tooltip="Minimum number of decoded markers required to accept the board. WASM default: 8."
+                    value={config.minMarkerInliers}
+                    onChange={(v) => set("minMarkerInliers", v ?? 8)}
+                    disabled={disabled}
+                    min={1}
+                    max={64}
+                    step={1}
                 />
             </CollapsibleSection>
         </>

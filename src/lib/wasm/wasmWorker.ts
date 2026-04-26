@@ -10,7 +10,7 @@
 /** UUID generation with fallback for non-secure contexts (HTTP via --host). */
 function generateId(): string {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-        return generateId();
+        return crypto.randomUUID();
     }
     const bytes = new Uint8Array(16);
     crypto.getRandomValues(bytes);
@@ -51,12 +51,12 @@ export interface WorkerResponse {
 
 // ── WASM module singletons ───────────────────────────────────────────────────
 
-let chessInit: Promise<typeof import("chess-corners-wasm")> | null = null;
-let calibInit: Promise<typeof import("calib-targets-wasm")> | null = null;
+let chessInit: Promise<typeof import("@vitavision/chess-corners")> | null = null;
+let calibInit: Promise<typeof import("@vitavision/calib-targets")> | null = null;
 
 async function getChessModule() {
     if (!chessInit) {
-        chessInit = import("chess-corners-wasm").then(async (mod) => {
+        chessInit = import("@vitavision/chess-corners").then(async (mod) => {
             await mod.default();
             return mod;
         });
@@ -66,7 +66,7 @@ async function getChessModule() {
 
 async function getCalibModule() {
     if (!calibInit) {
-        calibInit = import("calib-targets-wasm").then(async (mod) => {
+        calibInit = import("@vitavision/calib-targets").then(async (mod) => {
             await mod.default();
             return mod;
         });
@@ -676,7 +676,17 @@ async function handleCalibTarget(
         const defaults = mod.default_chessboard_params() as Record<string, unknown>;
         const userParams = (config.params ?? {}) as Record<string, unknown>;
         const params = deepMerge(defaults, userParams);
-        result = mod.detect_chessboard(width, height, gray, chessCfg, params);
+        const raw = mod.detect_chessboard(width, height, gray, chessCfg, params);
+        // 0.7+ returns { target, grid_directions, cell_size, strong_indices }; older
+        // detectors and adaptCalibTargetResult expect the corners under `detection`.
+        // Normalise so downstream consumers stay schema-stable.
+        if (raw && typeof raw === "object") {
+            const r = raw as Record<string, unknown>;
+            if (r.detection === undefined && r.target !== undefined) {
+                r.detection = r.target;
+            }
+        }
+        result = raw;
     } else if (algorithm === "charuco") {
         // Charuco has no dedicated defaults function.
         // Its `chessboard` sub-object uses the same schema as standalone chessboard params —
@@ -816,15 +826,11 @@ async function handlePuzzleboard(
 
     // Read board dimensions for defaults
     const board = (config.board ?? {}) as Record<string, unknown>;
-    const rows = (board.rows as number) ?? 7;
+    const rows = (board.rows as number) ?? 10;
     const cols = (board.cols as number) ?? 10;
 
     const defaults = mod.default_puzzleboard_params(rows, cols) as Record<string, unknown>;
     const merged = deepMerge(defaults, config);
-
-    // Defence-in-depth: always run in fixed_board mode (full-scan is too slow for interactive use)
-    const decode = (merged.decode ?? {}) as Record<string, unknown>;
-    merged.decode = { ...decode, search_mode: { kind: "fixed_board" } };
 
     const t0 = performance.now();
     const result = mod.detect_puzzleboard(width, height, gray, null, merged);

@@ -14,7 +14,7 @@ function fromBase64Url(b64: string): string {
     return atob(padded);
 }
 
-const VALID_SAMPLE_IDS = new Set<SampleId>(["chessboard", "charuco", "markerboard", "ringgrid", "upload"]);
+const VALID_SAMPLE_IDS = new Set<SampleId>(["chessboard", "charuco", "markerboard", "ringgrid", "puzzleboard", "upload"]);
 
 function parseSampleId(value: string | null): SampleId | null {
     if (value === null) {

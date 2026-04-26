@@ -602,10 +602,19 @@ describe("puzzleboardAlgorithm", () => {
         expect(summary[4].label).toBe("Runtime");
     });
 
-    it("diagnostics warns on high bit error rate", () => {
-        const result = mockPuzzleboardResult(10, 0.25);
+    it("diagnostics warns on high bit error rate paired with low confidence", () => {
+        const result = mockPuzzleboardResult(10, 0.30);
+        result.summary.mean_confidence = 0.5;
         const diags = puzzleboardAlgorithm.diagnostics!(result);
         expect(diags.some((d) => d.level === "warning" && d.message.includes("bit error rate"))).toBe(true);
+    });
+
+    it("diagnostics stays quiet when bit error rate is high but confidence is high", () => {
+        // Detection succeeded with high mean confidence — even a moderately high BER is not actionable.
+        const result = mockPuzzleboardResult(10, 0.30);
+        result.summary.mean_confidence = 0.85;
+        const diags = puzzleboardAlgorithm.diagnostics!(result);
+        expect(diags.some((d) => d.level === "warning" && d.message.includes("bit error rate"))).toBe(false);
     });
 
     it("diagnostics errors on zero corners", () => {

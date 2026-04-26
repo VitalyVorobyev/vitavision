@@ -6,7 +6,7 @@ import PuzzleboardOverlay from "./PuzzleboardOverlay";
 import type { LabeledPointFeature } from "../../../../store/editor/useEditorStore";
 
 const initialConfig: PuzzleboardConfig = {
-    boardRows: 7,
+    boardRows: 10,
     boardCols: 10,
     cellSize: 15,
     originRow: 0,
@@ -21,11 +21,17 @@ const initialConfig: PuzzleboardConfig = {
     chessCompletenessThreshold: 0.02,
     graphMinSpacingPix: 8,
     graphMaxSpacingPix: 600,
+    decodeSearchMode: "full",
+    decodeScoringMode: "soft_log_likelihood",
+    decodeBitLikelihoodSlope: 12,
+    decodePerBitFloor: -6,
+    decodeAlignmentMinMargin: 0.02,
 };
 
 const presets: AlgorithmPreset[] = [
-    { label: "Default", description: "Balanced defaults for most boards", config: { ...initialConfig } },
+    { label: "Default", description: "Full master-pattern scan — works regardless of printed origin", config: { ...initialConfig } },
     { label: "Strict bit check", description: "Higher bit confidence, lower error tolerance", config: { ...initialConfig, decodeMinBitConfidence: 0.25, decodeMaxBitErrorRate: 0.15 } },
+    { label: "Fixed board (fast)", description: "Restrict decode to the configured rows × cols at origin (fastest; requires correct origin_row/col)", config: { ...initialConfig, decodeSearchMode: "fixed_board" } },
 ];
 
 const toFeatures = (result: PuzzleBoardDetectResult, runId: string): LabeledPointFeature[] => {
@@ -55,8 +61,15 @@ const toDiagnostics = (result: PuzzleBoardDetectResult): DiagnosticEntry[] => {
     if (!result.alignment) {
         entries.push({ level: "error", message: "No alignment found", detail: "Board could not be located in the image." });
     }
-    if (result.summary.bit_error_rate > 0.20) {
-        entries.push({ level: "warning", message: `High bit error rate: ${(result.summary.bit_error_rate * 100).toFixed(1)}%`, detail: "Reduce decodeMaxBitErrorRate or improve image quality." });
+    // Detection succeeded if we got here, so a moderately high bit-error rate paired
+    // with high mean confidence is informational, not a problem worth flagging.
+    const ber = result.summary.bit_error_rate;
+    if (ber > 0.25 && result.summary.mean_confidence < 0.7) {
+        entries.push({
+            level: "warning",
+            message: `High bit error rate: ${(ber * 100).toFixed(1)}%`,
+            detail: "Many decoded bits did not match the master pattern. The image may be blurred, low-contrast, or partially occluded.",
+        });
     }
     if (result.decode.edges_observed > 0 && result.decode.edges_matched / result.decode.edges_observed < 0.6) {
         entries.push({ level: "info", message: "Low edge match rate", detail: "Fewer than 60% of observed edges matched the master pattern." });
@@ -93,8 +106,11 @@ export const puzzleboardAlgorithm: AlgorithmDefinition = {
                 max_bit_error_rate: c.decodeMaxBitErrorRate,
                 sample_radius_rel: c.decodeSampleRadiusRel,
                 search_all_components: c.decodeSearchAllComponents,
-                // Fixed-board mode only — full-scan is too slow for interactive editor use
-                search_mode: { kind: "fixed_board" },
+                search_mode: { kind: c.decodeSearchMode },
+                scoring_mode: { kind: c.decodeScoringMode },
+                bit_likelihood_slope: c.decodeBitLikelihoodSlope,
+                per_bit_floor: c.decodePerBitFloor,
+                alignment_min_margin: c.decodeAlignmentMinMargin,
             },
             chessboard: {
                 min_corner_strength: c.chessMinCornerStrength,

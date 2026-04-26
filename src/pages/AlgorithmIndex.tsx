@@ -269,13 +269,13 @@ export default function AlgorithmIndex() {
 
     if (isDesktop) {
         return (
-            <div className="min-h-screen">
+            <div className="flex flex-1 flex-col">
                 <SeoHead
                     title="Algorithms"
                     description="Classical computer vision algorithms and deep-learning models — explore, understand, and experiment."
                 />
 
-                <div className="grid grid-cols-[220px_minmax(0,1fr)]">
+                <div className="grid flex-1 grid-cols-[220px_minmax(0,1fr)]">
                     {/* Sidebar */}
                     <AlgorithmsSidebar
                         filters={filters}

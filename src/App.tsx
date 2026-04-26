@@ -46,7 +46,7 @@ function AppLayout() {
                 Skip to content
             </a>
             <Navbar />
-            <main id="main-content" className="flex-1">
+            <main id="main-content" className="flex flex-1 flex-col">
                 <Suspense fallback={<div className="flex-1 flex items-center justify-center py-32"><div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>}>
                     <Routes>
                         <Route path="/" element={<Home />} />

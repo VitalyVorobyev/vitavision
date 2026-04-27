@@ -103,6 +103,12 @@
     --article-link:      205 70% 68%;
   }
 
+  html, body {
+    /* Hard cap: never allow horizontal scroll at the page level. Any element
+       that overflows scrolls inside its own scroll container instead. */
+    overflow-x: clip;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;

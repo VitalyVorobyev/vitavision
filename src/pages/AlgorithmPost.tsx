@@ -92,7 +92,7 @@ export default function AlgorithmPost() {
     const jsonLd = buildAlgorithmJsonLd(frontmatter, slug ?? page.slug);
 
     return (
-        <div className="max-w-[760px] mx-auto py-16 px-4 sm:px-8 animate-in fade-in">
+        <div className="w-full min-w-0 max-w-[760px] mx-auto py-16 px-4 sm:px-8 animate-in fade-in">
             <SeoHead
                 title={frontmatter.title}
                 description={frontmatter.summary}

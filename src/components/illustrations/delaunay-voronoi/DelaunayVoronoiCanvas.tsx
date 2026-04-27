@@ -52,22 +52,26 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             e.stopPropagation();
             if (e.button !== 0) return;
             const isFree = state.points.some((p) => p.id === id);
+            const isGridNode = id.startsWith("g-");
+            const isCorner = state.grid.corners.some((c) => c.id === id);
 
-            if (activeTool === "delete" && isFree) {
-                // Delete free points immediately on click.
+            // Delete tool: remove free points or grid nodes (corners stay).
+            if (activeTool === "delete" && (isFree || isGridNode)) {
                 demo.removePoint(id);
                 return;
             }
 
             if (activeTool === "move" || activeTool === "add" || activeTool === "hover" || activeTool === "grid") {
+                // Hover tool just selects; never drags.
                 dragging.current = activeTool !== "hover" ? { id } : null;
                 if (activeTool !== "hover") {
                     (e.currentTarget as SVGElement).setPointerCapture(e.pointerId);
                 }
                 demo.selectPoint(id);
             }
+            void isCorner;
         },
-        [demo, activeTool, state.points],
+        [demo, activeTool, state.points, state.grid.corners],
     );
 
     const onPointerMove = useCallback(

@@ -15,6 +15,7 @@
   --color-muted-foreground: hsl(var(--muted-foreground));
 
   --color-border: hsl(var(--border));
+  --color-border-strong: hsl(var(--border-strong));
 
   --color-accent: hsl(var(--accent));
   --color-accent-soft: hsl(var(--accent-soft));
@@ -48,6 +49,7 @@
     --muted:             210 40% 96%;
     --muted-foreground:  215 16% 47%;   /* Slate Grey */
     --border:            214 32% 91%;   /* Subtle Blueprint Lines */
+    --border-strong:     214 32% 80%;  /* kbd outlines, stronger contrast */
     --accent:            215 19% 35%;   /* Blueprint Blue */
     --accent-soft:       214 32% 91%;
     --accent-2:          215 19% 35%;
@@ -60,6 +62,9 @@
     /* Layered surface tokens */
     --bg-soft:           210 40% 96%;   /* between --background and --muted */
     --surface-hi:        214 32% 91%;   /* matches --border for a subtle "raised" feel */
+
+    /* Slightly elevated surface (used by HorizonViz and pose chrome) */
+    --surface-2:         214 32% 95%;
 
     /* Article reading tokens */
     --article-body:      215 25% 22%;
@@ -75,6 +80,7 @@
     --muted:             217 33% 17%;
     --muted-foreground:  215 20% 65%;   /* Muted Slate */
     --border:            215 25% 27%;   /* Subtle Depth Borders */
+    --border-strong:     222 18% 28%;  /* kbd outlines, stronger contrast */
     --accent:            215 20% 65%;   /* Steel Blue Accent */
     --accent-soft:       217 33% 17%;
     --accent-2:          215 20% 65%;
@@ -87,6 +93,9 @@
     /* Layered surface tokens */
     --bg-soft:           222 40% 13%;   /* between --background and --surface */
     --surface-hi:        217 33% 21%;   /* one step brighter than --surface */
+
+    /* Slightly elevated surface (used by HorizonViz and pose chrome) */
+    --surface-2:         222 22% 14%;
 
     /* Article reading tokens */
     --article-body:      210 30% 83%;

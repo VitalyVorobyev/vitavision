@@ -1,0 +1,251 @@
+/* vitavision.dev design tokens — extracted from screenshots & source */
+:root {
+  --background: 222 28% 9%;          /* deep slate-blue */
+  --surface: 222 24% 12%;
+  --surface-2: 222 22% 14%;
+  --muted: 222 18% 22%;
+  --muted-foreground: 222 10% 62%;
+  --border: 222 20% 20%;
+  --border-strong: 222 18% 28%;
+  --foreground: 210 30% 95%;
+  --primary: 28 92% 60%;             /* warm amber accent */
+  --primary-soft: 28 92% 60% / 0.12;
+  --emerald: 152 60% 48%;
+  --rose: 350 80% 62%;
+  --amber: 38 92% 60%;
+  --violet: 260 70% 70%;
+  --teal: 180 60% 55%;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.mono { font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace; }
+
+.panel {
+  border: 1px solid hsl(var(--border));
+  background: linear-gradient(180deg, hsl(var(--surface)), hsl(var(--background)));
+  border-radius: 1.5rem;
+}
+
+.panel-flat {
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--surface));
+  border-radius: 1rem;
+}
+
+.eyebrow {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+.tinybrow {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+.muted { color: hsl(var(--muted-foreground)); }
+
+/* Buttons / pills */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background) / 0.8);
+  color: hsl(var(--muted-foreground));
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 12px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background) / 0.8);
+  color: hsl(var(--muted-foreground));
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.75rem;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s ease;
+  font-family: inherit;
+}
+.btn:hover { color: hsl(var(--foreground)); }
+.btn.active, .btn[data-pressed="true"] {
+  border-color: hsl(var(--primary) / 0.35);
+  background: hsl(var(--primary) / 0.12);
+  color: hsl(var(--foreground));
+}
+
+.btn-primary {
+  border-color: hsl(var(--primary) / 0.4);
+  background: hsl(var(--primary) / 0.16);
+  color: hsl(var(--primary));
+}
+
+.kbd {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  border: 1px solid hsl(var(--border-strong));
+  background: hsl(var(--background));
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Range input */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+  height: 18px;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: hsl(var(--muted));
+  border-radius: 999px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: hsl(var(--foreground));
+  border: 2px solid hsl(var(--primary));
+  cursor: pointer;
+}
+
+/* Number input */
+input[type="number"], input[type="text"] {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  outline: none;
+}
+input[type="number"]:focus, input[type="text"]:focus {
+  border-color: hsl(var(--primary) / 0.5);
+}
+
+/* Metric cell */
+.metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background) / 0.6);
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.4rem;
+  min-width: 0;
+}
+.metric .lbl {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  line-height: 1;
+}
+.metric .val {
+  margin-top: 6px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  line-height: 1;
+}
+.metric.r-pos { border-color: hsl(var(--emerald) / 0.4); background: hsl(var(--emerald) / 0.10); color: hsl(152 60% 80%); }
+.metric.r-pos .val { color: hsl(152 60% 80%); }
+
+.row { display: flex; align-items: center; gap: 0.5rem; }
+.col { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.divider { height: 1px; background: hsl(var(--border)); }
+
+/* Page chrome (mock browser frame is handled via macos_window if needed; we render
+   inside the page only) */
+.page {
+  padding: 28px 36px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.artboard-root {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  min-height: 100%;
+}
+
+.h-title {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.h-sub {
+  color: hsl(var(--muted-foreground));
+  margin: 6px 0 14px 0;
+  max-width: 720px;
+}
+
+.tag {
+  display: inline-block;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background) / 0.6);
+  color: hsl(var(--muted-foreground));
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  margin-right: 6px;
+}
+
+/* Phase swatch (for SR pairs etc) */
+.swatch {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* Scroll bars muted */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: hsl(var(--border-strong)); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Annotation note */
+.note {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  border-left: 2px solid hsl(var(--primary) / 0.5);
+  padding: 4px 10px;
+  background: hsl(var(--primary) / 0.04);
+  border-radius: 0 6px 6px 0;
+}

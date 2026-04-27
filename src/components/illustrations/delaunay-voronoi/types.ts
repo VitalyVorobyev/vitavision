@@ -25,11 +25,16 @@ export interface HoverTarget {
     area: number;
 }
 
+export type ActiveTool = "add" | "move" | "delete" | "grid" | "hover" | "more";
+
 export interface ViewState {
     points: Point[];
     grid: GridConfig;
     layers: Layers;
     selectedId: string | null;
     hover: HoverTarget | null;
-    // V2: occluders: Circle[]
+    activeTool: ActiveTool;
+    pointer: { x: number; y: number } | null;
+    gridPopoverOpen: boolean;
+    poseModalOpen: boolean;
 }

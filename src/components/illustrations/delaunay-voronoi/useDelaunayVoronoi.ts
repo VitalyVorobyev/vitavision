@@ -3,7 +3,9 @@ import { Delaunay } from "d3-delaunay";
 import { v4 as uuid } from "uuid";
 import { computeHomography, applyHomography } from "./homography";
 import { triangleMinAngle } from "./geometry";
-import type { Point, GridConfig, Layers, ViewState, HoverTarget } from "./types";
+import { usePoseFromHomography } from "./usePoseFromHomography";
+import type { Pose } from "./cameraPose";
+import type { Point, GridConfig, Layers, ViewState, HoverTarget, ActiveTool } from "./types";
 
 const W = 800;
 const H = 600;
@@ -29,6 +31,10 @@ function makeInitialState(): ViewState {
         layers: { delaunay: true, voronoi: false, circumcircles: false, grid: false },
         selectedId: null,
         hover: null,
+        activeTool: "add",
+        pointer: null,
+        gridPopoverOpen: false,
+        poseModalOpen: false,
     };
 }
 
@@ -43,7 +49,11 @@ type Action =
     | { type: "MOVE_CORNER"; index: 0 | 1 | 2 | 3; x: number; y: number }
     | { type: "RESET_GRID" }
     | { type: "CLEAR_POINTS" }
-    | { type: "RANDOM_POINTS"; count: number };
+    | { type: "RANDOM_POINTS"; count: number }
+    | { type: "SET_TOOL"; tool: ActiveTool }
+    | { type: "SET_POINTER"; pointer: { x: number; y: number } | null }
+    | { type: "SET_GRID_POPOVER_OPEN"; open: boolean }
+    | { type: "SET_POSE_MODAL_OPEN"; open: boolean };
 
 function reducer(state: ViewState, action: Action): ViewState {
     switch (action.type) {
@@ -82,11 +92,17 @@ function reducer(state: ViewState, action: Action): ViewState {
             return { ...state, selectedId: action.id };
         case "SET_HOVER":
             return { ...state, hover: action.hover };
-        case "TOGGLE_LAYER":
+        case "TOGGLE_LAYER": {
+            const next = !state.layers[action.layer];
+            // Closing the grid layer also closes the popover.
+            const gridPopoverOpen =
+                action.layer === "grid" && !next ? false : state.gridPopoverOpen;
             return {
                 ...state,
-                layers: { ...state.layers, [action.layer]: !state.layers[action.layer] },
+                layers: { ...state.layers, [action.layer]: next },
+                gridPopoverOpen,
             };
+        }
         case "SET_GRID_DIMS":
             return {
                 ...state,
@@ -116,6 +132,24 @@ function reducer(state: ViewState, action: Action): ViewState {
             }));
             return { ...state, points: newPoints, selectedId: null };
         }
+        case "SET_TOOL": {
+            // Activating grid tool: enable the grid layer and open the popover.
+            if (action.tool === "grid") {
+                return {
+                    ...state,
+                    activeTool: "grid",
+                    layers: { ...state.layers, grid: true },
+                    gridPopoverOpen: true,
+                };
+            }
+            return { ...state, activeTool: action.tool };
+        }
+        case "SET_POINTER":
+            return { ...state, pointer: action.pointer };
+        case "SET_GRID_POPOVER_OPEN":
+            return { ...state, gridPopoverOpen: action.open };
+        case "SET_POSE_MODAL_OPEN":
+            return { ...state, poseModalOpen: action.open };
         default:
             return state;
     }
@@ -153,6 +187,7 @@ export interface DelaunayVoronoiState {
     voronoi: ReturnType<Delaunay<Point>["voronoi"]> | null;
     triangles: TriangleInfo[];
     stats: Stats;
+    pose: Pose;
     addPoint: (x: number, y: number) => void;
     movePoint: (id: string, x: number, y: number) => void;
     removePoint: (id: string) => void;
@@ -164,6 +199,10 @@ export interface DelaunayVoronoiState {
     resetGrid: () => void;
     clearPoints: () => void;
     randomPoints: (count?: number) => void;
+    setTool: (tool: ActiveTool) => void;
+    setPointer: (pointer: { x: number; y: number } | null) => void;
+    setGridPopoverOpen: (open: boolean) => void;
+    setPoseModalOpen: (open: boolean) => void;
 }
 
 export function useDelaunayVoronoi(): DelaunayVoronoiState {
@@ -218,6 +257,11 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
         };
     }, [allPoints, delaunay, triangles]);
 
+    // Always compute pose from corners; mark invalid when grid layer is off.
+    // Source-frame aspect = cols / rows so a frontal grid yields ~0 reproj error.
+    const rawPose = usePoseFromHomography(state.grid.corners, W, H, state.grid.cols / state.grid.rows);
+    const effectivePose: Pose = state.layers.grid ? rawPose : { ...rawPose, valid: false };
+
     return {
         state,
         allPoints,
@@ -225,6 +269,7 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
         voronoi,
         triangles,
         stats,
+        pose: effectivePose,
         addPoint: (x, y) => dispatch({ type: "ADD_POINT", x, y }),
         movePoint: (id, x, y) => dispatch({ type: "MOVE_POINT", id, x, y }),
         removePoint: (id) => dispatch({ type: "REMOVE_POINT", id }),
@@ -236,5 +281,9 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
         resetGrid: () => dispatch({ type: "RESET_GRID" }),
         clearPoints: () => dispatch({ type: "CLEAR_POINTS" }),
         randomPoints: (count = 30) => dispatch({ type: "RANDOM_POINTS", count }),
+        setTool: (tool) => dispatch({ type: "SET_TOOL", tool }),
+        setPointer: (pointer) => dispatch({ type: "SET_POINTER", pointer }),
+        setGridPopoverOpen: (open) => dispatch({ type: "SET_GRID_POPOVER_OPEN", open }),
+        setPoseModalOpen: (open) => dispatch({ type: "SET_POSE_MODAL_OPEN", open }),
     };
 }

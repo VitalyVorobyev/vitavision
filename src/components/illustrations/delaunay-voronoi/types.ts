@@ -10,6 +10,11 @@ export interface GridConfig {
     cols: number;
     // TL, TR, BR, BL in canvas coords
     corners: [Point, Point, Point, Point];
+    // Per-node overrides — moves a projected grid point to an explicit position.
+    // Keyed by the synthetic grid id (e.g. "g-2-3").
+    overrides: Record<string, { x: number; y: number }>;
+    // Grid ids the user has deleted. Skipped in projectGridPoints.
+    deleted: string[];
 }
 
 export interface Layers {
@@ -36,5 +41,4 @@ export interface ViewState {
     activeTool: ActiveTool;
     pointer: { x: number; y: number } | null;
     gridPopoverOpen: boolean;
-    poseModalOpen: boolean;
 }

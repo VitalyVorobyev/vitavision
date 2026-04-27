@@ -3,8 +3,6 @@ import {
     Panel, FloatingPanel, TinyBrow, MetricCell, Kbd, Pill, Note,
 } from "../_shared/primitives";
 import DelaunayVoronoiCanvas from "./DelaunayVoronoiCanvas";
-import PoseReadout from "./PoseReadout";
-import HorizonViz from "./HorizonViz";
 import type { DelaunayVoronoiState } from "./useDelaunayVoronoi";
 import type { ActiveTool, Layers } from "./types";
 
@@ -79,7 +77,7 @@ const TOOLS: { tool: ActiveTool; icon: string; title: string; key: string }[] = 
 ];
 
 export default function DelaunayVoronoiDesktopD({ demo }: Props) {
-    const { state, stats, pose, toggleLayer, setGridDims, resetGrid, clearPoints, randomPoints, setTool, setGridPopoverOpen } = demo;
+    const { state, stats, toggleLayer, setGridDims, resetGrid, clearPoints, randomPoints, setTool, setGridPopoverOpen } = demo;
     const { layers, hover, pointer, activeTool, gridPopoverOpen } = state;
     const { points, triangles, edges, minAngleDeg } = stats;
     const [randomN] = useState(30);
@@ -206,8 +204,8 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                     }
                 </FloatingPanel>
 
-                {/* ── Stats + Pose HUD (bottom-right) ── */}
-                <FloatingPanel className="absolute bottom-4 right-4 w-[260px] p-2.5 flex flex-col gap-2">
+                {/* ── Stats HUD (bottom-right) ── */}
+                <FloatingPanel className="absolute bottom-4 right-4 w-[200px] p-2.5 flex flex-col gap-2">
                     <TinyBrow>Stats</TinyBrow>
                     <div className="grid grid-cols-2 gap-1.5">
                         <MetricCell label="Points" value={String(points)} />
@@ -219,9 +217,6 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                             tone={minAngleTone(minAngleDeg)}
                         />
                     </div>
-                    <TinyBrow className="mt-1">Camera pose</TinyBrow>
-                    <PoseReadout pose={pose} />
-                    <HorizonViz pose={pose} />
                 </FloatingPanel>
 
                 {/* ── Hover tooltip (bottom-left) ── */}

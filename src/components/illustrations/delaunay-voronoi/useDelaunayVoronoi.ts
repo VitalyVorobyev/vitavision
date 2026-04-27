@@ -3,8 +3,6 @@ import { Delaunay } from "d3-delaunay";
 import { v4 as uuid } from "uuid";
 import { computeHomography, applyHomography } from "./homography";
 import { triangleMinAngle } from "./geometry";
-import { usePoseFromHomography } from "./usePoseFromHomography";
-import type { Pose } from "./cameraPose";
 import type { Point, GridConfig, Layers, ViewState, HoverTarget, ActiveTool } from "./types";
 
 const W = 800;
@@ -27,6 +25,8 @@ function makeInitialState(): ViewState {
             rows: 6,
             cols: 8,
             corners: defaultCorners(),
+            overrides: {},
+            deleted: [],
         },
         layers: { delaunay: true, voronoi: false, circumcircles: false, grid: false },
         selectedId: null,
@@ -34,7 +34,6 @@ function makeInitialState(): ViewState {
         activeTool: "add",
         pointer: null,
         gridPopoverOpen: false,
-        poseModalOpen: false,
     };
 }
 
@@ -52,8 +51,7 @@ type Action =
     | { type: "RANDOM_POINTS"; count: number }
     | { type: "SET_TOOL"; tool: ActiveTool }
     | { type: "SET_POINTER"; pointer: { x: number; y: number } | null }
-    | { type: "SET_GRID_POPOVER_OPEN"; open: boolean }
-    | { type: "SET_POSE_MODAL_OPEN"; open: boolean };
+    | { type: "SET_GRID_POPOVER_OPEN"; open: boolean };
 
 function reducer(state: ViewState, action: Action): ViewState {
     switch (action.type) {
@@ -80,14 +78,42 @@ function reducer(state: ViewState, action: Action): ViewState {
                 ) as [Point, Point, Point, Point];
                 return { ...state, grid: { ...state.grid, corners: newCorners } };
             }
+            // Grid node — record an override so the user's drag survives re-projection.
+            if (action.id.startsWith("g-")) {
+                return {
+                    ...state,
+                    grid: {
+                        ...state.grid,
+                        overrides: { ...state.grid.overrides, [action.id]: { x: action.x, y: action.y } },
+                    },
+                };
+            }
             return state;
         }
-        case "REMOVE_POINT":
-            return {
-                ...state,
-                points: state.points.filter((p) => p.id !== action.id),
-                selectedId: state.selectedId === action.id ? null : state.selectedId,
-            };
+        case "REMOVE_POINT": {
+            // Free point — drop it.
+            if (state.points.some((p) => p.id === action.id)) {
+                return {
+                    ...state,
+                    points: state.points.filter((p) => p.id !== action.id),
+                    selectedId: state.selectedId === action.id ? null : state.selectedId,
+                };
+            }
+            // Grid node — record it as deleted, also clear any override.
+            if (action.id.startsWith("g-")) {
+                const { [action.id]: _dropped, ...overrides } = state.grid.overrides;
+                void _dropped;
+                const deleted = state.grid.deleted.includes(action.id)
+                    ? state.grid.deleted
+                    : [...state.grid.deleted, action.id];
+                return {
+                    ...state,
+                    grid: { ...state.grid, overrides, deleted },
+                    selectedId: state.selectedId === action.id ? null : state.selectedId,
+                };
+            }
+            return state;
+        }
         case "SELECT_POINT":
             return { ...state, selectedId: action.id };
         case "SET_HOVER":
@@ -119,7 +145,10 @@ function reducer(state: ViewState, action: Action): ViewState {
             return { ...state, grid: { ...state.grid, corners: newCorners } };
         }
         case "RESET_GRID":
-            return { ...state, grid: { ...state.grid, corners: defaultCorners() } };
+            return {
+                ...state,
+                grid: { ...state.grid, corners: defaultCorners(), overrides: {}, deleted: [] },
+            };
         case "CLEAR_POINTS":
             return { ...state, points: [], selectedId: null, hover: null };
         case "RANDOM_POINTS": {
@@ -148,8 +177,6 @@ function reducer(state: ViewState, action: Action): ViewState {
             return { ...state, pointer: action.pointer };
         case "SET_GRID_POPOVER_OPEN":
             return { ...state, gridPopoverOpen: action.open };
-        case "SET_POSE_MODAL_OPEN":
-            return { ...state, poseModalOpen: action.open };
         default:
             return state;
     }
@@ -157,11 +184,15 @@ function reducer(state: ViewState, action: Action): ViewState {
 
 function projectGridPoints(grid: GridConfig): Point[] {
     const H_mat = computeHomography(grid.corners);
+    const deletedSet = new Set(grid.deleted);
     const pts: Point[] = [];
     for (let r = 0; r <= grid.rows; r++) {
         for (let c = 0; c <= grid.cols; c++) {
-            const uv = applyHomography(H_mat, { x: c / grid.cols, y: r / grid.rows });
-            pts.push({ id: `g-${r}-${c}`, x: uv.x, y: uv.y, kind: "grid" });
+            const id = `g-${r}-${c}`;
+            if (deletedSet.has(id)) continue;
+            const override = grid.overrides[id];
+            const pos = override ?? applyHomography(H_mat, { x: c / grid.cols, y: r / grid.rows });
+            pts.push({ id, x: pos.x, y: pos.y, kind: "grid" });
         }
     }
     return pts;
@@ -187,7 +218,6 @@ export interface DelaunayVoronoiState {
     voronoi: ReturnType<Delaunay<Point>["voronoi"]> | null;
     triangles: TriangleInfo[];
     stats: Stats;
-    pose: Pose;
     addPoint: (x: number, y: number) => void;
     movePoint: (id: string, x: number, y: number) => void;
     removePoint: (id: string) => void;
@@ -202,7 +232,6 @@ export interface DelaunayVoronoiState {
     setTool: (tool: ActiveTool) => void;
     setPointer: (pointer: { x: number; y: number } | null) => void;
     setGridPopoverOpen: (open: boolean) => void;
-    setPoseModalOpen: (open: boolean) => void;
 }
 
 export function useDelaunayVoronoi(): DelaunayVoronoiState {
@@ -257,11 +286,6 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
         };
     }, [allPoints, delaunay, triangles]);
 
-    // Always compute pose from corners; mark invalid when grid layer is off.
-    // Source-frame aspect = cols / rows so a frontal grid yields ~0 reproj error.
-    const rawPose = usePoseFromHomography(state.grid.corners, W, H, state.grid.cols / state.grid.rows);
-    const effectivePose: Pose = state.layers.grid ? rawPose : { ...rawPose, valid: false };
-
     return {
         state,
         allPoints,
@@ -269,7 +293,6 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
         voronoi,
         triangles,
         stats,
-        pose: effectivePose,
         addPoint: (x, y) => dispatch({ type: "ADD_POINT", x, y }),
         movePoint: (id, x, y) => dispatch({ type: "MOVE_POINT", id, x, y }),
         removePoint: (id) => dispatch({ type: "REMOVE_POINT", id }),
@@ -284,6 +307,5 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
         setTool: (tool) => dispatch({ type: "SET_TOOL", tool }),
         setPointer: (pointer) => dispatch({ type: "SET_POINTER", pointer }),
         setGridPopoverOpen: (open) => dispatch({ type: "SET_GRID_POPOVER_OPEN", open }),
-        setPoseModalOpen: (open) => dispatch({ type: "SET_POSE_MODAL_OPEN", open }),
     };
 }

@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Panel, PanelFlat, FloatingPanel, TinyBrow } from "../_shared/primitives";
 import DelaunayVoronoiCanvas from "./DelaunayVoronoiCanvas";
-import PoseReadout from "./PoseReadout";
-import HorizonViz from "./HorizonViz";
 import type { DelaunayVoronoiState } from "./useDelaunayVoronoi";
 import type { ActiveTool, Layers } from "./types";
 
@@ -33,8 +31,8 @@ function minAngleColor(deg: number): string {
 }
 
 export default function DelaunayVoronoiMobile({ demo }: Props) {
-    const { state, stats, pose, toggleLayer, setGridDims, resetGrid, clearPoints, randomPoints, setTool, setPoseModalOpen } = demo;
-    const { layers, activeTool, poseModalOpen } = state;
+    const { state, stats, toggleLayer, setGridDims, resetGrid, clearPoints, randomPoints, setTool } = demo;
+    const { layers, activeTool } = state;
     const { points, triangles, edges, minAngleDeg } = stats;
     const [randomN, setRandomN] = useState(30);
 
@@ -45,20 +43,6 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
             {/* Canvas panel */}
             <Panel className="relative overflow-hidden p-0 w-full" style={{ aspectRatio: "4/3" }}>
                 <DelaunayVoronoiCanvas demo={demo} />
-
-                {/* Pose chip (top-left) — tap opens pose modal */}
-                <FloatingPanel
-                    className="absolute top-2.5 left-2.5 px-2.5 py-1.5 cursor-pointer"
-                    onClick={() => setPoseModalOpen(true)}
-                    role="button"
-                    aria-label="Open pose readout"
-                >
-                    <TinyBrow className="mb-0.5 text-[9px]">Pose</TinyBrow>
-                    <div className="font-mono text-[11px] leading-5">
-                        <div>yaw <span className="text-muted-foreground">{pose.valid ? `${pose.yaw.toFixed(1)}°` : "—"}</span></div>
-                        <div>pitch <span className="text-muted-foreground">{pose.valid ? `${pose.pitch.toFixed(1)}°` : "—"}</span></div>
-                    </div>
-                </FloatingPanel>
 
                 {/* Stats chip (top-right) */}
                 <FloatingPanel className="absolute top-2.5 right-2.5 px-2.5 py-1.5 font-mono text-[11px]">
@@ -110,30 +94,6 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                     );
                 })}
             </div>
-
-            {/* Pose modal */}
-            {poseModalOpen && (
-                <>
-                    <div
-                        className="fixed inset-0 z-40 bg-black/40"
-                        onClick={() => setPoseModalOpen(false)}
-                    />
-                    <div className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-border p-4 max-h-[60vh] overflow-y-auto bg-[hsl(var(--surface))]">
-                        <TinyBrow className="mb-3">Camera pose</TinyBrow>
-                        <PoseReadout pose={pose} />
-                        <div className="mt-3">
-                            <HorizonViz pose={pose} />
-                        </div>
-                        <button
-                            type="button"
-                            onClick={() => setPoseModalOpen(false)}
-                            className="mt-4 w-full rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground"
-                        >
-                            Close
-                        </button>
-                    </div>
-                </>
-            )}
 
             {/* More sheet */}
             {isMoreOpen && (

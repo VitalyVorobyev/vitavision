@@ -5,7 +5,6 @@ import { formatValue } from "./readoutHelpers";
 import {
     FloatingPanel,
     MetricCell,
-    Note,
     TinyBrow,
 } from "../_shared/primitives";
 import type { ChessDemoProps } from "./ChessDemoProps";
@@ -143,12 +142,6 @@ export default function ChessResponseDesktopA({
                         <div className="flex gap-1">
                             <button
                                 type="button"
-                                className="rounded-lg border border-border/80 bg-background/80 px-1.5 py-0.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                                Pin
-                            </button>
-                            <button
-                                type="button"
                                 aria-label={inspectorOpen ? "Collapse inspector" : "Expand inspector"}
                                 onClick={() => setInspectorOpen((v) => !v)}
                                 className="rounded-lg border border-border/80 bg-background/80 px-1.5 py-0.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
@@ -160,15 +153,6 @@ export default function ChessResponseDesktopA({
 
                     {inspectorOpen && (
                         <div className="space-y-3.5">
-                            <SliderRow
-                                label="Rotation"
-                                value={rotationDeg}
-                                min={0}
-                                max={360}
-                                step={0.5}
-                                onChange={onRotationChange}
-                                display={`${rotationDeg.toFixed(1)}°`}
-                            />
                             <SliderRow
                                 label="Blur"
                                 value={blur}
@@ -288,18 +272,6 @@ export default function ChessResponseDesktopA({
                         θ = {rotationDeg.toFixed(1)}°
                     </span>
                 </FloatingPanel>
-            </div>
-
-            {/* Below-panel row: explanation + note */}
-            <div className="grid grid-cols-[1fr_auto] gap-4 items-start">
-                <p className="text-sm text-muted-foreground max-w-[640px]">
-                    Move the rotation slider to see how SR (sum), DR (diff), and MR (mean) terms react
-                    to a true corner. Collapse the inspector for a clean reading view.
-                </p>
-                <Note className="max-w-xs">
-                    <strong className="text-primary">A — Canvas-first.</strong> Inspector and HUD float
-                    over the diagram; bottom dock for live params. Best for hero figures.
-                </Note>
             </div>
         </div>
     );

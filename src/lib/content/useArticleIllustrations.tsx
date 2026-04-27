@@ -1,6 +1,7 @@
 import { useEffect, type RefObject } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import ChessResponseIllustration from "../../components/illustrations/ChessResponseIllustration.tsx";
+import DelaunayVoronoiInlineIllustration from "../../components/illustrations/DelaunayVoronoiInlineIllustration.tsx";
 import type { ChessResponsePattern, ChessResponsePreset } from "../../components/illustrations/chess-response/types";
 
 function parsePattern(value: string | undefined): ChessResponsePattern | undefined {
@@ -40,19 +41,34 @@ export function useArticleIllustrations(
         const roots: Root[] = [];
 
         hosts.forEach((host) => {
-            if (host.dataset.vvIllustration !== "chess-response") return;
-
-            const root = createRoot(host);
-            roots.push(root);
-            root.render(
-                <ChessResponseIllustration
-                    preset={parsePreset(host.dataset.vvPreset)}
-                    initialPattern={parsePattern(host.dataset.vvPattern)}
-                    initialRotation={parseNumber(host.dataset.vvRotation, 22.5)}
-                    showControls={parseBoolean(host.dataset.vvControls, true)}
-                    initialAnimateRotation={parseBoolean(host.dataset.vvAnimateRotation, false)}
-                />,
-            );
+            const kind = host.dataset.vvIllustration;
+            if (kind === "chess-response") {
+                const root = createRoot(host);
+                roots.push(root);
+                root.render(
+                    <ChessResponseIllustration
+                        preset={parsePreset(host.dataset.vvPreset)}
+                        initialPattern={parsePattern(host.dataset.vvPattern)}
+                        initialRotation={parseNumber(host.dataset.vvRotation, 22.5)}
+                        showControls={parseBoolean(host.dataset.vvControls, true)}
+                        initialAnimateRotation={parseBoolean(host.dataset.vvAnimateRotation, false)}
+                    />,
+                );
+            } else if (kind === "delaunay-voronoi") {
+                const root = createRoot(host);
+                roots.push(root);
+                root.render(
+                    <DelaunayVoronoiInlineIllustration
+                        showLegend={parseBoolean(host.dataset.vvLegend, false)}
+                        initialLayers={{
+                            grid:          parseBoolean(host.dataset.vvGrid, true),
+                            delaunay:      parseBoolean(host.dataset.vvDelaunay, true),
+                            voronoi:       parseBoolean(host.dataset.vvVoronoi, false),
+                            circumcircles: parseBoolean(host.dataset.vvCircumcircles, false),
+                        }}
+                    />,
+                );
+            }
         });
 
         return () => {

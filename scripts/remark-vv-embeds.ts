@@ -50,7 +50,12 @@ function extractDirectiveLabel(node: DirectiveNode): string | undefined {
     return labelChild?.children?.map((child) => child.value ?? "").join("").trim() || undefined;
 }
 
-const SUPPORTED_ILLUSTRATIONS = new Set(["chess-response"]);
+const SUPPORTED_ILLUSTRATIONS = new Set(["chess-response", "delaunay-voronoi"]);
+
+const FALLBACK_TEXT: Record<string, string> = {
+    "chess-response":   "Interactive illustration loads here. Enable JavaScript to inspect the ChESS response terms.",
+    "delaunay-voronoi": "Interactive illustration loads here. Enable JavaScript to drag corners and edit grid nodes.",
+};
 
 const remarkVvEmbeds: Plugin<[], Root> = () => {
     return (tree: Root) => {
@@ -65,20 +70,33 @@ const remarkVvEmbeds: Plugin<[], Root> = () => {
             const attributes = node.attributes ?? {};
             const data = node.data || (node.data = {});
             data.hName = "div";
-            data.hProperties = {
+            const baseProps: Record<string, unknown> = {
                 className: "vv-embed vv-embed--illustration",
                 "data-vv-illustration": illustration,
-                "data-vv-preset": attributes.preset ?? "article",
-                ...(attributes.pattern ? { "data-vv-pattern": attributes.pattern } : {}),
-                ...(attributes.rotation ? { "data-vv-rotation": attributes.rotation } : {}),
-                ...(attributes.controls ? { "data-vv-controls": attributes.controls } : {}),
-                ...(attributes.animate ? { "data-vv-animate-rotation": attributes.animate } : {}),
             };
+            if (illustration === "chess-response") {
+                Object.assign(baseProps, {
+                    "data-vv-preset": attributes.preset ?? "article",
+                    ...(attributes.pattern ? { "data-vv-pattern": attributes.pattern } : {}),
+                    ...(attributes.rotation ? { "data-vv-rotation": attributes.rotation } : {}),
+                    ...(attributes.controls ? { "data-vv-controls": attributes.controls } : {}),
+                    ...(attributes.animate ? { "data-vv-animate-rotation": attributes.animate } : {}),
+                });
+            } else if (illustration === "delaunay-voronoi") {
+                Object.assign(baseProps, {
+                    ...(attributes.grid          ? { "data-vv-grid":          attributes.grid          } : {}),
+                    ...(attributes.delaunay      ? { "data-vv-delaunay":      attributes.delaunay      } : {}),
+                    ...(attributes.voronoi       ? { "data-vv-voronoi":       attributes.voronoi       } : {}),
+                    ...(attributes.circumcircles ? { "data-vv-circumcircles": attributes.circumcircles } : {}),
+                    ...(attributes.legend        ? { "data-vv-legend":        attributes.legend        } : {}),
+                });
+            }
+            data.hProperties = baseProps;
 
             node.children = [
                 createParagraph(
                     "vv-embed__fallback",
-                    "Interactive illustration loads here. Enable JavaScript to inspect the ChESS response terms.",
+                    FALLBACK_TEXT[illustration] ?? "Interactive illustration loads here.",
                 ),
             ] as DirectiveNode["children"];
         });

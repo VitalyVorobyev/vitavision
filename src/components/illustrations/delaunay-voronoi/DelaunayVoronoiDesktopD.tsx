@@ -77,9 +77,7 @@ const TOOLS: { tool: ActiveTool; icon: string; title: string; key: string }[] = 
 ];
 
 function formatMinAngle(deg: number): string {
-    if (deg <= 0) return "—";
-    if (deg < 0.05) return "<0.1°";
-    return `${deg.toFixed(1)}°`;
+    return deg > 0 ? `${deg.toFixed(1)}°` : "—";
 }
 
 export default function DelaunayVoronoiDesktopD({ demo }: Props) {

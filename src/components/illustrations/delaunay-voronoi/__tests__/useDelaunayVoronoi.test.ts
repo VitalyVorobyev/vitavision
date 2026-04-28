@@ -127,6 +127,25 @@ describe("useDelaunayVoronoi reducer", () => {
         expect(result.current.state.points.length).toBe(0);
     });
 
+    it("default rect grid: stats show all 96 cells with healthy min-angle", () => {
+        const { result } = renderHook(() => useDelaunayVoronoi());
+        act(() => result.current.toggleLayer("grid"));
+        // 6 rows × 8 cols × 2 triangles per cell = 96
+        expect(result.current.stats.triangles).toBe(96);
+        expect(result.current.stats.minAngleDeg).toBeGreaterThan(30);
+    });
+
+    it("small corner move: no Delaunator hull artifacts contaminate min-angle", () => {
+        const { result } = renderHook(() => useDelaunayVoronoi());
+        act(() => result.current.toggleLayer("grid"));
+        // Drag c0 from (80,80) to (130,80) — small convex move that previously surfaced
+        // 3+ phantom collinear "triangles" with ~0 area, polluting min-angle to <0.1°.
+        act(() => result.current.moveCorner(0, 130, 80));
+        act(() => result.current.endDrag());
+        expect(result.current.stats.triangles).toBe(96);
+        expect(result.current.stats.minAngleDeg).toBeGreaterThan(5);
+    });
+
     it("singular grid corners produce no projected grid (no phantom origin cluster)", () => {
         const { result } = renderHook(() => useDelaunayVoronoi());
         act(() => result.current.toggleLayer("grid"));

@@ -30,11 +30,16 @@ function minAngleColor(deg: number): string {
     return "text-rose-400";
 }
 
+function formatMinAngle(deg: number): string {
+    return deg > 0 ? `${deg.toFixed(1)}°` : "—";
+}
+
 export default function DelaunayVoronoiMobile({ demo }: Props) {
-    const { state, stats, toggleLayer, setGridDims, resetGrid, clearPoints, randomPoints, setTool } = demo;
+    const { state, stats, toggleLayer, setGridDims, resetGrid, clearPoints, randomPoints, setTool, undo, redo, canUndo, canRedo } = demo;
     const { layers, activeTool } = state;
     const { points, triangles, edges, minAngleDeg } = stats;
     const [randomN, setRandomN] = useState(30);
+    const [hintVisible, setHintVisible] = useState(true);
 
     const isMoreOpen = activeTool === "more";
 
@@ -46,8 +51,34 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
 
                 {/* Stats chip (top-right) */}
                 <FloatingPanel className="absolute top-2.5 right-2.5 px-2.5 py-1.5 font-mono text-[11px]">
-                    {points} · {triangles} · {edges} · <span className={minAngleColor(minAngleDeg)}>{minAngleDeg > 0 ? `${minAngleDeg.toFixed(1)}°` : "—"}</span>
+                    {points} · {triangles} · {edges} · <span className={minAngleColor(minAngleDeg)}>{formatMinAngle(minAngleDeg)}</span>
                 </FloatingPanel>
+
+                {/* Reset corners chip — appears below stats when grid layer is on */}
+                {layers.grid && (
+                    <FloatingPanel className="absolute top-2.5 left-2.5 px-2.5 py-1 text-[11px]">
+                        <button
+                            type="button"
+                            onClick={resetGrid}
+                            className="text-muted-foreground hover:text-foreground transition-colors"
+                        >↺ Reset corners</button>
+                    </FloatingPanel>
+                )}
+
+                {/* Usage hint (bottom, dismissable) */}
+                {hintVisible && (
+                    <FloatingPanel className="absolute bottom-2.5 left-2.5 right-2.5 px-2.5 py-2 flex items-start gap-2">
+                        <span className="text-[11px] leading-snug text-muted-foreground">
+                            Tap to add a point. Drag to move. Use the Delete tool to remove.
+                        </span>
+                        <button
+                            type="button"
+                            aria-label="Dismiss hint"
+                            onClick={() => setHintVisible(false)}
+                            className="-mt-0.5 -mr-0.5 w-5 h-5 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted/40 hover:text-foreground shrink-0"
+                        >×</button>
+                    </FloatingPanel>
+                )}
             </Panel>
 
             {/* Tool dock */}
@@ -105,6 +136,29 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                     <div className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-border p-4 max-h-[60vh] overflow-y-auto bg-[hsl(var(--surface))]">
                         <TinyBrow className="mb-3">More options</TinyBrow>
                         <div className="flex flex-col gap-3">
+                            {/* History */}
+                            <div className="grid grid-cols-2 gap-2">
+                                <button
+                                    type="button"
+                                    onClick={undo}
+                                    disabled={!canUndo}
+                                    className={`rounded-xl border border-border py-2.5 text-sm transition-colors ${
+                                        canUndo
+                                            ? "text-muted-foreground hover:text-foreground"
+                                            : "opacity-40 cursor-not-allowed text-muted-foreground"
+                                    }`}
+                                >↶ Undo</button>
+                                <button
+                                    type="button"
+                                    onClick={redo}
+                                    disabled={!canRedo}
+                                    className={`rounded-xl border border-border py-2.5 text-sm transition-colors ${
+                                        canRedo
+                                            ? "text-muted-foreground hover:text-foreground"
+                                            : "opacity-40 cursor-not-allowed text-muted-foreground"
+                                    }`}
+                                >↷ Redo</button>
+                            </div>
                             {/* Grid size */}
                             <div className="flex flex-col gap-2">
                                 <div className="flex items-center justify-between">

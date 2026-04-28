@@ -1,5 +1,5 @@
 import { useRef, useCallback, type PointerEvent, type KeyboardEvent, type ReactElement } from "react";
-import { triangleArea } from "./geometry";
+import { triangleArea, triangleMinAngle } from "./geometry";
 import type { DelaunayVoronoiState } from "./useDelaunayVoronoi";
 
 const W = 800;
@@ -133,8 +133,9 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                     if ((s1 >= 0 && s2 >= 0 && s3 >= 0) || (s1 <= 0 && s2 <= 0 && s3 <= 0)) {
                         const rawArea = triangleArea(a, b, c);
                         const normArea = rawArea / (W * H);
+                        const minAngleDeg = (triangleMinAngle(a, b, c) * 180) / Math.PI;
                         if (hover?.kind !== "triangle" || hover.index !== i) {
-                            demo.setHover({ kind: "triangle", index: i, area: normArea });
+                            demo.setHover({ kind: "triangle", index: i, area: normArea, minAngleDeg });
                         }
                         return;
                     }
@@ -151,15 +152,30 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
     }, [demo]);
 
     const onPointerUp = useCallback(() => {
-        dragging.current = null;
-    }, []);
+        if (dragging.current) {
+            dragging.current = null;
+            demo.endDrag();
+        }
+    }, [demo]);
 
     const onKeyDown = useCallback(
         (e: KeyboardEvent<SVGSVGElement>) => {
+            // Undo/redo (Cmd/Ctrl-Z, Shift-Cmd/Ctrl-Z).
+            if ((e.metaKey || e.ctrlKey) && (e.key === "z" || e.key === "Z")) {
+                e.preventDefault();
+                if (e.shiftKey) demo.redo(); else demo.undo();
+                return;
+            }
+            if ((e.metaKey || e.ctrlKey) && (e.key === "y" || e.key === "Y")) {
+                e.preventDefault();
+                demo.redo();
+                return;
+            }
             if (e.key === "Delete" || e.key === "Backspace") {
                 if (selectedId) {
                     const isFree = state.points.some((p) => p.id === selectedId);
-                    if (isFree) demo.removePoint(selectedId);
+                    const isGridNode = selectedId.startsWith("g-");
+                    if (isFree || isGridNode) demo.removePoint(selectedId);
                 }
                 return;
             }

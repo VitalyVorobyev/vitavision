@@ -24,13 +24,23 @@ export interface Layers {
     grid: boolean;
 }
 
-export interface HoverTarget {
-    kind: "triangle" | "cell";
-    index: number;
-    area: number;
-}
+export type HoverTarget =
+    | { kind: "cell"; index: number; area: number }
+    | { kind: "triangle"; index: number; area: number; minAngleDeg: number };
 
 export type ActiveTool = "add" | "move" | "delete" | "grid" | "hover" | "more";
+
+export interface HistorySnapshot {
+    points: Point[];
+    corners: [Point, Point, Point, Point];
+    overrides: Record<string, { x: number; y: number }>;
+    deleted: string[];
+}
+
+export interface History {
+    past: HistorySnapshot[];
+    future: HistorySnapshot[];
+}
 
 export interface ViewState {
     points: Point[];
@@ -41,4 +51,6 @@ export interface ViewState {
     activeTool: ActiveTool;
     pointer: { x: number; y: number } | null;
     gridPopoverOpen: boolean;
+    history: History;
+    dragTag: string | null;
 }

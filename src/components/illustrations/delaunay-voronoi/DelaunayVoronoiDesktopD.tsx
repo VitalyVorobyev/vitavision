@@ -76,11 +76,16 @@ const TOOLS: { tool: ActiveTool; icon: string; title: string; key: string }[] = 
     { tool: "hover",  icon: "⊙", title: "Hover info",   key: "H" },
 ];
 
+function formatMinAngle(deg: number): string {
+    return deg > 0 ? `${deg.toFixed(1)}°` : "—";
+}
+
 export default function DelaunayVoronoiDesktopD({ demo }: Props) {
-    const { state, stats, toggleLayer, setGridDims, resetGrid, clearPoints, randomPoints, setTool, setGridPopoverOpen } = demo;
+    const { state, stats, toggleLayer, setGridDims, resetGrid, clearPoints, randomPoints, setTool, setGridPopoverOpen, undo, redo, canUndo, canRedo } = demo;
     const { layers, hover, pointer, activeTool, gridPopoverOpen } = state;
     const { points, triangles, edges, minAngleDeg } = stats;
-    const [randomN] = useState(30);
+    const [randomN, setRandomN] = useState(30);
+    const [hintVisible, setHintVisible] = useState(true);
 
     return (
         <div className="flex flex-col gap-3">
@@ -115,10 +120,50 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                     <div className="h-px bg-border mx-1.5 my-0.5" />
                     <button
                         type="button"
-                        title="Random N points (R)"
-                        onClick={() => randomPoints(randomN)}
-                        className="w-10 h-10 flex items-center justify-center rounded-xl text-base hover:bg-muted/40 text-muted-foreground hover:text-foreground"
-                    >⚂</button>
+                        title="Undo (⌘Z)"
+                        aria-label="Undo"
+                        onClick={undo}
+                        disabled={!canUndo}
+                        className={`w-10 h-10 flex items-center justify-center rounded-xl text-base transition-colors ${
+                            canUndo
+                                ? "hover:bg-muted/40 text-muted-foreground hover:text-foreground"
+                                : "opacity-40 cursor-not-allowed text-muted-foreground"
+                        }`}
+                    >↶</button>
+                    <button
+                        type="button"
+                        title="Redo (⇧⌘Z)"
+                        aria-label="Redo"
+                        onClick={redo}
+                        disabled={!canRedo}
+                        className={`w-10 h-10 flex items-center justify-center rounded-xl text-base transition-colors ${
+                            canRedo
+                                ? "hover:bg-muted/40 text-muted-foreground hover:text-foreground"
+                                : "opacity-40 cursor-not-allowed text-muted-foreground"
+                        }`}
+                    >↷</button>
+                    <div className="h-px bg-border mx-1.5 my-0.5" />
+                    <div className="flex flex-col items-center gap-1 py-0.5">
+                        <input
+                            type="number"
+                            value={randomN}
+                            min={3}
+                            max={500}
+                            onChange={(e) => {
+                                const v = Math.max(3, Math.min(500, Number(e.target.value)));
+                                if (Number.isFinite(v)) setRandomN(v);
+                            }}
+                            className="w-10 text-center text-[11px] font-mono rounded border border-border bg-background py-0.5 focus:outline-none focus:ring-1 focus:ring-primary"
+                            aria-label="Random point count"
+                            title="Random point count"
+                        />
+                        <button
+                            type="button"
+                            title={`Random ${randomN} points (R)`}
+                            onClick={() => randomPoints(randomN)}
+                            className="w-10 h-8 flex items-center justify-center rounded-xl text-base hover:bg-muted/40 text-muted-foreground hover:text-foreground"
+                        >⚂</button>
+                    </div>
                     <button
                         type="button"
                         title="Clear all points"
@@ -174,12 +219,7 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                                 key={key}
                                 type="button"
                                 aria-pressed={on}
-                                onClick={() => {
-                                    if (key === "grid" && on) {
-                                        // turning off grid: close popover via toggleLayer which handles it
-                                    }
-                                    toggleLayer(key);
-                                }}
+                                onClick={() => toggleLayer(key)}
                                 className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs transition-colors ${
                                     on
                                         ? "border border-primary/40 bg-primary/10 text-foreground"
@@ -195,6 +235,18 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                         );
                     })}
                 </FloatingPanel>
+
+                {/* ── Reset corners chip (top-center, below layer chips, only when grid is on) ── */}
+                {layers.grid && (
+                    <FloatingPanel className="absolute top-[58px] left-1/2 -translate-x-1/2 px-2.5 py-1 text-[11px] flex items-center">
+                        <button
+                            type="button"
+                            onClick={resetGrid}
+                            className="text-muted-foreground hover:text-foreground transition-colors"
+                            title="Reset grid corners to defaults"
+                        >↺ Reset corners</button>
+                    </FloatingPanel>
+                )}
 
                 {/* ── Coord readout (top-right) ── */}
                 <FloatingPanel className="absolute top-4 right-4 px-2.5 py-1.5 text-[11px] font-mono rounded-xl">
@@ -213,11 +265,26 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                         <MetricCell label="Edges" value={String(edges)} />
                         <MetricCell
                             label="Min ∠"
-                            value={minAngleDeg > 0 ? `${minAngleDeg.toFixed(1)}°` : "—"}
+                            value={formatMinAngle(minAngleDeg)}
                             tone={minAngleTone(minAngleDeg)}
                         />
                     </div>
                 </FloatingPanel>
+
+                {/* ── Usage hint (bottom-center, dismissable) ── */}
+                {hintVisible && (
+                    <FloatingPanel className="absolute bottom-4 left-1/2 -translate-x-1/2 max-w-[480px] px-3 py-2 flex items-start gap-2.5">
+                        <span className="text-[11px] leading-snug text-muted-foreground">
+                            Click an empty area to add a point. Drag any point to move it. Select a point and press <Kbd>⌫</Kbd> to remove it.
+                        </span>
+                        <button
+                            type="button"
+                            aria-label="Dismiss hint"
+                            onClick={() => setHintVisible(false)}
+                            className="-mt-0.5 -mr-0.5 w-5 h-5 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted/40 hover:text-foreground shrink-0"
+                        >×</button>
+                    </FloatingPanel>
+                )}
 
                 {/* ── Hover tooltip (bottom-left) ── */}
                 {hover && activeTool === "hover" && (
@@ -227,14 +294,24 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                             <span className="text-muted-foreground capitalize">{hover.kind} #{hover.index}</span>
                             <span className="font-mono">area {hover.area.toFixed(4)}</span>
                         </div>
-                        {hover.kind === "triangle" && (
-                            <div className="flex justify-between text-xs mt-1">
-                                <span className="text-muted-foreground">min angle</span>
-                                <span className={`font-mono ${minAngleTone(minAngleDeg) === "good" ? "text-emerald-400" : minAngleTone(minAngleDeg) === "warn" ? "text-amber-400" : "text-rose-400"}`}>
-                                    {minAngleDeg > 0 ? `${minAngleDeg.toFixed(1)}°` : "—"}
-                                </span>
-                            </div>
-                        )}
+                        {hover.kind === "triangle" && (() => {
+                            const tone = minAngleTone(hover.minAngleDeg);
+                            const toneClass = tone === "good"
+                                ? "text-emerald-400"
+                                : tone === "warn"
+                                    ? "text-amber-400"
+                                    : tone === "bad"
+                                        ? "text-rose-400"
+                                        : "text-muted-foreground";
+                            return (
+                                <div className="flex justify-between text-xs mt-1">
+                                    <span className="text-muted-foreground">min angle</span>
+                                    <span className={`font-mono ${toneClass}`}>
+                                        {formatMinAngle(hover.minAngleDeg)}
+                                    </span>
+                                </div>
+                            );
+                        })()}
                     </FloatingPanel>
                 )}
             </Panel>
@@ -246,6 +323,8 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                 <Pill><Kbd>⌫</Kbd> delete selected</Pill>
                 <Pill><Kbd>G</Kbd> grid warp</Pill>
                 <Pill><Kbd>R</Kbd> random N</Pill>
+                <Pill><Kbd>⌘Z</Kbd> undo</Pill>
+                <Pill><Kbd>⇧⌘Z</Kbd> redo</Pill>
             </div>
             <Note>
                 <strong className="text-primary">D — Floating tool palette.</strong> Modal tools, layer chips, HUD. The canvas owns the screen.

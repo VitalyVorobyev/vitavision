@@ -7,8 +7,7 @@ import { useEditorStore } from "../../../store/editor/useEditorStore";
 import type { SampleId } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
 
-import { ALGORITHM_MANIFEST, loadAlgorithm } from "../algorithms/registry";
-import type { AlgorithmDefinition } from "../algorithms/types";
+import { ALGORITHM_MANIFEST, loadAlgorithm, getLoadedAlgorithm } from "../algorithms/registry";
 import useAlgorithmRunner, { stageLabel } from "../algorithms/useAlgorithmRunner";
 import { useDeepLinkSync } from "../../../hooks/useEditorDeepLink";
 
@@ -104,13 +103,20 @@ export default function ConfigurePanel() {
     });
     const [configModalOpen, setConfigModalOpen] = useState(false);
 
-    // Loaded algorithm definition — null while the dynamic import is in flight.
-    const [algorithm, setAlgorithm] = useState<AlgorithmDefinition | null>(null);
+    // Algorithm definition is derived from the registry cache + the current
+    // selection. Always in sync with selectedAlgorithmId — never stale, so
+    // handleRun and handleConfigChange can't act on the wrong algorithm.
+    // Returns null while the chunk for the current selection is still loading.
+    const algorithm = getLoadedAlgorithm(selectedAlgorithmId);
+
+    // Trigger counter so the component re-renders when a deferred load resolves
+    // and getLoadedAlgorithm starts returning the freshly-cached entry.
+    const [, setLoadTick] = useState(0);
 
     useEffect(() => {
         let cancelled = false;
-        loadAlgorithm(selectedAlgorithmId).then((algo) => {
-            if (!cancelled) setAlgorithm(algo);
+        loadAlgorithm(selectedAlgorithmId).then(() => {
+            if (!cancelled) setLoadTick((tick) => tick + 1);
         });
         return () => { cancelled = true; };
     }, [selectedAlgorithmId]);
@@ -149,6 +155,11 @@ export default function ConfigurePanel() {
         // Load the new algorithm and sync URL once it resolves.
         // We don't block the selection on the load — the picker updates immediately.
         loadAlgorithm(id).then((algo) => {
+            // If the user has since picked a different algorithm, don't let
+            // this stale resolution overwrite the URL with the older selection.
+            // Reading from the store at resolution time avoids the closure
+            // capturing a stale `selectedAlgorithmId`.
+            if (id !== useEditorStore.getState().selectedAlgorithmId) return;
             syncToUrl(
                 id,
                 resolveConfig(configEntries, id, configSampleId, algo.initialConfig, algo.sampleDefaults),

@@ -2,7 +2,7 @@
 title: "Delaunay Triangulation & Voronoi Diagrams"
 date: 2026-04-26
 summary: "Interactive construction of Delaunay triangulations and dual Voronoi diagrams, with a draggable projective grid to explore how calibration patterns deform under perspective."
-tags: ["computer-vision", "geometry", "interactive"]
+tags: ["geometry", "graph"]
 author: "Vitaly Vorobyev"
 category: "interactive-figure"
 componentId: "delaunay-voronoi"

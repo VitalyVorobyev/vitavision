@@ -112,4 +112,36 @@ describe("useDelaunayVoronoi reducer", () => {
         }
         expect(result.current.state.history.past.length).toBe(50);
     });
+
+    it("randomPoints clamps oversized counts (no runaway allocation)", () => {
+        const { result } = renderHook(() => useDelaunayVoronoi());
+        act(() => result.current.randomPoints(1_000_000));
+        expect(result.current.state.points.length).toBeLessThanOrEqual(2000);
+    });
+
+    it("randomPoints rejects negative or non-finite counts", () => {
+        const { result } = renderHook(() => useDelaunayVoronoi());
+        act(() => result.current.randomPoints(-50));
+        expect(result.current.state.points.length).toBe(0);
+        act(() => result.current.randomPoints(Number.NaN));
+        expect(result.current.state.points.length).toBe(0);
+    });
+
+    it("singular grid corners produce no projected grid (no phantom origin cluster)", () => {
+        const { result } = renderHook(() => useDelaunayVoronoi());
+        act(() => result.current.toggleLayer("grid"));
+        // Collapse all four corners onto one point — homography becomes singular.
+        act(() => result.current.moveCorner(0, 100, 100));
+        act(() => result.current.endDrag());
+        act(() => result.current.moveCorner(1, 100, 100));
+        act(() => result.current.endDrag());
+        act(() => result.current.moveCorner(2, 100, 100));
+        act(() => result.current.endDrag());
+        act(() => result.current.moveCorner(3, 100, 100));
+        act(() => result.current.endDrag());
+
+        // No grid points should have been projected — and crucially nothing near (0,0).
+        const projected = result.current.allPoints.filter((p) => p.id.startsWith("g-"));
+        expect(projected.length).toBe(0);
+    });
 });

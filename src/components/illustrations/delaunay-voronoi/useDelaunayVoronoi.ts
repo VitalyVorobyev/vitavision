@@ -226,8 +226,12 @@ function reducer(state: ViewState, action: Action): ViewState {
                 dragTag: null,
             };
         case "RANDOM_POINTS": {
+            // Hard cap to prevent oversized allocations from any caller (pasted input,
+            // upstream callers, or unsanitized keyboard shortcuts). 2000 is well past the
+            // demo's useful range; anything larger only hurts the browser tab.
+            const count = Math.max(0, Math.min(2000, Math.floor(action.count) || 0));
             const padding = 40;
-            const newPoints: Point[] = Array.from({ length: action.count }, () => ({
+            const newPoints: Point[] = Array.from({ length: count }, () => ({
                 id: uuid(),
                 x: padding + Math.random() * (W - 2 * padding),
                 y: padding + Math.random() * (H - 2 * padding),
@@ -284,6 +288,16 @@ function reducer(state: ViewState, action: Action): ViewState {
 
 function projectGridPoints(grid: GridConfig): Point[] {
     const H_mat = computeHomography(grid.corners);
+    // Singular corner configuration (collinear or coincident) — skip projection entirely.
+    // The user can drag a corner back to a valid quad to restore the grid; meanwhile the
+    // four corner handles remain interactive (they're rendered separately).
+    if (H_mat === null) {
+        // Honour overrides anyway — they're explicit user-placed positions.
+        const deletedSet = new Set(grid.deleted);
+        return Object.entries(grid.overrides)
+            .filter(([id]) => !deletedSet.has(id))
+            .map(([id, pos]) => ({ id, x: pos.x, y: pos.y, kind: "grid" as const }));
+    }
     const deletedSet = new Set(grid.deleted);
     const pts: Point[] = [];
     for (let r = 0; r <= grid.rows; r++) {

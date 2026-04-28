@@ -10,7 +10,8 @@ describe("computeHomography", () => {
             { x: number; y: number },
         ] = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }];
         const H = computeHomography(corners);
-        const result = applyHomography(H, { x: 0.5, y: 0.5 });
+        expect(H).not.toBeNull();
+        const result = applyHomography(H!, { x: 0.5, y: 0.5 });
         expect(result.x).toBeCloseTo(0.5, 9);
         expect(result.y).toBeCloseTo(0.5, 9);
     });
@@ -23,7 +24,8 @@ describe("computeHomography", () => {
             { x: number; y: number },
         ] = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }];
         const H = computeHomography(corners);
-        const r = applyHomography(H, { x: 0, y: 0 });
+        expect(H).not.toBeNull();
+        const r = applyHomography(H!, { x: 0, y: 0 });
         expect(r.x).toBeCloseTo(0, 9);
         expect(r.y).toBeCloseTo(0, 9);
     });
@@ -42,10 +44,11 @@ describe("computeHomography", () => {
             { x: 0 + dx, y: 1 + dy },
         ];
         const H = computeHomography(corners);
-        const r00 = applyHomography(H, { x: 0, y: 0 });
+        expect(H).not.toBeNull();
+        const r00 = applyHomography(H!, { x: 0, y: 0 });
         expect(r00.x).toBeCloseTo(dx, 9);
         expect(r00.y).toBeCloseTo(dy, 9);
-        const r11 = applyHomography(H, { x: 1, y: 1 });
+        const r11 = applyHomography(H!, { x: 1, y: 1 });
         expect(r11.x).toBeCloseTo(1 + dx, 9);
         expect(r11.y).toBeCloseTo(1 + dy, 9);
     });
@@ -59,11 +62,32 @@ describe("computeHomography", () => {
             { x: number; y: number },
         ] = [{ x: 0, y: 0 }, { x: 4, y: 0 }, { x: 3, y: 2 }, { x: 1, y: 2 }];
         const H = computeHomography(corners);
+        expect(H).not.toBeNull();
         const srcCorners = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }];
         for (let i = 0; i < 4; i++) {
-            const r = applyHomography(H, srcCorners[i]);
+            const r = applyHomography(H!, srcCorners[i]);
             expect(r.x).toBeCloseTo(corners[i].x, 9);
             expect(r.y).toBeCloseTo(corners[i].y, 9);
         }
+    });
+
+    it("returns null for coincident corners (singular system)", () => {
+        const corners: [
+            { x: number; y: number },
+            { x: number; y: number },
+            { x: number; y: number },
+            { x: number; y: number },
+        ] = [{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }];
+        expect(computeHomography(corners)).toBeNull();
+    });
+
+    it("returns null for collinear corners", () => {
+        const corners: [
+            { x: number; y: number },
+            { x: number; y: number },
+            { x: number; y: number },
+            { x: number; y: number },
+        ] = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 }];
+        expect(computeHomography(corners)).toBeNull();
     });
 });

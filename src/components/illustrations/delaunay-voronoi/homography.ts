@@ -30,7 +30,11 @@ function solve8(A: number[][], b: number[]): number[] | null {
 }
 
 // Compute homography mapping unit square [0,0],[1,0],[1,1],[0,1] → corners (TL,TR,BR,BL).
-export function computeHomography(corners: [Vec2, Vec2, Vec2, Vec2]): Matrix3 {
+// Returns null when the system is singular (e.g. corners collinear or coincident).
+// Callers should treat null as "no valid projection" — falling back to identity here would
+// snap the projected grid to the unit square at the origin and inject phantom points into
+// downstream geometry.
+export function computeHomography(corners: [Vec2, Vec2, Vec2, Vec2]): Matrix3 | null {
     const src: Vec2[] = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }];
     const A: number[][] = [];
     const b: number[] = [];
@@ -43,7 +47,7 @@ export function computeHomography(corners: [Vec2, Vec2, Vec2, Vec2]): Matrix3 {
         b.push(dy);
     }
     const h = solve8(A, b);
-    if (!h) return [1, 0, 0, 0, 1, 0, 0, 0, 1];
+    if (!h) return null;
     return [h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7], 1];
 }
 

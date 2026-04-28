@@ -9,7 +9,7 @@ import FeatureTooltip, { type DirectedPointTooltipState } from "./canvas/Feature
 import { isReadonlyFeature, useEditorStore } from "../../store/editor/useEditorStore";
 import { useRadsymHeatmap } from "./algorithms/radsym/useRadsymHeatmap";
 import { useShallow } from "zustand/react/shallow";
-import { getAlgorithmById } from "./algorithms/registry";
+import { getLoadedAlgorithm } from "./algorithms/registry";
 import CanvasControlsHint from "../shared/CanvasControlsHint";
 import useViewportMode from "../../hooks/useViewportMode";
 import { usePixelSampler } from "./hooks/usePixelSampler";
@@ -435,8 +435,9 @@ export default function CanvasWorkspace() {
 
                         {/* Algorithm overlay (grid edges, labels, markers) */}
                         {overlayVisibility.algorithmOverlay && lastAlgorithmResult && (() => {
-                            const algo = getAlgorithmById(lastAlgorithmResult.algorithmId);
-                            const Overlay = algo.OverlayComponent;
+                            // By the time lastAlgorithmResult is set, the algorithm is loaded.
+                            const algo = getLoadedAlgorithm(lastAlgorithmResult.algorithmId);
+                            const Overlay = algo?.OverlayComponent;
                             if (!Overlay) return null;
                             return (
                                 <Overlay

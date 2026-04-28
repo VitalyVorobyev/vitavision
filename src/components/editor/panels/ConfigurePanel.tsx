@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { LoaderCircle, Sparkles, AlertCircle, Maximize2, ChevronDown, X } from "lucide-react";
@@ -7,14 +7,13 @@ import { useEditorStore } from "../../../store/editor/useEditorStore";
 import type { SampleId } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
 
-import { ALGORITHM_REGISTRY, getAlgorithmById } from "../algorithms/registry";
+import { ALGORITHM_MANIFEST, loadAlgorithm } from "../algorithms/registry";
+import type { AlgorithmDefinition } from "../algorithms/types";
 import useAlgorithmRunner, { stageLabel } from "../algorithms/useAlgorithmRunner";
 import { useDeepLinkSync } from "../../../hooks/useEditorDeepLink";
 
 import RailSection from "./RailSection";
 import ConfigModal from "./ConfigModal";
-
-let didSeedFromUrl = false;
 
 type ConfigEntry = { value: unknown; sampleId: SampleId };
 
@@ -41,7 +40,7 @@ function AlgorithmPicker({ value, onChange }: { value: string; onChange: (id: st
                 onChange={(e) => onChange(e.target.value)}
                 className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-8 text-xs font-medium text-foreground transition-colors hover:bg-muted/60 focus:outline-none focus:ring-1 focus:ring-primary/40"
             >
-                {ALGORITHM_REGISTRY.map((algo) => (
+                {ALGORITHM_MANIFEST.map((algo) => (
                     <option key={algo.id} value={algo.id}>{algo.title}</option>
                 ))}
             </select>
@@ -82,16 +81,20 @@ export default function ConfigurePanel() {
         ? initialState.sampleId
         : imageSampleId;
 
-    // Seed store from deep link on first page load only (not on tab switches)
+    // didSeedFromUrl: run once per mount (useRef instead of module-level variable
+    // so it resets if the user navigates away and returns — URL may have changed).
+    const didSeedFromUrl = useRef(false);
     useEffect(() => {
-        if (!didSeedFromUrl) {
-            didSeedFromUrl = true;
+        if (!didSeedFromUrl.current) {
+            didSeedFromUrl.current = true;
             if (initialState.algorithmId !== selectedAlgorithmId) {
                 setSelectedAlgorithmId(initialState.algorithmId);
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- run once per page session
-    }, []);
+    // Empty deps: intentional — we only want this to run once on mount.
+    // didSeedFromUrl is a ref (stable), and the initial* values from useDeepLinkSync
+    // are derived from URL search params at construction time and do not change.
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>(() => {
         if (initialState.config !== null) {
@@ -101,44 +104,60 @@ export default function ConfigurePanel() {
     });
     const [configModalOpen, setConfigModalOpen] = useState(false);
 
-    const runner = useAlgorithmRunner();
-    const algorithm = useMemo(() => getAlgorithmById(selectedAlgorithmId), [selectedAlgorithmId]);
+    // Loaded algorithm definition — null while the dynamic import is in flight.
+    const [algorithm, setAlgorithm] = useState<AlgorithmDefinition | null>(null);
 
-    const ConfigComponent = algorithm.ConfigComponent;
-    const config = resolveConfig(
-        configEntries,
-        algorithm.id,
-        configSampleId,
-        algorithm.initialConfig,
-        algorithm.sampleDefaults,
+    useEffect(() => {
+        let cancelled = false;
+        loadAlgorithm(selectedAlgorithmId).then((algo) => {
+            if (!cancelled) setAlgorithm(algo);
+        });
+        return () => { cancelled = true; };
+    }, [selectedAlgorithmId]);
+
+    const runner = useAlgorithmRunner();
+
+    const manifestEntry = useMemo(
+        () => ALGORITHM_MANIFEST.find((e) => e.id === selectedAlgorithmId) ?? ALGORITHM_MANIFEST[0],
+        [selectedAlgorithmId],
     );
 
+    const ConfigComponent = algorithm?.ConfigComponent ?? null;
+    const config = algorithm
+        ? resolveConfig(configEntries, algorithm.id, configSampleId, algorithm.initialConfig, algorithm.sampleDefaults)
+        : undefined;
+
     const handleConfigChange = useCallback((next: unknown) => {
+        if (!algorithm) return;
         setConfigEntries((current) => ({
             ...current,
             [algorithm.id]: { value: next, sampleId: configSampleId },
         }));
         syncToUrl(algorithm.id, next);
-    }, [algorithm.id, configSampleId, syncToUrl]);
+    }, [algorithm, configSampleId, syncToUrl]);
 
     const activeGalleryImage = useMemo(
         () => galleryImages.find((img) => img.sampleId === imageSampleId && imageSrc !== null) ?? null,
         [galleryImages, imageSampleId, imageSrc],
     );
 
-    const canRun = imageSrc !== null && !runner.isRunning;
+    const canRun = imageSrc !== null && !runner.isRunning && algorithm !== null;
 
     const handleSelectAlgorithm = (id: string) => {
         setSelectedAlgorithmId(id);
         runner.clearError();
-        const algo = getAlgorithmById(id);
-        syncToUrl(
-            id,
-            resolveConfig(configEntries, id, configSampleId, algo.initialConfig, algo.sampleDefaults),
-        );
+        // Load the new algorithm and sync URL once it resolves.
+        // We don't block the selection on the load — the picker updates immediately.
+        loadAlgorithm(id).then((algo) => {
+            syncToUrl(
+                id,
+                resolveConfig(configEntries, id, configSampleId, algo.initialConfig, algo.sampleDefaults),
+            );
+        });
     };
 
     const handleRun = async () => {
+        if (!algorithm) return;
         const output = await runner.runAlgorithm({
             algorithm,
             config,
@@ -194,12 +213,12 @@ export default function ConfigurePanel() {
             <RailSection label="Algorithm">
                 <AlgorithmPicker value={selectedAlgorithmId} onChange={handleSelectAlgorithm} />
                 <p className="text-xs text-muted-foreground leading-relaxed px-0.5">
-                    {algorithm.description}
-                    {algorithm.blogSlug && (
+                    {manifestEntry.description}
+                    {manifestEntry.blogSlug && (
                         <>
                             {" "}
                             <Link
-                                to={`/blog/${algorithm.blogSlug}`}
+                                to={`/blog/${manifestEntry.blogSlug}`}
                                 className="text-primary underline hover:text-primary/80"
                             >
                                 Learn more
@@ -210,7 +229,7 @@ export default function ConfigurePanel() {
             </RailSection>
 
             {/* Section 3: Presets (if available) */}
-            {algorithm.presets && algorithm.presets.length > 0 && (
+            {algorithm?.presets && algorithm.presets.length > 0 && (
                 <RailSection label="Presets">
                     <PresetPicker
                         presets={algorithm.presets}
@@ -228,29 +247,36 @@ export default function ConfigurePanel() {
                         onClick={() => setConfigModalOpen(true)}
                         className="text-muted-foreground/50 hover:text-foreground transition-colors"
                         title="Expand configuration"
+                        disabled={algorithm === null}
                     >
                         <Maximize2 size={11} />
                     </button>
                 }
             >
-                <ConfigComponent
+                {ConfigComponent && config !== undefined ? (
+                    <ConfigComponent
+                        config={config}
+                        onChange={handleConfigChange}
+                        disabled={runner.isRunning}
+                    />
+                ) : (
+                    <p className="text-xs text-muted-foreground/60 animate-pulse">Loading…</p>
+                )}
+            </RailSection>
+
+            {ConfigComponent && config !== undefined && (
+                <ConfigModal
+                    open={configModalOpen}
+                    onClose={() => setConfigModalOpen(false)}
+                    title={`${manifestEntry.title} Configuration`}
+                    ConfigComponent={ConfigComponent}
                     config={config}
                     onChange={handleConfigChange}
                     disabled={runner.isRunning}
                 />
-            </RailSection>
+            )}
 
-            <ConfigModal
-                open={configModalOpen}
-                onClose={() => setConfigModalOpen(false)}
-                title={`${algorithm.title} Configuration`}
-                ConfigComponent={ConfigComponent}
-                config={config}
-                onChange={handleConfigChange}
-                disabled={runner.isRunning}
-            />
-
-            {/* Section 4: Run + status + summary */}
+            {/* Section 5: Run + status + summary */}
             <RailSection label="Run">
                 <RunSection runner={runner} canRun={canRun} onRun={handleRun} />
             </RailSection>
@@ -321,7 +347,7 @@ function HintCardInner({
                 <div className="flex flex-wrap gap-1 pt-0.5">
                     <span className="text-[10px] text-muted-foreground self-center">Try:</span>
                     {image.recommendedAlgorithms!.map((name) => {
-                        const match = ALGORITHM_REGISTRY.find((a) => a.title === name);
+                        const match = ALGORITHM_MANIFEST.find((a) => a.title === name);
                         return (
                             <button
                                 key={name}

@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 
 import { useEditorStore, type OverlayToggles, type PanelMode } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
-import { getAlgorithmById } from "../algorithms/registry";
+import { getLoadedAlgorithm } from "../algorithms/registry";
 
 import ConfigurePanel from "./ConfigurePanel";
 import FeatureListPanel from "./FeatureListPanel";
@@ -86,8 +86,9 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
     const [touchTabOverride, setTouchTabOverride] = useState<"features" | null>(null);
     const touchTab: TouchPanelTab = touchTabOverride ?? panelMode;
 
+    // By the time lastAlgorithmResult is set, the algorithm is already loaded.
     const hasOverlay = lastAlgorithmResult
-        ? !!getAlgorithmById(lastAlgorithmResult.algorithmId).OverlayComponent
+        ? !!(getLoadedAlgorithm(lastAlgorithmResult.algorithmId)?.OverlayComponent)
         : false;
 
     const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {

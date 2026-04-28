@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getAlgorithmById, DEFAULT_ALGORITHM_ID } from "../components/editor/algorithms/registry";
+import { ALGORITHM_MANIFEST, DEFAULT_ALGORITHM_ID } from "../components/editor/algorithms/registry";
 import type { SampleId } from "../store/editor/useEditorStore";
 
 /* ── base64url helpers ───────────────────────────────────────── */
@@ -41,7 +41,7 @@ export function readDeepLink(searchParams: URLSearchParams): DeepLinkState {
     const configParam = searchParams.get("config");
     const sampleParam = parseSampleId(searchParams.get("sample"));
 
-    const algorithmId = algoParam && getAlgorithmById(algoParam).id === algoParam
+    const algorithmId = algoParam && ALGORITHM_MANIFEST.some((e) => e.id === algoParam)
         ? algoParam
         : DEFAULT_ALGORITHM_ID;
 

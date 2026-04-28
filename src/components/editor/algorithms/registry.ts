@@ -1,24 +1,111 @@
-import { chessCornersAlgorithm } from "./chessCorners/adapter";
-import { chessboardAlgorithm } from "./calibrationTargets/chessboardAdapter";
-import { charucoAlgorithm } from "./calibrationTargets/charucoAdapter";
-import { markerboardAlgorithm } from "./calibrationTargets/markerboardAdapter";
-import { ringgridAlgorithm } from "./ringgrid/adapter";
-import { radsymAlgorithm } from "./radsym/adapter";
-import { puzzleboardAlgorithm } from "./puzzleboard/adapter";
 import type { AlgorithmDefinition } from "./types";
 
-export const ALGORITHM_REGISTRY: AlgorithmDefinition[] = [
-    chessCornersAlgorithm,
-    chessboardAlgorithm,
-    charucoAlgorithm,
-    markerboardAlgorithm,
-    ringgridAlgorithm,
-    radsymAlgorithm,
-    puzzleboardAlgorithm,
+export interface AlgorithmManifestEntry {
+    id: string;
+    title: string;
+    description: string;
+    blogSlug?: string;
+}
+
+/** Lightweight static manifest — no adapter modules imported. */
+export const ALGORITHM_MANIFEST: AlgorithmManifestEntry[] = [
+    {
+        id: "chess-corners",
+        title: "ChESS Corners",
+        description: "Detect ChESS X-junction keypoints with subpixel positions and two-axis orientation descriptors.",
+        blogSlug: "pyramidal-blur-aware-xcorner",
+    },
+    {
+        id: "chessboard",
+        title: "Chessboard",
+        description: "Detect labeled chessboard corner grid with subpixel accuracy.",
+    },
+    {
+        id: "charuco",
+        title: "ChArUco",
+        description: "Detect ChArUco board corners and embedded ArUco markers.",
+    },
+    {
+        id: "markerboard",
+        title: "Marker Board",
+        description: "Detect checkerboard corners and fiducial circle markers.",
+    },
+    {
+        id: "ringgrid",
+        title: "Ring Grid",
+        description: "Detect concentric ring markers on a hex-lattice grid with binary code bands.",
+    },
+    {
+        id: "radsym",
+        title: "Radial Symmetry",
+        description: "Detect radial symmetry centers via response map voting (FRST / RSD).",
+    },
+    {
+        id: "puzzleboard",
+        title: "PuzzleBoard",
+        description: "Self-identifying checkerboard with absolute (u,v) grid via embedded edge-bit pattern.",
+        blogSlug: "puzzleboard",
+    },
 ];
 
-export const DEFAULT_ALGORITHM_ID = chessCornersAlgorithm.id;
+export const DEFAULT_ALGORITHM_ID = "chess-corners";
 
-export const getAlgorithmById = (id: string): AlgorithmDefinition => {
-    return ALGORITHM_REGISTRY.find((algorithm) => algorithm.id === id) ?? ALGORITHM_REGISTRY[0];
+// Per-id dynamic import map. Each import() creates its own chunk.
+const LOADERS: Record<string, () => Promise<AlgorithmDefinition>> = {
+    "chess-corners": () =>
+        import("./chessCorners/adapter").then((m) => m.chessCornersAlgorithm),
+    chessboard: () =>
+        import("./calibrationTargets/chessboardAdapter").then((m) => m.chessboardAlgorithm),
+    charuco: () =>
+        import("./calibrationTargets/charucoAdapter").then((m) => m.charucoAlgorithm),
+    markerboard: () =>
+        import("./calibrationTargets/markerboardAdapter").then((m) => m.markerboardAlgorithm),
+    ringgrid: () =>
+        import("./ringgrid/adapter").then((m) => m.ringgridAlgorithm),
+    radsym: () =>
+        import("./radsym/adapter").then((m) => m.radsymAlgorithm),
+    puzzleboard: () =>
+        import("./puzzleboard/adapter").then((m) => m.puzzleboardAlgorithm),
 };
+
+// Promise cache — guarantees each adapter module is loaded at most once.
+const pendingLoads = new Map<string, Promise<AlgorithmDefinition>>();
+
+// Resolved cache — populated when the promise settles.
+const loadedAlgorithms = new Map<string, AlgorithmDefinition>();
+
+/**
+ * Dynamically loads the adapter for the given algorithm id.
+ * Subsequent calls for the same id return the cached promise.
+ */
+export function loadAlgorithm(id: string): Promise<AlgorithmDefinition> {
+    const cached = pendingLoads.get(id);
+    if (cached) return cached;
+
+    const loader = LOADERS[id] ?? LOADERS[DEFAULT_ALGORITHM_ID];
+    const resolvedId = LOADERS[id] ? id : DEFAULT_ALGORITHM_ID;
+
+    const promise = loader().then((algo) => {
+        loadedAlgorithms.set(resolvedId, algo);
+        return algo;
+    });
+
+    pendingLoads.set(resolvedId, promise);
+    return promise;
+}
+
+/**
+ * Sync access to an already-loaded algorithm.
+ * Returns null if the algorithm has not been loaded yet.
+ */
+export function getLoadedAlgorithm(id: string): AlgorithmDefinition | null {
+    return loadedAlgorithms.get(id) ?? null;
+}
+
+/**
+ * @deprecated Use ALGORITHM_MANIFEST for listing. Kept only for legacy callers
+ * that need the full AlgorithmDefinition array (e.g. tests loading all adapters).
+ */
+export async function loadAllAlgorithms(): Promise<AlgorithmDefinition[]> {
+    return Promise.all(ALGORITHM_MANIFEST.map((e) => loadAlgorithm(e.id)));
+}

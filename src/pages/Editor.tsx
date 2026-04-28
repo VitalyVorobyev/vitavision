@@ -172,6 +172,28 @@ export default function Editor() {
     const deepLinkApplied = useRef(false);
     const { isPhone, isTouchTablet, isLandscape } = useViewportMode();
 
+    // Revoke blob: URLs and scrub them from the store when the user leaves /editor.
+    // Editor stays mounted across galleryMode toggles, so this only fires on route navigation.
+    useEffect(() => {
+        return () => {
+            const state = useEditorStore.getState();
+            for (const img of state.galleryImages) {
+                if (img.src.startsWith("blob:")) {
+                    URL.revokeObjectURL(img.src);
+                }
+            }
+            if (state.imageSrc?.startsWith("blob:")) {
+                URL.revokeObjectURL(state.imageSrc);
+            }
+            useEditorStore.setState({
+                galleryImages: state.galleryImages.filter((img) => !img.src.startsWith("blob:")),
+                ...(state.imageSrc?.startsWith("blob:")
+                    ? { imageSrc: null, imageName: null, imageWidth: 0, imageHeight: 0, imageSampleId: "upload" as const }
+                    : {}),
+            });
+        };
+    }, []);
+
     useEffect(() => {
         if (deepLinkApplied.current || imageSrc !== null) {
             return;
@@ -370,7 +392,11 @@ export default function Editor() {
     );
 
     const canvasArea = (
-        <div className="relative flex-1 overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiAvPgo8cGF0aCBkPSJNMCAwbDhfOGm0XzgtOF8wIiBzdHJva2U9IiNlNWU3ZWIiIC8+Cjwvc3ZnPg==')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjMTgxODE4IiAvPgo8cGF0aCBkPSJNMCAwbDhfOG0wXzgtOF8wIiBzdHJva2U9IiMyODI4MjgiIC8+Cjwvc3ZnPg==')]">
+        // Transparency-grid background: two 4×4 squares tiled in an 8×8 SVG.
+        // Light: white bg / #e5e7eb squares. Dark: #181818 bg / #282828 squares.
+        // The previous base64 encoded invalid path data (underscores as spaces +
+        // a stray non-printable byte), so the pattern never rendered. Fixed here.
+        <div className="relative flex-1 overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZTVlN2ViIi8+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjQiIGhlaWdodD0iNCIgZmlsbD0iI2U1ZTdlYiIvPjwvc3ZnPg==')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiMxODE4MTgiLz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMjgyODI4Ii8+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjQiIGhlaWdodD0iNCIgZmlsbD0iIzI4MjgyOCIvPjwvc3ZnPg==')]">
             <ErrorBoundary><CanvasWorkspace /></ErrorBoundary>
             <div className="absolute top-3 right-3">
                 <ZoomControls

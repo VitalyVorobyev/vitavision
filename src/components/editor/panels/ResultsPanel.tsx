@@ -3,7 +3,7 @@ import { AlertCircle, AlertTriangle, ArrowLeft, Info } from "lucide-react";
 
 import { useEditorStore } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
-import { getAlgorithmById } from "../algorithms/registry";
+import { getLoadedAlgorithm } from "../algorithms/registry";
 import type { AlgorithmSummaryEntry, DiagnosticEntry } from "../algorithms/types";
 
 import RailSection from "./RailSection";
@@ -72,7 +72,7 @@ export default function ResultsPanel() {
 
     const algo = useMemo(() => {
         if (!lastAlgorithmResult) return null;
-        return getAlgorithmById(lastAlgorithmResult.algorithmId);
+        return getLoadedAlgorithm(lastAlgorithmResult.algorithmId);
     }, [lastAlgorithmResult]);
 
     const summaryEntries = useMemo((): AlgorithmSummaryEntry[] => {

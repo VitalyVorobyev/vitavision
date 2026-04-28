@@ -9,7 +9,7 @@ import FeatureTooltip, { type DirectedPointTooltipState } from "./canvas/Feature
 import { isReadonlyFeature, useEditorStore } from "../../store/editor/useEditorStore";
 import { useRadsymHeatmap } from "./algorithms/radsym/useRadsymHeatmap";
 import { useShallow } from "zustand/react/shallow";
-import { getAlgorithmById } from "./algorithms/registry";
+import { getLoadedAlgorithm } from "./algorithms/registry";
 import CanvasControlsHint from "../shared/CanvasControlsHint";
 import useViewportMode from "../../hooks/useViewportMode";
 import { usePixelSampler } from "./hooks/usePixelSampler";
@@ -33,7 +33,6 @@ export default function CanvasWorkspace() {
         updateFeature,
         selectedFeatureId,
         setSelectedFeatureId,
-        showFeatures,
         lastAlgorithmResult,
         featureGroupVisibility,
         overlayVisibility,
@@ -54,7 +53,6 @@ export default function CanvasWorkspace() {
         updateFeature: s.updateFeature,
         selectedFeatureId: s.selectedFeatureId,
         setSelectedFeatureId: s.setSelectedFeatureId,
-        showFeatures: s.showFeatures,
         lastAlgorithmResult: s.lastAlgorithmResult,
         featureGroupVisibility: s.featureGroupVisibility,
         overlayVisibility: s.overlayVisibility,
@@ -169,6 +167,10 @@ export default function CanvasWorkspace() {
 
     /* ── Event handlers ── */
 
+    // Track the most-recent drag-and-drop blob URL so we can revoke it when a
+    // second file is dropped (the first URL is then orphaned by setImage).
+    const droppedBlobUrlRef = useRef<string | null>(null);
+
     const handleDrop = (event: React.DragEvent) => {
         event.preventDefault();
 
@@ -177,7 +179,13 @@ export default function CanvasWorkspace() {
         const file = event.dataTransfer.files[0];
         if (!file.type.startsWith("image/")) return;
 
+        // Revoke the previous blob URL (if any) before creating a new one.
+        if (droppedBlobUrlRef.current) {
+            URL.revokeObjectURL(droppedBlobUrlRef.current);
+        }
+
         const url = URL.createObjectURL(file);
+        droppedBlobUrlRef.current = url;
         const img = new Image();
         img.onload = () => {
             setImage(url, img.width, img.height, file.name);
@@ -417,8 +425,9 @@ export default function CanvasWorkspace() {
 
                         {/* Algorithm overlay (grid edges, labels, markers) */}
                         {overlayVisibility.algorithmOverlay && lastAlgorithmResult && (() => {
-                            const algo = getAlgorithmById(lastAlgorithmResult.algorithmId);
-                            const Overlay = algo.OverlayComponent;
+                            // By the time lastAlgorithmResult is set, the algorithm is loaded.
+                            const algo = getLoadedAlgorithm(lastAlgorithmResult.algorithmId);
+                            const Overlay = algo?.OverlayComponent;
                             if (!Overlay) return null;
                             return (
                                 <Overlay
@@ -433,7 +442,7 @@ export default function CanvasWorkspace() {
 
                         <FeatureLayer
                             features={features}
-                            showFeatures={showFeatures}
+                            showFeatures={overlayVisibility.features}
                             featureGroupVisibility={featureGroupVisibility}
                             zoom={zoom}
                             activeTool={activeTool}

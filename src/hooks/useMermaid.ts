@@ -61,6 +61,15 @@ export function useMermaid(
         let cancelled = false;
 
         (async () => {
+            // Mermaid is the heaviest lazy chunk in the app (~470 kB shared deps
+            // + ~430 kB cytoscape + ~256 kB katex for math-in-diagrams + per-
+            // diagram modules). Everything is loaded only on pages that actually
+            // contain a mermaid block, so non-article routes are unaffected. The
+            // katex chunk in particular is dynamically imported by mermaid's
+            // diagram renderers on demand — it does NOT come from the
+            // `katex/dist/katex.min.css` import in main.tsx (CSS imports don't
+            // pull in JS). Confirmed by build analysis: chunk-ICPOFSXX (mermaid
+            // internals) is the sole importer of katex-*.js.
             const { default: mermaid } = await import("mermaid");
             mermaid.initialize({
                 startOnLoad: false,

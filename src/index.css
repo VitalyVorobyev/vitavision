@@ -23,6 +23,9 @@
 
   --color-brand: hsl(var(--brand));
 
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
   --color-bg-soft:    hsl(var(--bg-soft));
   --color-surface-hi: hsl(var(--surface-hi));
 
@@ -56,6 +59,10 @@
     --primary:           215 19% 35%;
     --primary-foreground: 210 40% 98%;
 
+    /* Destructive — errors, delete actions */
+    --destructive:            0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+
     /* Brand accent — logo pupil */
     --brand:             191 75% 55%;
 
@@ -86,6 +93,10 @@
     --accent-2:          215 20% 65%;
     --primary:           215 20% 65%;
     --primary-foreground: 222 47% 11%;
+
+    /* Destructive — errors, delete actions */
+    --destructive:            0 70% 65%;
+    --destructive-foreground: 222 47% 11%;
 
     /* Brand accent — logo pupil */
     --brand:             191 75% 55%;

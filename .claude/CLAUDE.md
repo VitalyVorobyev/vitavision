@@ -92,7 +92,7 @@ All algorithms run client-side via WASM (`executionModes: ["wasm"]`). Add a new 
 2. Registering in `src/components/editor/algorithms/registry.ts`
 3. Adding WASM handler in `src/lib/wasm/wasmWorker.ts` — **always start from WASM module defaults and deep-merge user overrides** to avoid missing required fields.
 
-Currently registered: `chess-corners`, `chessboard`, `charuco`, `markerboard`, `ringgrid`, `radsym`.
+Currently registered: `chess-corners`, `chessboard`, `charuco`, `markerboard`, `ringgrid`, `radsym`, `puzzleboard`.
 
 WASM config schema validation: run `bun run scripts/test-wasm-schemas.ts` to verify config shapes are accepted by real WASM modules.
 
@@ -108,7 +108,7 @@ Shared result/config types live in `src/lib/types.ts`. These describe WASM detec
 
 #### Frontend Headers
 - **Cloudflare Pages** (`public/_headers`): HSTS, nosniff, DENY, Referrer-Policy, Permissions-Policy, full CSP with script SHA-256 hash, `frame-ancestors 'none'`, `wasm-unsafe-eval`
-- **Dev CSP** (`vite.config.ts`): relaxes CSP for WASM and Web Workers in dev mode only
+- **Dev CSP**: the `<meta>` CSP in `index.html` already includes `wasm-unsafe-eval` and `worker-src 'self' blob:`, so no additional dev-only plugin is needed in `vite.config.ts`.
 
 #### Client-Side Safety
 - Image pixel-count limit: `WASM_MAX_PIXELS=20_000_000` in `useAlgorithmRunner.ts`

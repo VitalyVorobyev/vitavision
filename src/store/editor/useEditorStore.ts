@@ -249,7 +249,6 @@ interface EditorState {
 
     zoom: number;
     pan: { x: number; y: number };
-    showFeatures: boolean;
 
     galleryMode: boolean;
     galleryImages: GalleryImage[];
@@ -279,7 +278,6 @@ interface EditorState {
 
     setZoom: (zoom: number) => void;
     setPan: (pan: { x: number; y: number }) => void;
-    setShowFeatures: (show: boolean) => void;
 
     setGalleryMode: (mode: boolean) => void;
     addGalleryImage: (img: GalleryImage) => void;
@@ -324,7 +322,6 @@ export const useEditorStore = create<EditorState>((set) => ({
         imageHeight: height,
         features: [],
         selectedFeatureId: null,
-        showFeatures: true,
         lastAlgorithmResult: null,
         runHistory: [],
         overlayVisibility: { features: true, algorithmOverlay: true },
@@ -389,12 +386,6 @@ export const useEditorStore = create<EditorState>((set) => ({
 
     setZoom: (zoom) => set({ zoom }),
     setPan: (pan) => set({ pan }),
-
-    showFeatures: true,
-    setShowFeatures: (show) => set((state) => ({
-        showFeatures: show,
-        overlayVisibility: { ...state.overlayVisibility, features: show },
-    })),
 
     galleryMode: true,
     galleryImages: [
@@ -462,7 +453,6 @@ export const useEditorStore = create<EditorState>((set) => ({
     clearFeatures: () => set({
         features: [],
         selectedFeatureId: null,
-        showFeatures: true,
         lastAlgorithmResult: null,
         runHistory: [],
         overlayVisibility: { features: true, algorithmOverlay: true },
@@ -480,7 +470,6 @@ export const useEditorStore = create<EditorState>((set) => ({
     resetFeatureGroupVisibility: () => set({ featureGroupVisibility: {} }),
     setOverlayVisibility: (key, visible) => set((state) => ({
         overlayVisibility: { ...state.overlayVisibility, [key]: visible },
-        ...(key === 'features' ? { showFeatures: visible } : {}),
     })),
     setOverlayToggle: (key, value) => set((state) => ({
         overlayToggles: { ...state.overlayToggles, [key]: value },

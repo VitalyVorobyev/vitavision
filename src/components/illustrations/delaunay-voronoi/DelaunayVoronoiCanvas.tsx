@@ -292,16 +292,16 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                 </g>
             )}
 
-            {/* Layer 4: Delaunay edges */}
-            {layers.delaunay && delaunay && allPoints.length >= 3 && (
+            {/* Layer 4: Delaunay edges — iterate the filtered triangle list so
+                rendered edges, stats, and hover all describe the same triangulation. */}
+            {layers.delaunay && triangles.length > 0 && allPoints.length >= 3 && (
                 <g aria-hidden="true" pointerEvents="none">
                     {(() => {
                         const lines: ReactElement[] = [];
-                        const t = delaunay.triangles;
                         const rendered = new Set<string>();
-                        for (let i = 0; i < t.length; i += 3) {
+                        for (const { ai, bi, ci } of triangles) {
                             const pairs: [number, number][] = [
-                                [t[i], t[i + 1]], [t[i + 1], t[i + 2]], [t[i + 2], t[i]],
+                                [ai, bi], [bi, ci], [ci, ai],
                             ];
                             for (const [u, v] of pairs) {
                                 const key = u < v ? `${u}-${v}` : `${v}-${u}`;

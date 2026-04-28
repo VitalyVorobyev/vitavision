@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useEditorStore } from "../../store/editor/useEditorStore";
 import type { SampleId } from "../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
@@ -24,6 +25,18 @@ export default function EditorGallery() {
         setPan: s.setPan,
     })));
 
+    // Track blob URLs created in this gallery session so we can revoke on unmount.
+    const uploadedBlobUrlsRef = useRef<string[]>([]);
+
+    useEffect(() => {
+        return () => {
+            for (const url of uploadedBlobUrlsRef.current) {
+                URL.revokeObjectURL(url);
+            }
+            uploadedBlobUrlsRef.current = [];
+        };
+    }, []);
+
     const handleFileUpload = () => {
         const input = document.createElement("input");
         input.type = "file";
@@ -36,6 +49,7 @@ export default function EditorGallery() {
             }
 
             const url = URL.createObjectURL(file);
+            uploadedBlobUrlsRef.current.push(url);
             addGalleryImage({
                 id: uuidv4(),
                 src: url,

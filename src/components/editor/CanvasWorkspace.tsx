@@ -169,6 +169,18 @@ export default function CanvasWorkspace() {
 
     /* ── Event handlers ── */
 
+    // Track blob URLs created by drag-and-drop so we can revoke them on unmount.
+    const droppedBlobUrlRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (droppedBlobUrlRef.current) {
+                URL.revokeObjectURL(droppedBlobUrlRef.current);
+                droppedBlobUrlRef.current = null;
+            }
+        };
+    }, []);
+
     const handleDrop = (event: React.DragEvent) => {
         event.preventDefault();
 
@@ -177,7 +189,13 @@ export default function CanvasWorkspace() {
         const file = event.dataTransfer.files[0];
         if (!file.type.startsWith("image/")) return;
 
+        // Revoke the previous blob URL (if any) before creating a new one.
+        if (droppedBlobUrlRef.current) {
+            URL.revokeObjectURL(droppedBlobUrlRef.current);
+        }
+
         const url = URL.createObjectURL(file);
+        droppedBlobUrlRef.current = url;
         const img = new Image();
         img.onload = () => {
             setImage(url, img.width, img.height, file.name);

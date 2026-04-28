@@ -2,7 +2,7 @@ import { useReducer, useMemo, useCallback } from "react";
 import { Delaunay } from "d3-delaunay";
 import { v4 as uuid } from "uuid";
 import { computeHomography, applyHomography } from "./homography";
-import { triangleMinAngle } from "./geometry";
+import { triangleMinAngle, triangleArea } from "./geometry";
 import type { Point, GridConfig, Layers, ViewState, HoverTarget, ActiveTool, HistorySnapshot } from "./types";
 
 const HISTORY_LIMIT = 50;
@@ -386,11 +386,20 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
         if (!delaunay) return [];
         const result: TriangleInfo[] = [];
         const t = delaunay.triangles;
+        // Filter Delaunator hull artifacts: when input has collinear subsets that aren't
+        // axis-aligned (which is every projective grid edge after a corner drag), Delaunator
+        // emits degenerate "triangles" with effectively zero area. They contaminate the
+        // min-angle stat. 1e-3 px² is well below any meaningful triangulation cell and
+        // matches the dedup tolerance used for input points.
+        const TRIANGLE_AREA_EPS = 1e-3;
         for (let i = 0; i < t.length; i += 3) {
-            result.push({ ai: t[i], bi: t[i + 1], ci: t[i + 2] });
+            const ai = t[i], bi = t[i + 1], ci = t[i + 2];
+            const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
+            if (triangleArea(a, b, c) <= TRIANGLE_AREA_EPS) continue;
+            result.push({ ai, bi, ci });
         }
         return result;
-    }, [delaunay]);
+    }, [delaunay, allPoints]);
 
     const stats = useMemo((): Stats => {
         if (!delaunay || triangles.length === 0) {
@@ -401,10 +410,7 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
         for (const { ai, bi, ci } of triangles) {
             const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
             const minRad = triangleMinAngle(a, b, c);
-            // Skip exact zeros (truly degenerate triplets) — those would otherwise drag the
-            // global to 0 even when the rest of the mesh is healthy. Dedupe of coincident
-            // inputs prevents most of these; this guards the residual numerical case.
-            if (Number.isFinite(minRad) && minRad > 0 && minRad < minAngle) minAngle = minRad;
+            if (Number.isFinite(minRad) && minRad < minAngle) minAngle = minRad;
             for (const [u, v] of [[ai, bi], [bi, ci], [ci, ai]] as [number, number][]) {
                 edgeSet.add(u < v ? `${u}-${v}` : `${v}-${u}`);
             }

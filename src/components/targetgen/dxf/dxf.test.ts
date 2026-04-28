@@ -1,9 +1,10 @@
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { generateDxf } from "../../src/components/targetgen/dxf/index.ts";
+import { join, resolve } from "node:path";
+import { generateDxf } from "./index.ts";
 
-const PUBLIC_ROOT = join(import.meta.dir, "..", "..", "public");
+// Path to the public directory — two levels up from src/components/targetgen/dxf/
+const PUBLIC_ROOT = resolve(import.meta.dirname, "../../../../public");
 
 const PAGE = {
     sizeKind: "a4",
@@ -44,8 +45,9 @@ beforeAll(() => {
             throw new Error(`Unexpected fetch url: ${rawUrl}`);
         }
 
-        const file = Bun.file(join(PUBLIC_ROOT, pathname.slice(1)));
-        return new Response(file, {
+        const filePath = join(PUBLIC_ROOT, pathname.slice(1));
+        const data = readFileSync(filePath);
+        return new Response(data, {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
@@ -57,7 +59,7 @@ afterAll(() => {
 });
 
 describe("generateDxf", () => {
-    test("renders chessboard squares as filled hatches", async () => {
+    it("renders chessboard squares as filled hatches", async () => {
         const dxf = await generateDxf(
             {
                 targetType: "chessboard",
@@ -76,7 +78,7 @@ describe("generateDxf", () => {
         expect(count(dxf, "\n91\n2\n")).toBe(2);
     });
 
-    test("renders ChArUco markers as filled bit cells", async () => {
+    it("renders ChArUco markers as filled bit cells", async () => {
         const dxf = await generateDxf(
             {
                 targetType: "charuco",
@@ -98,7 +100,7 @@ describe("generateDxf", () => {
         expect(count(dxf, "\n0\nCIRCLE\n")).toBe(0);
     });
 
-    test("preserves marker-board black circle fill and white circle hole polarity", async () => {
+    it("preserves marker-board black circle fill and white circle hole polarity", async () => {
         const dxf = await generateDxf(
             {
                 targetType: "markerboard",
@@ -122,7 +124,7 @@ describe("generateDxf", () => {
         expect(count(dxf, "\n92\n1\n")).toBe(1);
     });
 
-    test("renders ringgrid annuli and code sectors as filled hatches", async () => {
+    it("renders ringgrid annuli and code sectors as filled hatches", async () => {
         const codebook = JSON.parse(
             readFileSync(join(PUBLIC_ROOT, "ringgrid/codebook_baseline.json"), "utf8"),
         ) as { codes: number[] };

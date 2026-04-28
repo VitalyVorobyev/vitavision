@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useEditorStore, type OverlayToggles, type PanelMode } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
@@ -91,11 +91,26 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
         ? !!(getLoadedAlgorithm(lastAlgorithmResult.algorithmId)?.OverlayComponent)
         : false;
 
+    // AbortController used to clean up drag listeners if the component unmounts mid-drag.
+    const dragAbortRef = useRef<AbortController | null>(null);
+
+    useEffect(() => {
+        return () => {
+            // Abort any in-progress drag on unmount.
+            dragAbortRef.current?.abort();
+        };
+    }, []);
+
     const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         e.preventDefault();
         isDragging.current = true;
         const handle = e.currentTarget;
         handle.setPointerCapture(e.pointerId);
+
+        // Abort any previous drag (shouldn't happen, but be safe).
+        dragAbortRef.current?.abort();
+        const controller = new AbortController();
+        dragAbortRef.current = controller;
 
         const onMove = (ev: PointerEvent) => {
             const newWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, window.innerWidth - ev.clientX));
@@ -103,11 +118,11 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
         };
         const onUp = () => {
             isDragging.current = false;
-            handle.removeEventListener("pointermove", onMove);
-            handle.removeEventListener("pointerup", onUp);
+            controller.abort();
+            dragAbortRef.current = null;
         };
-        handle.addEventListener("pointermove", onMove);
-        handle.addEventListener("pointerup", onUp);
+        handle.addEventListener("pointermove", onMove, { signal: controller.signal });
+        handle.addEventListener("pointerup", onUp, { signal: controller.signal });
     }, []);
 
     if (variant === "touch") {

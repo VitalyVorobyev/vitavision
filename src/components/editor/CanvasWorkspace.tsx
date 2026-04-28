@@ -33,7 +33,6 @@ export default function CanvasWorkspace() {
         updateFeature,
         selectedFeatureId,
         setSelectedFeatureId,
-        showFeatures,
         lastAlgorithmResult,
         featureGroupVisibility,
         overlayVisibility,
@@ -54,7 +53,6 @@ export default function CanvasWorkspace() {
         updateFeature: s.updateFeature,
         selectedFeatureId: s.selectedFeatureId,
         setSelectedFeatureId: s.setSelectedFeatureId,
-        showFeatures: s.showFeatures,
         lastAlgorithmResult: s.lastAlgorithmResult,
         featureGroupVisibility: s.featureGroupVisibility,
         overlayVisibility: s.overlayVisibility,
@@ -452,7 +450,7 @@ export default function CanvasWorkspace() {
 
                         <FeatureLayer
                             features={features}
-                            showFeatures={showFeatures}
+                            showFeatures={overlayVisibility.features}
                             featureGroupVisibility={featureGroupVisibility}
                             zoom={zoom}
                             activeTool={activeTool}

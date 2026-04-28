@@ -26,6 +26,14 @@ interface FeatureLayerProps {
     onDirectedPointLeave: () => void;
 }
 
+// Hoisted to module scope to avoid recreation every render.
+// Render area features (markers, polygons) first, then point-like features on top.
+// This ensures point hit areas are above marker fills so clicking near a corner
+// selects the corner, not the underlying marker polygon.
+const AREA_TYPES = new Set(["aruco_marker", "bbox", "ellipse", "polygon"]);
+
+const LABEL_MIN_ZOOM = 0.5;
+
 export default memo(function FeatureLayer(props: FeatureLayerProps) {
     const {
         features,
@@ -43,8 +51,6 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
         onDirectedPointLeave,
     } = props;
 
-    const LABEL_MIN_ZOOM = 0.5;
-
     if (!showFeatures) {
         return null;
     }
@@ -56,11 +62,6 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
 
         setSelectedFeatureId(featureId);
     };
-
-    // Render area features (markers, polygons) first, then point-like features on top.
-    // This ensures point hit areas are above marker fills so clicking near a corner
-    // selects the corner, not the underlying marker polygon.
-    const AREA_TYPES = new Set(["aruco_marker", "bbox", "ellipse", "polygon"]);
     const areaFeatures = features.filter((f) => AREA_TYPES.has(f.type));
     const pointFeatures = features.filter((f) => !AREA_TYPES.has(f.type));
 

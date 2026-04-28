@@ -52,6 +52,7 @@ export default function ConfigModal({ open, onClose, title, ConfigComponent, con
                     <button
                         type="button"
                         onClick={onClose}
+                        aria-label="Close"
                         className="rounded-md p-1 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
                     >
                         <X size={16} />

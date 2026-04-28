@@ -103,32 +103,6 @@ export function getLoadedAlgorithm(id: string): AlgorithmDefinition | null {
 }
 
 /**
- * @deprecated Use loadAlgorithm() + getLoadedAlgorithm() instead.
- * Kept for backward compatibility — synchronously returns the cached definition,
- * or falls back to the default algorithm manifest entry as a stub.
- * Callers that use this during render should migrate to the async pattern.
- */
-export function getAlgorithmById(id: string): AlgorithmDefinition {
-    const loaded = loadedAlgorithms.get(id);
-    if (loaded) return loaded;
-    // Kick off load in the background for next render cycle.
-    loadAlgorithm(id);
-    // Return a minimal stub so callers don't crash before the load resolves.
-    const manifest = ALGORITHM_MANIFEST.find((e) => e.id === id) ?? ALGORITHM_MANIFEST[0];
-    return {
-        id: manifest.id,
-        title: manifest.title,
-        description: manifest.description,
-        blogSlug: manifest.blogSlug,
-        initialConfig: {},
-        ConfigComponent: () => null,
-        run: () => Promise.reject(new Error("Algorithm not yet loaded")),
-        toFeatures: () => [],
-        summary: () => [],
-    };
-}
-
-/**
  * @deprecated Use ALGORITHM_MANIFEST for listing. Kept only for legacy callers
  * that need the full AlgorithmDefinition array (e.g. tests loading all adapters).
  */

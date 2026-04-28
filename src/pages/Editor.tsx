@@ -172,6 +172,28 @@ export default function Editor() {
     const deepLinkApplied = useRef(false);
     const { isPhone, isTouchTablet, isLandscape } = useViewportMode();
 
+    // Revoke blob: URLs and scrub them from the store when the user leaves /editor.
+    // Editor stays mounted across galleryMode toggles, so this only fires on route navigation.
+    useEffect(() => {
+        return () => {
+            const state = useEditorStore.getState();
+            for (const img of state.galleryImages) {
+                if (img.src.startsWith("blob:")) {
+                    URL.revokeObjectURL(img.src);
+                }
+            }
+            if (state.imageSrc?.startsWith("blob:")) {
+                URL.revokeObjectURL(state.imageSrc);
+            }
+            useEditorStore.setState({
+                galleryImages: state.galleryImages.filter((img) => !img.src.startsWith("blob:")),
+                ...(state.imageSrc?.startsWith("blob:")
+                    ? { imageSrc: null, imageName: null, imageWidth: 0, imageHeight: 0, imageSampleId: "upload" as const }
+                    : {}),
+            });
+        };
+    }, []);
+
     useEffect(() => {
         if (deepLinkApplied.current || imageSrc !== null) {
             return;

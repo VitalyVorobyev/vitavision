@@ -167,17 +167,9 @@ export default function CanvasWorkspace() {
 
     /* ── Event handlers ── */
 
-    // Track blob URLs created by drag-and-drop so we can revoke them on unmount.
+    // Track the most-recent drag-and-drop blob URL so we can revoke it when a
+    // second file is dropped (the first URL is then orphaned by setImage).
     const droppedBlobUrlRef = useRef<string | null>(null);
-
-    useEffect(() => {
-        return () => {
-            if (droppedBlobUrlRef.current) {
-                URL.revokeObjectURL(droppedBlobUrlRef.current);
-                droppedBlobUrlRef.current = null;
-            }
-        };
-    }, []);
 
     const handleDrop = (event: React.DragEvent) => {
         event.preventDefault();

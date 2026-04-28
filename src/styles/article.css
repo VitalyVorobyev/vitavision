@@ -388,6 +388,49 @@
 .dark .vv-color--muted  { color: hsl(215 20% 65%); }
 
 /* --------------------------------------------------------------------------
+   Mobile overflow guard
+   --------------------------------------------------------------------------
+   Without these rules, raw <img>s with natural width > viewport, KaTeX display
+   blocks, code blocks, mermaid SVGs, and tables would force the article
+   column wider than the screen on a phone — at which point flex parents in
+   the page layout grow with the content and the whole page side-scrolls. */
+article {
+    min-width: 0;
+    max-width: 100%;
+}
+article > *,
+article > * > * {
+    max-width: 100%;
+}
+article img {
+    max-width: 100%;
+    height: auto;
+}
+article table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+article figure,
+article .vv-embed,
+article [data-vv-illustration] {
+    max-width: 100%;
+}
+article pre:has(code),
+article .katex-display,
+article .mermaid-diagram {
+    max-width: 100%;
+}
+/* KaTeX display equations and shiki code blocks contain unbreakable inline
+   content that propagates intrinsic min-width up the parent chain. Force
+   their bounding box to the article column so the page never grows. */
+article .katex-display > .katex,
+article pre.shiki {
+    max-width: 100%;
+}
+
+/* --------------------------------------------------------------------------
    Shiki code block styling
    -------------------------------------------------------------------------- */
 

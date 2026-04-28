@@ -617,9 +617,7 @@ export const demoPages: DemoIndexEntry[] = [
       "title": "ChESS detector response",
       "summary": "Interactive exploration of the ChESS corner detector response. Adjust rotation, blur, and contrast to see how SR, DR, and MR terms shape the score.",
       "tags": [
-        "computer-vision",
-        "feature-detection",
-        "interactive"
+        "feature-detection"
       ],
       "author": "Vitaly Vorobyev",
       "readingTimeMinutes": 1,
@@ -633,6 +631,25 @@ export const demoPages: DemoIndexEntry[] = [
         "01-chesscorners"
       ],
       "date": "2026-04-12"
+    }
+  },
+  {
+    "slug": "delaunay-voronoi",
+    "frontmatter": {
+      "title": "Delaunay Triangulation",
+      "summary": "Interactive construction of Delaunay triangulations and dual Voronoi diagrams, with a draggable projective grid to explore how calibration patterns deform under perspective.",
+      "tags": [
+        "geometry",
+        "graph"
+      ],
+      "author": "Vitaly Vorobyev",
+      "readingTimeMinutes": 1,
+      "access": "public",
+      "componentId": "delaunay-voronoi",
+      "category": "interactive-figure",
+      "relatedAlgorithms": [],
+      "relatedPosts": [],
+      "date": "2026-04-26"
     }
   }
 ];

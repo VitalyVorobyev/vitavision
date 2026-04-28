@@ -2,7 +2,7 @@
 title: "ChESS detector response"
 date: 2026-04-12
 summary: "Interactive exploration of the ChESS corner detector response. Adjust rotation, blur, and contrast to see how SR, DR, and MR terms shape the score."
-tags: ["computer-vision", "feature-detection", "interactive"]
+tags: ["feature-detection"]
 author: "Vitaly Vorobyev"
 category: "interactive-figure"
 componentId: "chess-response"

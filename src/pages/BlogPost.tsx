@@ -114,9 +114,9 @@ export default function BlogPost() {
     const jsonLd = buildBlogJsonLd(frontmatter, slug ?? post.slug);
 
     return (
-        <div className="mx-auto max-w-[1120px] px-4 sm:px-8 py-16 animate-in fade-in xl:grid xl:grid-cols-[minmax(0,760px)_240px] xl:gap-16 xl:justify-center">
+        <div className="mx-auto w-full min-w-0 max-w-[1120px] px-4 sm:px-8 py-16 animate-in fade-in xl:grid xl:grid-cols-[minmax(0,760px)_240px] xl:gap-16 xl:justify-center">
             <ReadingProgress articleRef={articleRef} />
-            <div className="w-full max-w-[760px] mx-auto xl:mx-0 xl:max-w-none">
+            <div className="w-full min-w-0 max-w-[760px] mx-auto xl:mx-0 xl:max-w-none">
             <SeoHead
                 title={frontmatter.title}
                 description={frontmatter.summary}

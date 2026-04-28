@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>vitavision · demo layout proposals</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="vv.css" />
+  <style>
+    /* Each artboard re-uses the .page styling but constrained to the artboard width */
+    .artboard-root { width: 1280px; }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="canvases.jsx"></script>
+  <script type="text/babel" src="layouts/chess-a.jsx"></script>
+  <script type="text/babel" src="layouts/chess-b.jsx"></script>
+  <script type="text/babel" src="layouts/chess-c.jsx"></script>
+  <script type="text/babel" src="layouts/delaunay-d.jsx"></script>
+  <script type="text/babel" src="layouts/delaunay-e.jsx"></script>
+  <script type="text/babel" src="layouts/delaunay-f.jsx"></script>
+  <script type="text/babel" src="layouts/chess-mobile.jsx"></script>
+  <script type="text/babel" src="layouts/delaunay-mobile.jsx"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-presets="env,react">
+    const { useState } = React;
+
+    function App() {
+      return (
+        <DesignCanvas
+          title="Demo layout proposals"
+          subtitle="Six ergonomic alternatives — three for ChESS, three for Delaunay/Voronoi. Same vitavision style, different UX strategies. Click an artboard to focus."
+        >
+          <DCSection
+            id="chess"
+            title="ChESS detector response"
+            description="Three layouts trading off canvas-first immersion vs. data density vs. teaching clarity."
+          >
+            <DCArtboard id="chess-a" label="A · Canvas-first inspector" width={1280} height={1100}>
+              <div className="artboard-root"><ChessLayoutA /></div>
+            </DCArtboard>
+            <DCArtboard id="chess-b" label="B · Toolbar + dock (power user)" width={1280} height={1100}>
+              <div className="artboard-root"><ChessLayoutB /></div>
+            </DCArtboard>
+            <DCArtboard id="chess-c" label="C · Formula-driven (teaching)" width={1280} height={1200}>
+              <div className="artboard-root"><ChessLayoutC /></div>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection
+            id="delaunay"
+            title="Delaunay & Voronoi"
+            description="Three layouts tuned for direct manipulation, data exploration, and long editing sessions."
+          >
+            <DCArtboard id="delaunay-d" label="D · Floating tool palette + pose readout" width={1280} height={920}>
+              <div className="artboard-root"><DelaunayLayoutD /></div>
+            </DCArtboard>
+            <DCArtboard id="delaunay-e" label="E · Bottom inspector tray" width={1280} height={1100}>
+              <div className="artboard-root"><DelaunayLayoutE /></div>
+            </DCArtboard>
+            <DCArtboard id="delaunay-f" label="F · Side rail + mini-map" width={1280} height={1000}>
+              <div className="artboard-root"><DelaunayLayoutF /></div>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection
+            id="chess-mobile"
+            title="ChESS — mobile"
+            description="Three mobile UX strategies. Same component palette, sized for thumbs."
+          >
+            <DCArtboard id="chess-m1" label="M1 · Stacked panel" width={440} height={900}>
+              <IOSDevice width={402} height={874} dark>
+                <ChessMobileV1 />
+              </IOSDevice>
+            </DCArtboard>
+            <DCArtboard id="chess-m2" label="M2 · Tabbed bottom nav" width={440} height={900}>
+              <IOSDevice width={402} height={874} dark>
+                <ChessMobileV2 />
+              </IOSDevice>
+            </DCArtboard>
+            <DCArtboard id="chess-m3" label="M3 · Full-bleed + slide-up sheet" width={440} height={900}>
+              <IOSDevice width={402} height={874} dark>
+                <ChessMobileV3 />
+              </IOSDevice>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection
+            id="delaunay-mobile"
+            title="Delaunay — mobile"
+            description="Three mobile UX strategies. All three surface the live camera-pose readout."
+          >
+            <DCArtboard id="delaunay-m1" label="M1 · Tool dock + pose chip" width={440} height={900}>
+              <IOSDevice width={402} height={874} dark>
+                <DelaunayMobileV1 />
+              </IOSDevice>
+            </DCArtboard>
+            <DCArtboard id="delaunay-m2" label="M2 · Bottom sheet w/ tabs" width={440} height={900}>
+              <IOSDevice width={402} height={874} dark>
+                <DelaunayMobileV2 />
+              </IOSDevice>
+            </DCArtboard>
+            <DCArtboard id="delaunay-m3" label="M3 · Full-bleed focus mode" width={440} height={900}>
+              <IOSDevice width={402} height={874} dark>
+                <DelaunayMobileV3 />
+              </IOSDevice>
+            </DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

@@ -42,7 +42,6 @@ export interface PuzzleboardConfig {
     rows: number;
     cols: number;
     cellSizeMm: number;
-    pngDpi: number;
 }
 
 export interface RingGridConfig {

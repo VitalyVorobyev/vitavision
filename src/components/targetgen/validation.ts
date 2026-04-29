@@ -1,5 +1,6 @@
 import type { TargetConfig, PageConfig, ValidationResult, CharucoConfig, RingGridConfig } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
+import { PUZZLEBOARD_QUIET_ZONE_MM } from "./puzzleboard/constants";
 import {
     generateMarkers,
     markerOuterDrawRadius,
@@ -104,9 +105,8 @@ export function validateConfig(
         }
         case "puzzleboard": {
             const c = target.config;
-            const MARGIN_MM = 5;
-            boardW = c.cols * c.cellSizeMm + 2 * MARGIN_MM;
-            boardH = c.rows * c.cellSizeMm + 2 * MARGIN_MM;
+            boardW = c.cols * c.cellSizeMm + 2 * PUZZLEBOARD_QUIET_ZONE_MM;
+            boardH = c.rows * c.cellSizeMm + 2 * PUZZLEBOARD_QUIET_ZONE_MM;
             if (c.cellSizeMm < 5) smallFeatureWarning = true;
             break;
         }

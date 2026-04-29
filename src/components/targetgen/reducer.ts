@@ -64,7 +64,6 @@ export const DEFAULT_PUZZLEBOARD: PuzzleboardConfig = {
     rows: 7,
     cols: 10,
     cellSizeMm: 15,
-    pngDpi: 300,
 };
 
 export function defaultConfigForType(targetType: string) {

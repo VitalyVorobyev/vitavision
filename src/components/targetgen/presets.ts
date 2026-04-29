@@ -205,7 +205,7 @@ export const PUZZLEBOARD_PRESETS: Preset[] = [
     {
         id: "puzzleboard-default",
         label: "Default 7×10",
-        description: "Standard 7×10 board with 15 mm cells at 300 DPI",
+        description: "Standard 7×10 board with 15 mm cells",
         targetType: "puzzleboard",
         target: { targetType: "puzzleboard", config: { ...DEFAULT_PUZZLEBOARD } },
         page: A4_LANDSCAPE,

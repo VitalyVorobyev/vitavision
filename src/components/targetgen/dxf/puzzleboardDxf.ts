@@ -7,6 +7,7 @@ import {
     dxfFilledRectWithVoids,
 } from "./dxfWriter";
 import { horizontalEdgeBit, verticalEdgeBit } from "../puzzleboard/codeMaps";
+import { PUZZLEBOARD_QUIET_ZONE_MM as MARGIN_MM } from "../puzzleboard/constants";
 
 interface CircleAt {
     cx: number;
@@ -20,10 +21,14 @@ export function puzzleboardDxf(
     page: PageDimensions,
 ): string[] {
     const { rows, cols, cellSizeMm: sq } = config;
-    const boardW = cols * sq;
-    const boardH = rows * sq;
-    const ox = (page.widthMm - boardW) / 2;
-    const oy = (page.heightMm - boardH) / 2;
+    const inkW = cols * sq;
+    const inkH = rows * sq;
+    const outerW = inkW + 2 * MARGIN_MM;
+    const outerH = inkH + 2 * MARGIN_MM;
+    const outerOx = (page.widthMm - outerW) / 2;
+    const outerOy = (page.heightMm - outerH) / 2;
+    const ox = outerOx + MARGIN_MM;
+    const oy = outerOy + MARGIN_MM;
     const dotR = sq / 6;
     const flipY = (svgY: number) => page.heightMm - svgY;
 

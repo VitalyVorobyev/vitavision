@@ -43,19 +43,9 @@ export default function PuzzleboardGenConfig({ config, dispatch }: Props) {
                     step={0.5}
                     tooltip="Side length of each square cell in millimeters"
                 />
-                <NumberField
-                    label="PNG DPI"
-                    value={config.pngDpi}
-                    onChange={(v) => update({ pngDpi: v ?? 300 })}
-                    disabled={false}
-                    min={72}
-                    max={600}
-                    step={1}
-                    tooltip="Resolution of the generated PNG pattern"
-                />
             </Section>
             <p className="text-xs text-muted-foreground px-1">
-                Margin (5 mm) and dot diameter (1/3 edge) are fixed by the upstream pattern. PNG-only export.
+                Margin (5 mm) and dot diameter (1/3 edge) are fixed by the upstream pattern.
             </p>
         </>
     );

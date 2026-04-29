@@ -3,14 +3,35 @@ import type { BlogIndexEntry, AlgorithmIndexEntry, DemoIndexEntry, ModelIndexEnt
 
 export const blogPosts: BlogIndexEntry[] = [
   {
+    "slug": "02-grid-deteciont-part1",
+    "frontmatter": {
+      "title": "Grid detection I",
+      "summary": "A chessboard-specific detector, from sampling geometry to a practical multiscale implementation.",
+      "tags": [
+        "feature-detection",
+        "calibration-targets"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "repoLinks": [
+        "https://github.com/VitalyVorobyev/calib-targets-rs"
+      ],
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 2,
+      "access": "public",
+      "relatedAlgorithms": [],
+      "relatedDemos": [
+        "delaunay-voronoi"
+      ],
+      "date": "2026-05-15"
+    }
+  },
+  {
     "slug": "01-chesscorners",
     "frontmatter": {
       "title": "ChESS Corners Detector",
       "summary": "A chessboard-specific detector, from sampling geometry to a practical multiscale implementation.",
       "tags": [
-        "computer-vision",
-        "rust",
-        "calibration",
         "feature-detection"
       ],
       "author": "Vitaly Vorobyev",
@@ -232,6 +253,46 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "16-pixel Bresenham ring at radius 3. Segment-test parameter N\ntypically 9 or 12. The high-speed early-rejection test on the four\ncardinal points (indices 1, 5, 9, 13) is what makes the detector\nfast in practice; the full segment test runs only on candidates\nthat pass it. The decision-tree variant trained via ID3 on labeled\ncorners is described in §3 of the paper but is out of scope here\n(the page covers the segment test as the primitive).\n"
       },
       "date": "2026-04-15"
+    }
+  },
+  {
+    "slug": "gp-checkerboard-enhancement",
+    "frontmatter": {
+      "title": "GP Checkerboard Enhancement",
+      "summary": "Wrap a checkerboard corner detector with a Gaussian process that learns the smooth map from local board coordinates to image pixel coordinates, then use the predictive mean to recover occluded corners, claim corners the upstream structure recovery missed, extend the board beyond the image, and smooth the detected positions.",
+      "tags": [
+        "calibration",
+        "chessboard",
+        "gaussian-processes"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "category": "calibration-targets",
+      "relatedAlgorithms": [
+        "chess-corners",
+        "ocpad",
+        "rochade",
+        "duda-radon-corners",
+        "pyramidal-blur-aware-xcorner",
+        "shu-topological-grid",
+        "laureano-topological-chessboard"
+      ],
+      "sources": {
+        "primary": "hillen2023-enhanced",
+        "references": [
+          "geiger2012-automatic",
+          "rufli2008-blurred",
+          "fuersattel2016-ocpad",
+          "duda2018-accurate",
+          "chen2023-ccdn",
+          "rasmussen2006-gpml"
+        ],
+        "notes": "Two parallel GP regressors with squared-exponential kernels map\nlocal board coordinates (x, y) ∈ ℤ² to image axes u and v\nindependently. Algorithm 1 (paper §2.2) iterates: train GPs on the\ncurrently-allocated corners, expand the board grid by one ring\n(north, east, south, west, plus four corners), predict uv for each\nnew xy via the GP posterior mean, and claim any unallocated detected\ncorner that lies within max_dist_factor · ‖p_1 − p_2‖ of a prediction\n(default 0.25 × the first edge length). On no-match, the ring widens\nby 1 (max 2) to bridge larger gaps. Refinement (§2.3) retrains on\nthe full augmented set, fills missing grid positions, and replaces\ndetected uv with the GP posterior mean — smoothing jitter because\nevery corner contributes to every prediction. Defaults from the\nPyCBD reference implementation: max_iterations = 12,\nmax_expansion_factor = 2, max_dist_factor = 0.25, initial\nlengthscale = 10 in xy-standardised space, lengthscale ∈ [0, 25],\nL-BFGS with 25000 inner iterations and 3 random restarts.\n"
+      },
+      "date": "2026-04-29"
     }
   },
   {

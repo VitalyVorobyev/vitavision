@@ -7,6 +7,7 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "laureano-topological-chessboard": () => import("./content/algorithms/laureano-topological-chessboard.ts"),
   "daniilidis-dual-quaternion-handeye": () => import("./content/algorithms/daniilidis-dual-quaternion-handeye.ts"),
   "fast-corner-detector": () => import("./content/algorithms/fast-corner-detector.ts"),
+  "gp-checkerboard-enhancement": () => import("./content/algorithms/gp-checkerboard-enhancement.ts"),
   "harris-corner-detector": () => import("./content/algorithms/harris-corner-detector.ts"),
   "kumar-generalized-rac": () => import("./content/algorithms/kumar-generalized-rac.ts"),
   "duda-radon-corners": () => import("./content/algorithms/duda-radon-corners.ts"),

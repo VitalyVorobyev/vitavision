@@ -2,7 +2,7 @@
 title: "ChESS Corners Detector"
 date: 2026-04-15
 summary: "A chessboard-specific detector, from sampling geometry to a practical multiscale implementation."
-tags: ["computer-vision", "rust", "calibration", "feature-detection"]
+tags: ["feature-detection"]
 author: "Vitaly Vorobyev"
 repoLinks: ["https://github.com/VitalyVorobyev/chess-corners-rs"]
 relatedAlgorithms: ["chess-corners", "harris-corner-detector", "shi-tomasi-corner-detector", "fast-corner-detector"]

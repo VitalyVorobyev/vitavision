@@ -4,6 +4,7 @@ import { chessboardDxf } from "./chessboardDxf";
 import { markerboardDxf } from "./markerboardDxf";
 import { charucoDxf } from "./charucoDxf";
 import { ringgridDxf } from "./ringgridDxf";
+import { puzzleboardDxf } from "./puzzleboardDxf";
 import { buildDxf, dxfLine } from "./dxfWriter";
 
 function scaleLineDxfEntities(pageW: number, marginMm: number): string[] {
@@ -42,7 +43,8 @@ export async function generateDxf(target: TargetConfig, page: PageConfig): Promi
             entities = await ringgridDxf(target.config, dims);
             break;
         case "puzzleboard":
-            throw new Error("DXF export is not available for PuzzleBoard.");
+            entities = puzzleboardDxf(target.config, dims);
+            break;
     }
 
     if (page.showScaleLine) {

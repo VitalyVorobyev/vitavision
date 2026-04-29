@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import type { TargetGeneratorState, TargetGeneratorAction } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
 import { generateMarkers, markerOuterDrawRadius, markerBounds } from "./ringgrid/layout";
+import { PUZZLEBOARD_QUIET_ZONE_MM } from "./puzzleboard/constants";
 import { isPreviewOverlayTarget } from "./previewInteractions";
 import ZoomControls from "../shared/ZoomControls";
 import CanvasControlsHint from "../shared/CanvasControlsHint";
@@ -37,10 +38,9 @@ function computeBoardDims(state: TargetGeneratorState) {
             };
         }
         case "puzzleboard": {
-            const MARGIN_MM = 5;
             return {
-                w: target.config.cols * target.config.cellSizeMm + 2 * MARGIN_MM,
-                h: target.config.rows * target.config.cellSizeMm + 2 * MARGIN_MM,
+                w: target.config.cols * target.config.cellSizeMm + 2 * PUZZLEBOARD_QUIET_ZONE_MM,
+                h: target.config.rows * target.config.cellSizeMm + 2 * PUZZLEBOARD_QUIET_ZONE_MM,
             };
         }
     }

@@ -48,7 +48,6 @@ describe("defaultConfigForType", () => {
         expect(config.rows).toBe(DEFAULT_PUZZLEBOARD.rows);
         expect(config.cols).toBe(DEFAULT_PUZZLEBOARD.cols);
         expect(config.cellSizeMm).toBe(DEFAULT_PUZZLEBOARD.cellSizeMm);
-        expect(config.pngDpi).toBe(DEFAULT_PUZZLEBOARD.pngDpi);
     });
 });
 
@@ -129,7 +128,6 @@ describe("targetGeneratorReducer", () => {
         expect(config.rows).toBe(7);
         expect(config.cols).toBe(10);
         expect(config.cellSizeMm).toBe(15);
-        expect(config.pngDpi).toBe(300);
         // Previous chessboard config is cached
         expect(next.configCache.chessboard).toBeDefined();
     });

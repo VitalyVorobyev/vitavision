@@ -1,0 +1,1 @@
+export const PUZZLEBOARD_QUIET_ZONE_MM = 5;

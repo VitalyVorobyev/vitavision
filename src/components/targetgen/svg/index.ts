@@ -25,7 +25,7 @@ export async function generatePreviewSvg(target: TargetConfig, page: PageConfig)
             svg = await ringgridSvg(target.config, dims);
             break;
         case "puzzleboard":
-            svg = await puzzleboardSvg(target.config, dims);
+            svg = puzzleboardSvg(target.config, dims);
             break;
     }
 

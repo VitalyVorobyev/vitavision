@@ -98,9 +98,7 @@ export default function DownloadBar({ state }: Props) {
             const base = buildFilename(state, "").replace(/\.$/, "");
             zip.file(`${base}.svg`, svg);
             zip.file(`${base}.json`, JSON.stringify({ target: state.target, page: state.page }, null, 2));
-            if (!isPuzzleboard) {
-                zip.file(`${base}.dxf`, await generateDxf(state.target, state.page));
-            }
+            zip.file(`${base}.dxf`, await generateDxf(state.target, state.page));
             const pngBlob = await rasterizeSvgToPng(svg, state.page.pngDpi);
             zip.file(`${base}.png`, pngBlob);
             const zipBlob = await zip.generateAsync({ type: "blob" });
@@ -112,9 +110,8 @@ export default function DownloadBar({ state }: Props) {
         }
     };
 
-    const isPuzzleboard = state.target.targetType === "puzzleboard";
     const disabled = hasErrors || !svg || generatingDxf || zipping;
-    const dxfDisabled = disabled || isPuzzleboard;
+    const dxfDisabled = disabled;
 
     const btnClass =
         "flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium transition-colors " +
@@ -139,7 +136,7 @@ export default function DownloadBar({ state }: Props) {
                     className={btnClass}
                     onClick={() => void handleDxf()}
                     disabled={dxfDisabled}
-                    title={isPuzzleboard ? "DXF is not available for PuzzleBoard" : "Download DXF"}
+                    title="Download DXF"
                 >
                     <Download size={14} />
                     DXF

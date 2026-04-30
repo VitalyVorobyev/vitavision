@@ -14,7 +14,7 @@ difficulty: intermediate
 # Introduction
 
 Detection of regular grid structures on images is a backbone for various applications,
-spanning calibration, pose estimation, metrology, industrial inspection and more.
+spanning calibration, pose estimation, metrology, industrial inspection and more. This is a large topic, and I want to begin discussing it in this post.
 
 We limit this discussion with a very specific task: detecting an image of a chessboard.
 Our target solution should be able to cope with occlusions, when not all corners of the board
@@ -28,7 +28,7 @@ crate.
 
 # Plane homography
 
-Before we dive in, lets discuss one concept that makes planar grids so useful in computer vision. A *projective camera* creates and image (2D) of objects by a projection of 3D objects. It is a one-to-one correspondence between image points and *rays* from the camera center.
+One property makes planar grids so useful in computer vision. Lets briefly discuss it to motivate the rest of the text. A *projective camera* creates and image (2D) of objects by a projection of 3D objects. It is a one-to-one correspondence between image points and *rays* from the camera center.
 
 We can obtain more if we know that we observe a *flat object*, a plane. In this case, there is a one-to-one correspondence between plane points and image points, defined by a $3 \times 3$ matrix acting in homogeneous space.
 
@@ -36,8 +36,10 @@ We can obtain more if we know that we observe a *flat object*, a plane. In this 
 A **homography** is a projective transformation from $\mathbb{P}^2$ to $\mathbb{P}^2$ represented by a non-singular $3 \times 3$ matrix $H$, defined up to scale. It maps points as $x' \sim Hx$ where $\sim$ denotes equality up to a non-zero scalar.
 :::
 
-Next, if there are features on the plane with known geometry and that we can detect on the image, then we can derive camera intrinsic parameters from the measures homography. The Zhang's camera caoibration algorithm is based on that.
+If there are features on the plane with known geometry and that we can detect on the image, then we can derive camera intrinsic parameters from the measures homography. The Zhang's camera calibration algorithm is based on that [link]. If we already have a calibrated camera, then we can infer the camera pose in space using the same homography data.
 
 # Grid as a graph
 
+There are several essentially different approaches to grid detection. To list some important papers are: TODO.
 
+In the [previous blog](TODO) we discussed a very efficient detector of X-junctions that provides locations of corners with subpixel accuracy and orientation of each corner. This is a very 

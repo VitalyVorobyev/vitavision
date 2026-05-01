@@ -8,6 +8,9 @@ draft: true
 author: "Vitaly Vorobyev"
 difficulty: advanced
 relatedAlgorithms: ["daniilidis-dual-quaternion-handeye", "zhang-planar-calibration"]
+prerequisites: []
+comparedWith: [daniilidis-dual-quaternion-handeye]
+failureModes: []
 sources:
   primary: tsai1989-handeye
   references:

@@ -6,8 +6,10 @@ tags: ["calibration", "chessboard"]
 category: calibration-targets
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-draft: true
 relatedAlgorithms: ["ocpad", "chess-corners", "laureano-topological-chessboard", "shu-topological-grid"]
+prerequisites: [image-gradient]
+comparedWith: []
+failureModes: []
 sources:
   primary: placht2014-rochade
   references: [lucchese2003-saddle, niblack1992-skeleton, rufli2008-blurred, chen2005-xcorner]

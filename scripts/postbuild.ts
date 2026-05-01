@@ -1,16 +1,18 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from "node:fs";
 import { join } from "node:path";
 import { Feed } from "feed";
-import { blogPosts, algorithmPages, demoPages, modelPages } from "../src/generated/content-index.ts";
+import { blogPosts, algorithmPages, demoPages, modelPages, conceptPages } from "../src/generated/content-index.ts";
 import { blogHtmlLoaders } from "../src/generated/blog-loaders.ts";
 import { algorithmHtmlLoaders } from "../src/generated/algorithm-loaders.ts";
 import { demoHtmlLoaders } from "../src/generated/demo-loaders.ts";
 import { modelHtmlLoaders } from "../src/generated/model-loaders.ts";
+import { conceptHtmlLoaders } from "../src/generated/concept-loaders.ts";
 import { render } from "../src/entry-server.tsx";
 import type { StaticContentContextValue } from "../src/lib/content/ssr-content.tsx";
 import {
     buildAlgorithmJsonLd,
     buildBlogJsonLd,
+    buildConceptJsonLd,
     buildDemoJsonLd,
     buildModelJsonLd,
     comparePublicationDateDesc,
@@ -118,6 +120,7 @@ async function main(): Promise<void> {
         algorithmHtmlBySlug: await loadHtmlMap(algorithmHtmlLoaders),
         demoHtmlBySlug: await loadHtmlMap(demoHtmlLoaders),
         modelHtmlBySlug: await loadHtmlMap(modelHtmlLoaders),
+        conceptHtmlBySlug: await loadHtmlMap(conceptHtmlLoaders),
     };
     let count = 0;
 
@@ -198,6 +201,20 @@ async function main(): Promise<void> {
         count++;
     }
 
+    // Individual concept pages
+    for (const page of conceptPages) {
+        const { frontmatter } = page;
+        const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildConceptJsonLd(frontmatter, page.slug))}</script>`;
+        writePage(template, `/concepts/${page.slug}`, `concepts/${page.slug}`, {
+            title: frontmatter.title,
+            description: frontmatter.summary,
+            ogType: "article",
+            ogImage: frontmatter.coverImage,
+            url: `/concepts/${page.slug}`,
+        }, staticContent, jsonLd);
+        count++;
+    }
+
     // Target generator
     writePage(template, "/tools/target-generator", "tools/target-generator", {
         title: "Target Generator",
@@ -211,6 +228,7 @@ async function main(): Promise<void> {
         "/algorithms", ...algorithmPages.map((p) => `/algorithms/${p.slug}`),
         "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
         ...modelPages.map((m) => `/algorithms/models/${m.slug}`),
+        ...conceptPages.map((c) => `/concepts/${c.slug}`),
         "/tools/target-generator",
     ];
     writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(sitemapPaths), "utf-8");
@@ -233,6 +251,7 @@ async function main(): Promise<void> {
         ...algorithmPages.map((page) => ({ kind: "algorithm" as const, ...page })),
         ...demoPages.map((demo) => ({ kind: "demo" as const, ...demo })),
         ...modelPages.map((model) => ({ kind: "model" as const, ...model })),
+        ...conceptPages.map((page) => ({ kind: "concept" as const, ...page })),
     ].sort(comparePublicationDateDesc);
 
     for (const entry of feedEntries) {
@@ -242,7 +261,9 @@ async function main(): Promise<void> {
                 ? `/demos/${entry.slug}`
                 : entry.kind === "model"
                     ? `/algorithms/models/${entry.slug}`
-                    : `/blog/${entry.slug}`;
+                    : entry.kind === "concept"
+                        ? `/concepts/${entry.slug}`
+                        : `/blog/${entry.slug}`;
         const { frontmatter } = entry;
         feed.addItem({
             title: formatFeedTitle(entry.kind, frontmatter.title),
@@ -273,3 +294,23 @@ main().catch((err) => {
     console.error("postbuild failed:", err);
     process.exit(1);
 });
+
+// Validation guard: ensure no research-note paths leaked into the public build.
+// docs/research/ is a private reasoning substrate and must never appear in dist/.
+import { execSync } from "node:child_process";
+
+const distDir = join(import.meta.dir, "..", "dist");
+try {
+    const result = execSync(
+        `grep -rl "docs/research/" ${distDir} || true`,
+        { encoding: "utf-8" },
+    ).trim();
+    if (result) {
+        throw new Error(
+            `Public build leaks research-note paths: ${result.split("\n").join(", ")}`,
+        );
+    }
+} catch (err) {
+    if (err instanceof Error && err.message.startsWith("Public build leaks")) throw err;
+    // grep returned non-zero with no matches — that is the success path
+}

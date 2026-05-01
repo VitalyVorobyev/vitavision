@@ -9,6 +9,9 @@ difficulty: intermediate
 arch_family: cnn
 draft: true
 flops: "64-D descriptors at H/8 × W/8 resolution"
+prerequisites: [image-gradient]
+comparedWith: []
+failureModes: []
 sources:
   primary: potje2024-xfeat
   references:

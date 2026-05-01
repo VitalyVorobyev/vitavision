@@ -16,6 +16,15 @@ const publicationFrontmatterBaseObjectSchema = z.object({
     access: z.enum(["public", "members"]).default("public"),
 });
 
+/** Relationship fields mixin — applied to algorithm, model, and concept schemas. */
+const relationshipFieldsSchema = z.object({
+    prerequisites: z.array(z.string().min(1)).optional(),
+    related: z.array(z.string().min(1)).optional(),
+    comparedWith: z.array(z.string().min(1)).optional(),
+    failureModes: z.array(z.string().min(1)).optional(),
+    quality: z.enum(["stub", "canonical"]).optional(),
+});
+
 /** Zod schema for blog post frontmatter. */
 export const blogFrontmatterSchema = publicationFrontmatterBaseObjectSchema.extend({
     relatedAlgorithms: z.array(z.string().min(1)).optional(),
@@ -36,6 +45,7 @@ export type AlgorithmCategory = (typeof algorithmCategoryValues)[number];
 
 /** Zod schema for algorithm page frontmatter. */
 export const algorithmFrontmatterSchema = publicationFrontmatterBaseObjectSchema
+    .merge(relationshipFieldsSchema)
     .extend({
         category: z.enum(algorithmCategoryValues),
         relatedPosts: z.array(z.string().min(1)).optional(),
@@ -133,29 +143,31 @@ export const modelCategoryValues = [
 export type ModelCategory = (typeof modelCategoryValues)[number];
 
 /** Zod schema for model page frontmatter. */
-export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema.extend({
-    category: z.enum(modelCategoryValues),
-    arch_family: z.enum(["cnn", "vit", "encoder-decoder", "diffusion", "gan", "hybrid"]).optional(),
-    params: z.string().optional(),
-    flops: z.string().optional(),
-    sources: z.object({
-        primary: z.string().min(1),
-        references: z.array(z.string().min(1)).optional(),
-        notes: z.string().optional(),
-    }).optional(),
-    implementations: z.array(z.object({
-        role: z.enum(["official", "community", "port"]),
-        repo: z.string().url(),
-        commit: z.string().regex(/^[0-9a-f]{7,40}$/),
-        framework: z.enum(["pytorch", "tensorflow", "jax", "caffe", "other"]),
-        license: z.string().min(1),
-        weights_url: z.string().url().optional(),
-        weights_license: z.string().min(1).optional(),
-    })).min(1).optional(), // required on non-drafts; enforced in content-build
-    relatedPosts: z.array(z.string().min(1)).optional(),
-    relatedAlgorithms: z.array(z.string().min(1)).optional(),
-    relatedDemos: z.array(z.string().min(1)).optional(),
-});
+export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
+    .merge(relationshipFieldsSchema)
+    .extend({
+        category: z.enum(modelCategoryValues),
+        arch_family: z.enum(["cnn", "vit", "encoder-decoder", "diffusion", "gan", "hybrid"]).optional(),
+        params: z.string().optional(),
+        flops: z.string().optional(),
+        sources: z.object({
+            primary: z.string().min(1),
+            references: z.array(z.string().min(1)).optional(),
+            notes: z.string().optional(),
+        }).optional(),
+        implementations: z.array(z.object({
+            role: z.enum(["official", "community", "port"]),
+            repo: z.string().url(),
+            commit: z.string().regex(/^[0-9a-f]{7,40}$/),
+            framework: z.enum(["pytorch", "tensorflow", "jax", "caffe", "other"]),
+            license: z.string().min(1),
+            weights_url: z.string().url().optional(),
+            weights_license: z.string().min(1).optional(),
+        })).min(1).optional(), // required on non-drafts; enforced in content-build
+        relatedPosts: z.array(z.string().min(1)).optional(),
+        relatedAlgorithms: z.array(z.string().min(1)).optional(),
+        relatedDemos: z.array(z.string().min(1)).optional(),
+    });
 
 export type ModelFrontmatter = z.infer<typeof modelFrontmatterSchema>;
 export type ModelFrontmatterSerialized = SerializedFrontmatter<ModelFrontmatter>;
@@ -168,5 +180,40 @@ export interface ModelIndexEntry {
 
 /** Full model entry including rendered html. */
 export interface ModelEntry extends ModelIndexEntry {
+    html: string;
+}
+
+/** Concept category — used to group concept cards on the atlas index. */
+export const conceptCategoryValues = [
+    "image-formation",
+    "geometry",
+    "feature-theory",
+    "calibration-theory",
+] as const;
+export type ConceptCategory = (typeof conceptCategoryValues)[number];
+
+/** Zod schema for concept page frontmatter. */
+export const conceptFrontmatterSchema = publicationFrontmatterBaseObjectSchema
+    .merge(relationshipFieldsSchema)
+    .extend({
+        category: z.enum(conceptCategoryValues),
+        sources: z.object({
+            primary: z.string().min(1).optional(),
+            references: z.array(z.string().min(1)).optional(),
+            notes: z.string().optional(),
+        }).optional(),
+    });
+
+export type ConceptFrontmatter = z.infer<typeof conceptFrontmatterSchema>;
+export type ConceptFrontmatterSerialized = SerializedFrontmatter<ConceptFrontmatter>;
+
+/** Index entry for a concept page (no html). Used by listing pages. */
+export interface ConceptIndexEntry {
+    slug: string;
+    frontmatter: ConceptFrontmatterSerialized;
+}
+
+/** Full concept entry including rendered html. */
+export interface ConceptEntry extends ConceptIndexEntry {
     html: string;
 }

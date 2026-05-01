@@ -1,6 +1,7 @@
 import type {
     AlgorithmFrontmatterSerialized,
     BlogFrontmatterSerialized,
+    ConceptFrontmatterSerialized,
     DemoFrontmatterSerialized,
     ModelFrontmatterSerialized,
 } from "./schema.ts";
@@ -82,6 +83,17 @@ export function buildModelJsonLd(
     );
 }
 
+export function buildConceptJsonLd(
+    frontmatter: ConceptFrontmatterSerialized,
+    slug: string,
+): Record<string, unknown> {
+    return buildStructuredArticleJsonLd(
+        "TechArticle",
+        frontmatter,
+        `/concepts/${slug}`,
+    );
+}
+
 export function comparePublicationDateDesc<T extends { frontmatter: { date: string } }>(
     a: T,
     b: T,
@@ -89,9 +101,10 @@ export function comparePublicationDateDesc<T extends { frontmatter: { date: stri
     return b.frontmatter.date.localeCompare(a.frontmatter.date);
 }
 
-export function formatFeedTitle(kind: "blog" | "algorithm" | "demo" | "model", title: string): string {
+export function formatFeedTitle(kind: "blog" | "algorithm" | "demo" | "model" | "concept", title: string): string {
     if (kind === "algorithm") return `[Algorithm] ${title}`;
     if (kind === "demo") return `[Demo] ${title}`;
     if (kind === "model") return `[Model] ${title}`;
+    if (kind === "concept") return `[Concept] ${title}`;
     return title;
 }

@@ -169,26 +169,25 @@ export default function AlgorithmsFilterSheet({
 
                             {/* Scrollable body */}
                             <div className="flex-1 overflow-y-auto px-[18px] pt-1 pb-2.5">
-                                {/* Kind section */}
+                                {/* Type section */}
                                 <div className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-muted-foreground mt-3.5 mb-2">
-                                    Kind
+                                    Type
                                 </div>
                                 <div
                                     role="radiogroup"
-                                    aria-label="Kind"
-                                    className="flex gap-2 mt-2"
+                                    aria-label="Type"
+                                    className="grid grid-cols-2 gap-2 mt-2"
                                 >
                                     {(
                                         [
-                                            ["classical", "Classical"],
-                                            ["models", "Models"],
+                                            ["all",       "All"],
+                                            ["algorithm", "Algorithms"],
+                                            ["model",     "Models"],
+                                            ["concept",   "Concepts"],
                                         ] as const
                                     ).map(([key, label]) => {
                                         const active = filters.kind === key;
-                                        const count =
-                                            key === "classical"
-                                                ? facets.kinds.classical
-                                                : facets.kinds.models;
+                                        const count = facets.kinds[key];
                                         return (
                                             <button
                                                 key={key}
@@ -196,7 +195,7 @@ export default function AlgorithmsFilterSheet({
                                                 role="radio"
                                                 aria-checked={active}
                                                 onClick={() => onKindChange(key)}
-                                                className={`flex-1 px-3 py-2.5 rounded-lg flex items-center justify-between transition-colors ${
+                                                className={`px-3 py-2.5 rounded-lg flex items-center justify-between transition-colors ${
                                                     active
                                                         ? "border border-[hsl(var(--brand)/0.5)] bg-[hsl(var(--brand)/0.08)] font-semibold text-foreground"
                                                         : "border border-border bg-surface text-[hsl(var(--foreground)/0.8)]"
@@ -213,7 +212,9 @@ export default function AlgorithmsFilterSheet({
                                     })}
                                 </div>
 
-                                {/* Category section */}
+                                {/* Category section — hidden when kind === "all" */}
+                                {filters.kind !== "all" && (
+                                <>
                                 <div className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-muted-foreground mt-5 mb-2">
                                     Category
                                 </div>
@@ -255,6 +256,8 @@ export default function AlgorithmsFilterSheet({
                                         );
                                     })}
                                 </div>
+                                </>
+                                )}
 
                                 {/* Tags section */}
                                 <div className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-muted-foreground mt-5 mb-2">

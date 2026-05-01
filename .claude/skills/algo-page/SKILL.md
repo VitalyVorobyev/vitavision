@@ -270,6 +270,11 @@ sources:                      # Authoritative sources for this page (see Workflo
 coverImage: "..."
 repoLinks: [...]
 demoLinks: [...]
+
+# Atlas relationship fields (optional)
+prerequisites: []   # concept slugs this algorithm depends on (e.g. [image-gradient, structure-tensor])
+comparedWith: []    # algorithms that this is directly contrasted with (author one side; build mirrors)
+failureModes: []    # failure-mode page slugs (always empty in MVP; required as placeholder)
 ```
 
 `relatedDemos` and `editorAlgorithmId` should be considered for every page. `sources` is required for every new page — see the Workflow section below.
@@ -285,6 +290,25 @@ When introducing a new `editorAlgorithmId` value:
 3. Smoke-test: visit `/algorithms/<slug>`, click "Try in the editor", confirm the image loads and the algorithm is preselected before touching anything.
 
 A deep-link that leaves the user in gallery mode with no image is worse than no link — they don't know what to do next.
+
+## Research-note awareness
+
+Before drafting or editing a page, check `docs/research/notes/<sources.primary>.md`. If it exists, treat the bullets in its `## NEW: <slug>` or `## UPDATE: <slug>` block as authoritative content guidance for the section being edited. The note's other sections (Setting, Core idea, Assumptions, Failure regime, Numerical sensitivity, Applicability, Connections) are reasoning context to draw from.
+
+**Two invocation paths:**
+
+- **Bootstrap** (new page from scratch): supply `arxiv:<id>`, `doi:<doi>`, or a URL. Runs Bootstrap B1–B9 below.
+- **Apply from research note** (update existing page): invoke as `/algo-page <existing-slug>`. The skill reads `docs/research/notes/<sources.primary>.md` and applies `## UPDATE: <slug>` bullets — synthesizing them into the page format, not copying them verbatim.
+
+**Explicit rules:**
+
+- **1:1 page = primary paper.** Every algorithm page has exactly one primary paper in `sources.primary`. Supplementary papers go in `sources.references` only.
+- **No pairwise comparison pages.** Use `comparedWith:` field + an inline `## When to choose X over Y` section inside the more authoritative page. Surveys allowed only with ≥3 methods, ≥800 words, and a decision table.
+- **Never publish raw LLM summaries.** Always synthesize against the research note's structured fields and your own understanding. Each claim must trace to a paper section, equation, or impl line.
+- **Cite source IDs only from `docs/papers/index.yaml`.** Do not invent paper IDs.
+- **Never reference unresolved slugs.** Verify every slug in `relatedAlgorithms`, `prerequisites`, `comparedWith` exists on disk before adding it.
+- **Do not author reverse edges.** `usedBy:` and similar reverse fields are computed by the build. Never add them manually.
+- Use `quality: stub` only for intentional public placeholders; `quality: canonical` only when the canonical gate is satisfied (sources present, prerequisites non-empty, no TODO markers).
 
 ## Workflow
 

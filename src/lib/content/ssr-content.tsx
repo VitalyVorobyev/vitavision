@@ -5,6 +5,7 @@ export interface StaticContentContextValue {
     algorithmHtmlBySlug?: Record<string, string>;
     demoHtmlBySlug?: Record<string, string>;
     modelHtmlBySlug?: Record<string, string>;
+    conceptHtmlBySlug?: Record<string, string>;
 }
 
 const StaticContentContext = createContext<StaticContentContextValue | null>(null);

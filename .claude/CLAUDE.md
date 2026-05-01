@@ -55,6 +55,53 @@ Currently present:
 
 `.env.example` holds the shape and short explanations — keep it in sync when a new variable is introduced, but never paste a real secret there.
 
+## Atlas authoring policy
+
+The site's algorithm/model/concept pages form a connected practical CV atlas. When authoring or editing content, follow these rules:
+
+### Single global slug namespace
+All relationship fields (`prerequisites`, `related`, `comparedWith`, `failureModes`, `relatedAlgorithms`) use a single slug namespace covering algorithms (`content/algorithms/`), models (`content/models/`), and concepts (`content/concepts/`). Unknown slugs are hard build errors. Verify slugs exist on disk before adding them.
+
+### Authored vs derived edges
+Authors write only forward edges. The build emits `src/generated/content-graph.ts` with derived reverse edges (`usedBy`, `comparedFrom`, `relatedFrom`, `affects`). **Never** add `usedBy: [...]` or similar reverse fields manually — they will be ignored at best and confusing at worst.
+
+For symmetric relations (`comparedWith`, `related`), author on one side only. The graph mirrors them.
+
+### When a topic deserves its own page
+- **Concept page**: only when referenced by 3+ algorithm/model pages AND can support ≥500 words of substantive standalone content (definition, math, numerical concerns, implementation implications).
+- **Failure-mode page**: same criterion (3+ references, ≥500 words). Failure-mode authoring is deferred until natural candidates accumulate.
+- **Comparison page**: prohibited as pairwise. Use `comparedWith:` field + an inline `## When to choose X over Y` section inside the more authoritative page. Surveys allowed only when ≥3 methods are contrasted with ≥800 words and a decision table.
+
+### Quality field
+- Omitted = normal published page (default).
+- `quality: "stub"` = public placeholder; reader-visible warning badge.
+- `quality: "canonical"` = flagship reviewed page; reader-visible badge; passes stricter validation (sources, prerequisites, no TODO).
+
+`draft: true` remains the publication gate. Do not introduce `status:` or `review:` fields.
+
+### Sources
+Source IDs in `sources.primary` and `sources.references` must exist in `docs/papers/index.yaml`. Do not invent paper IDs. Concept pages may omit `sources:` if no canonical paper exists.
+
+### Validation
+Run `bun run scripts/validate-content.ts` before opening a PR. The build runs the same validation and will fail on broken slugs, prerequisite cycles, missing source IDs, or canonical-quality violations.
+
+### Research notes (private reasoning substrate)
+
+Private notes live at `docs/research/notes/<paper-id>.md`, where `<paper-id>`
+matches an entry in `docs/papers/index.yaml`. They are reasoning material for
+Claude, not public content — never published, never indexed, never imported
+from `src/**`.
+
+Discovery: any public page's frontmatter `sources.primary` and
+`sources.references` are paper IDs; the corresponding research note (if
+written) is at the matching path. When reasoning about an algorithm, model,
+or concept, read both the public page and any research notes for its cited
+papers.
+
+Use `paper-ingest` to create a research note from a paper. Use `algo-page`,
+`deep-model-page`, or `concept-page` to apply a note's "Atlas update plan"
+section to public pages — never publish from a raw LLM summary.
+
 ## Architecture Overview
 
 Static computer vision web app: image annotation editor + WASM algorithm runner. **No backend** — all processing is client-side.

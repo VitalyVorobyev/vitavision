@@ -5,10 +5,11 @@ summary: "Detect chessboard X-junctions in heavily blurred or high-resolution im
 tags: ["calibration", "chessboard", "corner-detection"]
 category: corner-detection
 author: "Vitaly Vorobyev"
-draft: true
 difficulty: intermediate
-editorAlgorithmId: chess-corners
 relatedAlgorithms: ["chess-corners", "rochade", "shu-topological-grid", "shi-tomasi-corner-detector"]
+prerequisites: [image-gradient, scale-space]
+comparedWith: []
+failureModes: []
 sources:
   primary: abeles2021-pyramidal
   references: [placht2014-rochade, bennett2013-chess, lucchese2003-saddle, shi-tomasi1994-features]

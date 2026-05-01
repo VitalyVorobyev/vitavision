@@ -39,13 +39,14 @@ export const blogPosts: BlogIndexEntry[] = [
         "https://github.com/VitalyVorobyev/chess-corners-rs"
       ],
       "difficulty": "intermediate",
-      "readingTimeMinutes": 12,
+      "readingTimeMinutes": 11,
       "access": "public",
       "relatedAlgorithms": [
         "chess-corners",
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
-        "fast-corner-detector"
+        "fast-corner-detector",
+        "duda-radon-corners"
       ],
       "relatedDemos": [
         "chess-response"

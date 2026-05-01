@@ -1,11 +1,12 @@
 ---
 title: "ChESS Corners Detector"
 date: 2026-04-15
+modified: 2026-05-01
 summary: "A chessboard-specific detector, from sampling geometry to a practical multiscale implementation."
 tags: ["feature-detection"]
 author: "Vitaly Vorobyev"
 repoLinks: ["https://github.com/VitalyVorobyev/chess-corners-rs"]
-relatedAlgorithms: ["chess-corners", "harris-corner-detector", "shi-tomasi-corner-detector", "fast-corner-detector"]
+relatedAlgorithms: ["chess-corners", "harris-corner-detector", "shi-tomasi-corner-detector", "fast-corner-detector", "duda-radon-corners"]
 relatedDemos: ["chess-response"]
 difficulty: intermediate
 ---
@@ -18,7 +19,7 @@ The first question was simple: how should one detect chessboard corners?
 
 Classical detectors such as [Harris](/algorithms/harris-corner-detector), [Shi-Tomasi](/algorithms/shi-tomasi-corner-detector), or [FAST](/algorithms/fast-corner-detector) are designed to react to corner-like structures in general. That is exactly why they are broadly useful, and also why they are not ideal here. A chessboard corner is more specific than a generic corner: locally, it forms an X-junction with an alternating black-white arrangement. Since this structure is known in advance, it is better to encode it directly in the detector.
 
-(OpenCV’s chessboard detector follows a different route: it starts from segmenting black squares and then derives corners from the recovered geometry. That works well, but it couples the problem to global board structure and requires the whole pattern to be visible, which is not acceptable in my case.)
+(The old OpenCV `findChessboardCorners` chessboard detector follows a different route: it starts from segmenting black squares and then derives corners from the recovered geometry. That works well, but couples the problem to the global board structure. The newer `findChessboardCornersSB` detector is based on [the Duda-Frese local X-junction detector](/algorithms/duda-radon-corners), which is a solid alternative to the approach we discuss here. Both detectors expect the full requested pattern to be visible, which is not acceptyble in my case.)
 
 Bennett and Lasenby [proposed](https://arxiv.org/abs/1301.5491) an elegant, robust, and efficient detector, ChESS (Chess-board Extraction by Subtraction and Summation), designed specifically for chessboard-like X-junctions. In my view, this idea deserves more attention in the vision community. In this post, we will look at ChESS in some detail, closely following the original paper. By the end, you should have a clear picture of how [my implementation of ChESS](https://github.com/VitalyVorobyev/chess-corners-rs) works.
 
@@ -132,29 +133,21 @@ where the sums run over all $(x, y)$ in the refinement window, and $w(x,y)$ is t
 
 In my implementation, I use several classical subpixel refinement methods, as well as a CNN-based refiner. That part deserves a separate discussion, so I will return to it in another post.
 
-# 4. Corner orientation
+# 4. Corner orientations
 
 The original paper also discusses corner orientation, but in a quantized form: it assigns each detected corner to one of eight orientation bins.
 
-In my implementation, I instead compute a continuous orientation as an additional descriptor.
+Under perspective projection, the two board directions that meet at a chessboard corner do not generally remain perpendicular in the image. I use an additional descriptor to estimate both orientations from the image.
 
-This is done after detection and subpixel refinement. For each corner, the original grayscale image is sampled on a 16-point ring around the refined subpixel location, using bilinear interpolation. The 16 sampled values form a signal on the ring; subtracting their mean removes the constant offset and leaves the angular variation that carries the orientation information.
-
-The idea is similar to a Fourier transform: the ring signal is decomposed into repeating angular patterns. For a chessboard corner, the relevant pattern repeats twice during one full turn around the ring. Its phase gives the local corner orientation.
-
-This leads to
+The descriptor is computed after detection and subpixel refinement. For each corner, the original grayscale image is sampled on a 16-point ring around the refined location, using bilinear interpolation. The sampled ring is then fitted with a two-axis intensity model:
 
 $$
-M = \sum_i (s_i - \bar{s}) e^{j 2 \phi_i},
-\qquad
-\theta = \frac{1}{2}\operatorname{atan2}(\operatorname{Im} M, \operatorname{Re} M).
+I(\phi) = \mu + A \cdot \tanh(\beta \sin(\phi - \theta_1)) \cdot \tanh(\beta \sin(\phi - \theta_2)).
 $$
 
-Here $s_i$ are the ring samples, $\bar{s}$ is their mean, and $\phi_i$ is the angle of the $i$-th sample on the ring. The complex value $M$ tells us how strongly this twice-per-turn pattern is present and at which angle it is aligned.
+Here $\theta_1$ and $\theta_2$ are the two local grid directions, $\mu$ is the ring mean, and $A$ is the fitted bright-dark contrast. The two angles are not constrained to be orthogonal.
 
-The orientation is defined modulo $\pi$, since reversing the direction gives the same line.
-
-This orientation becomes useful later when reconstructing board structure and filtering out geometrically inconsistent detections.
+The measured orientations become useful later when reconstructing board structure and filtering out geometrically inconsistent detections.
 
 # 5. ChESS in Rust
 
@@ -199,7 +192,7 @@ The image below shows an example input used for benchmarking:
 
 ![Example 1024 by 576 chessboard image used for benchmarking](./images/01-chess/mid_chess.png)
 
-One notable property of this detector is its speed. Detecting features in the image above ($1024 \times 576$ pixels) takes about 1.2 ms on my MacBook Pro with an M4 chip, with the rayon and simd features enabled. On the same image, OpenCV’s pixel-precise Harris detector takes about 3.9 ms, while `findChessboardCornersSB` takes about 115 ms.
+One notable property of this detector is its speed. Detecting corners in the image above ($1024 \times 576$ pixels) takes about 1.2 ms on my MacBook Pro with an M4 chip, with parallel processing (rayon) and SIMD optimizations enabled. On the same image, OpenCV’s pixel-precise Harris detector takes about 3.9 ms, while `findChessboardCornersSB` takes about 115 ms.
 
 The last comparison is only partial, because `findChessboardCornersSB` is a full chessboard detector, while ChESS here covers only the corner-detection stage. A full chessboard detector built on top of ChESS takes less than 4 ms on the same image. I will return to that in a future post. The implementation is available in [calib-targets-rs](https://github.com/VitalyVorobyev/calib-targets-rs).
 

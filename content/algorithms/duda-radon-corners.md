@@ -6,7 +6,6 @@ tags: ["feature-detection", "calibration", "chessboard"]
 category: corner-detection
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-draft: true
 relatedAlgorithms: ["chess-corners", "harris-corner-detector", "rochade", "pyramidal-blur-aware-xcorner"]
 prerequisites: [image-gradient]
 comparedWith: []

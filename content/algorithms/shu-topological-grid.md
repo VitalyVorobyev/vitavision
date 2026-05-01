@@ -6,7 +6,6 @@ tags: ["calibration", "chessboard"]
 category: calibration-targets
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-draft: true
 relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "chess-corners"]
 prerequisites: [image-gradient]
 comparedWith: []

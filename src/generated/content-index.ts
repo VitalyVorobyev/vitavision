@@ -78,7 +78,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "dlt"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
       "readingTimeMinutes": 7,
       "access": "public",
@@ -87,7 +86,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "explainers",
+      "category": "calibration-targets",
       "relatedAlgorithms": [
         "zhang-planar-calibration"
       ],
@@ -206,7 +205,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "robotics"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
       "readingTimeMinutes": 9,
       "access": "public",
@@ -239,7 +237,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "corner"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": false,
       "difficulty": "intermediate",
       "readingTimeMinutes": 5,
       "access": "public",
@@ -342,7 +339,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "chessboard"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 5,
       "access": "public",
@@ -454,7 +450,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "corner-detection"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
@@ -471,7 +466,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "shu-topological-grid",
         "shi-tomasi-corner-detector"
       ],
-      "editorAlgorithmId": "chess-corners",
       "sources": {
         "primary": "abeles2021-pyramidal",
         "references": [
@@ -523,7 +517,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "chessboard"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
       "access": "public",
@@ -562,7 +555,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "corner"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 4,
       "access": "public",
@@ -598,7 +590,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "chessboard"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 5,
       "access": "public",
@@ -670,7 +661,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "homography"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
       "readingTimeMinutes": 7,
       "access": "public",

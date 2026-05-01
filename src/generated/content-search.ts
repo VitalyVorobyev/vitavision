@@ -24,7 +24,7 @@ export const searchRecords: SearchRecord[] = [
       "projective-warp",
       "dlt"
     ],
-    "category": "explainers",
+    "category": "calibration-targets",
     "headings": [
       "Procedure"
     ]

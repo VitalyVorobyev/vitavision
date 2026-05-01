@@ -4,6 +4,7 @@ import type { AlgorithmsFilters, AlgorithmsKind, FacetCounts } from "../../hooks
 interface Props {
     filters: AlgorithmsFilters;
     facets: FacetCounts;
+    /** Category values for the currently-selected kind (empty array for "all"). */
     categoryValues: readonly string[];
     categoryLabel: (id: string) => string;
     popularTags: string[];
@@ -61,6 +62,13 @@ function SidebarRow({
     );
 }
 
+const KIND_ITEMS: { key: AlgorithmsKind; label: string }[] = [
+    { key: "all",       label: "All" },
+    { key: "algorithm", label: "Algorithms" },
+    { key: "model",     label: "Models" },
+    { key: "concept",   label: "Concepts" },
+];
+
 export default function AlgorithmsSidebar({
     filters,
     facets,
@@ -77,78 +85,67 @@ export default function AlgorithmsSidebar({
         <aside className="w-[220px] shrink-0 border-r border-[hsl(var(--border)/0.38)] py-5 pl-[22px] pr-[18px] text-[13px]">
             {/* Kind section */}
             <div className="mb-[22px]">
-                <SectionLabel label="Kind" />
+                <SectionLabel label="Type" />
                 <div
                     role="radiogroup"
-                    aria-label="Kind"
+                    aria-label="Type"
                     className="flex flex-col gap-1"
                 >
-                    <button
-                        type="button"
-                        role="radio"
-                        aria-checked={filters.kind === "classical"}
-                        onClick={() => onKindChange("classical")}
-                        className={`flex justify-between items-center px-2 py-[5px] rounded-[5px] w-full text-left text-[13px] transition-colors ${
-                            filters.kind === "classical"
-                                ? "bg-[hsl(var(--surface-hi))] text-foreground font-semibold"
-                                : "text-[hsl(var(--foreground)/0.8)] hover:bg-[hsl(var(--surface-hi)/0.5)]"
-                        }`}
-                    >
-                        <span>Classical</span>
-                        <span className="text-[11px] text-muted-foreground font-normal">
-                            {facets.kinds.classical}
-                        </span>
-                    </button>
-                    <button
-                        type="button"
-                        role="radio"
-                        aria-checked={filters.kind === "models"}
-                        onClick={() => onKindChange("models")}
-                        className={`flex justify-between items-center px-2 py-[5px] rounded-[5px] w-full text-left text-[13px] transition-colors ${
-                            filters.kind === "models"
-                                ? "bg-[hsl(var(--surface-hi))] text-foreground font-semibold"
-                                : "text-[hsl(var(--foreground)/0.8)] hover:bg-[hsl(var(--surface-hi)/0.5)]"
-                        }`}
-                    >
-                        <span>Models</span>
-                        <span className="text-[11px] text-muted-foreground font-normal">
-                            {facets.kinds.models}
-                        </span>
-                    </button>
+                    {KIND_ITEMS.map(({ key, label }) => (
+                        <button
+                            key={key}
+                            type="button"
+                            role="radio"
+                            aria-checked={filters.kind === key}
+                            onClick={() => onKindChange(key)}
+                            className={`flex justify-between items-center px-2 py-[5px] rounded-[5px] w-full text-left text-[13px] transition-colors ${
+                                filters.kind === key
+                                    ? "bg-[hsl(var(--surface-hi))] text-foreground font-semibold"
+                                    : "text-[hsl(var(--foreground)/0.8)] hover:bg-[hsl(var(--surface-hi)/0.5)]"
+                            }`}
+                        >
+                            <span>{label}</span>
+                            <span className="text-[11px] text-muted-foreground font-normal">
+                                {facets.kinds[key]}
+                            </span>
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* Category section */}
-            <div className="mb-[22px]">
-                <SectionLabel label="Category" />
-                <div
-                    role="radiogroup"
-                    aria-label="Category"
-                    className="flex flex-col gap-0.5"
-                >
-                    <SidebarRow
-                        label="All"
-                        count={facets.categories["all"] ?? 0}
-                        active={filters.categoryId === "all"}
-                        onClick={() => onCategoryChange("all")}
-                    />
-                    {categoryValues
-                        .filter(
-                            (id) =>
-                                (facets.categories[id] ?? 0) > 0 ||
-                                filters.categoryId === id,
-                        )
-                        .map((id) => (
-                            <SidebarRow
-                                key={id}
-                                label={categoryLabel(id)}
-                                count={facets.categories[id] ?? 0}
-                                active={filters.categoryId === id}
-                                onClick={() => onCategoryChange(id)}
-                            />
-                        ))}
+            {/* Category section — hidden when kind === "all" */}
+            {filters.kind !== "all" && (
+                <div className="mb-[22px]">
+                    <SectionLabel label="Category" />
+                    <div
+                        role="radiogroup"
+                        aria-label="Category"
+                        className="flex flex-col gap-0.5"
+                    >
+                        <SidebarRow
+                            label="All"
+                            count={facets.categories["all"] ?? 0}
+                            active={filters.categoryId === "all"}
+                            onClick={() => onCategoryChange("all")}
+                        />
+                        {categoryValues
+                            .filter(
+                                (id) =>
+                                    (facets.categories[id] ?? 0) > 0 ||
+                                    filters.categoryId === id,
+                            )
+                            .map((id) => (
+                                <SidebarRow
+                                    key={id}
+                                    label={categoryLabel(id)}
+                                    count={facets.categories[id] ?? 0}
+                                    active={filters.categoryId === id}
+                                    onClick={() => onCategoryChange(id)}
+                                />
+                            ))}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Tags section */}
             <div>

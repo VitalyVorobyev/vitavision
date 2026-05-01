@@ -270,6 +270,11 @@ sources:                      # Authoritative sources for this page (see Workflo
 coverImage: "..."
 repoLinks: [...]
 demoLinks: [...]
+
+# Atlas relationship fields (optional)
+prerequisites: []   # concept slugs this algorithm depends on (e.g. [image-gradient, structure-tensor])
+comparedWith: []    # algorithms that this is directly contrasted with (author one side; build mirrors)
+failureModes: []    # failure-mode page slugs (always empty in MVP; required as placeholder)
 ```
 
 `relatedDemos` and `editorAlgorithmId` should be considered for every page. `sources` is required for every new page — see the Workflow section below.

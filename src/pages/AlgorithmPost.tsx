@@ -8,6 +8,8 @@ import DifficultyBadge from "../components/blog/DifficultyBadge.tsx";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import { useMermaid } from "../hooks/useMermaid.ts";
 import RelatedPosts from "../components/blog/RelatedPosts.tsx";
+import RelationshipPanel from "../components/atlas/RelationshipPanel.tsx";
+import QualityBadge from "../components/atlas/QualityBadge.tsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
 import { proseClasses } from "../lib/prose-classes";
 import { useStaticContent } from "../lib/content/ssr-content.tsx";
@@ -137,9 +139,12 @@ export default function AlgorithmPost() {
                         </>
                     )}
                 </div>
-                {frontmatter.difficulty && (
-                    <div><DifficultyBadge level={frontmatter.difficulty} /></div>
-                )}
+                <div className="flex items-center gap-2">
+                    {frontmatter.difficulty && (
+                        <DifficultyBadge level={frontmatter.difficulty} />
+                    )}
+                    <QualityBadge quality={frontmatter.quality} />
+                </div>
                 <div className="flex flex-wrap gap-1.5">
                     {frontmatter.tags.map((tag) => (
                         <TagBadge key={tag} tag={tag} />
@@ -198,7 +203,7 @@ export default function AlgorithmPost() {
 
             <RelatedPosts slugs={frontmatter.relatedPosts} type="blog" />
             <RelatedPosts slugs={frontmatter.relatedDemos} type="demo" />
-            <RelatedPosts slugs={frontmatter.relatedAlgorithms} type="algorithm" />
+            <RelationshipPanel slug={slug ?? page.slug} />
 
             {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (
                 <footer className="mt-12 pt-6 border-t border-border space-y-3">

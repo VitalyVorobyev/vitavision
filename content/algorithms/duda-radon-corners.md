@@ -8,6 +8,9 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 draft: true
 relatedAlgorithms: ["chess-corners", "harris-corner-detector", "rochade", "pyramidal-blur-aware-xcorner"]
+prerequisites: [image-gradient]
+comparedWith: []
+failureModes: []
 sources:
   primary: duda2018-accurate
   references: [harris1988-corner, rufli2008-blurred, sinzinger2007-model-based]

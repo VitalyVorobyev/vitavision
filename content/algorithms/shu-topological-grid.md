@@ -8,6 +8,9 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 draft: true
 relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "chess-corners"]
+prerequisites: [image-gradient]
+comparedWith: []
+failureModes: []
 sources:
   primary: shu2009-topological
   references: [harris1988-corner]

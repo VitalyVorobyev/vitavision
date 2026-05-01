@@ -7,7 +7,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-reac
 
 const NAV_ITEMS = [
     { to: "/blog", label: "Blog", active: (pathname: string) => pathname.startsWith("/blog") },
-    { to: "/algorithms", label: "Algorithms", active: (pathname: string) => pathname.startsWith("/algorithms") },
+    { to: "/algorithms", label: "Atlas", active: (pathname: string) => pathname.startsWith("/algorithms") || pathname.startsWith("/concepts") },
     { to: "/demos", label: "Demos", active: (pathname: string) => pathname.startsWith("/demos") },
     { to: "/editor", label: "Editor", active: (pathname: string) => pathname.startsWith("/editor") },
     { to: "/tools/target-generator", label: "Targets", active: (pathname: string) => pathname.startsWith("/tools") },

@@ -8,6 +8,9 @@ author: "Vitaly Vorobyev"
 difficulty: advanced
 draft: true
 relatedAlgorithms: ["zhang-planar-calibration"]
+prerequisites: [homography]
+comparedWith: []
+failureModes: []
 sources:
   primary: zaragoza2013-apap
   references:

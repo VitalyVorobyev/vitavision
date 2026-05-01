@@ -8,6 +8,9 @@ author: "Vitaly Vorobyev"
 difficulty: advanced
 draft: true
 relatedAlgorithms: ["tsai-lenz-handeye", "zhang-planar-calibration"]
+prerequisites: []
+comparedWith: []
+failureModes: []
 sources:
   primary: daniilidis1999-hand-eye
   references:

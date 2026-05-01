@@ -6,6 +6,7 @@ import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import AlgorithmIndex from "./pages/AlgorithmIndex.tsx";
 import AlgorithmPost from "./pages/AlgorithmPost.tsx";
+import ConceptPost from "./pages/ConceptPost.tsx";
 import ModelPost from "./pages/ModelPost.tsx";
 import DemoIndex from "./pages/DemoIndex.tsx";
 import DemoPage from "./pages/DemoPage.tsx";
@@ -36,6 +37,7 @@ export function render(url: string, staticContent: StaticContentContextValue | n
                                 <Route path="/algorithms" element={<AlgorithmIndex />} />
                                 <Route path="/algorithms/models/:slug" element={<ModelPost />} />
                                 <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
+                                <Route path="/concepts/:slug" element={<ConceptPost />} />
                                 <Route path="/demos" element={<DemoIndex />} />
                                 <Route path="/demos/:slug" element={<DemoPage />} />
                                 <Route path="/tools/target-generator" element={

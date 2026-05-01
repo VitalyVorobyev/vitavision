@@ -28,9 +28,9 @@ const tiles: Tile[] = [
         Spec: SpecBlog,
     },
     {
-        label: "Algorithms",
+        label: "Atlas",
         href: "/algorithms",
-        tooltip: "Browse the algorithm register — short reference cards with derivations and references",
+        tooltip: "Browse the practical CV atlas — algorithms, deep-learning models, and concepts with prerequisites, comparisons, and source-grounded references",
         Spec: SpecAlgorithms,
     },
     {

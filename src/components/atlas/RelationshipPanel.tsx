@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { contentGraph } from "../../generated/content-graph.ts";
 import type { GraphNode, NodeType } from "../../generated/content-graph.ts";
+import { useIsAdmin } from "../../lib/auth/useIsAdmin.ts";
 
 interface RelationshipPanelProps {
     /** The slug of the page being rendered. */
@@ -34,12 +35,15 @@ function RelBadge({ node }: { node: GraphNode }) {
 interface SectionProps {
     heading: string;
     slugs: string[];
+    /** When false, draft target nodes are filtered out of the section. */
+    showDrafts: boolean;
 }
 
-function Section({ heading, slugs }: SectionProps) {
+function Section({ heading, slugs, showDrafts }: SectionProps) {
     const nodes = slugs
         .map((s) => contentGraph.nodes[s])
-        .filter((n): n is GraphNode => n !== undefined);
+        .filter((n): n is GraphNode => n !== undefined)
+        .filter((n) => showDrafts || !n.draft);
 
     if (nodes.length === 0) return null;
 
@@ -60,6 +64,7 @@ function Section({ heading, slugs }: SectionProps) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function RelationshipPanel({ slug }: RelationshipPanelProps) {
+    const isAdmin = useIsAdmin();
     const fwd = contentGraph.forward[slug];
     const rev = contentGraph.reverse[slug];
 
@@ -90,25 +95,32 @@ export default function RelationshipPanel({ slug }: RelationshipPanelProps) {
 
     const affects = rev?.affects ?? [];
 
-    // If all sections are empty, render nothing.
+    // After draft filtering, a section may collapse to zero — compute against the
+    // post-filter target sets so we don't render an empty <section>.
+    const visibleCount = (slugs: string[]) =>
+        slugs
+            .map((s) => contentGraph.nodes[s])
+            .filter((n): n is GraphNode => n !== undefined && (isAdmin || !n.draft))
+            .length;
+
     const hasContent =
-        prerequisites.length > 0 ||
-        comparedWith.length > 0 ||
-        related.length > 0 ||
-        usedBy.length > 0 ||
-        failureModes.length > 0 ||
-        affects.length > 0;
+        visibleCount(prerequisites) > 0 ||
+        visibleCount(comparedWith) > 0 ||
+        visibleCount(related) > 0 ||
+        visibleCount(usedBy) > 0 ||
+        visibleCount(failureModes) > 0 ||
+        visibleCount(affects) > 0;
 
     if (!hasContent) return null;
 
     return (
         <section className="mt-12 pt-6 border-t border-border space-y-5">
-            <Section heading="Prerequisites" slugs={prerequisites} />
-            <Section heading="Compared with" slugs={comparedWith} />
-            <Section heading="Related" slugs={related} />
-            <Section heading="Used by" slugs={usedBy} />
-            <Section heading="Failure modes" slugs={failureModes} />
-            <Section heading="Affects" slugs={affects} />
+            <Section heading="Prerequisites" slugs={prerequisites} showDrafts={isAdmin} />
+            <Section heading="Compared with" slugs={comparedWith} showDrafts={isAdmin} />
+            <Section heading="Related" slugs={related} showDrafts={isAdmin} />
+            <Section heading="Used by" slugs={usedBy} showDrafts={isAdmin} />
+            <Section heading="Failure modes" slugs={failureModes} showDrafts={isAdmin} />
+            <Section heading="Affects" slugs={affects} showDrafts={isAdmin} />
         </section>
     );
 }

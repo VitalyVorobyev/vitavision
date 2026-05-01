@@ -8,6 +8,7 @@ export interface GraphNode {
     title: string;
     summary: string;
     path: string;
+    draft: boolean;
 }
 
 export interface ForwardEdges {
@@ -37,168 +38,192 @@ export const contentGraph: ContentGraph = {
       "type": "algorithm",
       "title": "As-Projective-As-Possible Image Stitching",
       "summary": "Replace a global homography with a spatially varying field of homographies, each fit by a per-cell weighted DLT (Moving DLT) on the same point correspondences, so the warp stays globally projective but adapts locally where the projective model is inadequate.",
-      "path": "/algorithms/apap-image-stitching"
+      "path": "/algorithms/apap-image-stitching",
+      "draft": false
     },
     "chess-corners": {
       "slug": "chess-corners",
       "type": "algorithm",
       "title": "ChESS Corners",
       "summary": "A chessboard-specific corner detector: scores each pixel by how well its local neighborhood matches an alternating bright-dark X-junction pattern, using 16 fixed integer offsets on a radius-5 ring.",
-      "path": "/algorithms/chess-corners"
+      "path": "/algorithms/chess-corners",
+      "draft": false
     },
     "laureano-topological-chessboard": {
       "slug": "laureano-topological-chessboard",
       "type": "algorithm",
       "title": "Chessboard Detection via X-Corners and Topology",
       "summary": "Detect every corner of a chessboard calibration pattern and assign it an integer grid coordinate by counting ring-alternations to locate X-junctions, Delaunay-triangulating the corner set, and keeping only triangles that respect the two-colour neighbourhood regularity of the pattern.",
-      "path": "/algorithms/laureano-topological-chessboard"
+      "path": "/algorithms/laureano-topological-chessboard",
+      "draft": true
     },
     "daniilidis-dual-quaternion-handeye": {
       "slug": "daniilidis-dual-quaternion-handeye",
       "type": "algorithm",
       "title": "Daniilidis Dual-Quaternion Hand-Eye Calibration",
       "summary": "Solve the hand-eye equation AX=XB jointly for rotation and translation by parametrising rigid motions as unit dual quaternions and extracting X from the right null space of a single linear system.",
-      "path": "/algorithms/daniilidis-dual-quaternion-handeye"
+      "path": "/algorithms/daniilidis-dual-quaternion-handeye",
+      "draft": false
     },
     "fast-corner-detector": {
       "slug": "fast-corner-detector",
       "type": "algorithm",
       "title": "FAST Corner Detector",
       "summary": "Segment-test corner detector on a 16-pixel Bresenham ring of radius 3 around each candidate; classifies a point as a corner when N contiguous ring pixels are all brighter (or all darker) than the centre by a margin t.",
-      "path": "/algorithms/fast-corner-detector"
+      "path": "/algorithms/fast-corner-detector",
+      "draft": false
     },
     "harris-corner-detector": {
       "slug": "harris-corner-detector",
       "type": "algorithm",
       "title": "Harris Corner Detector",
       "summary": "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum.",
-      "path": "/algorithms/harris-corner-detector"
+      "path": "/algorithms/harris-corner-detector",
+      "draft": false
     },
     "kumar-generalized-rac": {
       "slug": "kumar-generalized-rac",
       "type": "algorithm",
       "title": "Kumar-Ahuja Generalized Radial Alignment Constraint",
       "summary": "Extend Tsai's radial alignment constraint to a non-frontal sensor by modelling lens–sensor tilt as a 2-DoF rotation, projecting observations onto a hypothesized frontal sensor, and solving a seven-parameter linear system for the extrinsic rotation and tilt.",
-      "path": "/algorithms/kumar-generalized-rac"
+      "path": "/algorithms/kumar-generalized-rac",
+      "draft": true
     },
     "duda-radon-corners": {
       "slug": "duda-radon-corners",
       "type": "algorithm",
       "title": "Localized Radon Checkerboard Corners",
       "summary": "Detect checkerboard X-junctions by approximating a localized Radon transform with 1-D box filters on rotated copies of the image; the per-pixel response is the squared difference between the maximum and minimum directional line integrals over four discrete angles.",
-      "path": "/algorithms/duda-radon-corners"
+      "path": "/algorithms/duda-radon-corners",
+      "draft": false
     },
     "ocpad": {
       "slug": "ocpad",
       "type": "algorithm",
       "title": "OCPAD: Occluded Checkerboard Pattern Detection",
       "summary": "Recover the largest visible checkerboard subgraph from a partially occluded pattern by running VF2 subgraph isomorphism against a model graph under a binary-search driver over vertex counts, then closing gaps by breadth-first region growing from a quad-density anchor.",
-      "path": "/algorithms/ocpad"
+      "path": "/algorithms/ocpad",
+      "draft": true
     },
     "puzzleboard": {
       "slug": "puzzleboard",
       "type": "algorithm",
       "title": "PuzzleBoard",
       "summary": "Detect and decode a self-identifying checkerboard calibration pattern: saddle-point corners from a Hessian response, grid reconstruction via Kruskal minimum spanning forest on the 9-nearest-neighbour graph, absolute corner position on a $501 \\times 501$ grid from cross-correlation against two binary de Bruijn factor maps.",
-      "path": "/algorithms/puzzleboard"
+      "path": "/algorithms/puzzleboard",
+      "draft": true
     },
     "pyramidal-blur-aware-xcorner": {
       "slug": "pyramidal-blur-aware-xcorner",
       "type": "algorithm",
       "title": "Pyramidal Blur-Aware X-Corner Chessboard Detector",
       "summary": "Detect chessboard X-junctions in heavily blurred or high-resolution images by computing a 16-sample circular x-corner intensity at every level of an image pyramid, selecting per corner the level that maximises intensity per resolution, then assembling a chessboard graph with blur-aware edge validation.",
-      "path": "/algorithms/pyramidal-blur-aware-xcorner"
+      "path": "/algorithms/pyramidal-blur-aware-xcorner",
+      "draft": false
     },
     "02-demo-blocks": {
       "slug": "02-demo-blocks",
       "type": "algorithm",
       "title": "Rich Algorithm Content Demo",
       "summary": "A draft algorithm page that exercises semantic blocks, math, diagrams, code, and related-link metadata.",
-      "path": "/algorithms/02-demo-blocks"
+      "path": "/algorithms/02-demo-blocks",
+      "draft": true
     },
     "rochade": {
       "slug": "rochade",
       "type": "algorithm",
       "title": "ROCHADE: Robust Checkerboard Advanced Detection",
       "summary": "Detect a full planar checkerboard in an image by reducing the gradient-magnitude edge set to a single-pixel centreline graph, extracting inner corners as graph saddle points, then refining each corner to subpixel accuracy by fitting a bivariate quadratic to a cone-filtered neighbourhood and solving for its stationary point.",
-      "path": "/algorithms/rochade"
+      "path": "/algorithms/rochade",
+      "draft": false
     },
     "shi-tomasi-corner-detector": {
       "slug": "shi-tomasi-corner-detector",
       "type": "algorithm",
       "title": "Shi-Tomasi Corner Detector",
       "summary": "Scores each pixel by the smaller eigenvalue of the gradient structure tensor M; returns integer pixel locations where that eigenvalue exceeds a threshold, derived from a feature-tracking quality criterion.",
-      "path": "/algorithms/shi-tomasi-corner-detector"
+      "path": "/algorithms/shi-tomasi-corner-detector",
+      "draft": false
     },
     "shu-topological-grid": {
       "slug": "shu-topological-grid",
       "type": "algorithm",
       "title": "Topological Grid Finding",
       "summary": "Recover the integer $(i, j)$ grid coordinate of every corner in a checkerboard calibration image by Delaunay-triangulating the corners, merging same-colour triangle pairs into quads, topologically and geometrically filtering illegal quads, and flood-filling coordinates through the resulting mesh.",
-      "path": "/algorithms/shu-topological-grid"
+      "path": "/algorithms/shu-topological-grid",
+      "draft": false
     },
     "tsai-lenz-handeye": {
       "slug": "tsai-lenz-handeye",
       "type": "algorithm",
       "title": "Tsai-Lenz Hand-Eye Calibration",
       "summary": "Recover the constant rigid transform from a robot gripper to a rigidly mounted camera by solving the AX=XB equation in two stages — modified Rodrigues rotation, then translation.",
-      "path": "/algorithms/tsai-lenz-handeye"
+      "path": "/algorithms/tsai-lenz-handeye",
+      "draft": true
     },
     "zhang-planar-calibration": {
       "slug": "zhang-planar-calibration",
       "type": "algorithm",
       "title": "Zhang's Planar Camera Calibration",
       "summary": "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations.",
-      "path": "/algorithms/zhang-planar-calibration"
+      "path": "/algorithms/zhang-planar-calibration",
+      "draft": false
     },
     "ccdn-checkerboard-detector": {
       "slug": "ccdn-checkerboard-detector",
       "type": "model",
       "title": "CCDN",
       "summary": "Fully convolutional network that regresses a per-pixel checkerboard-corner response map; trained with weighted cross-entropy and paired with threshold + NMS + k-means post-processing.",
-      "path": "/algorithms/models/ccdn-checkerboard-detector"
+      "path": "/algorithms/models/ccdn-checkerboard-detector",
+      "draft": true
     },
     "xfeat": {
       "slug": "xfeat",
       "type": "model",
       "title": "XFeat",
       "summary": "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices.",
-      "path": "/algorithms/models/xfeat"
+      "path": "/algorithms/models/xfeat",
+      "draft": true
     },
     "epipolar-geometry": {
       "slug": "epipolar-geometry",
       "type": "concept",
       "title": "Epipolar Geometry",
       "summary": "The intrinsic projective geometry of two views of a scene, encoding the constraint that a point visible in one image must lie on a specific line in the other image determined entirely by the camera positions.",
-      "path": "/concepts/epipolar-geometry"
+      "path": "/concepts/epipolar-geometry",
+      "draft": false
     },
     "homography": {
       "slug": "homography",
       "type": "concept",
       "title": "Homography",
       "summary": "An invertible projective transformation of the plane, represented by a 3×3 matrix defined up to a non-zero scalar, mapping points between two images of a planar surface or capturing a pure camera rotation.",
-      "path": "/concepts/homography"
+      "path": "/concepts/homography",
+      "draft": false
     },
     "image-gradient": {
       "slug": "image-gradient",
       "type": "concept",
       "title": "Image Gradient",
       "summary": "The 2-vector of partial derivatives of image intensity with respect to spatial coordinates, measuring the rate and direction of brightness change at each pixel.",
-      "path": "/concepts/image-gradient"
+      "path": "/concepts/image-gradient",
+      "draft": false
     },
     "scale-space": {
       "slug": "scale-space",
       "type": "concept",
       "title": "Scale Space",
       "summary": "A one-parameter family of images obtained by progressively blurring an input image with Gaussians of increasing standard deviation, providing a principled multi-scale representation for detecting and describing image features.",
-      "path": "/concepts/scale-space"
+      "path": "/concepts/scale-space",
+      "draft": false
     },
     "structure-tensor": {
       "slug": "structure-tensor",
       "type": "concept",
       "title": "Structure Tensor",
       "summary": "A symmetric 2×2 matrix formed by summing the outer products of the image gradient over a local window, encoding the dominant orientation and anisotropy of local image structure.",
-      "path": "/concepts/structure-tensor"
+      "path": "/concepts/structure-tensor",
+      "draft": false
     }
   },
   "forward": {

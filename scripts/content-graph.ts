@@ -14,6 +14,8 @@ export interface GraphNode {
     title: string;
     summary: string;
     path: string;
+    /** True if the source page is marked draft. Public UI must hide these from non-admin users. */
+    draft: boolean;
 }
 
 export interface ForwardEdges {
@@ -42,6 +44,7 @@ export interface ContentEntry {
     type: NodeType;
     title: string;
     summary: string;
+    draft?: boolean;
     /** Optional legacy field — normalized into forward.related. */
     relatedAlgorithms?: string[];
     prerequisites?: string[];
@@ -84,6 +87,7 @@ export function buildContentGraph(entries: ContentEntry[]): ContentGraph {
             title: e.title,
             summary: e.summary,
             path: nodePath(e.slug, e.type),
+            draft: e.draft === true,
         };
         forward[e.slug] = emptyForward();
         reverse[e.slug] = emptyReverse();
@@ -205,6 +209,7 @@ export function emitContentGraph(graph: ContentGraph, outDir: string): void {
         "    title: string;",
         "    summary: string;",
         "    path: string;",
+        "    draft: boolean;",
         "}",
         "",
         "export interface ForwardEdges {",

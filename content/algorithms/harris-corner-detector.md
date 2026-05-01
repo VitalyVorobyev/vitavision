@@ -7,6 +7,9 @@ category: corner-detection
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["shi-tomasi-corner-detector", "fast-corner-detector", "chess-corners"]
+prerequisites: [image-gradient, structure-tensor]
+comparedWith: [shi-tomasi-corner-detector, fast-corner-detector]
+failureModes: []
 sources:
   primary: harris1988-corner
   references: [shi-tomasi1994-features]

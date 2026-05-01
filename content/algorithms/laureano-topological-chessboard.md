@@ -8,6 +8,9 @@ author: "Vitaly Vorobyev"
 draft: true
 difficulty: intermediate
 relatedAlgorithms: ["shu-topological-grid", "chess-corners", "fast-corner-detector"]
+prerequisites: [image-gradient]
+comparedWith: []
+failureModes: []
 sources:
   primary: laureano2013-topological
   references: [shu2009-topological, rosten2006-fast]

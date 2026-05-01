@@ -8,6 +8,9 @@ author: "Vitaly Vorobyev"
 difficulty: advanced
 draft: true
 relatedAlgorithms: ["zhang-planar-calibration"]
+prerequisites: []
+comparedWith: []
+failureModes: []
 sources:
   primary: kumar2014-grac
   references:

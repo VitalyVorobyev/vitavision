@@ -8,6 +8,9 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 draft: true
 relatedAlgorithms: ["shu-topological-grid", "puzzleboard", "laureano-topological-chessboard"]
+prerequisites: [image-gradient]
+comparedWith: []
+failureModes: []
 sources:
   primary: fuersattel2016-ocpad
   references: [placht2014-rochade, cordella2004-vf2]

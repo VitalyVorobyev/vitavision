@@ -9,6 +9,9 @@ difficulty: advanced
 draft: true
 editorAlgorithmId: puzzleboard
 relatedAlgorithms: ["chess-corners", "harris-corner-detector", "shu-topological-grid"]
+prerequisites: [image-gradient]
+comparedWith: []
+failureModes: []
 sources:
   primary: stelldinger2024-puzzleboard
   references: [harris1988-corner]

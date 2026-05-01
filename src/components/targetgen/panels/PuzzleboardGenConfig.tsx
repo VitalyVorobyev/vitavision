@@ -19,9 +19,9 @@ export default function PuzzleboardGenConfig({ config, dispatch }: Props) {
                     onChange={(v) => update({ rows: v ?? 7 })}
                     disabled={false}
                     min={1}
-                    max={50}
+                    max={501}
                     step={1}
-                    tooltip="Number of square rows on the board"
+                    tooltip="Number of square rows on the board (max 501 — the master pattern's period)"
                 />
                 <NumberField
                     label="Cols"
@@ -29,9 +29,9 @@ export default function PuzzleboardGenConfig({ config, dispatch }: Props) {
                     onChange={(v) => update({ cols: v ?? 10 })}
                     disabled={false}
                     min={1}
-                    max={50}
+                    max={501}
                     step={1}
-                    tooltip="Number of square columns on the board"
+                    tooltip="Number of square columns on the board (max 501 — the master pattern's period)"
                 />
                 <NumberField
                     label="Cell size (mm)"

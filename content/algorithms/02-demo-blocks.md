@@ -9,6 +9,9 @@ draft: true
 difficulty: intermediate
 relatedPosts: ["00-intro"]
 relatedAlgorithms: ["harris-corner-detector"]
+prerequisites: []
+comparedWith: []
+failureModes: []
 ---
 
 This draft algorithm page mirrors the rich markdown feature coverage of the blog pipeline so the `/algorithms/*` route is exercised with the same authoring tools. It also provides explicit internal links to [the intro post](/blog/00-intro) and [the Harris detector page](/algorithms/harris-corner-detector).

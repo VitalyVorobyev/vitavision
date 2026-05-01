@@ -17,6 +17,11 @@ editorAlgorithmId: <chess-corners|chessboard|charuco|markerboard|ringgrid|radsym
 coverImage: "./images/<slug>/cover.png"
 repoLinks: ["https://github.com/..."]
 demoLinks: ["https://..."]
+
+# Atlas relationship fields (optional)
+prerequisites: []   # concept slugs this algorithm depends on
+comparedWith: []    # algorithms that this is directly contrasted with (author one side; build mirrors)
+failureModes: []    # failure-mode page slugs (always empty in MVP)
 ---
 
 # Goal

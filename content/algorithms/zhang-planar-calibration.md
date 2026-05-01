@@ -6,8 +6,10 @@ tags: ["calibration", "intrinsics", "homography"]
 category: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
-draft: true
 relatedAlgorithms: ["chess-corners", "rochade", "puzzleboard"]
+prerequisites: [homography]
+comparedWith: []
+failureModes: []
 sources:
   primary: zhang2000-flexible
   references:

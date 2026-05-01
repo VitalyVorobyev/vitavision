@@ -139,6 +139,30 @@ coverImage: "..."
 
 `sources` is required for every non-draft page. `implementations[]` is required for every non-draft page — a model without a referenceable implementation cannot ship as non-draft.
 
+## Research-note awareness
+
+Before drafting or editing a page, check `docs/research/notes/<sources.primary>.md`. If it exists, treat the bullets in its `## NEW: <slug>` or `## UPDATE: <slug>` block as authoritative content guidance for the section being edited. The note's other sections (Setting, Core idea, Assumptions, Failure regime, Numerical sensitivity, Applicability, Connections) are reasoning context to draw from.
+
+**Two invocation paths:**
+
+- **Bootstrap** (new page from scratch): supply `arxiv:<id>`, `doi:<doi>`, or a URL. Runs Bootstrap B1–B10 below.
+- **Apply from research note** (update existing page): invoke as `/deep-model-page <existing-slug>`. The skill reads `docs/research/notes/<sources.primary>.md` and applies `## UPDATE: <slug>` bullets — synthesizing them into the page format, not copying them verbatim.
+
+**Model-family vs single-paper pages:**
+
+- Prefer a **model-family page** (e.g. "ResNet family", "YOLO family") over a single-paper page when successive papers in a series differ primarily in scale, training recipe, or minor architectural tweaks rather than in fundamental design decisions. Create one family page and note variants in `# Architecture.Family & shape`.
+- **Avoid chasing minor model-version variants.** When a new version (e.g. ResNet-50 → ResNet-101, YOLOv5 → YOLOv8) appears, update the existing family page rather than creating a new one. Create a new page only when the architectural change is substantial (new training objective, new fundamental block type, new modality).
+
+**Explicit rules:**
+
+- **1:1 page = primary paper (or paper family).** Every model page has exactly one primary paper in `sources.primary`. Supplementary papers go in `sources.references` only.
+- **No pairwise comparison pages.** Use `comparedWith:` field + an inline `## When to choose X over Y` section in the more authoritative page. Surveys allowed only with ≥3 methods, ≥800 words, and a decision table.
+- **Never publish raw LLM summaries.** Always synthesize against the research note's structured fields and your own understanding. Each claim must trace to a paper section, equation, table, or impl file/line.
+- **Cite source IDs only from `docs/papers/index.yaml`.** Do not invent paper IDs.
+- **Never reference unresolved slugs.** Verify every slug in `relatedAlgorithms`, `prerequisites`, `comparedWith` exists on disk before adding it.
+- **Do not author reverse edges.** `usedBy:` and similar reverse fields are computed by the build. Never add them manually.
+- Use `quality: stub` only for intentional public placeholders; `quality: canonical` only when the canonical gate is satisfied.
+
 ## Workflow
 
 This procedure is mandatory for any new or rewritten model page.

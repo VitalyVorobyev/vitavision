@@ -75,4 +75,24 @@ describe("puzzleboardSvg", () => {
             expect(c).toContain(rAttr);
         }
     });
+
+    it("renders large boards (200x200) with the expected primitive counts", () => {
+        const big: PuzzleboardConfig = { rows: 200, cols: 200, cellSizeMm: 1 };
+        const bigPage: PageDimensions = { widthMm: 250, heightMm: 250, marginMm: 5 };
+        const svg = puzzleboardSvg(big, bigPage);
+        expect(svg).toMatch(/^<svg/);
+        const rects = svg.match(/<rect/g)!;
+        const circles = svg.match(/<circle/g)!;
+        expect(rects.length).toBe(200 * 200 + 1);
+        expect(circles.length).toBe(199 * 200 + 200 * 199);
+    });
+
+    it("renders boards at the master-period maximum (501x501) without error", () => {
+        const max: PuzzleboardConfig = { rows: 501, cols: 501, cellSizeMm: 0.5 };
+        const maxPage: PageDimensions = { widthMm: 300, heightMm: 300, marginMm: 5 };
+        const svg = puzzleboardSvg(max, maxPage);
+        expect(svg).toMatch(/^<svg/);
+        const rects = svg.match(/<rect/g)!;
+        expect(rects.length).toBe(501 * 501 + 1);
+    });
 });

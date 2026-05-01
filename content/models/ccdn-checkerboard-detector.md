@@ -9,6 +9,9 @@ difficulty: intermediate
 arch_family: cnn
 draft: true
 params: "16,301"
+prerequisites: [image-gradient]
+comparedWith: []
+failureModes: []
 sources:
   primary: chen2023-ccdn
   references:

@@ -294,3 +294,23 @@ main().catch((err) => {
     console.error("postbuild failed:", err);
     process.exit(1);
 });
+
+// Validation guard: ensure no research-note paths leaked into the public build.
+// docs/research/ is a private reasoning substrate and must never appear in dist/.
+import { execSync } from "node:child_process";
+
+const distDir = join(import.meta.dir, "..", "dist");
+try {
+    const result = execSync(
+        `grep -rl "docs/research/" ${distDir} || true`,
+        { encoding: "utf-8" },
+    ).trim();
+    if (result) {
+        throw new Error(
+            `Public build leaks research-note paths: ${result.split("\n").join(", ")}`,
+        );
+    }
+} catch (err) {
+    if (err instanceof Error && err.message.startsWith("Public build leaks")) throw err;
+    // grep returned non-zero with no matches — that is the success path
+}

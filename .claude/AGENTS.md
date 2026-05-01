@@ -2,6 +2,19 @@
 
 This file is consumed by Claude instances working on vitavision. It covers the atlas content rules. For broader project context see CLAUDE.md.
 
+## Private research workflow
+
+1. **New sources become private notes first.** Use `paper-ingest` to turn an arxiv ID, DOI, URL, or local PDF into `docs/research/notes/<paper-id>.md`. Public pages are not modified by `paper-ingest`.
+2. **Public pages updated only after note review.** After `paper-ingest`, read the note's `# Atlas update plan` section. Then invoke `algo-page`, `deep-model-page`, or `concept-page` against the affected slug. Never update public pages directly from a raw LLM summary.
+3. **Prefer updating existing pages over creating new ones.** When a new paper supplements an existing page, fan the note's bullets into that page's relevant sections rather than creating a new page.
+4. **Map new sources to existing graph nodes.** Before proposing a new page slug, scan `content/algorithms/`, `content/models/`, and `content/concepts/` for an existing page that covers the method. If one exists, it is supplementary content — not a new page.
+5. **Never publish raw LLM summaries.** Every claim on a public page must be traceable to a specific paper section, equation, table, or implementation file/line.
+6. **Preserve source provenance via `docs/papers/index.yaml`.** Every `sources.primary` and `sources.references` entry must be a key in that file. Do not invent IDs.
+7. **No pairwise comparison pages.** Use `comparedWith:` field + an inline `## When to choose X over Y` section in the more authoritative page. Surveys allowed with ≥3 methods, ≥800 words, and a decision table only.
+8. **No authored reverse edges.** `usedBy:` and similar reverse fields are computed by the build (`src/generated/content-graph.ts`). Never add them manually.
+9. **No unresolved slugs.** Verify every slug in relationship fields exists on disk before adding it. Unknown slugs are hard build errors.
+10. **Concept-page criterion.** A concept page is warranted only when the concept is referenced as `prerequisites` in 3+ existing or planned public pages AND can support ≥500 words of substantive standalone content. If either criterion fails, the topic belongs as a section inside an existing page.
+
 ## Slug namespace
 
 All relationship fields (`prerequisites`, `related`, `comparedWith`, `failureModes`, `relatedAlgorithms`) share a single namespace:
@@ -55,4 +68,4 @@ The build (`bun run build`) runs the same validation and fails on: broken slugs,
 
 ## No parallel atlas tree
 
-There is no `/content/atlas/` directory, no Obsidian vault, no export pipeline. The atlas is a navigation and relationship layer over `content/algorithms/`, `content/models/`, and `content/concepts/`. Do not create parallel namespaces.
+There is no `/content/atlas/` directory, no Obsidian vault, no export pipeline. The atlas is a navigation and relationship layer over `content/algorithms/`, `content/models/`, and `content/concepts/`. The atlas is served at `/algorithms` (with tabs for algorithms, models, concepts). Do not create parallel namespaces.

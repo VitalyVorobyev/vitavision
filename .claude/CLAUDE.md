@@ -85,6 +85,23 @@ Source IDs in `sources.primary` and `sources.references` must exist in `docs/pap
 ### Validation
 Run `bun run scripts/validate-content.ts` before opening a PR. The build runs the same validation and will fail on broken slugs, prerequisite cycles, missing source IDs, or canonical-quality violations.
 
+### Research notes (private reasoning substrate)
+
+Private notes live at `docs/research/notes/<paper-id>.md`, where `<paper-id>`
+matches an entry in `docs/papers/index.yaml`. They are reasoning material for
+Claude, not public content — never published, never indexed, never imported
+from `src/**`.
+
+Discovery: any public page's frontmatter `sources.primary` and
+`sources.references` are paper IDs; the corresponding research note (if
+written) is at the matching path. When reasoning about an algorithm, model,
+or concept, read both the public page and any research notes for its cited
+papers.
+
+Use `paper-ingest` to create a research note from a paper. Use `algo-page`,
+`deep-model-page`, or `concept-page` to apply a note's "Atlas update plan"
+section to public pages — never publish from a raw LLM summary.
+
 ## Architecture Overview
 
 Static computer vision web app: image annotation editor + WASM algorithm runner. **No backend** — all processing is client-side.

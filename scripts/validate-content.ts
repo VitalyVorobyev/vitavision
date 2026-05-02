@@ -49,13 +49,103 @@ async function renderMarkdownPlain(content: string): Promise<string> {
     return String(result);
 }
 
-// ── Paper IDs ────────────────────────────────────────────────────────────────
-function loadPaperIds(): Set<string> {
-    if (!existsSync(PAPERS_INDEX)) return new Set();
+// ── Typed source registry ─────────────────────────────────────────────────────
+type SourceKind = "paper" | "repo" | "doc";
+
+interface IndexEntry {
+    id: string;
+    kind: SourceKind;
+    // paper:
+    url?: string;
+    // repo:
+    repo?: string;
+    commit?: string;
+    license?: string;
+    // doc:
+    path?: string;
+}
+
+/**
+ * Build a typed Map keyed by canonical source-ref form:
+ *   paper:<id>            for kind=paper (or absent kind)
+ *   repo:<repo>@<commit>  for kind=repo
+ *   doc:<path>            for kind=doc
+ *
+ * Also validates defensive rule: no paper id may start with "repo:" or "doc:".
+ */
+function loadSourceIndex(validatorErrors: string[]): Map<string, IndexEntry> {
+    const index = new Map<string, IndexEntry>();
+    if (!existsSync(PAPERS_INDEX)) return index;
     const raw = readFileSync(PAPERS_INDEX, "utf-8");
-    const entries = parseYaml(raw) as Array<{ id?: string }>;
-    if (!Array.isArray(entries)) return new Set();
-    return new Set(entries.map((e) => e.id).filter(Boolean) as string[]);
+    const entries = parseYaml(raw) as Array<Record<string, unknown>>;
+    if (!Array.isArray(entries)) return index;
+
+    for (const e of entries) {
+        const id = e.id as string | undefined;
+        if (!id) continue;
+        const kind = (e.kind as SourceKind | undefined) ?? "paper";
+
+        // Defensive rule: paper ids must not start with reserved prefixes.
+        if (kind === "paper" && (id.startsWith("repo:") || id.startsWith("doc:"))) {
+            validatorErrors.push(
+                `[index.yaml] entry id "${id}" must not start with reserved prefix "repo:" or "doc:"`,
+            );
+            continue;
+        }
+
+        const entry: IndexEntry = {
+            id,
+            kind,
+            url: e.url as string | undefined,
+            repo: e.repo as string | undefined,
+            commit: e.commit as string | undefined,
+            license: e.license as string | undefined,
+            path: e.path as string | undefined,
+        };
+
+        let key: string;
+        if (kind === "paper") {
+            key = `paper:${id}`;
+        } else if (kind === "repo") {
+            const repo = e.repo as string | undefined;
+            const commit = e.commit as string | undefined;
+            if (!repo || !commit) {
+                validatorErrors.push(
+                    `[index.yaml] entry id "${id}" (kind: repo) must have "repo" and "commit" fields`,
+                );
+                continue;
+            }
+            key = `repo:${repo}@${commit}`;
+        } else {
+            // doc
+            const path = e.path as string | undefined;
+            if (!path) {
+                validatorErrors.push(
+                    `[index.yaml] entry id "${id}" (kind: doc) must have a "path" field`,
+                );
+                continue;
+            }
+            key = `doc:${path}`;
+        }
+
+        index.set(key, entry);
+    }
+    return index;
+}
+
+/** Parse a source-ref string into a { kind, key } pair. */
+function parseSourceRef(s: string): { kind: SourceKind; key: string } | null {
+    if (s.startsWith("paper:")) {
+        return { kind: "paper", key: s };
+    }
+    if (s.startsWith("repo:")) {
+        return { kind: "repo", key: s };
+    }
+    if (s.startsWith("doc:")) {
+        return { kind: "doc", key: s };
+    }
+    // Bare id → backward-compat paper reference
+    return { kind: "paper", key: `paper:${s}` };
 }
 
 // ── Slug helpers ─────────────────────────────────────────────────────────────
@@ -120,7 +210,7 @@ export async function validateContent(options?: ValidateContentOptions): Promise
     const rawModelEntries = loadDirectory(join(CONTENT_DIR, "models"), modelSlug);
     const rawConceptEntries = loadDirectory(join(CONTENT_DIR, "concepts"), conceptSlug);
 
-    const paperIds = loadPaperIds();
+    const sourceIndex = loadSourceIndex(errors);
 
     // ── Parse and filter ─────────────────────────────────────────────────────
     interface ParsedEntry extends RawEntry {
@@ -259,16 +349,51 @@ export async function validateContent(options?: ValidateContentOptions): Promise
     }
 
     // ── Rule 3: Source-id existence ───────────────────────────────────────────
+    const REPO_REF_RE = /^repo:https?:\/\/[^@]+@[0-9a-f]{7,40}$/;
+
+    function checkSingleSourceRef(file: string, field: string, value: string): void {
+        const parsed = parseSourceRef(value);
+        if (!parsed) {
+            errors.push(
+                `[${file}] ${field} "${value}" malformed (expected paper:<id> | repo:<url>@<7-40 hex> | doc:<path>)`,
+            );
+            return;
+        }
+
+        const { kind, key } = parsed;
+
+        if (kind === "paper") {
+            if (!sourceIndex.has(key)) {
+                errors.push(`[${file}] ${field} "${value}" not found in docs/papers/index.yaml`);
+            }
+        } else if (kind === "repo") {
+            if (!REPO_REF_RE.test(value)) {
+                errors.push(
+                    `[${file}] ${field} "${value}" malformed (expected paper:<id> | repo:<url>@<7-40 hex> | doc:<path>)`,
+                );
+                return;
+            }
+            if (!sourceIndex.has(key)) {
+                errors.push(`[${file}] ${field} "${value}" not found in docs/papers/index.yaml`);
+            }
+        } else {
+            // doc
+            const docPath = value.slice("doc:".length);
+            const absPath = join(REPO_ROOT, docPath);
+            if (!existsSync(absPath)) {
+                errors.push(`[${file}] ${field} "${value}" file does not exist`);
+            }
+        }
+    }
+
     function checkSourceIds(file: string, sources: unknown): void {
         if (!sources || typeof sources !== "object") return;
         const src = sources as { primary?: string; references?: string[] };
-        if (src.primary && !paperIds.has(src.primary)) {
-            errors.push(`[${file}] sources.primary "${src.primary}" not found in docs/papers/index.yaml`);
+        if (src.primary) {
+            checkSingleSourceRef(file, "sources.primary", src.primary);
         }
         for (const ref of src.references ?? []) {
-            if (!paperIds.has(ref)) {
-                errors.push(`[${file}] sources.references "${ref}" not found in docs/papers/index.yaml`);
-            }
+            checkSingleSourceRef(file, "sources.references", ref);
         }
     }
 

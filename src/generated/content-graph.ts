@@ -55,7 +55,7 @@ export const contentGraph: ContentGraph = {
       "title": "Chessboard Detection via X-Corners and Topology",
       "summary": "Detect every corner of a chessboard calibration pattern and assign it an integer grid coordinate by counting ring-alternations to locate X-junctions, Delaunay-triangulating the corner set, and keeping only triangles that respect the two-colour neighbourhood regularity of the pattern.",
       "path": "/algorithms/laureano-topological-chessboard",
-      "draft": true
+      "draft": false
     },
     "daniilidis-dual-quaternion-handeye": {
       "slug": "daniilidis-dual-quaternion-handeye",
@@ -79,7 +79,7 @@ export const contentGraph: ContentGraph = {
       "title": "Gao Dual-Homography Stitching",
       "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group with RANSAC, and blending per pixel by inverse-distance weights — the direct two-plane predecessor of APAP's continuous grid of per-cell homographies.",
       "path": "/algorithms/gao-dual-homography-stitching",
-      "draft": true
+      "draft": false
     },
     "geiger-chessboard-detector": {
       "slug": "geiger-chessboard-detector",
@@ -87,7 +87,7 @@ export const contentGraph: ContentGraph = {
       "title": "Geiger Chessboard Corner Detector",
       "summary": "Detect checkerboard X-corners by computing a four-quadrant corner likelihood at each pixel using axis-aligned and 45°-rotated prototype filters at three fixed scales, verifying candidates by gradient-orientation statistics, and refining to subpixel accuracy via gradient-orthogonality weighted least squares — the libcbdetect detector that anchors many subsequent calibration pipelines.",
       "path": "/algorithms/geiger-chessboard-detector",
-      "draft": true
+      "draft": false
     },
     "gp-checkerboard-enhancement": {
       "slug": "gp-checkerboard-enhancement",
@@ -95,7 +95,7 @@ export const contentGraph: ContentGraph = {
       "title": "GP Checkerboard Enhancement (PyCBD)",
       "summary": "Post-process a partially detected checkerboard by training two Gaussian processes (one per pixel coordinate) on the allocated (boardXY, boardUV) pairs to allocate unassigned detections to grid positions, predict UV for occluded or out-of-frame corners, and apply a global-consistency refinement to every allocated corner.",
       "path": "/algorithms/gp-checkerboard-enhancement",
-      "draft": true
+      "draft": false
     },
     "harris-corner-detector": {
       "slug": "harris-corner-detector",
@@ -111,7 +111,7 @@ export const contentGraph: ContentGraph = {
       "title": "Kumar-Ahuja Generalized Radial Alignment Constraint",
       "summary": "Extend Tsai's radial alignment constraint to a non-frontal sensor by modelling lens–sensor tilt as a 2-DoF rotation, projecting observations onto a hypothesized frontal sensor, and solving a seven-parameter linear system for the extrinsic rotation and tilt.",
       "path": "/algorithms/kumar-generalized-rac",
-      "draft": true
+      "draft": false
     },
     "lin-sva-stitching": {
       "slug": "lin-sva-stitching",
@@ -119,7 +119,7 @@ export const contentGraph: ContentGraph = {
       "title": "Lin Smoothly Varying Affine Stitching",
       "summary": "Stitch two images under moderate parallax by replacing the global affine with a per-feature deviation field, regularised to be smooth via a Gaussian-kernel CPD-style EM that jointly estimates correspondence and warp — the contemporary affine-model competitor to APAP's per-cell projective grid.",
       "path": "/algorithms/lin-sva-stitching",
-      "draft": true
+      "draft": false
     },
     "duda-radon-corners": {
       "slug": "duda-radon-corners",
@@ -135,7 +135,7 @@ export const contentGraph: ContentGraph = {
       "title": "Normalised Eight-Point Algorithm",
       "summary": "Compute the fundamental matrix from n ≥ 8 point correspondences by conditioning the linear DLT system via a similarity normalisation, recovering accuracy comparable to iterative methods at a fraction of the cost.",
       "path": "/algorithms/fundamental-matrix-eight-point",
-      "draft": true
+      "draft": false
     },
     "ocpad": {
       "slug": "ocpad",
@@ -143,7 +143,7 @@ export const contentGraph: ContentGraph = {
       "title": "OCPAD: Occluded Checkerboard Pattern Detection",
       "summary": "Recover the largest visible checkerboard subgraph from a partially occluded pattern by running VF2 subgraph isomorphism against a model graph under a binary-search driver over vertex counts, then closing gaps by breadth-first region growing from a quad-density anchor.",
       "path": "/algorithms/ocpad",
-      "draft": true
+      "draft": false
     },
     "puzzleboard": {
       "slug": "puzzleboard",
@@ -151,7 +151,7 @@ export const contentGraph: ContentGraph = {
       "title": "PuzzleBoard",
       "summary": "Detect and decode a self-identifying checkerboard calibration pattern: saddle-point corners from a Hessian response, grid reconstruction via Kruskal minimum spanning forest on the 9-nearest-neighbour graph, absolute corner position on a $501 \\times 501$ grid from cross-correlation against two binary de Bruijn factor maps.",
       "path": "/algorithms/puzzleboard",
-      "draft": true
+      "draft": false
     },
     "pyramidal-blur-aware-xcorner": {
       "slug": "pyramidal-blur-aware-xcorner",
@@ -191,7 +191,7 @@ export const contentGraph: ContentGraph = {
       "title": "Sturm-Maybank Plane-Based Calibration",
       "summary": "Recover camera intrinsics from one or more views of one or more planar targets via the same two IAC-on-homography constraints as Zhang's method, with an exhaustive singularity catalogue and a generalisation to variable intrinsics (zooming cameras) — the concurrent CVPR 1999 derivation of plane-based calibration.",
       "path": "/algorithms/sturm-plane-based-calibration",
-      "draft": true
+      "draft": false
     },
     "shu-topological-grid": {
       "slug": "shu-topological-grid",
@@ -207,7 +207,7 @@ export const contentGraph: ContentGraph = {
       "title": "Tsai-Lenz Hand-Eye Calibration",
       "summary": "Recover the constant rigid transform from a robot gripper to a rigidly mounted camera by solving the AX=XB equation in two stages — modified Rodrigues rotation, then translation.",
       "path": "/algorithms/tsai-lenz-handeye",
-      "draft": true
+      "draft": false
     },
     "tsai-versatile-calibration": {
       "slug": "tsai-versatile-calibration",
@@ -215,7 +215,7 @@ export const contentGraph: ContentGraph = {
       "title": "Tsai's Versatile Camera Calibration",
       "summary": "Two-stage camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns.",
       "path": "/algorithms/tsai-versatile-calibration",
-      "draft": true
+      "draft": false
     },
     "zhang-planar-calibration": {
       "slug": "zhang-planar-calibration",
@@ -450,7 +450,9 @@ export const contentGraph: ContentGraph = {
         "ocpad",
         "chessboard-x-corner-detection"
       ],
-      "comparedWith": [],
+      "comparedWith": [
+        "ocpad"
+      ],
       "failureModes": []
     },
     "harris-corner-detector": {
@@ -1033,7 +1035,9 @@ export const contentGraph: ContentGraph = {
         "chessboard-x-corner-detection",
         "topological-grid-recovery"
       ],
-      "comparedFrom": [],
+      "comparedFrom": [
+        "gp-checkerboard-enhancement"
+      ],
       "affects": []
     },
     "puzzleboard": {

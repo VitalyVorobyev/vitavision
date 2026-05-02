@@ -6,7 +6,6 @@ tags: ["image-stitching", "spatially-varying-warp", "affine", "non-rigid-registr
 category: explainers
 author: "Vitaly Vorobyev"
 difficulty: advanced
-draft: true
 relatedAlgorithms: ["apap-image-stitching", "gao-dual-homography-stitching"]
 prerequisites: [homography]
 related: [spatially-varying-image-stitching]

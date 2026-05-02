@@ -6,7 +6,6 @@ tags: ["calibration", "intrinsics", "iac", "singularity-analysis", "variable-int
 category: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
-draft: true
 relatedAlgorithms: ["zhang-planar-calibration"]
 prerequisites: [homography]
 comparedWith: []

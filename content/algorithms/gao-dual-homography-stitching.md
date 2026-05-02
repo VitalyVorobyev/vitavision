@@ -6,7 +6,6 @@ tags: ["image-stitching", "homography", "panorama", "multi-plane"]
 category: explainers
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-draft: true
 relatedAlgorithms: ["apap-image-stitching"]
 prerequisites: [homography]
 related: [spatially-varying-image-stitching]

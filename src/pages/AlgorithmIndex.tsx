@@ -630,7 +630,7 @@ export default function AlgorithmIndex() {
     // ── Mobile layout ───────────────────────────────────────────────────────
 
     return (
-        <div className="max-w-[640px] mx-auto px-4 py-5 space-y-4">
+        <div className="w-full min-w-0 max-w-[640px] mx-auto px-4 py-5 space-y-4">
             <SeoHead
                 title="Atlas"
                 description="Practical computer vision atlas — algorithms, models, and concepts."

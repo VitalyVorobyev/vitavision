@@ -6,7 +6,6 @@ tags: ["geometry", "stereo", "two-view-geometry", "fundamental-matrix"]
 category: explainers
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-draft: true
 relatedAlgorithms: ["apap-image-stitching"]
 prerequisites: [epipolar-geometry, homography, dlt-normalisation]
 comparedWith: []

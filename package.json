@@ -14,6 +14,8 @@
     "papers:fetch": "bun run scripts/papers-fetch.ts",
     "papers:fetch-meta": "bun run scripts/papers-fetch-meta.ts",
     "papers:query": "bun run scripts/papers-query.ts",
+    "sources:fetch-doc": "bun run scripts/sources-fetch-doc.ts",
+    "sources:fetch-repo": "bun run scripts/sources-fetch-repo.ts",
     "vault:build": "bun run scripts/atlas-vault-build.ts",
     "postbuild": "bun run scripts/postbuild.ts",
     "test": "vitest run",

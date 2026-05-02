@@ -176,7 +176,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "corner-detection"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
@@ -284,7 +283,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "multi-plane"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
@@ -325,7 +323,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "corner-detection"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 10,
       "access": "public",
@@ -371,7 +368,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "gaussian-processes"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
       "access": "public",
@@ -383,9 +379,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "ocpad",
         "chessboard-x-corner-detection"
       ],
-      "comparedWith": [],
+      "comparedWith": [
+        "ocpad"
+      ],
       "failureModes": [],
-      "quality": "stub",
       "category": "calibration",
       "relatedAlgorithms": [
         "geiger-chessboard-detector",
@@ -401,7 +398,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "fuersattel2016-ocpad",
           "placht2014-rochade"
         ],
-        "notes": "Stub algorithm page authored from the full text of Hillen et al. 2023\n(`docs/papers/.cache/hillen2023-enhanced.txt` / DOI 10.3390/math11224568).\nMethod is an enhancement layer wrapping any upstream checkerboard\ndetector (paper benchmarks against Geiger 2012 / libcbdetect; the\nPyCBD library exposes the GP step as a modular post-processor).\nTwo GPs predict U and V pixel coordinates from `boardXY` grid keys\nusing a squared-exponential kernel (Eq. 6); hyperparameters fit by\nL-BFGS maximisation of log marginal likelihood (Eq. 7, Rasmussen\n2006 Ch. 5). Three capabilities: (1) iterative grid expansion +\nmatching of unallocated detections (Algorithm 1, distance-threshold\nmatching, max 10 iterations); (2) UV prediction for occluded or\nout-of-frame grid positions; (3) global-consistency refinement of\nevery allocated corner via the GP posterior mean. Library:\n`pip install pycbd` / github.com/InViLabUAntwerp/PyCBD. Strongest\ngains on low-resolution endoscopic, multispectral, and thermal IR\ncaptures where conventional detectors miss many corners.\n"
+        "notes": "Algorithm page authored from the Hillen 2023 research note (private\nreasoning substrate, not bundled). PyCBD library wraps\nany upstream checkerboard detector (paper benchmarks Geiger 2012);\ntwo GPs predict U and V from `boardXY` via SE kernel (Hillen Eq. 6);\nhyperparameters fit by L-BFGS on log marginal likelihood (Hillen\nEq. 7, Rasmussen 2006 Ch. 5). Iterative outward expansion\n(Algorithm 1, `maxNrOfIterations` default 10) allocates unassigned\ndetections; retrained GPs fill in occluded grid positions and\nsmooth all allocated corners via posterior mean. Cost dominated\nby O(n^3) Cholesky factorisation; sparse-GP extension (Rasmussen\nCh. 8) not implemented in PyCBD. Library:\n`pip install pycbd` / github.com/InViLabUAntwerp/PyCBD.\nComplementary to OCPAD (subgraph isomorphism) — covered in the\nRemarks comparison.\n"
       },
       "date": "2026-05-02"
     }
@@ -460,7 +457,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "lens-sensor-tilt"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
       "readingTimeMinutes": 10,
       "access": "public",
@@ -496,7 +492,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "non-rigid-registration"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
       "readingTimeMinutes": 7,
       "access": "public",
@@ -580,7 +575,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "fundamental-matrix"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
@@ -613,7 +607,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "chessboard"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
@@ -654,7 +647,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "self-identifying-pattern"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
       "readingTimeMinutes": 6,
       "access": "public",
@@ -849,7 +841,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "variable-intrinsics"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
       "readingTimeMinutes": 6,
       "access": "public",
@@ -923,7 +914,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "robotics"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
       "readingTimeMinutes": 9,
       "access": "public",
@@ -960,7 +950,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "radial-distortion"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
       "readingTimeMinutes": 9,
       "access": "public",

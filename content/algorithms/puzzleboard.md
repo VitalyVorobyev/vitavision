@@ -6,7 +6,6 @@ tags: ["calibration", "chessboard", "self-identifying-pattern"]
 category: calibration-targets
 author: "Vitaly Vorobyev"
 difficulty: advanced
-draft: true
 editorAlgorithmId: puzzleboard
 relatedAlgorithms: ["chess-corners", "harris-corner-detector", "shu-topological-grid"]
 prerequisites: [image-gradient, hessian-saddle-response, topological-grid-recovery]

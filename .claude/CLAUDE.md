@@ -86,7 +86,18 @@ For symmetric relations (`comparedWith`, `related`), author on one side only. Th
 `draft: true` remains the publication gate. Do not introduce `status:` or `review:` fields.
 
 ### Sources
-Source IDs in `sources.primary` and `sources.references` must exist in `docs/papers/index.yaml`. Do not invent paper IDs. Concept pages may omit `sources:` if no canonical paper exists.
+
+Frontmatter `sources.primary` and `sources.references[]` accept three source kinds, all registered in `docs/papers/index.yaml`:
+
+- `<bare-id>` or `paper:<id>` — a paper. Default kind; the 45+ existing entries use this form. Do not invent paper IDs.
+- `repo:<https-url>@<sha>` — a GitHub repo pinned at a 7–40-char commit SHA. The index entry must exist with `kind: repo` and matching commit. Use this for repos cited as background or comparison; for the page's own reference implementation use `sources.impl` (algo) or `implementations[]` (model) — those are richer-typed and license-verified.
+- `doc:<repo-relative-path>` — a markdown doc inside this repo. The path must exist under `docs/` or `content/`. Index entry has `kind: doc`.
+
+Bare IDs are treated as `paper:<id>` for backward compatibility. New paper IDs must not start with `repo:` or `doc:`.
+
+Each registered source has a corresponding research note at `docs/research/notes/<source-id>.md` — papers via `paper-ingest`, repos via `bun sources:fetch-repo` then stub-fill via `paper-ingest`, docs via `bun sources:fetch-doc` then stub-fill via `paper-ingest`. Notes are the canonical input the page-authoring skills consume; cache files (`docs/papers/.cache/`, `docs/sources/.cache/`) are read only by the Sonnet Extract subagent during ingestion, never by the orchestrator.
+
+Concept pages may omit `sources:` if no canonical source exists.
 
 ### Validation
 Run `bun run scripts/validate-content.ts` before opening a PR. The build runs the same validation and will fail on broken slugs, prerequisite cycles, missing source IDs, or canonical-quality violations.

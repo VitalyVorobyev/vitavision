@@ -5,7 +5,6 @@ summary: "Detect every corner of a chessboard calibration pattern and assign it 
 tags: ["calibration", "chessboard", "corner-detection"]
 category: calibration-targets
 author: "Vitaly Vorobyev"
-draft: true
 difficulty: intermediate
 relatedAlgorithms: ["shu-topological-grid", "chess-corners", "fast-corner-detector"]
 prerequisites: [image-gradient, hessian-saddle-response, topological-grid-recovery]

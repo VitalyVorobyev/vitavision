@@ -6,7 +6,6 @@ tags: ["calibration", "intrinsics", "extrinsics", "radial-distortion"]
 category: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
-draft: true
 relatedAlgorithms: ["zhang-planar-calibration", "tsai-lenz-handeye", "kumar-generalized-rac"]
 prerequisites: [camera-distortion-models]
 comparedWith: [zhang-planar-calibration, kumar-generalized-rac]

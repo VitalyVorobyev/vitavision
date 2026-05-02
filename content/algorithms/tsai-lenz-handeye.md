@@ -4,7 +4,6 @@ date: 2026-04-20
 summary: "Recover the constant rigid transform from a robot gripper to a rigidly mounted camera by solving the AX=XB equation in two stages — modified Rodrigues rotation, then translation."
 tags: ["calibration", "hand-eye", "robotics"]
 category: calibration
-draft: true
 author: "Vitaly Vorobyev"
 difficulty: advanced
 relatedAlgorithms: ["daniilidis-dual-quaternion-handeye", "zhang-planar-calibration"]

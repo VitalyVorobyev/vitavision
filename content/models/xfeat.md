@@ -126,6 +126,7 @@ Official PyTorch release with Apache-2.0 code and Apache-2.0 weights shipped in-
 - The paper reports neither parameter count nor FLOPs, and no inference-memory budget beyond the $6.5\,\mathrm{GB}$ training footprint — exact deployment sizing requires measuring the $6.0\,\mathrm{MB}$ checkpoint against the target device.
 - Compact $64$-D descriptors reach AUC@5° $42.6$ against DISK's $53.8$ on Megadepth-1500 (sparse setting, Table 1) — the capacity reduction costs absolute pose accuracy on wide-baseline pairs.
 - Training used a $6.5\,\mathrm{GB}$-VRAM RTX 4090 for 36 hours on a 6:4 MegaDepth/synthetic-COCO mix; reproducing on consumer GPUs with less VRAM requires either gradient accumulation or a smaller batch, neither of which is evaluated in the paper.
+- Compared with SuperPoint: see [When to choose SuperPoint over XFeat](/algorithms/models/superpoint#when-to-choose-superpoint-over-xfeat) on the SuperPoint page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

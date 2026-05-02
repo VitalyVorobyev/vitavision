@@ -8,12 +8,12 @@ author: "Vitaly Vorobyev"
 draft: true
 difficulty: intermediate
 relatedAlgorithms: ["shu-topological-grid", "chess-corners", "fast-corner-detector"]
-prerequisites: [image-gradient]
+prerequisites: [image-gradient, hessian-saddle-response, topological-grid-recovery]
 comparedWith: []
 failureModes: []
 sources:
   primary: laureano2013-topological
-  references: [shu2009-topological, rosten2006-fast]
+  references: [shu2009-topological, rosten2006-fast, chen2005-xcorner]
   notes: |
     Pipeline: (1) per-pixel x-corner detector — count sign alternations
     N_alt of I against Tl = m − gate, Th = m + gate on a 16-pixel
@@ -164,6 +164,7 @@ The caller further enforces $T_\ell < I(p_c) < T_h$ on the centre pixel before a
 - The filter requires only that a sufficient subset of the pattern be visible; it does not demand the full grid. Partial occlusion, missing border tiles, and background clutter all reduce to discarded Delaunay triangles.
 - Scope: the method emits ordered integer-coordinate corner lists; it does not solve for camera intrinsics or extrinsics. Those are the downstream calibration problem (e.g. Zhang's method).
 - Failure modes: steep viewing angles defocus the X-junctions and push Delaunay edges across tile corners simultaneously; both detection and topology degrade at the same time rather than catching each other. Low-contrast images starve $N_\mathrm{alt}$ at the first stage.
+- Compared with Shu: see [When to choose Shu over Laureano](/algorithms/shu-topological-grid#when-to-choose-shu-over-laureano) on the Shu page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

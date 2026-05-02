@@ -2,9 +2,13 @@
 export interface GeneratedHtmlModule { html: string; }
 
 export const conceptHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
+  "camera-distortion-models": () => import("./content/concepts/camera-distortion-models.ts"),
+  "dlt-normalisation": () => import("./content/concepts/dlt-normalisation.ts"),
   "epipolar-geometry": () => import("./content/concepts/epipolar-geometry.ts"),
+  "hessian-saddle-response": () => import("./content/concepts/hessian-saddle-response.ts"),
   "homography": () => import("./content/concepts/homography.ts"),
   "image-gradient": () => import("./content/concepts/image-gradient.ts"),
   "scale-space": () => import("./content/concepts/scale-space.ts"),
   "structure-tensor": () => import("./content/concepts/structure-tensor.ts"),
+  "topological-grid-recovery": () => import("./content/concepts/topological-grid-recovery.ts"),
 };

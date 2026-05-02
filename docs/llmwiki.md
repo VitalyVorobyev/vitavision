@@ -1,4 +1,4 @@
-# LLM Wiki
+# LLM Wiki (by Andrej Karpathy)
 
 A pattern for building personal knowledge bases using LLMs.
 

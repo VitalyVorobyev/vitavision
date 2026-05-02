@@ -7,7 +7,11 @@ author: "Vitaly Vorobyev"
 category: geometry
 difficulty: advanced
 prerequisites: []
-related: []
+related:
+  - dlt-normalisation
+sources:
+  references:
+    - hartley1997-eight-point
 ---
 
 # Definition

@@ -10,6 +10,7 @@ difficulty: advanced
 relatedAlgorithms: ["daniilidis-dual-quaternion-handeye", "zhang-planar-calibration"]
 prerequisites: []
 comparedWith: [daniilidis-dual-quaternion-handeye]
+
 failureModes: []
 sources:
   primary: tsai1989-handeye
@@ -188,6 +189,21 @@ fn solve_handeye(pairs: &[(Matrix3<f64>, Vector3<f64>,
 - The modified Rodrigues parametrisation is singularity-free for $\theta \in [0, \pi)$ but degenerates at $\theta = \pi$, where $P_r$ is well-defined ($|P_r| = 2$) but the recovery formula in step 4 has to be replaced by the explicit branch in step 6.
 - Computational cost is dominated by the two $3M \times 3$ least-squares solves and is $O(M)$ in the number of station pairs.
 - The decoupled formulation amplifies translation error when the camera baseline between stations is short relative to the target depth; simultaneous rotation-and-translation solvers (Park-Martin on the Lie algebra, Daniilidis dual-quaternion) treat the residual jointly and tend to be more robust under that regime.
+
+## When to choose Tsai-Lenz over Daniilidis
+
+[Daniilidis dual-quaternion hand-eye](/atlas/daniilidis-dual-quaternion-handeye) (1999) solves AX = XB for the rigid hand-eye transform in a single stage by parametrising the rigid motion as a unit dual quaternion and solving an SVD on the resulting linear constraint. Tsai-Lenz solves the same problem in two decoupled stages — modified Rodrigues for rotation, then linear least squares for translation.
+
+| | Tsai-Lenz (1989) | Daniilidis (1999) |
+|---|---|---|
+| Stages | two (rotation, then translation) | one (rotation + translation jointly via dual quaternions) |
+| Rotation parametrisation | modified Rodrigues vector | dual quaternion (unit norm + perpendicularity constraint) |
+| Translation handling | second linear solve, biased by Stage 1 rotation error | jointly optimised; residuals shared across rotation and translation |
+| Min stations | 3 (two motion pairs) | 3 (two motion pairs) |
+| Singular configurations | $\theta = \pi$ requires explicit branch handling | dual-quaternion parametrisation is singularity-free |
+| Robustness when baseline is short | translation error inflates | jointly optimised; better behaviour |
+
+Choose Tsai-Lenz when (1) you want a clean two-stage decomposition where rotation and translation can be inspected separately — useful for diagnosing which component is the dominant error source; (2) the implementation simplicity of the modified Rodrigues parametrisation matters more than singularity safety; (3) the rotation angles between station pairs are far from $\pi$ (the standard machine-vision case). Choose Daniilidis when (1) the inter-station rotation angles can reach $\pi$ (workspace-wide motion); (2) the camera baseline is short relative to the target depth — the joint solve handles the translation-amplification regime where Tsai-Lenz's decoupling fails; (3) you need a singularity-free parametrisation throughout the rotation domain.
 
 # References
 

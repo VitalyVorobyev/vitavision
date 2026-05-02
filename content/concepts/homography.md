@@ -10,6 +10,7 @@ prerequisites: []
 related:
   - zhang-planar-calibration
   - apap-image-stitching
+  - dlt-normalisation
 sources:
   references:
     - hartley1997-eight-point

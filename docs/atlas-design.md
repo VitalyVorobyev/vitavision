@@ -1,4 +1,7 @@
 # Vision Atlas: Knowledge Graph and LLM Context Design
+
+> **Superseded.** This document is the result of an early design session and significantly overshoots what was actually built. See `docs/README.md` for the authoritative authoring guide and `docs/atlas-vault/README.md` for the current graph projection. Kept in-tree for historical context only — same status as `docs/practical-computer-vision-atlas-spec.md`.
+
 ## 1. Product Definition
 The Vision Atlas is not only a public collection of computer vision pages. It should become a structured knowledge system for:
 - human navigation,

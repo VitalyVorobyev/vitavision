@@ -7,8 +7,8 @@ category: calibration-targets
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["ocpad", "chess-corners", "laureano-topological-chessboard", "shu-topological-grid"]
-prerequisites: [image-gradient]
-comparedWith: []
+prerequisites: [image-gradient, hessian-saddle-response]
+comparedWith: [pyramidal-blur-aware-xcorner]
 failureModes: []
 sources:
   primary: placht2014-rochade
@@ -172,6 +172,21 @@ The cone filter $c$ is convolved with $I$ before `refine_saddle` runs; `solve_6x
 - The cone kernel is preferred over a Gaussian because convolution of step-function checkerboards with a sectionally linear kernel produces sectionally defined bivariate quadratics, matching the fit exactly; a Gaussian smears the quadratic structure and biases the saddle location under anisotropic sampling.
 - Dead-end pruning plus rethinning in step 6 eliminates degree-$3$ artefacts induced by short centreline spurs; without it, every spur branch contributes a spurious saddle at its root.
 - The stage-1 graph is the input required by OCPAD to recover partially occluded patterns — OCPAD replaces step 8 with a VF2 subgraph-isomorphism search and the rest of the pipeline is reused verbatim.
+- Compared with ChESS: see [When to choose ChESS over ROCHADE](/algorithms/chess-corners#when-to-choose-chess-over-rochade) on the ChESS page, which hosts the comparison per the older-paper-hosts rule.
+
+## When to choose ROCHADE over Pyramidal
+
+[Pyramidal blur-aware X-corner](/atlas/pyramidal-blur-aware-xcorner) (Abeles 2021) computes a ChESS-style 16-sample template at every level of an image pyramid and selects per corner the level that maximises intensity-per-resolution. ROCHADE is a single-scale detector that achieves blur robustness through a different mechanism — the gradient-magnitude centreline survives heavy blur because the centreline graph is topological, not intensity-based.
+
+| | ROCHADE (2014) | Pyramidal (2021) |
+|---|---|---|
+| Scale handling | single-scale | full image pyramid (typically 4–6 levels) |
+| Blur strategy | centreline + cone-quadratic refinement | scale-pyramid + blur-aware edge validation |
+| Per-image cost | one pass through the centreline pipeline | $L$ passes through the X-corner detector + edge validation |
+| Subpixel accuracy | high (cone-quadratic) | high (mean-shift in intensity image) |
+| Extreme-pose regime | strong (Mesa 91/103 vs OpenCV 8/103) | strong (per-corner level selection compensates for foreshortening) |
+
+Choose ROCHADE when (1) the image is moderately blurred and the corner sizes are roughly known a priori — the single-scale pipeline is faster and well-tuned for the common machine-vision case; (2) the centreline-graph stage is useful as input to downstream pipelines like OCPAD (which reuses ROCHADE Stage 1 verbatim before applying VF2 subgraph isomorphism). Choose Pyramidal when corner sizes vary widely across a single image (close-range plus long-range targets), when the pipeline must work across extreme blur regimes (fast-moving scenes, motion blur), or when per-corner pyramid-level metadata is useful downstream (autofocus diagnostics, per-corner uncertainty estimates).
 
 # References
 

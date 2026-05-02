@@ -156,6 +156,7 @@ fn line_integrals(i: &[f32], w: usize, h: usize, m: i32) -> [Vec<f32>; 4] {
 - The detector is noise-robust because box-filter sums of intensities attenuate additive image noise by a factor proportional to $\sqrt{2m+1}$, whereas gradient-based detectors amplify the same noise through differentiation.
 - Skipping the $2\times$ supersample roughly doubles the subpixel error but roughly halves the runtime; the trade-off is linear in pixel count.
 - The response map also yields per-corner orientation: fitting a subpixel peak to $f_r[x^\ast, y^\ast, \alpha]$ over $\alpha$ recovers both centreline angles, which a downstream grid-growing step can use to seed neighbour search.
+- Compared with ChESS: see [When to choose ChESS over Duda-Radon](/algorithms/chess-corners#when-to-choose-chess-over-duda-radon) on the ChESS page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

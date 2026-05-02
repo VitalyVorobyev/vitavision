@@ -8,7 +8,7 @@ author: "Vitaly Vorobyev"
 difficulty: advanced
 draft: true
 relatedAlgorithms: ["zhang-planar-calibration"]
-prerequisites: []
+prerequisites: [camera-distortion-models]
 comparedWith: []
 failureModes: []
 sources:
@@ -226,6 +226,7 @@ fn tilt_angles(l: f64, p: f64) -> (f64, f64) {
 - The four-way ambiguity is inherent to the constraint, not an artifact of the solver: the projection from non-frontal sensor to frontal sensor is many-to-one in the tilt angles, and RAC fixes only the relative sign of $(\rho, \sigma)$ through $\mathrm{sign}(L)$. Disambiguation via radial-distortion-model fit degrades when the true distortion is small.
 - The CoD search is an outer loop around the linear solver: each candidate $(I_0, J_0)$ re-runs steps 1–5 and evaluates residual RAC error on the frontal-projected points. Cost is $O(K \cdot N)$ per iteration for $K$ sampled CoD locations and $N$ correspondences; convergence depends on the seed accuracy.
 - Reduces to Tsai's RAC when $R = I$: the tilt-induced rows of the $7 \times 1$ unknown collapse ($q_1, q_2, q_3, q_4$ depend only on $S$ and $(t_x, t_y)$; $q_5, q_6, q_7$ are the unchanged Tsai quantities), and Eq. 35 becomes Tsai's linear system for $(\lambda, t_z)$.
+- Compared with Tsai 1987: see [When to choose Tsai over Kumar gRAC](/algorithms/tsai-versatile-calibration#when-to-choose-tsai-over-kumar-grac) on the Tsai page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

@@ -117,6 +117,7 @@ fn shi_tomasi_response(img: &[f32], w: usize, h: usize, sigma: f32) -> Vec<f32> 
 - The response is rotation-invariant: $R$ is a function of $\operatorname{tr}(M)$ and $\det(M)$, both of which are rotation-invariant quantities.
 - The detector is not scale-invariant. Response peaks at the scale of the integration window $\sigma$. Multi-scale detection requires running the detector on a Gaussian image pyramid.
 - No free sensitivity parameter analogous to Harris's $k$: the threshold $\tau$ has a direct interpretation as a tracking-quality bound derived from the linear displacement system (equation (8) of the paper).
+- Compared with Harris: see [When to choose Harris over Shi-Tomasi](/algorithms/harris-corner-detector#when-to-choose-harris-over-shi-tomasi) on the Harris page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

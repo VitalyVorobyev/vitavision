@@ -10,7 +10,7 @@ relatedPosts: ["01-chesscorners"]
 relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "fast-corner-detector"]
 relatedDemos: ["chess-response"]
 prerequisites: [image-gradient]
-comparedWith: [rochade, pyramidal-blur-aware-xcorner, puzzleboard]
+comparedWith: [rochade, pyramidal-blur-aware-xcorner, puzzleboard, duda-radon-corners]
 failureModes: []
 editorAlgorithmId: chess-corners
 sources:
@@ -150,6 +150,47 @@ The 16 ring accesses and 5 cross accesses are fixed offsets, so the hot loop com
 - Selective for chessboard-like X-junctions; not a general-purpose corner detector.
 - Ring radius is fixed to 5 pixels in the canonical design. For heavy blur or low-resolution targets, the paper also defines a radius-10 ring with the same angular pattern.
 - Orientation is ambiguous from ring samples alone — the response is symmetric under rotation by $90^\circ$. Orientation is recovered post-detection by maximizing the signed measure $M_n = (I_n + I_{n+8}) - (I_{n+4} + I_{n+12})$ over the eight discrete directions.
+- Compared with Harris: see [When to choose Harris over ChESS](/algorithms/harris-corner-detector#when-to-choose-harris-over-chess) on the Harris page, which hosts the comparison per the older-paper-hosts rule.
+
+## When to choose ChESS over ROCHADE
+
+[ROCHADE](/atlas/rochade) (Placht 2014) is a two-stage pipeline: extract the gradient-magnitude centreline graph, then locate corners as graph saddle points and refine each one with a cone-filtered bivariate quadratic fit. ChESS is a single-pass per-pixel detector with no graph stage and no fit.
+
+| | ChESS | ROCHADE |
+|---|---|---|
+| Stages | one (per-pixel ring score) | two (centreline graph + saddle fit) |
+| Per-pixel cost | 16 ring + 5 cross reads | gradient + thresholding + dilation + skeletonisation + window fit |
+| Subpixel accuracy | not built in | high (cone-filtered quadratic, exact for piecewise-step) |
+| Heavy-blur regime | degrades quickly | strong (centreline survives blur) |
+| Extreme-pose regime | degrades | strong (Mesa 91 / 103 vs OpenCV 8 / 103, §IV of paper) |
+
+Choose ChESS when latency matters more than precision: a single-pass ring detector at video rates is ~10× faster than the ROCHADE pipeline and good enough for moderately distorted, well-lit, in-focus chessboards. Choose ROCHADE when accuracy or robustness to extreme pose / blur is the gating requirement — the cone-quadratic refinement and the centreline graph give it a measurable edge on degraded inputs that ChESS cannot recover.
+
+## When to choose ChESS over Pyramidal
+
+[Pyramidal blur-aware X-corner](/atlas/pyramidal-blur-aware-xcorner) (Abeles 2021) computes a ChESS-style 16-sample template at **every** level of an image pyramid and selects per corner the level that maximises intensity-per-resolution. ChESS is single-scale.
+
+Choose ChESS when the image is in focus and the corners' apparent size is comparable to the canonical ring radius (5 px) — the single-scale detector is ~$\log L$ times cheaper than running the same operator at $L$ pyramid levels. Choose Pyramidal when blur is heavy or when the same pipeline must work across a wide range of corner sizes (close-range vs long-range) without per-image scale tuning. Pyramidal also adds a blur-aware edge validation that ChESS lacks; on the standard ROCHADE benchmark it reaches F1 = 0.97 vs ChESS's ~0.84 on the most blurred subset (Table III of paper).
+
+## When to choose ChESS over Duda-Radon
+
+[Duda-Radon](/atlas/duda-radon-corners) (Duda 2018) computes a localised Radon transform along four discrete angles, approximated by 1-D box filters on rotated copies of the image. The response is the squared difference between the maximum and minimum directional line integrals.
+
+| | ChESS | Duda-Radon |
+|---|---|---|
+| Operator | sum-of-differences over a 16-pixel ring | localised Radon transform along four angles |
+| Sampling | thin ring at radius 5 | thick rays of half-width $m$ (typically 3–5 px) |
+| Noise robustness | gradient-magnitude limited | strong (box-filter integration attenuates noise) |
+| Subpixel accuracy | not built in (paired with Hessian saddle) | 0.0332 px indoor / 0.0459 px outdoor reported |
+| Cost | 16 reads | two image rotations + four box filters |
+
+Choose ChESS for low-latency single-pass detection — the per-pixel cost is much lower. Choose Duda-Radon when subpixel accuracy is the primary requirement and the input is moderately blurred ($\sigma_b > 2$) — the Radon ray's box-filter integration is more noise-tolerant than ChESS's ring difference, and the published accuracy numbers (0.03–0.05 px) outperform most chessboard detectors in the same regime.
+
+## When to choose ChESS over PuzzleBoard
+
+[PuzzleBoard](/atlas/puzzleboard) (Stelldinger 2024) detects saddle corners with a Hessian response, then **decodes** each corner's absolute integer position on a $501 \times 501$ pattern grid by cross-correlating against two embedded de-Bruijn binary maps. ChESS detects corners but assigns no absolute identity.
+
+Choose ChESS when the calibration target is a standard chessboard with no encoded position — ChESS is the right tool for the classical Zhang-style calibration where corner-to-grid assignment is done downstream by a topology filter. Choose PuzzleBoard when the calibration scenario requires **partial-pattern** robustness with absolute position recovery: any local window of $\sim 5 \times 5$ corners on the PuzzleBoard pattern decodes to its absolute $(u, v) \in \{0, \dots, 500\}^2$ position, with majority-voting error correction tolerating up to 40% corrupted bits. The trade-off: PuzzleBoard requires a custom pattern (the standard checker squares are augmented with binary circles at edge midpoints), so the calibration target is not interchangeable with classical chessboards.
 
 # References
 

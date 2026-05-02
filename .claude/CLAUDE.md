@@ -70,7 +70,13 @@ For symmetric relations (`comparedWith`, `related`), author on one side only. Th
 ### When a topic deserves its own page
 - **Concept page**: only when referenced by 3+ algorithm/model pages AND can support ≥500 words of substantive standalone content (definition, math, numerical concerns, implementation implications).
 - **Failure-mode page**: same criterion (3+ references, ≥500 words). Failure-mode authoring is deferred until natural candidates accumulate.
-- **Comparison page**: prohibited as pairwise. Use `comparedWith:` field + an inline `## When to choose X over Y` section inside the more authoritative page. Surveys allowed only when ≥3 methods are contrasted with ≥800 words and a decision table.
+- **Pairwise comparison page**: prohibited. Use `comparedWith:` field + an inline `## When to choose X over Y` section inside the more authoritative page. The non-host page carries a single Remarks bullet linking to the comparison anchor — never duplicate the prose.
+- **Survey concept page** (3+ methods): a concept page (`content/concepts/<survey-slug>.md`), not an algorithm page. Required: ≥3 surveyed methods, ≥800 words, decision table near the top, every surveyed algorithm page lists the survey concept in its `related`. Author only when ≥3 of the surveyed papers have research notes.
+
+### Comparison authoring discipline
+- **More-authoritative tiebreaker** for which page hosts the `## When to choose X over Y` section: (1) older paper hosts; (2) same year → more general scope hosts; (3) tied → author judgment with reason recorded in the commit message. No "more cited" rule.
+- **Both research notes required.** Comparison content can be written agentically only when `docs/research/notes/<both-paper-ids>.md` both exist. If either is missing, the page-authoring skill must refuse and request `paper-ingest` first. This is enforceable via filesystem check; without it, comparison prose is hallucination.
+- See `docs/README.md` §4 for the full convention with worked examples.
 
 ### Quality field
 - Omitted = normal published page (default).
@@ -85,12 +91,16 @@ Source IDs in `sources.primary` and `sources.references` must exist in `docs/pap
 ### Validation
 Run `bun run scripts/validate-content.ts` before opening a PR. The build runs the same validation and will fail on broken slugs, prerequisite cycles, missing source IDs, or canonical-quality violations.
 
-### Research notes (private reasoning substrate)
+### Research notes (unpublished reasoning substrate)
 
-Private notes live at `docs/research/notes/<paper-id>.md`, where `<paper-id>`
+Notes live at `docs/research/notes/<paper-id>.md`, where `<paper-id>`
 matches an entry in `docs/papers/index.yaml`. They are reasoning material for
-Claude, not public content — never published, never indexed, never imported
-from `src/**`.
+Claude — committed to the public GitHub repo for reproducibility, but never
+deployed to the site, never indexed, never imported from `src/**`.
+
+**Authoring rule:** write every research note as if a peer reviewer or paper
+author might read it tomorrow. No surprise-attributable critical takes, no
+sensitive third-party material. Personal opinion lives in `content/blog/`.
 
 Discovery: any public page's frontmatter `sources.primary` and
 `sources.references` are paper IDs; the corresponding research note (if

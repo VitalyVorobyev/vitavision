@@ -7,7 +7,7 @@ category: calibration-targets
 author: "Vitaly Vorobyev"
 difficulty: advanced
 relatedAlgorithms: ["zhang-planar-calibration"]
-prerequisites: [homography]
+prerequisites: [homography, dlt-normalisation]
 comparedWith: []
 failureModes: []
 sources:
@@ -151,6 +151,8 @@ Each branch of the function corresponds to one equation: the weight loop is Eq. 
 - The estimator is local in the source image only. Two correspondences with similar $x_i$ but very different $x'_i$ — moving objects, occluding edges — receive equal weights and pull the local homography toward an average, producing visible misalignment. The paper relies on RANSAC to remove such matches before MDLT and on downstream blending or seam cutting to absorb residuals.
 - Cell partitioning is a computational shortcut, not a regularisation. Within a cell every pixel uses the same $H_*$; the field is piecewise-constant in $H$ but still continuous in the warped pixel position to within cell-boundary precision, since neighbouring cells solve nearly identical weighted SVDs.
 - Common extensions name the limitation they address: the as-natural-as-possible warp (Lin 2015) attaches a global similarity prior to the boundary cells to suppress perspective distortion in extrapolation regions; bundle-adjusted multi-image stitching iterates MDLT and a shared similarity over $> 2$ views.
+- Compared with Gao DHW: see [When to choose Gao DHW over APAP](/algorithms/gao-dual-homography-stitching#when-to-choose-gao-dhw-over-apap) on the Gao page, which hosts the comparison per the older-paper-hosts rule.
+- Compared with Lin SVA: see [When to choose Lin SVA over APAP](/algorithms/lin-sva-stitching#when-to-choose-lin-sva-over-apap) on the Lin SVA page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

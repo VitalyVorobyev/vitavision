@@ -200,6 +200,7 @@ The rigid transform is then $R_X = R(q)$ and $t_X = 2\,(q' \otimes q^*)_{\text{v
 - Computational cost is dominated by one SVD of a $6M \times 8$ matrix, $O(M)$ in the number of motion pairs.
 - The root-selection step is a standard dual-quaternion trick: of the two real roots of the quadratic in $s$, only one yields a non-degenerate $|q|^2$ under the $|q|^2 = 1$ normalisation. A purely imaginary or negative value flags either a sign flip on one of the input quaternions or ill-conditioned motions.
 - Unit dual quaternions are a double cover of $SE(3)$: $\hat x$ and $-\hat x$ represent the same rigid transform. The solver returns whichever sign the SVD produces; downstream code should canonicalise by requiring $q_0 \geq 0$.
+- Compared with Tsai-Lenz: see [When to choose Tsai-Lenz over Daniilidis](/algorithms/tsai-lenz-handeye#when-to-choose-tsai-lenz-over-daniilidis) on the Tsai-Lenz page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

@@ -2,7 +2,7 @@
 
 This is the entry point for everyone (you, me, Claude in a future session) who needs to add or update content on the site. It explains what the atlas is, how the pieces fit together, and the exact workflow for the four content paths: paper-driven algorithm/model pages, concepts, research notes, and blog posts.
 
-If you only have time for one section, read **§5 Workflow at a glance**.
+If you only have time for one section, read **§6 Workflow at a glance**.
 
 ---
 
@@ -25,7 +25,7 @@ Public site lives at:
 | **Model page** | `content/models/*.md` | 1:1 with primary paper for single-paper models; or 1:family for ResNet/YOLO-style families. | Deep-learning models. Don't chase minor versions — update the family page. |
 | **Concept page** | `content/concepts/*.md` | Many-to-many. Cites multiple papers and textbooks. | A reusable mathematical/geometric object referenced by **3+ existing or planned pages** AND supports **≥500 words** of substantive standalone content. |
 | **Blog post** | `content/blog/*.md` | Free-form. | Long-form notes, write-ups, exploratory work. Not part of the atlas. |
-| **Research note** | `docs/research/notes/<paper-id>.md` | 1:1 with paper. | Always created during paper ingestion. Never published. |
+| **Research note** | `docs/research/notes/<paper-id>.md` | 1:1 with paper. | Always created during paper ingestion. Committed to GitHub but not deployed. |
 
 ## 3. The relationship graph
 
@@ -43,7 +43,41 @@ The build emits `src/generated/content-graph.ts` containing nodes + forward edge
 
 All slugs are validated against a single global namespace covering algorithms + models + concepts + (eventually) failure-modes. Unknown slugs are hard build errors.
 
-## 4. The four authoring skills
+## 4. Comparisons and surveys
+
+`comparedWith:` declares an algorithmic comparison edge. Comparison **content** — actual prose contrasting two methods — lives on exactly one side of the pair, not on both, and not on a separate page.
+
+### Two-way: inline on the more-authoritative page
+
+The host page carries a `## When to choose X over Y` section inside `# Remarks` (or as a final subsection of `# Algorithm` when the contrast is purely algorithmic). The non-host page does **not** duplicate the content; it carries a single `# Remarks` bullet pointing back:
+
+```markdown
+- Compared with Harris: see [When to choose Harris over Shi-Tomasi](/algorithms/harris-corner-detector#when-to-choose-harris-over-shi-tomasi). The Harris page hosts the comparison.
+```
+
+**More-authoritative tiebreaker**, applied in order:
+
+1. **Older paper hosts.** The page whose primary paper introduced the idea first.
+2. **Same year → more general scope hosts.** General-purpose corner detector hosts vs. specialized variant; the gradient-based formulation hosts vs. its application to a specific target.
+3. **Tied → author judgment, recorded in the commit message.** No "more cited" rule — citation counts are unstable and we do not track them.
+
+### Three-or-more-way: a survey concept page
+
+Pairwise pages are prohibited. A survey of ≥3 methods lives as a **concept page**, not as an algorithm page (concept pages allow `sources:` to be omitted and have no primary-paper requirement). Required:
+
+- `content/concepts/<survey-slug>.md` — e.g. `general-purpose-corner-detection.md`, `x-corner-detection-for-calibration.md`.
+- ≥3 surveyed methods.
+- ≥800 words of substantive content.
+- A decision table near the top (rows = methods, columns = "use when / avoid when / typical cost / typical accuracy").
+- Each surveyed algorithm page lists the survey concept in its `related` (so the relationship panel surfaces it from each method's page).
+
+### Agentic discipline
+
+Comparison content is written agentically only when the **research notes for both papers exist** under `docs/research/notes/`. If either is missing, the page-authoring skill must refuse and request `paper-ingest` first. This is enforceable: the skill greps for both `<paper-id>.md` files and aborts if either is absent. Without paper grounding, comparison prose is hallucination — exactly what the README's "never publish raw LLM extractions" rule forbids.
+
+For surveys: at least 3 of the surveyed methods' primary papers must have research notes before the concept page can be drafted.
+
+## 5. The four authoring skills
 
 | Skill | Purpose | Touches |
 |---|---|---|
@@ -54,7 +88,7 @@ All slugs are validated against a single global namespace covering algorithms + 
 
 The four skills cover every authoring path. There is **no separate `atlas-update` skill** — page skills handle both create-from-scratch and apply-update-plan.
 
-## 5. Workflow at a glance
+## 6. Workflow at a glance
 
 ### Path A — paper-driven (the common case)
 
@@ -95,11 +129,13 @@ You: Use concept-page to evaluate whether "epipolar geometry" meets the
 
 Blog is outside the atlas. Just create `content/blog/<slug>.md` with the standard frontmatter (`title`, `date`, `summary`, `tags`, `author`). See `docs/blog-authoring-guide.md` for the long form.
 
-## 6. Research notes — the reasoning substrate
+## 7. Research notes — the reasoning substrate
 
 `docs/research/notes/<paper-id>.md`. One file per paper. Naming matches `docs/papers/index.yaml` so discovery is automatic — when Claude reads a public page's `sources.primary: harris1988-corner`, the corresponding note is at a known path.
 
-Notes are **private**: not built, not indexed, not in sitemap or RSS. The build's postbuild guard fails the build if any `docs/research/` path leaks into `dist/`.
+Notes are **unpublished working drafts**, not private — they are committed to the public GitHub repo (so a fresh checkout has the full reasoning substrate, version history, and reproducibility) but excluded from the deployed site: not built, not indexed, not in sitemap or RSS. The postbuild guard in `scripts/postbuild.ts` fails the build if any `docs/research/` path leaks into `dist/`.
+
+**Authoring rule:** write every research note as if a peer reviewer or paper author might read it tomorrow. No surprise-attributable critical takes, no sensitive third-party material, no half-formed opinions you would not put in a blog post. Personal opinion lives in `content/blog/`, not here.
 
 What goes in a note (see `docs/research/templates/source-note.md`):
 - **Setting** — problem class, inputs/outputs with preconditions
@@ -114,7 +150,7 @@ What goes in a note (see `docs/research/templates/source-note.md`):
 
 Notes are **page-authoring focused**: every field exists because it serves writing or updating a public page.
 
-## 7. Validation
+## 8. Validation
 
 Run before every commit:
 
@@ -134,7 +170,7 @@ What validation catches:
 - Non-draft model pages missing `implementations[]`.
 - `docs/research/` paths leaking into `dist/`.
 
-## 8. Frontmatter quick reference
+## 9. Frontmatter quick reference
 
 Every public page shares the base fields:
 
@@ -164,15 +200,27 @@ sources:
 
 Type-specific fields (`category` enum, `editorAlgorithmId`, model `implementations`, etc.) live in `src/lib/content/schema.ts`.
 
-## 9. What never gets published
+## 10. What never gets deployed to the site
 
-- Anything under `docs/research/`.
+- Anything under `docs/research/` (committed to GitHub, excluded from `dist/`).
+- Anything under `docs/atlas-vault/` (generated Obsidian projection; see §11).
+
 - Full quotes from papers (use short quotes inline only when paraphrasing would change technical meaning).
 - Raw LLM extractions of paper content. Always synthesize against your own understanding plus the research note's structured fields.
 - Pairwise comparison pages. Use `comparedWith:` plus an inline `## When to choose X over Y` section in the more authoritative page.
 - Any frontmatter field you invented. Schema is checked at build time.
 
-## 10. Further reading
+## 11. Atlas vault — graph view in Obsidian
+
+`docs/atlas-vault/` is a generated Obsidian-compatible projection of the atlas. Every algorithm, model, concept, and paper becomes a stub `.md` whose body is `[[wikilinks]]` for every forward edge — useful for opening in Obsidian and looking at the atlas as a graph (clusters by shared concepts, by `comparedWith`, by paper citations).
+
+```bash
+bun run vault:build       # regenerate docs/atlas-vault/ from content/** + docs/papers/index.yaml
+```
+
+The vault is a derived artifact: never edit it by hand, never author from it. It is committed (so a fresh checkout has the same graph state) but excluded from the deployed site by the postbuild guard. Open `docs/atlas-vault/` as a vault in Obsidian; the `.obsidian/` config folder is gitignored.
+
+## 12. Further reading
 
 - `docs/research/README.md` — deep dive on research notes (Section 6 expanded).
 - `.claude/skills/paper-ingest/SKILL.md` — paper-ingest workflow detail.

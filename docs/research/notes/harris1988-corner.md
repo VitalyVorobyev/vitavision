@@ -8,10 +8,6 @@ created: 2026-04-30
 relevant_atlas_pages: [harris-corner-detector, image-gradient, structure-tensor]
 ---
 
-> **Private — do not publish.** This file is a reasoning substrate for Claude
-> and the repo owner. Public Atlas pages are authored by the page-type skills
-> using the bullets in "Atlas update plan" below.
-
 # Setting
 
 **Problem class.** Feature-point extraction from monocular image sequences for 3D motion analysis. The paper addresses the joint detection of corners and edges — two distinct feature classes — within a single operator framework so that a vision pipeline can produce both localized corner points and thin directed edges from one pass over the image.

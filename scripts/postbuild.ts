@@ -295,19 +295,21 @@ main().catch((err) => {
     process.exit(1);
 });
 
-// Validation guard: ensure no research-note paths leaked into the public build.
-// docs/research/ is a private reasoning substrate and must never appear in dist/.
+// Validation guard: ensure no unpublished docs paths leaked into the public build.
+// docs/research/ is the unpublished reasoning substrate; docs/atlas-vault/ is the
+// generated Obsidian projection. Both are committed to GitHub but must never
+// appear in dist/.
 import { execSync } from "node:child_process";
 
 const distDir = join(import.meta.dir, "..", "dist");
 try {
     const result = execSync(
-        `grep -rl "docs/research/" ${distDir} || true`,
+        `grep -rlE "docs/(research|atlas-vault)/" ${distDir} || true`,
         { encoding: "utf-8" },
     ).trim();
     if (result) {
         throw new Error(
-            `Public build leaks research-note paths: ${result.split("\n").join(", ")}`,
+            `Public build leaks unpublished-docs paths: ${result.split("\n").join(", ")}`,
         );
     }
 } catch (err) {

@@ -775,3 +775,28 @@
     inherits the naming convention and the philosophy: choose a
     nominal global model, allow per-element deviation only as needed
     to satisfy correspondences.
+
+- id: geiger2012-automatic
+  title: "Automatic camera and range sensor calibration using a single shot"
+  authors: ["A. Geiger", "F. Moosmann", "O. Car", "B. Schuster"]
+  year: 2012
+  venue: IEEE ICRA
+  url: https://www.cvlibs.net/publications/Geiger2012ICRA.pdf
+  doi: "10.1109/icra.2012.6224570"
+  pdf: geiger2012-automatic.pdf
+  cites:
+    - lucchese2003-saddle
+    - harris1988-corner
+    - rufli2008-blurred
+    - shi-tomasi1994-features
+  notes: |
+    Single-shot calibration of a camera + LiDAR rig from one capture
+    of multiple checkerboards arranged in the scene. The chessboard
+    detector itself (independent of the LiDAR fusion) is the
+    open-source `libcbdetect` and is the workhorse for many subsequent
+    calibration pipelines (Hillen 2023 Gaussian-process enhancement,
+    OCPAD partial-pattern recovery, Pyramidal blur-aware comparison).
+    Detector pipeline: 4-quadrant likelihood + multi-scale (3 fixed
+    scales) + gradient-orientation verification; structure recovery
+    allocates corners to a free grid without requiring known board
+    dimensions.

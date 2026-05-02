@@ -8,6 +8,7 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["chess-corners", "harris-corner-detector", "rochade", "pyramidal-blur-aware-xcorner"]
 prerequisites: [image-gradient]
+related: [chessboard-x-corner-detection]
 comparedWith: []
 failureModes: []
 sources:

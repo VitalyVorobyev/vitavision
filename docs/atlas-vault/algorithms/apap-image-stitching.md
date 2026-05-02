@@ -10,10 +10,12 @@ Replace a global homography with a spatially varying field of homographies, each
 
 ## Prerequisites
 
+- [[dlt-normalisation]]
 - [[homography]]
 
 ## Related
 
+- [[spatially-varying-image-stitching]]
 - [[zhang-planar-calibration]]
 
 ## Sources

@@ -1,0 +1,30 @@
+---
+title: "Lin Smoothly Varying Affine Stitching"
+type: algorithm
+slug: lin-sva-stitching
+---
+
+> Generated stub — do not edit. Source: `content/algorithms/lin-sva-stitching.md`.
+
+Stitch two images under moderate parallax by replacing the global affine with a per-feature deviation field, regularised to be smooth via a Gaussian-kernel CPD-style EM that jointly estimates correspondence and warp — the contemporary affine-model competitor to APAP's per-cell projective grid.
+
+## Prerequisites
+
+- [[homography]]
+
+## Related
+
+- [[apap-image-stitching]]
+- [[gao-dual-homography-stitching]]
+- [[spatially-varying-image-stitching]]
+
+## Compared with
+
+- [[apap-image-stitching]]
+
+## Sources
+
+- Primary: [[lin2011-svastitching]]
+- Reference: [[gao2011-dual-homography]]
+- Reference: [[igarashi2005-arap]]
+- Reference: [[zaragoza2013-apap]]

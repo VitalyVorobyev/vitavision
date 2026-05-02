@@ -8,6 +8,7 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["ocpad", "chess-corners", "laureano-topological-chessboard", "shu-topological-grid"]
 prerequisites: [image-gradient, hessian-saddle-response]
+related: [chessboard-x-corner-detection]
 comparedWith: [pyramidal-blur-aware-xcorner]
 failureModes: []
 sources:

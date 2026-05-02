@@ -131,6 +131,24 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "gp-checkerboard-enhancement",
+    "path": "/algorithms/gp-checkerboard-enhancement",
+    "type": "algorithm",
+    "title": "GP Checkerboard Enhancement (PyCBD)",
+    "summary": "Post-process a partially detected checkerboard by training two Gaussian processes (one per pixel coordinate) on the allocated (boardXY, boardUV) pairs to allocate unassigned detections to grid positions, predict UV for occluded or out-of-frame corners, and apply a global-consistency refinement to every allocated corner.",
+    "tags": [
+      "calibration",
+      "chessboard",
+      "gaussian-processes"
+    ],
+    "category": "calibration",
+    "headings": [
+      "Stage 1 — Iterative corner allocation (§2.2, Algorithm 1)",
+      "Stage 2 — GP refinement (§2.3)",
+      "Stage 3 — Unwarping by-product (§5)"
+    ]
+  },
+  {
     "slug": "harris-corner-detector",
     "path": "/algorithms/harris-corner-detector",
     "type": "algorithm",
@@ -418,6 +436,24 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
+    "slug": "mate-checkerboard-detector",
+    "path": "/algorithms/models/mate-checkerboard-detector",
+    "type": "model",
+    "title": "MATE",
+    "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
+    "tags": [
+      "calibration",
+      "corner-detection",
+      "cnn"
+    ],
+    "category": "calibration-learning",
+    "headings": [
+      "Novelty",
+      "Limitations",
+      "When to choose MATE over CCDN"
+    ]
+  },
+  {
     "slug": "superpoint",
     "path": "/algorithms/models/superpoint",
     "type": "model",
@@ -471,6 +507,23 @@ export const searchRecords: SearchRecord[] = [
       "Kumar gRAC 2014 — radial generalised to non-frontal sensors",
       "Inverse distortion (rectification)",
       "Coefficient estimation in calibration"
+    ]
+  },
+  {
+    "slug": "chessboard-x-corner-detection",
+    "path": "/concepts/chessboard-x-corner-detection",
+    "type": "concept",
+    "title": "Chessboard X-Corner Detection",
+    "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
+    "tags": [
+      "calibration",
+      "chessboard",
+      "corner-detection",
+      "survey"
+    ],
+    "category": "feature-theory",
+    "headings": [
+      "The four design axes"
     ]
   },
   {
@@ -589,6 +642,26 @@ export const searchRecords: SearchRecord[] = [
       "Difference of Gaussians (DoG)",
       "Discrete scale-space pyramids",
       "Characteristic scale"
+    ]
+  },
+  {
+    "slug": "spatially-varying-image-stitching",
+    "path": "/concepts/spatially-varying-image-stitching",
+    "type": "concept",
+    "title": "Spatially Varying Image Stitching",
+    "summary": "A 2011–2013 lineage of stitching methods that replace the single global homography with a spatially varying warp field — fitted as either two homographies + spatial blend (Gao 2011), a smooth affine deviation field (Lin 2011), or a per-cell weighted-DLT projective grid (Zaragoza 2013, APAP) — to absorb parallax and non-rotational camera motion that no single homography can represent.",
+    "tags": [
+      "image-stitching",
+      "homography",
+      "panorama",
+      "spatially-varying-warp",
+      "survey"
+    ],
+    "category": "geometry",
+    "headings": [
+      "Gao DHW — discrete two-plane decomposition",
+      "SVA — continuous affine deviation field",
+      "APAP — continuous projective field via Moving DLT"
     ]
   },
   {

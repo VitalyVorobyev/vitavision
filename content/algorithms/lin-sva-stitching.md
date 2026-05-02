@@ -9,6 +9,7 @@ difficulty: advanced
 draft: true
 relatedAlgorithms: ["apap-image-stitching", "gao-dual-homography-stitching"]
 prerequisites: [homography]
+related: [spatially-varying-image-stitching]
 comparedWith: [apap-image-stitching]
 failureModes: []
 sources:

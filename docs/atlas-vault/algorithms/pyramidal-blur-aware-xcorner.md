@@ -16,6 +16,7 @@ Detect chessboard X-junctions in heavily blurred or high-resolution images by co
 ## Related
 
 - [[chess-corners]]
+- [[chessboard-x-corner-detection]]
 - [[rochade]]
 - [[shi-tomasi-corner-detector]]
 - [[shu-topological-grid]]

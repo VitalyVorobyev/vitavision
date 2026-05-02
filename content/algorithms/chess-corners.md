@@ -10,6 +10,7 @@ relatedPosts: ["01-chesscorners"]
 relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "fast-corner-detector"]
 relatedDemos: ["chess-response"]
 prerequisites: [image-gradient]
+related: [chessboard-x-corner-detection]
 comparedWith: [rochade, pyramidal-blur-aware-xcorner, puzzleboard, duda-radon-corners]
 failureModes: []
 editorAlgorithmId: chess-corners

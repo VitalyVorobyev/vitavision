@@ -9,6 +9,7 @@ difficulty: intermediate
 draft: true
 relatedAlgorithms: ["chess-corners", "rochade", "pyramidal-blur-aware-xcorner"]
 prerequisites: [image-gradient]
+related: [chessboard-x-corner-detection]
 comparedWith: [pyramidal-blur-aware-xcorner]
 failureModes: []
 sources:
@@ -19,6 +20,7 @@ sources:
     - lucchese2003-saddle
     - rufli2008-blurred
     - zhang2000-flexible
+    - hillen2023-enhanced
   notes: |
     Single-shot multi-sensor calibration paper (camera + lidar/RGB-D),
     but the chessboard detector is self-contained and the workhorse of
@@ -115,7 +117,7 @@ Open source: **libcbdetect** (C++) at [cvlibs.net](https://www.cvlibs.net), main
 - **Three fixed scales is the limitation.** The $4 \times 4$, $8 \times 8$, $12 \times 12$ window sizes are chosen empirically; severe blur peaking between these scales degrades detection. The [pyramidal blur-aware detector](/atlas/pyramidal-blur-aware-xcorner) (Abeles 2021) addresses this by computing the response at every level of a full image pyramid and selecting per corner the level that maximises intensity-per-resolution.
 - **Distinct from ChESS and ROCHADE.** Unlike [ChESS](/atlas/chess-corners) (16-pixel ring sampling), Geiger uses two full quadrant-kernel convolutions per scale. Unlike [ROCHADE](/atlas/rochade) (gradient-magnitude centreline graph), Geiger detects per-pixel and grows the grid greedily from seed corners.
 - **Subpixel refinement neighbourhood is large.** The $11 \times 11$ window in Eq. 3 integrates over 121 pixels — significantly larger than Harris's typical 5–9 px or ROCHADE's cone window ($2\kappa+1$ with $\kappa=2$–$5$). Larger neighbourhood reduces single-pixel noise sensitivity but can cross checkerboard edges on small fields.
-- **Used downstream by Hillen 2023 GP enhancement.** [Hillen et al. 2023](/atlas/hillen2023-enhanced) (Gaussian-process enhancement, forthcoming page) consumes Geiger's partial board outputs and learns a GP from grid-coordinate to pixel-coordinate to fill in missing corners. Geiger is the upstream detector in that pipeline; the GP wrapper compensates for Geiger's structure-recovery limitation under heavy occlusion.
+- **Used downstream by GP enhancement.** [GP checkerboard enhancement](/atlas/gp-checkerboard-enhancement) (Hillen et al. 2023) consumes Geiger's partial board outputs and learns a Gaussian process from grid-coordinate to pixel-coordinate to fill in missing corners, predict UV for occluded grid positions, and globally smooth all detected corner positions. Geiger is the canonical upstream detector in that pipeline; the GP wrapper compensates for Geiger's structure-recovery limitation under heavy occlusion and is the workhorse for Hillen 2023's low-resolution endoscopic, multispectral, and thermal IR benchmarks.
 - **Empirical accuracy.** Mean reprojection error 0.18 px across 10 calibration settings (Table I of paper); F1 = 0.92 on the abeles 2021 benchmark — second-best after the pyramidal detector at 0.97 (the abeles paper notes Geiger has "many more logical branches making it expensive to compute" but credits it as the foundational design).
 - **Calibration-target-only.** The four-quadrant likelihood is specifically tuned to X-junctions; it is not a general-purpose corner detector. For non-checkerboard scenes use Harris, Shi-Tomasi, or FAST.
 

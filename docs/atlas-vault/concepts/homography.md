@@ -11,6 +11,7 @@ An invertible projective transformation of the plane, represented by a 3×3 matr
 ## Related
 
 - [[apap-image-stitching]]
+- [[dlt-normalisation]]
 - [[zhang-planar-calibration]]
 
 ## Sources

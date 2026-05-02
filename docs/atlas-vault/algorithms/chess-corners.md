@@ -14,12 +14,14 @@ A chessboard-specific corner detector: scores each pixel by how well its local n
 
 ## Related
 
+- [[chessboard-x-corner-detection]]
 - [[fast-corner-detector]]
 - [[harris-corner-detector]]
 - [[shi-tomasi-corner-detector]]
 
 ## Compared with
 
+- [[duda-radon-corners]]
 - [[puzzleboard]]
 - [[pyramidal-blur-aware-xcorner]]
 - [[rochade]]

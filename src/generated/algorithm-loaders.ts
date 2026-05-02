@@ -9,6 +9,7 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "fast-corner-detector": () => import("./content/algorithms/fast-corner-detector.ts"),
   "gao-dual-homography-stitching": () => import("./content/algorithms/gao-dual-homography-stitching.ts"),
   "geiger-chessboard-detector": () => import("./content/algorithms/geiger-chessboard-detector.ts"),
+  "gp-checkerboard-enhancement": () => import("./content/algorithms/gp-checkerboard-enhancement.ts"),
   "harris-corner-detector": () => import("./content/algorithms/harris-corner-detector.ts"),
   "kumar-generalized-rac": () => import("./content/algorithms/kumar-generalized-rac.ts"),
   "lin-sva-stitching": () => import("./content/algorithms/lin-sva-stitching.ts"),

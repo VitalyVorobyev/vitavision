@@ -26,6 +26,7 @@ Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is t
 
 ## Compared with
 
+- [[chess-corners]]
 - [[fast-corner-detector]]
 - [[shi-tomasi-corner-detector]]
 

@@ -8,6 +8,10 @@ slug: kumar-generalized-rac
 
 Extend Tsai's radial alignment constraint to a non-frontal sensor by modelling lens–sensor tilt as a 2-DoF rotation, projecting observations onto a hypothesized frontal sensor, and solving a seven-parameter linear system for the extrinsic rotation and tilt.
 
+## Prerequisites
+
+- [[camera-distortion-models]]
+
 ## Related
 
 - [[zhang-planar-calibration]]

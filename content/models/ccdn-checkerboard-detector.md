@@ -10,6 +10,7 @@ arch_family: cnn
 draft: true
 params: "16,301"
 prerequisites: [image-gradient]
+related: [chessboard-x-corner-detection]
 comparedWith: []
 failureModes: []
 sources:
@@ -113,6 +114,10 @@ One public TensorFlow implementation. The repository carries no LICENSE file, wh
 - OCamCalib reaches 0.319 px / 0 % missed on the same uEye set by exploiting known pattern dimensions; CCDN trades that precision for pattern-agnosticism (Table 1).
 - The only public TensorFlow implementation is unlicensed, unmaintained since 2018, ships no trained weights, and has no documented provenance from the paper's authors — downstream use requires retraining from scratch and resolving the licensing question.
 - The cluster-size floor $N_i \ge 2$ and the fixed $k = 10$ in k-means++ are hand-tuned; sparse partial checkerboards with only a few visible corners at the image border risk being pruned as outliers.
+
+# Remarks
+
+- Compared with MATE: see [When to choose MATE over CCDN](/atlas/mate-checkerboard-detector#when-to-choose-mate-over-ccdn) on the [MATE](/atlas/mate-checkerboard-detector) page, which hosts the comparison per the older-paper-hosts rule. CCDN doubles MATE's depth (six vs three convolutions), replaces MSE with positive-negative-balanced cross-entropy, enforces stride-1 max-pools to preserve input resolution, and adds adaptive-threshold + NMS + k-means++ post-processing.
 
 # References
 

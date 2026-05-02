@@ -8,6 +8,7 @@ author: "Vitaly Vorobyev"
 difficulty: advanced
 relatedAlgorithms: ["zhang-planar-calibration"]
 prerequisites: [homography, dlt-normalisation]
+related: [spatially-varying-image-stitching]
 comparedWith: []
 failureModes: []
 sources:

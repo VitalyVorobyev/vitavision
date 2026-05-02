@@ -800,3 +800,51 @@
     scales) + gradient-orientation verification; structure recovery
     allocates corners to a free grid without requiring known board
     dimensions.
+
+- id: rasmussen2006-gpml
+  title: "Gaussian Processes for Machine Learning"
+  authors: ["C. E. Rasmussen", "C. K. I. Williams"]
+  year: 2006
+  venue: MIT Press
+  url: https://gaussianprocess.org/gpml/
+  pdf: rasmussen2006-gpml.pdf
+  cites: []
+  notes: |
+    Canonical textbook on Gaussian processes (ISBN 0-262-18253-X; freely
+    available at gaussianprocess.org/gpml). Chapter 2 introduces the GP
+    regression posterior in closed form (Eqs. 2.23–2.24): predictive mean
+    f̄_* = k_*ᵀ(K + σ_n²I)⁻¹y and covariance, with the squared-exponential
+    kernel as the running example. Chapter 5 derives the log marginal
+    likelihood used for hyperparameter selection (the alternative to
+    cross-validation that Hillen 2023 inherits). The GP framework cited
+    by `hillen2023-enhanced` for chessboard refinement.
+
+- id: hillen2023-enhanced
+  title: "Enhanced Checkerboard Detection Using Gaussian Processes"
+  authors: ["M. Hillen", "I. De Boi", "T. De Kerf", "S. Sels", "E. Cardenas De La Hoz", "J. Gladines", "G. Steenackers", "R. Penne", "S. Vanlanduit"]
+  year: 2023
+  venue: Mathematics (MDPI)
+  url: https://www.mdpi.com/2227-7390/11/22/4568
+  doi: "10.3390/math11224568"
+  pdf: hillen2023-enhanced.pdf
+  cites:
+    - rasmussen2006-gpml
+    - geiger2012-automatic
+    - rufli2008-blurred
+    - duda2018-accurate
+    - fuersattel2016-ocpad
+    - placht2014-rochade
+  notes: |
+    Post-detection enhancement layer (PyCBD library) that wraps any
+    upstream chessboard detector — evaluated on top of Geiger 2012
+    libcbdetect — and uses two Gaussian processes (one for U, one for V)
+    over (boardXY → boardUV) pairs to (1) allocate unallocated detected
+    corners to grid positions, (2) predict UV for occluded or
+    out-of-frame grid positions, (3) globally smooth all allocated UV
+    coordinates. Squared-exponential kernel; hyperparameters fit by
+    L-BFGS on the log marginal likelihood (Rasmussen 2006 Ch. 5).
+    Strongest gains on low-resolution endoscopic, multispectral, and
+    thermal IR captures where conventional detectors miss many corners.
+    Complementary to OCPAD subgraph-isomorphism recovery: OCPAD is
+    combinatorial / training-free; Hillen GP is regression / requires
+    a partial board fragment but extrapolates beyond the image border.

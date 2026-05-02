@@ -10,16 +10,20 @@ Detect every corner of a chessboard calibration pattern and assign it an integer
 
 ## Prerequisites
 
+- [[hessian-saddle-response]]
 - [[image-gradient]]
+- [[topological-grid-recovery]]
 
 ## Related
 
 - [[chess-corners]]
+- [[chessboard-x-corner-detection]]
 - [[fast-corner-detector]]
 - [[shu-topological-grid]]
 
 ## Sources
 
 - Primary: [[laureano2013-topological]]
+- Reference: [[chen2005-xcorner]]
 - Reference: [[rosten2006-fast]]
 - Reference: [[shu2009-topological]]

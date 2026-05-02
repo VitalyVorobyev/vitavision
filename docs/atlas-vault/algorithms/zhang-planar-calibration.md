@@ -10,6 +10,7 @@ Recover camera intrinsics, radial distortion, and per-view extrinsics from at le
 
 ## Prerequisites
 
+- [[camera-distortion-models]]
 - [[homography]]
 
 ## Related
@@ -17,6 +18,10 @@ Recover camera intrinsics, radial distortion, and per-view extrinsics from at le
 - [[chess-corners]]
 - [[puzzleboard]]
 - [[rochade]]
+
+## Compared with
+
+- [[sturm-plane-based-calibration]]
 
 ## Sources
 

@@ -11,12 +11,18 @@ Recover the integer $(i, j)$ grid coordinate of every corner in a checkerboard c
 ## Prerequisites
 
 - [[image-gradient]]
+- [[topological-grid-recovery]]
 
 ## Related
 
 - [[chess-corners]]
+- [[chessboard-x-corner-detection]]
 - [[harris-corner-detector]]
 - [[shi-tomasi-corner-detector]]
+
+## Compared with
+
+- [[laureano-topological-chessboard]]
 
 ## Sources
 

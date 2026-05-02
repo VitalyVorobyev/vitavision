@@ -85,6 +85,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "homography",
         "dlt-normalisation"
       ],
+      "related": [
+        "spatially-varying-image-stitching"
+      ],
       "comparedWith": [],
       "failureModes": [],
       "category": "calibration-targets",
@@ -120,6 +123,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [
         "rochade",
@@ -178,6 +184,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient",
         "hessian-saddle-response",
         "topological-grid-recovery"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
       "failureModes": [],
@@ -282,6 +291,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "homography"
       ],
+      "related": [
+        "spatially-varying-image-stitching"
+      ],
       "comparedWith": [
         "apap-image-stitching"
       ],
@@ -320,6 +332,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedWith": [
         "pyramidal-blur-aware-xcorner"
       ],
@@ -337,9 +352,56 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "shi-tomasi1994-features",
           "lucchese2003-saddle",
           "rufli2008-blurred",
-          "zhang2000-flexible"
+          "zhang2000-flexible",
+          "hillen2023-enhanced"
         ],
         "notes": "Single-shot multi-sensor calibration paper (camera + lidar/RGB-D),\nbut the chessboard detector is self-contained and the workhorse of\nthe open-source libcbdetect. Detector pipeline (§III): (a) four-quadrant\ncorner likelihood (Eq. 1) using axis-aligned + 45°-rotated prototypes,\neach composed of {A, B, C, D} quadrant kernels; min-of-bright + min-of-\ndark suppresses non-checkerboard corners. (b) Conservative NMS. (c)\nGradient-orientation verification via 32-bin Sobel histogram + mean\nshift + expected-template product. (d) Three-scale max at 4×4, 8×8,\n12×12 windows. (e) Subpixel refinement (§III-B, Eq. 3): gradient-\northogonality weighted LS over an 11×11 neighbourhood, closed form.\n(f) Structure recovery (§III-C, Eq. 6-7): energy minimisation\nE_corners + E_struct, greedy expansion from seed corners — recovers\nmultiple unknown checkerboards in one pass without prior on (r, c).\nReported F1 = 0.92 in the abeles2021 benchmark (second-best after\npyramidal at 0.97). Mean reprojection error 0.18 px across 10\ncalibration settings (Table I). Open source: libcbdetect (cvlibs.net).\n"
+      },
+      "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "gp-checkerboard-enhancement",
+    "frontmatter": {
+      "title": "GP Checkerboard Enhancement (PyCBD)",
+      "summary": "Post-process a partially detected checkerboard by training two Gaussian processes (one per pixel coordinate) on the allocated (boardXY, boardUV) pairs to allocate unassigned detections to grid positions, predict UV for occluded or out-of-frame corners, and apply a global-consistency refinement to every allocated corner.",
+      "tags": [
+        "calibration",
+        "chessboard",
+        "gaussian-processes"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "related": [
+        "geiger-chessboard-detector",
+        "ocpad",
+        "chessboard-x-corner-detection"
+      ],
+      "comparedWith": [],
+      "failureModes": [],
+      "quality": "stub",
+      "category": "calibration",
+      "relatedAlgorithms": [
+        "geiger-chessboard-detector",
+        "ocpad"
+      ],
+      "sources": {
+        "primary": "hillen2023-enhanced",
+        "references": [
+          "rasmussen2006-gpml",
+          "geiger2012-automatic",
+          "rufli2008-blurred",
+          "duda2018-accurate",
+          "fuersattel2016-ocpad",
+          "placht2014-rochade"
+        ],
+        "notes": "Stub algorithm page authored from the full text of Hillen et al. 2023\n(`docs/papers/.cache/hillen2023-enhanced.txt` / DOI 10.3390/math11224568).\nMethod is an enhancement layer wrapping any upstream checkerboard\ndetector (paper benchmarks against Geiger 2012 / libcbdetect; the\nPyCBD library exposes the GP step as a modular post-processor).\nTwo GPs predict U and V pixel coordinates from `boardXY` grid keys\nusing a squared-exponential kernel (Eq. 6); hyperparameters fit by\nL-BFGS maximisation of log marginal likelihood (Eq. 7, Rasmussen\n2006 Ch. 5). Three capabilities: (1) iterative grid expansion +\nmatching of unallocated detections (Algorithm 1, distance-threshold\nmatching, max 10 iterations); (2) UV prediction for occluded or\nout-of-frame grid positions; (3) global-consistency refinement of\nevery allocated corner via the GP posterior mean. Library:\n`pip install pycbd` / github.com/InViLabUAntwerp/PyCBD. Strongest\ngains on low-resolution endoscopic, multispectral, and thermal IR\ncaptures where conventional detectors miss many corners.\n"
       },
       "date": "2026-05-02"
     }
@@ -441,6 +503,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "homography"
       ],
+      "related": [
+        "spatially-varying-image-stitching"
+      ],
       "comparedWith": [
         "apap-image-stitching"
       ],
@@ -478,6 +543,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
       "failureModes": [],
@@ -553,6 +621,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient",
         "topological-grid-recovery"
       ],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedWith": [],
       "failureModes": [],
       "category": "calibration-targets",
@@ -592,6 +663,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "hessian-saddle-response",
         "topological-grid-recovery"
       ],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedWith": [],
       "failureModes": [],
       "category": "calibration-targets",
@@ -629,6 +703,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "image-gradient",
         "scale-space"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
       "failureModes": [],
@@ -696,6 +773,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "image-gradient",
         "hessian-saddle-response"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [
         "pyramidal-blur-aware-xcorner"
@@ -808,6 +888,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "image-gradient",
         "topological-grid-recovery"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [
         "laureano-topological-chessboard"
@@ -1013,6 +1096,9 @@ export const modelPages: ModelIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedWith": [],
       "failureModes": [],
       "category": "calibration-learning",
@@ -1044,6 +1130,53 @@ export const modelPages: ModelIndexEntry[] = [
         "harris-corner-detector"
       ],
       "date": "2026-04-18"
+    }
+  },
+  {
+    "slug": "mate-checkerboard-detector",
+    "frontmatter": {
+      "title": "MATE",
+      "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
+      "tags": [
+        "calibration",
+        "corner-detection",
+        "cnn"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
+      "comparedWith": [
+        "ccdn-checkerboard-detector"
+      ],
+      "failureModes": [],
+      "quality": "stub",
+      "category": "calibration-learning",
+      "arch_family": "cnn",
+      "params": "2,939",
+      "sources": {
+        "primary": "donne2016-mate",
+        "references": [
+          "chen2023-ccdn",
+          "placht2014-rochade",
+          "bennett2013-chess",
+          "rufli2008-blurred"
+        ],
+        "notes": "Stub page authored from secondary sources only — the MDPI PDF for\nDonné et al. 2016 (doi:10.3390/s16111858) returned HTTP 403 to\nautomated fetchers and could not be cached. All claims are derived\nfrom the chen2023-ccdn research note, the existing CCDN page\n(`content/models/ccdn-checkerboard-detector.md`), and the\nindex.yaml `donne2016-mate` notes. Architecture: 3 conv\nlayers + ReLU; per-pixel response map; max-pool with stride > 1\n(output spatially coarser than input). Loss: MSE between predicted\nresponse and binary corner mask (no positive/negative balancing).\nPost-processing: fixed 0.5 threshold; no NMS, no clustering.\nBenchmarks (via CCDN Tables 1–2): uEye 1.009 px / 3.065 % missed /\n0.809 % doubles / 492 FP; GoPro 0.835 px / 4.566 % / 4.556 % / 389 FP.\nPromote past stub when the paper PDF becomes accessible and the\narchitectural specifics (kernel sizes, channel counts, max-pool\nstrides, training hyperparameters) can be verified against the\nprimary text.\n"
+      },
+      "relatedAlgorithms": [
+        "chess-corners",
+        "rochade",
+        "fast-corner-detector"
+      ],
+      "date": "2026-05-02"
     }
   },
   {
@@ -1166,6 +1299,60 @@ export const conceptPages: ConceptIndexEntry[] = [
           "weng1992-camera",
           "zhang2000-flexible",
           "kumar2014-grac"
+        ]
+      },
+      "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "chessboard-x-corner-detection",
+    "frontmatter": {
+      "title": "Chessboard X-Corner Detection",
+      "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
+      "tags": [
+        "calibration",
+        "chessboard",
+        "corner-detection",
+        "survey"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "related": [
+        "chess-corners",
+        "rochade",
+        "geiger-chessboard-detector",
+        "pyramidal-blur-aware-xcorner",
+        "shu-topological-grid",
+        "laureano-topological-chessboard",
+        "ocpad",
+        "puzzleboard",
+        "duda-radon-corners",
+        "ccdn-checkerboard-detector",
+        "mate-checkerboard-detector",
+        "gp-checkerboard-enhancement",
+        "hessian-saddle-response",
+        "topological-grid-recovery"
+      ],
+      "category": "feature-theory",
+      "sources": {
+        "references": [
+          "bennett2013-chess",
+          "placht2014-rochade",
+          "fuersattel2016-ocpad",
+          "donne2016-mate",
+          "abeles2021-pyramidal",
+          "geiger2012-automatic",
+          "laureano2013-topological",
+          "shu2009-topological",
+          "duda2018-accurate",
+          "chen2023-ccdn",
+          "stelldinger2024-puzzleboard",
+          "hillen2023-enhanced"
         ]
       },
       "date": "2026-05-02"
@@ -1344,6 +1531,43 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "category": "image-formation",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "spatially-varying-image-stitching",
+    "frontmatter": {
+      "title": "Spatially Varying Image Stitching",
+      "summary": "A 2011–2013 lineage of stitching methods that replace the single global homography with a spatially varying warp field — fitted as either two homographies + spatial blend (Gao 2011), a smooth affine deviation field (Lin 2011), or a per-cell weighted-DLT projective grid (Zaragoza 2013, APAP) — to absorb parallax and non-rotational camera motion that no single homography can represent.",
+      "tags": [
+        "image-stitching",
+        "homography",
+        "panorama",
+        "spatially-varying-warp",
+        "survey"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "homography"
+      ],
+      "related": [
+        "apap-image-stitching",
+        "gao-dual-homography-stitching",
+        "lin-sva-stitching",
+        "dlt-normalisation"
+      ],
+      "category": "geometry",
+      "sources": {
+        "references": [
+          "gao2011-dual-homography",
+          "lin2011-svastitching",
+          "zaragoza2013-apap",
+          "hartley1997-eight-point"
+        ]
+      },
+      "date": "2026-05-02"
     }
   },
   {

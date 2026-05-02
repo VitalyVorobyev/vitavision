@@ -9,6 +9,7 @@ difficulty: intermediate
 draft: true
 relatedAlgorithms: ["shu-topological-grid", "puzzleboard", "laureano-topological-chessboard"]
 prerequisites: [image-gradient, topological-grid-recovery]
+related: [chessboard-x-corner-detection]
 comparedWith: []
 failureModes: []
 sources:
@@ -163,6 +164,7 @@ Region growing runs after this converges: for each unassigned neighbour of a mat
 - The quad filter excises every triangle and isolated edge, which removes most background clutter before matching. A spurious diagonal inside an otherwise valid quad is tolerated downstream by the error-tolerant driver.
 - Failure modes: candidates with fewer than half the model vertices are dropped at step 1; genuine patterns with ambiguous anchor placement (no clear quad-density maximum, e.g. a uniform fragment) yield slower, less reliable matches; multiple disconnected components of the candidate graph are resolved by keeping only the largest, which drops real corners on the smaller side.
 - VF2 can be swapped for any exact subgraph-isomorphism routine; the binary-search driver and the region-growing step are independent of the matcher.
+- Compared with [GP enhancement](/atlas/gp-checkerboard-enhancement) (Hillen 2023): OCPAD is combinatorial — it matches the detected corner graph against the model graph by exact subgraph isomorphism and requires no training. The GP method is regression — it learns the board-to-pixel map from a partial allocated set and predicts missing corners by interpolation/extrapolation, requiring at least a partial board fragment as training data but extending naturally beyond the image border. The two are complementary: OCPAD recovers a partial visible subgraph; GP enhancement fills in occluded or out-of-frame corners with smooth refinement.
 
 # References
 

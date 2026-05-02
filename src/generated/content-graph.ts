@@ -89,6 +89,14 @@ export const contentGraph: ContentGraph = {
       "path": "/algorithms/geiger-chessboard-detector",
       "draft": true
     },
+    "gp-checkerboard-enhancement": {
+      "slug": "gp-checkerboard-enhancement",
+      "type": "algorithm",
+      "title": "GP Checkerboard Enhancement (PyCBD)",
+      "summary": "Post-process a partially detected checkerboard by training two Gaussian processes (one per pixel coordinate) on the allocated (boardXY, boardUV) pairs to allocate unassigned detections to grid positions, predict UV for occluded or out-of-frame corners, and apply a global-consistency refinement to every allocated corner.",
+      "path": "/algorithms/gp-checkerboard-enhancement",
+      "draft": true
+    },
     "harris-corner-detector": {
       "slug": "harris-corner-detector",
       "type": "algorithm",
@@ -225,6 +233,14 @@ export const contentGraph: ContentGraph = {
       "path": "/algorithms/models/ccdn-checkerboard-detector",
       "draft": true
     },
+    "mate-checkerboard-detector": {
+      "slug": "mate-checkerboard-detector",
+      "type": "model",
+      "title": "MATE",
+      "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
+      "path": "/algorithms/models/mate-checkerboard-detector",
+      "draft": true
+    },
     "superpoint": {
       "slug": "superpoint",
       "type": "model",
@@ -247,6 +263,14 @@ export const contentGraph: ContentGraph = {
       "title": "Camera Distortion Models",
       "summary": "Mathematical models for departures from the ideal pinhole projection — radial barrel/pincushion, tangential decentering, thin-prism — and the historical lineage from Brown's photogrammetric polynomial through Tsai's one-term radial, Weng's full Brown-Conrady, and Zhang's two-term planar formulation.",
       "path": "/concepts/camera-distortion-models",
+      "draft": false
+    },
+    "chessboard-x-corner-detection": {
+      "slug": "chessboard-x-corner-detection",
+      "type": "concept",
+      "title": "Chessboard X-Corner Detection",
+      "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
+      "path": "/concepts/chessboard-x-corner-detection",
       "draft": false
     },
     "dlt-normalisation": {
@@ -297,6 +321,14 @@ export const contentGraph: ContentGraph = {
       "path": "/concepts/scale-space",
       "draft": false
     },
+    "spatially-varying-image-stitching": {
+      "slug": "spatially-varying-image-stitching",
+      "type": "concept",
+      "title": "Spatially Varying Image Stitching",
+      "summary": "A 2011–2013 lineage of stitching methods that replace the single global homography with a spatially varying warp field — fitted as either two homographies + spatial blend (Gao 2011), a smooth affine deviation field (Lin 2011), or a per-cell weighted-DLT projective grid (Zaragoza 2013, APAP) — to absorb parallax and non-rotational camera motion that no single homography can represent.",
+      "path": "/concepts/spatially-varying-image-stitching",
+      "draft": false
+    },
     "structure-tensor": {
       "slug": "structure-tensor",
       "type": "concept",
@@ -321,7 +353,8 @@ export const contentGraph: ContentGraph = {
         "dlt-normalisation"
       ],
       "related": [
-        "zhang-planar-calibration"
+        "zhang-planar-calibration",
+        "spatially-varying-image-stitching"
       ],
       "comparedWith": [],
       "failureModes": []
@@ -333,7 +366,8 @@ export const contentGraph: ContentGraph = {
       "related": [
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
-        "fast-corner-detector"
+        "fast-corner-detector",
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [
         "rochade",
@@ -352,7 +386,8 @@ export const contentGraph: ContentGraph = {
       "related": [
         "shu-topological-grid",
         "chess-corners",
-        "fast-corner-detector"
+        "fast-corner-detector",
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
       "failureModes": []
@@ -383,7 +418,8 @@ export const contentGraph: ContentGraph = {
         "homography"
       ],
       "related": [
-        "apap-image-stitching"
+        "apap-image-stitching",
+        "spatially-varying-image-stitching"
       ],
       "comparedWith": [
         "apap-image-stitching"
@@ -397,11 +433,24 @@ export const contentGraph: ContentGraph = {
       "related": [
         "chess-corners",
         "rochade",
-        "pyramidal-blur-aware-xcorner"
+        "pyramidal-blur-aware-xcorner",
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [
         "pyramidal-blur-aware-xcorner"
       ],
+      "failureModes": []
+    },
+    "gp-checkerboard-enhancement": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "related": [
+        "geiger-chessboard-detector",
+        "ocpad",
+        "chessboard-x-corner-detection"
+      ],
+      "comparedWith": [],
       "failureModes": []
     },
     "harris-corner-detector": {
@@ -442,7 +491,8 @@ export const contentGraph: ContentGraph = {
       ],
       "related": [
         "apap-image-stitching",
-        "gao-dual-homography-stitching"
+        "gao-dual-homography-stitching",
+        "spatially-varying-image-stitching"
       ],
       "comparedWith": [
         "apap-image-stitching"
@@ -457,7 +507,8 @@ export const contentGraph: ContentGraph = {
         "chess-corners",
         "harris-corner-detector",
         "rochade",
-        "pyramidal-blur-aware-xcorner"
+        "pyramidal-blur-aware-xcorner",
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
       "failureModes": []
@@ -482,7 +533,8 @@ export const contentGraph: ContentGraph = {
       "related": [
         "shu-topological-grid",
         "puzzleboard",
-        "laureano-topological-chessboard"
+        "laureano-topological-chessboard",
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
       "failureModes": []
@@ -496,7 +548,8 @@ export const contentGraph: ContentGraph = {
       "related": [
         "chess-corners",
         "harris-corner-detector",
-        "shu-topological-grid"
+        "shu-topological-grid",
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
       "failureModes": []
@@ -510,7 +563,8 @@ export const contentGraph: ContentGraph = {
         "chess-corners",
         "rochade",
         "shu-topological-grid",
-        "shi-tomasi-corner-detector"
+        "shi-tomasi-corner-detector",
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
       "failureModes": []
@@ -532,7 +586,8 @@ export const contentGraph: ContentGraph = {
         "ocpad",
         "chess-corners",
         "laureano-topological-chessboard",
-        "shu-topological-grid"
+        "shu-topological-grid",
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [
         "pyramidal-blur-aware-xcorner"
@@ -570,7 +625,8 @@ export const contentGraph: ContentGraph = {
       "related": [
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
-        "chess-corners"
+        "chess-corners",
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [
         "laureano-topological-chessboard"
@@ -626,9 +682,25 @@ export const contentGraph: ContentGraph = {
         "chess-corners",
         "rochade",
         "fast-corner-detector",
-        "harris-corner-detector"
+        "harris-corner-detector",
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
+      "failureModes": []
+    },
+    "mate-checkerboard-detector": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "related": [
+        "chess-corners",
+        "rochade",
+        "fast-corner-detector",
+        "chessboard-x-corner-detection"
+      ],
+      "comparedWith": [
+        "ccdn-checkerboard-detector"
+      ],
       "failureModes": []
     },
     "superpoint": {
@@ -659,6 +731,29 @@ export const contentGraph: ContentGraph = {
         "tsai-versatile-calibration",
         "zhang-planar-calibration",
         "kumar-generalized-rac"
+      ],
+      "comparedWith": [],
+      "failureModes": []
+    },
+    "chessboard-x-corner-detection": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "related": [
+        "chess-corners",
+        "rochade",
+        "geiger-chessboard-detector",
+        "pyramidal-blur-aware-xcorner",
+        "shu-topological-grid",
+        "laureano-topological-chessboard",
+        "ocpad",
+        "puzzleboard",
+        "duda-radon-corners",
+        "ccdn-checkerboard-detector",
+        "mate-checkerboard-detector",
+        "gp-checkerboard-enhancement",
+        "hessian-saddle-response",
+        "topological-grid-recovery"
       ],
       "comparedWith": [],
       "failureModes": []
@@ -727,6 +822,19 @@ export const contentGraph: ContentGraph = {
       "comparedWith": [],
       "failureModes": []
     },
+    "spatially-varying-image-stitching": {
+      "prerequisites": [
+        "homography"
+      ],
+      "related": [
+        "apap-image-stitching",
+        "gao-dual-homography-stitching",
+        "lin-sva-stitching",
+        "dlt-normalisation"
+      ],
+      "comparedWith": [],
+      "failureModes": []
+    },
     "structure-tensor": {
       "prerequisites": [
         "image-gradient"
@@ -758,7 +866,8 @@ export const contentGraph: ContentGraph = {
         "lin-sva-stitching",
         "fundamental-matrix-eight-point",
         "dlt-normalisation",
-        "homography"
+        "homography",
+        "spatially-varying-image-stitching"
       ],
       "comparedFrom": [
         "gao-dual-homography-stitching",
@@ -781,6 +890,8 @@ export const contentGraph: ContentGraph = {
         "shu-topological-grid",
         "zhang-planar-calibration",
         "ccdn-checkerboard-detector",
+        "mate-checkerboard-detector",
+        "chessboard-x-corner-detection",
         "hessian-saddle-response",
         "image-gradient",
         "scale-space"
@@ -796,6 +907,7 @@ export const contentGraph: ContentGraph = {
         "harris-corner-detector",
         "ocpad",
         "rochade",
+        "chessboard-x-corner-detection",
         "hessian-saddle-response",
         "topological-grid-recovery"
       ],
@@ -822,6 +934,7 @@ export const contentGraph: ContentGraph = {
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
         "ccdn-checkerboard-detector",
+        "mate-checkerboard-detector",
         "superpoint",
         "image-gradient"
       ],
@@ -833,14 +946,26 @@ export const contentGraph: ContentGraph = {
     "gao-dual-homography-stitching": {
       "usedBy": [],
       "relatedFrom": [
-        "lin-sva-stitching"
+        "lin-sva-stitching",
+        "spatially-varying-image-stitching"
       ],
       "comparedFrom": [],
       "affects": []
     },
     "geiger-chessboard-detector": {
       "usedBy": [],
-      "relatedFrom": [],
+      "relatedFrom": [
+        "gp-checkerboard-enhancement",
+        "chessboard-x-corner-detection"
+      ],
+      "comparedFrom": [],
+      "affects": []
+    },
+    "gp-checkerboard-enhancement": {
+      "usedBy": [],
+      "relatedFrom": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedFrom": [],
       "affects": []
     },
@@ -875,14 +1000,17 @@ export const contentGraph: ContentGraph = {
     },
     "lin-sva-stitching": {
       "usedBy": [],
-      "relatedFrom": [],
+      "relatedFrom": [
+        "spatially-varying-image-stitching"
+      ],
       "comparedFrom": [],
       "affects": []
     },
     "duda-radon-corners": {
       "usedBy": [],
       "relatedFrom": [
-        "harris-corner-detector"
+        "harris-corner-detector",
+        "chessboard-x-corner-detection"
       ],
       "comparedFrom": [
         "chess-corners"
@@ -900,7 +1028,9 @@ export const contentGraph: ContentGraph = {
     "ocpad": {
       "usedBy": [],
       "relatedFrom": [
+        "gp-checkerboard-enhancement",
         "rochade",
+        "chessboard-x-corner-detection",
         "topological-grid-recovery"
       ],
       "comparedFrom": [],
@@ -912,6 +1042,7 @@ export const contentGraph: ContentGraph = {
         "harris-corner-detector",
         "ocpad",
         "zhang-planar-calibration",
+        "chessboard-x-corner-detection",
         "hessian-saddle-response",
         "topological-grid-recovery"
       ],
@@ -926,6 +1057,7 @@ export const contentGraph: ContentGraph = {
         "geiger-chessboard-detector",
         "harris-corner-detector",
         "duda-radon-corners",
+        "chessboard-x-corner-detection",
         "image-gradient",
         "scale-space"
       ],
@@ -950,6 +1082,8 @@ export const contentGraph: ContentGraph = {
         "pyramidal-blur-aware-xcorner",
         "zhang-planar-calibration",
         "ccdn-checkerboard-detector",
+        "mate-checkerboard-detector",
+        "chessboard-x-corner-detection",
         "hessian-saddle-response"
       ],
       "comparedFrom": [
@@ -991,6 +1125,7 @@ export const contentGraph: ContentGraph = {
         "puzzleboard",
         "pyramidal-blur-aware-xcorner",
         "rochade",
+        "chessboard-x-corner-detection",
         "topological-grid-recovery"
       ],
       "comparedFrom": [],
@@ -1032,7 +1167,19 @@ export const contentGraph: ContentGraph = {
     },
     "ccdn-checkerboard-detector": {
       "usedBy": [],
-      "relatedFrom": [],
+      "relatedFrom": [
+        "chessboard-x-corner-detection"
+      ],
+      "comparedFrom": [
+        "mate-checkerboard-detector"
+      ],
+      "affects": []
+    },
+    "mate-checkerboard-detector": {
+      "usedBy": [],
+      "relatedFrom": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedFrom": [],
       "affects": []
     },
@@ -1060,6 +1207,25 @@ export const contentGraph: ContentGraph = {
       "comparedFrom": [],
       "affects": []
     },
+    "chessboard-x-corner-detection": {
+      "usedBy": [],
+      "relatedFrom": [
+        "chess-corners",
+        "laureano-topological-chessboard",
+        "geiger-chessboard-detector",
+        "gp-checkerboard-enhancement",
+        "duda-radon-corners",
+        "ocpad",
+        "puzzleboard",
+        "pyramidal-blur-aware-xcorner",
+        "rochade",
+        "shu-topological-grid",
+        "ccdn-checkerboard-detector",
+        "mate-checkerboard-detector"
+      ],
+      "comparedFrom": [],
+      "affects": []
+    },
     "dlt-normalisation": {
       "usedBy": [
         "apap-image-stitching",
@@ -1067,7 +1233,8 @@ export const contentGraph: ContentGraph = {
       ],
       "relatedFrom": [
         "epipolar-geometry",
-        "homography"
+        "homography",
+        "spatially-varying-image-stitching"
       ],
       "comparedFrom": [],
       "affects": []
@@ -1088,7 +1255,9 @@ export const contentGraph: ContentGraph = {
         "puzzleboard",
         "rochade"
       ],
-      "relatedFrom": [],
+      "relatedFrom": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedFrom": [],
       "affects": []
     },
@@ -1099,7 +1268,8 @@ export const contentGraph: ContentGraph = {
         "lin-sva-stitching",
         "fundamental-matrix-eight-point",
         "sturm-plane-based-calibration",
-        "zhang-planar-calibration"
+        "zhang-planar-calibration",
+        "spatially-varying-image-stitching"
       ],
       "relatedFrom": [
         "dlt-normalisation"
@@ -1113,6 +1283,7 @@ export const contentGraph: ContentGraph = {
         "laureano-topological-chessboard",
         "fast-corner-detector",
         "geiger-chessboard-detector",
+        "gp-checkerboard-enhancement",
         "harris-corner-detector",
         "duda-radon-corners",
         "ocpad",
@@ -1122,8 +1293,10 @@ export const contentGraph: ContentGraph = {
         "shi-tomasi-corner-detector",
         "shu-topological-grid",
         "ccdn-checkerboard-detector",
+        "mate-checkerboard-detector",
         "superpoint",
         "xfeat",
+        "chessboard-x-corner-detection",
         "hessian-saddle-response",
         "structure-tensor"
       ],
@@ -1136,6 +1309,16 @@ export const contentGraph: ContentGraph = {
         "pyramidal-blur-aware-xcorner"
       ],
       "relatedFrom": [],
+      "comparedFrom": [],
+      "affects": []
+    },
+    "spatially-varying-image-stitching": {
+      "usedBy": [],
+      "relatedFrom": [
+        "apap-image-stitching",
+        "gao-dual-homography-stitching",
+        "lin-sva-stitching"
+      ],
       "comparedFrom": [],
       "affects": []
     },
@@ -1157,7 +1340,9 @@ export const contentGraph: ContentGraph = {
         "puzzleboard",
         "shu-topological-grid"
       ],
-      "relatedFrom": [],
+      "relatedFrom": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedFrom": [],
       "affects": []
     }

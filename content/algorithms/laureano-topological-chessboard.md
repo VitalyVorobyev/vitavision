@@ -9,6 +9,7 @@ draft: true
 difficulty: intermediate
 relatedAlgorithms: ["shu-topological-grid", "chess-corners", "fast-corner-detector"]
 prerequisites: [image-gradient, hessian-saddle-response, topological-grid-recovery]
+related: [chessboard-x-corner-detection]
 comparedWith: []
 failureModes: []
 sources:

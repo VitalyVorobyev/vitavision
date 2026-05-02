@@ -8,6 +8,7 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["chess-corners", "rochade", "shu-topological-grid", "shi-tomasi-corner-detector"]
 prerequisites: [image-gradient, scale-space]
+related: [chessboard-x-corner-detection]
 comparedWith: []
 failureModes: []
 sources:

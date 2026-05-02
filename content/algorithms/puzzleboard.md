@@ -10,6 +10,7 @@ draft: true
 editorAlgorithmId: puzzleboard
 relatedAlgorithms: ["chess-corners", "harris-corner-detector", "shu-topological-grid"]
 prerequisites: [image-gradient, hessian-saddle-response, topological-grid-recovery]
+related: [chessboard-x-corner-detection]
 comparedWith: []
 failureModes: []
 sources:

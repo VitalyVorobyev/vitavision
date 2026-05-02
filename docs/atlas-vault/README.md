@@ -14,10 +14,10 @@ and use the graph view to look for clusters, gaps, and isolated islands.
 
 ## Counts
 
-- Algorithms: 17
-- Models: 2
-- Concepts: 5
-- Papers: 35
+- Algorithms: 24
+- Models: 4
+- Concepts: 11
+- Papers: 38
 
 ## Conventions
 

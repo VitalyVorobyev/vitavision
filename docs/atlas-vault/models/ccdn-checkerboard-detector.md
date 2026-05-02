@@ -15,6 +15,7 @@ Fully convolutional network that regresses a per-pixel checkerboard-corner respo
 ## Related
 
 - [[chess-corners]]
+- [[chessboard-x-corner-detection]]
 - [[fast-corner-detector]]
 - [[harris-corner-detector]]
 - [[rochade]]

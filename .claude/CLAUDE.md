@@ -171,3 +171,11 @@ Shared result/config types live in `src/lib/types.ts`. These describe WASM detec
 - Image pixel-count limit: `WASM_MAX_PIXELS=20_000_000` in `useAlgorithmRunner.ts`
 - WASM runs in Web Workers (off main thread, no DOM access)
 - No shared memory — pixel buffers transferred via `Transferable`
+
+### Touch & mobile interaction
+
+Any interactive SVG, canvas, or react-konva surface that handles drag or in-surface gestures **must** set `touch-action: none` on the interactive element. Without it, the browser claims touches as pan/scroll gestures before pointer-capture can win, and drag becomes impossible on touch devices.
+
+Hover-only affordances (highlight-on-mouseover, tooltips that require pointermove) **must** have a tap-equivalent on touch. Detect via `e.pointerType === "touch"` or `"pen"` inside the pointer handler — do not branch on viewport width, since touch laptops exist. Reuse the same hit-test code; do not duplicate it.
+
+Verify in browser devtools touch emulation (Chrome → Device Toolbar → "Responsive" with touch enabled) before declaring an interactive change complete. Type-check and unit tests do not catch this class of bug.

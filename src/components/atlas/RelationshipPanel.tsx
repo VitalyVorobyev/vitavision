@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { contentGraph } from "../../generated/content-graph.ts";
 import type { GraphNode, NodeType } from "../../generated/content-graph.ts";
+import { blogPosts, demoPages } from "../../generated/content-index.ts";
 import { useIsAdmin } from "../../lib/auth/useIsAdmin.ts";
 
 interface RelationshipPanelProps {
@@ -76,10 +77,13 @@ interface SidebarSectionProps {
     itemColor: string;
     /** When set, collapses the list to this many items + a "Show all" toggle. */
     maxItems?: number;
+    /** Whether the section starts open (controlled by viewport width on mount). */
+    defaultOpen?: boolean;
 }
 
-function SidebarSection({ heading, slugs, showDrafts, itemColor, maxItems }: SidebarSectionProps) {
+function SidebarSection({ heading, slugs, showDrafts, itemColor, maxItems, defaultOpen = true }: SidebarSectionProps) {
     const [expanded, setExpanded] = useState(false);
+    const [open, setOpen] = useState(defaultOpen);
 
     const nodes = slugs
         .map((s) => contentGraph.nodes[s])
@@ -93,23 +97,32 @@ function SidebarSection({ heading, slugs, showDrafts, itemColor, maxItems }: Sid
     const overflow = nodes.length - visible.length;
 
     return (
-        <div className="mb-[18px]">
-            <h3 className="flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.12em] uppercase text-slate-500 mb-2.5">
-                <span>{heading}</span>
-                <span className="text-slate-600 font-mono">{nodes.length}</span>
-            </h3>
+        <details
+            open={open}
+            onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}
+            className="mb-[18px] group"
+        >
+            <summary className="flex items-center justify-between gap-2 cursor-pointer list-none mb-2.5 [&::-webkit-details-marker]:hidden">
+                <h3 className="flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted-foreground">
+                    <span>{heading}</span>
+                    <span className="text-muted-foreground/70 font-mono">{nodes.length}</span>
+                </h3>
+                <span aria-hidden="true" className="text-muted-foreground/50 text-[10px] transition-transform group-open:rotate-90">
+                    ▸
+                </span>
+            </summary>
             <ul className="m-0 p-0 list-none">
                 {visible.map((node) => (
                     <li
                         key={node.slug}
-                        className="border-b border-dashed border-slate-400/10 last:border-b-0"
+                        className="border-b border-dashed border-foreground/10 last:border-b-0"
                     >
                         <Link
                             to={node.path}
                             className={`flex items-center justify-between gap-2 text-[13px] py-1.5 ${itemColor} no-underline hover:text-foreground transition-colors`}
                         >
                             <span className="truncate">{node.title}</span>
-                            <span aria-hidden="true" className="text-slate-500 text-[11px] flex-shrink-0">↗</span>
+                            <span aria-hidden="true" className="text-muted-foreground text-[11px] flex-shrink-0">↗</span>
                         </Link>
                     </li>
                 ))}
@@ -118,45 +131,92 @@ function SidebarSection({ heading, slugs, showDrafts, itemColor, maxItems }: Sid
                 <button
                     type="button"
                     onClick={() => setExpanded((v) => !v)}
-                    className="mt-1 text-[11px] font-mono text-slate-500 hover:text-foreground transition-colors"
+                    className="mt-1 text-[11px] font-mono text-muted-foreground hover:text-foreground transition-colors"
                 >
                     {expanded ? "Show fewer" : `+${overflow} more`}
                 </button>
             )}
-        </div>
+        </details>
     );
 }
 
 interface AlsoSeeProps {
     relatedPosts?: string[];
     relatedDemos?: string[];
+    defaultOpen?: boolean;
 }
 
-function AlsoSee({ relatedPosts, relatedDemos }: AlsoSeeProps) {
-    const postCount = relatedPosts?.length ?? 0;
-    const demoCount = relatedDemos?.length ?? 0;
-    if (postCount + demoCount === 0) return null;
+function AlsoSee({ relatedPosts, relatedDemos, defaultOpen = true }: AlsoSeeProps) {
+    const [open, setOpen] = useState(defaultOpen);
+
+    const resolvedPosts = (relatedPosts ?? []).map((slug) => {
+        const entry = blogPosts.find((p) => p.slug === slug);
+        if (!entry) {
+            console.warn(`[RelationshipPanel] AlsoSee: blog post slug "${slug}" not found in content-index`);
+            return null;
+        }
+        return { slug, title: entry.frontmatter.title, href: `/blog/${slug}` };
+    }).filter((x): x is { slug: string; title: string; href: string } => x !== null);
+
+    const resolvedDemos = (relatedDemos ?? []).map((slug) => {
+        const entry = demoPages.find((p) => p.slug === slug);
+        if (!entry) {
+            console.warn(`[RelationshipPanel] AlsoSee: demo slug "${slug}" not found in content-index`);
+            return null;
+        }
+        return { slug, title: entry.frontmatter.title, href: `/demos/${slug}` };
+    }).filter((x): x is { slug: string; title: string; href: string } => x !== null);
+
+    if (resolvedPosts.length + resolvedDemos.length === 0) return null;
+
+    const totalCount = resolvedPosts.length + resolvedDemos.length;
 
     return (
-        <div className="border-t border-white/[0.06] pt-3.5">
-            <h3 className="text-[10.5px] font-semibold tracking-[0.12em] uppercase text-slate-500 mb-2.5">
-                Also see
-            </h3>
-            <ul className="m-0 p-0 list-none space-y-1.5">
-                {postCount > 0 && (
-                    <li className="text-[12.5px] text-slate-400">
-                        <span aria-hidden="true" className="mr-1.5">📝</span>
-                        {postCount} blog post{postCount === 1 ? "" : "s"}
+        <details
+            open={open}
+            onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}
+            className="border-t border-border pt-3.5 group"
+        >
+            <summary className="flex items-center justify-between gap-2 cursor-pointer list-none mb-2.5 [&::-webkit-details-marker]:hidden">
+                <h3 className="flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted-foreground">
+                    <span>Also see</span>
+                    <span className="text-muted-foreground/70 font-mono">{totalCount}</span>
+                </h3>
+                <span aria-hidden="true" className="text-muted-foreground/50 text-[10px] transition-transform group-open:rotate-90">
+                    ▸
+                </span>
+            </summary>
+            <ul className="m-0 p-0 list-none space-y-0">
+                {resolvedPosts.map(({ slug, title, href }) => (
+                    <li key={slug} className="border-b border-dashed border-foreground/10 last:border-b-0">
+                        <Link
+                            to={href}
+                            className="flex items-center justify-between gap-2 text-[13px] py-1.5 text-foreground no-underline hover:text-foreground transition-colors"
+                        >
+                            <span className="inline-flex items-center gap-1.5 truncate">
+                                <span aria-hidden="true" className="flex-shrink-0">📝</span>
+                                <span className="truncate">{title}</span>
+                            </span>
+                            <span aria-hidden="true" className="text-muted-foreground text-[11px] flex-shrink-0">↗</span>
+                        </Link>
                     </li>
-                )}
-                {demoCount > 0 && (
-                    <li className="text-[12.5px] text-slate-400">
-                        <span aria-hidden="true" className="mr-1.5">▶</span>
-                        {demoCount} demo{demoCount === 1 ? "" : "s"}
+                ))}
+                {resolvedDemos.map(({ slug, title, href }) => (
+                    <li key={slug} className="border-b border-dashed border-foreground/10 last:border-b-0">
+                        <Link
+                            to={href}
+                            className="flex items-center justify-between gap-2 text-[13px] py-1.5 text-foreground no-underline hover:text-foreground transition-colors"
+                        >
+                            <span className="inline-flex items-center gap-1.5 truncate">
+                                <span aria-hidden="true" className="flex-shrink-0">▶</span>
+                                <span className="truncate">{title}</span>
+                            </span>
+                            <span aria-hidden="true" className="text-muted-foreground text-[11px] flex-shrink-0">↗</span>
+                        </Link>
                     </li>
-                )}
+                ))}
             </ul>
-        </div>
+        </details>
     );
 }
 
@@ -171,6 +231,14 @@ export default function RelationshipPanel({
     const isAdmin = useIsAdmin();
     const fwd = contentGraph.forward[slug];
     const rev = contentGraph.reverse[slug];
+
+    // Sections open by default on ≥1024px viewports; collapsed on smaller viewports.
+    // Read synchronously during render. Guard for SSR and test envs where matchMedia may be absent.
+    const [sectionsOpen] = useState<boolean>(() =>
+        typeof window !== "undefined" && typeof window.matchMedia === "function"
+            ? window.matchMedia("(min-width: 1024px)").matches
+            : true
+    );
 
     if (!fwd && !rev) return null;
 
@@ -215,27 +283,30 @@ export default function RelationshipPanel({
         if (!hasGraphContent && !hasAlsoSee) return null;
 
         return (
-            <div className="border border-white/[0.06] rounded-[10px] bg-white/[0.015] p-[18px]">
+            <div className="border border-border rounded-[10px] bg-card p-[18px]">
                 <SidebarSection
                     heading="Prerequisites"
                     slugs={prerequisites}
                     showDrafts={isAdmin}
-                    itemColor="text-slate-300"
+                    itemColor="text-foreground"
+                    defaultOpen={sectionsOpen}
                 />
                 <SidebarSection
                     heading="Compared with"
                     slugs={comparedWith}
                     showDrafts={isAdmin}
-                    itemColor="text-amber-300"
+                    itemColor="text-amber-600 dark:text-amber-400"
+                    defaultOpen={sectionsOpen}
                 />
                 <SidebarSection
                     heading="Related"
                     slugs={related}
                     showDrafts={isAdmin}
-                    itemColor="text-blue-300"
+                    itemColor="text-blue-600 dark:text-blue-400"
                     maxItems={4}
+                    defaultOpen={sectionsOpen}
                 />
-                <AlsoSee relatedPosts={relatedPosts} relatedDemos={relatedDemos} />
+                <AlsoSee relatedPosts={relatedPosts} relatedDemos={relatedDemos} defaultOpen={sectionsOpen} />
             </div>
         );
     }

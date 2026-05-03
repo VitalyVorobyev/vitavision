@@ -114,6 +114,7 @@ export default function ConceptPost() {
                     backLabel="Back to atlas"
                     frontmatter={frontmatter}
                     badges={<QualityBadge quality={frontmatter.quality} />}
+                    kind="concept"
                 />
 
                 {html === null ? (

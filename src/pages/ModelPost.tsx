@@ -281,6 +281,7 @@ export default function ModelPost() {
                     backLabel="Back to atlas"
                     frontmatter={frontmatter}
                     badges={modelBadges}
+                    kind="model"
                 />
 
                 {frontmatter.implementations && frontmatter.implementations.length >= 1 && (

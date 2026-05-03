@@ -4,6 +4,7 @@ import TagBadge from "../blog/TagBadge.tsx";
 import SourceStrip from "./SourceStrip.tsx";
 
 type Difficulty = "beginner" | "intermediate" | "advanced";
+type PageKind = "algorithm" | "model" | "concept";
 
 interface AtlasFrontmatter {
     title: string;
@@ -23,7 +24,15 @@ interface AtlasPageHeaderProps {
     frontmatter: AtlasFrontmatter;
     /** Extra badges rendered on the right of the meta row (e.g. QualityBadge, model arch chips). */
     badges?: ReactNode;
+    /** Page kind shown as a badge to the left of the title. */
+    kind?: PageKind;
 }
+
+const KIND_CLASSES: Record<PageKind, string> = {
+    algorithm: "text-brand border-brand/40",
+    model:     "text-violet-600 dark:text-violet-400 border-violet-500/40",
+    concept:   "text-muted-foreground border-border",
+};
 
 const DIFFICULTY_DOT: Record<Difficulty, string> = {
     advanced:     "bg-red-500",
@@ -37,7 +46,7 @@ const DIFFICULTY_LABEL: Record<Difficulty, string> = {
     beginner:     "Beginner",
 };
 
-export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges }: AtlasPageHeaderProps) {
+export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges, kind }: AtlasPageHeaderProps) {
     return (
         <header className="space-y-4 mb-8">
             <Link
@@ -47,13 +56,18 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                 &larr; {backLabel}
             </Link>
             <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
+                {kind && (
+                    <span aria-hidden="true" className={`text-sm font-mono uppercase tracking-wider border rounded px-2 py-1 mr-3 align-middle ${KIND_CLASSES[kind]}`}>
+                        {kind}
+                    </span>
+                )}
                 {frontmatter.dev && (
-                    <span className="text-sm font-mono uppercase tracking-wider text-blue-500 border border-blue-500/40 rounded px-2 py-1 mr-3 align-middle">
+                    <span aria-hidden="true" className="text-sm font-mono uppercase tracking-wider text-blue-500 border border-blue-500/40 rounded px-2 py-1 mr-3 align-middle">
                         dev sample
                     </span>
                 )}
                 {frontmatter.draft && (
-                    <span className="text-sm font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-2 py-1 mr-3 align-middle">
+                    <span aria-hidden="true" className="text-sm font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-2 py-1 mr-3 align-middle">
                         draft
                     </span>
                 )}

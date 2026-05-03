@@ -115,6 +115,7 @@ export default function AlgorithmPost() {
                     backLabel="Back to atlas"
                     frontmatter={frontmatter}
                     badges={<QualityBadge quality={frontmatter.quality} />}
+                    kind="algorithm"
                 />
 
                 {html === null ? (

@@ -167,8 +167,16 @@ demoLinks: [...]
 
 # Atlas relationship fields (optional)
 prerequisites: []   # concept slugs this algorithm depends on (e.g. [image-gradient, structure-tensor])
-comparedWith: []    # algorithms that this is directly contrasted with (author one side; build mirrors)
 failureModes: []    # failure-mode page slugs (always empty in MVP; required as placeholder)
+
+# Quality + typed relations (optional)
+quality: stub | canonical | historical    # see CLAUDE.md → "Quality field"
+relations:                                # see CLAUDE.md → "Relations field". The single field for all
+                                          # inter-page links beyond prerequisites/failureModes.
+  - type: generalized_by | alternative_formulation_of | parallel_foundation_with | extended_by | compared_with | feeds_into | learned_alternative_of
+    target: <slug>
+    confidence: high | medium | low
+    caution: <one-line note, optional>
 ```
 
 **Source kinds.** `sources.primary` and `sources.references[]` accept `<bare-id>` (defaults to `paper`), `paper:<id>`, `repo:<url>@<sha>`, or `doc:<repo-relative-path>`. The validator dispatches on prefix and resolves against `docs/papers/index.yaml` (papers and repos) or the filesystem (docs).
@@ -208,7 +216,7 @@ The note's `## NEW: <slug>` or `## UPDATE: <slug>` block provides authoritative 
 - **Cite source IDs only from `docs/papers/index.yaml`.** Do not invent paper IDs.
 - **Never reference unresolved slugs.** Verify every slug in `relatedAlgorithms`, `prerequisites`, `comparedWith` exists on disk before adding it.
 - **Do not author reverse edges.** `usedBy:` and similar reverse fields are computed by the build. Never add them manually.
-- Use `quality: stub` only for intentional public placeholders; `quality: canonical` only when the canonical gate is satisfied (sources present, prerequisites non-empty, no TODO markers).
+- Use `quality: stub` only for intentional public placeholders; `quality: canonical` only when the canonical gate is satisfied (sources present, prerequisites non-empty, no TODO markers); `quality: historical` only when a same-domain successor on the site supersedes this method (per CLAUDE.md → Comparison authoring discipline → Rule A). Historical pages must include at least one `relations[]` entry with `{ type: generalized_by, confidence: high, target: <successor-slug> }`, drop `editorAlgorithmId`, and omit `comparedWith:` entirely.
 
 ## Workflow
 
@@ -249,6 +257,8 @@ B8. **Synthesize the frontmatter.** No body yet — just the yaml block.
   - `sources.notes`: freeform summary of key equations, symbols, and constants grounding the page.
   - `relatedAlgorithms`: union of `bun papers:query pages-using <ref-id>` over `sources.references`, plus judgment-based cross-links from the same algorithmic family.
   - **Omit `sources.impl` and `editorAlgorithmId`.** Neither can be inferred safely. Add them only when the user supplies a repo URL or names an existing adapter id.
+  - **Typed relations.** If the research note's `## NEW: <slug>` or `## UPDATE: <slug>` block records a `Relations:` block (one or more `{ type, target, confidence, caution }` entries — recorded by `paper-ingest` Step 4b), copy each entry into the frontmatter `relations:` list verbatim. Verify each `target` slug resolves to an on-disk page before writing.
+  - **Historical fork.** If the research note ALSO records `Quality: historical`, set `quality: historical` in the frontmatter; **drop** `editorAlgorithmId` (no Try-in-editor CTA on a historical page); **omit** `comparedWith` entirely (per CLAUDE.md → Comparison authoring discipline → Rule A — supersession is not comparison). The historical fork requires that at least one of the copied `relations[]` entries is `{ type: generalized_by, confidence: high }` and that its target is non-draft, non-historical — the validator (Rule 4b) enforces this.
 
 B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no body. Then continue with Workflow §4.
 
@@ -270,7 +280,7 @@ B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no b
 3. **Cache the impl** (only if `sources.impl` is set). `bun impls:fetch <slug>` writes raw files into `docs/impls/.cache/<owner>/<repo>/<sha>/<file>`. Opus will pass these paths to the Draft subagent in Step 7.
 4. **Query the citation graph** (lightweight, in-orchestrator). `bun papers:query cites <primary-id>` and `bun papers:query pages-using <ref-id>` for each reference — used to populate `relatedAlgorithms` candidates. Output is small (slug list).
 5. **Read frontmatter of candidate cross-link pages.** For each candidate slug from §4, read only the page's frontmatter (cheap, ~200 tokens each). Do not load page bodies. Use the frontmatter `summary` and `sources.primary` to confirm a cross-link makes sense.
-6. **Assemble the Draft contract input.** Collect: primary note path, reference note paths, cached impl file paths, page-template skeleton path (`references/algo-page-template.md`), target slug. **Opus does NOT read the notes themselves at this step** — the Draft subagent will.
+6. **Assemble the Draft contract input.** Collect: primary note path, reference note paths, cached impl file paths, page-template skeleton path, target slug. **Pick the template on `frontmatter.quality`**: when `quality: "historical"`, pass `references/algo-page-template-historical.md` (trimmed: Goal + Historical context + References — no Algorithm/Implementation/Remarks); otherwise pass `references/algo-page-template.md`. **Opus does NOT read the notes themselves at this step** — the Draft subagent will.
 7. **Delegate the page draft to Sonnet.** Invoke the Draft contract from `.claude/skills/_shared/subagent-prompts.md` with the inputs from §6. Sonnet returns:
    - The full page body as a markdown string in its reply
    - A `<<<AUDIT>>>{json}<<<END>>>` block listing every constant / equation / symbol used in the body and the source note that supplied each
@@ -295,6 +305,16 @@ B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no b
 ## Voice rules
 
 See `.claude/skills/_shared/voice-rules.md` for the canonical rules. They are binding.
+
+## Historical pages — voice rules
+
+Pages with `quality: "historical"` follow a tighter discipline:
+
+- **No editorialising about obsolescence.** Words like "outdated", "obsolete", "primitive", "legacy", "archaic" are forbidden. The reader-visible "Historical" badge already conveys the status. Prose stays factual: state when the paper appeared, what was new, what the successor improved, why the page is preserved.
+- **No `# Algorithm` / `# Implementation` / `# Remarks` headings.** The trimmed template is `# Goal` + `# Historical context` + `# References` only. Math lives in the original paper PDF and the research note; do not duplicate it.
+- **`# Historical context` covers four points** in 2–4 paragraphs: (a) when and in what landscape the paper appeared; (b) what was new — the contribution sentence; (c) what the successor improved (with a concrete sentence on the lifted limitation, linking the successor's page); (d) why the page is preserved (citation lineage, pedagogical value, period-correct understanding).
+- **No "When to choose X over Y" subsections.** Supersession is not comparison; the `successor:` field carries the relationship.
+- **References include the successor's primary source** so the reader can follow the lineage forward without leaving the page.
 
 ## Forbidden patterns (taken from real failure modes)
 

@@ -4,13 +4,18 @@ date: 2026-05-02
 summary: "Detect checkerboard X-corners by computing a four-quadrant corner likelihood at each pixel using axis-aligned and 45°-rotated prototype filters at three fixed scales, verifying candidates by gradient-orientation statistics, and refining to subpixel accuracy via gradient-orthogonality weighted least squares — the libcbdetect detector that anchors many subsequent calibration pipelines."
 tags: ["calibration", "chessboard", "corner-detection"]
 domain: features
+tasks: [chessboard-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["chess-corners", "rochade", "pyramidal-blur-aware-xcorner"]
 prerequisites: [image-gradient]
-related: [chessboard-x-corner-detection]
-comparedWith: [pyramidal-blur-aware-xcorner]
 failureModes: []
+relations:
+  - type: compared_with
+    target: pyramidal-blur-aware-xcorner
+    confidence: high
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: geiger2012-automatic
   references:

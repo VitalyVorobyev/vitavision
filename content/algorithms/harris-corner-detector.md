@@ -4,12 +4,21 @@ date: 2026-04-15
 summary: "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum."
 tags: ["feature-detection", "corner"]
 domain: features
+tasks: [corner-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["chess-corners", "duda-radon-corners", "fast-corner-detector", "laureano-topological-chessboard", "puzzleboard", "pyramidal-blur-aware-xcorner", "shi-tomasi-corner-detector", "shu-topological-grid"]
 prerequisites: [image-gradient, structure-tensor]
-comparedWith: [shi-tomasi-corner-detector, fast-corner-detector, chess-corners]
 failureModes: []
+relations:
+  - type: compared_with
+    target: shi-tomasi-corner-detector
+    confidence: high
+  - type: compared_with
+    target: fast-corner-detector
+    confidence: high
+  - type: compared_with
+    target: chess-corners
+    confidence: high
 sources:
   primary: harris1988-corner
   references: [shi-tomasi1994-features]

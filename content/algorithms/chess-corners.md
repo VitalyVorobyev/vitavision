@@ -4,16 +4,30 @@ date: 2026-04-15
 summary: "A chessboard-specific corner detector: scores each pixel by how well its local neighborhood matches an alternating bright-dark X-junction pattern, using 16 fixed integer offsets on a radius-5 ring."
 tags: ["feature-detection", "calibration", "chessboard"]
 domain: features
+tasks: [corner-detection, chessboard-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedPosts: ["01-chesscorners"]
-relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "fast-corner-detector"]
 relatedDemos: ["chess-response"]
 prerequisites: [image-gradient]
-related: [chessboard-x-corner-detection]
-comparedWith: [rochade, pyramidal-blur-aware-xcorner, puzzleboard, duda-radon-corners]
 failureModes: []
 editorAlgorithmId: chess-corners
+relations:
+  - type: compared_with
+    target: rochade
+    confidence: high
+  - type: compared_with
+    target: pyramidal-blur-aware-xcorner
+    confidence: high
+  - type: compared_with
+    target: puzzleboard
+    confidence: high
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
+  - type: compared_with
+    target: duda-radon-corners
+    confidence: high
 sources:
   primary: bennett2013-chess
   references: [rosten2006-fast]

@@ -202,6 +202,7 @@ export interface ValidateContentOptions {
  */
 export async function validateContent(options?: ValidateContentOptions): Promise<string[]> {
     const errors: string[] = [];
+    const warnings: string[] = [];
 
     const includeDrafts = options?.includeDrafts ?? (process.env.INCLUDE_DRAFTS === "true");
 
@@ -265,18 +266,30 @@ export async function validateContent(options?: ValidateContentOptions): Promise
     // A non-draft page may legitimately reference a draft page (it just won't be published yet).
     // This matches how the old content-validate.ts worked.
     const allEntries = [...algoEntries, ...modelEntries, ...conceptEntries];
-    const allGraphEntries: ContentEntry[] = allEntries.map((e) => ({
-        slug: e.slug,
-        type: (algoEntries.includes(e) ? "algorithm" :
-            modelEntries.includes(e) ? "model" : "concept") as ContentEntry["type"],
-        title: (e.frontmatter.title as string) ?? e.slug,
-        summary: (e.frontmatter.summary as string) ?? "",
-        relatedAlgorithms: e.frontmatter.relatedAlgorithms as string[] | undefined,
-        prerequisites: e.frontmatter.prerequisites as string[] | undefined,
-        related: e.frontmatter.related as string[] | undefined,
-        comparedWith: e.frontmatter.comparedWith as string[] | undefined,
-        failureModes: e.frontmatter.failureModes as string[] | undefined,
-    }));
+    type ParsedRelations = ContentEntry["relations"];
+
+    function entryToContentEntry(
+        e: typeof allEntries[number],
+        type: ContentEntry["type"],
+    ): ContentEntry {
+        return {
+            slug: e.slug,
+            type,
+            title: (e.frontmatter.title as string) ?? e.slug,
+            summary: (e.frontmatter.summary as string) ?? "",
+            prerequisites: e.frontmatter.prerequisites as string[] | undefined,
+            failureModes: e.frontmatter.failureModes as string[] | undefined,
+            relations: e.frontmatter.relations as ParsedRelations,
+        };
+    }
+
+    const allGraphEntries: ContentEntry[] = allEntries.map((e) =>
+        entryToContentEntry(
+            e,
+            (algoEntries.includes(e) ? "algorithm" :
+                modelEntries.includes(e) ? "model" : "concept") as ContentEntry["type"],
+        ),
+    );
 
     // Build full-namespace graph for slug resolution.
     const fullGraph = buildContentGraph(allGraphEntries);
@@ -284,38 +297,9 @@ export async function validateContent(options?: ValidateContentOptions): Promise
 
     // Build the published-only graph entries for cycle detection (uses filtered set).
     const filteredGraphEntries: ContentEntry[] = [
-        ...algoFiltered.map((e) => ({
-            slug: e.slug,
-            type: "algorithm" as const,
-            title: (e.frontmatter.title as string) ?? e.slug,
-            summary: (e.frontmatter.summary as string) ?? "",
-            relatedAlgorithms: e.frontmatter.relatedAlgorithms as string[] | undefined,
-            prerequisites: e.frontmatter.prerequisites as string[] | undefined,
-            related: e.frontmatter.related as string[] | undefined,
-            comparedWith: e.frontmatter.comparedWith as string[] | undefined,
-            failureModes: e.frontmatter.failureModes as string[] | undefined,
-        })),
-        ...modelFiltered.map((e) => ({
-            slug: e.slug,
-            type: "model" as const,
-            title: (e.frontmatter.title as string) ?? e.slug,
-            summary: (e.frontmatter.summary as string) ?? "",
-            relatedAlgorithms: e.frontmatter.relatedAlgorithms as string[] | undefined,
-            prerequisites: e.frontmatter.prerequisites as string[] | undefined,
-            related: e.frontmatter.related as string[] | undefined,
-            comparedWith: e.frontmatter.comparedWith as string[] | undefined,
-            failureModes: e.frontmatter.failureModes as string[] | undefined,
-        })),
-        ...conceptFiltered.map((e) => ({
-            slug: e.slug,
-            type: "concept" as const,
-            title: (e.frontmatter.title as string) ?? e.slug,
-            summary: (e.frontmatter.summary as string) ?? "",
-            prerequisites: e.frontmatter.prerequisites as string[] | undefined,
-            related: e.frontmatter.related as string[] | undefined,
-            comparedWith: e.frontmatter.comparedWith as string[] | undefined,
-            failureModes: e.frontmatter.failureModes as string[] | undefined,
-        })),
+        ...algoFiltered.map((e) => entryToContentEntry(e, "algorithm")),
+        ...modelFiltered.map((e) => entryToContentEntry(e, "model")),
+        ...conceptFiltered.map((e) => entryToContentEntry(e, "concept")),
     ];
 
     // Use pre-built published graph if supplied, otherwise build from filtered entries.
@@ -337,10 +321,13 @@ export async function validateContent(options?: ValidateContentOptions): Promise
 
     for (const e of [...algoFiltered, ...modelFiltered, ...conceptFiltered]) {
         checkRelationshipField(e.file, "prerequisites", e.frontmatter.prerequisites as string[] | undefined);
-        checkRelationshipField(e.file, "related", e.frontmatter.related as string[] | undefined);
-        checkRelationshipField(e.file, "comparedWith", e.frontmatter.comparedWith as string[] | undefined);
         checkRelationshipField(e.file, "failureModes", e.frontmatter.failureModes as string[] | undefined);
-        checkRelationshipField(e.file, "relatedAlgorithms", e.frontmatter.relatedAlgorithms as string[] | undefined);
+        const relations = (e.frontmatter.relations as Array<{ target?: string }> | undefined) ?? [];
+        for (const rel of relations) {
+            if (rel?.target && !knownSlugs.has(rel.target)) {
+                errors.push(`[${e.file}] unknown slug "${rel.target}" in relations[].target`);
+            }
+        }
     }
 
     // ── Rule 2: Prerequisite cycles ───────────────────────────────────────────
@@ -438,17 +425,15 @@ export async function validateContent(options?: ValidateContentOptions): Promise
             }
         }
 
-        // Must have at least one of prerequisites / related / relatedAlgorithms
+        // Must have at least one of prerequisites / relations[]
         const prereqs = e.frontmatter.prerequisites as string[] | undefined;
-        const related = e.frontmatter.related as string[] | undefined;
-        const relAlgo = e.frontmatter.relatedAlgorithms as string[] | undefined;
+        const relations = e.frontmatter.relations as Array<unknown> | undefined;
         const hasRelationship =
             (prereqs && prereqs.length > 0) ||
-            (related && related.length > 0) ||
-            (relAlgo && relAlgo.length > 0);
+            (relations && relations.length > 0);
         if (!hasRelationship) {
             errors.push(
-                `[${e.file}] quality: "canonical" requires at least one of prerequisites/related/relatedAlgorithms`,
+                `[${e.file}] quality: "canonical" requires at least one of prerequisites or relations[]`,
             );
         }
 
@@ -456,6 +441,89 @@ export async function validateContent(options?: ValidateContentOptions): Promise
         const html = await renderMarkdownPlain(e.content);
         if (/TODO/i.test(html)) {
             errors.push(`[${e.file}] quality: "canonical" but rendered HTML contains TODO`);
+        }
+    }
+
+    // ── Rule 4b: Typed relations[] + historical quality gates (algorithm only) ─
+    // A historical page is preserved for citation/lineage; the method is
+    // superseded for practical use. The "Superseded by" link is derived from
+    // a `relations[]` entry of type "generalized_by" with confidence "high".
+    // See CLAUDE.md → "Quality field" and "Relations field" for the policy.
+    type TypedRelation = {
+        type: string;
+        target: string;
+        confidence: string;
+        caution?: string;
+    };
+
+    for (const e of algoFiltered) {
+        const relations = (e.frontmatter.relations as TypedRelation[] | undefined) ?? [];
+
+        // Every relations[].target must resolve to a known slug, regardless of quality.
+        for (const rel of relations) {
+            if (!knownSlugs.has(rel.target)) {
+                errors.push(
+                    `[${e.file}] relations[].target "${rel.target}" does not resolve to a known page`,
+                );
+            }
+        }
+
+        if (e.frontmatter.quality !== "historical") continue;
+
+        // Page itself must not be draft.
+        if (e.isDraft) {
+            errors.push(`[${e.file}] quality: "historical" but page is draft`);
+        }
+
+        // sources.primary is required — provenance is the whole point of preservation.
+        const src = e.frontmatter.sources as { primary?: string } | undefined;
+        if (!src?.primary) {
+            errors.push(`[${e.file}] quality: "historical" requires sources.primary`);
+        }
+
+        // At least one relations entry must be a high-confidence generalized_by.
+        const supersededBy = relations.find(
+            (r) => r.type === "generalized_by" && r.confidence === "high",
+        );
+        if (!supersededBy) {
+            errors.push(
+                `[${e.file}] quality: "historical" requires at least one relations[] entry with type: "generalized_by" and confidence: "high"`,
+            );
+            continue;
+        }
+
+        // The generalized_by/high target must resolve, must not be draft, and
+        // must not itself be historical (no chains).
+        if (!knownSlugs.has(supersededBy.target)) {
+            // Already reported above; skip the deeper check.
+            continue;
+        }
+        const targetEntry = allEntries.find((entry) => entry.slug === supersededBy.target);
+        if (targetEntry) {
+            if (targetEntry.isDraft) {
+                errors.push(
+                    `[${e.file}] generalized_by/high target "${supersededBy.target}" is a draft page; resolve to a published successor`,
+                );
+            }
+            if (targetEntry.frontmatter.quality === "historical") {
+                errors.push(
+                    `[${e.file}] generalized_by/high target "${supersededBy.target}" is itself quality: "historical"; chains are not permitted`,
+                );
+            }
+        }
+
+        // Soft warning (not an error): historical pages should not contain
+        // # Algorithm or # Implementation top-level headings — those belong on a
+        // canonical page. Catches authoring drift without coupling the validator
+        // to per-section markdown layout.
+        const lines = e.content.split("\n");
+        for (const line of lines) {
+            if (/^#\s+(Algorithm|Implementation)\s*$/.test(line)) {
+                warnings.push(
+                    `[${e.file}] quality: "historical" page contains "${line.trim()}" heading; trim per template`,
+                );
+                break;
+            }
         }
     }
 
@@ -518,6 +586,12 @@ export async function validateContent(options?: ValidateContentOptions): Promise
         console.log(
             `content:validate — ${totalChecked} page(s) validated (${algoFiltered.length} algo, ${modelFiltered.length} model, ${conceptFiltered.length} concept), no errors`,
         );
+    }
+    if (warnings.length > 0) {
+        for (const w of warnings) {
+            console.warn(`  WARN  ${w}`);
+        }
+        console.warn(`content:validate — ${warnings.length} warning(s)`);
     }
 
     return errors;

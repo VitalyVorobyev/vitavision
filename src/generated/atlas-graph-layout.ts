@@ -16,99 +16,129 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 540.83136,
     "cluster": "fundamentals"
   },
+  "barath-magsac": {
+    "x": 296.0591485,
+    "y": 101.490528,
+    "cluster": "geometry"
+  },
   "dlt-normalisation": {
-    "x": 333.646975,
+    "x": 408.2234875,
     "y": 79.74393600000002,
     "cluster": "geometry"
   },
   "epipolar-geometry": {
-    "x": 510.41644899999994,
+    "x": 496.60822449999995,
     "y": 75.468,
     "cluster": "geometry"
   },
+  "fischler-bolles-ransac": {
+    "x": 305.0602525,
+    "y": 323.186016,
+    "cluster": "geometry"
+  },
   "fundamental-matrix-eight-point": {
-    "x": 299.785378,
+    "x": 391.292689,
     "y": 280.504272,
     "cluster": "geometry"
   },
   "homography": {
-    "x": 496.92111399999993,
+    "x": 489.860557,
     "y": 298.962768,
     "cluster": "geometry"
   },
+  "raguram-usac": {
+    "x": 294.747541,
+    "y": 468.16161600000004,
+    "cluster": "geometry"
+  },
+  "ransac": {
+    "x": 380.686051,
+    "y": 528.984336,
+    "cluster": "geometry"
+  },
   "spatially-varying-image-stitching": {
-    "x": 290.88541,
+    "x": 477.142705,
     "y": 472.16942400000005,
     "cluster": "geometry"
   },
   "chess-corners": {
     "x": 503.90377650000005,
-    "y": 91.95787200000001,
+    "y": 93.2462976,
     "cluster": "detectors"
   },
   "chessboard-x-corner-detection": {
     "x": 600.8661105,
-    "y": 99.394896,
+    "y": 99.1959168,
     "cluster": "detectors"
   },
   "duda-radon-corners": {
     "x": 711.6682740000001,
-    "y": 105.48069600000001,
+    "y": 104.0645568,
     "cluster": "detectors"
   },
   "fast-corner-detector": {
     "x": 502.62693450000006,
-    "y": 191.33256,
+    "y": 172.74604800000003,
     "cluster": "detectors"
   },
   "geiger-chessboard-detector": {
     "x": 617.7115755,
-    "y": 183.719136,
+    "y": 166.65530880000003,
     "cluster": "detectors"
   },
   "harris-corner-detector": {
     "x": 692.4903600000001,
-    "y": 184.872792,
+    "y": 167.57823360000003,
     "cluster": "detectors"
   },
   "hessian-saddle-response": {
     "x": 511.7418165,
-    "y": 302.307312,
+    "y": 261.5258496,
     "cluster": "detectors"
   },
   "image-gradient": {
     "x": 592.506588,
-    "y": 310.143,
+    "y": 267.7944,
+    "cluster": "detectors"
+  },
+  "loy-fast-radial-symmetry": {
+    "x": 694.968192,
+    "y": 250.4309952,
+    "cluster": "detectors"
+  },
+  "ni-generalized-fast-radial-symmetry": {
+    "x": 518.78025,
+    "y": 335.01106560000005,
     "cluster": "detectors"
   },
   "pyramidal-blur-aware-xcorner": {
-    "x": 702.370083,
-    "y": 296.70132,
+    "x": 612.070083,
+    "y": 337.68105600000007,
     "cluster": "detectors"
   },
   "shi-tomasi-corner-detector": {
-    "x": 519.0362505,
-    "y": 411.24993599999993,
+    "x": 699.6362505000001,
+    "y": 348.67994880000003,
     "cluster": "detectors"
   },
   "structure-tensor": {
-    "x": 621.6748425,
-    "y": 389.74324799999994,
+    "x": 531.3748425,
+    "y": 412.11459840000003,
     "cluster": "detectors"
   },
   "superpoint": {
-    "x": 691.5769755000001,
-    "y": 402.25353599999994,
+    "x": 601.2769755,
+    "y": 422.12282880000004,
     "cluster": "detectors"
   },
   "topological-grid-recovery": {
-    "x": 511.78922400000005,
-    "y": 487.159896,
+    "x": 692.389224,
+    "y": 409.4079168,
     "cluster": "detectors"
   },
   "xfeat": {
-    "x": 622.348029,
-    "y": 509.774376,
+    "x": 532.048029,
+    "y": 508.1395008,
     "cluster": "detectors"
   },
   "apap-image-stitching": {
@@ -121,78 +151,83 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 109.7234688,
     "cluster": "applications"
   },
+  "ccs-camera-calibration": {
+    "x": 916.3018340000001,
+    "y": 94.8070848,
+    "cluster": "applications"
+  },
   "daniilidis-dual-quaternion-handeye": {
-    "x": 900.5783465000001,
-    "y": 94.2059136,
+    "x": 719.9783465,
+    "y": 174.84591360000002,
     "cluster": "applications"
   },
   "gao-dual-homography-stitching": {
-    "x": 741.1094495000001,
+    "x": 831.4094495,
     "y": 165.49248000000003,
     "cluster": "applications"
   },
   "gp-checkerboard-enhancement": {
-    "x": 829.219223,
+    "x": 919.5192230000001,
     "y": 178.32028800000003,
     "cluster": "applications"
   },
   "kumar-generalized-rac": {
-    "x": 909.7595990000001,
-    "y": 169.6047168,
+    "x": 729.1595990000001,
+    "y": 250.2447168,
     "cluster": "applications"
   },
   "laureano-topological-chessboard": {
-    "x": 718.382294,
+    "x": 808.682294,
     "y": 268.8443328,
     "cluster": "applications"
   },
   "lin-sva-stitching": {
-    "x": 811.887041,
+    "x": 902.187041,
     "y": 271.7062464,
     "cluster": "applications"
   },
   "mate-checkerboard-detector": {
-    "x": 920.9477690000001,
-    "y": 260.2360128,
+    "x": 740.3477690000001,
+    "y": 340.87601280000007,
     "cluster": "applications"
   },
   "ocpad": {
-    "x": 744.2762705,
+    "x": 834.5762705,
     "y": 329.6005248000001,
     "cluster": "applications"
   },
   "puzzleboard": {
-    "x": 828.662975,
+    "x": 918.962975,
     "y": 339.1035456000001,
     "cluster": "applications"
   },
   "rochade": {
-    "x": 901.175681,
-    "y": 351.44307840000005,
+    "x": 720.575681,
+    "y": 432.08307840000003,
     "cluster": "applications"
   },
   "shu-topological-grid": {
-    "x": 719.9846675,
+    "x": 810.2846675,
     "y": 416.77155840000006,
     "cluster": "applications"
   },
   "sturm-plane-based-calibration": {
-    "x": 809.5324685,
+    "x": 899.8324685000001,
     "y": 416.09982720000005,
     "cluster": "applications"
   },
   "tsai-lenz-handeye": {
-    "x": 910.4106620000001,
-    "y": 412.10613120000005,
+    "x": 729.8106620000001,
+    "y": 492.74613120000004,
     "cluster": "applications"
   },
   "tsai-versatile-calibration": {
-    "x": 738.691667,
+    "x": 828.991667,
     "y": 500.67707520000005,
     "cluster": "applications"
   },
   "zhang-planar-calibration": {
-    "x": 820.66691,
+    "x": 910.9669100000001,
     "y": 493.2428736,
     "cluster": "applications"
   }

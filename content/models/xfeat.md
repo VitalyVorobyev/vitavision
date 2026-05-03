@@ -4,12 +4,12 @@ date: 2026-04-18
 summary: "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices."
 tags: ["image-matching", "keypoint-detection", "local-descriptors", "cnn"]
 domain: features
+tasks: [feature-detection, local-feature-matching]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: cnn
 flops: "64-D descriptors at H/8 × W/8 resolution"
 prerequisites: [image-gradient]
-comparedWith: []
 failureModes: []
 sources:
   primary: potje2024-xfeat

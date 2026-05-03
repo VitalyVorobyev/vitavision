@@ -100,8 +100,9 @@ export default function useAtlasGraph({ algorithms, models, concepts }: UseAtlas
             const fwd = contentGraph.forward[node.slug];
             if (!fwd) continue;
             for (const t of fwd.prerequisites) pushEdge(node.slug, t);
-            for (const t of fwd.related) pushEdge(node.slug, t);
-            for (const t of fwd.comparedWith) pushEdge(node.slug, t);
+            // All typed relations contribute graph edges regardless of direction;
+            // mirrored entries are deduplicated by the seen-pair set.
+            for (const rel of fwd.relations) pushEdge(node.slug, rel.target);
         }
 
         return { nodes, edges, nodesBySlug };

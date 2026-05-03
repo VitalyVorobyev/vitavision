@@ -4,14 +4,24 @@ date: 2026-05-02
 summary: "Fully-convolutional CNN that jointly detects interest points and computes 256-D descriptors in a single forward pass, trained without human annotations via Homographic Adaptation on synthetic shapes and MS-COCO images."
 tags: ["computer-vision", "keypoint-detection", "local-descriptors", "image-matching", "self-supervised"]
 domain: features
+tasks: [feature-detection, local-feature-matching]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: cnn
 params: "~1.3M (estimate; not stated in paper)"
 prerequisites: [image-gradient]
-comparedWith: [xfeat]
-draft: true
 failureModes: []
+relations:
+  - type: compared_with
+    target: xfeat
+    confidence: high
+  - type: learned_alternative_of
+    target: harris-corner-detector
+    confidence: high
+    caution: "SuperPoint replaces classical sparse keypoint+descriptor pipelines (Harris/Shi-Tomasi + SIFT/ORB) with a single learned model; it does not literally re-implement the Harris response."
+  - type: learned_alternative_of
+    target: shi-tomasi-corner-detector
+    confidence: high
 sources:
   primary: detone2018-superpoint
   references:
@@ -35,10 +45,14 @@ sources:
     aligned integer positions, no subpixel refinement). §7.3 Figure 8
     explicit failure mode: "extreme in-plane rotation not seen in the
     training examples."
-relatedAlgorithms:
-  - harris-corner-detector
-  - shi-tomasi-corner-detector
-  - fast-corner-detector
+implementations:
+  - role: official
+    repo: https://github.com/magicleap/SuperPointPretrainedNetwork
+    commit: 1fda796addba9b6f8e79d586a3699700a86b1cea
+    framework: pytorch
+    license: noncommercial-research-only
+    weights_url: https://github.com/magicleap/SuperPointPretrainedNetwork/blob/master/superpoint_v1.pth
+    weights_license: noncommercial-research-only
 ---
 
 # Motivation
@@ -90,7 +104,7 @@ with $\lambda = 0.0001$. The detector loss $\mathcal{L}_p$ is a cell-wise cross-
 
 # Implementations
 
-The original Magic Leap reference implementation (PyTorch) ships pretrained weights and an inference notebook; downstream forks add C++ and ONNX export paths. License verification before promoting this page from `draft: true` is the gating step — see Limitations.
+The official Magic Leap PyTorch release ships pretrained weights (`superpoint_v1.pth`) and an inference notebook; the LICENSE at the pinned commit restricts use to noncommercial academic research — see Limitations.
 
 # Assessment
 
@@ -114,6 +128,7 @@ The original Magic Leap reference implementation (PyTorch) ships pretrained weig
 - **Not scale-invariant by construction.** No scale-space, no orientation normalisation. Scale coverage is empirical, limited to the training homography range.
 - **Supervision from homographies only.** Generalisation to non-planar parallax scenes is unverified by the paper's HPatches-centric evaluation protocol.
 - **Keypoint density ceiling.** The $8 \times 8$ cell design caps effective keypoint density to one point per 64 pixels; at $480 \times 640$ the theoretical maximum is 4800 points (paper evaluates at $N = 1000$).
+- **Restrictive code and weights license.** The official Magic Leap repository's LICENSE is a custom "academic or non-profit organization noncommercial research use only" agreement — the pretrained weights inherit the same restriction. Commercial deployment requires either a separate licensing agreement with Magic Leap or retraining from scratch on a redistributable dataset.
 
 ## When to choose SuperPoint over XFeat
 

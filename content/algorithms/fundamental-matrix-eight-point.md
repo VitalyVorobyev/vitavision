@@ -4,11 +4,10 @@ date: 2026-05-02
 summary: "Compute the fundamental matrix from n ≥ 8 point correspondences by conditioning the linear DLT system via a similarity normalisation, recovering accuracy comparable to iterative methods at a fraction of the cost."
 tags: ["geometry", "stereo", "two-view-geometry", "fundamental-matrix"]
 domain: geometry
+tasks: [fundamental-matrix-estimation]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["apap-image-stitching"]
-prerequisites: [epipolar-geometry, homography, dlt-normalisation]
-comparedWith: []
+prerequisites: [epipolar-geometry, homography, dlt-normalisation, ransac]
 failureModes: []
 sources:
   primary: hartley1997-eight-point

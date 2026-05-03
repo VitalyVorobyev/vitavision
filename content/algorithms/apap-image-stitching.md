@@ -4,12 +4,10 @@ date: 2026-04-26
 summary: "Replace a global homography with a spatially varying field of homographies, each fit by a per-cell weighted DLT (Moving DLT) on the same point correspondences, so the warp stays globally projective but adapts locally where the projective model is inadequate."
 tags: ["image-stitching", "homography", "projective-warp", "dlt"]
 domain: stitching
+tasks: [image-stitching]
 author: "Vitaly Vorobyev"
 difficulty: advanced
-relatedAlgorithms: ["zhang-planar-calibration"]
-prerequisites: [homography, dlt-normalisation]
-related: [spatially-varying-image-stitching]
-comparedWith: []
+prerequisites: [homography, dlt-normalisation, ransac]
 failureModes: []
 sources:
   primary: zaragoza2013-apap

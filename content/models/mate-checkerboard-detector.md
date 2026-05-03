@@ -4,20 +4,34 @@ date: 2026-05-02
 summary: "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold."
 tags: ["calibration", "corner-detection", "cnn"]
 domain: calibration
+tasks: [corner-detection, chessboard-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: cnn
 quality: stub
+noPublicImpl: true
 params: "2,939"
 prerequisites: [image-gradient]
-related: [chessboard-x-corner-detection]
-comparedWith: [ccdn-checkerboard-detector]
 failureModes: []
-draft: true
+relations:
+  - type: compared_with
+    target: ccdn-checkerboard-detector
+    confidence: high
+  - type: compared_with
+    target: ccs-camera-calibration
+    confidence: high
+    caution: "Different scope: MATE is a detector, CCS is a full calibration pipeline; comparison is at the corner-detection level."
+  - type: learned_alternative_of
+    target: chess-corners
+    confidence: high
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: donne2016-mate
   references:
     - chen2023-ccdn
+    - zhang2022-learning-based
     - placht2014-rochade
     - bennett2013-chess
     - rufli2008-blurred
@@ -38,10 +52,6 @@ sources:
     architectural specifics (kernel sizes, channel counts, max-pool
     strides, training hyperparameters) can be verified against the
     primary text.
-relatedAlgorithms:
-  - chess-corners
-  - rochade
-  - fast-corner-detector
 ---
 
 # Motivation
@@ -103,6 +113,21 @@ MATE remains relevant in three narrow situations:
 
 For production calibration use under any non-trivial imaging conditions (lens distortion, low contrast, partial visibility), choose CCDN.
 
+## When to choose MATE over CCS
+
+[CCS](/atlas/ccs-camera-calibration) (Zhang et al., RA-L 2022) is a full learning-based calibration pipeline that pairs a UNet 2D-Gaussian heatmap detector with sub-pixel Gaussian surface fitting and image-level RANSAC over Zhang's planar calibration. The detection stage operates at sub-pixel accuracy (CCS Table III: 0.78 / 0.51 / 0.71 px under noise / bad lighting / distortion) versus MATE's pixel-level response map without built-in refinement. CCS supersedes MATE for end-to-end sub-pixel calibration tasks; MATE's role narrows to scenarios where only a lightweight integer-grid response is needed and the surrounding pipeline owns refinement, distortion correction, and parameter estimation.
+
+| | MATE (2016) | CCS (2022) |
+|---|---|---|
+| Scope | Detector only | Full calibration pipeline (detection + distortion correction + estimation) |
+| Detection output | Per-pixel response map; integer-grid accuracy | UNet 2D-Gaussian heatmap; SVD-based Gaussian surface-fit sub-pixel coordinates with confidence $\sigma$ |
+| Distortion correction | None | CNN-regressed radial correction model (5 parameters) preceding detection |
+| Outlier handling | None (every supra-threshold pixel emits a candidate) | Distribution-aware $\sigma$ rejection upstream + image-level RANSAC over views downstream |
+| Parameter estimation | Not included | Built-in Zhang + RANSAC view selection |
+| Implementation status | No verified public implementation | Official PyTorch release (MIT) with detection weights |
+
+Choose MATE when only a lightweight learned X-corner response is needed and the calling system already owns sub-pixel refinement, distortion handling, and parameter estimation — for example, a research baseline studying a single-stage CNN detector in isolation. Choose CCS when the goal is an end-to-end calibration pipeline with sub-pixel accuracy and the camera's distortion can be matched to the CCS training distribution.
+
 # Implementations
 
 No public implementation of MATE has been verified at the time of writing this stub. CCDN's reference implementation (`https://github.com/AnkaChan/new_chessboards_test`) reproduces MATE's architecture as a comparison baseline; readers seeking a runnable MATE should verify the architecture in that repository against the original paper before relying on it.
@@ -114,3 +139,4 @@ No public implementation of MATE has been verified at the time of writing this s
 3. S. Placht, P. Fürsattel, E. Mengue, H. Hofmann, C. Schaller, M. Balda, E. Angelopoulou. *ROCHADE: Robust Checkerboard Advanced Detection for Camera Calibration.* ECCV 2014, 766–779.
 4. S. Bennett, J. Lasenby. *ChESS — Quick and Robust Detection of Chess-board Features.* arXiv:1301.5491, 2013.
 5. M. Rufli, D. Scaramuzza, R. Siegwart. *Automatic Detection of Checkerboards on Blurred and Distorted Images.* IROS 2008, 3121–3126.
+6. Y. Zhang, X. Zhao, D. Qian. *Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration.* IEEE Robotics and Automation Letters 7(4):10470–10477, 2022. [arXiv](https://arxiv.org/pdf/2202.00158)

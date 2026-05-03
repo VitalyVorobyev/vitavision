@@ -124,11 +124,54 @@ export const searchRecords: SearchRecord[] = [
     "venue": "ECCV"
   },
   {
+    "slug": "loy-fast-radial-symmetry",
+    "path": "/atlas/loy-fast-radial-symmetry",
+    "type": "algorithm",
+    "title": "Fast Radial Symmetry Transform",
+    "summary": "Gradient-vote operator that highlights pixels of high local radial symmetry — bright/dark blobs and approximately circular features. Each pixel votes along its gradient direction at one or more radii into orientation and magnitude projection maps; the per-radius contribution is the magnitude projection weighted by a power of the orientation count and Gaussian-smoothed; the cumulative response across radii localises feature centres at $O(K \\cdot |N|)$ cost.",
+    "tags": [
+      "feature-detection",
+      "blob-detection",
+      "radial-symmetry"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "Gareth Loy",
+      "Alexander Zelinsky"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "fischler-bolles-ransac",
+    "path": "/atlas/fischler-bolles-ransac",
+    "type": "algorithm",
+    "title": "Fischler–Bolles RANSAC",
+    "summary": "Founding random-sample-consensus paradigm: fit a parametric model to data containing an unknown fraction of gross outliers by drawing minimal random subsets, instantiating candidate models, counting consensus inliers, and retaining the largest consensus set.",
+    "tags": [
+      "geometry",
+      "robust-estimation",
+      "outlier-rejection",
+      "ransac"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "M. A. Fischler",
+      "R. C. Bolles"
+    ],
+    "venue": "Communications of the ACM"
+  },
+  {
     "slug": "gao-dual-homography-stitching",
     "path": "/atlas/gao-dual-homography-stitching",
     "type": "algorithm",
     "title": "Gao Dual-Homography Stitching",
-    "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group with RANSAC, and blending per pixel by inverse-distance weights — the direct two-plane predecessor of APAP's continuous grid of per-cell homographies.",
+    "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group, and blending per pixel by inverse-distance weights. Superseded for practical use by APAP's continuous per-cell grid.",
     "tags": [
       "image-stitching",
       "homography",
@@ -136,9 +179,7 @@ export const searchRecords: SearchRecord[] = [
       "multi-plane"
     ],
     "domain": "stitching",
-    "headings": [
-      "When to choose Gao DHW over APAP"
-    ],
+    "headings": [],
     "authors": [
       "J. Gao",
       "S. J. Kim",
@@ -171,6 +212,29 @@ export const searchRecords: SearchRecord[] = [
       "B. Schuster"
     ],
     "venue": "IEEE ICRA"
+  },
+  {
+    "slug": "ni-generalized-fast-radial-symmetry",
+    "path": "/atlas/ni-generalized-fast-radial-symmetry",
+    "type": "algorithm",
+    "title": "Generalised Fast Radial Symmetry",
+    "summary": "Affine extension of FRST: each pixel votes along a corrected direction $\\hat V = G M G^{-1} M^{-1} \\nabla I$ at radius $n$, where $G = R D \\in A(2)$ is a rotation–anisotropic-scale pair from a sampled grid, so circles seen as ellipses under bounded perspective converge into a single peak in the per-pixel-max response stack while keeping FRS's $O(K)$ per-radius cost per $G_i$.",
+    "tags": [
+      "feature-detection",
+      "blob-detection",
+      "radial-symmetry",
+      "affine-invariant"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "Jie Ni",
+      "Maneesh K. Singh",
+      "Claus Bahlmann"
+    ],
+    "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)"
   },
   {
     "slug": "gp-checkerboard-enhancement",
@@ -288,6 +352,30 @@ export const searchRecords: SearchRecord[] = [
       "U. Frese"
     ],
     "venue": "British Machine Vision Conference (BMVC)"
+  },
+  {
+    "slug": "barath-magsac",
+    "path": "/atlas/barath-magsac",
+    "type": "algorithm",
+    "title": "MAGSAC: Marginalising Sample Consensus",
+    "summary": "Robust estimator that eliminates the user-tuned inlier threshold by treating the noise scale σ as a random variable on [0, σ_max] and marginalising the RANSAC quality function over σ; the final model is a weighted least-squares fit using marginal-likelihood weights via iteratively reweighted least squares (σ-consensus).",
+    "tags": [
+      "geometry",
+      "robust-estimation",
+      "outlier-rejection",
+      "ransac",
+      "irls"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "D. Barath",
+      "J. Matas",
+      "J. Noskova"
+    ],
+    "venue": "CVPR"
   },
   {
     "slug": "fundamental-matrix-eight-point",
@@ -489,7 +577,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/atlas/tsai-versatile-calibration",
     "type": "algorithm",
     "title": "Tsai's Versatile Camera Calibration",
-    "summary": "Two-stage camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns.",
+    "summary": "Two-stage 1987 camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a precision 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns. Superseded for practical use by Zhang's planar method.",
     "tags": [
       "calibration",
       "intrinsics",
@@ -497,15 +585,38 @@ export const searchRecords: SearchRecord[] = [
       "radial-distortion"
     ],
     "domain": "calibration",
-    "headings": [
-      "Stage 1 — extrinsic + scale (linear)",
-      "When to choose Tsai over Zhang",
-      "When to choose Tsai over Kumar gRAC"
-    ],
+    "headings": [],
     "authors": [
       "R. Y. Tsai"
     ],
     "venue": "IEEE Journal on Robotics and Automation"
+  },
+  {
+    "slug": "raguram-usac",
+    "path": "/atlas/raguram-usac",
+    "type": "algorithm",
+    "title": "USAC: Universal RANSAC Framework",
+    "summary": "Engineering decomposition of practical RANSAC into four pluggable stages — sampling (PROSAC), model verification (SPRT), local optimisation (LO-RANSAC), and degeneracy handling (DEGENSAC) — with a single reference C++ implementation (USAC-1.0) and an SPRT-corrected stopping criterion.",
+    "tags": [
+      "geometry",
+      "robust-estimation",
+      "outlier-rejection",
+      "ransac",
+      "sprt"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure",
+      "When to choose USAC over MAGSAC"
+    ],
+    "authors": [
+      "R. Raguram",
+      "O. Chum",
+      "M. Pollefeys",
+      "J. Matas",
+      "J. Frahm"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
     "slug": "zhang-planar-calibration",
@@ -548,6 +659,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "arXiv (Cornell University)"
   },
   {
+    "slug": "ccs-camera-calibration",
+    "path": "/atlas/ccs-camera-calibration",
+    "type": "model",
+    "title": "CCS",
+    "summary": "Three-stage learning-based camera calibration pipeline: a CNN regresses radial-distortion-correction parameters, a UNet predicts per-corner Gaussian heatmaps refined by surface-fit subpixel localisation, and an image-level RANSAC accepts inlier views before Zhang-style intrinsic estimation.",
+    "tags": [
+      "calibration",
+      "corner-detection",
+      "distortion-correction",
+      "cnn"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "When to choose CCS over CCDN"
+    ],
+    "authors": [
+      "Y. Zhang",
+      "X. Zhao",
+      "D. Qian"
+    ],
+    "venue": "IEEE Robotics and Automation Letters"
+  },
+  {
     "slug": "mate-checkerboard-detector",
     "path": "/atlas/mate-checkerboard-detector",
     "type": "model",
@@ -562,7 +696,8 @@ export const searchRecords: SearchRecord[] = [
     "headings": [
       "Novelty",
       "Limitations",
-      "When to choose MATE over CCDN"
+      "When to choose MATE over CCDN",
+      "When to choose MATE over CCS"
     ],
     "authors": [
       "S. Donné",
@@ -637,6 +772,7 @@ export const searchRecords: SearchRecord[] = [
       "Tsai 1987 — one term, radial only",
       "Weng 1992 — full Brown-Conrady with tangential",
       "Zhang 2000 — two-term radial, no tangential",
+      "CCS 2022 — learned correction decoupled from intrinsic estimation",
       "Kumar gRAC 2014 — radial generalised to non-frontal sensors",
       "Inverse distortion (rectification)",
       "Coefficient estimation in calibration"
@@ -647,7 +783,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/atlas/chessboard-x-corner-detection",
     "type": "concept",
     "title": "Chessboard X-Corner Detection",
-    "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
+    "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN) and learned heatmap pipelines (CCS), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
     "tags": [
       "calibration",
       "chessboard",
@@ -754,6 +890,25 @@ export const searchRecords: SearchRecord[] = [
       "Gradient of a Gaussian",
       "Gradient magnitude and direction",
       "Separability and the structure tensor"
+    ]
+  },
+  {
+    "slug": "ransac",
+    "path": "/atlas/ransac",
+    "type": "concept",
+    "title": "RANSAC",
+    "summary": "Random sample consensus — a paradigm for fitting a parametric model to data containing an unknown fraction of gross outliers, by drawing minimal random subsets, instantiating candidate models, and selecting the one with the largest globally consistent inlier set.",
+    "tags": [
+      "geometry",
+      "robust-estimation",
+      "outlier-rejection",
+      "model-fitting"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Iteration count",
+      "The four design axes of practical RANSAC",
+      "Surveyed methods"
     ]
   },
   {

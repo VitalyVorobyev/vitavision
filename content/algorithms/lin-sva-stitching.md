@@ -4,13 +4,16 @@ date: 2026-05-02
 summary: "Stitch two images under moderate parallax by replacing the global affine with a per-feature deviation field, regularised to be smooth via a Gaussian-kernel CPD-style EM that jointly estimates correspondence and warp — the contemporary affine-model competitor to APAP's per-cell projective grid."
 tags: ["image-stitching", "spatially-varying-warp", "affine", "non-rigid-registration"]
 domain: stitching
+tasks: [image-stitching]
 author: "Vitaly Vorobyev"
 difficulty: advanced
-relatedAlgorithms: ["apap-image-stitching", "gao-dual-homography-stitching"]
-prerequisites: [homography]
-related: [spatially-varying-image-stitching]
-comparedWith: [apap-image-stitching]
+prerequisites: [homography, ransac]
 failureModes: []
+relations:
+  - type: generalized_by
+    target: apap-image-stitching
+    confidence: medium
+    caution: "Affine deviation field remains a useful baseline; APAP's projective per-cell grid is more general but not strictly necessary for moderate-parallax planar-scene panoramas."
 sources:
   primary: lin2011-svastitching
   references:

@@ -4,13 +4,18 @@ date: 2026-05-02
 summary: "Post-process a partially detected checkerboard by training two Gaussian processes (one per pixel coordinate) on the allocated (boardXY, boardUV) pairs to allocate unassigned detections to grid positions, predict UV for occluded or out-of-frame corners, and apply a global-consistency refinement to every allocated corner."
 tags: ["calibration", "chessboard", "gaussian-processes"]
 domain: calibration
+tasks: [corner-detection, chessboard-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["geiger-chessboard-detector", "ocpad"]
 prerequisites: [image-gradient]
-related: [geiger-chessboard-detector, ocpad, chessboard-x-corner-detection]
-comparedWith: [ocpad]
 failureModes: []
+relations:
+  - type: compared_with
+    target: ocpad
+    confidence: high
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: hillen2023-enhanced
   references:

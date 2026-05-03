@@ -7,11 +7,6 @@ author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: advanced
 prerequisites: [homography]
-related:
-  - apap-image-stitching
-  - gao-dual-homography-stitching
-  - lin-sva-stitching
-  - dlt-normalisation
 sources:
   references:
     - gao2011-dual-homography

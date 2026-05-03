@@ -6,9 +6,7 @@ tags: ["feature-detection", "corner"]
 domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "chess-corners"]
 prerequisites: [image-gradient]
-comparedWith: []
 failureModes: []
 sources:
   primary: rosten2006-fast

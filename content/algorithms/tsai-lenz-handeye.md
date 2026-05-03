@@ -6,11 +6,14 @@ tags: ["calibration", "hand-eye", "robotics"]
 domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
-relatedAlgorithms: ["daniilidis-dual-quaternion-handeye", "zhang-planar-calibration"]
 prerequisites: []
-comparedWith: [daniilidis-dual-quaternion-handeye]
 
 failureModes: []
+relations:
+  - type: alternative_formulation_of
+    target: daniilidis-dual-quaternion-handeye
+    confidence: high
+    caution: "Daniilidis's dual-quaternion solver couples rotation and translation simultaneously; both methods remain in practitioner use."
 sources:
   primary: tsai1989-handeye
   references:

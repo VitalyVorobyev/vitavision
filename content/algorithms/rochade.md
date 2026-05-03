@@ -6,11 +6,15 @@ tags: ["calibration", "chessboard"]
 domain: targets
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["ocpad", "chess-corners", "laureano-topological-chessboard", "shu-topological-grid"]
 prerequisites: [image-gradient, hessian-saddle-response]
-related: [chessboard-x-corner-detection]
-comparedWith: [pyramidal-blur-aware-xcorner]
 failureModes: []
+relations:
+  - type: compared_with
+    target: pyramidal-blur-aware-xcorner
+    confidence: high
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: placht2014-rochade
   references: [lucchese2003-saddle, niblack1992-skeleton, rufli2008-blurred, chen2005-xcorner]

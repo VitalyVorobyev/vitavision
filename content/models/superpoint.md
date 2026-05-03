@@ -9,9 +9,19 @@ difficulty: intermediate
 arch_family: cnn
 params: "~1.3M (estimate; not stated in paper)"
 prerequisites: [image-gradient]
-comparedWith: [xfeat]
 draft: true
 failureModes: []
+relations:
+  - type: compared_with
+    target: xfeat
+    confidence: high
+  - type: learned_alternative_of
+    target: harris-corner-detector
+    confidence: high
+    caution: "SuperPoint replaces classical sparse keypoint+descriptor pipelines (Harris/Shi-Tomasi + SIFT/ORB) with a single learned model; it does not literally re-implement the Harris response."
+  - type: learned_alternative_of
+    target: shi-tomasi-corner-detector
+    confidence: high
 sources:
   primary: detone2018-superpoint
   references:
@@ -35,10 +45,6 @@ sources:
     aligned integer positions, no subpixel refinement). §7.3 Figure 8
     explicit failure mode: "extreme in-plane rotation not seen in the
     training examples."
-relatedAlgorithms:
-  - harris-corner-detector
-  - shi-tomasi-corner-detector
-  - fast-corner-detector
 ---
 
 # Motivation

@@ -6,11 +6,15 @@ tags: ["calibration", "chessboard", "gaussian-processes"]
 domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["geiger-chessboard-detector", "ocpad"]
 prerequisites: [image-gradient]
-related: [geiger-chessboard-detector, ocpad, chessboard-x-corner-detection]
-comparedWith: [ocpad]
 failureModes: []
+relations:
+  - type: compared_with
+    target: ocpad
+    confidence: high
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: hillen2023-enhanced
   references:

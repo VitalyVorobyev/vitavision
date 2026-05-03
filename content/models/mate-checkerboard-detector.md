@@ -10,10 +10,18 @@ arch_family: cnn
 quality: stub
 params: "2,939"
 prerequisites: [image-gradient]
-related: [chessboard-x-corner-detection]
-comparedWith: [ccdn-checkerboard-detector]
 failureModes: []
 draft: true
+relations:
+  - type: compared_with
+    target: ccdn-checkerboard-detector
+    confidence: high
+  - type: learned_alternative_of
+    target: chess-corners
+    confidence: high
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: donne2016-mate
   references:
@@ -38,10 +46,6 @@ sources:
     architectural specifics (kernel sizes, channel counts, max-pool
     strides, training hyperparameters) can be verified against the
     primary text.
-relatedAlgorithms:
-  - chess-corners
-  - rochade
-  - fast-corner-detector
 ---
 
 # Motivation

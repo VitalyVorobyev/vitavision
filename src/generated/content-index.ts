@@ -85,15 +85,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "homography",
         "dlt-normalisation"
       ],
-      "related": [
-        "spatially-varying-image-stitching"
-      ],
-      "comparedWith": [],
       "failureModes": [],
       "domain": "stitching",
-      "relatedAlgorithms": [
-        "zhang-planar-calibration"
-      ],
       "sources": {
         "primary": "zaragoza2013-apap",
         "references": [
@@ -124,24 +117,37 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [
-        "rochade",
-        "pyramidal-blur-aware-xcorner",
-        "puzzleboard",
-        "duda-radon-corners"
-      ],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "rochade",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "pyramidal-blur-aware-xcorner",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "puzzleboard",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "duda-radon-corners",
+          "confidence": "high"
+        }
+      ],
       "domain": "features",
       "relatedPosts": [
         "01-chesscorners"
-      ],
-      "relatedAlgorithms": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector",
-        "fast-corner-detector"
       ],
       "relatedDemos": [
         "chess-response"
@@ -184,17 +190,21 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "hessian-saddle-response",
         "topological-grid-recovery"
       ],
-      "related": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [],
       "failureModes": [],
-      "domain": "targets",
-      "relatedAlgorithms": [
-        "shu-topological-grid",
-        "chess-corners",
-        "fast-corner-detector"
+      "relations": [
+        {
+          "type": "alternative_formulation_of",
+          "target": "geiger-chessboard-detector",
+          "confidence": "medium",
+          "caution": "Less influential in practice than Geiger but methodologically distinct — the X-corner detector is a ring-alternation count rather than a quadrant template, and the topology filter operates on Delaunay triangles directly."
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
       ],
+      "domain": "targets",
       "sources": {
         "primary": "laureano2013-topological",
         "references": [
@@ -222,13 +232,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
-      "comparedWith": [],
       "failureModes": [],
       "domain": "calibration",
-      "relatedAlgorithms": [
-        "tsai-lenz-handeye",
-        "zhang-planar-calibration"
-      ],
       "sources": {
         "primary": "daniilidis1999-hand-eye",
         "references": [
@@ -256,14 +261,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
-      "comparedWith": [],
       "failureModes": [],
       "domain": "features",
-      "relatedAlgorithms": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector",
-        "chess-corners"
-      ],
       "sources": {
         "primary": "rosten2006-fast",
         "notes": "16-pixel Bresenham ring at radius 3. Segment-test parameter N\ntypically 9 or 12. The high-speed early-rejection test on the four\ncardinal points (indices 1, 5, 9, 13) is what makes the detector\nfast in practice; the full segment test runs only on candidates\nthat pass it. The decision-tree variant trained via ID3 on labeled\ncorners is described in §3 of the paper but is out of scope here\n(the page covers the segment test as the primitive).\n"
@@ -272,10 +271,37 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "loy-fast-radial-symmetry",
+    "frontmatter": {
+      "title": "Fast Radial Symmetry Transform",
+      "summary": "Gradient-vote operator that highlights pixels of high local radial symmetry — bright/dark blobs and approximately circular features. Each pixel votes along its gradient direction at one or more radii into orientation and magnitude projection maps; the per-radius contribution is the magnitude projection weighted by a power of the orientation count and Gaussian-smoothed; the cumulative response across radii localises feature centres at $O(K \\cdot |N|)$ cost.",
+      "tags": [
+        "feature-detection",
+        "blob-detection",
+        "radial-symmetry"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "domain": "features",
+      "editorAlgorithmId": "radsym",
+      "sources": {
+        "primary": "loy2003-frst",
+        "notes": "Multi-radius gradient-vote operator. At each radius $n$, the\norientation projection $O_n$ (signed unit votes) and magnitude\nprojection $M_n$ (signed gradient-magnitude votes) are\naccumulated at the positively- and negatively-affected pixels\n$p^{\\pm} = p \\pm \\mathrm{round}(\\hat{\\mathbf{g}}(p)\\cdot n)$.\nThe per-radius contribution is $S_n = F_n \\ast A_n$ with\n$F_n = |\\tilde O_n|^{\\alpha}\\, \\tilde M_n$, $\\tilde O_n$ and\n$\\tilde M_n$ being max-normalised projections, and $A_n$ a\n2-D Gaussian of size $n \\times n$ and $\\sigma = 0.5n$\n(operative value from Table 1 of the conference version;\nFigure 3 caption gives 0.25n — discrepancy noted in the\nresearch note). Cumulative $S = \\sum_n S_n$; positive\nmaxima localise bright radially-symmetric features, negative\nminima localise dark ones. Recommended parameters from the\npaper: $\\alpha = 2$ (eliminates line responses), $\\beta\n\\approx 20\\%$ of $\\max\\|\\mathbf{g}\\|$. Sparse-radius\napproximation $\\{1,3,5\\}$ replaces the full $\\{1,\\ldots,5\\}$\nset with negligible loss.\n"
+      },
+      "date": "2026-05-03"
+    }
+  },
+  {
     "slug": "gao-dual-homography-stitching",
     "frontmatter": {
       "title": "Gao Dual-Homography Stitching",
-      "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group with RANSAC, and blending per pixel by inverse-distance weights — the direct two-plane predecessor of APAP's continuous grid of per-cell homographies.",
+      "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group, and blending per pixel by inverse-distance weights. Superseded for practical use by APAP's continuous per-cell grid.",
       "tags": [
         "image-stitching",
         "homography",
@@ -284,22 +310,22 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 8,
+      "readingTimeMinutes": 3,
       "access": "public",
       "prerequisites": [
         "homography"
       ],
-      "related": [
-        "spatially-varying-image-stitching"
-      ],
-      "comparedWith": [
-        "apap-image-stitching"
-      ],
       "failureModes": [],
-      "domain": "stitching",
-      "relatedAlgorithms": [
-        "apap-image-stitching"
+      "quality": "historical",
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "apap-image-stitching",
+          "confidence": "high",
+          "caution": "APAP's continuous grid of per-cell homographies subsumes the two-plane parametrisation; the two methods are not peer practitioner choices."
+        }
       ],
+      "domain": "stitching",
       "sources": {
         "primary": "gao2011-dual-homography",
         "references": [
@@ -329,19 +355,20 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [
-        "pyramidal-blur-aware-xcorner"
-      ],
       "failureModes": [],
-      "domain": "features",
-      "relatedAlgorithms": [
-        "chess-corners",
-        "rochade",
-        "pyramidal-blur-aware-xcorner"
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "pyramidal-blur-aware-xcorner",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
       ],
+      "domain": "features",
       "sources": {
         "primary": "geiger2012-automatic",
         "references": [
@@ -374,20 +401,20 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "geiger-chessboard-detector",
-        "ocpad",
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [
-        "ocpad"
-      ],
       "failureModes": [],
-      "domain": "calibration",
-      "relatedAlgorithms": [
-        "geiger-chessboard-detector",
-        "ocpad"
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "ocpad",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
       ],
+      "domain": "calibration",
       "sources": {
         "primary": "hillen2023-enhanced",
         "references": [
@@ -420,23 +447,25 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient",
         "structure-tensor"
       ],
-      "comparedWith": [
-        "shi-tomasi-corner-detector",
-        "fast-corner-detector",
-        "chess-corners"
-      ],
       "failureModes": [],
-      "domain": "features",
-      "relatedAlgorithms": [
-        "chess-corners",
-        "duda-radon-corners",
-        "fast-corner-detector",
-        "laureano-topological-chessboard",
-        "puzzleboard",
-        "pyramidal-blur-aware-xcorner",
-        "shi-tomasi-corner-detector",
-        "shu-topological-grid"
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "chess-corners",
+          "confidence": "high"
+        }
       ],
+      "domain": "features",
       "sources": {
         "primary": "harris1988-corner",
         "references": [
@@ -463,12 +492,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "camera-distortion-models"
       ],
-      "comparedWith": [],
       "failureModes": [],
       "domain": "calibration",
-      "relatedAlgorithms": [
-        "zhang-planar-calibration"
-      ],
       "sources": {
         "primary": "kumar2014-grac",
         "references": [
@@ -498,18 +523,16 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "homography"
       ],
-      "related": [
-        "spatially-varying-image-stitching"
-      ],
-      "comparedWith": [
-        "apap-image-stitching"
-      ],
       "failureModes": [],
-      "domain": "stitching",
-      "relatedAlgorithms": [
-        "apap-image-stitching",
-        "gao-dual-homography-stitching"
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "apap-image-stitching",
+          "confidence": "medium",
+          "caution": "Affine deviation field remains a useful baseline; APAP's projective per-cell grid is more general but not strictly necessary for moderate-parallax planar-scene panoramas."
+        }
       ],
+      "domain": "stitching",
       "sources": {
         "primary": "lin2011-svastitching",
         "references": [
@@ -539,18 +562,15 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [],
       "failureModes": [],
-      "domain": "features",
-      "relatedAlgorithms": [
-        "chess-corners",
-        "harris-corner-detector",
-        "rochade",
-        "pyramidal-blur-aware-xcorner"
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
       ],
+      "domain": "features",
       "sources": {
         "primary": "duda2018-accurate",
         "references": [
@@ -583,12 +603,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "homography",
         "dlt-normalisation"
       ],
-      "comparedWith": [],
       "failureModes": [],
       "domain": "geometry",
-      "relatedAlgorithms": [
-        "apap-image-stitching"
-      ],
       "sources": {
         "primary": "hartley1997-eight-point",
         "references": [],
@@ -614,17 +630,15 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient",
         "topological-grid-recovery"
       ],
-      "related": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [],
       "failureModes": [],
-      "domain": "targets",
-      "relatedAlgorithms": [
-        "shu-topological-grid",
-        "puzzleboard",
-        "laureano-topological-chessboard"
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
       ],
+      "domain": "targets",
       "sources": {
         "primary": "fuersattel2016-ocpad",
         "references": [
@@ -655,17 +669,15 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "hessian-saddle-response",
         "topological-grid-recovery"
       ],
-      "related": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [],
       "failureModes": [],
-      "domain": "targets",
-      "relatedAlgorithms": [
-        "chess-corners",
-        "harris-corner-detector",
-        "shu-topological-grid"
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
       ],
+      "domain": "targets",
       "editorAlgorithmId": "puzzleboard",
       "sources": {
         "primary": "stelldinger2024-puzzleboard",
@@ -696,18 +708,15 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient",
         "scale-space"
       ],
-      "related": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [],
       "failureModes": [],
-      "domain": "features",
-      "relatedAlgorithms": [
-        "chess-corners",
-        "rochade",
-        "shu-topological-grid",
-        "shi-tomasi-corner-detector"
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
       ],
+      "domain": "features",
       "sources": {
         "primary": "abeles2021-pyramidal",
         "references": [
@@ -738,20 +747,20 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient",
         "hessian-saddle-response"
       ],
-      "related": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [
-        "pyramidal-blur-aware-xcorner"
-      ],
       "failureModes": [],
-      "domain": "targets",
-      "relatedAlgorithms": [
-        "ocpad",
-        "chess-corners",
-        "laureano-topological-chessboard",
-        "shu-topological-grid"
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "pyramidal-blur-aware-xcorner",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
       ],
+      "domain": "targets",
       "sources": {
         "primary": "placht2014-rochade",
         "references": [
@@ -782,14 +791,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient",
         "structure-tensor"
       ],
-      "comparedWith": [],
       "failureModes": [],
       "domain": "features",
-      "relatedAlgorithms": [
-        "harris-corner-detector",
-        "fast-corner-detector",
-        "chess-corners"
-      ],
       "sources": {
         "primary": "shi-tomasi1994-features",
         "references": [
@@ -819,12 +822,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "homography"
       ],
-      "comparedWith": [],
       "failureModes": [],
       "domain": "calibration",
-      "relatedAlgorithms": [
-        "zhang-planar-calibration"
-      ],
       "sources": {
         "primary": "sturm2003-plane-based",
         "references": [
@@ -852,19 +851,26 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient",
         "topological-grid-recovery"
       ],
-      "related": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [
-        "laureano-topological-chessboard"
-      ],
       "failureModes": [],
-      "domain": "targets",
-      "relatedAlgorithms": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector",
-        "chess-corners"
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "laureano-topological-chessboard",
+          "confidence": "high"
+        },
+        {
+          "type": "alternative_formulation_of",
+          "target": "geiger-chessboard-detector",
+          "confidence": "medium",
+          "caution": "Different abstraction layer — topological grid recovery from a candidate corner set vs single-shot detection that integrates corner finding and grid linking. Not superseded by Geiger; both remain in practitioner use."
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
       ],
+      "domain": "targets",
       "sources": {
         "primary": "shu2009-topological",
         "references": [
@@ -890,15 +896,16 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
-      "comparedWith": [
-        "daniilidis-dual-quaternion-handeye"
-      ],
       "failureModes": [],
-      "domain": "calibration",
-      "relatedAlgorithms": [
-        "daniilidis-dual-quaternion-handeye",
-        "zhang-planar-calibration"
+      "relations": [
+        {
+          "type": "alternative_formulation_of",
+          "target": "daniilidis-dual-quaternion-handeye",
+          "confidence": "high",
+          "caution": "Daniilidis's dual-quaternion solver couples rotation and translation simultaneously; both methods remain in practitioner use."
+        }
       ],
+      "domain": "calibration",
       "sources": {
         "primary": "tsai1989-handeye",
         "references": [
@@ -914,7 +921,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "slug": "tsai-versatile-calibration",
     "frontmatter": {
       "title": "Tsai's Versatile Camera Calibration",
-      "summary": "Two-stage camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns.",
+      "summary": "Two-stage 1987 camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a precision 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns. Superseded for practical use by Zhang's planar method.",
       "tags": [
         "calibration",
         "intrinsics",
@@ -923,31 +930,35 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 10,
+      "readingTimeMinutes": 4,
       "access": "public",
       "prerequisites": [
         "camera-distortion-models"
       ],
-      "comparedWith": [
-        "zhang-planar-calibration",
-        "kumar-generalized-rac"
-      ],
       "failureModes": [],
-      "domain": "calibration",
-      "relatedAlgorithms": [
-        "zhang-planar-calibration",
-        "tsai-lenz-handeye",
-        "kumar-generalized-rac"
+      "quality": "historical",
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "tsai-lenz-handeye",
+          "confidence": "high",
+          "caution": "Tsai 1987's per-station extrinsics are the canonical input format for the Tsai-Lenz hand-eye AX = XB solver."
+        }
       ],
+      "domain": "calibration",
       "sources": {
         "primary": "tsai1987-versatile",
         "references": [
           "zhang2000-flexible",
           "weng1992-camera",
-          "kumar2014-grac",
           "daniilidis1999-hand-eye"
         ],
-        "notes": "Two-stage technique. Stage 1 — radial alignment constraint (RAC) gives a\nlinear system in five (coplanar, Eq. 10) or seven (non-coplanar, Eq. 16)\nunknowns encoding (R, T_x, T_y) and the image-scale uncertainty s_x.\nStage 2 — fixes Stage 1 outputs and recovers (f, T_z, kappa_1) by a\nshort nonlinear solve seeded by an ignoring-distortion linear\napproximation (Eq. 15 → Eq. 8b). One-term radial distortion only;\ntangential excluded \"to avoid numerical instability\" (§II-B).\nCoplanar target requires s_x known a priori (Lenz-Tsai 1987); non-coplanar\ntarget recovers s_x as part of the calibration.\n"
+        "notes": "Two-stage technique on a precision 3D target. Stage 1 — the radial\nalignment constraint (RAC) eliminates $f$, $\\kappa_1$, $\\kappa_2$, $T_z$\nfrom the projection equation, yielding a linear system in five\n(coplanar) or seven (non-coplanar) unknowns encoding $(R, T_x, T_y)$\nplus the image-scale factor $s_x$. Stage 2 — fixes Stage 1 outputs and\nrecovers $(f, T_z, \\kappa_1)$ by a short nonlinear solve seeded by an\nignoring-distortion linear approximation. One-term radial distortion\nonly; tangential excluded \"to avoid numerical instability\". The\ncoplanar variant requires $s_x$ known a priori (Lenz–Tsai 1987); the\nnon-coplanar variant recovers $s_x$ as part of the calibration.\n"
       },
       "date": "2026-05-02"
     }
@@ -970,16 +981,16 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "homography",
         "camera-distortion-models"
       ],
-      "comparedWith": [
-        "sturm-plane-based-calibration"
-      ],
       "failureModes": [],
-      "domain": "calibration",
-      "relatedAlgorithms": [
-        "chess-corners",
-        "rochade",
-        "puzzleboard"
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "sturm-plane-based-calibration",
+          "confidence": "high",
+          "caution": "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis."
+        }
       ],
+      "domain": "calibration",
       "sources": {
         "primary": "zhang2000-flexible",
         "references": [
@@ -1056,11 +1067,19 @@ export const modelPages: ModelIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "chess-corners",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
+      ],
       "domain": "calibration",
       "arch_family": "cnn",
       "params": "16,301",
@@ -1083,12 +1102,6 @@ export const modelPages: ModelIndexEntry[] = [
           "license": "unlicensed"
         }
       ],
-      "relatedAlgorithms": [
-        "chess-corners",
-        "rochade",
-        "fast-corner-detector",
-        "harris-corner-detector"
-      ],
       "date": "2026-04-18"
     }
   },
@@ -1110,14 +1123,25 @@ export const modelPages: ModelIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [
-        "ccdn-checkerboard-detector"
-      ],
       "failureModes": [],
       "quality": "stub",
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "ccdn-checkerboard-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "chess-corners",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
+      ],
       "domain": "calibration",
       "arch_family": "cnn",
       "params": "2,939",
@@ -1131,11 +1155,6 @@ export const modelPages: ModelIndexEntry[] = [
         ],
         "notes": "Stub page authored from secondary sources only — the MDPI PDF for\nDonné et al. 2016 (doi:10.3390/s16111858) returned HTTP 403 to\nautomated fetchers and could not be cached. All claims are derived\nfrom the chen2023-ccdn research note, the existing CCDN page\n(`content/models/ccdn-checkerboard-detector.md`), and the\nindex.yaml `donne2016-mate` notes. Architecture: 3 conv\nlayers + ReLU; per-pixel response map; max-pool with stride > 1\n(output spatially coarser than input). Loss: MSE between predicted\nresponse and binary corner mask (no positive/negative balancing).\nPost-processing: fixed 0.5 threshold; no NMS, no clustering.\nBenchmarks (via CCDN Tables 1–2): uEye 1.009 px / 3.065 % missed /\n0.809 % doubles / 492 FP; GoPro 0.835 px / 4.566 % / 4.556 % / 389 FP.\nPromote past stub when the paper PDF becomes accessible and the\narchitectural specifics (kernel sizes, channel counts, max-pool\nstrides, training hyperparameters) can be verified against the\nprimary text.\n"
       },
-      "relatedAlgorithms": [
-        "chess-corners",
-        "rochade",
-        "fast-corner-detector"
-      ],
       "date": "2026-05-02"
     }
   },
@@ -1159,10 +1178,25 @@ export const modelPages: ModelIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
-      "comparedWith": [
-        "xfeat"
-      ],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "xfeat",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "harris-corner-detector",
+          "confidence": "high",
+          "caution": "SuperPoint replaces classical sparse keypoint+descriptor pipelines (Harris/Shi-Tomasi + SIFT/ORB) with a single learned model; it does not literally re-implement the Harris response."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high"
+        }
+      ],
       "domain": "features",
       "arch_family": "cnn",
       "params": "~1.3M (estimate; not stated in paper)",
@@ -1175,11 +1209,6 @@ export const modelPages: ModelIndexEntry[] = [
         ],
         "notes": "§3.1 shared VGG-style encoder: eight 3×3 conv layers (64-64-64-64-128-\n128-128-128) with three 2×2 max-pools → H_c = H/8, W_c = W/8. ReLU +\nBatchNorm throughout. §3.2 detector head: 65-class softmax (8×8 grid +\n\"no-keypoint\" dustbin), pixel-shuffle reshape to H×W (no learned\nupsampling). §3.3 descriptor head: 256-D semi-dense map at H/8 × W/8,\nbicubic upsample + L2 normalise. §3.4 / Eq. 1 total loss = detector\ncross-entropy (Eq. 2-3) + λ · descriptor hinge (Eq. 5-6) with λ=0.0001,\nλ_d=250, m_p=1, m_n=0.2. §4 MagicPoint pre-training on Synthetic Shapes.\n§5 / Eq. 10 Homographic Adaptation: aggregate detections from N_h=100\nrandom homographies into pseudo-labels. §6 joint training on MS-COCO\n2014 (80k grayscale, 240×320), Adam lr=0.001. §7.1 70 FPS on Titan X\nat 480×640. Table 4 HPatches: NN mAP 0.821 (vs SIFT 0.694, LIFT 0.664,\nORB 0.735); MLE 1.158 px (vs SIFT 0.833 — SuperPoint outputs cell-\naligned integer positions, no subpixel refinement). §7.3 Figure 8\nexplicit failure mode: \"extreme in-plane rotation not seen in the\ntraining examples.\"\n"
       },
-      "relatedAlgorithms": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector",
-        "fast-corner-detector"
-      ],
       "date": "2026-05-02"
     }
   },
@@ -1201,7 +1230,6 @@ export const modelPages: ModelIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
-      "comparedWith": [],
       "failureModes": [],
       "domain": "features",
       "arch_family": "cnn",
@@ -1246,11 +1274,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [],
-      "related": [
-        "tsai-versatile-calibration",
-        "zhang-planar-calibration",
-        "kumar-generalized-rac"
-      ],
       "domain": "image-formation",
       "sources": {
         "references": [
@@ -1280,22 +1303,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient"
-      ],
-      "related": [
-        "chess-corners",
-        "rochade",
-        "geiger-chessboard-detector",
-        "pyramidal-blur-aware-xcorner",
-        "shu-topological-grid",
-        "laureano-topological-chessboard",
-        "ocpad",
-        "puzzleboard",
-        "duda-radon-corners",
-        "ccdn-checkerboard-detector",
-        "mate-checkerboard-detector",
-        "gp-checkerboard-enhancement",
-        "hessian-saddle-response",
-        "topological-grid-recovery"
       ],
       "domain": "features",
       "sources": {
@@ -1333,12 +1340,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [],
-      "related": [
-        "homography",
-        "epipolar-geometry",
-        "apap-image-stitching",
-        "fundamental-matrix-eight-point"
-      ],
       "domain": "geometry",
       "sources": {
         "references": [
@@ -1364,9 +1365,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
-      "related": [
-        "dlt-normalisation"
-      ],
       "domain": "geometry",
       "sources": {
         "references": [
@@ -1393,13 +1391,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient"
-      ],
-      "related": [
-        "chess-corners",
-        "rochade",
-        "laureano-topological-chessboard",
-        "puzzleboard",
-        "structure-tensor"
       ],
       "domain": "features",
       "sources": {
@@ -1428,11 +1419,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
-      "related": [
-        "zhang-planar-calibration",
-        "apap-image-stitching",
-        "dlt-normalisation"
-      ],
       "domain": "geometry",
       "sources": {
         "references": [
@@ -1458,13 +1444,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 8,
       "access": "public",
       "prerequisites": [],
-      "related": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector",
-        "chess-corners",
-        "fast-corner-detector",
-        "pyramidal-blur-aware-xcorner"
-      ],
       "domain": "features",
       "date": "2026-04-30"
     }
@@ -1484,10 +1463,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
-      "related": [
-        "chess-corners",
-        "pyramidal-blur-aware-xcorner"
-      ],
       "domain": "image-formation",
       "date": "2026-04-30"
     }
@@ -1510,12 +1485,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "homography"
-      ],
-      "related": [
-        "apap-image-stitching",
-        "gao-dual-homography-stitching",
-        "lin-sva-stitching",
-        "dlt-normalisation"
       ],
       "domain": "geometry",
       "sources": {
@@ -1546,10 +1515,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector"
-      ],
       "domain": "features",
       "date": "2026-04-30"
     }
@@ -1570,12 +1535,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [],
-      "related": [
-        "shu-topological-grid",
-        "laureano-topological-chessboard",
-        "ocpad",
-        "puzzleboard"
-      ],
       "domain": "features",
       "sources": {
         "references": [

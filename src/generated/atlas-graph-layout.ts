@@ -81,33 +81,38 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 310.143,
     "cluster": "detectors"
   },
+  "loy-fast-radial-symmetry": {
+    "x": 694.968192,
+    "y": 288.438744,
+    "cluster": "detectors"
+  },
   "pyramidal-blur-aware-xcorner": {
-    "x": 702.370083,
-    "y": 296.70132,
+    "x": 521.770083,
+    "y": 397.50131999999996,
     "cluster": "detectors"
   },
   "shi-tomasi-corner-detector": {
-    "x": 519.0362505,
+    "x": 609.3362505,
     "y": 411.24993599999993,
     "cluster": "detectors"
   },
   "structure-tensor": {
-    "x": 621.6748425,
+    "x": 711.9748425,
     "y": 389.74324799999994,
     "cluster": "detectors"
   },
   "superpoint": {
-    "x": 691.5769755000001,
-    "y": 402.25353599999994,
+    "x": 510.97697550000004,
+    "y": 503.053536,
     "cluster": "detectors"
   },
   "topological-grid-recovery": {
-    "x": 511.78922400000005,
+    "x": 602.089224,
     "y": 487.159896,
     "cluster": "detectors"
   },
   "xfeat": {
-    "x": 622.348029,
+    "x": 712.6480290000001,
     "y": 509.774376,
     "cluster": "detectors"
   },

@@ -6,10 +6,13 @@ tags: ["calibration", "intrinsics", "homography"]
 domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
-relatedAlgorithms: ["chess-corners", "rochade", "puzzleboard"]
 prerequisites: [homography, camera-distortion-models]
-comparedWith: [sturm-plane-based-calibration]
 failureModes: []
+relations:
+  - type: parallel_foundation_with
+    target: sturm-plane-based-calibration
+    confidence: high
+    caution: "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis."
 sources:
   primary: zhang2000-flexible
   references:

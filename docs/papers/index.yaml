@@ -926,3 +926,31 @@
     are available, enables objective comparison via mean Euclidean
     location error against MATLAB camera calibration toolbox, OpenCV
     detectors, and prior deep-learning baselines (e.g. donne2016-mate).
+
+- id: loy2003-frst
+  title: "Fast radial symmetry for detecting points of interest"
+  authors: ["Gareth Loy", "Alexander Zelinsky"]
+  year: 2003
+  venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
+  url: https://ieeexplore.ieee.org/document/1217601
+  doi: "10.1109/TPAMI.2003.1217601"
+  pdf: loy2003-frst.pdf
+  cites: []
+  notes: |
+    Fast Radial Symmetry Transform (FRST). Gradient-based voting
+    operator that highlights points of high local radial symmetry —
+    small bright/dark blobs and approximately circular features. Each
+    image pixel casts a vote along its gradient orientation at one or
+    more candidate radii; the positively- and negatively-affected vote
+    maps are combined and Gaussian-smoothed to yield a per-radius
+    symmetry contribution. Features are local maxima of the cumulative
+    response summed across radii. Cost is O(K·N) for K radii and N
+    pixels, enabling real-time use (>60 fps on 2003 hardware) while
+    matching or exceeding earlier symmetry/interest-point detectors
+    such as Reisfeld's generalized symmetry transform. Journal version
+    of the ECCV 2002 conference paper; algorithmic content is identical
+    with extended experiments and analysis. Underpins the editor's
+    `radsym` algorithm and serves as the baseline for the RSD
+    fused-radii variant exposed alongside it. Note: TPAMI PDF is
+    paywalled at IEEE Xplore; the cached `.pdf` is the freely-available
+    ECCV 2002 conference version (same algorithm).

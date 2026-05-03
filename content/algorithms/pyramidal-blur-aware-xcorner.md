@@ -6,11 +6,12 @@ tags: ["calibration", "chessboard", "corner-detection"]
 domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["chess-corners", "rochade", "shu-topological-grid", "shi-tomasi-corner-detector"]
 prerequisites: [image-gradient, scale-space]
-related: [chessboard-x-corner-detection]
-comparedWith: []
 failureModes: []
+relations:
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: abeles2021-pyramidal
   references: [placht2014-rochade, bennett2013-chess, lucchese2003-saddle, shi-tomasi1994-features]

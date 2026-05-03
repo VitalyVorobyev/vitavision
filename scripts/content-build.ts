@@ -713,6 +713,11 @@ async function main(): Promise<void> {
     // Build content graph from all non-draft, non-dev entries.
     // dev:true pages are excluded from relationship edges and slug lookups so
     // they do not appear in navigation. They remain routable via direct URL.
+    type FrontmatterRel = {
+        prerequisites?: string[];
+        failureModes?: string[];
+        relations?: ContentEntry["relations"];
+    };
     const graphEntries: ContentEntry[] = [
         ...algorithmPublished.map((e) => ({
             slug: e.slug,
@@ -720,11 +725,9 @@ async function main(): Promise<void> {
             title: e.frontmatter.title,
             summary: e.frontmatter.summary,
             draft: e.frontmatter.draft === true,
-            relatedAlgorithms: (e.frontmatter as { relatedAlgorithms?: string[] }).relatedAlgorithms,
-            prerequisites: (e.frontmatter as { prerequisites?: string[] }).prerequisites,
-            related: (e.frontmatter as { related?: string[] }).related,
-            comparedWith: (e.frontmatter as { comparedWith?: string[] }).comparedWith,
-            failureModes: (e.frontmatter as { failureModes?: string[] }).failureModes,
+            prerequisites: (e.frontmatter as FrontmatterRel).prerequisites,
+            failureModes: (e.frontmatter as FrontmatterRel).failureModes,
+            relations: (e.frontmatter as FrontmatterRel).relations,
         })),
         ...modelPublished.map((e) => ({
             slug: e.slug,
@@ -732,11 +735,9 @@ async function main(): Promise<void> {
             title: e.frontmatter.title,
             summary: e.frontmatter.summary,
             draft: e.frontmatter.draft === true,
-            relatedAlgorithms: (e.frontmatter as { relatedAlgorithms?: string[] }).relatedAlgorithms,
-            prerequisites: (e.frontmatter as { prerequisites?: string[] }).prerequisites,
-            related: (e.frontmatter as { related?: string[] }).related,
-            comparedWith: (e.frontmatter as { comparedWith?: string[] }).comparedWith,
-            failureModes: (e.frontmatter as { failureModes?: string[] }).failureModes,
+            prerequisites: (e.frontmatter as FrontmatterRel).prerequisites,
+            failureModes: (e.frontmatter as FrontmatterRel).failureModes,
+            relations: (e.frontmatter as FrontmatterRel).relations,
         })),
         ...conceptPublished.map((e) => ({
             slug: e.slug,
@@ -744,10 +745,9 @@ async function main(): Promise<void> {
             title: e.frontmatter.title,
             summary: e.frontmatter.summary,
             draft: e.frontmatter.draft === true,
-            prerequisites: (e.frontmatter as { prerequisites?: string[] }).prerequisites,
-            related: (e.frontmatter as { related?: string[] }).related,
-            comparedWith: (e.frontmatter as { comparedWith?: string[] }).comparedWith,
-            failureModes: (e.frontmatter as { failureModes?: string[] }).failureModes,
+            prerequisites: (e.frontmatter as FrontmatterRel).prerequisites,
+            failureModes: (e.frontmatter as FrontmatterRel).failureModes,
+            relations: (e.frontmatter as FrontmatterRel).relations,
         })),
     ];
 

@@ -7,9 +7,7 @@ author: "Vitaly Vorobyev"
 dev: true
 difficulty: intermediate
 relatedPosts: ["00-intro"]
-relatedAlgorithms: ["harris-corner-detector"]
 prerequisites: []
-comparedWith: []
 failureModes: []
 ---
 

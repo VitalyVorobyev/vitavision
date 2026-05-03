@@ -7,21 +7,6 @@ author: "Vitaly Vorobyev"
 domain: features
 difficulty: intermediate
 prerequisites: [image-gradient]
-related:
-  - chess-corners
-  - rochade
-  - geiger-chessboard-detector
-  - pyramidal-blur-aware-xcorner
-  - shu-topological-grid
-  - laureano-topological-chessboard
-  - ocpad
-  - puzzleboard
-  - duda-radon-corners
-  - ccdn-checkerboard-detector
-  - mate-checkerboard-detector
-  - gp-checkerboard-enhancement
-  - hessian-saddle-response
-  - topological-grid-recovery
 sources:
   references:
     - bennett2013-chess

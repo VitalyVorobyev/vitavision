@@ -7,11 +7,12 @@ domain: targets
 author: "Vitaly Vorobyev"
 difficulty: advanced
 editorAlgorithmId: puzzleboard
-relatedAlgorithms: ["chess-corners", "harris-corner-detector", "shu-topological-grid"]
 prerequisites: [image-gradient, hessian-saddle-response, topological-grid-recovery]
-related: [chessboard-x-corner-detection]
-comparedWith: []
 failureModes: []
+relations:
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: stelldinger2024-puzzleboard
   references: [harris1988-corner, chen2005-xcorner]

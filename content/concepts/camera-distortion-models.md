@@ -7,10 +7,6 @@ author: "Vitaly Vorobyev"
 domain: image-formation
 difficulty: intermediate
 prerequisites: []
-related:
-  - tsai-versatile-calibration
-  - zhang-planar-calibration
-  - kumar-generalized-rac
 sources:
   references:
     - tsai1987-versatile

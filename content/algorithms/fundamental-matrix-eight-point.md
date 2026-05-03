@@ -6,9 +6,7 @@ tags: ["geometry", "stereo", "two-view-geometry", "fundamental-matrix"]
 domain: geometry
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["apap-image-stitching"]
 prerequisites: [epipolar-geometry, homography, dlt-normalisation]
-comparedWith: []
 failureModes: []
 sources:
   primary: hartley1997-eight-point

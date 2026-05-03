@@ -124,11 +124,32 @@ export const searchRecords: SearchRecord[] = [
     "venue": "ECCV"
   },
   {
+    "slug": "loy-fast-radial-symmetry",
+    "path": "/atlas/loy-fast-radial-symmetry",
+    "type": "algorithm",
+    "title": "Fast Radial Symmetry Transform",
+    "summary": "Gradient-vote operator that highlights pixels of high local radial symmetry — bright/dark blobs and approximately circular features. Each pixel votes along its gradient direction at one or more radii into orientation and magnitude projection maps; the per-radius contribution is the magnitude projection weighted by a power of the orientation count and Gaussian-smoothed; the cumulative response across radii localises feature centres at $O(K \\cdot |N|)$ cost.",
+    "tags": [
+      "feature-detection",
+      "blob-detection",
+      "radial-symmetry"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "Gareth Loy",
+      "Alexander Zelinsky"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "gao-dual-homography-stitching",
     "path": "/atlas/gao-dual-homography-stitching",
     "type": "algorithm",
     "title": "Gao Dual-Homography Stitching",
-    "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group with RANSAC, and blending per pixel by inverse-distance weights — the direct two-plane predecessor of APAP's continuous grid of per-cell homographies.",
+    "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group, and blending per pixel by inverse-distance weights. Superseded for practical use by APAP's continuous per-cell grid.",
     "tags": [
       "image-stitching",
       "homography",
@@ -136,9 +157,7 @@ export const searchRecords: SearchRecord[] = [
       "multi-plane"
     ],
     "domain": "stitching",
-    "headings": [
-      "When to choose Gao DHW over APAP"
-    ],
+    "headings": [],
     "authors": [
       "J. Gao",
       "S. J. Kim",
@@ -489,7 +508,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/atlas/tsai-versatile-calibration",
     "type": "algorithm",
     "title": "Tsai's Versatile Camera Calibration",
-    "summary": "Two-stage camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns.",
+    "summary": "Two-stage 1987 camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a precision 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns. Superseded for practical use by Zhang's planar method.",
     "tags": [
       "calibration",
       "intrinsics",
@@ -497,11 +516,7 @@ export const searchRecords: SearchRecord[] = [
       "radial-distortion"
     ],
     "domain": "calibration",
-    "headings": [
-      "Stage 1 — extrinsic + scale (linear)",
-      "When to choose Tsai over Zhang",
-      "When to choose Tsai over Kumar gRAC"
-    ],
+    "headings": [],
     "authors": [
       "R. Y. Tsai"
     ],

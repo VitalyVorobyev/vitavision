@@ -7,9 +7,6 @@ author: "Vitaly Vorobyev"
 domain: image-formation
 difficulty: intermediate
 prerequisites: []
-related:
-  - chess-corners
-  - pyramidal-blur-aware-xcorner
 ---
 
 # Definition

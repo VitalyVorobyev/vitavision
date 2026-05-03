@@ -8,6 +8,42 @@ import { join } from "node:path";
 
 export type NodeType = "algorithm" | "model" | "concept" | "failure-mode";
 
+/** Single fixed vocabulary of typed inter-page relations. See CLAUDE.md → "Relations field". */
+export const RELATION_TYPES = [
+    "generalized_by",
+    "alternative_formulation_of",
+    "parallel_foundation_with",
+    "extended_by",
+    "compared_with",
+    "feeds_into",
+    "learned_alternative_of",
+] as const;
+export type RelationType = (typeof RELATION_TYPES)[number];
+
+/** Symmetric relation types — the build mirrors them onto the target's forward edges. */
+export const SYMMETRIC_RELATION_TYPES: ReadonlySet<RelationType> = new Set<RelationType>([
+    "alternative_formulation_of",
+    "parallel_foundation_with",
+    "compared_with",
+]);
+
+/** Asymmetric reverse-edge labels — used by the renderer to pick a heading on the target's panel. */
+export const ASYMMETRIC_REVERSE_OF: Partial<Record<RelationType, "generalises" | "extends" | "fedBy" | "hasLearnedAlternative">> = {
+    generalized_by: "generalises",
+    extended_by: "extends",
+    feeds_into: "fedBy",
+    learned_alternative_of: "hasLearnedAlternative",
+};
+
+export interface TypedRelation {
+    type: RelationType;
+    target: string;
+    confidence: "high" | "medium" | "low";
+    caution?: string;
+    /** When true, this entry was mirrored from another page's symmetric relation, not authored on this page. */
+    mirrored?: boolean;
+}
+
 export interface GraphNode {
     slug: string;
     type: NodeType;
@@ -20,16 +56,24 @@ export interface GraphNode {
 
 export interface ForwardEdges {
     prerequisites: string[];
-    related: string[];       // includes normalized relatedAlgorithms
-    comparedWith: string[];
     failureModes: string[];
+    /** Authored relations + mirrored symmetric entries from other pages. */
+    relations: TypedRelation[];
 }
 
 export interface ReverseEdges {
-    usedBy: string[];        // pages that list this slug as a prerequisite
-    relatedFrom: string[];   // mirrored related
-    comparedFrom: string[];  // mirrored comparedWith
-    affects: string[];       // failure-mode → algorithms (reverse of failureModes)
+    /** Pages that list this slug as a prerequisite. */
+    usedBy: string[];
+    /** Pages that list this slug as a failure mode. */
+    affects: string[];
+    /** Pages where this slug is the target of a `generalized_by` forward — i.e., this page generalises those. */
+    generalises: string[];
+    /** Pages where this slug is the target of an `extended_by` forward — i.e., this page is extended by those. */
+    extending: string[];
+    /** Pages where this slug is the target of a `feeds_into` forward — i.e., those pages feed into this. */
+    fedBy: string[];
+    /** Pages where this slug is the target of a `learned_alternative_of` forward — i.e., those models replace this classical algo. */
+    hasLearnedAlternative: string[];
 }
 
 export interface ContentGraph {
@@ -45,12 +89,9 @@ export interface ContentEntry {
     title: string;
     summary: string;
     draft?: boolean;
-    /** Optional legacy field — normalized into forward.related. */
-    relatedAlgorithms?: string[];
     prerequisites?: string[];
-    related?: string[];
-    comparedWith?: string[];
     failureModes?: string[];
+    relations?: TypedRelation[];
 }
 
 function nodePath(slug: string, type: NodeType): string {
@@ -66,23 +107,43 @@ function nodePath(slug: string, type: NodeType): string {
 }
 
 function emptyForward(): ForwardEdges {
-    return { prerequisites: [], related: [], comparedWith: [], failureModes: [] };
+    return { prerequisites: [], failureModes: [], relations: [] };
 }
 
 function emptyReverse(): ReverseEdges {
-    return { usedBy: [], relatedFrom: [], comparedFrom: [], affects: [] };
+    return {
+        usedBy: [],
+        affects: [],
+        generalises: [],
+        extending: [],
+        fedBy: [],
+        hasLearnedAlternative: [],
+    };
+}
+
+function dedupeRelations(rels: TypedRelation[]): TypedRelation[] {
+    // Keep first occurrence per (type, target) — authored entries take precedence over mirrored ones.
+    const seen = new Set<string>();
+    const out: TypedRelation[] = [];
+    for (const r of rels) {
+        const key = `${r.type}:${r.target}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push(r);
+    }
+    return out;
 }
 
 /**
  * Build the full content graph from a flat list of entries.
- * Forward edges are authored; reverse edges are computed automatically.
+ * Forward edges include authored + mirrored symmetric relations.
+ * Reverse edges are typed buckets for asymmetric relations + the existing prerequisite / failure-mode reverses.
  */
 export function buildContentGraph(entries: ContentEntry[]): ContentGraph {
     const nodes: Record<string, GraphNode> = {};
     const forward: Record<string, ForwardEdges> = {};
     const reverse: Record<string, ReverseEdges> = {};
 
-    // Initialise nodes and empty edge maps.
     for (const e of entries) {
         nodes[e.slug] = {
             slug: e.slug,
@@ -96,39 +157,82 @@ export function buildContentGraph(entries: ContentEntry[]): ContentGraph {
         reverse[e.slug] = emptyReverse();
     }
 
-    // Populate forward edges (deduplicate as we go).
+    // First pass — populate authored forward edges.
     for (const e of entries) {
         const fwd = forward[e.slug];
-
-        // prerequisites
-        const prereqs = e.prerequisites ?? [];
-        fwd.prerequisites = [...new Set(prereqs)];
-
-        // related: normalize relatedAlgorithms + related into one list
-        const related = [...(e.relatedAlgorithms ?? []), ...(e.related ?? [])];
-        fwd.related = [...new Set(related)];
-
-        // comparedWith
-        fwd.comparedWith = [...new Set(e.comparedWith ?? [])];
-
-        // failureModes
+        fwd.prerequisites = [...new Set(e.prerequisites ?? [])];
         fwd.failureModes = [...new Set(e.failureModes ?? [])];
+        fwd.relations = (e.relations ?? []).map((r) => ({ ...r }));
     }
 
-    // Compute reverse edges by iterating over forward edges.
+    // Second pass — mirror symmetric relations onto target pages.
+    for (const [slug, fwd] of Object.entries(forward)) {
+        for (const rel of fwd.relations) {
+            if (rel.mirrored) continue; // safety; authored entries don't carry the flag
+            if (!SYMMETRIC_RELATION_TYPES.has(rel.type)) continue;
+            const targetForward = forward[rel.target];
+            if (!targetForward) continue;
+            const alreadyAuthored = targetForward.relations.some(
+                (r) => r.type === rel.type && r.target === slug,
+            );
+            if (alreadyAuthored) continue;
+            targetForward.relations.push({
+                type: rel.type,
+                target: slug,
+                confidence: rel.confidence,
+                caution: rel.caution,
+                mirrored: true,
+            });
+        }
+    }
+
+    // Dedupe each forward.relations list (defensive — authored may contain dupes).
+    for (const fwd of Object.values(forward)) {
+        fwd.relations = dedupeRelations(fwd.relations);
+    }
+
+    // Third pass — compute reverse edges.
     for (const [slug, fwd] of Object.entries(forward)) {
         for (const target of fwd.prerequisites) {
             if (reverse[target]) reverse[target].usedBy.push(slug);
         }
-        for (const target of fwd.related) {
-            if (reverse[target]) reverse[target].relatedFrom.push(slug);
-        }
-        for (const target of fwd.comparedWith) {
-            if (reverse[target]) reverse[target].comparedFrom.push(slug);
-        }
         for (const target of fwd.failureModes) {
             if (reverse[target]) reverse[target].affects.push(slug);
         }
+        for (const rel of fwd.relations) {
+            if (rel.mirrored) continue; // mirrored entries don't generate further reverse edges
+            const rev = reverse[rel.target];
+            if (!rev) continue;
+            switch (rel.type) {
+                case "generalized_by":
+                    rev.generalises.push(slug);
+                    break;
+                case "extended_by":
+                    rev.extending.push(slug);
+                    break;
+                case "feeds_into":
+                    rev.fedBy.push(slug);
+                    break;
+                case "learned_alternative_of":
+                    rev.hasLearnedAlternative.push(slug);
+                    break;
+                // Symmetric types are already mirrored onto target's forward — no separate reverse bucket.
+                case "alternative_formulation_of":
+                case "parallel_foundation_with":
+                case "compared_with":
+                    break;
+            }
+        }
+    }
+
+    // Stable sort each list for deterministic output.
+    for (const rev of Object.values(reverse)) {
+        rev.usedBy.sort();
+        rev.affects.sort();
+        rev.generalises.sort();
+        rev.extending.sort();
+        rev.fedBy.sort();
+        rev.hasLearnedAlternative.sort();
     }
 
     return { nodes, forward, reverse };
@@ -136,14 +240,9 @@ export function buildContentGraph(entries: ContentEntry[]): ContentGraph {
 
 /**
  * Detect cycles in the prerequisites subgraph using iterative DFS with three-colour marking.
- * Returns a list of cycles (each cycle is an ordered list of slugs).
- * Returns [] if the graph is acyclic.
  */
 export function detectPrerequisiteCycles(graph: ContentGraph): string[][] {
-    const WHITE = 0; // unvisited
-    const GRAY = 1;  // in current DFS path
-    const BLACK = 2; // fully processed
-
+    const WHITE = 0; const GRAY = 1; const BLACK = 2;
     const color: Record<string, number> = {};
     const parent: Record<string, string | null> = {};
     const cycles: string[][] = [];
@@ -165,9 +264,8 @@ export function detectPrerequisiteCycles(graph: ContentGraph): string[][] {
 
                 const prereqs = graph.forward[top.slug]?.prerequisites ?? [];
                 for (const next of prereqs) {
-                    if (color[next] === undefined) continue; // unknown slug — skip
+                    if (color[next] === undefined) continue;
                     if (color[next] === GRAY) {
-                        // Found a cycle — reconstruct it from parent chain
                         const cycle: string[] = [next];
                         let cur: string | null = top.slug;
                         while (cur !== null && cur !== next) {
@@ -195,9 +293,7 @@ export function detectPrerequisiteCycles(graph: ContentGraph): string[][] {
     return cycles;
 }
 
-/**
- * Write src/generated/content-graph.ts as a typed TypeScript literal.
- */
+/** Write src/generated/content-graph.ts as a typed TypeScript literal. */
 export function emitContentGraph(graph: ContentGraph, outDir: string): void {
     const filePath = join(outDir, "content-graph.ts");
 
@@ -205,6 +301,23 @@ export function emitContentGraph(graph: ContentGraph, outDir: string): void {
         "// Auto-generated by scripts/content-build.ts — do not edit manually.",
         "",
         "export type NodeType = \"algorithm\" | \"model\" | \"concept\" | \"failure-mode\";",
+        "",
+        "export type RelationType =",
+        "    | \"generalized_by\"",
+        "    | \"alternative_formulation_of\"",
+        "    | \"parallel_foundation_with\"",
+        "    | \"extended_by\"",
+        "    | \"compared_with\"",
+        "    | \"feeds_into\"",
+        "    | \"learned_alternative_of\";",
+        "",
+        "export interface TypedRelation {",
+        "    type: RelationType;",
+        "    target: string;",
+        "    confidence: \"high\" | \"medium\" | \"low\";",
+        "    caution?: string;",
+        "    mirrored?: boolean;",
+        "}",
         "",
         "export interface GraphNode {",
         "    slug: string;",
@@ -217,16 +330,17 @@ export function emitContentGraph(graph: ContentGraph, outDir: string): void {
         "",
         "export interface ForwardEdges {",
         "    prerequisites: string[];",
-        "    related: string[];",
-        "    comparedWith: string[];",
         "    failureModes: string[];",
+        "    relations: TypedRelation[];",
         "}",
         "",
         "export interface ReverseEdges {",
         "    usedBy: string[];",
-        "    relatedFrom: string[];",
-        "    comparedFrom: string[];",
         "    affects: string[];",
+        "    generalises: string[];",
+        "    extending: string[];",
+        "    fedBy: string[];",
+        "    hasLearnedAlternative: string[];",
         "}",
         "",
         "export interface ContentGraph {",

@@ -6,10 +6,7 @@ tags: ["image-stitching", "homography", "projective-warp", "dlt"]
 domain: stitching
 author: "Vitaly Vorobyev"
 difficulty: advanced
-relatedAlgorithms: ["zhang-planar-calibration"]
 prerequisites: [homography, dlt-normalisation]
-related: [spatially-varying-image-stitching]
-comparedWith: []
 failureModes: []
 sources:
   primary: zaragoza2013-apap

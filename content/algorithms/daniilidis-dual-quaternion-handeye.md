@@ -6,9 +6,7 @@ tags: ["calibration", "hand-eye", "robotics"]
 domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
-relatedAlgorithms: ["tsai-lenz-handeye", "zhang-planar-calibration"]
 prerequisites: []
-comparedWith: []
 failureModes: []
 sources:
   primary: daniilidis1999-hand-eye

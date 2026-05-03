@@ -9,9 +9,14 @@ difficulty: intermediate
 arch_family: cnn
 params: "16,301"
 prerequisites: [image-gradient]
-related: [chessboard-x-corner-detection]
-comparedWith: []
 failureModes: []
+relations:
+  - type: learned_alternative_of
+    target: chess-corners
+    confidence: high
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: chen2023-ccdn
   references:
@@ -35,11 +40,6 @@ implementations:
     commit: 2674d8760146ceb0aaa6e8c7055ed6520a913f32
     framework: tensorflow
     license: unlicensed
-relatedAlgorithms:
-  - chess-corners
-  - rochade
-  - fast-corner-detector
-  - harris-corner-detector
 ---
 
 # Motivation

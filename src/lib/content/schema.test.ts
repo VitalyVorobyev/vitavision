@@ -79,4 +79,92 @@ describe("algorithmFrontmatterSchema", () => {
             demoLinks: ["not-a-url"],
         })).toThrow();
     });
+
+    it("accepts quality: historical with a typed relations entry", () => {
+        const parsed = algorithmFrontmatterSchema.parse({
+            title: "Historical Method",
+            date: "2026-05-03",
+            summary: "Preserved for citation lineage.",
+            tags: ["calibration"],
+            author: "Vitaly Vorobyev",
+            quality: "historical",
+            relations: [
+                { type: "generalized_by", target: "modern-method", confidence: "high" },
+            ],
+        });
+
+        expect(parsed.quality).toBe("historical");
+        expect(parsed.relations).toEqual([
+            { type: "generalized_by", target: "modern-method", confidence: "high" },
+        ]);
+    });
+
+    it("accepts a relation with a caution string", () => {
+        const parsed = algorithmFrontmatterSchema.parse({
+            title: "Borderline Method",
+            date: "2026-05-03",
+            summary: "Testing relation caution.",
+            tags: ["demo"],
+            author: "Vitaly Vorobyev",
+            relations: [
+                {
+                    type: "alternative_formulation_of",
+                    target: "older-method",
+                    confidence: "high",
+                    caution: "Newer and more coupled, but not a universal replacement.",
+                },
+            ],
+        });
+
+        expect(parsed.relations?.[0]?.caution).toContain("not a universal replacement");
+    });
+
+    it("rejects unknown quality values", () => {
+        expect(() => algorithmFrontmatterSchema.parse({
+            title: "Bad Quality",
+            date: "2026-05-03",
+            summary: "Testing rejection of unknown quality.",
+            tags: ["demo"],
+            author: "Vitaly Vorobyev",
+            quality: "deprecated",
+        })).toThrow();
+    });
+
+    it("rejects unknown relation types", () => {
+        expect(() => algorithmFrontmatterSchema.parse({
+            title: "Bad Relation",
+            date: "2026-05-03",
+            summary: "Testing rejection of unknown relation types.",
+            tags: ["demo"],
+            author: "Vitaly Vorobyev",
+            relations: [
+                { type: "supersedes", target: "x", confidence: "high" },
+            ],
+        })).toThrow();
+    });
+
+    it("rejects relations missing confidence", () => {
+        expect(() => algorithmFrontmatterSchema.parse({
+            title: "Missing Confidence",
+            date: "2026-05-03",
+            summary: "Testing required confidence field.",
+            tags: ["demo"],
+            author: "Vitaly Vorobyev",
+            relations: [
+                { type: "generalized_by", target: "x" },
+            ],
+        })).toThrow();
+    });
+
+    it("treats relations as optional", () => {
+        const parsed = algorithmFrontmatterSchema.parse({
+            title: "Living Method",
+            date: "2026-05-03",
+            summary: "No relations needed.",
+            tags: ["demo"],
+            author: "Vitaly Vorobyev",
+        });
+
+        expect(parsed).not.toHaveProperty("relations");
+    });
 });

@@ -6,11 +6,15 @@ tags: ["calibration", "chessboard", "corner-detection"]
 domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["chess-corners", "rochade", "pyramidal-blur-aware-xcorner"]
 prerequisites: [image-gradient]
-related: [chessboard-x-corner-detection]
-comparedWith: [pyramidal-blur-aware-xcorner]
 failureModes: []
+relations:
+  - type: compared_with
+    target: pyramidal-blur-aware-xcorner
+    confidence: high
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: geiger2012-automatic
   references:

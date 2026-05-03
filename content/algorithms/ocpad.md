@@ -6,11 +6,12 @@ tags: ["calibration", "chessboard"]
 domain: targets
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["shu-topological-grid", "puzzleboard", "laureano-topological-chessboard"]
 prerequisites: [image-gradient, topological-grid-recovery]
-related: [chessboard-x-corner-detection]
-comparedWith: []
 failureModes: []
+relations:
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: fuersattel2016-ocpad
   references: [placht2014-rochade, cordella2004-vf2]

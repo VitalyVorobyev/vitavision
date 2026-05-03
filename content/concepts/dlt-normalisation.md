@@ -7,11 +7,6 @@ author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: intermediate
 prerequisites: []
-related:
-  - homography
-  - epipolar-geometry
-  - apap-image-stitching
-  - fundamental-matrix-eight-point
 sources:
   references:
     - hartley1997-eight-point

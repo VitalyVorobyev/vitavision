@@ -6,11 +6,13 @@ tags: ["image-stitching", "spatially-varying-warp", "affine", "non-rigid-registr
 domain: stitching
 author: "Vitaly Vorobyev"
 difficulty: advanced
-relatedAlgorithms: ["apap-image-stitching", "gao-dual-homography-stitching"]
 prerequisites: [homography]
-related: [spatially-varying-image-stitching]
-comparedWith: [apap-image-stitching]
 failureModes: []
+relations:
+  - type: generalized_by
+    target: apap-image-stitching
+    confidence: medium
+    caution: "Affine deviation field remains a useful baseline; APAP's projective per-cell grid is more general but not strictly necessary for moderate-parallax planar-scene panoramas."
 sources:
   primary: lin2011-svastitching
   references:

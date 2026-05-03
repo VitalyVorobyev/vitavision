@@ -7,13 +7,26 @@ domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedPosts: ["01-chesscorners"]
-relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "fast-corner-detector"]
 relatedDemos: ["chess-response"]
 prerequisites: [image-gradient]
-related: [chessboard-x-corner-detection]
-comparedWith: [rochade, pyramidal-blur-aware-xcorner, puzzleboard, duda-radon-corners]
 failureModes: []
 editorAlgorithmId: chess-corners
+relations:
+  - type: compared_with
+    target: rochade
+    confidence: high
+  - type: compared_with
+    target: pyramidal-blur-aware-xcorner
+    confidence: high
+  - type: compared_with
+    target: puzzleboard
+    confidence: high
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
+  - type: compared_with
+    target: duda-radon-corners
+    confidence: high
 sources:
   primary: bennett2013-chess
   references: [rosten2006-fast]

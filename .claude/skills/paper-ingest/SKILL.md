@@ -83,6 +83,34 @@ See `.claude/skills/_shared/subagent-prompts.md` for the contract template and c
 
 The orchestrator confirms the candidate list with the user before proceeding: "I found these Atlas pages that may relate to this paper: [list]. I plan to write update-plan bullets for: [list]. Does this look right?" The user-confirmation step is preserved; it now runs on the JSON returned by the Sonnet subagent.
 
+### Step 4b — Typed-relations check
+
+Before deciding the paper's role, the orchestrator surfaces the typed-relations question to the user **verbatim** (no auto-detection from title heuristics or year delta):
+
+> "For each candidate slug above, is there a typed relationship between **this** paper and that page? The vocabulary is fixed (see CLAUDE.md → Relations field), in three categories:
+>
+> *Lineage:*
+> - `generalized_by` — same problem, target strictly more general/robust.
+> - `alternative_formulation_of` — same problem, different mathematical formulation; both coexist.
+> - `parallel_foundation_with` — concurrent peers that founded the field together.
+> - `extended_by` — target builds on this method without replacing it.
+>
+> *Practice:*
+> - `compared_with` — peer practitioner choice; reader picks one.
+> - `feeds_into` — output is consumed by target in a typical pipeline.
+>
+> *Cross-paradigm:*
+> - `learned_alternative_of` — this paper's deep-learning model replaces classical target algorithm. (Model→algorithm only.)
+>
+> For each relation, give: `(type, target-slug, confidence: high|medium|low, optional caution: <one line>)`. If any relation is `generalized_by` with `confidence: high` AND you intend the older page to render as preserved-for-lineage-only, also flag it as `quality: historical`. If unsure on any of these, answer 'no relation' — we can revisit at page-authoring time."
+
+The user's answer is recorded in the note's update plan:
+
+- In an existing-page `## UPDATE: <slug>` block: append a `Relations:` block listing each relation as one line — `{ type: <type>, target: <slug>, confidence: <high|medium|low>, caution: <text or omit> }`. If the user also flagged the page historical, append `Quality: historical` on its own line.
+- In a `## NEW: <suggested-slug>` block: same shape, applied to the new page being authored.
+
+The orchestrator does not edit any `content/**` file — `algo-page` reads the recorded `Relations:` block at draft time and writes them into the page frontmatter (see `algo-page/SKILL.md` Bootstrap B8).
+
 ### Step 5 — Determine the paper's role
 
 **Primary update** — `sources.primary` of an existing page → the paper primarily deepens or corrects that page. Write bullets under `## UPDATE: <existing-slug>`.
@@ -162,6 +190,7 @@ The distinction matters because primary-update notes are applied to a single pag
 - **Never write `usedBy:` (or any reverse edge) anywhere.** Reverse edges are computed by the build from `src/generated/content-graph.ts`.
 - **Never overwrite an existing research note.** Step 0 enforces this. To re-author, delete the note first.
 - **Never read the cache `.txt` / `.html` directly in the orchestrator.** Cache reads happen inside the delegated Extract contract; the orchestrator only sees Sonnet's reply.
+- **Never auto-detect typed relations or historical status from title heuristics, year delta, or any other signal.** Always ask the user (Step 4b). Even when the answer seems obvious — a paper from 1987 about a method later replaced by a 2000 paper that is already on the site — the orchestrator surfaces the question and records the user's answer verbatim, including the confidence level and any caution. The cost of one short question is far smaller than the cost of silently mislabelling a relation type or marking a page historical.
 
 ## References
 

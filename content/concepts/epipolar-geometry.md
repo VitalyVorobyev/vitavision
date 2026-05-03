@@ -7,8 +7,6 @@ author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: advanced
 prerequisites: []
-related:
-  - dlt-normalisation
 sources:
   references:
     - hartley1997-eight-point

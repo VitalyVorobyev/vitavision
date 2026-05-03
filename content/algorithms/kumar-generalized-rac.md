@@ -6,9 +6,7 @@ tags: ["camera-calibration", "lens-sensor-tilt"]
 domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
-relatedAlgorithms: ["zhang-planar-calibration"]
 prerequisites: [camera-distortion-models]
-comparedWith: []
 failureModes: []
 sources:
   primary: kumar2014-grac

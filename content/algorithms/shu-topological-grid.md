@@ -6,12 +6,20 @@ tags: ["calibration", "chessboard"]
 domain: targets
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "chess-corners"]
 prerequisites: [image-gradient, topological-grid-recovery]
-related: [chessboard-x-corner-detection]
-comparedWith: [laureano-topological-chessboard]
 
 failureModes: []
+relations:
+  - type: compared_with
+    target: laureano-topological-chessboard
+    confidence: high
+  - type: alternative_formulation_of
+    target: geiger-chessboard-detector
+    confidence: medium
+    caution: "Different abstraction layer — topological grid recovery from a candidate corner set vs single-shot detection that integrates corner finding and grid linking. Not superseded by Geiger; both remain in practitioner use."
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: shu2009-topological
   references: [harris1988-corner]

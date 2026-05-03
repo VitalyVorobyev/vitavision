@@ -1,9 +1,51 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { contentGraph } from "../../generated/content-graph.ts";
-import type { GraphNode, NodeType } from "../../generated/content-graph.ts";
+import type { GraphNode, NodeType, RelationType, TypedRelation } from "../../generated/content-graph.ts";
 import { blogPosts, demoPages } from "../../generated/content-index.ts";
 import { useIsAdmin } from "../../lib/auth/useIsAdmin.ts";
+
+export type { TypedRelation };
+
+// ── Type → display label ─────────────────────────────────────────────────────
+
+/** Forward-direction label: how to describe a typed relation that the page itself authored. */
+const FORWARD_LABEL: Record<RelationType, string> = {
+    generalized_by: "Generalised by",
+    alternative_formulation_of: "Alternative formulation of",
+    parallel_foundation_with: "Parallel foundation with",
+    extended_by: "Extended by",
+    compared_with: "Compared with",
+    feeds_into: "Feeds into",
+    learned_alternative_of: "Learned alternative of",
+};
+
+/** Reverse-direction label for asymmetric types (when target's panel renders the entry). */
+const REVERSE_LABEL: Partial<Record<RelationType, string>> = {
+    generalized_by: "Generalises",
+    extended_by: "Extends",
+    feeds_into: "Fed by",
+    learned_alternative_of: "Has learned alternative",
+};
+
+/** Which bucket the relation belongs to. Drives the section heading in the panel. */
+const RELATION_CATEGORY: Record<RelationType, "lineage" | "practice" | "cross-paradigm"> = {
+    generalized_by: "lineage",
+    alternative_formulation_of: "lineage",
+    parallel_foundation_with: "lineage",
+    extended_by: "lineage",
+    compared_with: "practice",
+    feeds_into: "practice",
+    learned_alternative_of: "cross-paradigm",
+};
+
+interface DisplayRelation {
+    label: string;
+    target: string;
+    confidence: TypedRelation["confidence"];
+    caution?: string;
+    category: "lineage" | "practice" | "cross-paradigm";
+}
 
 interface RelationshipPanelProps {
     /** The slug of the page being rendered. */
@@ -14,9 +56,11 @@ interface RelationshipPanelProps {
     relatedPosts?: string[];
     /** Sidebar-only: demo slugs surfaced under "Also see". */
     relatedDemos?: string[];
+    /** When set, render a prominent "Superseded by" section linking this slug. The caller decides — typically only set when `quality: "historical"`. */
+    supersededBy?: string;
 }
 
-// ── Type-specific badge styling (block variant) ─────────────────────────────────
+// ── Type-specific badge styling (block variant) for plain slug lists ─────────
 
 const TYPE_CLASSES: Record<NodeType, string> = {
     "algorithm":    "border-brand/30 bg-brand/10 text-brand hover:border-brand/60",
@@ -36,12 +80,11 @@ function RelBadge({ node }: { node: GraphNode }) {
     );
 }
 
-// ── Block-variant section ───────────────────────────────────────────────────────
+// ── Plain-slug section (used for prerequisites / usedBy / affects) ───────────
 
 interface BlockSectionProps {
     heading: string;
     slugs: string[];
-    /** When false, draft target nodes are filtered out of the section. */
     showDrafts: boolean;
 }
 
@@ -66,8 +109,6 @@ function BlockSection({ heading, slugs, showDrafts }: BlockSectionProps) {
         </div>
     );
 }
-
-// ── Sidebar-variant section ─────────────────────────────────────────────────────
 
 interface SidebarSectionProps {
     heading: string;
@@ -139,6 +180,122 @@ function SidebarSection({ heading, slugs, showDrafts, itemColor, maxItems, defau
         </details>
     );
 }
+
+// ── Typed-relations bucket section (Lineage / Practice / Cross-paradigm) ──────
+
+function TypedBucket({
+    heading,
+    items,
+    variant,
+}: {
+    heading: string;
+    items: DisplayRelation[];
+    variant: "block" | "sidebar";
+}) {
+    const resolved = items
+        .map((rel) => ({ rel, node: contentGraph.nodes[rel.target] }))
+        .filter((r): r is { rel: DisplayRelation; node: GraphNode } => r.node !== undefined);
+    if (resolved.length === 0) return null;
+
+    if (variant === "sidebar") {
+        return (
+            <div className="mb-[18px]">
+                <h3 className="text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted-foreground mb-2.5">
+                    {heading}
+                </h3>
+                <ul className="m-0 p-0 list-none space-y-2.5">
+                    {resolved.map(({ rel, node }, i) => (
+                        <li key={`${rel.label}:${rel.target}:${i}`} className="border-b border-dashed border-foreground/10 last:border-b-0 pb-2 last:pb-0">
+                            <div className="flex items-baseline gap-2 text-[10px] font-mono uppercase tracking-[0.1em] text-muted-foreground mb-0.5">
+                                <span>{rel.label}</span>
+                                {rel.confidence !== "high" && (
+                                    <span className="text-muted-foreground/70">· {rel.confidence}</span>
+                                )}
+                            </div>
+                            <Link
+                                to={node.path}
+                                className="block text-[13px] text-foreground hover:text-foreground/80 no-underline"
+                            >
+                                {node.title}
+                            </Link>
+                            {rel.caution && (
+                                <p className="m-0 mt-1 text-[11.5px] text-muted-foreground italic leading-snug">
+                                    {rel.caution}
+                                </p>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        );
+    }
+
+    return (
+        <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                {heading}
+            </h3>
+            <ul className="m-0 p-0 list-none space-y-3">
+                {resolved.map(({ rel, node }, i) => (
+                    <li key={`${rel.label}:${rel.target}:${i}`}>
+                        <div className="flex items-baseline gap-2 text-[11px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                            <span>{rel.label}</span>
+                            {rel.confidence !== "high" && (
+                                <span className="text-muted-foreground/70">· {rel.confidence}</span>
+                            )}
+                        </div>
+                        <Link to={node.path} className="text-sm font-medium text-foreground hover:underline">
+                            {node.title}
+                        </Link>
+                        {rel.caution && (
+                            <p className="m-0 mt-1 text-xs text-muted-foreground italic">{rel.caution}</p>
+                        )}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
+// ── Superseded-by section (historical pages only) ──────────────────────────────
+
+function SupersededBy({ successor, variant }: { successor: string; variant: "block" | "sidebar" }) {
+    const node = contentGraph.nodes[successor];
+    if (!node) return null;
+
+    if (variant === "sidebar") {
+        return (
+            <div className="mb-[18px] rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2.5">
+                <h3 className="text-[10.5px] font-semibold tracking-[0.12em] uppercase text-amber-700 dark:text-amber-400 mb-1.5">
+                    Superseded by
+                </h3>
+                <Link
+                    to={node.path}
+                    className="flex items-center justify-between gap-2 text-[14px] font-semibold text-amber-700 dark:text-amber-400 no-underline hover:underline"
+                >
+                    <span className="truncate">{node.title}</span>
+                    <span aria-hidden="true" className="text-amber-700/70 dark:text-amber-400/70 text-[11px] flex-shrink-0">↗</span>
+                </Link>
+            </div>
+        );
+    }
+
+    return (
+        <div className="rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1.5">
+                Superseded by
+            </h3>
+            <Link
+                to={node.path}
+                className="text-base font-semibold text-amber-700 dark:text-amber-400 no-underline hover:underline"
+            >
+                {node.title}
+            </Link>
+        </div>
+    );
+}
+
+// ── "Also see" external panel (blog + demos) ─────────────────────────────────
 
 interface AlsoSeeProps {
     relatedPosts?: string[];
@@ -227,13 +384,12 @@ export default function RelationshipPanel({
     variant = "block",
     relatedPosts,
     relatedDemos,
+    supersededBy,
 }: RelationshipPanelProps) {
     const isAdmin = useIsAdmin();
     const fwd = contentGraph.forward[slug];
     const rev = contentGraph.reverse[slug];
 
-    // Sections open by default on ≥1024px viewports; collapsed on smaller viewports.
-    // Read synchronously during render. Guard for SSR and test envs where matchMedia may be absent.
     const [sectionsOpen] = useState<boolean>(() =>
         typeof window !== "undefined" && typeof window.matchMedia === "function"
             ? window.matchMedia("(min-width: 1024px)").matches
@@ -242,28 +398,62 @@ export default function RelationshipPanel({
 
     if (!fwd && !rev) return null;
 
-    // ── Compute sections (shared across variants) ──────────────────────────────
-
+    // ── Plain slug lists ───────────────────────────────────────────────────────
     const prerequisites = fwd?.prerequisites ?? [];
-
-    // comparedWith = forward.comparedWith ∪ reverse.comparedFrom, deduped
-    const comparedWith = Array.from(new Set([
-        ...(fwd?.comparedWith ?? []),
-        ...(rev?.comparedFrom ?? []),
-    ]));
-
-    // related = forward.related ∪ reverse.relatedFrom, deduped, minus
-    // anything already in comparedWith or prerequisites to avoid duplication.
-    const comparedOrPrereq = new Set([...comparedWith, ...prerequisites]);
-    const related = Array.from(new Set([
-        ...(fwd?.related ?? []),
-        ...(rev?.relatedFrom ?? []),
-    ])).filter((s) => !comparedOrPrereq.has(s));
-
     const usedBy = rev?.usedBy ?? [];
     const failureModes = fwd?.failureModes ?? [];
     const affects = rev?.affects ?? [];
 
+    // ── Typed relations (forward + asymmetric reverses), bucketed by category ─
+    const display: DisplayRelation[] = [];
+
+    for (const rel of fwd?.relations ?? []) {
+        // Suppress the entry that drives the prominent "Superseded by" section.
+        if (
+            supersededBy !== undefined &&
+            rel.target === supersededBy &&
+            rel.type === "generalized_by" &&
+            rel.confidence === "high"
+        ) continue;
+        display.push({
+            label: FORWARD_LABEL[rel.type],
+            target: rel.target,
+            confidence: rel.confidence,
+            caution: rel.caution,
+            category: RELATION_CATEGORY[rel.type],
+        });
+    }
+
+    type ReverseBucket = { slugs: string[]; type: RelationType };
+    const reverseBuckets: ReverseBucket[] = [
+        { slugs: rev?.generalises ?? [], type: "generalized_by" },
+        { slugs: rev?.extending ?? [], type: "extended_by" },
+        { slugs: rev?.fedBy ?? [], type: "feeds_into" },
+        { slugs: rev?.hasLearnedAlternative ?? [], type: "learned_alternative_of" },
+    ];
+    for (const bucket of reverseBuckets) {
+        const label = REVERSE_LABEL[bucket.type];
+        if (!label) continue;
+        for (const slug of bucket.slugs) {
+            display.push({
+                label,
+                target: slug,
+                confidence: "high",
+                category: RELATION_CATEGORY[bucket.type],
+            });
+        }
+    }
+
+    const visibleDisplay = display.filter((d) => {
+        const node = contentGraph.nodes[d.target];
+        return node !== undefined && (isAdmin || !node.draft);
+    });
+
+    const lineage = visibleDisplay.filter((d) => d.category === "lineage");
+    const practice = visibleDisplay.filter((d) => d.category === "practice");
+    const crossParadigm = visibleDisplay.filter((d) => d.category === "cross-paradigm");
+
+    // ── Visibility flags ──────────────────────────────────────────────────────
     const visibleCount = (slugs: string[]) =>
         slugs
             .map((s) => contentGraph.nodes[s])
@@ -272,18 +462,21 @@ export default function RelationshipPanel({
 
     const hasGraphContent =
         visibleCount(prerequisites) > 0 ||
-        visibleCount(comparedWith) > 0 ||
-        visibleCount(related) > 0 ||
         visibleCount(usedBy) > 0 ||
         visibleCount(failureModes) > 0 ||
-        visibleCount(affects) > 0;
+        visibleCount(affects) > 0 ||
+        lineage.length > 0 ||
+        practice.length > 0 ||
+        crossParadigm.length > 0;
 
     if (variant === "sidebar") {
         const hasAlsoSee = (relatedPosts?.length ?? 0) + (relatedDemos?.length ?? 0) > 0;
-        if (!hasGraphContent && !hasAlsoSee) return null;
+        const hasSuccessor = supersededBy !== undefined && contentGraph.nodes[supersededBy] !== undefined;
+        if (!hasGraphContent && !hasAlsoSee && !hasSuccessor) return null;
 
         return (
             <div className="border border-border rounded-[10px] bg-card p-[18px]">
+                {hasSuccessor && <SupersededBy successor={supersededBy!} variant="sidebar" />}
                 <SidebarSection
                     heading="Prerequisites"
                     slugs={prerequisites}
@@ -291,16 +484,12 @@ export default function RelationshipPanel({
                     itemColor="text-foreground"
                     defaultOpen={sectionsOpen}
                 />
+                <TypedBucket heading="Lineage" items={lineage} variant="sidebar" />
+                <TypedBucket heading="Practice" items={practice} variant="sidebar" />
+                <TypedBucket heading="Cross-paradigm" items={crossParadigm} variant="sidebar" />
                 <SidebarSection
-                    heading="Compared with"
-                    slugs={comparedWith}
-                    showDrafts={isAdmin}
-                    itemColor="text-amber-600 dark:text-amber-400"
-                    defaultOpen={sectionsOpen}
-                />
-                <SidebarSection
-                    heading="Related"
-                    slugs={related}
+                    heading="Used by"
+                    slugs={usedBy}
                     showDrafts={isAdmin}
                     itemColor="text-blue-600 dark:text-blue-400"
                     maxItems={4}
@@ -311,13 +500,16 @@ export default function RelationshipPanel({
         );
     }
 
-    if (!hasGraphContent) return null;
+    const hasSuccessor = supersededBy !== undefined && contentGraph.nodes[supersededBy] !== undefined;
+    if (!hasGraphContent && !hasSuccessor) return null;
 
     return (
         <section className="mt-12 pt-6 border-t border-border space-y-5">
+            {hasSuccessor && <SupersededBy successor={supersededBy!} variant="block" />}
             <BlockSection heading="Prerequisites" slugs={prerequisites} showDrafts={isAdmin} />
-            <BlockSection heading="Compared with" slugs={comparedWith} showDrafts={isAdmin} />
-            <BlockSection heading="Related" slugs={related} showDrafts={isAdmin} />
+            <TypedBucket heading="Lineage" items={lineage} variant="block" />
+            <TypedBucket heading="Practice" items={practice} variant="block" />
+            <TypedBucket heading="Cross-paradigm" items={crossParadigm} variant="block" />
             <BlockSection heading="Used by" slugs={usedBy} showDrafts={isAdmin} />
             <BlockSection heading="Failure modes" slugs={failureModes} showDrafts={isAdmin} />
             <BlockSection heading="Affects" slugs={affects} showDrafts={isAdmin} />

@@ -7,12 +7,6 @@ author: "Vitaly Vorobyev"
 domain: features
 difficulty: intermediate
 prerequisites: []
-related:
-  - harris-corner-detector
-  - shi-tomasi-corner-detector
-  - chess-corners
-  - fast-corner-detector
-  - pyramidal-blur-aware-xcorner
 ---
 
 # Definition
@@ -120,6 +114,7 @@ The image gradient is the lowest-level quantity on which feature detection and i
 - **chess-corners** — the ChESS detector samples gradient-derived intensity contrasts on a ring pattern; gradient orientation is used to compute the dominant direction.
 - **fast-corner-detector** — does not use gradients directly; pixel-intensity comparisons on a circle substitute for gradient computation, which is one reason FAST is faster than Harris.
 - **pyramidal-blur-aware-xcorner** — operates on an image pyramid, computing gradients at each pyramid level; scale selection is driven by gradient-based saddle-point measures.
+- **loy-fast-radial-symmetry** — votes along the gradient orientation $\hat{\mathbf{g}}(p) = \mathbf{g}(p)/\|\mathbf{g}(p)\|$ at each pixel; positively- and negatively-affected pixels at distance $n$ accumulate magnitude and orientation contributions, yielding a symmetry-contribution map per radius.
 
 # References
 

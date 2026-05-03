@@ -110,18 +110,7 @@ The inequality enforces that the stationary point is a saddle (Hessian eigenvalu
 9. For each initial corner $(x, y)$: convolve $I$ with the cone kernel $c$; fit $p$ by least squares in the $(2\kappa + 1) \times (2\kappa + 1)$ window around $(x, y)$; solve for $(x^\ast, y^\ast)$; accept iff $4 a_1 a_3 - a_2^2 < 0$.
 :::
 
-```mermaid
-flowchart LR
-    A["I"] --> B["Scharr<br/>gradient"]
-    B --> C["Local<br/>threshold τ=4"]
-    C --> D["Conditional<br/>dilation"]
-    D --> E["Centreline<br/>thinning"]
-    E --> F["Saddles<br/>deg ≥ 3"]
-    F --> G["Cluster<br/>α∈[2,5]"]
-    G --> H["Grid<br/>verify"]
-    H --> I["Cone filter<br/>+ quadratic fit"]
-    I --> J["Subpixel<br/>corners"]
-```
+![ROCHADE pipeline: 10-stage flow from input image to subpixel corners.](./images/rochade/pipeline.svg)
 
 # Implementation
 

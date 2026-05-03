@@ -15,6 +15,8 @@ The two SVG primitives share the same markdown syntax and output location (`cont
 
 **Blocked.** Inline `<svg>` markup in markdown is stripped by `rehype-sanitize` (`scripts/content-build.ts:57-120`). Paste raw SVG into a `.svg` file under `content/images/<slug>/` and reference it with markdown image syntax; do not paste it into the page body. Interactive React components are possible but hardcoded per algorithm (`src/lib/content/useArticleIllustrations.tsx` currently only knows `chess-response`); do not invent new ones from a skill pass — request a code change.
 
+**Also blocked.** Embedding raster images inside SVG via `<image href="data:image/png;..."/>` is unacceptable. SVGs are vector primitives — if the figure is a photograph or a rasterized screenshot, use a PNG/JPEG with markdown image syntax directly. SVG is for vector content only.
+
 ## Choosing the primitive
 
 **Good signals for including a figure:**
@@ -105,7 +107,8 @@ When a figure is genuinely valuable but depends on real-image data that the gene
 
 ## Mermaid authoring notes
 
-- Prefer `flowchart LR` for left-to-right pipelines; `flowchart TB` when stages don't fit horizontally on mobile.
+- **`flowchart LR` is forbidden for pipelines with >4 stages.** It produces a long horizontal strip that's unreadable at narrow viewports (≤768 px). Use `flowchart TB` (top-to-bottom) for short pipelines, OR a 2D matplotlib SVG (see `py/_templates/pipeline_2d.py.template`) for any pipeline with ≥5 stages where the structure is load-bearing.
+- For pipelines with ≤4 stages, `flowchart LR` is fine if it fits within ~600 px width.
 - Use `<br/>` for line breaks inside node labels; keep each label ≤ 3 short lines.
 - Arithmetic symbols inside node labels can clash with Mermaid syntax; the usual fix is to wrap the label in double quotes: `A["s = f_xy² − f_xx·f_yy"] --> B`.
-- Preview at mobile width (≤ 360 px) — long single-line pipelines wrap awkwardly; split into two rows with `subgraph` or switch to `TB` if it does.
+- Preview at mobile width (≤ 360 px). If the diagram doesn't fit, switch to a generated SVG.

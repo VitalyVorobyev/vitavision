@@ -34,13 +34,19 @@ export interface ForwardEdges {
     relations: TypedRelation[];
 }
 
+export interface ReverseRelation {
+    slug: string;
+    confidence: "high" | "medium" | "low";
+    caution?: string;
+}
+
 export interface ReverseEdges {
     usedBy: string[];
     affects: string[];
-    generalises: string[];
-    extending: string[];
-    fedBy: string[];
-    hasLearnedAlternative: string[];
+    generalises: ReverseRelation[];
+    extending: ReverseRelation[];
+    fedBy: ReverseRelation[];
+    hasLearnedAlternative: ReverseRelation[];
 }
 
 export interface ContentGraph {
@@ -1134,8 +1140,16 @@ export const contentGraph: ContentGraph = {
       "usedBy": [],
       "affects": [],
       "generalises": [
-        "gao-dual-homography-stitching",
-        "lin-sva-stitching"
+        {
+          "slug": "gao-dual-homography-stitching",
+          "confidence": "high",
+          "caution": "APAP's continuous grid of per-cell homographies subsumes the two-plane parametrisation; the two methods are not peer practitioner choices."
+        },
+        {
+          "slug": "lin-sva-stitching",
+          "confidence": "medium",
+          "caution": "Affine deviation field remains a useful baseline; APAP's projective per-cell grid is more general but not strictly necessary for moderate-parallax planar-scene panoramas."
+        }
       ],
       "extending": [],
       "fedBy": [],
@@ -1148,9 +1162,18 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": [
-        "ccdn-checkerboard-detector",
-        "ccs-camera-calibration",
-        "mate-checkerboard-detector"
+        {
+          "slug": "ccdn-checkerboard-detector",
+          "confidence": "high"
+        },
+        {
+          "slug": "ccs-camera-calibration",
+          "confidence": "high"
+        },
+        {
+          "slug": "mate-checkerboard-detector",
+          "confidence": "high"
+        }
       ]
     },
     "laureano-topological-chessboard": {
@@ -1214,7 +1237,10 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [
-        "loy-fast-radial-symmetry"
+        {
+          "slug": "loy-fast-radial-symmetry",
+          "confidence": "high"
+        }
       ],
       "fedBy": [],
       "hasLearnedAlternative": []
@@ -1234,7 +1260,11 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": [
-        "superpoint"
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "SuperPoint replaces classical sparse keypoint+descriptor pipelines (Harris/Shi-Tomasi + SIFT/ORB) with a single learned model; it does not literally re-implement the Harris response."
+        }
       ]
     },
     "kumar-generalized-rac": {
@@ -1266,7 +1296,11 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [
-        "fischler-bolles-ransac"
+        {
+          "slug": "fischler-bolles-ransac",
+          "confidence": "high",
+          "caution": "MAGSAC marginalises the inlier threshold rather than fixing it — orthogonal axis to USAC's framework refactor"
+        }
       ],
       "fedBy": [],
       "hasLearnedAlternative": []
@@ -1318,7 +1352,10 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": [
-        "superpoint"
+        {
+          "slug": "superpoint",
+          "confidence": "high"
+        }
       ]
     },
     "sturm-plane-based-calibration": {
@@ -1343,7 +1380,11 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [],
       "fedBy": [
-        "tsai-versatile-calibration"
+        {
+          "slug": "tsai-versatile-calibration",
+          "confidence": "high",
+          "caution": "Tsai 1987's per-station extrinsics are the canonical input format for the Tsai-Lenz hand-eye AX = XB solver."
+        }
       ],
       "hasLearnedAlternative": []
     },
@@ -1360,7 +1401,11 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [
-        "fischler-bolles-ransac"
+        {
+          "slug": "fischler-bolles-ransac",
+          "confidence": "high",
+          "caution": "USAC is a unifying engineering framework, not a single new technique"
+        }
       ],
       "fedBy": [],
       "hasLearnedAlternative": []
@@ -1369,23 +1414,65 @@ export const contentGraph: ContentGraph = {
       "usedBy": [],
       "affects": [],
       "generalises": [
-        "tsai-versatile-calibration"
+        {
+          "slug": "tsai-versatile-calibration",
+          "confidence": "high"
+        }
       ],
       "extending": [],
       "fedBy": [
-        "ccdn-checkerboard-detector",
-        "ccs-camera-calibration",
-        "chess-corners",
-        "duda-radon-corners",
-        "geiger-chessboard-detector",
-        "gp-checkerboard-enhancement",
-        "laureano-topological-chessboard",
-        "mate-checkerboard-detector",
-        "ocpad",
-        "puzzleboard",
-        "pyramidal-blur-aware-xcorner",
-        "rochade",
-        "shu-topological-grid"
+        {
+          "slug": "ccdn-checkerboard-detector",
+          "confidence": "high"
+        },
+        {
+          "slug": "ccs-camera-calibration",
+          "confidence": "high"
+        },
+        {
+          "slug": "chess-corners",
+          "confidence": "high"
+        },
+        {
+          "slug": "duda-radon-corners",
+          "confidence": "high"
+        },
+        {
+          "slug": "geiger-chessboard-detector",
+          "confidence": "high"
+        },
+        {
+          "slug": "gp-checkerboard-enhancement",
+          "confidence": "high"
+        },
+        {
+          "slug": "laureano-topological-chessboard",
+          "confidence": "high"
+        },
+        {
+          "slug": "mate-checkerboard-detector",
+          "confidence": "high"
+        },
+        {
+          "slug": "ocpad",
+          "confidence": "high"
+        },
+        {
+          "slug": "puzzleboard",
+          "confidence": "high"
+        },
+        {
+          "slug": "pyramidal-blur-aware-xcorner",
+          "confidence": "high"
+        },
+        {
+          "slug": "rochade",
+          "confidence": "high"
+        },
+        {
+          "slug": "shu-topological-grid",
+          "confidence": "high"
+        }
       ],
       "hasLearnedAlternative": []
     },

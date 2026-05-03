@@ -61,19 +61,30 @@ export interface ForwardEdges {
     relations: TypedRelation[];
 }
 
+/**
+ * One asymmetric reverse-edge entry. Preserves the authored confidence and caution
+ * from the source page's forward relation so the target page renders the same
+ * editorial nuance in its reverse view.
+ */
+export interface ReverseRelation {
+    slug: string;
+    confidence: TypedRelation["confidence"];
+    caution?: string;
+}
+
 export interface ReverseEdges {
     /** Pages that list this slug as a prerequisite. */
     usedBy: string[];
     /** Pages that list this slug as a failure mode. */
     affects: string[];
     /** Pages where this slug is the target of a `generalized_by` forward — i.e., this page generalises those. */
-    generalises: string[];
+    generalises: ReverseRelation[];
     /** Pages where this slug is the target of an `extended_by` forward — i.e., this page is extended by those. */
-    extending: string[];
+    extending: ReverseRelation[];
     /** Pages where this slug is the target of a `feeds_into` forward — i.e., those pages feed into this. */
-    fedBy: string[];
+    fedBy: ReverseRelation[];
     /** Pages where this slug is the target of a `learned_alternative_of` forward — i.e., those models replace this classical algo. */
-    hasLearnedAlternative: string[];
+    hasLearnedAlternative: ReverseRelation[];
 }
 
 export interface ContentGraph {
@@ -203,18 +214,20 @@ export function buildContentGraph(entries: ContentEntry[]): ContentGraph {
             if (rel.mirrored) continue; // mirrored entries don't generate further reverse edges
             const rev = reverse[rel.target];
             if (!rev) continue;
+            const entry: ReverseRelation = { slug, confidence: rel.confidence };
+            if (rel.caution !== undefined) entry.caution = rel.caution;
             switch (rel.type) {
                 case "generalized_by":
-                    rev.generalises.push(slug);
+                    rev.generalises.push(entry);
                     break;
                 case "extended_by":
-                    rev.extending.push(slug);
+                    rev.extending.push(entry);
                     break;
                 case "feeds_into":
-                    rev.fedBy.push(slug);
+                    rev.fedBy.push(entry);
                     break;
                 case "learned_alternative_of":
-                    rev.hasLearnedAlternative.push(slug);
+                    rev.hasLearnedAlternative.push(entry);
                     break;
                 // Symmetric types are already mirrored onto target's forward — no separate reverse bucket.
                 case "alternative_formulation_of":
@@ -226,13 +239,14 @@ export function buildContentGraph(entries: ContentEntry[]): ContentGraph {
     }
 
     // Stable sort each list for deterministic output.
+    const bySlug = (a: ReverseRelation, b: ReverseRelation) => a.slug.localeCompare(b.slug);
     for (const rev of Object.values(reverse)) {
         rev.usedBy.sort();
         rev.affects.sort();
-        rev.generalises.sort();
-        rev.extending.sort();
-        rev.fedBy.sort();
-        rev.hasLearnedAlternative.sort();
+        rev.generalises.sort(bySlug);
+        rev.extending.sort(bySlug);
+        rev.fedBy.sort(bySlug);
+        rev.hasLearnedAlternative.sort(bySlug);
     }
 
     return { nodes, forward, reverse };
@@ -334,13 +348,19 @@ export function emitContentGraph(graph: ContentGraph, outDir: string): void {
         "    relations: TypedRelation[];",
         "}",
         "",
+        "export interface ReverseRelation {",
+        "    slug: string;",
+        "    confidence: \"high\" | \"medium\" | \"low\";",
+        "    caution?: string;",
+        "}",
+        "",
         "export interface ReverseEdges {",
         "    usedBy: string[];",
         "    affects: string[];",
-        "    generalises: string[];",
-        "    extending: string[];",
-        "    fedBy: string[];",
-        "    hasLearnedAlternative: string[];",
+        "    generalises: ReverseRelation[];",
+        "    extending: ReverseRelation[];",
+        "    fedBy: ReverseRelation[];",
+        "    hasLearnedAlternative: ReverseRelation[];",
         "}",
         "",
         "export interface ContentGraph {",

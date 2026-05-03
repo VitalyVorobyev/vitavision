@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { contentGraph } from "../../generated/content-graph.ts";
-import type { GraphNode, NodeType, RelationType, TypedRelation } from "../../generated/content-graph.ts";
+import type { GraphNode, NodeType, RelationType, ReverseRelation, TypedRelation } from "../../generated/content-graph.ts";
 import { blogPosts, demoPages } from "../../generated/content-index.ts";
 import { useIsAdmin } from "../../lib/auth/useIsAdmin.ts";
 
@@ -28,23 +28,25 @@ const REVERSE_LABEL: Partial<Record<RelationType, string>> = {
     learned_alternative_of: "Has learned alternative",
 };
 
-/** Which bucket the relation belongs to. Drives the section heading in the panel. */
-const RELATION_CATEGORY: Record<RelationType, "lineage" | "practice" | "cross-paradigm"> = {
-    generalized_by: "lineage",
-    alternative_formulation_of: "lineage",
-    parallel_foundation_with: "lineage",
-    extended_by: "lineage",
-    compared_with: "practice",
-    feeds_into: "practice",
-    learned_alternative_of: "cross-paradigm",
-};
+const SECTION_ORDER: readonly string[] = [
+    "Generalised by",
+    "Generalises",
+    "Alternative formulation of",
+    "Parallel foundation with",
+    "Extended by",
+    "Extends",
+    "Compared with",
+    "Feeds into",
+    "Fed by",
+    "Learned alternative of",
+    "Has learned alternative",
+];
 
 interface DisplayRelation {
     label: string;
     target: string;
     confidence: TypedRelation["confidence"];
     caution?: string;
-    category: "lineage" | "practice" | "cross-paradigm";
 }
 
 interface RelationshipPanelProps {
@@ -181,54 +183,19 @@ function SidebarSection({ heading, slugs, showDrafts, itemColor, maxItems, defau
     );
 }
 
-// ── Typed-relations bucket section (Lineage / Practice / Cross-paradigm) ──────
+// ── Typed-relations bucket section (block variant) ────────────────────────────
 
 function TypedBucket({
     heading,
     items,
-    variant,
 }: {
     heading: string;
     items: DisplayRelation[];
-    variant: "block" | "sidebar";
 }) {
     const resolved = items
         .map((rel) => ({ rel, node: contentGraph.nodes[rel.target] }))
         .filter((r): r is { rel: DisplayRelation; node: GraphNode } => r.node !== undefined);
     if (resolved.length === 0) return null;
-
-    if (variant === "sidebar") {
-        return (
-            <div className="mb-[18px]">
-                <h3 className="text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted-foreground mb-2.5">
-                    {heading}
-                </h3>
-                <ul className="m-0 p-0 list-none space-y-2.5">
-                    {resolved.map(({ rel, node }, i) => (
-                        <li key={`${rel.label}:${rel.target}:${i}`} className="border-b border-dashed border-foreground/10 last:border-b-0 pb-2 last:pb-0">
-                            <div className="flex items-baseline gap-2 text-[10px] font-mono uppercase tracking-[0.1em] text-muted-foreground mb-0.5">
-                                <span>{rel.label}</span>
-                                {rel.confidence !== "high" && (
-                                    <span className="text-muted-foreground/70">· {rel.confidence}</span>
-                                )}
-                            </div>
-                            <Link
-                                to={node.path}
-                                className="block text-[13px] text-foreground hover:text-foreground/80 no-underline"
-                            >
-                                {node.title}
-                            </Link>
-                            {rel.caution && (
-                                <p className="m-0 mt-1 text-[11.5px] text-muted-foreground italic leading-snug">
-                                    {rel.caution}
-                                </p>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        );
-    }
 
     return (
         <div>
@@ -238,12 +205,11 @@ function TypedBucket({
             <ul className="m-0 p-0 list-none space-y-3">
                 {resolved.map(({ rel, node }, i) => (
                     <li key={`${rel.label}:${rel.target}:${i}`}>
-                        <div className="flex items-baseline gap-2 text-[11px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
-                            <span>{rel.label}</span>
-                            {rel.confidence !== "high" && (
-                                <span className="text-muted-foreground/70">· {rel.confidence}</span>
-                            )}
-                        </div>
+                        {rel.confidence !== "high" && (
+                            <div className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground/70 mb-1">
+                                {rel.confidence}
+                            </div>
+                        )}
                         <Link to={node.path} className="text-sm font-medium text-foreground hover:underline">
                             {node.title}
                         </Link>
@@ -254,6 +220,119 @@ function TypedBucket({
                 ))}
             </ul>
         </div>
+    );
+}
+
+// ── Typed-relation section (sidebar variant, collapsible) ─────────────────────
+
+function TypedRelationSection({
+    heading,
+    items,
+    defaultOpen = true,
+}: {
+    heading: string;
+    items: DisplayRelation[];
+    defaultOpen?: boolean;
+}) {
+    const [open, setOpen] = useState(defaultOpen);
+
+    const resolved = items
+        .map((rel) => ({ rel, node: contentGraph.nodes[rel.target] }))
+        .filter((r): r is { rel: DisplayRelation; node: GraphNode } => r.node !== undefined);
+    if (resolved.length === 0) return null;
+
+    return (
+        <details
+            open={open}
+            onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}
+            className="mb-[18px] group"
+        >
+            <summary className="flex items-center justify-between gap-2 cursor-pointer list-none mb-2.5 [&::-webkit-details-marker]:hidden">
+                <h3 className="flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted-foreground">
+                    <span>{heading}</span>
+                    <span className="text-muted-foreground/70 font-mono">{resolved.length}</span>
+                </h3>
+                <span aria-hidden="true" className="text-muted-foreground/50 text-[10px] transition-transform group-open:rotate-90">
+                    ▸
+                </span>
+            </summary>
+            <ul className="m-0 p-0 list-none space-y-2.5">
+                {resolved.map(({ rel, node }, i) => (
+                    <li key={`${rel.label}:${rel.target}:${i}`} className="border-b border-dashed border-foreground/10 last:border-b-0 pb-2 last:pb-0">
+                        {rel.confidence !== "high" && (
+                            <div className="text-[10px] font-mono uppercase tracking-[0.1em] text-muted-foreground/70 mb-0.5">
+                                {rel.confidence}
+                            </div>
+                        )}
+                        <Link
+                            to={node.path}
+                            className="block text-[13px] text-foreground hover:text-foreground/80 no-underline"
+                        >
+                            {node.title}
+                        </Link>
+                        {rel.caution && (
+                            <p className="m-0 mt-1 text-[11.5px] text-muted-foreground italic leading-snug">
+                                {rel.caution}
+                            </p>
+                        )}
+                    </li>
+                ))}
+            </ul>
+        </details>
+    );
+}
+
+// ── Link section (blog posts / demos, collapsible) ────────────────────────────
+
+function LinkSection({
+    heading,
+    items,
+    icon,
+    defaultOpen = true,
+    borderTop = false,
+}: {
+    heading: string;
+    items: { slug: string; title: string; href: string }[];
+    icon: string;
+    defaultOpen?: boolean;
+    borderTop?: boolean;
+}) {
+    const [open, setOpen] = useState(defaultOpen);
+
+    if (items.length === 0) return null;
+
+    return (
+        <details
+            open={open}
+            onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}
+            className={`group${borderTop ? " border-t border-border pt-3.5" : " mt-[18px]"}`}
+        >
+            <summary className="flex items-center justify-between gap-2 cursor-pointer list-none mb-2.5 [&::-webkit-details-marker]:hidden">
+                <h3 className="flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted-foreground">
+                    <span>{heading}</span>
+                    <span className="text-muted-foreground/70 font-mono">{items.length}</span>
+                </h3>
+                <span aria-hidden="true" className="text-muted-foreground/50 text-[10px] transition-transform group-open:rotate-90">
+                    ▸
+                </span>
+            </summary>
+            <ul className="m-0 p-0 list-none space-y-0">
+                {items.map(({ slug, title, href }) => (
+                    <li key={slug} className="border-b border-dashed border-foreground/10 last:border-b-0">
+                        <Link
+                            to={href}
+                            className="flex items-center justify-between gap-2 text-[13px] py-1.5 text-foreground no-underline hover:text-foreground transition-colors"
+                        >
+                            <span className="inline-flex items-center gap-1.5 truncate">
+                                <span aria-hidden="true" className="flex-shrink-0">{icon}</span>
+                                <span className="truncate">{title}</span>
+                            </span>
+                            <span aria-hidden="true" className="text-muted-foreground text-[11px] flex-shrink-0">↗</span>
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+        </details>
     );
 }
 
@@ -295,87 +374,6 @@ function SupersededBy({ successor, variant }: { successor: string; variant: "blo
     );
 }
 
-// ── "Also see" external panel (blog + demos) ─────────────────────────────────
-
-interface AlsoSeeProps {
-    relatedPosts?: string[];
-    relatedDemos?: string[];
-    defaultOpen?: boolean;
-}
-
-function AlsoSee({ relatedPosts, relatedDemos, defaultOpen = true }: AlsoSeeProps) {
-    const [open, setOpen] = useState(defaultOpen);
-
-    const resolvedPosts = (relatedPosts ?? []).map((slug) => {
-        const entry = blogPosts.find((p) => p.slug === slug);
-        if (!entry) {
-            console.warn(`[RelationshipPanel] AlsoSee: blog post slug "${slug}" not found in content-index`);
-            return null;
-        }
-        return { slug, title: entry.frontmatter.title, href: `/blog/${slug}` };
-    }).filter((x): x is { slug: string; title: string; href: string } => x !== null);
-
-    const resolvedDemos = (relatedDemos ?? []).map((slug) => {
-        const entry = demoPages.find((p) => p.slug === slug);
-        if (!entry) {
-            console.warn(`[RelationshipPanel] AlsoSee: demo slug "${slug}" not found in content-index`);
-            return null;
-        }
-        return { slug, title: entry.frontmatter.title, href: `/demos/${slug}` };
-    }).filter((x): x is { slug: string; title: string; href: string } => x !== null);
-
-    if (resolvedPosts.length + resolvedDemos.length === 0) return null;
-
-    const totalCount = resolvedPosts.length + resolvedDemos.length;
-
-    return (
-        <details
-            open={open}
-            onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}
-            className="border-t border-border pt-3.5 group"
-        >
-            <summary className="flex items-center justify-between gap-2 cursor-pointer list-none mb-2.5 [&::-webkit-details-marker]:hidden">
-                <h3 className="flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted-foreground">
-                    <span>Also see</span>
-                    <span className="text-muted-foreground/70 font-mono">{totalCount}</span>
-                </h3>
-                <span aria-hidden="true" className="text-muted-foreground/50 text-[10px] transition-transform group-open:rotate-90">
-                    ▸
-                </span>
-            </summary>
-            <ul className="m-0 p-0 list-none space-y-0">
-                {resolvedPosts.map(({ slug, title, href }) => (
-                    <li key={slug} className="border-b border-dashed border-foreground/10 last:border-b-0">
-                        <Link
-                            to={href}
-                            className="flex items-center justify-between gap-2 text-[13px] py-1.5 text-foreground no-underline hover:text-foreground transition-colors"
-                        >
-                            <span className="inline-flex items-center gap-1.5 truncate">
-                                <span aria-hidden="true" className="flex-shrink-0">📝</span>
-                                <span className="truncate">{title}</span>
-                            </span>
-                            <span aria-hidden="true" className="text-muted-foreground text-[11px] flex-shrink-0">↗</span>
-                        </Link>
-                    </li>
-                ))}
-                {resolvedDemos.map(({ slug, title, href }) => (
-                    <li key={slug} className="border-b border-dashed border-foreground/10 last:border-b-0">
-                        <Link
-                            to={href}
-                            className="flex items-center justify-between gap-2 text-[13px] py-1.5 text-foreground no-underline hover:text-foreground transition-colors"
-                        >
-                            <span className="inline-flex items-center gap-1.5 truncate">
-                                <span aria-hidden="true" className="flex-shrink-0">▶</span>
-                                <span className="truncate">{title}</span>
-                            </span>
-                            <span aria-hidden="true" className="text-muted-foreground text-[11px] flex-shrink-0">↗</span>
-                        </Link>
-                    </li>
-                ))}
-            </ul>
-        </details>
-    );
-}
 
 // ── Main component ──────────────────────────────────────────────────────────────
 
@@ -420,26 +418,25 @@ export default function RelationshipPanel({
             target: rel.target,
             confidence: rel.confidence,
             caution: rel.caution,
-            category: RELATION_CATEGORY[rel.type],
         });
     }
 
-    type ReverseBucket = { slugs: string[]; type: RelationType };
+    type ReverseBucket = { entries: ReverseRelation[]; type: RelationType };
     const reverseBuckets: ReverseBucket[] = [
-        { slugs: rev?.generalises ?? [], type: "generalized_by" },
-        { slugs: rev?.extending ?? [], type: "extended_by" },
-        { slugs: rev?.fedBy ?? [], type: "feeds_into" },
-        { slugs: rev?.hasLearnedAlternative ?? [], type: "learned_alternative_of" },
+        { entries: rev?.generalises ?? [], type: "generalized_by" },
+        { entries: rev?.extending ?? [], type: "extended_by" },
+        { entries: rev?.fedBy ?? [], type: "feeds_into" },
+        { entries: rev?.hasLearnedAlternative ?? [], type: "learned_alternative_of" },
     ];
     for (const bucket of reverseBuckets) {
         const label = REVERSE_LABEL[bucket.type];
         if (!label) continue;
-        for (const slug of bucket.slugs) {
+        for (const entry of bucket.entries) {
             display.push({
                 label,
-                target: slug,
-                confidence: "high",
-                category: RELATION_CATEGORY[bucket.type],
+                target: entry.slug,
+                confidence: entry.confidence,
+                caution: entry.caution,
             });
         }
     }
@@ -449,9 +446,13 @@ export default function RelationshipPanel({
         return node !== undefined && (isAdmin || !node.draft);
     });
 
-    const lineage = visibleDisplay.filter((d) => d.category === "lineage");
-    const practice = visibleDisplay.filter((d) => d.category === "practice");
-    const crossParadigm = visibleDisplay.filter((d) => d.category === "cross-paradigm");
+    // Group by relation label in SECTION_ORDER
+    const grouped = new Map<string, DisplayRelation[]>();
+    for (const d of visibleDisplay) {
+        const list = grouped.get(d.label) ?? [];
+        list.push(d);
+        grouped.set(d.label, list);
+    }
 
     // ── Visibility flags ──────────────────────────────────────────────────────
     const visibleCount = (slugs: string[]) =>
@@ -465,14 +466,34 @@ export default function RelationshipPanel({
         visibleCount(usedBy) > 0 ||
         visibleCount(failureModes) > 0 ||
         visibleCount(affects) > 0 ||
-        lineage.length > 0 ||
-        practice.length > 0 ||
-        crossParadigm.length > 0;
+        visibleDisplay.length > 0;
+
+    // ── Resolve blog post + demo links ───────────────────────────────────────
+    const resolvedPosts = (relatedPosts ?? []).map((s) => {
+        const entry = blogPosts.find((p) => p.slug === s);
+        if (!entry) {
+            console.warn(`[RelationshipPanel] blog post slug "${s}" not found in content-index`);
+            return null;
+        }
+        return { slug: s, title: entry.frontmatter.title, href: `/blog/${s}` };
+    }).filter((x): x is { slug: string; title: string; href: string } => x !== null);
+
+    const resolvedDemos = (relatedDemos ?? []).map((s) => {
+        const entry = demoPages.find((p) => p.slug === s);
+        if (!entry) {
+            console.warn(`[RelationshipPanel] demo slug "${s}" not found in content-index`);
+            return null;
+        }
+        return { slug: s, title: entry.frontmatter.title, href: `/demos/${s}` };
+    }).filter((x): x is { slug: string; title: string; href: string } => x !== null);
 
     if (variant === "sidebar") {
-        const hasAlsoSee = (relatedPosts?.length ?? 0) + (relatedDemos?.length ?? 0) > 0;
+        const hasAlsoSee = resolvedPosts.length + resolvedDemos.length > 0;
         const hasSuccessor = supersededBy !== undefined && contentGraph.nodes[supersededBy] !== undefined;
         if (!hasGraphContent && !hasAlsoSee && !hasSuccessor) return null;
+
+        // Determine which "Also see" section renders first (gets the border-top separator)
+        const postsFirst = resolvedPosts.length > 0;
 
         return (
             <div className="border border-border rounded-[10px] bg-card p-[18px]">
@@ -484,9 +505,18 @@ export default function RelationshipPanel({
                     itemColor="text-foreground"
                     defaultOpen={sectionsOpen}
                 />
-                <TypedBucket heading="Lineage" items={lineage} variant="sidebar" />
-                <TypedBucket heading="Practice" items={practice} variant="sidebar" />
-                <TypedBucket heading="Cross-paradigm" items={crossParadigm} variant="sidebar" />
+                {SECTION_ORDER.map((label) => {
+                    const items = grouped.get(label) ?? [];
+                    if (items.length === 0) return null;
+                    return (
+                        <TypedRelationSection
+                            key={label}
+                            heading={label}
+                            items={items}
+                            defaultOpen={sectionsOpen}
+                        />
+                    );
+                })}
                 <SidebarSection
                     heading="Used by"
                     slugs={usedBy}
@@ -495,7 +525,20 @@ export default function RelationshipPanel({
                     maxItems={4}
                     defaultOpen={sectionsOpen}
                 />
-                <AlsoSee relatedPosts={relatedPosts} relatedDemos={relatedDemos} defaultOpen={sectionsOpen} />
+                <LinkSection
+                    heading="Blog posts"
+                    items={resolvedPosts}
+                    icon="📝"
+                    defaultOpen={sectionsOpen}
+                    borderTop={postsFirst}
+                />
+                <LinkSection
+                    heading="Demos"
+                    items={resolvedDemos}
+                    icon="▶"
+                    defaultOpen={sectionsOpen}
+                    borderTop={!postsFirst && resolvedDemos.length > 0}
+                />
             </div>
         );
     }
@@ -507,9 +550,17 @@ export default function RelationshipPanel({
         <section className="mt-12 pt-6 border-t border-border space-y-5">
             {hasSuccessor && <SupersededBy successor={supersededBy!} variant="block" />}
             <BlockSection heading="Prerequisites" slugs={prerequisites} showDrafts={isAdmin} />
-            <TypedBucket heading="Lineage" items={lineage} variant="block" />
-            <TypedBucket heading="Practice" items={practice} variant="block" />
-            <TypedBucket heading="Cross-paradigm" items={crossParadigm} variant="block" />
+            {SECTION_ORDER.map((label) => {
+                const items = grouped.get(label) ?? [];
+                if (items.length === 0) return null;
+                return (
+                    <TypedBucket
+                        key={label}
+                        heading={label}
+                        items={items}
+                    />
+                );
+            })}
             <BlockSection heading="Used by" slugs={usedBy} showDrafts={isAdmin} />
             <BlockSection heading="Failure modes" slugs={failureModes} showDrafts={isAdmin} />
             <BlockSection heading="Affects" slugs={affects} showDrafts={isAdmin} />

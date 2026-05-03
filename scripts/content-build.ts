@@ -201,6 +201,9 @@ const sanitizeSchema = {
         "mglyph",
         "figure",
         "figcaption",
+        // KaTeX SVG output for tall stretchy delimiters
+        "svg",
+        "path",
     ],
     attributes: {
         ...defaultSchema.attributes,
@@ -234,6 +237,8 @@ const sanitizeSchema = {
         pre: [...(defaultSchema.attributes?.pre ?? []), "className", "style", "tabindex", "tabIndex"],
         math: ["xmlns", "display"],
         annotation: ["encoding"],
+        svg: ["xmlns", "viewBox", "preserveAspectRatio", "width", "height", "style", "aria-hidden", "ariaHidden"],
+        path: ["d"],
         // Allow KaTeX classes on all elements
         "*": ["className", "style"],
     },

@@ -44,7 +44,8 @@ function ImplementationsTable({ implementations }: ImplementationsTableProps) {
             </h2>
 
             {/* Desktop table */}
-            <table className="hidden sm:table w-full text-sm border border-border rounded-lg overflow-hidden">
+            <div className="hidden sm:block overflow-x-auto">
+            <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
                 <thead>
                     <tr className="bg-muted/50">
                         <th className="text-left px-3 py-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground border-b border-border">Repo</th>
@@ -103,6 +104,7 @@ function ImplementationsTable({ implementations }: ImplementationsTableProps) {
                     ))}
                 </tbody>
             </table>
+            </div>
 
             {/* Mobile stacked list */}
             <ul className="sm:hidden space-y-3">

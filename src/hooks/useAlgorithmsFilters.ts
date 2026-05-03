@@ -5,6 +5,7 @@ import type {
     ModelIndexEntry,
     ConceptIndexEntry,
 } from "../lib/content/schema.ts";
+import { domainOrder } from "../components/algorithms/domainLabels.ts";
 
 // ── Public types ────────────────────────────────────────────────────────────
 
@@ -23,7 +24,7 @@ function isAlgorithmsView(value: string | null): value is AlgorithmsView {
 
 export interface AlgorithmsFilters {
     kind: AlgorithmsKind;
-    categoryId: string;   // "all" | AlgorithmCategory | ModelCategory | ConceptCategory
+    categoryId: string;   // "all" | Domain
     tags: string[];
     query: string;
     view: AlgorithmsView;
@@ -32,7 +33,7 @@ export interface AlgorithmsFilters {
 
 export interface FacetCounts {
     kinds:      Record<AlgorithmsKind, number>;
-    categories: Record<string, number>;   // "all" + each category id
+    categories: Record<string, number>;   // "all" + each domain id
     tags:       Record<string, number>;   // per-tag faceted count
     total:      number;                   // count after ALL filters
 }
@@ -70,8 +71,8 @@ function matchesTags(itemTags: readonly string[], required: string[]): boolean {
     return required.every((t) => itemTags.includes(t));
 }
 
-function matchesCategory(category: string, categoryId: string): boolean {
-    return categoryId === "all" || category === categoryId;
+function matchesDomain(domain: string | undefined, categoryId: string): boolean {
+    return categoryId === "all" || domain === categoryId;
 }
 
 /** Sort a mutable copy of an array. */
@@ -107,7 +108,7 @@ export function filterAlgorithms(
     const result = items.filter((entry) => {
         const fm = entry.frontmatter;
         return (
-            matchesCategory(fm.category, categoryId) &&
+            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
             matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs)
         );
@@ -128,7 +129,7 @@ export function filterModels(
     const result = items.filter((entry) => {
         const fm = entry.frontmatter;
         return (
-            matchesCategory(fm.category, categoryId) &&
+            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
             matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs)
         );
@@ -149,7 +150,7 @@ export function filterConcepts(
     const result = items.filter((entry) => {
         const fm = entry.frontmatter;
         return (
-            matchesCategory(fm.category, categoryId) &&
+            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
             matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs)
         );
@@ -167,7 +168,7 @@ function countAlgorithmsWith(
     return items.filter((e) => {
         const fm = e.frontmatter;
         return (
-            matchesCategory(fm.category, categoryId) &&
+            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
             matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
         );
@@ -182,7 +183,7 @@ function countModelsWith(
     return items.filter((e) => {
         const fm = e.frontmatter;
         return (
-            matchesCategory(fm.category, categoryId) &&
+            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
             matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
         );
@@ -197,7 +198,7 @@ function countConceptsWith(
     return items.filter((e) => {
         const fm = e.frontmatter;
         return (
-            matchesCategory(fm.category, categoryId) &&
+            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
             matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
         );
@@ -236,26 +237,27 @@ export function computeFacets(
     const categories: Record<string, number> = {};
 
     if (kind === "all") {
-        // Category sidebar is hidden in "all" mode — just expose the total.
+        // Domain sidebar is hidden in "all" mode — just expose the total.
         categories["all"] = kindsAll;
     } else if (kind === "algorithm") {
         categories["all"] = countAlgorithmsWith(algorithms, sqParams);
-        const catSet = new Set(algorithms.map((e) => e.frontmatter.category));
-        for (const cat of catSet) {
-            categories[cat] = countAlgorithmsWith(algorithms, { categoryId: cat, ...sqParams });
+        // Use domainOrder for stable presentation; only include domains present in data.
+        for (const dom of domainOrder) {
+            const count = countAlgorithmsWith(algorithms, { categoryId: dom, ...sqParams });
+            if (count > 0) categories[dom] = count;
         }
     } else if (kind === "model") {
         categories["all"] = countModelsWith(models, sqParams);
-        const catSet = new Set(models.map((e) => e.frontmatter.category));
-        for (const cat of catSet) {
-            categories[cat] = countModelsWith(models, { categoryId: cat, ...sqParams });
+        for (const dom of domainOrder) {
+            const count = countModelsWith(models, { categoryId: dom, ...sqParams });
+            if (count > 0) categories[dom] = count;
         }
     } else {
         // concept
         categories["all"] = countConceptsWith(concepts, sqParams);
-        const catSet = new Set(concepts.map((e) => e.frontmatter.category));
-        for (const cat of catSet) {
-            categories[cat] = countConceptsWith(concepts, { categoryId: cat, ...sqParams });
+        for (const dom of domainOrder) {
+            const count = countConceptsWith(concepts, { categoryId: dom, ...sqParams });
+            if (count > 0) categories[dom] = count;
         }
     }
 
@@ -266,7 +268,7 @@ export function computeFacets(
         const candidateItems = algorithms.filter((e) => {
             const fm = e.frontmatter;
             return (
-                matchesCategory(fm.category, categoryId) &&
+                matchesDomain(fm.domain, categoryId) &&
                 matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
             );
         });
@@ -281,7 +283,7 @@ export function computeFacets(
         const candidateItems = models.filter((e) => {
             const fm = e.frontmatter;
             return (
-                matchesCategory(fm.category, categoryId) &&
+                matchesDomain(fm.domain, categoryId) &&
                 matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
             );
         });
@@ -296,7 +298,7 @@ export function computeFacets(
         const candidateItems = concepts.filter((e) => {
             const fm = e.frontmatter;
             return (
-                matchesCategory(fm.category, categoryId) &&
+                matchesDomain(fm.domain, categoryId) &&
                 matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
             );
         });

@@ -3,7 +3,7 @@ title: "FAST Corner Detector"
 date: 2026-04-15
 summary: "Segment-test corner detector on a 16-pixel Bresenham ring of radius 3 around each candidate; classifies a point as a corner when N contiguous ring pixels are all brighter (or all darker) than the centre by a margin t."
 tags: ["feature-detection", "corner"]
-category: corner-detection
+domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "chess-corners"]

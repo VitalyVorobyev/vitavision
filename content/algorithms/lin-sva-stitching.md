@@ -3,7 +3,7 @@ title: "Lin Smoothly Varying Affine Stitching"
 date: 2026-05-02
 summary: "Stitch two images under moderate parallax by replacing the global affine with a per-feature deviation field, regularised to be smooth via a Gaussian-kernel CPD-style EM that jointly estimates correspondence and warp — the contemporary affine-model competitor to APAP's per-cell projective grid."
 tags: ["image-stitching", "spatially-varying-warp", "affine", "non-rigid-registration"]
-category: explainers
+domain: stitching
 author: "Vitaly Vorobyev"
 difficulty: advanced
 relatedAlgorithms: ["apap-image-stitching", "gao-dual-homography-stitching"]

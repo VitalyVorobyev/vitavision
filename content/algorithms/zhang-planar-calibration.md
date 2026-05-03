@@ -3,7 +3,7 @@ title: "Zhang's Planar Camera Calibration"
 date: 2026-04-20
 summary: "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations."
 tags: ["calibration", "intrinsics", "homography"]
-category: calibration
+domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
 relatedAlgorithms: ["chess-corners", "rochade", "puzzleboard"]

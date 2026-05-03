@@ -33,16 +33,6 @@ export const blogFrontmatterSchema = publicationFrontmatterBaseObjectSchema.exte
 
 export type BlogFrontmatter = z.infer<typeof blogFrontmatterSchema>;
 
-/** Algorithm category — used to group cards on the /algorithms index. */
-export const algorithmCategoryValues = [
-    "corner-detection",
-    "calibration-targets",
-    "subpixel-refinement",
-    "explainers",
-    "calibration"
-] as const;
-export type AlgorithmCategory = (typeof algorithmCategoryValues)[number];
-
 /** Unified domain taxonomy — orthogonal to kind. */
 export const domainValues = [
     "image-formation",
@@ -60,7 +50,6 @@ export type Domain = (typeof domainValues)[number];
 export const algorithmFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
-        category: z.enum(algorithmCategoryValues),
         dev: z.boolean().optional(),
         domain: z.enum(domainValues).optional(),
         relatedPosts: z.array(z.string().min(1)).optional(),
@@ -146,22 +135,10 @@ export interface DemoEntry extends DemoIndexEntry {
     html: string;
 }
 
-/** Model category — used to group cards on the /algorithms/models index. */
-export const modelCategoryValues = [
-    "detection",
-    "depth-stereo",
-    "pose-geometry",
-    "segmentation-flow",
-    "foundation-ssl",
-    "calibration-learning",
-] as const;
-export type ModelCategory = (typeof modelCategoryValues)[number];
-
 /** Zod schema for model page frontmatter. */
 export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
-        category: z.enum(modelCategoryValues),
         dev: z.boolean().optional(),
         domain: z.enum(domainValues).optional(),
         noPublicImpl: z.boolean().optional(),
@@ -201,20 +178,10 @@ export interface ModelEntry extends ModelIndexEntry {
     html: string;
 }
 
-/** Concept category — used to group concept cards on the atlas index. */
-export const conceptCategoryValues = [
-    "image-formation",
-    "geometry",
-    "feature-theory",
-    "calibration-theory",
-] as const;
-export type ConceptCategory = (typeof conceptCategoryValues)[number];
-
 /** Zod schema for concept page frontmatter. */
 export const conceptFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
-        category: z.enum(conceptCategoryValues),
         dev: z.boolean().optional(),
         domain: z.enum(domainValues).optional(),
         sources: z.object({

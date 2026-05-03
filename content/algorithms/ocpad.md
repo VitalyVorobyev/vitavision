@@ -3,7 +3,7 @@ title: "OCPAD: Occluded Checkerboard Pattern Detection"
 date: 2026-04-17
 summary: "Recover the largest visible checkerboard subgraph from a partially occluded pattern by running VF2 subgraph isomorphism against a model graph under a binary-search driver over vertex counts, then closing gaps by breadth-first region growing from a quad-density anchor."
 tags: ["calibration", "chessboard"]
-category: calibration-targets
+domain: targets
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["shu-topological-grid", "puzzleboard", "laureano-topological-chessboard"]

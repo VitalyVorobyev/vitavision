@@ -90,7 +90,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "stitching",
       "relatedAlgorithms": [
         "zhang-planar-calibration"
       ],
@@ -134,7 +134,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "duda-radon-corners"
       ],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedPosts": [
         "01-chesscorners"
       ],
@@ -189,7 +189,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "targets",
       "relatedAlgorithms": [
         "shu-topological-grid",
         "chess-corners",
@@ -224,7 +224,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration",
+      "domain": "calibration",
       "relatedAlgorithms": [
         "tsai-lenz-handeye",
         "zhang-planar-calibration"
@@ -258,7 +258,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedAlgorithms": [
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
@@ -296,7 +296,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "apap-image-stitching"
       ],
       "failureModes": [],
-      "category": "explainers",
+      "domain": "stitching",
       "relatedAlgorithms": [
         "apap-image-stitching"
       ],
@@ -336,7 +336,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "pyramidal-blur-aware-xcorner"
       ],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedAlgorithms": [
         "chess-corners",
         "rochade",
@@ -383,7 +383,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "ocpad"
       ],
       "failureModes": [],
-      "category": "calibration",
+      "domain": "calibration",
       "relatedAlgorithms": [
         "geiger-chessboard-detector",
         "ocpad"
@@ -426,7 +426,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "chess-corners"
       ],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedAlgorithms": [
         "chess-corners",
         "duda-radon-corners",
@@ -465,7 +465,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration",
+      "domain": "calibration",
       "relatedAlgorithms": [
         "zhang-planar-calibration"
       ],
@@ -505,7 +505,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "apap-image-stitching"
       ],
       "failureModes": [],
-      "category": "explainers",
+      "domain": "stitching",
       "relatedAlgorithms": [
         "apap-image-stitching",
         "gao-dual-homography-stitching"
@@ -544,7 +544,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedAlgorithms": [
         "chess-corners",
         "harris-corner-detector",
@@ -585,7 +585,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "explainers",
+      "domain": "geometry",
       "relatedAlgorithms": [
         "apap-image-stitching"
       ],
@@ -619,7 +619,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "targets",
       "relatedAlgorithms": [
         "shu-topological-grid",
         "puzzleboard",
@@ -660,7 +660,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "targets",
       "relatedAlgorithms": [
         "chess-corners",
         "harris-corner-detector",
@@ -701,7 +701,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedAlgorithms": [
         "chess-corners",
         "rochade",
@@ -745,7 +745,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "pyramidal-blur-aware-xcorner"
       ],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "targets",
       "relatedAlgorithms": [
         "ocpad",
         "chess-corners",
@@ -784,7 +784,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedAlgorithms": [
         "harris-corner-detector",
         "fast-corner-detector",
@@ -821,7 +821,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration",
+      "domain": "calibration",
       "relatedAlgorithms": [
         "zhang-planar-calibration"
       ],
@@ -859,7 +859,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "laureano-topological-chessboard"
       ],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "targets",
       "relatedAlgorithms": [
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
@@ -894,7 +894,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "daniilidis-dual-quaternion-handeye"
       ],
       "failureModes": [],
-      "category": "calibration",
+      "domain": "calibration",
       "relatedAlgorithms": [
         "daniilidis-dual-quaternion-handeye",
         "zhang-planar-calibration"
@@ -933,7 +933,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "kumar-generalized-rac"
       ],
       "failureModes": [],
-      "category": "calibration",
+      "domain": "calibration",
       "relatedAlgorithms": [
         "zhang-planar-calibration",
         "tsai-lenz-handeye",
@@ -974,7 +974,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "sturm-plane-based-calibration"
       ],
       "failureModes": [],
-      "category": "calibration",
+      "domain": "calibration",
       "relatedAlgorithms": [
         "chess-corners",
         "rochade",
@@ -1061,7 +1061,7 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration-learning",
+      "domain": "calibration",
       "arch_family": "cnn",
       "params": "16,301",
       "sources": {
@@ -1118,7 +1118,7 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "failureModes": [],
       "quality": "stub",
-      "category": "calibration-learning",
+      "domain": "calibration",
       "arch_family": "cnn",
       "params": "2,939",
       "sources": {
@@ -1163,7 +1163,7 @@ export const modelPages: ModelIndexEntry[] = [
         "xfeat"
       ],
       "failureModes": [],
-      "category": "foundation-ssl",
+      "domain": "features",
       "arch_family": "cnn",
       "params": "~1.3M (estimate; not stated in paper)",
       "sources": {
@@ -1203,7 +1203,7 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "detection",
+      "domain": "features",
       "arch_family": "cnn",
       "flops": "64-D descriptors at H/8 × W/8 resolution",
       "sources": {
@@ -1251,7 +1251,7 @@ export const conceptPages: ConceptIndexEntry[] = [
         "zhang-planar-calibration",
         "kumar-generalized-rac"
       ],
-      "category": "image-formation",
+      "domain": "image-formation",
       "sources": {
         "references": [
           "tsai1987-versatile",
@@ -1297,7 +1297,7 @@ export const conceptPages: ConceptIndexEntry[] = [
         "hessian-saddle-response",
         "topological-grid-recovery"
       ],
-      "category": "feature-theory",
+      "domain": "features",
       "sources": {
         "references": [
           "bennett2013-chess",
@@ -1339,7 +1339,7 @@ export const conceptPages: ConceptIndexEntry[] = [
         "apap-image-stitching",
         "fundamental-matrix-eight-point"
       ],
-      "category": "geometry",
+      "domain": "geometry",
       "sources": {
         "references": [
           "hartley1997-eight-point",
@@ -1367,7 +1367,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       "related": [
         "dlt-normalisation"
       ],
-      "category": "geometry",
+      "domain": "geometry",
       "sources": {
         "references": [
           "hartley1997-eight-point"
@@ -1401,7 +1401,7 @@ export const conceptPages: ConceptIndexEntry[] = [
         "puzzleboard",
         "structure-tensor"
       ],
-      "category": "feature-theory",
+      "domain": "features",
       "sources": {
         "references": [
           "chen2005-xcorner",
@@ -1433,7 +1433,7 @@ export const conceptPages: ConceptIndexEntry[] = [
         "apap-image-stitching",
         "dlt-normalisation"
       ],
-      "category": "geometry",
+      "domain": "geometry",
       "sources": {
         "references": [
           "hartley1997-eight-point",
@@ -1465,7 +1465,7 @@ export const conceptPages: ConceptIndexEntry[] = [
         "fast-corner-detector",
         "pyramidal-blur-aware-xcorner"
       ],
-      "category": "feature-theory",
+      "domain": "features",
       "date": "2026-04-30"
     }
   },
@@ -1488,7 +1488,7 @@ export const conceptPages: ConceptIndexEntry[] = [
         "chess-corners",
         "pyramidal-blur-aware-xcorner"
       ],
-      "category": "image-formation",
+      "domain": "image-formation",
       "date": "2026-04-30"
     }
   },
@@ -1517,7 +1517,7 @@ export const conceptPages: ConceptIndexEntry[] = [
         "lin-sva-stitching",
         "dlt-normalisation"
       ],
-      "category": "geometry",
+      "domain": "geometry",
       "sources": {
         "references": [
           "gao2011-dual-homography",
@@ -1550,7 +1550,7 @@ export const conceptPages: ConceptIndexEntry[] = [
         "harris-corner-detector",
         "shi-tomasi-corner-detector"
       ],
-      "category": "feature-theory",
+      "domain": "features",
       "date": "2026-04-30"
     }
   },
@@ -1576,7 +1576,7 @@ export const conceptPages: ConceptIndexEntry[] = [
         "ocpad",
         "puzzleboard"
       ],
-      "category": "feature-theory",
+      "domain": "features",
       "sources": {
         "references": [
           "shu2009-topological",

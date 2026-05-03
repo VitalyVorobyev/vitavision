@@ -13,7 +13,8 @@ export interface SearchRecord {
     title: string;
     summary: string;
     tags: string[];
-    category?: string;
+    /** Unified domain taxonomy value (replaces per-kind category). */
+    domain?: string;
     headings: string[];
     /** Source paper authors, joined from `frontmatter.sources.primary`. */
     authors?: string[];
@@ -39,7 +40,8 @@ export interface SearchEntry {
     title: string;
     summary: string;
     tags: string[];
-    category?: string;
+    /** Unified domain taxonomy value. */
+    domain?: string;
     html: string;
     /** Optional resolved primary-paper metadata (authors, venue). */
     primary?: { authors?: string[]; venue?: string };
@@ -58,7 +60,7 @@ export function buildSearchRecords(entries: SearchEntry[]): SearchRecord[] {
             title: e.title,
             summary: e.summary,
             tags: e.tags,
-            ...(e.category !== undefined ? { category: e.category } : {}),
+            ...(e.domain !== undefined ? { domain: e.domain } : {}),
             headings: extractHeadings(e.html),
             ...(e.primary?.authors && e.primary.authors.length > 0 ? { authors: e.primary.authors } : {}),
             ...(e.primary?.venue ? { venue: e.primary.venue } : {}),
@@ -82,7 +84,7 @@ export function emitContentSearch(records: SearchRecord[], outDir: string): void
         "    title: string;",
         "    summary: string;",
         "    tags: string[];",
-        "    category?: string;",
+        "    domain?: string;",
         "    headings: string[];",
         "    authors?: string[];",
         "    venue?: string;",

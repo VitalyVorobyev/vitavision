@@ -4,7 +4,7 @@ date: 2026-05-02
 summary: "A two-line similarity transform — translate the point centroid to the origin, isotropically scale so the average distance is √2 — that conditions the design matrix of any DLT-based estimator (homography, fundamental matrix, projective camera, Moving DLT) by ~10⁸, and is the difference between unusable and reliable linear solutions."
 tags: ["geometry", "linear-algebra", "numerical-conditioning", "dlt"]
 author: "Vitaly Vorobyev"
-category: geometry
+domain: geometry
 difficulty: intermediate
 prerequisites: []
 related:

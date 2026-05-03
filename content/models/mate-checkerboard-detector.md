@@ -3,17 +3,17 @@ title: "MATE"
 date: 2026-05-02
 summary: "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold."
 tags: ["calibration", "corner-detection", "cnn"]
-category: calibration-learning
+domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: cnn
-draft: true
 quality: stub
 params: "2,939"
 prerequisites: [image-gradient]
 related: [chessboard-x-corner-detection]
 comparedWith: [ccdn-checkerboard-detector]
 failureModes: []
+draft: true
 sources:
   primary: donne2016-mate
   references:

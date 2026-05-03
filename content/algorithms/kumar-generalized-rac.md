@@ -3,7 +3,7 @@ title: "Kumar-Ahuja Generalized Radial Alignment Constraint"
 date: 2026-04-23
 summary: "Extend Tsai's radial alignment constraint to a non-frontal sensor by modelling lens–sensor tilt as a 2-DoF rotation, projecting observations onto a hypothesized frontal sensor, and solving a seven-parameter linear system for the extrinsic rotation and tilt."
 tags: ["camera-calibration", "lens-sensor-tilt"]
-category: calibration
+domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
 relatedAlgorithms: ["zhang-planar-calibration"]

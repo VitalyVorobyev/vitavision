@@ -3,7 +3,7 @@ title: "Topological Grid Finding"
 date: 2026-04-16
 summary: "Recover the integer $(i, j)$ grid coordinate of every corner in a checkerboard calibration image by Delaunay-triangulating the corners, merging same-colour triangle pairs into quads, topologically and geometrically filtering illegal quads, and flood-filling coordinates through the resulting mesh."
 tags: ["calibration", "chessboard"]
-category: calibration-targets
+domain: targets
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "chess-corners"]

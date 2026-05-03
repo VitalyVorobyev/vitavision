@@ -4,7 +4,7 @@ date: 2026-05-02
 summary: "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement."
 tags: ["calibration", "chessboard", "corner-detection", "survey"]
 author: "Vitaly Vorobyev"
-category: feature-theory
+domain: features
 difficulty: intermediate
 prerequisites: [image-gradient]
 related:

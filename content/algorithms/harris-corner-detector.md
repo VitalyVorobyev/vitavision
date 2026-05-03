@@ -3,7 +3,7 @@ title: "Harris Corner Detector"
 date: 2026-04-15
 summary: "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum."
 tags: ["feature-detection", "corner"]
-category: corner-detection
+domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["chess-corners", "duda-radon-corners", "fast-corner-detector", "laureano-topological-chessboard", "puzzleboard", "pyramidal-blur-aware-xcorner", "shi-tomasi-corner-detector", "shu-topological-grid"]

@@ -13,7 +13,7 @@ export interface AtlasNode {
     kind: AtlasNodeKind;
     title: string;
     summary: string;
-    category: string;
+    domain: string | undefined;
     tags: readonly string[];
     path: string;
 }
@@ -54,7 +54,7 @@ export default function useAtlasGraph({ algorithms, models, concepts }: UseAtlas
                 kind: "algorithm",
                 title: e.frontmatter.title,
                 summary: e.frontmatter.summary,
-                category: e.frontmatter.category,
+                domain: e.frontmatter.domain,
                 tags: e.frontmatter.tags,
                 path: `/atlas/${e.slug}`,
             });
@@ -65,7 +65,7 @@ export default function useAtlasGraph({ algorithms, models, concepts }: UseAtlas
                 kind: "model",
                 title: e.frontmatter.title,
                 summary: e.frontmatter.summary,
-                category: e.frontmatter.category,
+                domain: e.frontmatter.domain,
                 tags: e.frontmatter.tags,
                 path: `/atlas/${e.slug}`,
             });
@@ -76,7 +76,7 @@ export default function useAtlasGraph({ algorithms, models, concepts }: UseAtlas
                 kind: "concept",
                 title: e.frontmatter.title,
                 summary: e.frontmatter.summary,
-                category: e.frontmatter.category,
+                domain: e.frontmatter.domain,
                 tags: e.frontmatter.tags,
                 path: `/atlas/${e.slug}`,
             });

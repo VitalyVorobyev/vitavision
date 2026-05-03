@@ -4,7 +4,7 @@ import { algorithmPages, modelPages, conceptPages } from "../generated/content-i
 
 interface MatchableEntry {
     slug: string;
-    frontmatter: { title: string; tags: readonly string[]; category?: string; draft?: boolean };
+    frontmatter: { title: string; tags: readonly string[]; domain?: string; draft?: boolean };
 }
 
 function tileMatchCount(tile: (typeof atlasTiles)[number]): number {
@@ -21,7 +21,7 @@ function tileMatchCount(tile: (typeof atlasTiles)[number]): number {
     }
     return sources.filter((e) => {
         if (e.frontmatter.draft) return false;
-        if (categoryId && categoryId !== "all" && e.frontmatter.category !== categoryId) return false;
+        if (categoryId && categoryId !== "all" && e.frontmatter.domain !== categoryId) return false;
         if (tags && tags.length > 0) {
             return tags.every((t) => e.frontmatter.tags.includes(t));
         }

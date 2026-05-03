@@ -505,6 +505,14 @@ export async function validateContent(options?: ValidateContentOptions): Promise
         }
     }
 
+    // ── Rule 7: Non-draft non-dev pages must set `domain` ─────────────────────
+    for (const e of [...algoFiltered, ...modelFiltered, ...conceptFiltered]) {
+        if (e.isDraft) continue;
+        if (!e.frontmatter.domain) {
+            errors.push(`[${e.file}] non-draft page must set domain`);
+        }
+    }
+
     // ── Summary ───────────────────────────────────────────────────────────────
     if (errors.length === 0) {
         console.log(

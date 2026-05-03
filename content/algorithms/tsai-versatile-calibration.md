@@ -3,7 +3,7 @@ title: "Tsai's Versatile Camera Calibration"
 date: 2026-05-02
 summary: "Two-stage camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns."
 tags: ["calibration", "intrinsics", "extrinsics", "radial-distortion"]
-category: calibration
+domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
 relatedAlgorithms: ["zhang-planar-calibration", "tsai-lenz-handeye", "kumar-generalized-rac"]

@@ -18,7 +18,7 @@ import { algorithmPages, modelPages, conceptPages } from "../src/generated/conte
 interface NodeInput {
     slug: string;
     kind: "algorithm" | "model" | "concept";
-    category: string;
+    domain: string | undefined;
     title: string;
 }
 
@@ -26,22 +26,22 @@ const CLUSTERS = [
     {
         id: "fundamentals",
         title: "Fundamentals",
-        categories: new Set(["image-formation", "explainers"]),
+        domains: new Set(["image-formation"]),
     },
     {
         id: "geometry",
         title: "Geometry",
-        categories: new Set(["geometry"]),
+        domains: new Set(["geometry"]),
     },
     {
         id: "detectors",
         title: "Feature detectors",
-        categories: new Set(["corner-detection", "feature-theory", "detection", "foundation-ssl"]),
+        domains: new Set(["features", "detection"]),
     },
     {
         id: "applications",
         title: "Applications",
-        categories: new Set(["calibration", "calibration-targets", "calibration-learning"]),
+        domains: new Set(["calibration", "targets", "stitching", "depth"]),
     },
 ];
 
@@ -70,11 +70,12 @@ const clusterAnchors: ClusterAnchor[] = CLUSTERS.map((_, i) => ({
     ry: clusterHeight * 0.42,
 }));
 
-function clusterIndexFor(category: string): number {
+function clusterIndexFor(domain: string | undefined): number {
+    if (!domain) return CLUSTERS.length - 1;
     for (let i = 0; i < CLUSTERS.length; i++) {
-        if (CLUSTERS[i].categories.has(category)) return i;
+        if (CLUSTERS[i].domains.has(domain)) return i;
     }
-    // Unknown category → applications column (mirrors the Map view fallback).
+    // Unknown domain → applications column (mirrors the Map view fallback).
     return CLUSTERS.length - 1;
 }
 
@@ -106,7 +107,7 @@ function layoutCluster(nodes: NodeInput[], anchor: ClusterAnchor): Record<string
         // Small deterministic jitter so the grid doesn't look mechanical.
         const jitterX = (hash01(node.slug + "-x") - 0.5) * stepX * 0.35;
         const jitterY = (hash01(node.slug + "-y") - 0.5) * stepY * 0.35;
-        result[node.slug] = { x: baseX + jitterX, y: baseY + jitterY, cluster: CLUSTERS[clusterIndexFor(node.category)].id };
+        result[node.slug] = { x: baseX + jitterX, y: baseY + jitterY, cluster: CLUSTERS[clusterIndexFor(node.domain)].id };
     });
     return result;
 }
@@ -116,19 +117,19 @@ function main(): void {
         ...algorithmPages.map<NodeInput>((p) => ({
             slug: p.slug,
             kind: "algorithm",
-            category: p.frontmatter.category,
+            domain: p.frontmatter.domain,
             title: p.frontmatter.title,
         })),
         ...modelPages.map<NodeInput>((p) => ({
             slug: p.slug,
             kind: "model",
-            category: p.frontmatter.category,
+            domain: p.frontmatter.domain,
             title: p.frontmatter.title,
         })),
         ...conceptPages.map<NodeInput>((p) => ({
             slug: p.slug,
             kind: "concept",
-            category: p.frontmatter.category,
+            domain: p.frontmatter.domain,
             title: p.frontmatter.title,
         })),
     ];
@@ -136,9 +137,9 @@ function main(): void {
     const layout: Record<string, { x: number; y: number; cluster: string }> = {};
     for (let i = 0; i < CLUSTERS.length; i++) {
         const cluster = CLUSTERS[i];
-        const nodesInCluster = inputs.filter((n) => clusterIndexFor(n.category) === i);
+        const nodesInCluster = inputs.filter((n) => clusterIndexFor(n.domain) === i);
         Object.assign(layout, layoutCluster(nodesInCluster, clusterAnchors[i]));
-        // Flag any cluster that ended up empty so reviewers notice unmapped categories.
+        // Flag any cluster that ended up empty so reviewers notice unmapped domains.
         if (nodesInCluster.length === 0) {
             console.warn(`atlas:layout — cluster "${cluster.id}" is empty after mapping`);
         }

@@ -7,48 +7,38 @@ export const atlasLayoutViewBox = { width: 1000, height: 600 };
 
 export const atlasLayout: Record<string, AtlasLayoutNode> = {
   "camera-distortion-models": {
-    "x": 115.884698,
-    "y": 113.619792,
-    "cluster": "fundamentals"
-  },
-  "fundamental-matrix-eight-point": {
-    "x": 265.385378,
-    "y": 78.904272,
-    "cluster": "fundamentals"
-  },
-  "gao-dual-homography-stitching": {
-    "x": 105.018899,
-    "y": 266.1312,
-    "cluster": "fundamentals"
-  },
-  "lin-sva-stitching": {
-    "x": 246.574082,
-    "y": 330.065616,
+    "x": 87.2,
+    "y": 128.839584,
     "cluster": "fundamentals"
   },
   "scale-space": {
-    "x": 89.72207900000001,
-    "y": 521.21568,
+    "x": 87.2,
+    "y": 540.83136,
     "cluster": "fundamentals"
   },
   "dlt-normalisation": {
     "x": 333.646975,
-    "y": 61.08787200000002,
+    "y": 79.74393600000002,
     "cluster": "geometry"
   },
   "epipolar-geometry": {
     "x": 510.41644899999994,
-    "y": 52.53600000000001,
+    "y": 75.468,
+    "cluster": "geometry"
+  },
+  "fundamental-matrix-eight-point": {
+    "x": 299.785378,
+    "y": 280.504272,
     "cluster": "geometry"
   },
   "homography": {
-    "x": 316.32111399999997,
-    "y": 499.52553600000005,
+    "x": 496.92111399999993,
+    "y": 298.962768,
     "cluster": "geometry"
   },
   "spatially-varying-image-stitching": {
-    "x": 471.48540999999994,
-    "y": 442.738848,
+    "x": 290.88541,
+    "y": 472.16942400000005,
     "cluster": "geometry"
   },
   "chess-corners": {
@@ -123,77 +113,87 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
   },
   "apap-image-stitching": {
     "x": 730.006613,
-    "y": 87.5514,
+    "y": 89.72112000000001,
     "cluster": "applications"
   },
   "ccdn-checkerboard-detector": {
     "x": 827.6547755,
-    "y": 112.554336,
+    "y": 109.7234688,
     "cluster": "applications"
   },
   "daniilidis-dual-quaternion-handeye": {
     "x": 900.5783465000001,
-    "y": 93.157392,
+    "y": 94.2059136,
+    "cluster": "applications"
+  },
+  "gao-dual-homography-stitching": {
+    "x": 741.1094495000001,
+    "y": 165.49248000000003,
     "cluster": "applications"
   },
   "gp-checkerboard-enhancement": {
-    "x": 738.9192230000001,
-    "y": 198.30035999999998,
+    "x": 829.219223,
+    "y": 178.32028800000003,
     "cluster": "applications"
   },
   "kumar-generalized-rac": {
-    "x": 819.459599,
-    "y": 187.40589599999998,
+    "x": 909.7595990000001,
+    "y": 169.6047168,
     "cluster": "applications"
   },
   "laureano-topological-chessboard": {
-    "x": 898.982294,
-    "y": 210.655416,
+    "x": 718.382294,
+    "y": 268.8443328,
+    "cluster": "applications"
+  },
+  "lin-sva-stitching": {
+    "x": 811.887041,
+    "y": 271.7062464,
     "cluster": "applications"
   },
   "mate-checkerboard-detector": {
-    "x": 740.3477690000001,
-    "y": 300.695016,
+    "x": 920.9477690000001,
+    "y": 260.2360128,
     "cluster": "applications"
   },
   "ocpad": {
-    "x": 834.5762705,
-    "y": 286.600656,
+    "x": 744.2762705,
+    "y": 329.6005248000001,
     "cluster": "applications"
   },
   "puzzleboard": {
-    "x": 918.962975,
-    "y": 298.479432,
+    "x": 828.662975,
+    "y": 339.1035456000001,
     "cluster": "applications"
   },
   "rochade": {
-    "x": 720.575681,
-    "y": 414.70384799999994,
+    "x": 901.175681,
+    "y": 351.44307840000005,
     "cluster": "applications"
   },
   "shu-topological-grid": {
-    "x": 810.2846675,
-    "y": 395.56444799999997,
+    "x": 719.9846675,
+    "y": 416.77155840000006,
     "cluster": "applications"
   },
   "sturm-plane-based-calibration": {
-    "x": 899.8324685000001,
-    "y": 394.72478399999994,
+    "x": 809.5324685,
+    "y": 416.09982720000005,
     "cluster": "applications"
   },
   "tsai-lenz-handeye": {
-    "x": 729.8106620000001,
-    "y": 490.532664,
+    "x": 910.4106620000001,
+    "y": 412.10613120000005,
     "cluster": "applications"
   },
   "tsai-versatile-calibration": {
-    "x": 828.991667,
-    "y": 500.446344,
+    "x": 738.691667,
+    "y": 500.67707520000005,
     "cluster": "applications"
   },
   "zhang-planar-calibration": {
-    "x": 910.9669100000001,
-    "y": 491.153592,
+    "x": 820.66691,
+    "y": 493.2428736,
     "cluster": "applications"
   }
 };

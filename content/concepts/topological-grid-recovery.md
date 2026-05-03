@@ -4,7 +4,7 @@ date: 2026-05-02
 summary: "Verify candidate calibration-pattern corners by constructing a graph over them (Delaunay triangulation, k-nearest-neighbours, or proximity) and accepting only configurations that match the expected chessboard topology — false positives are eliminated by structural rules rather than per-pixel response thresholds."
 tags: ["calibration", "chessboard", "topology", "graph-algorithms"]
 author: "Vitaly Vorobyev"
-category: feature-theory
+domain: features
 difficulty: advanced
 prerequisites: []
 related:

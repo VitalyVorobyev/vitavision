@@ -4,7 +4,7 @@ date: 2026-05-02
 summary: "A scalar response computed from the determinant of the image Hessian, negative at saddle points (X-corners) and zero at flat regions, edges, and blobs — the discriminator at the heart of every modern checkerboard X-corner detector."
 tags: ["feature-theory", "corner-detection", "calibration", "hessian"]
 author: "Vitaly Vorobyev"
-category: feature-theory
+domain: features
 difficulty: intermediate
 prerequisites:
   - image-gradient

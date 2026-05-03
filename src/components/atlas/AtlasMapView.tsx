@@ -21,8 +21,8 @@ interface AtlasMapViewProps {
 interface MapColumn {
     id: string;
     title: string;
-    /** Nodes whose `category` matches one of these IDs land in this column. */
-    categories: string[];
+    /** Nodes whose `domain` matches one of these IDs land in this column. */
+    domains: string[];
     /** Visual role for cards in this column. */
     role: "neutral" | "detector" | "application";
 }
@@ -31,33 +31,33 @@ interface MapColumn {
  * 4-column dependency layout. Order is intentional: read left-to-right,
  * fundamentals → geometry → detectors → applications.
  *
- * Categories listed here are the actual ones authored in the content. A node
- * whose category isn't mapped lands in the rightmost "Applications" column —
- * better than dropping it silently when an author adds a new category.
+ * Domains listed here are the actual ones from the unified domain taxonomy.
+ * A node whose domain isn't mapped lands in the rightmost "Applications"
+ * column — better than dropping it silently when a new domain is added.
  */
 const MAP_COLUMNS: MapColumn[] = [
     {
         id: "fundamentals",
         title: "Fundamentals",
-        categories: ["image-formation", "explainers"],
+        domains: ["image-formation"],
         role: "neutral",
     },
     {
         id: "geometry",
         title: "Geometry",
-        categories: ["geometry"],
+        domains: ["geometry"],
         role: "neutral",
     },
     {
         id: "detectors",
         title: "Feature detectors",
-        categories: ["corner-detection", "feature-theory", "detection", "foundation-ssl"],
+        domains: ["features", "detection"],
         role: "detector",
     },
     {
         id: "applications",
         title: "Applications",
-        categories: ["calibration", "calibration-targets", "calibration-learning"],
+        domains: ["calibration", "targets", "stitching", "depth"],
         role: "application",
     },
 ];
@@ -95,17 +95,17 @@ export default function AtlasMapView({
 }: AtlasMapViewProps) {
     const { nodes } = useAtlasGraph({ algorithms, models, concepts });
 
-    // Bucket nodes into columns; an unmapped category falls into the rightmost column.
+    // Bucket nodes into columns; an unmapped domain falls into the rightmost column.
     const columnEntries = useMemo(() => {
         const lookup = new Map<string, MapColumn>();
         for (const col of MAP_COLUMNS) {
-            for (const cat of col.categories) lookup.set(cat, col);
+            for (const dom of col.domains) lookup.set(dom, col);
         }
         const fallback = MAP_COLUMNS[MAP_COLUMNS.length - 1];
         const buckets = new Map<string, AtlasNode[]>();
         for (const col of MAP_COLUMNS) buckets.set(col.id, []);
         for (const node of nodes) {
-            const col = lookup.get(node.category) ?? fallback;
+            const col = (node.domain ? lookup.get(node.domain) : undefined) ?? fallback;
             buckets.get(col.id)!.push(node);
         }
         for (const list of buckets.values()) {

@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import type { ConceptIndexEntry } from "../../lib/content/schema.ts";
-import { conceptCategoryLabel } from "../algorithms/conceptCategoryLabels.ts";
-import type { ConceptCategory } from "../../lib/content/schema.ts";
+import { domainLabels } from "../algorithms/domainLabels.ts";
 
 interface ConceptCardProps {
     entry: ConceptIndexEntry;
@@ -50,7 +49,7 @@ function MonogramTile({ slug, size }: MonogramTileProps) {
 
 function CompactCard({ entry }: { entry: ConceptIndexEntry }) {
     const { slug, frontmatter: fm } = entry;
-    const catLabel = conceptCategoryLabel(fm.category as ConceptCategory);
+    const catLabel = fm.domain ? (domainLabels[fm.domain] ?? fm.domain) : "";
     return (
         <Link
             to={`/concepts/${slug}`}
@@ -85,7 +84,7 @@ function CompactCard({ entry }: { entry: ConceptIndexEntry }) {
 
 function HorizontalCard({ entry }: { entry: ConceptIndexEntry }) {
     const { slug, frontmatter: fm } = entry;
-    const catLabel = conceptCategoryLabel(fm.category as ConceptCategory);
+    const catLabel = fm.domain ? (domainLabels[fm.domain] ?? fm.domain) : "";
     return (
         <Link
             to={`/concepts/${slug}`}

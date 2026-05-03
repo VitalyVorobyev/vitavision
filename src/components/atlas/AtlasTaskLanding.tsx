@@ -21,7 +21,7 @@ interface AtlasTaskLandingProps {
 
 interface AtlasIndexLike {
     slug: string;
-    frontmatter: { title: string; date: string; tags: readonly string[]; category?: string };
+    frontmatter: { title: string; date: string; tags: readonly string[]; domain?: string };
     /** Page kind for the route prefix. */
     kind: "algorithm" | "model" | "concept";
 }
@@ -40,7 +40,7 @@ function tileMatchCount(tile: AtlasTile): number {
     }
     return sources.filter((e) => {
         const fm = e.frontmatter;
-        if (categoryId && categoryId !== "all" && fm.category !== categoryId) return false;
+        if (categoryId && categoryId !== "all" && fm.domain !== categoryId) return false;
         if (tags && tags.length > 0) {
             const hit = tags.every((t) => fm.tags.includes(t));
             if (!hit) return false;

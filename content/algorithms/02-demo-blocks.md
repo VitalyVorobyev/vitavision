@@ -3,7 +3,6 @@ title: "Rich Algorithm Content Demo"
 date: 2026-03-29
 summary: "A draft algorithm page that exercises semantic blocks, math, diagrams, code, and related-link metadata."
 tags: ["meta", "demo", "authoring"]
-category: explainers
 author: "Vitaly Vorobyev"
 dev: true
 difficulty: intermediate

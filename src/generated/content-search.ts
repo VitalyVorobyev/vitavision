@@ -7,7 +7,7 @@ export interface SearchRecord {
     title: string;
     summary: string;
     tags: string[];
-    category?: string;
+    domain?: string;
     headings: string[];
     authors?: string[];
     venue?: string;
@@ -26,7 +26,7 @@ export const searchRecords: SearchRecord[] = [
       "projective-warp",
       "dlt"
     ],
-    "category": "calibration-targets",
+    "domain": "stitching",
     "headings": [
       "Procedure"
     ],
@@ -49,7 +49,7 @@ export const searchRecords: SearchRecord[] = [
       "calibration",
       "chessboard"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
       "Procedure",
       "When to choose ChESS over ROCHADE",
@@ -74,7 +74,7 @@ export const searchRecords: SearchRecord[] = [
       "chessboard",
       "corner-detection"
     ],
-    "category": "calibration-targets",
+    "domain": "targets",
     "headings": [
       "Procedure"
     ],
@@ -96,7 +96,7 @@ export const searchRecords: SearchRecord[] = [
       "hand-eye",
       "robotics"
     ],
-    "category": "calibration",
+    "domain": "calibration",
     "headings": [],
     "authors": [
       "K. Daniilidis"
@@ -113,7 +113,7 @@ export const searchRecords: SearchRecord[] = [
       "feature-detection",
       "corner"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
       "Procedure"
     ],
@@ -135,7 +135,7 @@ export const searchRecords: SearchRecord[] = [
       "panorama",
       "multi-plane"
     ],
-    "category": "explainers",
+    "domain": "stitching",
     "headings": [
       "When to choose Gao DHW over APAP"
     ],
@@ -157,7 +157,7 @@ export const searchRecords: SearchRecord[] = [
       "chessboard",
       "corner-detection"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
       "Stage 1 — Corner likelihood (§III-A)",
       "Stage 2 — Subpixel + orientation refinement (§III-B)",
@@ -183,7 +183,7 @@ export const searchRecords: SearchRecord[] = [
       "chessboard",
       "gaussian-processes"
     ],
-    "category": "calibration",
+    "domain": "calibration",
     "headings": [
       "Stage 1 — Iterative corner allocation (§2.2, Algorithm 1)",
       "Stage 2 — GP refinement (§2.3)",
@@ -212,7 +212,7 @@ export const searchRecords: SearchRecord[] = [
       "feature-detection",
       "corner"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
       "Procedure",
       "When to choose Harris over Shi-Tomasi",
@@ -235,7 +235,7 @@ export const searchRecords: SearchRecord[] = [
       "camera-calibration",
       "lens-sensor-tilt"
     ],
-    "category": "calibration",
+    "domain": "calibration",
     "headings": [],
     "authors": [
       "A. Kumar",
@@ -255,7 +255,7 @@ export const searchRecords: SearchRecord[] = [
       "affine",
       "non-rigid-registration"
     ],
-    "category": "explainers",
+    "domain": "stitching",
     "headings": [
       "When to choose Lin SVA over APAP"
     ],
@@ -279,7 +279,7 @@ export const searchRecords: SearchRecord[] = [
       "calibration",
       "chessboard"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
       "Procedure"
     ],
@@ -301,7 +301,7 @@ export const searchRecords: SearchRecord[] = [
       "two-view-geometry",
       "fundamental-matrix"
     ],
-    "category": "explainers",
+    "domain": "geometry",
     "headings": [],
     "authors": [
       "R. I. Hartley"
@@ -318,7 +318,7 @@ export const searchRecords: SearchRecord[] = [
       "calibration",
       "chessboard"
     ],
-    "category": "calibration-targets",
+    "domain": "targets",
     "headings": [
       "Procedure"
     ],
@@ -343,7 +343,7 @@ export const searchRecords: SearchRecord[] = [
       "chessboard",
       "self-identifying-pattern"
     ],
-    "category": "calibration-targets",
+    "domain": "targets",
     "headings": [
       "Procedure"
     ],
@@ -365,7 +365,7 @@ export const searchRecords: SearchRecord[] = [
       "chessboard",
       "corner-detection"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
       "Procedure"
     ],
@@ -384,7 +384,7 @@ export const searchRecords: SearchRecord[] = [
       "calibration",
       "chessboard"
     ],
-    "category": "calibration-targets",
+    "domain": "targets",
     "headings": [
       "Procedure",
       "When to choose ROCHADE over Pyramidal"
@@ -410,7 +410,7 @@ export const searchRecords: SearchRecord[] = [
       "feature-detection",
       "corner"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
       "Procedure"
     ],
@@ -433,7 +433,7 @@ export const searchRecords: SearchRecord[] = [
       "singularity-analysis",
       "variable-intrinsics"
     ],
-    "category": "calibration",
+    "domain": "calibration",
     "headings": [],
     "authors": [
       "P. Sturm",
@@ -451,7 +451,7 @@ export const searchRecords: SearchRecord[] = [
       "calibration",
       "chessboard"
     ],
-    "category": "calibration-targets",
+    "domain": "targets",
     "headings": [
       "Procedure",
       "When to choose Shu over Laureano"
@@ -474,7 +474,7 @@ export const searchRecords: SearchRecord[] = [
       "hand-eye",
       "robotics"
     ],
-    "category": "calibration",
+    "domain": "calibration",
     "headings": [
       "When to choose Tsai-Lenz over Daniilidis"
     ],
@@ -496,7 +496,7 @@ export const searchRecords: SearchRecord[] = [
       "extrinsics",
       "radial-distortion"
     ],
-    "category": "calibration",
+    "domain": "calibration",
     "headings": [
       "Stage 1 — extrinsic + scale (linear)",
       "When to choose Tsai over Zhang",
@@ -518,7 +518,7 @@ export const searchRecords: SearchRecord[] = [
       "intrinsics",
       "homography"
     ],
-    "category": "calibration",
+    "domain": "calibration",
     "headings": [
       "When to choose Zhang over Sturm-Maybank"
     ],
@@ -538,7 +538,7 @@ export const searchRecords: SearchRecord[] = [
       "corner-detection",
       "cnn"
     ],
-    "category": "calibration-learning",
+    "domain": "calibration",
     "headings": [],
     "authors": [
       "B. Chen",
@@ -558,7 +558,7 @@ export const searchRecords: SearchRecord[] = [
       "corner-detection",
       "cnn"
     ],
-    "category": "calibration-learning",
+    "domain": "calibration",
     "headings": [
       "Novelty",
       "Limitations",
@@ -585,7 +585,7 @@ export const searchRecords: SearchRecord[] = [
       "image-matching",
       "self-supervised"
     ],
-    "category": "foundation-ssl",
+    "domain": "features",
     "headings": [
       "When to choose SuperPoint over XFeat"
     ],
@@ -608,7 +608,7 @@ export const searchRecords: SearchRecord[] = [
       "local-descriptors",
       "cnn"
     ],
-    "category": "detection",
+    "domain": "features",
     "headings": [],
     "authors": [
       "G. Potje",
@@ -631,7 +631,7 @@ export const searchRecords: SearchRecord[] = [
       "intrinsics",
       "camera-model"
     ],
-    "category": "image-formation",
+    "domain": "image-formation",
     "headings": [
       "The Brown polynomial (1966)",
       "Tsai 1987 — one term, radial only",
@@ -654,7 +654,7 @@ export const searchRecords: SearchRecord[] = [
       "corner-detection",
       "survey"
     ],
-    "category": "feature-theory",
+    "domain": "features",
     "headings": [
       "The four design axes"
     ]
@@ -671,7 +671,7 @@ export const searchRecords: SearchRecord[] = [
       "numerical-conditioning",
       "dlt"
     ],
-    "category": "geometry",
+    "domain": "geometry",
     "headings": [
       "Why the design matrix needs conditioning",
       "Why the rank-2 SVD truncation is the most-perturbed step",
@@ -690,7 +690,7 @@ export const searchRecords: SearchRecord[] = [
       "stereo",
       "two-view-geometry"
     ],
-    "category": "geometry",
+    "domain": "geometry",
     "headings": [
       "Fundamental matrix",
       "Essential matrix",
@@ -709,7 +709,7 @@ export const searchRecords: SearchRecord[] = [
       "calibration",
       "hessian"
     ],
-    "category": "feature-theory",
+    "domain": "features",
     "headings": [
       "Origin: Chen-Zhang 2005",
       "Variants in the wild",
@@ -728,7 +728,7 @@ export const searchRecords: SearchRecord[] = [
       "projective-geometry",
       "calibration"
     ],
-    "category": "geometry",
+    "domain": "geometry",
     "headings": [
       "Projective geometry of the homography",
       "Special cases",
@@ -748,7 +748,7 @@ export const searchRecords: SearchRecord[] = [
       "derivatives",
       "filtering"
     ],
-    "category": "feature-theory",
+    "domain": "features",
     "headings": [
       "Discrete derivative kernels",
       "Gradient of a Gaussian",
@@ -767,7 +767,7 @@ export const searchRecords: SearchRecord[] = [
       "multi-scale",
       "gaussian-filtering"
     ],
-    "category": "image-formation",
+    "domain": "image-formation",
     "headings": [
       "Axiomatic characterization",
       "Heat equation connection",
@@ -790,7 +790,7 @@ export const searchRecords: SearchRecord[] = [
       "spatially-varying-warp",
       "survey"
     ],
-    "category": "geometry",
+    "domain": "geometry",
     "headings": [
       "Gao DHW — discrete two-plane decomposition",
       "SVA — continuous affine deviation field",
@@ -808,7 +808,7 @@ export const searchRecords: SearchRecord[] = [
       "corner-detection",
       "linear-algebra"
     ],
-    "category": "feature-theory",
+    "domain": "features",
     "headings": [
       "Eigenvalue classification",
       "Corner response functions",
@@ -829,7 +829,7 @@ export const searchRecords: SearchRecord[] = [
       "topology",
       "graph-algorithms"
     ],
-    "category": "feature-theory",
+    "domain": "features",
     "headings": [
       "The shared shape",
       "Variants — what \"topology\" means in each method",

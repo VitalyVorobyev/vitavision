@@ -3,7 +3,7 @@ title: "Geiger Chessboard Corner Detector"
 date: 2026-05-02
 summary: "Detect checkerboard X-corners by computing a four-quadrant corner likelihood at each pixel using axis-aligned and 45°-rotated prototype filters at three fixed scales, verifying candidates by gradient-orientation statistics, and refining to subpixel accuracy via gradient-orthogonality weighted least squares — the libcbdetect detector that anchors many subsequent calibration pipelines."
 tags: ["calibration", "chessboard", "corner-detection"]
-category: corner-detection
+domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["chess-corners", "rochade", "pyramidal-blur-aware-xcorner"]

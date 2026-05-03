@@ -23,57 +23,55 @@ import useAlgorithmsFilters, {
     type AlgorithmsView,
 } from "../hooks/useAlgorithmsFilters.ts";
 import {
-    algorithmCategoryValues,
-    modelCategoryValues,
-    conceptCategoryValues,
-    type AlgorithmCategory,
     type AlgorithmIndexEntry,
-    type ModelCategory,
     type ModelIndexEntry,
-    type ConceptCategory,
     type ConceptIndexEntry,
 } from "../lib/content/schema.ts";
-import { categoryLabel, modelCategoryLabel } from "../components/algorithms/categoryLabels.ts";
-import { conceptCategoryLabel } from "../components/algorithms/conceptCategoryLabels.ts";
+import { domainLabels, domainOrder } from "../components/algorithms/domainLabels.ts";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 import { searchSlugs } from "../lib/atlas/searchClient.ts";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function computeGroupedAlgorithms(filtered: AlgorithmIndexEntry[]) {
-    const byCategory = new Map<AlgorithmCategory, AlgorithmIndexEntry[]>();
+type DomainGroup<T> = { domain: string; entries: T[] };
+
+function computeGroupedAlgorithms(filtered: AlgorithmIndexEntry[]): DomainGroup<AlgorithmIndexEntry>[] {
+    const byDomain = new Map<string, AlgorithmIndexEntry[]>();
     for (const entry of filtered) {
-        const bucket = byCategory.get(entry.frontmatter.category) ?? [];
+        const dom = entry.frontmatter.domain ?? "unknown";
+        const bucket = byDomain.get(dom) ?? [];
         bucket.push(entry);
-        byCategory.set(entry.frontmatter.category, bucket);
+        byDomain.set(dom, bucket);
     }
-    return algorithmCategoryValues
-        .map((category) => ({ category, entries: byCategory.get(category) ?? [] }))
+    return domainOrder
+        .map((dom) => ({ domain: dom, entries: byDomain.get(dom) ?? [] }))
         .filter((g) => g.entries.length > 0);
 }
 
-function computeGroupedModels(filtered: ModelIndexEntry[]) {
-    const byCategory = new Map<ModelCategory, ModelIndexEntry[]>();
+function computeGroupedModels(filtered: ModelIndexEntry[]): DomainGroup<ModelIndexEntry>[] {
+    const byDomain = new Map<string, ModelIndexEntry[]>();
     for (const entry of filtered) {
-        const bucket = byCategory.get(entry.frontmatter.category) ?? [];
+        const dom = entry.frontmatter.domain ?? "unknown";
+        const bucket = byDomain.get(dom) ?? [];
         bucket.push(entry);
-        byCategory.set(entry.frontmatter.category, bucket);
+        byDomain.set(dom, bucket);
     }
-    return modelCategoryValues
-        .map((category) => ({ category, entries: byCategory.get(category) ?? [] }))
+    return domainOrder
+        .map((dom) => ({ domain: dom, entries: byDomain.get(dom) ?? [] }))
         .filter((g) => g.entries.length > 0);
 }
 
-function computeGroupedConcepts(filtered: ConceptIndexEntry[]) {
-    const byCategory = new Map<ConceptCategory, ConceptIndexEntry[]>();
+function computeGroupedConcepts(filtered: ConceptIndexEntry[]): DomainGroup<ConceptIndexEntry>[] {
+    const byDomain = new Map<string, ConceptIndexEntry[]>();
     for (const entry of filtered) {
-        const bucket = byCategory.get(entry.frontmatter.category as ConceptCategory) ?? [];
+        const dom = entry.frontmatter.domain ?? "unknown";
+        const bucket = byDomain.get(dom) ?? [];
         bucket.push(entry);
-        byCategory.set(entry.frontmatter.category as ConceptCategory, bucket);
+        byDomain.set(dom, bucket);
     }
-    return conceptCategoryValues
-        .map((category) => ({ category, entries: byCategory.get(category) ?? [] }))
+    return domainOrder
+        .map((dom) => ({ domain: dom, entries: byDomain.get(dom) ?? [] }))
         .filter((g) => g.entries.length > 0);
 }
 
@@ -98,9 +96,9 @@ interface CardGroupProps {
     filteredModels: ModelIndexEntry[];
     filteredConcepts: ConceptIndexEntry[];
     filters: AlgorithmsFilters;
-    groupedAlgorithms: ReturnType<typeof computeGroupedAlgorithms>;
-    groupedModels: ReturnType<typeof computeGroupedModels>;
-    groupedConcepts: ReturnType<typeof computeGroupedConcepts>;
+    groupedAlgorithms: DomainGroup<AlgorithmIndexEntry>[];
+    groupedModels: DomainGroup<ModelIndexEntry>[];
+    groupedConcepts: DomainGroup<ConceptIndexEntry>[];
     layout: "grid" | "list";
 }
 
@@ -112,7 +110,7 @@ function AlgorithmsGroup({
 }: {
     filteredAlgorithms: AlgorithmIndexEntry[];
     filters: AlgorithmsFilters;
-    groupedAlgorithms: ReturnType<typeof computeGroupedAlgorithms>;
+    groupedAlgorithms: DomainGroup<AlgorithmIndexEntry>[];
     layout: "grid" | "list";
 }) {
     const gridClass =
@@ -131,7 +129,7 @@ function AlgorithmsGroup({
         return (
             <div>
                 <SectionHeader
-                    label={categoryLabel(filters.categoryId as AlgorithmCategory)}
+                    label={domainLabels[filters.categoryId as keyof typeof domainLabels] ?? filters.categoryId}
                     count={filteredAlgorithms.length}
                 />
                 <div className={gridClass}>
@@ -148,10 +146,10 @@ function AlgorithmsGroup({
     }
     return (
         <>
-            {groupedAlgorithms.map(({ category, entries }) => (
-                <div key={category}>
+            {groupedAlgorithms.map(({ domain, entries }) => (
+                <div key={domain}>
                     <SectionHeader
-                        label={categoryLabel(category)}
+                        label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
                         count={entries.length}
                     />
                     <div className={gridClass}>
@@ -177,7 +175,7 @@ function ModelsGroup({
 }: {
     filteredModels: ModelIndexEntry[];
     filters: AlgorithmsFilters;
-    groupedModels: ReturnType<typeof computeGroupedModels>;
+    groupedModels: DomainGroup<ModelIndexEntry>[];
     layout: "grid" | "list";
 }) {
     const gridClass =
@@ -196,7 +194,7 @@ function ModelsGroup({
         return (
             <div>
                 <SectionHeader
-                    label={modelCategoryLabel(filters.categoryId as ModelCategory)}
+                    label={domainLabels[filters.categoryId as keyof typeof domainLabels] ?? filters.categoryId}
                     count={filteredModels.length}
                 />
                 <div className={gridClass}>
@@ -213,10 +211,10 @@ function ModelsGroup({
     }
     return (
         <>
-            {groupedModels.map(({ category, entries }) => (
-                <div key={category}>
+            {groupedModels.map(({ domain, entries }) => (
+                <div key={domain}>
                     <SectionHeader
-                        label={modelCategoryLabel(category)}
+                        label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
                         count={entries.length}
                     />
                     <div className={gridClass}>
@@ -242,7 +240,7 @@ function ConceptsGroup({
 }: {
     filteredConcepts: ConceptIndexEntry[];
     filters: AlgorithmsFilters;
-    groupedConcepts: ReturnType<typeof computeGroupedConcepts>;
+    groupedConcepts: DomainGroup<ConceptIndexEntry>[];
     layout: "grid" | "list";
 }) {
     const gridClass =
@@ -261,7 +259,7 @@ function ConceptsGroup({
         return (
             <div>
                 <SectionHeader
-                    label={conceptCategoryLabel(filters.categoryId as ConceptCategory)}
+                    label={domainLabels[filters.categoryId as keyof typeof domainLabels] ?? filters.categoryId}
                     count={filteredConcepts.length}
                 />
                 <div className={gridClass}>
@@ -278,10 +276,10 @@ function ConceptsGroup({
     }
     return (
         <>
-            {groupedConcepts.map(({ category, entries }) => (
-                <div key={category}>
+            {groupedConcepts.map(({ domain, entries }) => (
+                <div key={domain}>
                     <SectionHeader
-                        label={conceptCategoryLabel(category)}
+                        label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
                         count={entries.length}
                     />
                     <div className={gridClass}>
@@ -509,19 +507,13 @@ export default function AlgorithmIndex() {
         [filteredConcepts],
     );
 
-    // Category values + label for the current kind
+    // Domain values + label — shared across all kinds.
+    // When kind === "all", the domain sidebar is hidden (categoryValues = []).
     const currentCategoryValues: readonly string[] =
-        filters.kind === "algorithm" ? algorithmCategoryValues :
-        filters.kind === "model"     ? modelCategoryValues :
-        filters.kind === "concept"   ? conceptCategoryValues :
-        [];
+        filters.kind !== "all" ? domainOrder : [];
 
-    const currentCategoryLabel = (id: string): string => {
-        if (filters.kind === "algorithm") return categoryLabel(id as AlgorithmCategory);
-        if (filters.kind === "model")     return modelCategoryLabel(id as ModelCategory);
-        if (filters.kind === "concept")   return conceptCategoryLabel(id as ConceptCategory);
-        return id;
-    };
+    const currentCategoryLabel = (id: string): string =>
+        domainLabels[id as keyof typeof domainLabels] ?? id;
 
     // Mobile active filter badge count
     const activeCount =

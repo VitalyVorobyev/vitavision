@@ -17,7 +17,7 @@ export const blogPosts: BlogIndexEntry[] = [
         "https://github.com/VitalyVorobyev/calib-targets-rs"
       ],
       "difficulty": "intermediate",
-      "readingTimeMinutes": 2,
+      "readingTimeMinutes": 5,
       "access": "public",
       "relatedAlgorithms": [],
       "relatedDemos": [

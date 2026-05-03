@@ -91,6 +91,22 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "gp-checkerboard-enhancement",
+    "path": "/algorithms/gp-checkerboard-enhancement",
+    "type": "algorithm",
+    "title": "GP Checkerboard Enhancement",
+    "summary": "Wrap a checkerboard corner detector with a Gaussian process that learns the smooth map from local board coordinates to image pixel coordinates, then use the predictive mean to recover occluded corners, claim corners the upstream structure recovery missed, extend the board beyond the image, and smooth the detected positions.",
+    "tags": [
+      "calibration",
+      "chessboard",
+      "gaussian-processes"
+    ],
+    "category": "calibration-targets",
+    "headings": [
+      "Procedure"
+    ]
+  },
+  {
     "slug": "harris-corner-detector",
     "path": "/algorithms/harris-corner-detector",
     "type": "algorithm",

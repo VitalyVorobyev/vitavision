@@ -73,6 +73,14 @@ export const contentGraph: ContentGraph = {
       "path": "/algorithms/fast-corner-detector",
       "draft": false
     },
+    "gp-checkerboard-enhancement": {
+      "slug": "gp-checkerboard-enhancement",
+      "type": "algorithm",
+      "title": "GP Checkerboard Enhancement",
+      "summary": "Wrap a checkerboard corner detector with a Gaussian process that learns the smooth map from local board coordinates to image pixel coordinates, then use the predictive mean to recover occluded corners, claim corners the upstream structure recovery missed, extend the board beyond the image, and smooth the detected positions.",
+      "path": "/algorithms/gp-checkerboard-enhancement",
+      "draft": true
+    },
     "harris-corner-detector": {
       "slug": "harris-corner-detector",
       "type": "algorithm",
@@ -282,6 +290,20 @@ export const contentGraph: ContentGraph = {
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
         "chess-corners"
+      ],
+      "comparedWith": [],
+      "failureModes": []
+    },
+    "gp-checkerboard-enhancement": {
+      "prerequisites": [],
+      "related": [
+        "chess-corners",
+        "ocpad",
+        "rochade",
+        "duda-radon-corners",
+        "pyramidal-blur-aware-xcorner",
+        "shu-topological-grid",
+        "laureano-topological-chessboard"
       ],
       "comparedWith": [],
       "failureModes": []
@@ -513,6 +535,7 @@ export const contentGraph: ContentGraph = {
       "relatedFrom": [
         "laureano-topological-chessboard",
         "fast-corner-detector",
+        "gp-checkerboard-enhancement",
         "harris-corner-detector",
         "duda-radon-corners",
         "puzzleboard",
@@ -531,6 +554,7 @@ export const contentGraph: ContentGraph = {
     "laureano-topological-chessboard": {
       "usedBy": [],
       "relatedFrom": [
+        "gp-checkerboard-enhancement",
         "ocpad",
         "rochade"
       ],
@@ -562,6 +586,12 @@ export const contentGraph: ContentGraph = {
       ],
       "affects": []
     },
+    "gp-checkerboard-enhancement": {
+      "usedBy": [],
+      "relatedFrom": [],
+      "comparedFrom": [],
+      "affects": []
+    },
     "harris-corner-detector": {
       "usedBy": [],
       "relatedFrom": [
@@ -587,13 +617,16 @@ export const contentGraph: ContentGraph = {
     },
     "duda-radon-corners": {
       "usedBy": [],
-      "relatedFrom": [],
+      "relatedFrom": [
+        "gp-checkerboard-enhancement"
+      ],
       "comparedFrom": [],
       "affects": []
     },
     "ocpad": {
       "usedBy": [],
       "relatedFrom": [
+        "gp-checkerboard-enhancement",
         "rochade"
       ],
       "comparedFrom": [],
@@ -613,6 +646,7 @@ export const contentGraph: ContentGraph = {
     "pyramidal-blur-aware-xcorner": {
       "usedBy": [],
       "relatedFrom": [
+        "gp-checkerboard-enhancement",
         "duda-radon-corners",
         "image-gradient",
         "scale-space"
@@ -631,6 +665,7 @@ export const contentGraph: ContentGraph = {
     "rochade": {
       "usedBy": [],
       "relatedFrom": [
+        "gp-checkerboard-enhancement",
         "duda-radon-corners",
         "pyramidal-blur-aware-xcorner",
         "zhang-planar-calibration",
@@ -661,6 +696,7 @@ export const contentGraph: ContentGraph = {
       "usedBy": [],
       "relatedFrom": [
         "laureano-topological-chessboard",
+        "gp-checkerboard-enhancement",
         "ocpad",
         "puzzleboard",
         "pyramidal-blur-aware-xcorner",

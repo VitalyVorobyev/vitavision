@@ -5,7 +5,7 @@ summary: "A draft algorithm page that exercises semantic blocks, math, diagrams,
 tags: ["meta", "demo", "authoring"]
 category: explainers
 author: "Vitaly Vorobyev"
-draft: true
+dev: true
 difficulty: intermediate
 relatedPosts: ["00-intro"]
 relatedAlgorithms: ["harris-corner-detector"]

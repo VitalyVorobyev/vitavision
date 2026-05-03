@@ -13,6 +13,7 @@ interface AtlasFrontmatter {
     difficulty?: Difficulty;
     tags: string[];
     draft?: boolean;
+    dev?: boolean;
     sources?: { primary?: string };
 }
 
@@ -46,6 +47,11 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                 &larr; {backLabel}
             </Link>
             <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
+                {frontmatter.dev && (
+                    <span className="text-sm font-mono uppercase tracking-wider text-blue-500 border border-blue-500/40 rounded px-2 py-1 mr-3 align-middle">
+                        dev sample
+                    </span>
+                )}
                 {frontmatter.draft && (
                     <span className="text-sm font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-2 py-1 mr-3 align-middle">
                         draft

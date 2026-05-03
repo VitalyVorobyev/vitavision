@@ -45,7 +45,7 @@ export default function AlgorithmPost() {
 
     // Draft gating must happen before the async loader fires, otherwise non-admins
     // download the draft HTML chunk even when the UI renders NotFound.
-    const isDraftBlocked = Boolean(page?.frontmatter.draft) && !isAdmin;
+    const isDraftBlocked = Boolean(page?.frontmatter.draft || page?.frontmatter.dev) && !isAdmin;
 
     const html = isDraftBlocked ? null : syncHtml ?? asyncHtml;
     const loadFailed = !isDraftBlocked && html === null && (!slug || !(slug in algorithmHtmlLoaders) || asyncFailed);

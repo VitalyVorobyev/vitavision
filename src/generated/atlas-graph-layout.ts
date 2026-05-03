@@ -6,33 +6,28 @@ export interface AtlasLayoutCluster { id: string; title: string; cx: number; cy:
 export const atlasLayoutViewBox = { width: 1000, height: 600 };
 
 export const atlasLayout: Record<string, AtlasLayoutNode> = {
-  "02-demo-blocks": {
-    "x": 98.21750300000001,
-    "y": 127.498944,
-    "cluster": "fundamentals"
-  },
   "camera-distortion-models": {
-    "x": 296.484698,
+    "x": 115.884698,
     "y": 113.619792,
     "cluster": "fundamentals"
   },
   "fundamental-matrix-eight-point": {
-    "x": 84.78537800000001,
-    "y": 280.504272,
+    "x": 265.385378,
+    "y": 78.904272,
     "cluster": "fundamentals"
   },
   "gao-dual-homography-stitching": {
-    "x": 285.618899,
+    "x": 105.018899,
     "y": 266.1312,
     "cluster": "fundamentals"
   },
   "lin-sva-stitching": {
-    "x": 65.97408200000001,
-    "y": 531.665616,
+    "x": 246.574082,
+    "y": 330.065616,
     "cluster": "fundamentals"
   },
   "scale-space": {
-    "x": 270.32207900000003,
+    "x": 89.72207900000001,
     "y": 521.21568,
     "cluster": "fundamentals"
   },

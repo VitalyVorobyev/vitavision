@@ -43,11 +43,26 @@ export const algorithmCategoryValues = [
 ] as const;
 export type AlgorithmCategory = (typeof algorithmCategoryValues)[number];
 
+/** Unified domain taxonomy — orthogonal to kind. */
+export const domainValues = [
+    "image-formation",
+    "features",
+    "geometry",
+    "targets",
+    "calibration",
+    "stitching",
+    "depth",
+    "detection",
+] as const;
+export type Domain = (typeof domainValues)[number];
+
 /** Zod schema for algorithm page frontmatter. */
 export const algorithmFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
         category: z.enum(algorithmCategoryValues),
+        dev: z.boolean().optional(),
+        domain: z.enum(domainValues).optional(),
         relatedPosts: z.array(z.string().min(1)).optional(),
         relatedAlgorithms: z.array(z.string().min(1)).optional(),
         relatedDemos: z.array(z.string().min(1)).optional(),
@@ -147,6 +162,8 @@ export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
         category: z.enum(modelCategoryValues),
+        dev: z.boolean().optional(),
+        domain: z.enum(domainValues).optional(),
         noPublicImpl: z.boolean().optional(),
         arch_family: z.enum(["cnn", "vit", "encoder-decoder", "diffusion", "gan", "hybrid"]).optional(),
         params: z.string().optional(),
@@ -198,6 +215,8 @@ export const conceptFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
         category: z.enum(conceptCategoryValues),
+        dev: z.boolean().optional(),
+        domain: z.enum(domainValues).optional(),
         sources: z.object({
             primary: z.string().min(1).optional(),
             references: z.array(z.string().min(1)).optional(),

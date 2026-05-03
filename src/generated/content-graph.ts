@@ -161,14 +161,6 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/pyramidal-blur-aware-xcorner",
       "draft": false
     },
-    "02-demo-blocks": {
-      "slug": "02-demo-blocks",
-      "type": "algorithm",
-      "title": "Rich Algorithm Content Demo",
-      "summary": "A draft algorithm page that exercises semantic blocks, math, diagrams, code, and related-link metadata.",
-      "path": "/atlas/02-demo-blocks",
-      "draft": true
-    },
     "rochade": {
       "slug": "rochade",
       "type": "algorithm",
@@ -231,7 +223,7 @@ export const contentGraph: ContentGraph = {
       "title": "CCDN",
       "summary": "Fully convolutional network that regresses a per-pixel checkerboard-corner response map; trained with weighted cross-entropy and paired with threshold + NMS + k-means post-processing.",
       "path": "/atlas/ccdn-checkerboard-detector",
-      "draft": true
+      "draft": false
     },
     "mate-checkerboard-detector": {
       "slug": "mate-checkerboard-detector",
@@ -255,7 +247,7 @@ export const contentGraph: ContentGraph = {
       "title": "XFeat",
       "summary": "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices.",
       "path": "/atlas/xfeat",
-      "draft": true
+      "draft": false
     },
     "camera-distortion-models": {
       "slug": "camera-distortion-models",
@@ -567,14 +559,6 @@ export const contentGraph: ContentGraph = {
         "shu-topological-grid",
         "shi-tomasi-corner-detector",
         "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [],
-      "failureModes": []
-    },
-    "02-demo-blocks": {
-      "prerequisites": [],
-      "related": [
-        "harris-corner-detector"
       ],
       "comparedWith": [],
       "failureModes": []
@@ -978,7 +962,6 @@ export const contentGraph: ContentGraph = {
         "fast-corner-detector",
         "duda-radon-corners",
         "puzzleboard",
-        "02-demo-blocks",
         "shi-tomasi-corner-detector",
         "shu-topological-grid",
         "ccdn-checkerboard-detector",
@@ -1070,12 +1053,6 @@ export const contentGraph: ContentGraph = {
         "geiger-chessboard-detector",
         "rochade"
       ],
-      "affects": []
-    },
-    "02-demo-blocks": {
-      "usedBy": [],
-      "relatedFrom": [],
-      "comparedFrom": [],
       "affects": []
     },
     "rochade": {

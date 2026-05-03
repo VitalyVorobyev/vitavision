@@ -375,39 +375,6 @@ export const searchRecords: SearchRecord[] = [
     "venue": "arXiv (Cornell University)"
   },
   {
-    "slug": "02-demo-blocks",
-    "path": "/atlas/02-demo-blocks",
-    "type": "algorithm",
-    "title": "Rich Algorithm Content Demo",
-    "summary": "A draft algorithm page that exercises semantic blocks, math, diagrams, code, and related-link metadata.",
-    "tags": [
-      "meta",
-      "demo",
-      "authoring"
-    ],
-    "category": "explainers",
-    "headings": [
-      "Typography Basics",
-      "Heading Hierarchy",
-      "Lists",
-      "Inline Math and Display Math",
-      "Code Blocks",
-      "Semantic Blocks",
-      "Definitions",
-      "Theorems and Proofs",
-      "Lemma",
-      "Notes and Warnings",
-      "Examples",
-      "Algorithm",
-      "Quote",
-      "Tables",
-      "Blockquote (Standard Markdown)",
-      "Mermaid Diagram",
-      "Inline Colored Text",
-      "Emphasized Phrase Block"
-    ]
-  },
-  {
     "slug": "rochade",
     "path": "/atlas/rochade",
     "type": "algorithm",

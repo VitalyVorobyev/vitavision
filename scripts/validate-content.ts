@@ -227,7 +227,8 @@ export async function validateContent(options?: ValidateContentOptions): Promise
         for (const e of rawEntries) {
             try {
                 const parsed = schemaFn(e.data);
-                const isDraft = !!(e.data.draft);
+                // Treat dev:true pages like drafts for validation purposes.
+                const isDraft = !!(e.data.draft) || !!(e.data.dev);
                 out.push({ ...e, frontmatter: parsed, isDraft });
             } catch (err) {
                 errors.push(`[${e.file}] ${label} frontmatter parse error: ${String(err)}`);

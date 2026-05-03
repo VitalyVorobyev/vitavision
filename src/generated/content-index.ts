@@ -722,34 +722,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
-    "slug": "02-demo-blocks",
-    "frontmatter": {
-      "title": "Rich Algorithm Content Demo",
-      "summary": "A draft algorithm page that exercises semantic blocks, math, diagrams, code, and related-link metadata.",
-      "tags": [
-        "meta",
-        "demo",
-        "authoring"
-      ],
-      "author": "Vitaly Vorobyev",
-      "draft": true,
-      "difficulty": "intermediate",
-      "readingTimeMinutes": 6,
-      "access": "public",
-      "prerequisites": [],
-      "comparedWith": [],
-      "failureModes": [],
-      "category": "explainers",
-      "relatedPosts": [
-        "00-intro"
-      ],
-      "relatedAlgorithms": [
-        "harris-corner-detector"
-      ],
-      "date": "2026-03-29"
-    }
-  },
-  {
     "slug": "rochade",
     "frontmatter": {
       "title": "ROCHADE: Robust Checkerboard Advanced Detection",
@@ -1078,7 +1050,6 @@ export const modelPages: ModelIndexEntry[] = [
         "cnn"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
@@ -1224,7 +1195,6 @@ export const modelPages: ModelIndexEntry[] = [
         "cnn"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",

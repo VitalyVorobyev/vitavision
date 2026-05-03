@@ -103,17 +103,7 @@ where the sign is $+$ when the previous iteration matched and $-$ when it did no
 9. Return $M$.
 :::
 
-```mermaid
-flowchart LR
-    A["Candidate graph<br/>G_d"] --> B["50% size<br/>reject"]
-    B --> C["Spatial<br/>consistency"]
-    C --> D["Quad<br/>filter"]
-    D --> E["Largest<br/>component"]
-    E --> F["Anchor<br/>max ρ(v)"]
-    F --> G["VF2 binary<br/>search on N_i"]
-    G --> H["BFS region<br/>growing"]
-    H --> I["Mapping M"]
-```
+![ocpad pipeline: 9-stage flow from candidate corner graph through size and spatial consistency pre-filtering, quad filter, largest-component selection, anchor-based BFS ordering, VF2 binary-search subgraph matching, BFS region growing, to the final graph-to-model mapping.](./images/ocpad/pipeline.svg)
 
 # Implementation
 

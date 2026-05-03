@@ -81,14 +81,7 @@ For the **coplanar case** ($z_w \equiv 0$), the system collapses to five unknown
    Seeded by Stage 2.a, one or two LM iterations converge.
 :::
 
-```mermaid
-flowchart LR
-    A["Sub-pixel<br/>extract (X_f, Y_f)"] --> B["Convert to<br/>(X_d, Y_d)"]
-    B --> C["Stage 1: linear<br/>RAC solve"]
-    C --> D["Recover R, T_x, T_y, s_x<br/>(closed form)"]
-    D --> E["Stage 2.a: linear<br/>(f, T_z) ignoring distortion"]
-    E --> F["Stage 2.b: LM refine<br/>(f, T_z, κ₁)"]
-```
+![tsai-versatile-calibration pipeline: 6-stage flow from sub-pixel feature extraction through distorted-pixel conversion, linear RAC solve for extrinsics and scale, closed-form recovery of R and T, linear focal-length approximation, to Levenberg-Marquardt refinement of focal length, depth translation, and radial distortion.](./images/tsai-versatile-calibration/pipeline.svg)
 
 # Remarks
 

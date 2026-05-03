@@ -105,16 +105,7 @@ The formula reconstructs the full position from a coarse-resolution index modulo
 10. Compute $(u, v)$ via the position-decoding formula; assign grid coordinates to every detected corner by offsetting from the decoded anchor.
 :::
 
-```mermaid
-flowchart LR
-    A["Hessian<br/>f_xx, f_xy, f_yy"] --> B["Saddle response s<br/>local maxima"]
-    B --> C["Subpixel refine<br/>3×3 centroid"]
-    C --> D["9-NN + Kruskal<br/>MSF grid"]
-    D --> E["Bit read at<br/>edge midpoints"]
-    E --> F["Majority vote<br/>(3 repetitions)"]
-    F --> G["Cross-correlate<br/>A, A', B, B'"]
-    G --> H["Decode (u, v)<br/>mod 167"]
-```
+![puzzleboard pipeline: 8-stage flow from Hessian computation through saddle response and subpixel refinement, 9-NN Kruskal grid reconstruction, edge-bit reading with majority voting, cross-correlation against factor maps, to absolute grid position decoding.](./images/puzzleboard/pipeline.svg)
 
 # Implementation
 

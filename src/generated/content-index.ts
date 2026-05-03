@@ -369,7 +369,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 7,
+      "readingTimeMinutes": 8,
       "access": "public",
       "prerequisites": [
         "image-gradient"
@@ -608,7 +608,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 6,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
         "image-gradient",
@@ -648,7 +648,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 6,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
         "image-gradient",
@@ -923,7 +923,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
         "camera-distortion-models"
@@ -964,7 +964,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
         "homography",

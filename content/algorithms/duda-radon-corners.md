@@ -96,7 +96,7 @@ Restricting $\alpha$ to $\mathcal{A}$ halves the number of rotations: the image 
 :::
 
 ```mermaid
-flowchart LR
+flowchart TB
     I["I"] --> S["2× super-<br/>sample"]
     S --> R0["rot α=0"]
     S --> R1["rot α=π/4"]

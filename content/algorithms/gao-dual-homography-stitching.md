@@ -54,15 +54,7 @@ Pixels near ground-plane features warp predominantly by $H_g$ ($\omega \to 1$ at
 
 **Stage 4 — post-processing.** The element-wise convex combination $\omega_{ij}\,H_g + (1-\omega_{ij})\,H_d$ is in general **not** a valid rank-3 projective matrix, so the resulting warp can produce a quadratic ("bow") deformation on straight lines. A content-aware straightening step tessellates the panorama into a polygonal mesh and minimises a weighted similarity-deformation energy that penalises non-similarity transforms on high-gradient cells and bending of vertical edges (Eq. 8–12). A graph-cut MRF seam cut on the gradient-magnitude data cost (Eq. 5–7, $\lambda = 2$) followed by a 16-pixel alpha-blending band hides residual colour discontinuities.
 
-```mermaid
-flowchart LR
-    A["SIFT matches<br/>(x_i, x'_i)"] --> B["K-means<br/>seeds at (x̄,0), (x̄,h)"]
-    B --> C["Two RANSACs<br/>H_g, H_d"]
-    C --> D["Per-pixel blend<br/>ω = d_g/(d_g+d_d)<br/>H_ij = ω H_g + (1-ω) H_d"]
-    D --> E["MRF seam cut<br/>gradient-mag cost"]
-    E --> F["Content-aware<br/>straightening"]
-    F --> G["Stitched mosaic"]
-```
+![gao-dual-homography-stitching pipeline: 7-stage flow from SIFT matches through spatial K-means clustering, per-group RANSAC homography fitting, per-pixel blend weight, MRF seam cut, content-aware straightening, to the final stitched mosaic.](./images/gao-dual-homography-stitching/pipeline.svg)
 
 # Remarks
 

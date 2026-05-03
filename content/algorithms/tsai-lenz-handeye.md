@@ -112,15 +112,7 @@ The skew matrix $[P_{g_{ij}} + P_{c_{ij}}]_\times$ has rank 2, and so does $R_{g
 6. Special case: if $P_{g_{ij}} + P_{c_{ij}}$ is collinear across pairs while $P_{g_{ij}}$ varies, then $\theta_{cg} = \pi$ and $n_{cg}$ is parallel to $P_{g_{ij}} + P_{c_{ij}}$; assemble $P_{cg} = 2 \sin(\pi/2)\,n_{cg} = 2 n_{cg}$ directly, then proceed to step 5.
 :::
 
-```mermaid
-flowchart LR
-    A["Stations<br/>(H_g_i, H_c_i)"] --> B["Pair motions<br/>H_g_ij, H_c_ij"]
-    B --> C["Modified Rodrigues<br/>P_g_ij, P_c_ij"]
-    C --> D["Stack [P_g+P_c]_x P' = P_c - P_g<br/>least squares"]
-    D --> E["P_cg = 2P' / sqrt(1+|P'|²)<br/>R_cg = R(P_cg)"]
-    E --> F["Stack (R_g - I) T = R_cg T_c - T_g<br/>least squares"]
-    F --> G["H_cg = [R_cg | T_cg]"]
-```
+![tsai-lenz-handeye pipeline: 7-stage flow from station observations through pair motion computation, modified Rodrigues vector encoding, rotation linear least squares, rotation recovery, translation linear least squares, to the final hand-eye transform.](./images/tsai-lenz-handeye/pipeline.svg)
 
 # Implementation
 

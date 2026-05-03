@@ -108,7 +108,7 @@ $S$ is negative at saddle-shaped X-junctions; the subpixel offset $(s, t)$ from 
 :::
 
 ```mermaid
-flowchart LR
+flowchart TB
     A["Image I"] --> B["X-corner<br/>N_alt = 4"]
     B --> C["NMS<br/>argmax R"]
     C --> D["Delaunay<br/>T = Del(C)"]

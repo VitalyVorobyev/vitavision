@@ -96,15 +96,7 @@ $$
 
 $E_\text{corners} = -|\{y \mid y \neq O\}|$ rewards explaining more corners; $E_\text{struct}$ measures how well triples of consecutive corners along each row and column satisfy the collinearity / spacing constraint (Eq. 7). The discrete optimisation is greedy: from each seed corner, expand a $2 \times 2$ initial hypothesis by adding one row or column at a time, picking the expansion that reduces $E$ the most. Apply this to each seed; merge duplicates greedily. The result is a list of all visible checkerboards in the image — recovered without any prior on $(r, c)$ — which is the **single-shot** property.
 
-```mermaid
-flowchart LR
-    I["grayscale image"] --> L["corner likelihood<br/>4-quad prototypes<br/>3 fixed scales"]
-    L --> N["NMS<br/>(τ_nms=0.02)"]
-    N --> V["gradient verification<br/>32-bin orientation hist<br/>+ mean shift"]
-    V --> R["subpixel refine<br/>11×11 grad-orthogonality<br/>(Eq. 3)"]
-    R --> S["structure recovery<br/>greedy seed expansion<br/>(Eq. 6-7)"]
-    S --> O["per-board corner sets"]
-```
+![geiger-chessboard-detector pipeline: 7-stage flow from grayscale image through four-quadrant corner likelihood at three fixed scales, NMS, gradient-orientation verification, subpixel refinement, greedy structure recovery, to per-board corner sets.](./images/geiger-chessboard-detector/pipeline.svg)
 
 # Implementation
 

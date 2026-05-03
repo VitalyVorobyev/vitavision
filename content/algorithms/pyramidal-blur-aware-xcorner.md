@@ -117,18 +117,7 @@ Level-dependent spacing keeps samples away from the smeared centre of edges inci
 9. If the pattern shape $(r, c)$ is given, return only chessboard graphs of that shape; otherwise return all valid graphs.
 :::
 
-```mermaid
-flowchart LR
-  A["Pyramid"] --> B["Per-level<br/>x-corner I"]
-  B --> C["2x2 box<br/>+ NMS"]
-  C --> D["Cascade<br/>filters"]
-  D --> E["Mean-shift<br/>subpixel"]
-  E --> F["Spokes:<br/>orient + contrast"]
-  F --> G["Cross-level<br/>level select"]
-  G --> H["KNN +<br/>edge validate"]
-  H --> I["Vote +<br/>graph rules"]
-  I --> J["Chessboard<br/>graphs"]
-```
+![pyramidal-blur-aware-xcorner pipeline: 10-stage flow from image pyramid through per-level x-corner intensity, 2×2 box filter and NMS, cascade filters, mean-shift subpixel refinement, spoke orientation, cross-level selection, KNN edge validation, vote and graph-rule enforcement, to chessboard graphs.](./images/pyramidal-blur-aware-xcorner/pipeline.svg)
 
 # Implementation
 

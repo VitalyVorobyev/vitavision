@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="449.64pt" height="177.395919pt" viewBox="0 0 449.64 177.395919" xmlns="http://www.w3.org/2000/svg" version="1.1" role="img" aria-labelledby="title desc"><title id="title">Shu topological grid finding pipeline</title><desc id="desc">6-stage pipeline from Harris corners through Delaunay triangulation, same-colour triangle merging into quads, topological degree filtering, geometric aspect-ratio filtering, to flood-fill integer grid coordinate assignment.</desc>
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.8, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 177.395919 
+L 449.64 177.395919 
+L 449.64 0 
+L 0 0 
+z
+" style="fill: #f8fafc"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 20.929047 16.255329 
+L 136.60357 16.255329 
+Q 141.277289 16.255329 141.277289 20.929047 
+L 141.277289 67.666228 
+Q 141.277289 72.339946 136.60357 72.339946 
+L 20.929047 72.339946 
+Q 16.255329 72.339946 16.255329 67.666228 
+L 16.255329 20.929047 
+Q 16.255329 16.255329 20.929047 16.255329 
+z
+" clip-path="url(#p5db448322f)" style="fill: #e2e8f0; stroke: #475569; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 166.982738 16.255329 
+L 282.657262 16.255329 
+Q 287.33098 16.255329 287.33098 20.929047 
+L 287.33098 67.666228 
+Q 287.33098 72.339946 282.657262 72.339946 
+L 166.982738 72.339946 
+Q 162.30902 72.339946 162.30902 67.666228 
+L 162.30902 20.929047 
+Q 162.30902 16.255329 166.982738 16.255329 
+z
+" clip-path="url(#p5db448322f)" style="fill: #e2e8f0; stroke: #475569; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 313.03643 16.255329 
+L 428.710953 16.255329 
+Q 433.384671 16.255329 433.384671 20.929047 
+L 433.384671 67.666228 
+Q 433.384671 72.339946 428.710953 72.339946 
+L 313.03643 72.339946 
+Q 308.362711 72.339946 308.362711 67.666228 
+L 308.362711 20.929047 
+Q 308.362711 16.255329 313.03643 16.255329 
+z
+" clip-path="url(#p5db448322f)" style="fill: #e2e8f0; stroke: #475569; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 313.03643 105.055973 
+L 428.710953 105.055973 
+Q 433.384671 105.055973 433.384671 109.729691 
+L 433.384671 156.466872 
+Q 433.384671 161.140591 428.710953 161.140591 
+L 313.03643 161.140591 
+Q 308.362711 161.140591 308.362711 156.466872 
+L 308.362711 109.729691 
+Q 308.362711 105.055973 313.03643 105.055973 
+z
+" clip-path="url(#p5db448322f)" style="fill: #e2e8f0; stroke: #475569; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 166.982738 105.055973 
+L 282.657262 105.055973 
+Q 287.33098 105.055973 287.33098 109.729691 
+L 287.33098 156.466872 
+Q 287.33098 161.140591 282.657262 161.140591 
+L 166.982738 161.140591 
+Q 162.30902 161.140591 162.30902 156.466872 
+L 162.30902 109.729691 
+Q 162.30902 105.055973 166.982738 105.055973 
+z
+" clip-path="url(#p5db448322f)" style="fill: #e2e8f0; stroke: #475569; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 20.929047 105.055973 
+L 136.60357 105.055973 
+Q 141.277289 105.055973 141.277289 109.729691 
+L 141.277289 156.466872 
+Q 141.277289 161.140591 136.60357 161.140591 
+L 20.929047 161.140591 
+Q 16.255329 161.140591 16.255329 156.466872 
+L 16.255329 109.729691 
+Q 16.255329 105.055973 20.929047 105.055973 
+z
+" clip-path="url(#p5db448322f)" style="fill: #e2e8f0; stroke: #475569; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 142.108539 44.297638 
+Q 151.792631 44.297638 160.358689 44.297638 
+" clip-path="url(#p5db448322f)" style="fill: none; stroke: #475569; stroke-linecap: round"/>
+    <path d="M 155.958689 42.097638 
+L 160.358689 44.297638 
+L 155.958689 46.497638 
+z
+" clip-path="url(#p5db448322f)" style="fill: #475569; stroke: #475569; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 288.162231 44.297638 
+Q 297.846322 44.297638 306.41238 44.297638 
+" clip-path="url(#p5db448322f)" style="fill: none; stroke: #475569; stroke-linecap: round"/>
+    <path d="M 302.01238 42.097638 
+L 306.41238 44.297638 
+L 302.01238 46.497638 
+z
+" clip-path="url(#p5db448322f)" style="fill: #475569; stroke: #475569; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 370.873691 73.169771 
+Q 370.873691 88.698427 370.873691 103.109049 
+" clip-path="url(#p5db448322f)" style="fill: none; stroke: #475569; stroke-linecap: round"/>
+    <path d="M 373.073691 98.709049 
+L 370.873691 103.109049 
+L 368.673691 98.709049 
+z
+" clip-path="url(#p5db448322f)" style="fill: #475569; stroke: #475569; stroke-linecap: round"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 307.531461 133.098282 
+Q 297.847369 133.098282 289.281311 133.098282 
+" clip-path="url(#p5db448322f)" style="fill: none; stroke: #475569; stroke-linecap: round"/>
+    <path d="M 293.681311 135.298282 
+L 289.281311 133.098282 
+L 293.681311 130.898282 
+z
+" clip-path="url(#p5db448322f)" style="fill: #475569; stroke: #475569; stroke-linecap: round"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 161.477769 133.098282 
+Q 151.793678 133.098282 143.22762 133.098282 
+" clip-path="url(#p5db448322f)" style="fill: none; stroke: #475569; stroke-linecap: round"/>
+    <path d="M 147.62762 135.298282 
+L 143.22762 133.098282 
+L 147.62762 130.898282 
+z
+" clip-path="url(#p5db448322f)" style="fill: #475569; stroke: #475569; stroke-linecap: round"/>
+   </g>
+   <g id="text_1">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(36.631309 40.495372)">Harris corners</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(47.816621 54.388653)">C = {p_k}</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(196.33125 40.662247)">Delaunay</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(193.463437 54.555528)">T = Del(C)</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(333.109316 40.662247)">Same-colour</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(317.780254 54.555528)">merge → quads Q</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(321.757129 129.462891)">Topological filter</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(331.376816 143.356173)">drop deg &gt; 4</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(177.623437 129.462891)">Geometric filter</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(188.38875 143.356173)">aspect ≤ 10</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(53.219434 129.462891)">Flood-fill</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(43.549121 143.356173)">integer (i, j)</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p5db448322f">
+   <rect x="7.2" y="7.2" width="435.24" height="162.995919"/>
+  </clipPath>
+ </defs>
+</svg>

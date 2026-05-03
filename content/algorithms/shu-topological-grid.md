@@ -99,14 +99,7 @@ The assignment is purely topological — it uses only the shared-edge indices, n
 10. Locate the three marker circles on the pattern, read off the origin and x-axis direction, and transform the labelled coordinates into the reference frame.
 :::
 
-```mermaid
-flowchart LR
-    A["Harris corners<br/>C = {p_k}"] --> B["Delaunay<br/>T = Del(C)"]
-    B --> C["Same-colour<br/>merge → quads Q"]
-    C --> D["Topological filter<br/>drop deg &gt; 4"]
-    D --> E["Geometric filter<br/>aspect ≤ 10"]
-    E --> F["Flood-fill<br/>integer (i, j)"]
-```
+![shu-topological-grid pipeline: 6-stage flow from Harris corners through Delaunay triangulation, same-colour triangle merging into quads, topological degree filtering, geometric aspect-ratio filtering, to flood-fill integer grid coordinate assignment.](./images/shu-topological-grid/pipeline.svg)
 
 # Implementation
 

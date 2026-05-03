@@ -54,13 +54,7 @@ Let $\sigma_\varepsilon^2$ denote the GP observation noise variance.
 Let $K \in \mathbb{R}^{n \times n}$ denote the Gram matrix with $K_{ij} = k_{\text{SE}}(\mathbf{X}_{b,i}, \mathbf{X}_{b,j}) + \sigma_\varepsilon^2 \delta_{ij}$.
 Let $\mathbf{k}_* \in \mathbb{R}^n$ denote the cross-covariance vector between training points and a query point $\mathbf{X}_*$.
 
-```mermaid
-flowchart LR
-    A["Upstream detector<br/>(boardXY, boardUV,<br/>unallocated cornersUV)"] --> B["Stage 1<br/>Iterative allocation<br/>(GP-guided expansion)"]
-    B --> C["GP retraining<br/>on full allocated set"]
-    C --> D["Stage 2<br/>Occluded fill-in +<br/>global smoothing"]
-    D --> E["Augmented corner set<br/>(boardXY, boardUV)<br/>+ per-corner variance"]
-```
+![gp-checkerboard-enhancement pipeline: 5-stage flow from upstream detector partial output through iterative GP-guided corner allocation, GP retraining, occluded fill-in and global smoothing, to the augmented corner set with per-corner variance.](./images/gp-checkerboard-enhancement/pipeline.svg)
 
 Two independent Gaussian processes — one for $u$ coordinates, one for $v$ coordinates — are trained on the same set of allocated pairs using the squared-exponential kernel.
 

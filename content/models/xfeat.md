@@ -59,7 +59,7 @@ Extract sparse or semi-dense local correspondences between two images under a fi
 **Blocks.** Backbone is six *basic blocks* with channel progression $\{4, 8, 24, 64, 64, 128\}$ and output resolutions $H/2, H/4, H/8, H/16, H/32$ respectively (§3.1, §B). A basic layer is a 2-D convolution with kernel $k \in \{1, 3\}$, ReLU, and BatchNorm; the first basic layer of each block uses stride 2 for spatial halving. The **defining choice is the triple-rate channel schedule** — each spatial halving multiplies the channel count by roughly $3\times$ instead of VGG's $2\times$ (§3.1) — which starves the first two blocks of capacity where resolution is highest, and concentrates depth where the feature maps are small.
 
 ```mermaid
-flowchart LR
+flowchart TB
     I["H×W, 1"] --> B1["block1<br/>H/2×W/2, 4→8"]
     B1 --> B2["block2<br/>H/4×W/4, 24"]
     B2 --> B3["block3<br/>H/8×W/8, 64"]

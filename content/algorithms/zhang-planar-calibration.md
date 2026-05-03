@@ -120,15 +120,7 @@ Stacking the rows from $n$ views produces a $2n \times 6$ matrix $V$ and the hom
    with $(x, y)$ the normalised image coordinates and the analogous expression for $\breve v$.
 :::
 
-```mermaid
-flowchart LR
-    A["Detect planar<br/>correspondences<br/>per view"] --> B["Fit homography H_i<br/>(DLT + LM)"]
-    B --> C["Assemble V<br/>(2n × 6)"]
-    C --> D["SVD → b<br/>→ B = A⁻ᵀA⁻¹"]
-    D --> E["Closed-form K<br/>(Appendix B)"]
-    E --> F["Per-view<br/>(R_i, t_i)"]
-    F --> G["LM refine<br/>A, k₁, k₂, R_i, t_i"]
-```
+![zhang-planar-calibration pipeline: 7-stage flow from planar correspondence detection through per-view homography fitting, IAC constraint matrix assembly, SVD null-vector solve, closed-form intrinsic recovery, per-view extrinsic extraction, to full Levenberg-Marquardt refinement.](./images/zhang-planar-calibration/pipeline.svg)
 
 # Implementation
 

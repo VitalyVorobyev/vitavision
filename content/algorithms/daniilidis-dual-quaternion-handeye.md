@@ -123,15 +123,7 @@ Of its two real roots, pick the one that maximises $s^2\,|u_1|^2 + 2s\,u_1 \cdot
 6. Assemble $q = \lambda_1 u_1 + \lambda_2 u_2$ and $q' = \lambda_1 w_1 + \lambda_2 w_2$; recover $R_X = R(q)$ and $t_X = 2\,(q' \otimes q^*)_{\text{vec}}$.
 :::
 
-```mermaid
-flowchart LR
-    A["Motion pairs<br/>(A_i, B_i)"] --> B["Unit dual quaternions<br/>â_i, b̂_i"]
-    B --> C["Stack 6×8 blocks S_i<br/>into T ∈ ℝ^(6M×8)"]
-    C --> D["SVD of T<br/>2-dim null space {v_7, v_8}"]
-    D --> E["Quadratic in s = λ_1/λ_2<br/>from q·q' = 0"]
-    E --> F["Pick root maximising<br/>|q|² > 0; fix λ_2 via |q|² = 1"]
-    F --> G["x̂ = λ_1 v_7 + λ_2 v_8<br/>R_X = R(q),  t_X = 2 q' q*"]
-```
+![daniilidis-dual-quaternion-handeye pipeline: 7-stage flow from motion pairs through unit dual quaternion conversion, stacking into the 6M×8 system T, SVD null-space extraction, quadratic root selection, and dual-quaternion assembly to the final hand-eye transform.](./images/daniilidis-dual-quaternion-handeye/pipeline.svg)
 
 # Implementation
 

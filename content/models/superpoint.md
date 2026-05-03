@@ -56,7 +56,7 @@ Jointly detect interest points and compute discriminative descriptors for full i
 **Descriptor head.** A semi-dense 256-D map at the encoder resolution $H/8 \times W/8$ is bicubic-upsampled to $H \times W$ and L2-normalised at every spatial position (§3.3). Inspired by UCN (Choy et al. 2016).
 
 ```mermaid
-flowchart LR
+flowchart TB
     X["input<br/>H×W, gray"] --> E1["VGG encoder<br/>8 × conv 3×3<br/>3 × maxpool 2×2"]
     E1 --> Hc["H/8 × W/8 × 128"]
     Hc --> Dh["detector head<br/>3×3 conv → 1×1 conv<br/>65 channels"]

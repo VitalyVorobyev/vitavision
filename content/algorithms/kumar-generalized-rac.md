@@ -166,17 +166,7 @@ Stacking this equation over correspondences yields $(\lambda, t_z)$ for each of 
 7. Use $U$ from step 6 to initialise a nonlinear refinement that minimises reprojection error including radial distortion $(k_1, k_2)$.
 :::
 
-```mermaid
-flowchart LR
-    A["Correspondences<br/>(P_w_i, I_i, J_i)"] --> B["Metric sensor points<br/>x_nf, y_nf"]
-    B --> C["Assemble A q = b<br/>per Eq. 7"]
-    C --> D["LS solve<br/>q ∈ ℝ⁷"]
-    D --> E["Decompose → S, R, t_x, t_y<br/>4-way sign ambiguity"]
-    E --> F["Solve (λ, t_z) via Eq. 35<br/>reject λ &lt; 0"]
-    F --> G["Pick by radial-distortion fit"]
-    G --> H["Iterate CoD (I_0, J_0)<br/>residual RAC search"]
-    H --> I["Nonlinear refine<br/>U* incl. k_1, k_2"]
-```
+![kumar-generalized-rac pipeline: 9-stage flow from world-image correspondences through metric sensor conversion, gRAC linear system assembly and solve, parameter decomposition with sign disambiguation, lambda/t_z solve, radial-distortion candidate selection, CoD iteration, and final nonlinear refinement.](./images/kumar-generalized-rac/pipeline.svg)
 
 # Implementation
 

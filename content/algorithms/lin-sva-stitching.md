@@ -82,7 +82,7 @@ Total objective: $E(A) = \mathcal{L}(A) + \lambda\Psi(A)$ (Eq. 6 of paper).
 :::
 
 ```mermaid
-flowchart LR
+flowchart TB
     A["SIFT correspondences"] --> B["RANSAC<br/>global affine"]
     B --> C["Init ΔA = 0, σ_t = 1"]
     C --> D["E-step: soft assign φ_ij"]

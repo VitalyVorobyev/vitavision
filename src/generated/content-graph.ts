@@ -251,13 +251,21 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/ccdn-checkerboard-detector",
       "draft": false
     },
+    "ccs-camera-calibration": {
+      "slug": "ccs-camera-calibration",
+      "type": "model",
+      "title": "CCS",
+      "summary": "Three-stage learning-based camera calibration pipeline: a CNN regresses radial-distortion-correction parameters, a UNet predicts per-corner Gaussian heatmaps refined by surface-fit subpixel localisation, and an image-level RANSAC accepts inlier views before Zhang-style intrinsic estimation.",
+      "path": "/atlas/ccs-camera-calibration",
+      "draft": false
+    },
     "mate-checkerboard-detector": {
       "slug": "mate-checkerboard-detector",
       "type": "model",
       "title": "MATE",
       "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
       "path": "/atlas/mate-checkerboard-detector",
-      "draft": true
+      "draft": false
     },
     "superpoint": {
       "slug": "superpoint",
@@ -265,7 +273,7 @@ export const contentGraph: ContentGraph = {
       "title": "SuperPoint",
       "summary": "Fully-convolutional CNN that jointly detects interest points and computes 256-D descriptors in a single forward pass, trained without human annotations via Homographic Adaptation on synthetic shapes and MS-COCO images.",
       "path": "/atlas/superpoint",
-      "draft": true
+      "draft": false
     },
     "xfeat": {
       "slug": "xfeat",
@@ -287,7 +295,7 @@ export const contentGraph: ContentGraph = {
       "slug": "chessboard-x-corner-detection",
       "type": "concept",
       "title": "Chessboard X-Corner Detection",
-      "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
+      "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN) and learned heatmap pipelines (CCS), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
       "path": "/atlas/chessboard-x-corner-detection",
       "draft": false
     },
@@ -827,8 +835,47 @@ export const contentGraph: ContentGraph = {
         },
         {
           "type": "compared_with",
+          "target": "ccs-camera-calibration",
+          "confidence": "high",
+          "caution": "Peer at the corner-detection level only; CCS adds distortion correction and RANSAC parameter estimation on top.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
           "target": "mate-checkerboard-detector",
           "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
+    "ccs-camera-calibration": {
+      "prerequisites": [
+        "chessboard-x-corner-detection",
+        "camera-distortion-models"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "ccdn-checkerboard-detector",
+          "confidence": "high",
+          "caution": "Peer at the corner-detection level only; CCS adds distortion correction and RANSAC parameter estimation on top."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "chess-corners",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mate-checkerboard-detector",
+          "confidence": "high",
+          "caution": "Different scope: MATE is a detector, CCS is a full calibration pipeline; comparison is at the corner-detection level.",
           "mirrored": true
         }
       ]
@@ -843,6 +890,12 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "ccdn-checkerboard-detector",
           "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "ccs-camera-calibration",
+          "confidence": "high",
+          "caution": "Different scope: MATE is a detector, CCS is a full calibration pipeline; comparison is at the corner-detection level."
         },
         {
           "type": "learned_alternative_of",
@@ -978,6 +1031,7 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": [
         "ccdn-checkerboard-detector",
+        "ccs-camera-calibration",
         "mate-checkerboard-detector"
       ]
     },
@@ -1164,6 +1218,7 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [
         "ccdn-checkerboard-detector",
+        "ccs-camera-calibration",
         "chess-corners",
         "duda-radon-corners",
         "geiger-chessboard-detector",
@@ -1179,6 +1234,14 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "ccdn-checkerboard-detector": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "ccs-camera-calibration": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -1212,6 +1275,7 @@ export const contentGraph: ContentGraph = {
     },
     "camera-distortion-models": {
       "usedBy": [
+        "ccs-camera-calibration",
         "kumar-generalized-rac",
         "tsai-versatile-calibration",
         "zhang-planar-calibration"
@@ -1223,7 +1287,9 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "chessboard-x-corner-detection": {
-      "usedBy": [],
+      "usedBy": [
+        "ccs-camera-calibration"
+      ],
       "affects": [],
       "generalises": [],
       "extending": [],

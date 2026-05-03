@@ -996,7 +996,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "references": [
           "tsai1987-versatile",
           "weng1992-camera",
-          "sturm2003-plane-based"
+          "sturm2003-plane-based",
+          "zhang2022-learning-based"
         ],
         "notes": "Page follows the MSR-TR-98-71 (Zhang, updated 2008) presentation:\n§2 basic equations; §3.1 closed-form linear initialization from\nhomographies; Appendix B closed-form K from the IAC vector b;\n§3.2 ML refinement (Eq. 10); §3.3 radial distortion (Eq. 11-12, 14);\n§4 parallel-plane degeneracy.\n"
       },
@@ -1062,7 +1063,7 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 6,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
         "image-gradient"
@@ -1087,6 +1088,7 @@ export const modelPages: ModelIndexEntry[] = [
         "primary": "chen2023-ccdn",
         "references": [
           "donne2016-mate",
+          "zhang2022-learning-based",
           "bennett2013-chess",
           "placht2014-rochade",
           "rufli2008-blurred"
@@ -1106,30 +1108,31 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
-    "slug": "mate-checkerboard-detector",
+    "slug": "ccs-camera-calibration",
     "frontmatter": {
-      "title": "MATE",
-      "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
+      "title": "CCS",
+      "summary": "Three-stage learning-based camera calibration pipeline: a CNN regresses radial-distortion-correction parameters, a UNet predicts per-corner Gaussian heatmaps refined by surface-fit subpixel localisation, and an image-level RANSAC accepts inlier views before Zhang-style intrinsic estimation.",
       "tags": [
         "calibration",
         "corner-detection",
+        "distortion-correction",
         "cnn"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
-      "readingTimeMinutes": 7,
+      "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "chessboard-x-corner-detection",
+        "camera-distortion-models"
       ],
       "failureModes": [],
-      "quality": "stub",
       "relations": [
         {
           "type": "compared_with",
           "target": "ccdn-checkerboard-detector",
-          "confidence": "high"
+          "confidence": "high",
+          "caution": "Peer at the corner-detection level only; CCS adds distortion correction and RANSAC parameter estimation on top."
         },
         {
           "type": "learned_alternative_of",
@@ -1143,12 +1146,81 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "domain": "calibration",
+      "arch_family": "hybrid",
+      "sources": {
+        "primary": "zhang2022-learning-based",
+        "references": [
+          "zhang2000-flexible",
+          "donne2016-mate",
+          "chen2023-ccdn",
+          "geiger2012-automatic",
+          "tsai1987-versatile"
+        ],
+        "notes": "Three-stage pipeline (paper Fig. 1). Stage 1 — CNN distortion correction:\n8-layer encoder + 3 regression layers; correction model\n$r_c = r_d(k_0' + k_1' r_d + k_2' r_d^2 + \\ldots)$, 5 output parameters\n(§III-A); grid-sampling L1 loss Eq. 1. Stage 2 — UNet heatmap detection\n[ref 30]: per-corner ground-truth = 2D Gaussian; MSE training loss Eq. 2;\nGaussian surface fit Eq. 3 reduced to a linear system Eq. 5 solved by SVD\n(§III-B); distribution-aware outlier rejection by σ; collineation\nline-fit + intersect post-processing. Stage 3 — image-level RANSAC over\nZhang's planar method (§III-C). Training intrinsics 100 ≤ fx, fy ≤ 300 px;\n120 ≤ px, py ≤ 360 px; 1 ≤ s ≤ 5 (§IV-A); image size 480 × 480; noise\nσ=1.5 with 3×3 kernel (§IV-B); distortion level 1: k₀=1,\n−0.2 ≤ k₁ ≤ −0.35; distortion level 2: 0.8 ≤ k₀ ≤ 1.2,\n−0.35 ≤ k₁ ≤ −0.5 (§IV-B). Real-data camera HIKROBOT MV-CA016-10GM\n1440×1080, 12×8 chessboard. Headline numbers: corner detection L2\nerror 0.78 / 0.51 / 0.71 px under noise / bad lighting / distortion\n(Table III) vs Chen et al. 0.93 / 1.21 / 0.94 px; real-data RPE 0.37 px\n(STD 0.02) vs Matlab 0.45 px (STD 0.10) and Chen et al. 0.47 px\n(STD 0.24) (Table II); E_IP rises from 0.60 px at distortion level 1\nto 1.12 px at distortion level 2 (Table I). Acknowledged limitation:\ndistortion correction introduces image-interpolation noise (§IV-D\nquote, Table IV).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/Easonyesheng/CCS",
+          "commit": "c3e7abf62281906c295ad1dff0de9f5d6d2c2350",
+          "framework": "pytorch",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-05-03"
+    }
+  },
+  {
+    "slug": "mate-checkerboard-detector",
+    "frontmatter": {
+      "title": "MATE",
+      "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
+      "tags": [
+        "calibration",
+        "corner-detection",
+        "cnn"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "quality": "stub",
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "ccdn-checkerboard-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "ccs-camera-calibration",
+          "confidence": "high",
+          "caution": "Different scope: MATE is a detector, CCS is a full calibration pipeline; comparison is at the corner-detection level."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "chess-corners",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
+      ],
+      "domain": "calibration",
+      "noPublicImpl": true,
       "arch_family": "cnn",
       "params": "2,939",
       "sources": {
         "primary": "donne2016-mate",
         "references": [
           "chen2023-ccdn",
+          "zhang2022-learning-based",
           "placht2014-rochade",
           "bennett2013-chess",
           "rufli2008-blurred"
@@ -1171,7 +1243,6 @@ export const modelPages: ModelIndexEntry[] = [
         "self-supervised"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
@@ -1209,6 +1280,17 @@ export const modelPages: ModelIndexEntry[] = [
         ],
         "notes": "§3.1 shared VGG-style encoder: eight 3×3 conv layers (64-64-64-64-128-\n128-128-128) with three 2×2 max-pools → H_c = H/8, W_c = W/8. ReLU +\nBatchNorm throughout. §3.2 detector head: 65-class softmax (8×8 grid +\n\"no-keypoint\" dustbin), pixel-shuffle reshape to H×W (no learned\nupsampling). §3.3 descriptor head: 256-D semi-dense map at H/8 × W/8,\nbicubic upsample + L2 normalise. §3.4 / Eq. 1 total loss = detector\ncross-entropy (Eq. 2-3) + λ · descriptor hinge (Eq. 5-6) with λ=0.0001,\nλ_d=250, m_p=1, m_n=0.2. §4 MagicPoint pre-training on Synthetic Shapes.\n§5 / Eq. 10 Homographic Adaptation: aggregate detections from N_h=100\nrandom homographies into pseudo-labels. §6 joint training on MS-COCO\n2014 (80k grayscale, 240×320), Adam lr=0.001. §7.1 70 FPS on Titan X\nat 480×640. Table 4 HPatches: NN mAP 0.821 (vs SIFT 0.694, LIFT 0.664,\nORB 0.735); MLE 1.158 px (vs SIFT 0.833 — SuperPoint outputs cell-\naligned integer positions, no subpixel refinement). §7.3 Figure 8\nexplicit failure mode: \"extreme in-plane rotation not seen in the\ntraining examples.\"\n"
       },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/magicleap/SuperPointPretrainedNetwork",
+          "commit": "1fda796addba9b6f8e79d586a3699700a86b1cea",
+          "framework": "pytorch",
+          "license": "noncommercial-research-only",
+          "weights_url": "https://github.com/magicleap/SuperPointPretrainedNetwork/blob/master/superpoint_v1.pth",
+          "weights_license": "noncommercial-research-only"
+        }
+      ],
       "date": "2026-05-02"
     }
   },
@@ -1271,7 +1353,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 10,
+      "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [],
       "domain": "image-formation",
@@ -1280,7 +1362,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "tsai1987-versatile",
           "weng1992-camera",
           "zhang2000-flexible",
-          "kumar2014-grac"
+          "kumar2014-grac",
+          "zhang2022-learning-based"
         ]
       },
       "date": "2026-05-02"
@@ -1290,7 +1373,7 @@ export const conceptPages: ConceptIndexEntry[] = [
     "slug": "chessboard-x-corner-detection",
     "frontmatter": {
       "title": "Chessboard X-Corner Detection",
-      "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
+      "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN) and learned heatmap pipelines (CCS), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
       "tags": [
         "calibration",
         "chessboard",
@@ -1299,7 +1382,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
         "image-gradient"
@@ -1317,6 +1400,7 @@ export const conceptPages: ConceptIndexEntry[] = [
           "shu2009-topological",
           "duda2018-accurate",
           "chen2023-ccdn",
+          "zhang2022-learning-based",
           "stelldinger2024-puzzleboard",
           "hillen2023-enhanced"
         ]

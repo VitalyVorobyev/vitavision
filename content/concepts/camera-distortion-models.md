@@ -13,6 +13,7 @@ sources:
     - weng1992-camera
     - zhang2000-flexible
     - kumar2014-grac
+    - zhang2022-learning-based
 ---
 
 # Definition
@@ -67,6 +68,18 @@ This is the model adopted by OpenCV, MATLAB Camera Calibration Toolbox (Bouguet)
 
 [Zhang's planar calibration](/atlas/zhang-planar-calibration) adopts **two radial terms** $(k_1, k_2)$ and excludes tangential. The authoritative MSR-TR-98-71 paper does not cite Brown directly but matches the Brown radial form with a 2-coefficient truncation. The exclusion of tangential is consistent with most checkerboard-target use cases on standard machine-vision lenses; it is the default in MATLAB's `cameraCalibrator` "Standard" option (vs "Three Coefficients" which adds $k_3$).
 
+## CCS 2022 — learned correction decoupled from intrinsic estimation
+
+[CCS](/atlas/ccs-camera-calibration) (Zhang et al., RA-L 2022) departs from the simultaneous-estimation tradition: a CNN encoder regresses the parameters of a radial *correction* model (the inverse of the forward distortion) directly from the input chessboard image, the image is warped to remove distortion, and only then are corner detection and intrinsic estimation performed. The forward and correction models are:
+
+$$
+r_d = r_c (k_0 + k_1 r_c^2 + \cdots), \qquad r_c = r_d (k_0' + k_1' r_d + k_2' r_d^2 + \cdots)
+$$
+
+with 5 parameters in practice (§III-A). The architectural reason for this ordering is that CCS's downstream collineation post-processing — line fitting through sorted inlier corners followed by intersection to recover lost corners — assumes the corrected image is distortion-free; if the CNN correction stage fails, downstream stages produce wrong corners (§III-B last paragraph).
+
+This decoupling avoids the numerical instability that classical simultaneous nonlinear optimisation of distortion and intrinsics exhibits under strong distortion: under CCS's "distortion level 2" (with $k_1 \in [-0.5, -0.35]$), the proposed pipeline still recovers intrinsic parameters with error $E_{IP} = 1.12$ px (Table I), where simultaneous optimisation diverges. The acknowledged trade-off is that the CNN correction warp introduces image-interpolation noise — combining a Matlab corner detector with the CCS distortion correction shows limited improvement because "the distortion correction brings into noise caused by image interpolation" (§IV-D, Table IV).
+
 ## Kumar gRAC 2014 — radial generalised to non-frontal sensors
 
 [Kumar-Ahuja's generalized RAC](/atlas/kumar-generalized-rac) extends Tsai's RAC to lenses that are not normal to the sensor (lens-sensor tilt up to $\sim 10°$). The distortion model is again one-term radial $\kappa_1$, but the radial axis is in the **lens** frame, not the sensor frame — the projection between them is governed by the tilt angles $(\rho, \sigma)$ which the calibration recovers as part of the linear stage. gRAC reduces to Tsai's RAC when $(\rho, \sigma) = 0$ and the model coincides with Tsai's one-term radial in that case.
@@ -106,6 +119,7 @@ Distortion coefficients are estimated jointly with intrinsics and per-view extri
 - [Tsai's versatile calibration](/atlas/tsai-versatile-calibration) — uses one-term radial; the canonical historical baseline.
 - [Zhang's planar calibration](/atlas/zhang-planar-calibration) — uses two-term radial; the most widely deployed model for chessboard-based calibration.
 - [Kumar gRAC](/atlas/kumar-generalized-rac) — one-term radial in the lens frame; reduces to Tsai when sensor-lens tilt is zero.
+- [CCS](/atlas/ccs-camera-calibration) — CNN-regressed radial correction model applied as a preprocessing warp before corner detection; decouples distortion from intrinsic estimation.
 - The Brown-Conrady model from Weng 1992 is not currently a standalone atlas page but is described here as the canonical full-polynomial reference. When a future page needs it (e.g., a fisheye or wide-angle calibration page), this concept is the citation target.
 
 # References
@@ -116,3 +130,4 @@ Distortion coefficients are estimated jointly with intrinsics and per-view extri
 4. M. K. Kumar, N. Ahuja. *A Generalized Radial Alignment Constraint for Camera Calibration.* IEEE ICPR, 2014.
 5. D. C. Brown. *Decentering distortion of lenses.* Photogrammetric Engineering 32(3):444–462, 1966. (Foundational; introduces both radial and decentering polynomial.)
 6. J. Kannala, S. Brandt. *A Generic Camera Model and Calibration Method for Conventional, Wide-Angle, and Fish-Eye Lenses.* IEEE TPAMI 28(8):1335–1340, 2006. (Fisheye-appropriate alternative.)
+7. Y. Zhang, X. Zhao, D. Qian. *Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration.* IEEE Robotics and Automation Letters 7(4):10470–10477, 2022. [arXiv](https://arxiv.org/pdf/2202.00158)

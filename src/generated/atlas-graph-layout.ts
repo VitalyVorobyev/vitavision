@@ -126,78 +126,83 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 109.7234688,
     "cluster": "applications"
   },
+  "ccs-camera-calibration": {
+    "x": 916.3018340000001,
+    "y": 94.8070848,
+    "cluster": "applications"
+  },
   "daniilidis-dual-quaternion-handeye": {
-    "x": 900.5783465000001,
-    "y": 94.2059136,
+    "x": 719.9783465,
+    "y": 174.84591360000002,
     "cluster": "applications"
   },
   "gao-dual-homography-stitching": {
-    "x": 741.1094495000001,
+    "x": 831.4094495,
     "y": 165.49248000000003,
     "cluster": "applications"
   },
   "gp-checkerboard-enhancement": {
-    "x": 829.219223,
+    "x": 919.5192230000001,
     "y": 178.32028800000003,
     "cluster": "applications"
   },
   "kumar-generalized-rac": {
-    "x": 909.7595990000001,
-    "y": 169.6047168,
+    "x": 729.1595990000001,
+    "y": 250.2447168,
     "cluster": "applications"
   },
   "laureano-topological-chessboard": {
-    "x": 718.382294,
+    "x": 808.682294,
     "y": 268.8443328,
     "cluster": "applications"
   },
   "lin-sva-stitching": {
-    "x": 811.887041,
+    "x": 902.187041,
     "y": 271.7062464,
     "cluster": "applications"
   },
   "mate-checkerboard-detector": {
-    "x": 920.9477690000001,
-    "y": 260.2360128,
+    "x": 740.3477690000001,
+    "y": 340.87601280000007,
     "cluster": "applications"
   },
   "ocpad": {
-    "x": 744.2762705,
+    "x": 834.5762705,
     "y": 329.6005248000001,
     "cluster": "applications"
   },
   "puzzleboard": {
-    "x": 828.662975,
+    "x": 918.962975,
     "y": 339.1035456000001,
     "cluster": "applications"
   },
   "rochade": {
-    "x": 901.175681,
-    "y": 351.44307840000005,
+    "x": 720.575681,
+    "y": 432.08307840000003,
     "cluster": "applications"
   },
   "shu-topological-grid": {
-    "x": 719.9846675,
+    "x": 810.2846675,
     "y": 416.77155840000006,
     "cluster": "applications"
   },
   "sturm-plane-based-calibration": {
-    "x": 809.5324685,
+    "x": 899.8324685000001,
     "y": 416.09982720000005,
     "cluster": "applications"
   },
   "tsai-lenz-handeye": {
-    "x": 910.4106620000001,
-    "y": 412.10613120000005,
+    "x": 729.8106620000001,
+    "y": 492.74613120000004,
     "cluster": "applications"
   },
   "tsai-versatile-calibration": {
-    "x": 738.691667,
+    "x": 828.991667,
     "y": 500.67707520000005,
     "cluster": "applications"
   },
   "zhang-planar-calibration": {
-    "x": 820.66691,
+    "x": 910.9669100000001,
     "y": 493.2428736,
     "cluster": "applications"
   }

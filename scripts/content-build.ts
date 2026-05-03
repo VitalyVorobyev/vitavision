@@ -638,14 +638,20 @@ async function main(): Promise<void> {
         highlighter,
     );
 
-    // Enforce: any non-draft, non-dev model page must have at least one implementations entry.
+    // Enforce: any non-draft, non-dev model page must have at least one implementations entry,
+    // unless `noPublicImpl: true` declares no public implementation exists for legitimate reasons.
     // This check runs before the draft filter so draft pages can freely omit implementations.
     for (const entry of rawModelPages) {
-        const fm = entry.frontmatter as { draft?: boolean; dev?: boolean; implementations?: unknown[] };
-        if (!fm.draft && !fm.dev) {
+        const fm = entry.frontmatter as {
+            draft?: boolean;
+            dev?: boolean;
+            noPublicImpl?: boolean;
+            implementations?: unknown[];
+        };
+        if (!fm.draft && !fm.dev && !fm.noPublicImpl) {
             if (!fm.implementations || fm.implementations.length === 0) {
                 throw new Error(
-                    `content:build failed: model page "${entry.slug}" is not draft but has no implementations[] entry. See .claude/skills/deep-model-page/SKILL.md §Workflow B9a.`,
+                    `content:build failed: model page "${entry.slug}" is not draft but has no implementations[] entry (and noPublicImpl is not set). See .claude/skills/deep-model-page/SKILL.md §Workflow B9a.`,
                 );
             }
         }

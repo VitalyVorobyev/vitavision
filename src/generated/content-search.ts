@@ -563,6 +563,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "arXiv (Cornell University)"
   },
   {
+    "slug": "ccs-camera-calibration",
+    "path": "/atlas/ccs-camera-calibration",
+    "type": "model",
+    "title": "CCS",
+    "summary": "Three-stage learning-based camera calibration pipeline: a CNN regresses radial-distortion-correction parameters, a UNet predicts per-corner Gaussian heatmaps refined by surface-fit subpixel localisation, and an image-level RANSAC accepts inlier views before Zhang-style intrinsic estimation.",
+    "tags": [
+      "calibration",
+      "corner-detection",
+      "distortion-correction",
+      "cnn"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "When to choose CCS over CCDN"
+    ],
+    "authors": [
+      "Y. Zhang",
+      "X. Zhao",
+      "D. Qian"
+    ],
+    "venue": "IEEE Robotics and Automation Letters"
+  },
+  {
     "slug": "mate-checkerboard-detector",
     "path": "/atlas/mate-checkerboard-detector",
     "type": "model",
@@ -577,7 +600,8 @@ export const searchRecords: SearchRecord[] = [
     "headings": [
       "Novelty",
       "Limitations",
-      "When to choose MATE over CCDN"
+      "When to choose MATE over CCDN",
+      "When to choose MATE over CCS"
     ],
     "authors": [
       "S. Donné",
@@ -652,6 +676,7 @@ export const searchRecords: SearchRecord[] = [
       "Tsai 1987 — one term, radial only",
       "Weng 1992 — full Brown-Conrady with tangential",
       "Zhang 2000 — two-term radial, no tangential",
+      "CCS 2022 — learned correction decoupled from intrinsic estimation",
       "Kumar gRAC 2014 — radial generalised to non-frontal sensors",
       "Inverse distortion (rectification)",
       "Coefficient estimation in calibration"
@@ -662,7 +687,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/atlas/chessboard-x-corner-detection",
     "type": "concept",
     "title": "Chessboard X-Corner Detection",
-    "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
+    "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN) and learned heatmap pipelines (CCS), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
     "tags": [
       "calibration",
       "chessboard",

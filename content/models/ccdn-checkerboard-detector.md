@@ -21,6 +21,7 @@ sources:
   primary: chen2023-ccdn
   references:
     - donne2016-mate
+    - zhang2022-learning-based
     - bennett2013-chess
     - placht2014-rochade
     - rufli2008-blurred
@@ -102,6 +103,7 @@ One public TensorFlow implementation. The repository carries no LICENSE file, wh
 # Remarks
 
 - Compared with MATE: see [When to choose MATE over CCDN](/atlas/mate-checkerboard-detector#when-to-choose-mate-over-ccdn) on the [MATE](/atlas/mate-checkerboard-detector) page, which hosts the comparison per the older-paper-hosts rule. CCDN doubles MATE's depth (six vs three convolutions), replaces MSE with positive-negative-balanced cross-entropy, enforces stride-1 max-pools to preserve input resolution, and adds adaptive-threshold + NMS + k-means++ post-processing.
+- Compared with CCS: see [When to choose CCS over CCDN](/atlas/ccs-camera-calibration#when-to-choose-ccs-over-ccdn) on the [CCS](/atlas/ccs-camera-calibration) page, which hosts the comparison per the older-paper-hosts rule (CCS 2022 < CCDN 2023). CCS embeds a UNet detector with sub-pixel Gaussian surface fitting inside a calibration pipeline that also performs CNN distortion correction and image-level RANSAC; CCDN remains a standalone pattern-agnostic detector with explicit threshold + NMS + k-means++ post-processing.
 
 # References
 
@@ -110,3 +112,4 @@ One public TensorFlow implementation. The repository carries no LICENSE file, wh
 3. S. Bennett, J. Lasenby. *ChESS — Quick and Robust Detection of Chess-board Features.* Computer Vision and Image Understanding 118:197–210, 2014. [arXiv](https://arxiv.org/pdf/1301.5491v1)
 4. S. Placht, P. Fürsattel, E. Mengue, H. Hofmann, C. Schaller, M. Balda, E. Angelopoulou. *ROCHADE: Robust Checkerboard Advanced Detection for Camera Calibration.* ECCV 2014, 766–779.
 5. M. Rufli, D. Scaramuzza, R. Siegwart. *Automatic Detection of Checkerboards on Blurred and Distorted Images.* IROS 2008, 3121–3126.
+6. Y. Zhang, X. Zhao, D. Qian. *Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration.* IEEE Robotics and Automation Letters 7(4):10470–10477, 2022. [arXiv](https://arxiv.org/pdf/2202.00158)

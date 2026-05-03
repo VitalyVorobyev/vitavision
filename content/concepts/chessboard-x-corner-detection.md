@@ -1,7 +1,7 @@
 ---
 title: "Chessboard X-Corner Detection"
 date: 2026-05-02
-summary: "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement."
+summary: "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN) and learned heatmap pipelines (CCS), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement."
 tags: ["calibration", "chessboard", "corner-detection", "survey"]
 author: "Vitaly Vorobyev"
 domain: features
@@ -19,6 +19,7 @@ sources:
     - shu2009-topological
     - duda2018-accurate
     - chen2023-ccdn
+    - zhang2022-learning-based
     - stelldinger2024-puzzleboard
     - hillen2023-enhanced
 ---
@@ -33,10 +34,10 @@ Although the geometry of the target is fixed and well known, robust detection is
 
 Every X-corner detector can be decomposed into four stages, and the choice at each stage is what differentiates one method from another:
 
-1. **Per-pixel corner response.** A score image $R: \Omega \to \mathbb{R}$ where local maxima are X-corner candidates. Choices include the [Hessian saddle response](/atlas/hessian-saddle-response) ($S = I_{xy}^2 - I_{xx}I_{yy}$), the four-quadrant convolution likelihood (Geiger), 16-pixel ring sampling (ChESS, Bennett 2013; FAST-derived), Bresenham-ring sign-alternation counting (Laureano), Hessian-saddle + structure-tensor (Shu, PuzzleBoard), gradient-magnitude centreline graph (ROCHADE), or a learned CNN feature map (MATE, CCDN). For surveys see [Hessian-saddle response](/atlas/hessian-saddle-response).
+1. **Per-pixel corner response.** A score image $R: \Omega \to \mathbb{R}$ where local maxima are X-corner candidates. Choices include the [Hessian saddle response](/atlas/hessian-saddle-response) ($S = I_{xy}^2 - I_{xx}I_{yy}$), the four-quadrant convolution likelihood (Geiger), 16-pixel ring sampling (ChESS, Bennett 2013; FAST-derived), Bresenham-ring sign-alternation counting (Laureano), Hessian-saddle + structure-tensor (Shu, PuzzleBoard), gradient-magnitude centreline graph (ROCHADE), or a learned feature map — plain CNN (MATE, CCDN) or UNet 2D-Gaussian heatmap (CCS). For surveys see [Hessian-saddle response](/atlas/hessian-saddle-response).
 2. **Multi-scale strategy.** None (single scale; ChESS, MATE), three fixed window sizes (Geiger), full image pyramid with per-corner level selection (Pyramidal blur-aware), or scale-space pyramid for blur invariance (Hillen GP enhancement on top of Geiger).
 3. **Structure recovery.** The mechanism that promotes a set of candidate corners into a labelled grid. Choices: greedy energy-minimisation expansion from seed corners (Geiger), exact subgraph isomorphism against a model graph (OCPAD), [topological grid recovery](/atlas/topological-grid-recovery) by quad/triangle filters and consistency rules (Shu, Laureano), de-Bruijn-coded position decoding (PuzzleBoard), or learned regression / classification post-processing (CCDN's NMS + k-means++).
-4. **Subpixel refinement.** The mechanism that takes integer pixel candidates to floating-point coordinates. Hand-crafted choices: Hessian-Taylor solve (Chen 2005), cone-quadratic fit on the gradient-magnitude centreline (ROCHADE), gradient-orthogonality weighted least squares (Geiger), orientation-weighted DFT response (ChESS), Radon centroid (Duda), grayscale centroid (PuzzleBoard), or none (MATE, CCDN — which leave subpixel as a downstream concern). A unifying *subpixel-corner-refinement* concept page is a candidate next addition once a fourth mechanism converges.
+4. **Subpixel refinement.** The mechanism that takes integer pixel candidates to floating-point coordinates. Hand-crafted choices: Hessian-Taylor solve (Chen 2005), cone-quadratic fit on the gradient-magnitude centreline (ROCHADE), gradient-orthogonality weighted least squares (Geiger), orientation-weighted DFT response (ChESS), Radon centroid (Duda), grayscale centroid (PuzzleBoard). Learned choices: SVD-based Gaussian surface fit on the predicted heatmap, recovering both the sub-pixel mean $\mu$ and a confidence variance $\sigma$ (CCS). MATE and CCDN leave subpixel as a downstream concern. A unifying *subpixel-corner-refinement* concept page is a candidate next addition once a fourth mechanism converges.
 
 # Decision table
 
@@ -52,6 +53,7 @@ Every X-corner detector can be decomposed into four stages, and the choice at ea
 | Duda Radon corners (2018) | Radon-projection ridge | none | none (downstream) | Radon centroid | no | best subpixel under heavy blur |
 | MATE (2016) | 3-conv CNN | none (subsampled output) | none | none | no | first learned X-corner detector |
 | CCDN (2023) | 6-conv CNN | none (full-res output) | adaptive threshold + NMS + k-means++ | none | no | best learned baseline; supersedes MATE |
+| CCS (2022) | UNet 2D-Gaussian heatmap | none | collineation line-fit + intersect | SVD Gaussian surface fit on heatmap | yes (chessboard pattern) | sub-pixel learned detector inside a full calibration pipeline (CNN distortion correction + image-level RANSAC) |
 | PuzzleBoard (2024) | Hessian saddle (Eq. 4.1) | none | Hessian-eigenvector + MSF + de-Bruijn decode | grayscale centroid 3×3 | implicit (501-grid) | absolute corner ID via embedded code |
 | GP enhancement (2023) | upstream (any) | upstream | GP regression on `(boardXY → boardUV)` | GP posterior mean | upstream | wraps any detector; fills occluded corners |
 
@@ -70,6 +72,8 @@ The choice flows from operating regime, not from accuracy alone. The questions b
 **Are you working with multispectral, thermal-IR, or low-contrast endoscopic imagery?** Pair [Geiger](/atlas/geiger-chessboard-detector) with [GP enhancement](/atlas/gp-checkerboard-enhancement) — the GP wrapper consistently improves Geiger's detection counts and corner accuracy on this class of imagery (Hillen 2023 §4).
 
 **Do you need a learned baseline?** Use [CCDN](/atlas/ccdn-checkerboard-detector). It supersedes [MATE](/atlas/mate-checkerboard-detector) on every reported metric. MATE remains relevant only as a historical baseline or for extreme parameter-budget situations (2,939 vs 16,301 weights).
+
+**Do you need an end-to-end learned calibration pipeline (detection + distortion correction + parameter estimation) with sub-pixel accuracy?** Use [CCS](/atlas/ccs-camera-calibration). The UNet heatmap detector with SVD-based Gaussian surface fitting delivers sub-pixel coordinates with confidence variance, the upstream CNN corrects radial distortion before detection, and the downstream image-level RANSAC stabilises Zhang-style intrinsic estimation (real-data RPE 0.37 px / STD 0.02 versus a Matlab Zhang baseline at 0.45 px / STD 0.10). The trade-off is a hard chessboard-only assumption and the need to match the target camera's distortion to the CCS training distribution.
 
 **Is fast hand-crafted scoring the priority and subpixel can be done downstream?** Use [ChESS](/atlas/chess-corners). Single-pass per-pixel ring score, no graph stage; pair with a separate Hessian-Taylor or cone-quadratic refinement step.
 
@@ -104,5 +108,6 @@ Every chessboard X-corner detector page in the atlas lists this concept in `rela
 8. J. M. Duda, K. Frese. *Accurate Detection and Localisation of Checkerboard Corners for Calibration.* BMVC, 2018.
 9. S. Donné et al. *MATE: Machine Learning for Adaptive Calibration Template Detection.* MDPI Sensors, 2016.
 10. B. Chen, C. Xiong, Q. Zhang. *CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration.* arXiv:2302.05097, 2023.
-11. P. Stelldinger, N. Schönherr, J. Biermann. *PuzzleBoard.* (See atlas page.)
-12. M. Hillen et al. *Enhanced Checkerboard Detection Using Gaussian Processes.* MDPI *Mathematics* 11(22):4568, 2023.
+11. Y. Zhang, X. Zhao, D. Qian. *Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration.* IEEE Robotics and Automation Letters 7(4):10470–10477, 2022.
+12. P. Stelldinger, N. Schönherr, J. Biermann. *PuzzleBoard.* (See atlas page.)
+13. M. Hillen et al. *Enhanced Checkerboard Detection Using Gaussian Processes.* MDPI *Mathematics* 11(22):4568, 2023.

@@ -19,13 +19,13 @@ function DraftBadge() {
 
 interface GlyphTileProps {
     slug: string;
-    category: AlgorithmIndexEntry["frontmatter"]["category"];
+    domain: AlgorithmIndexEntry["frontmatter"]["domain"];
     coverImage?: string;
     title: string;
     size: "sm" | "md"; // sm = 30×30, md = 34×34
 }
 
-function GlyphTile({ slug, category, coverImage, title, size }: GlyphTileProps) {
+function GlyphTile({ slug, domain, coverImage, title, size }: GlyphTileProps) {
     const sizeClasses = size === "sm"
         ? "w-[30px] h-[30px]"
         : "w-[34px] h-[34px]";
@@ -42,7 +42,7 @@ function GlyphTile({ slug, category, coverImage, title, size }: GlyphTileProps) 
                     className="w-full h-full object-cover"
                 />
             ) : (
-                <AlgorithmGlyph slug={slug} category={category} />
+                <AlgorithmGlyph slug={slug} domain={domain} />
             )}
         </div>
     );
@@ -77,7 +77,7 @@ function CompactCard({ entry }: { entry: AlgorithmIndexEntry }) {
             <div className="flex items-start gap-2.5">
                 <GlyphTile
                     slug={slug}
-                    category={fm.category}
+                    domain={fm.domain}
                     coverImage={fm.coverImage}
                     title={fm.title}
                     size="sm"
@@ -112,7 +112,7 @@ function HorizontalCard({ entry }: { entry: AlgorithmIndexEntry }) {
         >
             <GlyphTile
                 slug={slug}
-                category={fm.category}
+                domain={fm.domain}
                 coverImage={fm.coverImage}
                 title={fm.title}
                 size="md"

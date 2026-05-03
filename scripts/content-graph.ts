@@ -54,10 +54,13 @@ export interface ContentEntry {
 }
 
 function nodePath(slug: string, type: NodeType): string {
+    // All atlas content shares the global slug namespace, so all kinds route
+    // through /atlas/<slug>. failure-mode routing is reserved for the future.
     switch (type) {
-        case "algorithm": return `/algorithms/${slug}`;
-        case "model": return `/algorithms/models/${slug}`;
-        case "concept": return `/concepts/${slug}`;
+        case "algorithm":
+        case "model":
+        case "concept":
+            return `/atlas/${slug}`;
         case "failure-mode": return `/failure-modes/${slug}`;
     }
 }

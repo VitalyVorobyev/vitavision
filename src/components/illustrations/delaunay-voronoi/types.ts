@@ -28,7 +28,7 @@ export type HoverTarget =
     | { kind: "cell"; index: number; area: number }
     | { kind: "triangle"; index: number; area: number; minAngleDeg: number };
 
-export type ActiveTool = "add" | "move" | "delete" | "grid" | "hover" | "more";
+export type ActiveTool = "add" | "move" | "delete" | "grid" | "inspect" | "more";
 
 export interface HistorySnapshot {
     points: Point[];

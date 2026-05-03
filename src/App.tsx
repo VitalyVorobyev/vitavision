@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Navbar from './components/layout/Navbar';
@@ -11,6 +11,7 @@ import { ThemeProvider } from 'next-themes';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
+import { PapersProvider } from './lib/atlas/papersIndex.tsx';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 if (!PUBLISHABLE_KEY) {
@@ -20,9 +21,7 @@ if (!PUBLISHABLE_KEY) {
 const Blog = lazy(() => import('./pages/Blog'));
 const BlogPost = lazy(() => import('./pages/BlogPost'));
 const AlgorithmIndex = lazy(() => import('./pages/AlgorithmIndex'));
-const AlgorithmPost = lazy(() => import('./pages/AlgorithmPost'));
-const ConceptPost = lazy(() => import('./pages/ConceptPost'));
-const ModelPost = lazy(() => import('./pages/ModelPost'));
+const AtlasPost = lazy(() => import('./pages/AtlasPost'));
 const DemoIndex = lazy(() => import('./pages/DemoIndex'));
 const DemoPage = lazy(() => import('./pages/DemoPage'));
 const Editor = lazy(() => import('./pages/Editor'));
@@ -32,6 +31,11 @@ const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminDrafts = lazy(() => import('./pages/admin/Drafts'));
 const AdminUsers = lazy(() => import('./pages/admin/Users'));
 const AdminAnalytics = lazy(() => import('./pages/admin/Analytics'));
+
+function LegacyAtlasRedirect() {
+    const { slug } = useParams<{ slug: string }>();
+    return <Navigate to={slug ? `/atlas/${slug}` : "/atlas"} replace />;
+}
 
 function AppLayout() {
     const { pathname } = useLocation();
@@ -53,11 +57,14 @@ function AppLayout() {
                         <Route path="/" element={<Home />} />
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:slug" element={<BlogPost />} />
-                        <Route path="/algorithms" element={<AlgorithmIndex />} />
-                        <Route path="/algorithms/models" element={<Navigate to="/algorithms?kind=models" replace />} />
-                        <Route path="/algorithms/models/:slug" element={<ModelPost />} />
-                        <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
-                        <Route path="/concepts/:slug" element={<ConceptPost />} />
+                        <Route path="/atlas" element={<AlgorithmIndex />} />
+                        <Route path="/atlas/:slug" element={<AtlasPost />} />
+                        {/* Legacy redirects — preserve inbound links and old SEO URLs. */}
+                        <Route path="/algorithms" element={<Navigate to="/atlas" replace />} />
+                        <Route path="/algorithms/models" element={<Navigate to="/atlas?kind=model" replace />} />
+                        <Route path="/algorithms/models/:slug" element={<LegacyAtlasRedirect />} />
+                        <Route path="/algorithms/:slug" element={<LegacyAtlasRedirect />} />
+                        <Route path="/concepts/:slug" element={<LegacyAtlasRedirect />} />
                         <Route path="/demos" element={<DemoIndex />} />
                         <Route path="/demos/:slug" element={<DemoPage />} />
                         <Route path="/editor" element={<Editor />} />
@@ -92,9 +99,11 @@ function App() {
         <ClerkProvider publishableKey={PUBLISHABLE_KEY!}>
             <HelmetProvider>
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-                    <Router>
-                        <AppLayout />
-                    </Router>
+                    <PapersProvider>
+                        <Router>
+                            <AppLayout />
+                        </Router>
+                    </PapersProvider>
                     <Toaster richColors closeButton position="bottom-right" />
                 </ThemeProvider>
             </HelmetProvider>

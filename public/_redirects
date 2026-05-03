@@ -1,0 +1,10 @@
+# Legacy atlas URL redirects → /atlas/<slug>.
+# All atlas content shares one global slug namespace, so the destination is
+# just /atlas/<slug> regardless of kind. The SPA also handles these via
+# in-app <Navigate> for client-side navigation; this file covers direct
+# requests, search engines, and inbound external links.
+/algorithms                /atlas                  301
+/algorithms/models         /atlas?kind=model       301
+/algorithms/models/:slug   /atlas/:slug            301
+/algorithms/:slug          /atlas/:slug            301
+/concepts/:slug            /atlas/:slug            301

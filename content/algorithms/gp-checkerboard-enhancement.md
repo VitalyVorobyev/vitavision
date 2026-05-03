@@ -1,198 +1,150 @@
 ---
-title: "GP Checkerboard Enhancement"
-date: 2026-04-29
-summary: "Wrap a checkerboard corner detector with a Gaussian process that learns the smooth map from local board coordinates to image pixel coordinates, then use the predictive mean to recover occluded corners, claim corners the upstream structure recovery missed, extend the board beyond the image, and smooth the detected positions."
+title: "GP Checkerboard Enhancement (PyCBD)"
+date: 2026-05-02
+summary: "Post-process a partially detected checkerboard by training two Gaussian processes (one per pixel coordinate) on the allocated (boardXY, boardUV) pairs to allocate unassigned detections to grid positions, predict UV for occluded or out-of-frame corners, and apply a global-consistency refinement to every allocated corner."
 tags: ["calibration", "chessboard", "gaussian-processes"]
-draft: true
-category: calibration-targets
+domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms:
-  - chess-corners
-  - ocpad
-  - rochade
-  - duda-radon-corners
-  - pyramidal-blur-aware-xcorner
-  - shu-topological-grid
-  - laureano-topological-chessboard
+relatedAlgorithms: ["geiger-chessboard-detector", "ocpad"]
+prerequisites: [image-gradient]
+related: [geiger-chessboard-detector, ocpad, chessboard-x-corner-detection]
+comparedWith: [ocpad]
+failureModes: []
 sources:
   primary: hillen2023-enhanced
   references:
+    - rasmussen2006-gpml
     - geiger2012-automatic
     - rufli2008-blurred
-    - fuersattel2016-ocpad
     - duda2018-accurate
-    - chen2023-ccdn
-    - rasmussen2006-gpml
+    - fuersattel2016-ocpad
+    - placht2014-rochade
   notes: |
-    Two parallel GP regressors with squared-exponential kernels map
-    local board coordinates (x, y) ∈ ℤ² to image axes u and v
-    independently. Algorithm 1 (paper §2.2) iterates: train GPs on the
-    currently-allocated corners, expand the board grid by one ring
-    (north, east, south, west, plus four corners), predict uv for each
-    new xy via the GP posterior mean, and claim any unallocated detected
-    corner that lies within max_dist_factor · ‖p_1 − p_2‖ of a prediction
-    (default 0.25 × the first edge length). On no-match, the ring widens
-    by 1 (max 2) to bridge larger gaps. Refinement (§2.3) retrains on
-    the full augmented set, fills missing grid positions, and replaces
-    detected uv with the GP posterior mean — smoothing jitter because
-    every corner contributes to every prediction. Defaults from the
-    PyCBD reference implementation: max_iterations = 12,
-    max_expansion_factor = 2, max_dist_factor = 0.25, initial
-    lengthscale = 10 in xy-standardised space, lengthscale ∈ [0, 25],
-    L-BFGS with 25000 inner iterations and 3 random restarts.
+    Algorithm page authored from the Hillen 2023 research note (private
+    reasoning substrate, not bundled). PyCBD library wraps
+    any upstream checkerboard detector (paper benchmarks Geiger 2012);
+    two GPs predict U and V from `boardXY` via SE kernel (Hillen Eq. 6);
+    hyperparameters fit by L-BFGS on log marginal likelihood (Hillen
+    Eq. 7, Rasmussen 2006 Ch. 5). Iterative outward expansion
+    (Algorithm 1, `maxNrOfIterations` default 10) allocates unassigned
+    detections; retrained GPs fill in occluded grid positions and
+    smooth all allocated corners via posterior mean. Cost dominated
+    by O(n^3) Cholesky factorisation; sparse-GP extension (Rasmussen
+    Ch. 8) not implemented in PyCBD. Library:
+    `pip install pycbd` / github.com/InViLabUAntwerp/PyCBD.
+    Complementary to OCPAD (subgraph isomorphism) — covered in the
+    Remarks comparison.
 ---
 
 # Goal
 
-Augment a partially-detected checkerboard with the corners that the upstream structure-recovery step did not place in the grid, with corners hidden by occlusion, and with corners outside the image. Inputs: a set of inner corners delivered by an external detector, given as paired image coordinates $\{\mathbf{u}_i\} \subset \mathbb{R}^2$ and local-grid coordinates $\{\mathbf{x}_i\} \subset \mathbb{Z}^2$, plus the image coordinates $\{\mathbf{u}_j\}$ of the additional corners the detector found but the structure recovery did not allocate. Output: an extended grid covering as much of the board as the GP map can support — including occluded and out-of-image positions — with image coordinates replaced by the smooth GP posterior mean.
+Receive the partial output of an upstream checkerboard corner detector — a set of allocated board-to-pixel pairs $(\mathbf{X}_b, \mathbf{u}_b)$ and a set of detected-but-unallocated corner pixel coordinates $\mathbf{u}_u$ — and return an augmented corner set with three properties: (1) previously unallocated detections are assigned to grid positions by iterative GP-guided expansion, (2) UV coordinates are predicted for grid positions with no detected corner (occluded, outside the image, or missed by the upstream detector), and (3) every allocated corner's position is refined via the GP posterior mean, imposing global-board-geometry consistency rather than only local pixel evidence.
+
+The method does **not** perform corner detection itself. It wraps any upstream detector that returns a partial grid; the paper benchmarks against [Geiger 2012](/atlas/geiger-chessboard-detector) `libcbdetect`.
 
 # Algorithm
 
-The detector returns the inner corners of a planar $r \times c$ checkerboard. Let $\mathbf{x} = (x, y) \in \mathbb{Z}^2$ index a corner in local board coordinates and $\mathbf{u} = (u, v) \in \mathbb{R}^2$ its image coordinates. The mapping $\mathbf{x} \mapsto \mathbf{u}$ is smooth on a planar board imaged through a continuous lens model, and only locally well-behaved through a wide-angle or contaminated lens. Let $X = [\mathbf{x}_1, \ldots, \mathbf{x}_n]^T$ stack the training inputs and $\mathbf{y}_u, \mathbf{y}_v$ the corresponding $u$- and $v$-components of $\mathbf{u}_1, \ldots, \mathbf{u}_n$. Let $X_*$ stack the test inputs.
+Let $\mathbf{X} = (X, Y) \in \mathbb{Z}^2$ denote a local board grid coordinate.
+Let $\mathbf{u} = (u, v) \in \mathbb{R}^2$ denote the corresponding pixel coordinate.
+Let $\{(\mathbf{X}_{b,i}, \mathbf{u}_{b,i})\}_{i=1}^{n}$ denote the allocated training set from the upstream detector.
+Let $\sigma_f^2$ denote the GP output variance (signal variance).
+Let $l$ denote the GP length scale.
+Let $\sigma_\varepsilon^2$ denote the GP observation noise variance.
+Let $K \in \mathbb{R}^{n \times n}$ denote the Gram matrix with $K_{ij} = k_{\text{SE}}(\mathbf{X}_{b,i}, \mathbf{X}_{b,j}) + \sigma_\varepsilon^2 \delta_{ij}$.
+Let $\mathbf{k}_* \in \mathbb{R}^n$ denote the cross-covariance vector between training points and a query point $\mathbf{X}_*$.
 
-Two independent Gaussian processes model the two image axes:
+![gp-checkerboard-enhancement pipeline: 5-stage flow from upstream detector partial output through iterative GP-guided corner allocation, GP retraining, occluded fill-in and global smoothing, to the augmented corner set with per-corner variance.](./images/gp-checkerboard-enhancement/pipeline.svg)
 
-$$
-f_u(\mathbf{x}) \sim \mathcal{GP}\bigl(0,\, k_{SE}(\mathbf{x}, \mathbf{x}')\bigr), \qquad
-f_v(\mathbf{x}) \sim \mathcal{GP}\bigl(0,\, k_{SE}(\mathbf{x}, \mathbf{x}')\bigr).
-$$
-
-Each axis is treated as a noisy regression $y = f(\mathbf{x}) + \varepsilon$ with $\varepsilon \sim \mathcal{N}(0, \sigma_\varepsilon^2)$ (paper Eq. 1).
+Two independent Gaussian processes — one for $u$ coordinates, one for $v$ coordinates — are trained on the same set of allocated pairs using the squared-exponential kernel.
 
 :::definition[Squared-exponential kernel]
-The covariance between two board positions falls off with squared distance:
+The covariance between board positions $\mathbf{X}$ and $\mathbf{X}'$ under the SE kernel:
 
 $$
-k_{SE}(\mathbf{x}, \mathbf{x}') \;=\; \sigma_f^2 \exp\!\left(-\frac{\|\mathbf{x} - \mathbf{x}'\|^2}{2\,\ell^2}\right).
+k_{\text{SE}}(\mathbf{X}, \mathbf{X}') = \sigma_f^2 \exp\!\left(-\frac{\lVert \mathbf{X} - \mathbf{X}' \rVert^2}{2 l^2}\right).
+\tag{Hillen Eq. 6}
 $$
 
-The lengthscale $\ell$ sets the radius of influence of a training corner; the height-scale $\sigma_f^2$ sets the prior amplitude. Hyperparameters are $\theta = (\sigma_f^2, \ell)$.
+The SE kernel implies an infinitely differentiable mapping from board space to pixel space — the prior assumption that the board-to-image transformation is smooth.
 :::
 
-:::definition[Predictive posterior]
-With kernel matrix $K = k_{SE}(X, X) + \sigma_\varepsilon^2 I$ and cross-covariance $K_* = k_{SE}(X_*, X)$, the posterior over test outputs is normal with mean and variance
+Hyperparameters $(\sigma_f^2, l, \sigma_\varepsilon^2)$ are selected by maximising the log marginal likelihood of the training data (Hillen Eq. 7) via L-BFGS, which incorporates an automatic complexity penalty that prevents overfitting.
+
+:::definition[GP posterior mean (refined corner position)]
+The posterior mean pixel coordinate at a query board position $\mathbf{X}_*$, after conditioning on the training set:
 
 $$
-\begin{aligned}
-\mathbb{E}[f_*] &\;=\; K_* \, K^{-1}\, \mathbf{y},\\
-\mathbb{V}[f_*] &\;=\; k_{SE}(X_*, X_*) \,-\, K_* \, K^{-1}\, K_*^T.
-\end{aligned}
+\bar{u}(\mathbf{X}_*) = \mathbf{k}_*^\top (K + \sigma_\varepsilon^2 I)^{-1} \mathbf{u}_b.
 $$
 
-The mean $\mathbb{E}[f_*]$ is what the enhancer reads at every step (paper Eqs. 3–5).
+The posterior covariance $\text{cov}(u_*) = k(\mathbf{X}_*, \mathbf{X}_*) - \mathbf{k}_*^\top (K + \sigma_\varepsilon^2 I)^{-1} \mathbf{k}_*$ provides a per-corner confidence measure at no additional cost.
 :::
 
-:::definition[Log marginal likelihood]
-Hyperparameters are chosen by gradient ascent on
+Inference requires solving the linear system $(K + \sigma_\varepsilon^2 I)^{-1} \mathbf{u}_b$ via Cholesky factorisation — $O(n^3)$ in the number of training points.
 
-$$
-\log p(\mathbf{y} \mid X, \theta) \;=\; -\tfrac{1}{2}\,\mathbf{y}^T K^{-1} \mathbf{y} \;-\; \tfrac{1}{2} \log |K| \;-\; \tfrac{n}{2}\log 2\pi,
-$$
+:::algorithm[GP enhancement pipeline]
+::input[Allocated pairs $(\mathbf{X}_b, \mathbf{u}_b)$; unallocated corner pixels $\mathbf{u}_u$ from an upstream detector.]
+::output[Augmented allocated pairs $(\mathbf{X}_b', \mathbf{u}_b')$: unallocated corners assigned to grid positions, occluded/out-of-frame positions filled in, all corners globally smoothed.]
 
-using L-BFGS. The data-fit and complexity-penalty terms balance fidelity and smoothness (paper Eq. 7; Rasmussen & Williams §5.4).
+1. Train two GPs on the current $(\mathbf{X}_b, \mathbf{u}_b)$ using $k_{\text{SE}}$ and L-BFGS hyperparameter optimisation.
+2. For each grid position in the next outward ring `newXY`, predict pixel coordinates $\bar{\mathbf{u}}$ from the GP posterior mean.
+3. Match each prediction to the nearest unallocated detected corner within a distance threshold (a fraction of the mean inter-corner spacing).
+4. Augment $(\mathbf{X}_b, \mathbf{u}_b)$ with matched pairs; classify unmatched detections as false positives.
+5. Repeat steps 1–4 until no new corners are allocated, no predicted UV falls inside the image, or `maxNrOfIterations` (default 10) is reached.
+6. Retrain both GPs on the full allocated set.
+7. For every grid position with no detected corner (occluded or outside the image), predict UV from the retrained GP posterior mean.
+8. For every allocated corner, replace its position with the GP posterior mean evaluated at its board coordinate.
 :::
 
-:::definition[Match radius]
-A predicted image coordinate $\hat{\mathbf{u}}$ claims an unallocated detected corner $\mathbf{u}_j$ only if
+## Stage 1 — Iterative corner allocation (§2.2, Algorithm 1)
 
-$$
-\|\hat{\mathbf{u}} - \mathbf{u}_j\| \;\leq\; \tau \cdot \|\mathbf{u}_1 - \mathbf{u}_2\|,
-$$
+Steps 1–5 of the procedure above implement a greedy outward expansion of the board. The GP trained on the current allocated set extrapolates UV coordinates for adjacent unoccupied grid positions; these predictions guide nearest-neighbour matching against unallocated detections. Detections that no prediction claims by the end of iteration are classified as false positives — they detected something corner-like that does not fit any GP-consistent grid extrapolation.
 
-with $\tau$ set as a fraction of the first edge length (default $\tau = 0.25$). Larger $\tau$ accepts more false positives; smaller $\tau$ misses corners under heavy warping.
-:::
+## Stage 2 — GP refinement (§2.3)
 
-## Procedure
+After allocation (step 6 onward), the GPs are retrained on the complete set. Two products result. The fill-in (step 7) extends the recovered board to positions where no physical detection exists — corners outside the image boundary, behind an occluder, or simply missed. The smoothing (step 8) differs from per-corner local refinement (Hessian saddle, cone-quadratic): every corner's refined position is influenced by every other corner via the SE kernel, because the posterior mean is a function of all training observations jointly. The SE kernel's infinite differentiability ensures the resulting mapping is smooth.
 
-:::algorithm[GP-enhanced checkerboard pipeline]
-::input[Image $I$; checkerboard inner-corner detector returning allocated corners $(X, U)$ with $X$ in local grid coordinates and $U$ in image coordinates, plus unallocated detected corners $U_\bot$; optional target shape $(r, c)$.]
-::output[Augmented sets $(X, U)$ covering the board grid, with $U$ replaced by GP posterior means.]
+## Stage 3 — Unwarping by-product (§5)
 
-1. Run the upstream detector to obtain initial $(X, U)$ and the unallocated set $U_\bot$.
-2. **Allocation loop.** Repeat up to $i_{\max}$ times:
-   1. Standardise $X$, then fit $f_u$ and $f_v$ on $(X, U)$ by maximising the log marginal likelihood.
-   2. Expand the local grid: take $X^+$ as the unit-step boundary ring around $X$, growing by $1$ row and column on each side allowed by the target shape.
-   3. Predict $\hat{U}^+ = (\mathbb{E}[f_u(X^+)], \mathbb{E}[f_v(X^+)])$. Drop predictions that fall outside the image.
-   4. For each $(\mathbf{x}^+, \hat{\mathbf{u}}^+)$, find the nearest unallocated $\mathbf{u}_j \in U_\bot$ and accept the match if $\|\hat{\mathbf{u}}^+ - \mathbf{u}_j\| \leq \tau \cdot \|U_1 - U_2\|$. On accept: append $(\mathbf{x}^+, \mathbf{u}_j)$ to $(X, U)$ and drop $\mathbf{u}_j$ from $U_\bot$.
-   5. If no match was made this iteration, widen the expansion ring by $1$ (capped at $2$) to bridge larger gaps; otherwise reset to $1$.
-   6. Stop when $U_\bot = \emptyset$, the entire target shape is reached, or no predictions land in the image.
-3. **Refinement.** Refit $f_u, f_v$ on the full augmented $(X, U)$. Predict $\hat{U}$ at every integer grid position spanned by $X$ (and beyond, if extrapolation is requested). Replace $U$ by $\hat{U}$.
-4. Return $(X, \hat{U})$.
-:::
-
-```mermaid
-flowchart LR
-  A["Image I"] --> B["Detector<br/>(libcbdetect /<br/>Geiger 2012)"]
-  B --> C["Allocated<br/>(X, U)"]
-  B --> D["Unallocated<br/>U_⊥"]
-  C --> E["Fit GPs<br/>x↦u, x↦v"]
-  D --> F["Expand grid +<br/>match by τ·‖U₁−U₂‖"]
-  E --> F
-  F -->|claimed| E
-  F -->|done| G["Refit on full set;<br/>predict full grid"]
-  G --> H["Augmented<br/>(X, Û)"]
-```
+Querying the retrained GP on a dense regular `newXY` grid produces an unwarped frontal view of the board at no additional training cost. This is a side benefit reported in the paper and available from any trained PyCBD model.
 
 # Implementation
 
-The allocation loop is the algorithmic core. Each iteration trains two GPs (one per image axis), expands the board grid by one ring, predicts the corresponding image coordinates, and claims any unallocated detected corner within the match radius.
+The GP enhancement step is not codeable in isolation as a compact self-contained snippet — it requires a GP regression library (scikit-learn's `GaussianProcessRegressor` or equivalent) and the iterative allocation loop depends on the board structure returned by the upstream detector. The PyCBD library (`pip install pycbd`, [github.com/InViLabUAntwerp/PyCBD](https://github.com/InViLabUAntwerp/PyCBD)) provides the modular post-processor: the GP enhancement step accepts any partial grid `(boardXY, boardUV)` plus an unallocated-corners list `cornersUV` and can be combined with any upstream detector.
 
-```rust
-type P2 = [f64; 2];
+The core GP regression in Python follows the standard equations directly:
 
-fn allocate(
-    board_xy: &mut Vec<P2>, board_uv: &mut Vec<P2>, corners_uv: &mut Vec<P2>,
-    fit_predict: impl Fn(&[P2], &[f64], &[P2]) -> Vec<f64>,
-    max_iters: usize, max_expansion: u32, tau: f64,
-) {
-    let edge = norm(sub(board_uv[1], board_uv[0]));
-    let r_match = tau * edge;
-    let mut ring = 1u32;
+```python
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, WhiteKernel
 
-    for _ in 0..max_iters {
-        let new_xy = expand_ring(board_xy, ring);
-        if new_xy.is_empty() { break; }
+# boardXY: (n, 2) integer grid coordinates
+# boardUV: (n,)   pixel coordinates for one axis (u or v)
+kernel = RBF() + WhiteKernel()
+gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=5)
+gp.fit(boardXY, boardUV)
 
-        let us: Vec<f64> = board_uv.iter().map(|p| p[0]).collect();
-        let vs: Vec<f64> = board_uv.iter().map(|p| p[1]).collect();
-        let mu_u = fit_predict(board_xy, &us, &new_xy);
-        let mu_v = fit_predict(board_xy, &vs, &new_xy);
-
-        let mut claimed = 0;
-        for (k, xy) in new_xy.iter().enumerate() {
-            let pred = [mu_u[k], mu_v[k]];
-            if let Some(j) = nearest_within(corners_uv, pred, r_match) {
-                board_xy.push(*xy);
-                board_uv.push(corners_uv.swap_remove(j));
-                claimed += 1;
-            }
-        }
-
-        if corners_uv.is_empty() { break; }
-        if claimed == 0 {
-            ring += 1;
-            if ring > max_expansion { break; }
-        } else { ring = 1; }
-    }
-}
+# Predict UV for new grid positions newXY: (m, 2)
+u_pred, u_std = gp.predict(newXY, return_std=True)
+# u_pred: posterior mean (Hillen Eq. 6 + GP posterior)
+# u_std:  posterior standard deviation (confidence)
 ```
 
-`fit_predict(X, y, X_*)` returns the GP posterior mean at $X_*$ after fitting hyperparameters by maximum marginal likelihood; one call per axis. `expand_ring` enumerates the integer grid positions immediately outside the bounding box of `board_xy` (north, south, east, west, and the four corners). The refinement step in §3 of the procedure is a single `fit_predict` per axis on the full $(X, U)$, evaluated at every integer grid position.
+Key tunables: the distance-threshold fraction for the matching step in Stage 1 (lower → fewer false matches; higher → more recovered corners); a lower bound on the RBF length scale (prevents collapse on small boards with fewer than $\sim 4 \times 4$ inner corners).
 
 # Remarks
 
-- Two independent GPs on a single 2-D input. Per axis, hyperparameter optimisation costs $\mathcal{O}(n^3)$ per L-BFGS evaluation through the Cholesky of $K + \sigma_\varepsilon^2 I$, and prediction costs $\mathcal{O}(n^2 m)$ for $m$ test points. With $n$ in the low hundreds (a typical inner-corner count) the cost is dominated by the upstream detector.
-- The squared-exponential kernel assumes infinite differentiability of the board-to-image map; this is consistent with a continuous lens model but oversmooths at strong fisheye distortion or near sharp transitions in lens contamination. Bounding the lengthscale $\ell$ from below — the implementation default is 0 in standardised space — prevents the optimiser from explaining structured residuals as noise.
-- The match radius $\tau$ trades false positives for missed corners. For boards under heavy perspective or occlusion the gap between predicted and detected corner can exceed $0.25$ of the first edge; for clean images $\tau = 0.25$ is conservative.
-- Refinement is non-local: every detected corner participates in every prediction. This removes per-corner jitter that purely local refiners (Lucchese saddles, Förstner, ChESS subpixel) leave behind, but it propagates a single bad detection across the board if the noise model is too tight.
-- Out-of-image extrapolation is bounded by the lengthscale. Predictions far beyond the convex hull of $X$ revert to the prior mean; the posterior variance flags such cases. The implementation can return predictions for corners outside the frame when the caller asks for them.
-- The pipeline is detector-agnostic. Replacing the upstream detector swaps the prior on what counts as a corner without changing the GP enhancer.
+- **Complexity.** Stage 1 trains the GPs once per iteration; each training involves an $O(n^3)$ Cholesky factorisation of the $n \times n$ Gram matrix, where $n$ is the current allocated count. For boards $\leq 15 \times 10$ ($n \leq 150$), this is fast; for very large boards, sparse GP approximations reduce cost to $O(nm^2)$ where $m$ is the number of inducing points (Rasmussen 2006 Ch. 8) — not implemented in PyCBD.
+- **Smoothness bias under extreme warping.** The SE kernel imposes a stationary smoothness prior on the board-to-pixel mapping. Strong fisheye or heavy perspective produces high local curvature in this mapping; the SE posterior mean over-smooths corner positions in those regimes. Non-stationary kernels or deep GPs are deferred as future work in the paper.
+- **Small-board numerical instability.** Below $\sim 4 \times 4$ inner corners, the marginal likelihood surface becomes uninformative and the GP collapses toward the prior. Mitigate by constraining the length-scale lower bound in software.
+- **Upstream detector is the weakest link.** The enhancement requires at least a minimal connected board fragment as training data. If the upstream detector finds nothing, the enhancement cannot run. The paper benchmarks Geiger 2012 as upstream; Geiger fails more easily than OpenCV on high-noise, low-blur inputs but recovers more partial boards on multispectral and thermal IR imagery.
+- **Compared with OCPAD.** [OCPAD](/atlas/ocpad) (Fürsattel 2016) recovers partial boards by subgraph isomorphism on the detected corner graph — a combinatorial approach that requires no training. GP enhancement fills in occluded corners by learned interpolation and extrapolation — a regression approach that requires a partial board as training data but extends naturally beyond the image border and provides global smoothing. The two approaches address complementary failure modes.
+- **Confidence by construction.** The GP posterior variance provides a per-corner confidence estimate at no additional cost. Available from PyCBD; not exploited downstream in the paper's pipeline.
 
 # References
 
-1. M. Hillen, I. De Boi, T. De Kerf, S. Sels, E. Cardenas De La Hoz, J. Gladines, G. Steenackers, R. Penne, S. Vanlanduit. *Enhanced Checkerboard Detection Using Gaussian Processes.* Mathematics 11(22):4568, 2023. DOI: [10.3390/math11224568](https://doi.org/10.3390/math11224568)
-2. A. Geiger, F. Moosmann, Ö. Car, B. Schuster. *Automatic Camera and Range Sensor Calibration Using a Single Shot.* IEEE ICRA, 2012. DOI: [10.1109/ICRA.2012.6224570](https://doi.org/10.1109/ICRA.2012.6224570)
-3. C. E. Rasmussen, C. K. I. Williams. *Gaussian Processes for Machine Learning.* MIT Press, 2006. [gaussianprocess.org/gpml](https://gaussianprocess.org/gpml/)
-4. P. Fürsattel, S. Dotenco, S. Placht, M. Balda, A. Maier, C. Riess. *OCPAD — Occluded Checkerboard Pattern Detector.* IEEE WACV, 2016. DOI: [10.1109/WACV.2016.7477565](https://doi.org/10.1109/WACV.2016.7477565)
-5. A. Duda, U. Frese. *Accurate Detection and Localization of Checkerboard Corners for Calibration.* BMVC, 2018. [bmvc2018.org/contents/papers/0508.pdf](https://bmvc2018.org/contents/papers/0508.pdf)
+1. M. Hillen, I. De Boi, T. De Kerf, S. Sels, E. Cardenas De La Hoz, J. Gladines, G. Steenackers, R. Penne, S. Vanlanduit. *Enhanced Checkerboard Detection Using Gaussian Processes.* MDPI *Mathematics* 11(22):4568, 2023. [doi:10.3390/math11224568](https://doi.org/10.3390/math11224568)
+2. C. E. Rasmussen, C. K. I. Williams. *Gaussian Processes for Machine Learning.* MIT Press, 2006. (Ch. 2 — GP regression posterior; Ch. 5 — log marginal likelihood for hyperparameter selection.)
+3. A. Geiger, F. Moosmann, Ö. Car, B. Schuster. *Automatic Camera and Range Sensor Calibration Using a Single Shot.* IEEE ICRA, 2012. (`libcbdetect` — the upstream detector benchmarked in §4.)
+4. P. Fürsattel, S. Dotenco, S. Placht, M. Balda, A. Maier, C. Riess. *OCPAD — Occluded Checkerboard Pattern Detector.* WACV 2016. (Complementary partial-pattern recovery by subgraph isomorphism.)

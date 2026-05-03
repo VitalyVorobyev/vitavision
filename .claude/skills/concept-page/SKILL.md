@@ -100,6 +100,8 @@ sources:
     Freeform grounding notes.
 ```
 
+**Source kinds.** `sources.primary` and `sources.references[]` accept `<bare-id>` (defaults to `paper`), `paper:<id>`, `repo:<url>@<sha>`, or `doc:<repo-relative-path>`. Concepts most often cite `paper:` and occasionally `doc:` (a textbook chapter, a foundational design doc); `repo:` is rare for concepts but accepted when the canonical reference for the concept is a repo (e.g. an algorithm whose only specification is a reference implementation).
+
 `category` is required. `related` is strongly recommended — a concept page with no `related` entries is not yet doing its job in the graph. `prerequisites` is often empty for primitive concepts (`image-gradient`, `homography`) but populated for derived ones.
 
 **Do not write `usedBy:` or any reverse field.** Reverse edges are derived by the build.
@@ -110,54 +112,58 @@ sources:
 
 Evaluate the criterion before doing anything else. Count how many existing `content/algorithms/` and `content/models/` pages list the concept slug in their `prerequisites` field. Count planned pages from any open research notes. If the count is below 3, reject. If the planned content is too narrow for 500 words, reject.
 
-### Step 2 — Read relevant research notes
+### Step 2 — Confirm required research notes exist
 
-Discover via three paths:
+Concept pages cite multiple sources; before drafting, verify `docs/research/notes/<id>.md` exists for every paper that will be cited (from explicit invocation IDs, from `grep -rl "<concept-slug>" docs/research/notes/`, and from any existing `sources.references`). At least 3 distinct notes are required (matches the page-creation criterion in Step 1 — concepts span sources). If any required note is missing, stop and report:
 
-1. Explicit paper IDs given in the invocation (`Use concept-page on homography with papers hartley1997-homography, ma2003-invitation`).
-2. `grep -rl "<concept-slug>" docs/research/notes/` — notes that mention the concept.
-3. Paper IDs already in the existing concept page's `sources.references` (if updating an existing page).
+*"Cannot draft — research note `docs/research/notes/<id>.md` does not exist. Concept pages require at least 3 distinct paper notes. Run `/paper-ingest <id-or-arxiv-ref>` for each missing source first."*
 
-Read each discovered note. The note's `# Core idea`, `# Assumptions`, `# Failure regime`, and `# Numerical sensitivity` sections are reasoning context. The `## UPDATE: <slug>` or `## NEW: <slug>` bullets in the note's `# Atlas update plan` are authoritative content guidance for the sections named.
+Notes are the canonical input; the Draft contract reads them. Do NOT load the paper cache into orchestrator context.
 
-### Step 3 — Cache papers
+### Step 3 — Cache papers (precondition check)
 
-`bun papers:fetch <paper-id>` for each source. Read the primary source from `docs/papers/.cache/<paper-id>.html` (ar5iv) or `.txt` (pdftotext). Extract defining equations, named quantities, and section/equation numbers — you will cite these in Provenance of working notes.
+`bun papers:fetch <paper-id>` for each source. This is a no-op if the cache already exists; required so the citation linking remains stable. Opus does NOT read the cache files; the relevant content already lives in the research notes (Step 2).
 
 ### Step 4 — Synthesize across sources
 
 Concept pages cite multiple papers; each claim must be attributable. Guard against single-source bias: **at least 3 of the 5 sections must draw from 2 or more distinct sources or textbook references**. If only one paper covers the topic, the concept belongs in a section inside that paper's algorithm page, not as a standalone concept page.
 
-Do not copy bullets from research notes verbatim — synthesize. The note's bullets are content guidance; the page skill owns the page's format, prose, and structure.
+Do not copy bullets from research notes verbatim — synthesize. The Draft contract (Step 5) handles synthesis; the page skill owns the page's format, prose, and structure.
 
-### Step 5 — Draft
+### Step 5 — Delegate the page draft to Sonnet
 
-Use the 5-section template (Definition, Mathematical Description, Numerical Concerns, Where it appears, References) and the typography blocks from `algo-page/SKILL.md`. Apply voice rules (impersonal, declarative, minimal glue prose, no narrative arc).
+Invoke the Draft contract from `.claude/skills/_shared/subagent-prompts.md` with:
+- The list of research note paths (from Step 2)
+- The page-template skeleton path (`references/concept-page-template.md` if it exists; otherwise the 5-section convention defined in `## Structure` above)
+- The target concept slug
 
-Use `:::definition[Name]` blocks for central named quantities. Use `:::algorithm[...]` blocks only when the concept has a procedural aspect (e.g. the scale-space construction has discrete steps). Do not use `:::algorithm[...]` for purely mathematical definitions.
+Sonnet returns:
+- The full page body as a markdown string in its reply (5 sections: Definition, Mathematical Description, Numerical Concerns, Where it appears, References)
+- A `<<<AUDIT>>>{json}<<<END>>>` block listing every constant / equation / named quantity used in the body, each pointing to the source note that supplied it.
 
-Study the existing 5 MVP concept pages for style reference:
-- `/Users/vitalyvorobyev/vitavision/content/concepts/structure-tensor.md` — canonical example of the reference-entry voice and five-section structure.
+Sonnet **does not** write any file. Sonnet **does not** read cache files. If Sonnet returns `blocked: missing <kind> <name> for <source-id>`, the note is incomplete — extend the note and retry.
 
-### Step 6 — Validate
+Use `:::definition[Name]` blocks for central named quantities. Use `:::algorithm[...]` only when the concept has a procedural aspect (e.g. scale-space construction). Sonnet should follow the typography blocks from `algo-page/SKILL.md`.
+
+### Step 5.5 — Quality gate
+
+Verify the AUDIT JSON via the recipe in `_shared/subagent-prompts.md` (page-vs-note grep). Zero MISS lines = pass. Any MISS = (a) note is incomplete, extend and retry, or (b) Sonnet hallucinated, reject and re-delegate.
+
+Additionally check the multi-source rule: at least 3 of the 5 sections must draw from ≥2 distinct source notes (read the AUDIT JSON's `source_note` distribution per body section).
+
+### Step 5.6 — Assemble and write
+
+Opus assembles `--- frontmatter --- \n <body string from Sonnet>` and calls `Write` once. Frontmatter `related` slugs come from the notes' `Connections` sections + the candidate page slugs that listed this concept in their `prerequisites` (from Step 1's count), NOT from the body string.
+
+### Step 6 — Verify
 
 ```bash
-bun run build && bun run scripts/validate-content.ts
+bun run build && bun run scripts/content-validate.ts
 ```
-
-The build validates slug references, prerequisite cycles, missing source IDs, and quality-gate violations. Fix any errors before handing off the draft.
 
 ## Voice rules
 
-Voice rules are inherited from `.claude/skills/algo-page/SKILL.md §"Voice rules"`. The shortlist:
-
-- Impersonal. No first person.
-- Declarative. Statements of fact or definition.
-- Minimal glue prose. One sentence between math blocks, usually.
-- No narrative arc.
-- No attribution in prose; authors live in `# References`.
-- Sentences short; passive voice acceptable.
-- No softeners, no marketing words, no hedges.
+See `.claude/skills/_shared/voice-rules.md`. Binding.
 
 ## Forbidden patterns
 
@@ -168,6 +174,7 @@ Inherit the full `algo-page` forbidden-patterns list. The following are concept-
 - **No paraphrase of the `# Definition` as the opening sentence of `# Mathematical Description`.** The definition is already stated; `# Mathematical Description` develops it.
 - **No Wikipedia-style "history of" paragraphs** — attribution lives in `# References`.
 - **No pairwise concept comparisons as standalone pages.** Use `comparedWith:` field + inline `## When X vs Y` subsection.
+- **Loading the paper cache file (`docs/papers/.cache/*.{html,txt}`) into the orchestrator's context.** All paper reads happen in the Sonnet Extract contract during paper-ingest; the orchestrator works from notes only.
 
 ## Checklist
 
@@ -186,6 +193,9 @@ Run before handing off a draft.
 - [ ] No `usedBy:` or any reverse field in frontmatter.
 - [ ] Every paper id in `sources:` exists in `docs/papers/index.yaml`.
 - [ ] `bun run scripts/validate-content.ts` passes.
+- [ ] At least 3 distinct research notes exist for cited papers; page draft is the result of the Draft contract on those notes; the orchestrator did not load any `docs/papers/.cache/*` file.
+- [ ] AUDIT JSON returned by the Draft subagent has zero MISS entries when grep-checked against the cited notes.
+- [ ] At least 3 of the 5 page sections draw from ≥2 distinct source notes (verified from the AUDIT JSON's `source_note` distribution).
 
 ## Resources
 
@@ -194,3 +204,4 @@ Run before handing off a draft.
 - `src/lib/content/schema.ts` — `conceptFrontmatterSchema` defines the exact frontmatter schema.
 - `docs/papers/index.yaml` — registry of authoritative sources.
 - `bun papers:fetch [id]` / `bun papers:fetch-meta <arg>` — metadata and PDF caching.
+- `.claude/skills/_shared/subagent-prompts.md` — Draft contract template, AUDIT JSON shape, page-vs-note verification recipe. Inherited from `algo-page`.

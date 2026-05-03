@@ -4,7 +4,7 @@ date: 2026-04-30
 summary: "The 2-vector of partial derivatives of image intensity with respect to spatial coordinates, measuring the rate and direction of brightness change at each pixel."
 tags: ["feature-theory", "derivatives", "filtering"]
 author: "Vitaly Vorobyev"
-category: feature-theory
+domain: features
 difficulty: intermediate
 prerequisites: []
 related:

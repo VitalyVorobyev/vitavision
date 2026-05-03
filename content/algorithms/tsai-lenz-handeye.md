@@ -3,13 +3,13 @@ title: "Tsai-Lenz Hand-Eye Calibration"
 date: 2026-04-20
 summary: "Recover the constant rigid transform from a robot gripper to a rigidly mounted camera by solving the AX=XB equation in two stages — modified Rodrigues rotation, then translation."
 tags: ["calibration", "hand-eye", "robotics"]
-category: calibration
-draft: true
+domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
 relatedAlgorithms: ["daniilidis-dual-quaternion-handeye", "zhang-planar-calibration"]
 prerequisites: []
 comparedWith: [daniilidis-dual-quaternion-handeye]
+
 failureModes: []
 sources:
   primary: tsai1989-handeye
@@ -112,15 +112,7 @@ The skew matrix $[P_{g_{ij}} + P_{c_{ij}}]_\times$ has rank 2, and so does $R_{g
 6. Special case: if $P_{g_{ij}} + P_{c_{ij}}$ is collinear across pairs while $P_{g_{ij}}$ varies, then $\theta_{cg} = \pi$ and $n_{cg}$ is parallel to $P_{g_{ij}} + P_{c_{ij}}$; assemble $P_{cg} = 2 \sin(\pi/2)\,n_{cg} = 2 n_{cg}$ directly, then proceed to step 5.
 :::
 
-```mermaid
-flowchart LR
-    A["Stations<br/>(H_g_i, H_c_i)"] --> B["Pair motions<br/>H_g_ij, H_c_ij"]
-    B --> C["Modified Rodrigues<br/>P_g_ij, P_c_ij"]
-    C --> D["Stack [P_g+P_c]_x P' = P_c - P_g<br/>least squares"]
-    D --> E["P_cg = 2P' / sqrt(1+|P'|²)<br/>R_cg = R(P_cg)"]
-    E --> F["Stack (R_g - I) T = R_cg T_c - T_g<br/>least squares"]
-    F --> G["H_cg = [R_cg | T_cg]"]
-```
+![tsai-lenz-handeye pipeline: 7-stage flow from station observations through pair motion computation, modified Rodrigues vector encoding, rotation linear least squares, rotation recovery, translation linear least squares, to the final hand-eye transform.](./images/tsai-lenz-handeye/pipeline.svg)
 
 # Implementation
 
@@ -188,6 +180,21 @@ fn solve_handeye(pairs: &[(Matrix3<f64>, Vector3<f64>,
 - The modified Rodrigues parametrisation is singularity-free for $\theta \in [0, \pi)$ but degenerates at $\theta = \pi$, where $P_r$ is well-defined ($|P_r| = 2$) but the recovery formula in step 4 has to be replaced by the explicit branch in step 6.
 - Computational cost is dominated by the two $3M \times 3$ least-squares solves and is $O(M)$ in the number of station pairs.
 - The decoupled formulation amplifies translation error when the camera baseline between stations is short relative to the target depth; simultaneous rotation-and-translation solvers (Park-Martin on the Lie algebra, Daniilidis dual-quaternion) treat the residual jointly and tend to be more robust under that regime.
+
+## When to choose Tsai-Lenz over Daniilidis
+
+[Daniilidis dual-quaternion hand-eye](/atlas/daniilidis-dual-quaternion-handeye) (1999) solves AX = XB for the rigid hand-eye transform in a single stage by parametrising the rigid motion as a unit dual quaternion and solving an SVD on the resulting linear constraint. Tsai-Lenz solves the same problem in two decoupled stages — modified Rodrigues for rotation, then linear least squares for translation.
+
+| | Tsai-Lenz (1989) | Daniilidis (1999) |
+|---|---|---|
+| Stages | two (rotation, then translation) | one (rotation + translation jointly via dual quaternions) |
+| Rotation parametrisation | modified Rodrigues vector | dual quaternion (unit norm + perpendicularity constraint) |
+| Translation handling | second linear solve, biased by Stage 1 rotation error | jointly optimised; residuals shared across rotation and translation |
+| Min stations | 3 (two motion pairs) | 3 (two motion pairs) |
+| Singular configurations | $\theta = \pi$ requires explicit branch handling | dual-quaternion parametrisation is singularity-free |
+| Robustness when baseline is short | translation error inflates | jointly optimised; better behaviour |
+
+Choose Tsai-Lenz when (1) you want a clean two-stage decomposition where rotation and translation can be inspected separately — useful for diagnosing which component is the dominant error source; (2) the implementation simplicity of the modified Rodrigues parametrisation matters more than singularity safety; (3) the rotation angles between station pairs are far from $\pi$ (the standard machine-vision case). Choose Daniilidis when (1) the inter-station rotation angles can reach $\pi$ (workspace-wide motion); (2) the camera baseline is short relative to the target depth — the joint solve handles the translation-amplification regime where Tsai-Lenz's decoupling fails; (3) you need a singularity-free parametrisation throughout the rotation domain.
 
 # References
 

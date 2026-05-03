@@ -1,14 +1,36 @@
-# Authoritative source registry for the algorithms register.
+# docs/papers/index.yaml — registry of authoritative sources for Atlas pages.
 #
-# Each entry is a paper. Pages in content/algorithms/*.md reference papers
-# by `id` in their `sources:` frontmatter block. The `cites` field carries
-# the citation graph; query it with `bun papers:query <relation> <id>`.
+# Each entry has an `id` (kebab-case `firstauthor<year>-shortname` for papers,
+# `repo-<owner>-<repo>` for repos, `doc-<basename>` for docs) and an optional
+# `kind: paper | repo | doc` field. When `kind` is absent it defaults to
+# `paper` (preserves backward compat with the existing 45 paper entries).
 #
-# Id convention: firstauthorYEAR-keyword (lowercase, hyphenated). Stable
-# across paper versions; greppable. Same author + year disambiguated with
-# an `a`/`b` suffix.
+# Schema by kind:
+#   paper (default):
+#     id, title, authors, year, venue, url, pdf
+#     optional: arxiv, doi, cites
+#   repo:
+#     id, kind: repo, repo (https URL), commit (7-40 hex), license (SPDX)
+#     optional: title, description, weights_url, weights_license
+#   doc:
+#     id, kind: doc, path (repo-relative)
+#     optional: title, description
+#
+# Frontmatter `sources.primary` / `sources.references[]` reference these IDs.
+# The grammar accepts:
+#   <bare-id>          → treated as paper:<bare-id> (backward compat)
+#   paper:<id>         → explicit paper kind
+#   repo:<url>@<sha>   → repo kind, must match an entry with that commit
+#   doc:<path>         → doc kind, file must exist under docs/ or content/
+#
+# Defensive rule: new paper IDs MUST NOT start with `repo:` or `doc:`.
+#
+# Id convention for papers: firstauthorYEAR-keyword (lowercase, hyphenated).
+# Stable across paper versions; greppable. Same author + year disambiguated
+# with an `a`/`b` suffix.
 #
 # PDFs live in papers/.cache/ (gitignored), downloaded by `bun papers:fetch`.
+# The `cites` field carries the citation graph; query with `bun papers:query`.
 
 - id: bennett2013-chess
   title: "ChESS — Quick and Robust Detection of Chess-board Features"
@@ -776,53 +798,6 @@
     nominal global model, allow per-element deviation only as needed
     to satisfy correspondences.
 
-- id: hillen2023-enhanced
-  title: "Enhanced Checkerboard Detection Using Gaussian Processes"
-  authors: ["M. Hillen", "I. D. Boi", "T. D. Kerf", "S. Sels", "E. C. D. L. Hoz", "J. Gladines", "G. Steenackers", "R. Penne", "S. Vanlanduit"]
-  year: 2023
-  venue: Mathematics
-  url: https://www.mdpi.com/2227-7390/11/22/4568/pdf?version=1699354584
-  doi: "10.3390/math11224568"
-  pdf: hillen2023-enhanced.pdf
-  cites:
-  - geiger2012-automatic
-  - rufli2008-blurred
-  - fuersattel2016-ocpad
-  - chen2023-ccdn
-  - duda2018-accurate
-  - rasmussen2006-gpml
-  notes: |
-    Two-stage post-processor that wraps an existing checkerboard corner
-    detector (libcbdetect = Geiger 2012). §2.1 the GP regression model:
-    eq. (1) y = f(x) + ε, ε ~ N(0, σ_ε²); eq. (2) joint Gaussian over
-    [f, f_*]; eq. (3-5) conditional posterior with mean E(f_*) =
-    m_{X_*} + K_{X_*,X} (K_{X,X} + σ_ε² I)^{-1} f and variance V(f_*) =
-    K_{X_*,X_*} - K_{X_*,X} (K_{X,X} + σ_ε² I)^{-1} K_{X,X_*}; eq. (6)
-    squared-exponential kernel k_SE(x, x') = σ_f² exp(-‖x-x'‖² / 2ℓ²);
-    eq. (7) log marginal likelihood, optimized via L-BFGS. §2.2
-    Allocation of unassigned corners (Algorithm 1): two parallel GPs
-    map (x, y) board coordinates → u, v image coordinates; iteratively
-    expand the local board grid by 1 row/column in each direction
-    (north/east/south/west, plus corners), predict newUV, match to
-    unassigned cornerUV within max_dist_factor · ‖p_1 - p_2‖ (default
-    0.25 × first edge length); on no-match, expand by 2 instead of 1;
-    terminate at maxNrOfIterations (paper: 10; code: 12), no points in
-    image, or all corners assigned. §2.3 GP refinement: retrain on full
-    augmented set, predict uv for the entire integer grid (filling
-    occluded positions and even out-of-image positions), and replace
-    detected uv with predicted uv (smoothing). Default code parameters
-    (PyCBD): max_iterations=12, max_expansion_factor=2,
-    max_dist_factor=0.25, RBF lengthscale init=10 (in xy standardized
-    space), lengthscale ∈ [0, 25], num_restarts=3, optimizer=lbfgs,
-    max_iters=25000. §4 experiments: synthetic dataset (DALL-E
-    backgrounds + augmentations: Gaussian blur, shot noise, perspective,
-    optical distortion, occlusion) and real datasets (thermal IR
-    Xenics Ceres + multispectral PhotonFocus); compares Geiger,
-    Geiger+GP, OpenCV findChessboardCorners, OpenCV
-    findChessboardCornersSB; Geiger+GP wins on the real datasets and
-    on heavy perspective / occluded synthetics, slightly worse on heavy
-    blur. Released as PyPI package PyCBD (GitHub InViLabUAntwerp/PyCBD).
-
 - id: geiger2012-automatic
   title: "Automatic camera and range sensor calibration using a single shot"
   authors: ["A. Geiger", "F. Moosmann", "O. Car", "B. Schuster"]
@@ -831,49 +806,123 @@
   url: https://www.cvlibs.net/publications/Geiger2012ICRA.pdf
   doi: "10.1109/icra.2012.6224570"
   pdf: geiger2012-automatic.pdf
-  cites: [harris1988-corner, shi-tomasi1994-features, rufli2008-blurred, lucchese2003-saddle]
+  cites:
+    - lucchese2003-saddle
+    - harris1988-corner
+    - rufli2008-blurred
+    - shi-tomasi1994-features
   notes: |
-    Source of libcbdetect's checkerboard corner detector. §III-A defines
-    the corner-likelihood map: at every pixel, evaluate two n×n corner
-    prototypes (axis-aligned and 45°-rotated), each composed of four
-    quadrant filter kernels {A, B, C, D}. The likelihood combines
-    min-of-min responses: c = max(s_1^1, s_2^1, s_1^2, s_2^2) where
-    s_1^i = min(min(f_A^i, f_B^i) - μ, μ - min(f_C^i, f_D^i)) and
-    s_2^i is the flipped variant; μ = ¼(f_A^i + f_B^i + f_C^i + f_D^i)
-    (Eq. 1). NMS with parameters n_nms, τ_nms; gradient-statistics
-    verification — 32-bin orientation histogram from Sobel responses,
-    mean-shift to find two dominant edge directions α_1, α_2,
-    cross-correlation against an oriented gradient template T to
-    threshold at τ_corner. §III-B subpixel refinement: solve
-    c = (Σ g_p g_p^T)^{-1} Σ (g_p g_p^T) p over an 11×11 neighbourhood
-    (Eq. 2-3); refine each edge orientation e_i as the smallest
-    eigenvector of Σ_{p ∈ M_i} g_p g_p^T over the directional support
-    set M_i = {p : |m_i^T g_p| < 0.25}, where m_i = [cos α_i, sin α_i]^T
-    (Eq. 4-5). §III-C structure recovery as energy minimisation:
-    E(X, Y) = E_corners(Y) + E_struct(X, Y) (Eq. 6) where E_corners is
-    the negative count of explained corners and E_struct measures
-    collinearity ||c_i + c_k - 2 c_j||² / ||c_i - c_k||² over row and
-    column triples T (Eq. 7); optimised by greedy expansion from seed
-    triples. Hillen 2023 wraps this detector with a Gaussian-process
-    enhancer to recover occluded and unallocated corners.
+    Single-shot calibration of a camera + LiDAR rig from one capture
+    of multiple checkerboards arranged in the scene. The chessboard
+    detector itself (independent of the LiDAR fusion) is the
+    open-source `libcbdetect` and is the workhorse for many subsequent
+    calibration pipelines (Hillen 2023 Gaussian-process enhancement,
+    OCPAD partial-pattern recovery, Pyramidal blur-aware comparison).
+    Detector pipeline: 4-quadrant likelihood + multi-scale (3 fixed
+    scales) + gradient-orientation verification; structure recovery
+    allocates corners to a free grid without requiring known board
+    dimensions.
 
 - id: rasmussen2006-gpml
   title: "Gaussian Processes for Machine Learning"
   authors: ["C. E. Rasmussen", "C. K. I. Williams"]
   year: 2006
   venue: MIT Press
-  url: https://gaussianprocess.org/gpml/chapters/RW.pdf
-  doi: "10.7551/mitpress/3206.001.0001"
+  url: https://gaussianprocess.org/gpml/
   pdf: rasmussen2006-gpml.pdf
   cites: []
   notes: |
-    Canonical reference for GP regression. §2.2 derives the standard
-    predictive equations: posterior mean μ_* = K_*^T (K + σ_n² I)^{-1} y
-    and variance σ_*² = k_** - K_*^T (K + σ_n² I)^{-1} K_*; §5.4 the
-    log marginal likelihood log p(y|X, θ) = -½ y^T(K + σ_n² I)^{-1} y
-    - ½ log|K + σ_n² I| - (n/2) log 2π and its hyperparameter gradient
-    via the matrix derivative ½ tr((α α^T - (K + σ_n² I)^{-1}) ∂K/∂θ).
-    §4.2 the squared-exponential kernel k_SE(x, x') = σ_f² exp(-‖x-x'‖²
-    / 2ℓ²) and its automatic-relevance-determination variant. Hillen
-    2023 cites this as the foundational reference for the GP regression
-    model used in PyCBD's enhancer.
+    Canonical textbook on Gaussian processes (ISBN 0-262-18253-X; freely
+    available at gaussianprocess.org/gpml). Chapter 2 introduces the GP
+    regression posterior in closed form (Eqs. 2.23–2.24): predictive mean
+    f̄_* = k_*ᵀ(K + σ_n²I)⁻¹y and covariance, with the squared-exponential
+    kernel as the running example. Chapter 5 derives the log marginal
+    likelihood used for hyperparameter selection (the alternative to
+    cross-validation that Hillen 2023 inherits). The GP framework cited
+    by `hillen2023-enhanced` for chessboard refinement.
+
+- id: hillen2023-enhanced
+  title: "Enhanced Checkerboard Detection Using Gaussian Processes"
+  authors: ["M. Hillen", "I. De Boi", "T. De Kerf", "S. Sels", "E. Cardenas De La Hoz", "J. Gladines", "G. Steenackers", "R. Penne", "S. Vanlanduit"]
+  year: 2023
+  venue: Mathematics (MDPI)
+  url: https://www.mdpi.com/2227-7390/11/22/4568
+  doi: "10.3390/math11224568"
+  pdf: hillen2023-enhanced.pdf
+  cites:
+    - rasmussen2006-gpml
+    - geiger2012-automatic
+    - rufli2008-blurred
+    - duda2018-accurate
+    - fuersattel2016-ocpad
+    - placht2014-rochade
+  notes: |
+    Post-detection enhancement layer (PyCBD library) that wraps any
+    upstream chessboard detector — evaluated on top of Geiger 2012
+    libcbdetect — and uses two Gaussian processes (one for U, one for V)
+    over (boardXY → boardUV) pairs to (1) allocate unallocated detected
+    corners to grid positions, (2) predict UV for occluded or
+    out-of-frame grid positions, (3) globally smooth all allocated UV
+    coordinates. Squared-exponential kernel; hyperparameters fit by
+    L-BFGS on the log marginal likelihood (Rasmussen 2006 Ch. 5).
+    Strongest gains on low-resolution endoscopic, multispectral, and
+    thermal IR captures where conventional detectors miss many corners.
+    Complementary to OCPAD subgraph-isomorphism recovery: OCPAD is
+    combinatorial / training-free; Hillen GP is regression / requires
+    a partial board fragment but extrapolates beyond the image border.
+
+- id: zhang2022-learning-based
+  title: "Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration"
+  authors: ["Y. Zhang", "X. Zhao", "D. Qian"]
+  year: 2022
+  venue: IEEE Robotics and Automation Letters
+  url: https://arxiv.org/pdf/2202.00158
+  arxiv: "2202.00158"
+  doi: "10.1109/lra.2022.3192610"
+  pdf: zhang2022-learning-based.pdf
+  cites:
+    - placht2014-rochade
+    - lucchese2003-saddle
+    - geiger2012-automatic
+    - harris1988-corner
+    - tsai1987-versatile
+    - zhang2000-flexible
+    - donne2016-mate
+    - chen2023-ccdn
+  notes: |
+    Three-stage end-to-end checkerboard calibration pipeline. (1)
+    Learning-based radial distortion correction using a CNN trained on
+    synthesized distorted images; (2) accurate sub-pixel corner
+    detection combining a learned coarse detector with a classical
+    refinement step and post-processing; (3) image-level RANSAC over
+    candidate boards to discard outlier views before bundle adjustment.
+    Targets the three canonical failure modes of Zhang 2000 calibration:
+    inexact corner detection, uncorrected radial distortion, and
+    unstable parameter estimation under bad lighting / noise. Compared
+    against MATE (donne2016-mate), Geiger 2012 libcbdetect, and CCDN
+    (chen2023-ccdn) on synthetic + real datasets.
+
+- id: wu2021-highly
+  title: "A highly accurate and robust deep checkerboard corner detector"
+  authors: ["Hao Wu", "Yi Wan"]
+  year: 2021
+  venue: Electronics Letters
+  url: https://onlinelibrary.wiley.com/doi/pdfdirect/10.1049/ell2.12056
+  doi: "10.1049/ell2.12056"
+  pdf: wu2021-highly.pdf
+  cites:
+    - placht2014-rochade
+    - geiger2012-automatic
+    - harris1988-corner
+    - zhang2000-flexible
+    - donne2016-mate
+    - chen2023-ccdn
+  notes: |
+    Deep checkerboard corner detector for camera calibration. Two
+    contributions: (1) a synthetic training-data generator that
+    simulates the real imaging process and yields ground-truth sub-pixel
+    corner positions for free; (2) a relatively simple deep network
+    trained on that synthetic data. Because exact sub-pixel positions
+    are available, enables objective comparison via mean Euclidean
+    location error against MATLAB camera calibration toolbox, OpenCV
+    detectors, and prior deep-learning baselines (e.g. donne2016-mate).

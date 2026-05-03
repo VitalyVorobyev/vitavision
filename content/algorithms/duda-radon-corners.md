@@ -3,11 +3,12 @@ title: "Localized Radon Checkerboard Corners"
 date: 2026-04-23
 summary: "Detect checkerboard X-junctions by approximating a localized Radon transform with 1-D box filters on rotated copies of the image; the per-pixel response is the squared difference between the maximum and minimum directional line integrals over four discrete angles."
 tags: ["feature-detection", "calibration", "chessboard"]
-category: corner-detection
+domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["chess-corners", "harris-corner-detector", "rochade", "pyramidal-blur-aware-xcorner"]
 prerequisites: [image-gradient]
+related: [chessboard-x-corner-detection]
 comparedWith: []
 failureModes: []
 sources:
@@ -95,7 +96,7 @@ Restricting $\alpha$ to $\mathcal{A}$ halves the number of rotations: the image 
 :::
 
 ```mermaid
-flowchart LR
+flowchart TB
     I["I"] --> S["2× super-<br/>sample"]
     S --> R0["rot α=0"]
     S --> R1["rot α=π/4"]
@@ -156,6 +157,7 @@ fn line_integrals(i: &[f32], w: usize, h: usize, m: i32) -> [Vec<f32>; 4] {
 - The detector is noise-robust because box-filter sums of intensities attenuate additive image noise by a factor proportional to $\sqrt{2m+1}$, whereas gradient-based detectors amplify the same noise through differentiation.
 - Skipping the $2\times$ supersample roughly doubles the subpixel error but roughly halves the runtime; the trade-off is linear in pixel count.
 - The response map also yields per-corner orientation: fitting a subpixel peak to $f_r[x^\ast, y^\ast, \alpha]$ over $\alpha$ recovers both centreline angles, which a downstream grid-growing step can use to seed neighbour search.
+- Compared with ChESS: see [When to choose ChESS over Duda-Radon](/atlas/chess-corners#when-to-choose-chess-over-duda-radon) on the ChESS page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

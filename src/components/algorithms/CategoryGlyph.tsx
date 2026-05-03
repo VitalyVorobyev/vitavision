@@ -1,22 +1,22 @@
-import type { AlgorithmCategory } from "../../lib/content/schema.ts";
+import type { Domain } from "../../lib/content/schema.ts";
 
 interface CategoryGlyphProps {
-    category: AlgorithmCategory;
+    domain: Domain | undefined;
 }
 
-export default function CategoryGlyph({ category }: CategoryGlyphProps) {
+export default function CategoryGlyph({ domain }: CategoryGlyphProps) {
     return (
         <div className="w-full h-full bg-[linear-gradient(135deg,hsl(var(--surface)),hsl(var(--muted)))] flex items-center justify-center">
-            <Glyph category={category} />
+            <Glyph domain={domain} />
         </div>
     );
 }
 
-function Glyph({ category }: { category: AlgorithmCategory }) {
+function Glyph({ domain }: { domain: Domain | undefined }) {
     const stroke = "currentColor";
     const className = "text-muted-foreground/40 w-[60%] h-[60%]";
 
-    if (category === "corner-detection") {
+    if (domain === "features") {
         return (
             <svg
                 viewBox="0 0 64 64"
@@ -31,7 +31,7 @@ function Glyph({ category }: { category: AlgorithmCategory }) {
         );
     }
 
-    if (category === "calibration-targets") {
+    if (domain === "targets") {
         return (
             <svg
                 viewBox="0 0 64 64"
@@ -56,7 +56,7 @@ function Glyph({ category }: { category: AlgorithmCategory }) {
         );
     }
 
-    if (category === "subpixel-refinement") {
+    if (domain === "geometry") {
         return (
             <svg
                 viewBox="0 0 64 64"
@@ -72,7 +72,7 @@ function Glyph({ category }: { category: AlgorithmCategory }) {
         );
     }
 
-    // calibration
+    // calibration and all other domains
     return (
         <span className="text-[clamp(1.5rem,60%,3rem)] font-serif italic text-muted-foreground/40 select-none leading-none" aria-hidden="true">
             ƒ

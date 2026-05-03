@@ -9,11 +9,11 @@ interface Props {
 }
 
 const DOCK_TOOLS: { tool: ActiveTool; icon: string; label: string }[] = [
-    { tool: "add",    icon: "+",  label: "Add" },
-    { tool: "move",   icon: "↔", label: "Move" },
-    { tool: "delete", icon: "✕", label: "Delete" },
-    { tool: "grid",   icon: "▦", label: "Grid" },
-    { tool: "more",   icon: "⚙", label: "More" },
+    { tool: "add",     icon: "+",  label: "Add" },
+    { tool: "move",    icon: "↔", label: "Move" },
+    { tool: "inspect", icon: "⊙", label: "Inspect" },
+    { tool: "delete",  icon: "✕", label: "Delete" },
+    { tool: "grid",    icon: "▦", label: "Grid" },
 ];
 
 const LAYER_LABELS: { key: keyof Layers; label: string }[] = [
@@ -49,8 +49,18 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
             <Panel className="relative overflow-hidden p-0 w-full" style={{ aspectRatio: "4/3" }}>
                 <DelaunayVoronoiCanvas demo={demo} />
 
-                {/* Stats chip (top-right) */}
-                <FloatingPanel className="absolute top-2.5 right-2.5 px-2.5 py-1.5 font-mono text-[11px]">
+                {/* More kebab (top-right) — opens the bottom sheet */}
+                <FloatingPanel className="absolute top-2.5 right-2.5 px-2 py-1.5">
+                    <button
+                        type="button"
+                        aria-label="More options"
+                        onClick={() => setTool("more")}
+                        className="text-muted-foreground hover:text-foreground transition-colors text-base leading-none"
+                    >⋯</button>
+                </FloatingPanel>
+
+                {/* Stats chip (top-right, below kebab) */}
+                <FloatingPanel className="absolute top-12 right-2.5 px-2.5 py-1.5 font-mono text-[11px]">
                     {points} · {triangles} · {edges} · <span className={minAngleColor(minAngleDeg)}>{formatMinAngle(minAngleDeg)}</span>
                 </FloatingPanel>
 
@@ -69,7 +79,7 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                 {hintVisible && (
                     <FloatingPanel className="absolute bottom-2.5 left-2.5 right-2.5 px-2.5 py-2 flex items-start gap-2">
                         <span className="text-[11px] leading-snug text-muted-foreground">
-                            Tap to add a point. Drag to move. Use the Delete tool to remove.
+                            Tap to add a point. Drag to move. Inspect tool: tap a triangle or cell to see its area.
                         </span>
                         <button
                             type="button"

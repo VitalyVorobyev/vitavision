@@ -3,9 +3,8 @@ title: "Rich Algorithm Content Demo"
 date: 2026-03-29
 summary: "A draft algorithm page that exercises semantic blocks, math, diagrams, code, and related-link metadata."
 tags: ["meta", "demo", "authoring"]
-category: explainers
 author: "Vitaly Vorobyev"
-draft: true
+dev: true
 difficulty: intermediate
 relatedPosts: ["00-intro"]
 relatedAlgorithms: ["harris-corner-detector"]
@@ -14,7 +13,7 @@ comparedWith: []
 failureModes: []
 ---
 
-This draft algorithm page mirrors the rich markdown feature coverage of the blog pipeline so the `/algorithms/*` route is exercised with the same authoring tools. It also provides explicit internal links to [the intro post](/blog/00-intro) and [the Harris detector page](/algorithms/harris-corner-detector).
+This draft algorithm page mirrors the rich markdown feature coverage of the blog pipeline so the `/algorithms/*` route is exercised with the same authoring tools. It also provides explicit internal links to [the intro post](/blog/00-intro) and [the Harris detector page](/atlas/harris-corner-detector).
 
 ## Typography Basics
 

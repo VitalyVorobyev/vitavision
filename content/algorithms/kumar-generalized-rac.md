@@ -3,12 +3,11 @@ title: "Kumar-Ahuja Generalized Radial Alignment Constraint"
 date: 2026-04-23
 summary: "Extend Tsai's radial alignment constraint to a non-frontal sensor by modelling lens–sensor tilt as a 2-DoF rotation, projecting observations onto a hypothesized frontal sensor, and solving a seven-parameter linear system for the extrinsic rotation and tilt."
 tags: ["camera-calibration", "lens-sensor-tilt"]
-category: calibration
+domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
-draft: true
 relatedAlgorithms: ["zhang-planar-calibration"]
-prerequisites: []
+prerequisites: [camera-distortion-models]
 comparedWith: []
 failureModes: []
 sources:
@@ -167,17 +166,7 @@ Stacking this equation over correspondences yields $(\lambda, t_z)$ for each of 
 7. Use $U$ from step 6 to initialise a nonlinear refinement that minimises reprojection error including radial distortion $(k_1, k_2)$.
 :::
 
-```mermaid
-flowchart LR
-    A["Correspondences<br/>(P_w_i, I_i, J_i)"] --> B["Metric sensor points<br/>x_nf, y_nf"]
-    B --> C["Assemble A q = b<br/>per Eq. 7"]
-    C --> D["LS solve<br/>q ∈ ℝ⁷"]
-    D --> E["Decompose → S, R, t_x, t_y<br/>4-way sign ambiguity"]
-    E --> F["Solve (λ, t_z) via Eq. 35<br/>reject λ &lt; 0"]
-    F --> G["Pick by radial-distortion fit"]
-    G --> H["Iterate CoD (I_0, J_0)<br/>residual RAC search"]
-    H --> I["Nonlinear refine<br/>U* incl. k_1, k_2"]
-```
+![kumar-generalized-rac pipeline: 9-stage flow from world-image correspondences through metric sensor conversion, gRAC linear system assembly and solve, parameter decomposition with sign disambiguation, lambda/t_z solve, radial-distortion candidate selection, CoD iteration, and final nonlinear refinement.](./images/kumar-generalized-rac/pipeline.svg)
 
 # Implementation
 
@@ -226,6 +215,7 @@ fn tilt_angles(l: f64, p: f64) -> (f64, f64) {
 - The four-way ambiguity is inherent to the constraint, not an artifact of the solver: the projection from non-frontal sensor to frontal sensor is many-to-one in the tilt angles, and RAC fixes only the relative sign of $(\rho, \sigma)$ through $\mathrm{sign}(L)$. Disambiguation via radial-distortion-model fit degrades when the true distortion is small.
 - The CoD search is an outer loop around the linear solver: each candidate $(I_0, J_0)$ re-runs steps 1–5 and evaluates residual RAC error on the frontal-projected points. Cost is $O(K \cdot N)$ per iteration for $K$ sampled CoD locations and $N$ correspondences; convergence depends on the seed accuracy.
 - Reduces to Tsai's RAC when $R = I$: the tilt-induced rows of the $7 \times 1$ unknown collapse ($q_1, q_2, q_3, q_4$ depend only on $S$ and $(t_x, t_y)$; $q_5, q_6, q_7$ are the unchanged Tsai quantities), and Eq. 35 becomes Tsai's linear system for $(\lambda, t_z)$.
+- Compared with Tsai 1987: see [When to choose Tsai over Kumar gRAC](/atlas/tsai-versatile-calibration#when-to-choose-tsai-over-kumar-grac) on the Tsai page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

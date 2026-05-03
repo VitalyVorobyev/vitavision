@@ -17,7 +17,7 @@ const TOOL_CURSOR: Record<string, string> = {
     move: "default",
     delete: "not-allowed",
     grid: "default",
-    hover: "help",
+    inspect: "help",
     more: "default",
 };
 
@@ -32,11 +32,61 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
     const svgRef = useRef<SVGSVGElement>(null);
     const dragging = useRef<{ id: string } | null>(null);
 
+    // Shared hit-test used by both mouse-hover and touch-tap paths.
+    const hitTest = useCallback(
+        (x: number, y: number): import("./types").HoverTarget | null => {
+            if (layers.voronoi && voronoi && allPoints.length >= 3) {
+                const cellIdx = delaunay?.find(x, y);
+                if (cellIdx !== undefined && cellIdx >= 0) {
+                    const poly = voronoi.cellPolygon(cellIdx);
+                    if (poly) {
+                        let area = 0;
+                        for (let i = 0; i < poly.length - 1; i++) {
+                            area += poly[i][0] * poly[i + 1][1] - poly[i + 1][0] * poly[i][1];
+                        }
+                        area = Math.abs(area) / 2;
+                        return { kind: "cell", index: cellIdx, area: area / (W * H) };
+                    }
+                }
+            }
+            if (layers.delaunay && triangles.length > 0) {
+                for (let i = 0; i < triangles.length; i++) {
+                    const { ai, bi, ci } = triangles[i];
+                    const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
+                    const minX = Math.min(a.x, b.x, c.x);
+                    const maxX = Math.max(a.x, b.x, c.x);
+                    const minY = Math.min(a.y, b.y, c.y);
+                    const maxY = Math.max(a.y, b.y, c.y);
+                    if (x < minX || x > maxX || y < minY || y > maxY) continue;
+                    const s1 = (b.x - a.x) * (y - a.y) - (b.y - a.y) * (x - a.x);
+                    const s2 = (c.x - b.x) * (y - b.y) - (c.y - b.y) * (x - b.x);
+                    const s3 = (a.x - c.x) * (y - c.y) - (a.y - c.y) * (x - c.x);
+                    if ((s1 >= 0 && s2 >= 0 && s3 >= 0) || (s1 <= 0 && s2 <= 0 && s3 <= 0)) {
+                        const rawArea = triangleArea(a, b, c);
+                        const normArea = rawArea / (W * H);
+                        const minAngleDeg = (triangleMinAngle(a, b, c) * 180) / Math.PI;
+                        return { kind: "triangle", index: i, area: normArea, minAngleDeg };
+                    }
+                }
+            }
+            return null;
+        },
+        [layers, allPoints, delaunay, voronoi, triangles],
+    );
+
     const onBgPointerDown = useCallback(
         (e: PointerEvent<SVGRectElement>) => {
             if (e.button !== 0) return;
             const svg = svgRef.current;
             if (!svg) return;
+
+            // Tap-to-inspect on touch/pen: run hit-test and set hover; do not add point.
+            if (activeTool === "inspect" && (e.pointerType === "touch" || e.pointerType === "pen")) {
+                const { x, y } = svgPoint(svg, e.clientX, e.clientY);
+                demo.setHover(hitTest(x, y));
+                return;
+            }
+
             if (activeTool === "add") {
                 const { x, y } = svgPoint(svg, e.clientX, e.clientY);
                 demo.addPoint(x, y);
@@ -44,7 +94,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             // All other tools: deselect on background click.
             demo.selectPoint(null);
         },
-        [demo, activeTool],
+        [demo, activeTool, hitTest],
     );
 
     const onPointPointerDown = useCallback(
@@ -61,12 +111,14 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                 return;
             }
 
-            if (activeTool === "move" || activeTool === "add" || activeTool === "hover" || activeTool === "grid") {
-                // Hover tool just selects; never drags.
-                dragging.current = activeTool !== "hover" ? { id } : null;
-                if (activeTool !== "hover") {
-                    (e.currentTarget as SVGElement).setPointerCapture(e.pointerId);
-                }
+            // Inspect tool: tapping a node does nothing; let mouse hover path handle desktop.
+            if (activeTool === "inspect") {
+                return;
+            }
+
+            if (activeTool === "move" || activeTool === "add" || activeTool === "grid") {
+                dragging.current = { id };
+                (e.currentTarget as SVGElement).setPointerCapture(e.pointerId);
                 demo.selectPoint(id);
             }
             void isCorner;
@@ -93,58 +145,23 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                 return;
             }
 
-            // Hover detection only in hover tool mode.
-            if (activeTool !== "hover") {
+            // Mouse-hover detection only in inspect tool mode (desktop path).
+            if (activeTool !== "inspect") {
                 if (hover !== null) demo.setHover(null);
                 return;
             }
 
-            if (layers.voronoi && voronoi && allPoints.length >= 3) {
-                const cellIdx = delaunay?.find(x, y);
-                if (cellIdx !== undefined && cellIdx >= 0) {
-                    const poly = voronoi.cellPolygon(cellIdx);
-                    if (poly) {
-                        let area = 0;
-                        for (let i = 0; i < poly.length - 1; i++) {
-                            area += poly[i][0] * poly[i + 1][1] - poly[i + 1][0] * poly[i][1];
-                        }
-                        area = Math.abs(area) / 2;
-                        const normArea = area / (W * H);
-                        if (hover?.kind !== "cell" || hover.index !== cellIdx) {
-                            demo.setHover({ kind: "cell", index: cellIdx, area: normArea });
-                        }
-                        return;
-                    }
+            const target = hitTest(x, y);
+            if (target !== null) {
+                // Avoid redundant state updates when the hovered element hasn't changed.
+                if (hover?.kind !== target.kind || hover.index !== target.index) {
+                    demo.setHover(target);
                 }
+            } else {
+                if (hover !== null) demo.setHover(null);
             }
-
-            if (layers.delaunay && triangles.length > 0) {
-                for (let i = 0; i < triangles.length; i++) {
-                    const { ai, bi, ci } = triangles[i];
-                    const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
-                    const minX = Math.min(a.x, b.x, c.x);
-                    const maxX = Math.max(a.x, b.x, c.x);
-                    const minY = Math.min(a.y, b.y, c.y);
-                    const maxY = Math.max(a.y, b.y, c.y);
-                    if (x < minX || x > maxX || y < minY || y > maxY) continue;
-                    const s1 = (b.x - a.x) * (y - a.y) - (b.y - a.y) * (x - a.x);
-                    const s2 = (c.x - b.x) * (y - b.y) - (c.y - b.y) * (x - b.x);
-                    const s3 = (a.x - c.x) * (y - c.y) - (a.y - c.y) * (x - c.x);
-                    if ((s1 >= 0 && s2 >= 0 && s3 >= 0) || (s1 <= 0 && s2 <= 0 && s3 <= 0)) {
-                        const rawArea = triangleArea(a, b, c);
-                        const normArea = rawArea / (W * H);
-                        const minAngleDeg = (triangleMinAngle(a, b, c) * 180) / Math.PI;
-                        if (hover?.kind !== "triangle" || hover.index !== i) {
-                            demo.setHover({ kind: "triangle", index: i, area: normArea, minAngleDeg });
-                        }
-                        return;
-                    }
-                }
-            }
-
-            if (hover !== null) demo.setHover(null);
         },
-        [demo, activeTool, layers, allPoints, delaunay, voronoi, triangles, hover],
+        [demo, activeTool, hover, hitTest],
     );
 
     const onPointerLeave = useCallback(() => {
@@ -182,7 +199,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             if (e.key === "a" || e.key === "A") { demo.setTool("add"); return; }
             if (e.key === "v" || e.key === "V") { demo.setTool("move"); return; }
             if (e.key === "g" || e.key === "G") { demo.setTool("grid"); return; }
-            if (e.key === "h" || e.key === "H") { demo.setTool("hover"); return; }
+            if (e.key === "h" || e.key === "H") { demo.setTool("inspect"); return; }
             if (e.key === "r" || e.key === "R") { demo.randomPoints(); return; }
         },
         [demo, selectedId, state.points],
@@ -211,7 +228,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             viewBox={`0 0 ${W} ${H}`}
             preserveAspectRatio="xMidYMid meet"
             className="block h-full w-full outline-none focus-visible:ring-1 focus-visible:ring-primary"
-            style={{ cursor, display: "block" }}
+            style={{ cursor, display: "block", touchAction: "none" }}
             tabIndex={0}
             onPointerMove={onPointerMove}
             onPointerLeave={onPointerLeave}

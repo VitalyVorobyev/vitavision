@@ -3,12 +3,14 @@ title: "Topological Grid Finding"
 date: 2026-04-16
 summary: "Recover the integer $(i, j)$ grid coordinate of every corner in a checkerboard calibration image by Delaunay-triangulating the corners, merging same-colour triangle pairs into quads, topologically and geometrically filtering illegal quads, and flood-filling coordinates through the resulting mesh."
 tags: ["calibration", "chessboard"]
-category: calibration-targets
+domain: targets
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "chess-corners"]
-prerequisites: [image-gradient]
-comparedWith: []
+prerequisites: [image-gradient, topological-grid-recovery]
+related: [chessboard-x-corner-detection]
+comparedWith: [laureano-topological-chessboard]
+
 failureModes: []
 sources:
   primary: shu2009-topological
@@ -97,14 +99,7 @@ The assignment is purely topological — it uses only the shared-edge indices, n
 10. Locate the three marker circles on the pattern, read off the origin and x-axis direction, and transform the labelled coordinates into the reference frame.
 :::
 
-```mermaid
-flowchart LR
-    A["Harris corners<br/>C = {p_k}"] --> B["Delaunay<br/>T = Del(C)"]
-    B --> C["Same-colour<br/>merge → quads Q"]
-    C --> D["Topological filter<br/>drop deg &gt; 4"]
-    D --> E["Geometric filter<br/>aspect ≤ 10"]
-    E --> F["Flood-fill<br/>integer (i, j)"]
-```
+![shu-topological-grid pipeline: 6-stage flow from Harris corners through Delaunay triangulation, same-colour triangle merging into quads, topological degree filtering, geometric aspect-ratio filtering, to flood-fill integer grid coordinate assignment.](./images/shu-topological-grid/pipeline.svg)
 
 # Implementation
 
@@ -147,6 +142,20 @@ The flood-fill outer loop enqueues each quad once — every labelled quad pushes
 - The detector fails at extreme viewing angles (roughly $\leq 10^{\circ}$ from the pattern plane) where Delaunay triangulation crosses tile boundaries instead of diagonalizing them. At such angles the upstream corner detector is also unreliable.
 - Delaunay triangulation is not projective-invariant in general; the algorithm's practical robustness is empirical rather than a theorem. Extreme projective transforms can flip a diagonal and produce misaligned quads even when every corner is detected.
 - The method is agnostic to the corner detector used in step 1. Any detector that produces subpixel corner locations on pattern intersections feeds the Delaunay stage identically.
+
+## When to choose Shu over Laureano
+
+[Laureano](/atlas/laureano-topological-chessboard) (2013) uses the same Delaunay-based topology approach as Shu (2009) but at a different graph granularity. Shu filters at the **quad** level after merging same-colour triangle pairs; Laureano filters at the **triangle** level directly, with a per-triangle uniform-interior + same-colour-neighbour rule. Both iterate to a fixed point.
+
+| | Shu (2009) | Laureano (2013) |
+|---|---|---|
+| Graph unit | quad (merged triangle pair) | triangle (directly from Delaunay) |
+| Per-vertex rule | $\deg_Q(n) \leq 4$ + aspect ratio | $\geq 1$ same-colour neighbour, $\leq 2$ same-colour |
+| Coordinate propagation | flood-fill on quad mesh | reflection across shared edges from a seed triangle pair |
+| Subpixel refinement | upstream detector handles it | explicit Chen-Zhang Hessian solve at surviving vertices |
+| Partial-pattern recovery | local (each connected quad component) | local (orphan-vertex pruning to fixed point) |
+
+Choose Shu when (1) you have a clean upstream corner detector that produces well-separated saddle candidates and you want the simpler quad-mesh post-processing — the merge step removes the per-triangle bookkeeping; (2) the refinement is handled separately. Choose Laureano when you want the topology filter and the subpixel refinement to be part of the same pipeline — Laureano explicitly invokes the Chen-Zhang Hessian saddle solve only at vertices that have already passed the topology filter, which avoids wasting refinement compute on false positives. The triangle-level filter also tends to recover slightly more border vertices on partial patterns since it doesn't require a full quad to validate a vertex.
 
 # References
 

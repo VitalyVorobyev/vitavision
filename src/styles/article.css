@@ -503,9 +503,11 @@ article .vv-equation .katex-display {
 
 article .katex {
     font-size: 1.1em;
+    /* Inherit article foreground in light mode so KaTeX renders in readable text color. */
+    color: inherit;
 }
 
-/* Ensure KaTeX respects article text color */
+/* Ensure KaTeX respects article text color in dark mode */
 .dark article .katex {
     color: hsl(var(--article-body));
 }

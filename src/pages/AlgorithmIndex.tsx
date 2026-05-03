@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { LayoutGrid, List, Search, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { algorithmPages, modelPages, conceptPages } from "../generated/content-index.ts";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import AlgorithmCard from "../components/blog/AlgorithmCard.tsx";
@@ -8,6 +8,11 @@ import ConceptCard from "../components/blog/ConceptCard.tsx";
 import AlgorithmsSidebar from "../components/algorithms/AlgorithmsSidebar.tsx";
 import AlgorithmsTagPicker from "../components/algorithms/AlgorithmsTagPicker.tsx";
 import AlgorithmsFilterSheet from "../components/algorithms/AlgorithmsFilterSheet.tsx";
+import AlgorithmsViewToggle from "../components/algorithms/AlgorithmsViewToggle.tsx";
+import AtlasMapView from "../components/atlas/AtlasMapView.tsx";
+import AtlasConstellationView from "../components/atlas/AtlasConstellationView.tsx";
+import AtlasTaskLanding from "../components/atlas/AtlasTaskLanding.tsx";
+import useFirstVisitAtlasGate from "../hooks/useFirstVisitAtlasGate.ts";
 import useAlgorithmsFilters, {
     filterAlgorithms,
     filterModels,
@@ -15,59 +20,58 @@ import useAlgorithmsFilters, {
     computeFacets,
     type AlgorithmsFilters,
     type AlgorithmsKind,
+    type AlgorithmsView,
 } from "../hooks/useAlgorithmsFilters.ts";
 import {
-    algorithmCategoryValues,
-    modelCategoryValues,
-    conceptCategoryValues,
-    type AlgorithmCategory,
     type AlgorithmIndexEntry,
-    type ModelCategory,
     type ModelIndexEntry,
-    type ConceptCategory,
     type ConceptIndexEntry,
 } from "../lib/content/schema.ts";
-import { categoryLabel, modelCategoryLabel } from "../components/algorithms/categoryLabels.ts";
-import { conceptCategoryLabel } from "../components/algorithms/conceptCategoryLabels.ts";
+import { domainLabels, domainOrder } from "../components/algorithms/domainLabels.ts";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 import { searchSlugs } from "../lib/atlas/searchClient.ts";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function computeGroupedAlgorithms(filtered: AlgorithmIndexEntry[]) {
-    const byCategory = new Map<AlgorithmCategory, AlgorithmIndexEntry[]>();
+type DomainGroup<T> = { domain: string; entries: T[] };
+
+function computeGroupedAlgorithms(filtered: AlgorithmIndexEntry[]): DomainGroup<AlgorithmIndexEntry>[] {
+    const byDomain = new Map<string, AlgorithmIndexEntry[]>();
     for (const entry of filtered) {
-        const bucket = byCategory.get(entry.frontmatter.category) ?? [];
+        const dom = entry.frontmatter.domain ?? "unknown";
+        const bucket = byDomain.get(dom) ?? [];
         bucket.push(entry);
-        byCategory.set(entry.frontmatter.category, bucket);
+        byDomain.set(dom, bucket);
     }
-    return algorithmCategoryValues
-        .map((category) => ({ category, entries: byCategory.get(category) ?? [] }))
+    return domainOrder
+        .map((dom) => ({ domain: dom, entries: byDomain.get(dom) ?? [] }))
         .filter((g) => g.entries.length > 0);
 }
 
-function computeGroupedModels(filtered: ModelIndexEntry[]) {
-    const byCategory = new Map<ModelCategory, ModelIndexEntry[]>();
+function computeGroupedModels(filtered: ModelIndexEntry[]): DomainGroup<ModelIndexEntry>[] {
+    const byDomain = new Map<string, ModelIndexEntry[]>();
     for (const entry of filtered) {
-        const bucket = byCategory.get(entry.frontmatter.category) ?? [];
+        const dom = entry.frontmatter.domain ?? "unknown";
+        const bucket = byDomain.get(dom) ?? [];
         bucket.push(entry);
-        byCategory.set(entry.frontmatter.category, bucket);
+        byDomain.set(dom, bucket);
     }
-    return modelCategoryValues
-        .map((category) => ({ category, entries: byCategory.get(category) ?? [] }))
+    return domainOrder
+        .map((dom) => ({ domain: dom, entries: byDomain.get(dom) ?? [] }))
         .filter((g) => g.entries.length > 0);
 }
 
-function computeGroupedConcepts(filtered: ConceptIndexEntry[]) {
-    const byCategory = new Map<ConceptCategory, ConceptIndexEntry[]>();
+function computeGroupedConcepts(filtered: ConceptIndexEntry[]): DomainGroup<ConceptIndexEntry>[] {
+    const byDomain = new Map<string, ConceptIndexEntry[]>();
     for (const entry of filtered) {
-        const bucket = byCategory.get(entry.frontmatter.category as ConceptCategory) ?? [];
+        const dom = entry.frontmatter.domain ?? "unknown";
+        const bucket = byDomain.get(dom) ?? [];
         bucket.push(entry);
-        byCategory.set(entry.frontmatter.category as ConceptCategory, bucket);
+        byDomain.set(dom, bucket);
     }
-    return conceptCategoryValues
-        .map((category) => ({ category, entries: byCategory.get(category) ?? [] }))
+    return domainOrder
+        .map((dom) => ({ domain: dom, entries: byDomain.get(dom) ?? [] }))
         .filter((g) => g.entries.length > 0);
 }
 
@@ -92,9 +96,9 @@ interface CardGroupProps {
     filteredModels: ModelIndexEntry[];
     filteredConcepts: ConceptIndexEntry[];
     filters: AlgorithmsFilters;
-    groupedAlgorithms: ReturnType<typeof computeGroupedAlgorithms>;
-    groupedModels: ReturnType<typeof computeGroupedModels>;
-    groupedConcepts: ReturnType<typeof computeGroupedConcepts>;
+    groupedAlgorithms: DomainGroup<AlgorithmIndexEntry>[];
+    groupedModels: DomainGroup<ModelIndexEntry>[];
+    groupedConcepts: DomainGroup<ConceptIndexEntry>[];
     layout: "grid" | "list";
 }
 
@@ -106,7 +110,7 @@ function AlgorithmsGroup({
 }: {
     filteredAlgorithms: AlgorithmIndexEntry[];
     filters: AlgorithmsFilters;
-    groupedAlgorithms: ReturnType<typeof computeGroupedAlgorithms>;
+    groupedAlgorithms: DomainGroup<AlgorithmIndexEntry>[];
     layout: "grid" | "list";
 }) {
     const gridClass =
@@ -125,7 +129,7 @@ function AlgorithmsGroup({
         return (
             <div>
                 <SectionHeader
-                    label={categoryLabel(filters.categoryId as AlgorithmCategory)}
+                    label={domainLabels[filters.categoryId as keyof typeof domainLabels] ?? filters.categoryId}
                     count={filteredAlgorithms.length}
                 />
                 <div className={gridClass}>
@@ -142,10 +146,10 @@ function AlgorithmsGroup({
     }
     return (
         <>
-            {groupedAlgorithms.map(({ category, entries }) => (
-                <div key={category}>
+            {groupedAlgorithms.map(({ domain, entries }) => (
+                <div key={domain}>
                     <SectionHeader
-                        label={categoryLabel(category)}
+                        label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
                         count={entries.length}
                     />
                     <div className={gridClass}>
@@ -171,7 +175,7 @@ function ModelsGroup({
 }: {
     filteredModels: ModelIndexEntry[];
     filters: AlgorithmsFilters;
-    groupedModels: ReturnType<typeof computeGroupedModels>;
+    groupedModels: DomainGroup<ModelIndexEntry>[];
     layout: "grid" | "list";
 }) {
     const gridClass =
@@ -190,7 +194,7 @@ function ModelsGroup({
         return (
             <div>
                 <SectionHeader
-                    label={modelCategoryLabel(filters.categoryId as ModelCategory)}
+                    label={domainLabels[filters.categoryId as keyof typeof domainLabels] ?? filters.categoryId}
                     count={filteredModels.length}
                 />
                 <div className={gridClass}>
@@ -207,10 +211,10 @@ function ModelsGroup({
     }
     return (
         <>
-            {groupedModels.map(({ category, entries }) => (
-                <div key={category}>
+            {groupedModels.map(({ domain, entries }) => (
+                <div key={domain}>
                     <SectionHeader
-                        label={modelCategoryLabel(category)}
+                        label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
                         count={entries.length}
                     />
                     <div className={gridClass}>
@@ -236,7 +240,7 @@ function ConceptsGroup({
 }: {
     filteredConcepts: ConceptIndexEntry[];
     filters: AlgorithmsFilters;
-    groupedConcepts: ReturnType<typeof computeGroupedConcepts>;
+    groupedConcepts: DomainGroup<ConceptIndexEntry>[];
     layout: "grid" | "list";
 }) {
     const gridClass =
@@ -255,7 +259,7 @@ function ConceptsGroup({
         return (
             <div>
                 <SectionHeader
-                    label={conceptCategoryLabel(filters.categoryId as ConceptCategory)}
+                    label={domainLabels[filters.categoryId as keyof typeof domainLabels] ?? filters.categoryId}
                     count={filteredConcepts.length}
                 />
                 <div className={gridClass}>
@@ -272,10 +276,10 @@ function ConceptsGroup({
     }
     return (
         <>
-            {groupedConcepts.map(({ category, entries }) => (
-                <div key={category}>
+            {groupedConcepts.map(({ domain, entries }) => (
+                <div key={domain}>
                     <SectionHeader
-                        label={conceptCategoryLabel(category)}
+                        label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
                         count={entries.length}
                     />
                     <div className={gridClass}>
@@ -403,11 +407,20 @@ function CardGroup({
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function AlgorithmIndex() {
-    const { filters, setKind, setCategoryId, toggleTag, setQuery, setView, reset } =
+    const { filters, setKind, setCategoryId, toggleTag, setTags, setQuery, setView, reset } =
         useAlgorithmsFilters();
     // Per handoff: `lg` and up (≥1024px) = sidebar layout; below = sheet layout.
     const isDesktop = useMediaQuery("(min-width: 1024px)", true);
     const isAdmin = useIsAdmin();
+    const showTaskLanding = useFirstVisitAtlasGate() && isAdmin;
+
+    // Map/Constellation views are admin-only experimental modes. Coerce
+    // non-admins viewing one (e.g. via a stale /atlas?view=map link) back to
+    // a public-safe view without writing the change to localStorage.
+    const effectiveView: AlgorithmsView =
+        !isAdmin && (filters.view === "map" || filters.view === "constellation")
+            ? "grid"
+            : filters.view;
 
     const [tagPickerOpen, setTagPickerOpen] = useState(false);
     const [filterSheetOpen, setFilterSheetOpen] = useState(false);
@@ -494,23 +507,41 @@ export default function AlgorithmIndex() {
         [filteredConcepts],
     );
 
-    // Category values + label for the current kind
+    // Domain values + label — shared across all kinds.
+    // When kind === "all", the domain sidebar is hidden (categoryValues = []).
     const currentCategoryValues: readonly string[] =
-        filters.kind === "algorithm" ? algorithmCategoryValues :
-        filters.kind === "model"     ? modelCategoryValues :
-        filters.kind === "concept"   ? conceptCategoryValues :
-        [];
+        filters.kind !== "all" ? domainOrder : [];
 
-    const currentCategoryLabel = (id: string): string => {
-        if (filters.kind === "algorithm") return categoryLabel(id as AlgorithmCategory);
-        if (filters.kind === "model")     return modelCategoryLabel(id as ModelCategory);
-        if (filters.kind === "concept")   return conceptCategoryLabel(id as ConceptCategory);
-        return id;
-    };
+    const currentCategoryLabel = (id: string): string =>
+        domainLabels[id as keyof typeof domainLabels] ?? id;
 
     // Mobile active filter badge count
     const activeCount =
         filters.tags.length + (filters.categoryId !== "all" ? 1 : 0);
+
+    // ── First-visit landing (overrides everything until the user picks a path) ──
+
+    if (showTaskLanding) {
+        const totalPages = visibleAlgorithms.length + visibleModels.length + visibleConcepts.length;
+        return (
+            <div className="flex flex-1 flex-col">
+                <SeoHead
+                    title="Atlas"
+                    description="Practical computer vision atlas — algorithms, models, and concepts."
+                />
+                <AtlasTaskLanding
+                    totalPages={totalPages}
+                    onApply={(apply) => {
+                        if (apply.kind !== undefined) setKind(apply.kind);
+                        if (apply.categoryId !== undefined) setCategoryId(apply.categoryId);
+                        if (apply.tags !== undefined) setTags(apply.tags);
+                        // setView writes to localStorage — that's what suppresses the gate next visit.
+                        setView(apply.view);
+                    }}
+                />
+            </div>
+        );
+    }
 
     // ── Desktop layout ──────────────────────────────────────────────────────
 
@@ -562,35 +593,11 @@ export default function AlgorithmIndex() {
                                     />
                                 </div>
 
-                                {/* View toggle */}
-                                <div className="flex gap-0.5 p-0.5 rounded-md border border-[hsl(var(--border)/0.7)]">
-                                    <button
-                                        type="button"
-                                        aria-label="Grid view"
-                                        aria-pressed={filters.view === "grid"}
-                                        onClick={() => setView("grid")}
-                                        className={`p-[3px] rounded transition-colors ${
-                                            filters.view === "grid"
-                                                ? "bg-[hsl(var(--surface-hi))] text-foreground"
-                                                : "text-muted-foreground hover:text-foreground"
-                                        }`}
-                                    >
-                                        <LayoutGrid size={13} />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        aria-label="List view"
-                                        aria-pressed={filters.view === "list"}
-                                        onClick={() => setView("list")}
-                                        className={`p-[3px] rounded transition-colors ${
-                                            filters.view === "list"
-                                                ? "bg-[hsl(var(--surface-hi))] text-foreground"
-                                                : "text-muted-foreground hover:text-foreground"
-                                        }`}
-                                    >
-                                        <List size={13} />
-                                    </button>
-                                </div>
+                                <AlgorithmsViewToggle
+                                    view={effectiveView}
+                                    onChange={setView}
+                                    showExperimental={isAdmin}
+                                />
                             </div>
                         </div>
 
@@ -600,17 +607,35 @@ export default function AlgorithmIndex() {
                         </p>
 
                         {/* Results */}
-                        <CardGroup
-                            kind={filters.kind}
-                            filteredAlgorithms={filteredAlgorithms}
-                            filteredModels={filteredModels}
-                            filteredConcepts={filteredConcepts}
-                            filters={filters}
-                            groupedAlgorithms={groupedAlgorithms}
-                            groupedModels={groupedModels}
-                            groupedConcepts={groupedConcepts}
-                            layout={filters.view}
-                        />
+                        {effectiveView === "map" ? (
+                            <AtlasMapView
+                                algorithms={visibleAlgorithms}
+                                models={visibleModels}
+                                concepts={visibleConcepts}
+                                filters={filters}
+                                searchMatchedSlugs={searchMatchedSlugs}
+                            />
+                        ) : effectiveView === "constellation" ? (
+                            <AtlasConstellationView
+                                algorithms={visibleAlgorithms}
+                                models={visibleModels}
+                                concepts={visibleConcepts}
+                                filters={filters}
+                                searchMatchedSlugs={searchMatchedSlugs}
+                            />
+                        ) : (
+                            <CardGroup
+                                kind={filters.kind}
+                                filteredAlgorithms={filteredAlgorithms}
+                                filteredModels={filteredModels}
+                                filteredConcepts={filteredConcepts}
+                                filters={filters}
+                                groupedAlgorithms={groupedAlgorithms}
+                                groupedModels={groupedModels}
+                                groupedConcepts={groupedConcepts}
+                                layout={effectiveView === "list" ? "list" : "grid"}
+                            />
+                        )}
                     </main>
                 </div>
 
@@ -630,7 +655,7 @@ export default function AlgorithmIndex() {
     // ── Mobile layout ───────────────────────────────────────────────────────
 
     return (
-        <div className="max-w-[640px] mx-auto px-4 py-5 space-y-4">
+        <div className="w-full min-w-0 max-w-[640px] mx-auto px-4 py-5 space-y-4">
             <SeoHead
                 title="Atlas"
                 description="Practical computer vision atlas — algorithms, models, and concepts."

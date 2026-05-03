@@ -3,11 +3,10 @@ title: "XFeat"
 date: 2026-04-18
 summary: "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices."
 tags: ["image-matching", "keypoint-detection", "local-descriptors", "cnn"]
-category: detection
+domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: cnn
-draft: true
 flops: "64-D descriptors at H/8 × W/8 resolution"
 prerequisites: [image-gradient]
 comparedWith: []
@@ -60,7 +59,7 @@ Extract sparse or semi-dense local correspondences between two images under a fi
 **Blocks.** Backbone is six *basic blocks* with channel progression $\{4, 8, 24, 64, 64, 128\}$ and output resolutions $H/2, H/4, H/8, H/16, H/32$ respectively (§3.1, §B). A basic layer is a 2-D convolution with kernel $k \in \{1, 3\}$, ReLU, and BatchNorm; the first basic layer of each block uses stride 2 for spatial halving. The **defining choice is the triple-rate channel schedule** — each spatial halving multiplies the channel count by roughly $3\times$ instead of VGG's $2\times$ (§3.1) — which starves the first two blocks of capacity where resolution is highest, and concentrates depth where the feature maps are small.
 
 ```mermaid
-flowchart LR
+flowchart TB
     I["H×W, 1"] --> B1["block1<br/>H/2×W/2, 4→8"]
     B1 --> B2["block2<br/>H/4×W/4, 24"]
     B2 --> B3["block3<br/>H/8×W/8, 64"]
@@ -126,6 +125,7 @@ Official PyTorch release with Apache-2.0 code and Apache-2.0 weights shipped in-
 - The paper reports neither parameter count nor FLOPs, and no inference-memory budget beyond the $6.5\,\mathrm{GB}$ training footprint — exact deployment sizing requires measuring the $6.0\,\mathrm{MB}$ checkpoint against the target device.
 - Compact $64$-D descriptors reach AUC@5° $42.6$ against DISK's $53.8$ on Megadepth-1500 (sparse setting, Table 1) — the capacity reduction costs absolute pose accuracy on wide-baseline pairs.
 - Training used a $6.5\,\mathrm{GB}$-VRAM RTX 4090 for 36 hours on a 6:4 MegaDepth/synthetic-COCO mix; reproducing on consumer GPUs with less VRAM requires either gradient accumulation or a smaller batch, neither of which is evaluated in the paper.
+- Compared with SuperPoint: see [When to choose SuperPoint over XFeat](/atlas/superpoint#when-to-choose-superpoint-over-xfeat) on the SuperPoint page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

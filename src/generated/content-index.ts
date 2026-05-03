@@ -101,14 +101,18 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 7,
+      "readingTimeMinutes": 8,
       "access": "public",
       "prerequisites": [
-        "homography"
+        "homography",
+        "dlt-normalisation"
+      ],
+      "related": [
+        "spatially-varying-image-stitching"
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "stitching",
       "relatedAlgorithms": [
         "zhang-planar-calibration"
       ],
@@ -137,18 +141,22 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 4,
+      "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [
         "image-gradient"
       ],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedWith": [
         "rochade",
         "pyramidal-blur-aware-xcorner",
-        "puzzleboard"
+        "puzzleboard",
+        "duda-radon-corners"
       ],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedPosts": [
         "01-chesscorners"
       ],
@@ -190,16 +198,20 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "corner-detection"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "hessian-saddle-response",
+        "topological-grid-recovery"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "targets",
       "relatedAlgorithms": [
         "shu-topological-grid",
         "chess-corners",
@@ -209,7 +221,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "laureano2013-topological",
         "references": [
           "shu2009-topological",
-          "rosten2006-fast"
+          "rosten2006-fast",
+          "chen2005-xcorner"
         ],
         "notes": "Pipeline: (1) per-pixel x-corner detector — count sign alternations\nN_alt of I against Tl = m − gate, Th = m + gate on a 16-pixel\nBresenham ring (§2, Eq. 1); classify iff N_alt = 4 ∧ Tl < I(p_c) < Th\nwith gate = 10 empirical. (2) NMS under cost max(Σ_dark|I-m|,\nΣ_light|I-m|) (Eq. 2). (3) Adaptive integral-image binarization\n(Bradley-Roth, §3). (4) Delaunay triangulation of the corner set\n(§3). (5) Topological filter — triangles are legal iff uniform\ninterior ∧ ≥1 same-colour neighbour ∧ ≤2 same-colour neighbours;\niterate to fixed point, drop orphan vertices (§3). (6) Coordinate\npropagation from a seed same-colour triangle pair, reflection rule\nacross shared edges (§4, O(n)). (7) Chen-Zhang Hessian subpixel\nrefinement S = Ixx·Iyy − Ixy² at surviving vertices only (§5, Eq. 4).\nPositioned by the authors as a specification of FAST.\n"
       },
@@ -233,7 +246,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration",
+      "domain": "calibration",
       "relatedAlgorithms": [
         "tsai-lenz-handeye",
         "zhang-planar-calibration"
@@ -267,7 +280,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedAlgorithms": [
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
@@ -281,43 +294,135 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "gao-dual-homography-stitching",
+    "frontmatter": {
+      "title": "Gao Dual-Homography Stitching",
+      "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group with RANSAC, and blending per pixel by inverse-distance weights — the direct two-plane predecessor of APAP's continuous grid of per-cell homographies.",
+      "tags": [
+        "image-stitching",
+        "homography",
+        "panorama",
+        "multi-plane"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "homography"
+      ],
+      "related": [
+        "spatially-varying-image-stitching"
+      ],
+      "comparedWith": [
+        "apap-image-stitching"
+      ],
+      "failureModes": [],
+      "domain": "stitching",
+      "relatedAlgorithms": [
+        "apap-image-stitching"
+      ],
+      "sources": {
+        "primary": "gao2011-dual-homography",
+        "references": [
+          "hartley1997-eight-point",
+          "zaragoza2013-apap",
+          "lin2011-svastitching"
+        ],
+        "notes": "§3.1 Eq. 1: blended dual-homography H_ij = ω_ij H_g + (1-ω_ij) H_d.\n§3.1 Eq. 2: K-means seeds at (x̄, 0) and (x̄, h) — top-vs-bottom spatial\nbias to separate distant from ground features. §3.1 Eq. 3: per-pixel\nweight ω_ij = d_g / (d_g + d_d) using reciprocal-Euclidean distances\nto nearest inlier in each cluster. §3.1 RANSAC: 95% consensus per group.\n§3.2 Eq. 4: multi-image concatenation by boundary-point inverse-distance\nweighting in non-overlapping regions. §4.1 MRF seam cut: gradient-magnitude\ndata cost, smoothness λ=2, graph cuts. §4.2 content-aware straightening\nfixes bow-effect from quadratic warp; vertical-edge bending energy\n(Eq. 8-12). §5 explicit failure: a mid-ground structure violates the\ntwo-plane assumption (Figure 7).\n"
+      },
+      "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "geiger-chessboard-detector",
+    "frontmatter": {
+      "title": "Geiger Chessboard Corner Detector",
+      "summary": "Detect checkerboard X-corners by computing a four-quadrant corner likelihood at each pixel using axis-aligned and 45°-rotated prototype filters at three fixed scales, verifying candidates by gradient-orientation statistics, and refining to subpixel accuracy via gradient-orthogonality weighted least squares — the libcbdetect detector that anchors many subsequent calibration pipelines.",
+      "tags": [
+        "calibration",
+        "chessboard",
+        "corner-detection"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
+      "comparedWith": [
+        "pyramidal-blur-aware-xcorner"
+      ],
+      "failureModes": [],
+      "domain": "features",
+      "relatedAlgorithms": [
+        "chess-corners",
+        "rochade",
+        "pyramidal-blur-aware-xcorner"
+      ],
+      "sources": {
+        "primary": "geiger2012-automatic",
+        "references": [
+          "harris1988-corner",
+          "shi-tomasi1994-features",
+          "lucchese2003-saddle",
+          "rufli2008-blurred",
+          "zhang2000-flexible",
+          "hillen2023-enhanced"
+        ],
+        "notes": "Single-shot multi-sensor calibration paper (camera + lidar/RGB-D),\nbut the chessboard detector is self-contained and the workhorse of\nthe open-source libcbdetect. Detector pipeline (§III): (a) four-quadrant\ncorner likelihood (Eq. 1) using axis-aligned + 45°-rotated prototypes,\neach composed of {A, B, C, D} quadrant kernels; min-of-bright + min-of-\ndark suppresses non-checkerboard corners. (b) Conservative NMS. (c)\nGradient-orientation verification via 32-bin Sobel histogram + mean\nshift + expected-template product. (d) Three-scale max at 4×4, 8×8,\n12×12 windows. (e) Subpixel refinement (§III-B, Eq. 3): gradient-\northogonality weighted LS over an 11×11 neighbourhood, closed form.\n(f) Structure recovery (§III-C, Eq. 6-7): energy minimisation\nE_corners + E_struct, greedy expansion from seed corners — recovers\nmultiple unknown checkerboards in one pass without prior on (r, c).\nReported F1 = 0.92 in the abeles2021 benchmark (second-best after\npyramidal at 0.97). Mean reprojection error 0.18 px across 10\ncalibration settings (Table I). Open source: libcbdetect (cvlibs.net).\n"
+      },
+      "date": "2026-05-02"
+    }
+  },
+  {
     "slug": "gp-checkerboard-enhancement",
     "frontmatter": {
-      "title": "GP Checkerboard Enhancement",
-      "summary": "Wrap a checkerboard corner detector with a Gaussian process that learns the smooth map from local board coordinates to image pixel coordinates, then use the predictive mean to recover occluded corners, claim corners the upstream structure recovery missed, extend the board beyond the image, and smooth the detected positions.",
+      "title": "GP Checkerboard Enhancement (PyCBD)",
+      "summary": "Post-process a partially detected checkerboard by training two Gaussian processes (one per pixel coordinate) on the allocated (boardXY, boardUV) pairs to allocate unassigned detections to grid positions, predict UV for occluded or out-of-frame corners, and apply a global-consistency refinement to every allocated corner.",
       "tags": [
         "calibration",
         "chessboard",
         "gaussian-processes"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
-      "readingTimeMinutes": 7,
+      "readingTimeMinutes": 8,
       "access": "public",
-      "category": "calibration-targets",
-      "relatedAlgorithms": [
-        "chess-corners",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "related": [
+        "geiger-chessboard-detector",
         "ocpad",
-        "rochade",
-        "duda-radon-corners",
-        "pyramidal-blur-aware-xcorner",
-        "shu-topological-grid",
-        "laureano-topological-chessboard"
+        "chessboard-x-corner-detection"
+      ],
+      "comparedWith": [
+        "ocpad"
+      ],
+      "failureModes": [],
+      "domain": "calibration",
+      "relatedAlgorithms": [
+        "geiger-chessboard-detector",
+        "ocpad"
       ],
       "sources": {
         "primary": "hillen2023-enhanced",
         "references": [
+          "rasmussen2006-gpml",
           "geiger2012-automatic",
           "rufli2008-blurred",
-          "fuersattel2016-ocpad",
           "duda2018-accurate",
-          "chen2023-ccdn",
-          "rasmussen2006-gpml"
+          "fuersattel2016-ocpad",
+          "placht2014-rochade"
         ],
-        "notes": "Two parallel GP regressors with squared-exponential kernels map\nlocal board coordinates (x, y) ∈ ℤ² to image axes u and v\nindependently. Algorithm 1 (paper §2.2) iterates: train GPs on the\ncurrently-allocated corners, expand the board grid by one ring\n(north, east, south, west, plus four corners), predict uv for each\nnew xy via the GP posterior mean, and claim any unallocated detected\ncorner that lies within max_dist_factor · ‖p_1 − p_2‖ of a prediction\n(default 0.25 × the first edge length). On no-match, the ring widens\nby 1 (max 2) to bridge larger gaps. Refinement (§2.3) retrains on\nthe full augmented set, fills missing grid positions, and replaces\ndetected uv with the GP posterior mean — smoothing jitter because\nevery corner contributes to every prediction. Defaults from the\nPyCBD reference implementation: max_iterations = 12,\nmax_expansion_factor = 2, max_dist_factor = 0.25, initial\nlengthscale = 10 in xy-standardised space, lengthscale ∈ [0, 25],\nL-BFGS with 25000 inner iterations and 3 random restarts.\n"
+        "notes": "Algorithm page authored from the Hillen 2023 research note (private\nreasoning substrate, not bundled). PyCBD library wraps\nany upstream checkerboard detector (paper benchmarks Geiger 2012);\ntwo GPs predict U and V from `boardXY` via SE kernel (Hillen Eq. 6);\nhyperparameters fit by L-BFGS on log marginal likelihood (Hillen\nEq. 7, Rasmussen 2006 Ch. 5). Iterative outward expansion\n(Algorithm 1, `maxNrOfIterations` default 10) allocates unassigned\ndetections; retrained GPs fill in occluded grid positions and\nsmooth all allocated corners via posterior mean. Cost dominated\nby O(n^3) Cholesky factorisation; sparse-GP extension (Rasmussen\nCh. 8) not implemented in PyCBD. Library:\n`pip install pycbd` / github.com/InViLabUAntwerp/PyCBD.\nComplementary to OCPAD (subgraph isomorphism) — covered in the\nRemarks comparison.\n"
       },
-      "date": "2026-04-29"
+      "date": "2026-05-02"
     }
   },
   {
@@ -331,7 +436,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 4,
+      "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [
         "image-gradient",
@@ -339,14 +444,20 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [
         "shi-tomasi-corner-detector",
-        "fast-corner-detector"
-      ],
-      "failureModes": [],
-      "category": "corner-detection",
-      "relatedAlgorithms": [
-        "shi-tomasi-corner-detector",
         "fast-corner-detector",
         "chess-corners"
+      ],
+      "failureModes": [],
+      "domain": "features",
+      "relatedAlgorithms": [
+        "chess-corners",
+        "duda-radon-corners",
+        "fast-corner-detector",
+        "laureano-topological-chessboard",
+        "puzzleboard",
+        "pyramidal-blur-aware-xcorner",
+        "shi-tomasi-corner-detector",
+        "shu-topological-grid"
       ],
       "sources": {
         "primary": "harris1988-corner",
@@ -368,14 +479,15 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "lens-sensor-tilt"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
       "readingTimeMinutes": 10,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "camera-distortion-models"
+      ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration",
+      "domain": "calibration",
       "relatedAlgorithms": [
         "zhang-planar-calibration"
       ],
@@ -391,6 +503,48 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "lin-sva-stitching",
+    "frontmatter": {
+      "title": "Lin Smoothly Varying Affine Stitching",
+      "summary": "Stitch two images under moderate parallax by replacing the global affine with a per-feature deviation field, regularised to be smooth via a Gaussian-kernel CPD-style EM that jointly estimates correspondence and warp — the contemporary affine-model competitor to APAP's per-cell projective grid.",
+      "tags": [
+        "image-stitching",
+        "spatially-varying-warp",
+        "affine",
+        "non-rigid-registration"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "homography"
+      ],
+      "related": [
+        "spatially-varying-image-stitching"
+      ],
+      "comparedWith": [
+        "apap-image-stitching"
+      ],
+      "failureModes": [],
+      "domain": "stitching",
+      "relatedAlgorithms": [
+        "apap-image-stitching",
+        "gao-dual-homography-stitching"
+      ],
+      "sources": {
+        "primary": "lin2011-svastitching",
+        "references": [
+          "zaragoza2013-apap",
+          "gao2011-dual-homography",
+          "igarashi2005-arap"
+        ],
+        "notes": "SVA replaces the global affine with a per-feature deviation field\na_i = a_global + Δa_i, smoothness-regularised via a Gaussian Fourier\nweight (Eq. 4-5), giving Ψ(A) = tr(ΔAᵀ G⁻¹ ΔA) (Appendix A).\nJoint estimation: Coherent Point Drift (Myronenko 2007) likelihood\n-Σⱼ log Σᵢ g(t'ⱼ - bᵢ, σ_t) + λΨ(A) (Eq. 6). EM-style outer loop\nanneals σ_t from 1.0 to 0.1 by factor 0.97 (~75 outer iterations);\nM-step (Eq. 8) closed-form Δa^{k+1} = -CG/(2λ). Stitching field at\nquery point: v(z) = Σᵢ wᵢ g(z - b⁰ᵢ, γ), W = G⁺ ΔA (Eq. 9). §3\ndefaults: λ=10, γ=1, κ=0.5, normalised coords. ~8 min for 1200\nSIFT features in MATLAB; APAP reports ~15 min on temple pair.\nStated limitation (§6): \"violation of affine coherence at depth\nboundaries.\"\n"
+      },
+      "date": "2026-05-02"
+    }
+  },
+  {
     "slug": "duda-radon-corners",
     "frontmatter": {
       "title": "Localized Radon Checkerboard Corners",
@@ -402,14 +556,17 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 5,
+      "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
         "image-gradient"
       ],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedAlgorithms": [
         "chess-corners",
         "harris-corner-detector",
@@ -429,6 +586,40 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "fundamental-matrix-eight-point",
+    "frontmatter": {
+      "title": "Normalised Eight-Point Algorithm",
+      "summary": "Compute the fundamental matrix from n ≥ 8 point correspondences by conditioning the linear DLT system via a similarity normalisation, recovering accuracy comparable to iterative methods at a fraction of the cost.",
+      "tags": [
+        "geometry",
+        "stereo",
+        "two-view-geometry",
+        "fundamental-matrix"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "epipolar-geometry",
+        "homography",
+        "dlt-normalisation"
+      ],
+      "comparedWith": [],
+      "failureModes": [],
+      "domain": "geometry",
+      "relatedAlgorithms": [
+        "apap-image-stitching"
+      ],
+      "sources": {
+        "primary": "hartley1997-eight-point",
+        "references": [],
+        "notes": "Two-line fix to the Longuet-Higgins (1981) linear DLT for the\nfundamental matrix: translate each image's points to zero centroid,\nisotropically scale so the average distance to origin is √2, then\nrun the standard DLT, enforce rank 2 by SVD truncation, and\ndenormalise. Without normalisation, the design matrix A^T A has\ncondition number κ ~ 10^11–10^13 on typical 200×200 images;\nnormalisation drops κ to ~10^3–10^5 (Graph 1 of paper). Empirical\nfinding: the normalised linear method is \"almost indistinguishable\"\nfrom the optimal iterative gold-standard estimator at n ≥ 10\ncorrespondences, while running ~20× faster (§7.3, §8). The same\nnormalisation argument applies to the homography DLT.\n"
+      },
+      "date": "2026-05-02"
+    }
+  },
+  {
     "slug": "ocpad",
     "frontmatter": {
       "title": "OCPAD: Occluded Checkerboard Pattern Detection",
@@ -438,16 +629,19 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "chessboard"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
-      "readingTimeMinutes": 6,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "topological-grid-recovery"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "targets",
       "relatedAlgorithms": [
         "shu-topological-grid",
         "puzzleboard",
@@ -475,16 +669,20 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "self-identifying-pattern"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
-      "readingTimeMinutes": 6,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "hessian-saddle-response",
+        "topological-grid-recovery"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "targets",
       "relatedAlgorithms": [
         "chess-corners",
         "harris-corner-detector",
@@ -494,7 +692,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "sources": {
         "primary": "stelldinger2024-puzzleboard",
         "references": [
-          "harris1988-corner"
+          "harris1988-corner",
+          "chen2005-xcorner"
         ],
         "notes": "Pattern: checkerboard overlaid with binary circles at every edge midpoint.\nThe circles encode a sub-perfect map of type (501, 501; 3, 3)_4 — every\n3×3 window of 2-bit codes is unique. The map is the superposition of two\nbinary (3, 3; 3, 3)_2 de Bruijn rings A (shape 3×167) and B (shape 167×3).\nDetection pipeline (§4): Hessian-based saddle response s = f_xy² − f_xx·f_yy\n− k(f_xx + f_yy)² with default k = 1 (§4.1); subpixel refinement by\ngrayscale centroid in 3×3 (§4.1); 9-nearest-neighbour graph with direct\nvs diagonal disambiguation via Hessian eigenvector directions (§4.2);\nminimum spanning forest by Kruskal with union-find (§4.2); bit read at\nthe middle third of each edge (§3 motivates the 1/3 circle diameter);\ncross-correlation decoding against A, A', B, B' at sizes 167×333 and\n333×167; absolute position (x_A + 167·[(x_A − x_B) mod 3], y_B + 167·[(y_B\n− y_A) mod 3]) on {0,…,500}^2 (§4.3). Bit repetition every three rows and\ncolumns gives majority-voting error correction tolerating up to 40 %\ncorrupted bits (§4.3).\n"
       },
@@ -513,15 +712,18 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 6,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
         "image-gradient",
         "scale-space"
       ],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedAlgorithms": [
         "chess-corners",
         "rochade",
@@ -542,34 +744,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
-    "slug": "02-demo-blocks",
-    "frontmatter": {
-      "title": "Rich Algorithm Content Demo",
-      "summary": "A draft algorithm page that exercises semantic blocks, math, diagrams, code, and related-link metadata.",
-      "tags": [
-        "meta",
-        "demo",
-        "authoring"
-      ],
-      "author": "Vitaly Vorobyev",
-      "draft": true,
-      "difficulty": "intermediate",
-      "readingTimeMinutes": 6,
-      "access": "public",
-      "prerequisites": [],
-      "comparedWith": [],
-      "failureModes": [],
-      "category": "explainers",
-      "relatedPosts": [
-        "00-intro"
-      ],
-      "relatedAlgorithms": [
-        "harris-corner-detector"
-      ],
-      "date": "2026-03-29"
-    }
-  },
-  {
     "slug": "rochade",
     "frontmatter": {
       "title": "ROCHADE: Robust Checkerboard Advanced Detection",
@@ -580,14 +754,20 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 7,
+      "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "hessian-saddle-response"
       ],
-      "comparedWith": [],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
+      "comparedWith": [
+        "pyramidal-blur-aware-xcorner"
+      ],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "targets",
       "relatedAlgorithms": [
         "ocpad",
         "chess-corners",
@@ -626,7 +806,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "corner-detection",
+      "domain": "features",
       "relatedAlgorithms": [
         "harris-corner-detector",
         "fast-corner-detector",
@@ -643,6 +823,41 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "sturm-plane-based-calibration",
+    "frontmatter": {
+      "title": "Sturm-Maybank Plane-Based Calibration",
+      "summary": "Recover camera intrinsics from one or more views of one or more planar targets via the same two IAC-on-homography constraints as Zhang's method, with an exhaustive singularity catalogue and a generalisation to variable intrinsics (zooming cameras) — the concurrent CVPR 1999 derivation of plane-based calibration.",
+      "tags": [
+        "calibration",
+        "intrinsics",
+        "iac",
+        "singularity-analysis",
+        "variable-intrinsics"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "homography"
+      ],
+      "comparedWith": [],
+      "failureModes": [],
+      "domain": "calibration",
+      "relatedAlgorithms": [
+        "zhang-planar-calibration"
+      ],
+      "sources": {
+        "primary": "sturm2003-plane-based",
+        "references": [
+          "zhang2000-flexible"
+        ],
+        "notes": "Concurrent with Zhang 1999 (ICCV; published as TPAMI 2000). Same two\nIAC linear constraints per homography (Eq. 4 in Sturm-Maybank, Eqs. 3-4\nin Zhang). Primary distinguishing contributions: (a) exhaustive\nsingularity catalogue for one- and two-plane setups (Tables 1 and 2);\n(b) variable-intrinsics extension for zooming cameras (§4.2 — additional\ncolumns in the design matrix per zoom position); (c) prior-knowledge\nincorporation as linear constraints (§4.1). Numerical: column rescaling\nof A \"proved to be crucial\" for reliable IAC recovery; row rescaling\nexplicitly avoided (§4.3) because near-zero rows magnify noise. Note\npaper_id \"2003\" is an index artefact — paper is CVPR 1999.\n"
+      },
+      "date": "2026-05-02"
+    }
+  },
+  {
     "slug": "shu-topological-grid",
     "frontmatter": {
       "title": "Topological Grid Finding",
@@ -653,14 +868,20 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 5,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "topological-grid-recovery"
       ],
-      "comparedWith": [],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
+      "comparedWith": [
+        "laureano-topological-chessboard"
+      ],
       "failureModes": [],
-      "category": "calibration-targets",
+      "domain": "targets",
       "relatedAlgorithms": [
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
@@ -687,16 +908,15 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "robotics"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "advanced",
-      "readingTimeMinutes": 7,
+      "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
       "comparedWith": [
         "daniilidis-dual-quaternion-handeye"
       ],
       "failureModes": [],
-      "category": "calibration",
+      "domain": "calibration",
       "relatedAlgorithms": [
         "daniilidis-dual-quaternion-handeye",
         "zhang-planar-calibration"
@@ -713,6 +933,48 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "tsai-versatile-calibration",
+    "frontmatter": {
+      "title": "Tsai's Versatile Camera Calibration",
+      "summary": "Two-stage camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns.",
+      "tags": [
+        "calibration",
+        "intrinsics",
+        "extrinsics",
+        "radial-distortion"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "camera-distortion-models"
+      ],
+      "comparedWith": [
+        "zhang-planar-calibration",
+        "kumar-generalized-rac"
+      ],
+      "failureModes": [],
+      "domain": "calibration",
+      "relatedAlgorithms": [
+        "zhang-planar-calibration",
+        "tsai-lenz-handeye",
+        "kumar-generalized-rac"
+      ],
+      "sources": {
+        "primary": "tsai1987-versatile",
+        "references": [
+          "zhang2000-flexible",
+          "weng1992-camera",
+          "kumar2014-grac",
+          "daniilidis1999-hand-eye"
+        ],
+        "notes": "Two-stage technique. Stage 1 — radial alignment constraint (RAC) gives a\nlinear system in five (coplanar, Eq. 10) or seven (non-coplanar, Eq. 16)\nunknowns encoding (R, T_x, T_y) and the image-scale uncertainty s_x.\nStage 2 — fixes Stage 1 outputs and recovers (f, T_z, kappa_1) by a\nshort nonlinear solve seeded by an ignoring-distortion linear\napproximation (Eq. 15 → Eq. 8b). One-term radial distortion only;\ntangential excluded \"to avoid numerical instability\" (§II-B).\nCoplanar target requires s_x known a priori (Lenz-Tsai 1987); non-coplanar\ntarget recovers s_x as part of the calibration.\n"
+      },
+      "date": "2026-05-02"
+    }
+  },
+  {
     "slug": "zhang-planar-calibration",
     "frontmatter": {
       "title": "Zhang's Planar Camera Calibration",
@@ -724,14 +986,17 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 7,
+      "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
-        "homography"
+        "homography",
+        "camera-distortion-models"
       ],
-      "comparedWith": [],
+      "comparedWith": [
+        "sturm-plane-based-calibration"
+      ],
       "failureModes": [],
-      "category": "calibration",
+      "domain": "calibration",
       "relatedAlgorithms": [
         "chess-corners",
         "rochade",
@@ -807,16 +1072,18 @@ export const modelPages: ModelIndexEntry[] = [
         "cnn"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
         "image-gradient"
       ],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "calibration-learning",
+      "domain": "calibration",
       "arch_family": "cnn",
       "params": "16,301",
       "sources": {
@@ -848,6 +1115,97 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "mate-checkerboard-detector",
+    "frontmatter": {
+      "title": "MATE",
+      "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
+      "tags": [
+        "calibration",
+        "corner-detection",
+        "cnn"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "related": [
+        "chessboard-x-corner-detection"
+      ],
+      "comparedWith": [
+        "ccdn-checkerboard-detector"
+      ],
+      "failureModes": [],
+      "quality": "stub",
+      "domain": "calibration",
+      "arch_family": "cnn",
+      "params": "2,939",
+      "sources": {
+        "primary": "donne2016-mate",
+        "references": [
+          "chen2023-ccdn",
+          "placht2014-rochade",
+          "bennett2013-chess",
+          "rufli2008-blurred"
+        ],
+        "notes": "Stub page authored from secondary sources only — the MDPI PDF for\nDonné et al. 2016 (doi:10.3390/s16111858) returned HTTP 403 to\nautomated fetchers and could not be cached. All claims are derived\nfrom the chen2023-ccdn research note, the existing CCDN page\n(`content/models/ccdn-checkerboard-detector.md`), and the\nindex.yaml `donne2016-mate` notes. Architecture: 3 conv\nlayers + ReLU; per-pixel response map; max-pool with stride > 1\n(output spatially coarser than input). Loss: MSE between predicted\nresponse and binary corner mask (no positive/negative balancing).\nPost-processing: fixed 0.5 threshold; no NMS, no clustering.\nBenchmarks (via CCDN Tables 1–2): uEye 1.009 px / 3.065 % missed /\n0.809 % doubles / 492 FP; GoPro 0.835 px / 4.566 % / 4.556 % / 389 FP.\nPromote past stub when the paper PDF becomes accessible and the\narchitectural specifics (kernel sizes, channel counts, max-pool\nstrides, training hyperparameters) can be verified against the\nprimary text.\n"
+      },
+      "relatedAlgorithms": [
+        "chess-corners",
+        "rochade",
+        "fast-corner-detector"
+      ],
+      "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "superpoint",
+    "frontmatter": {
+      "title": "SuperPoint",
+      "summary": "Fully-convolutional CNN that jointly detects interest points and computes 256-D descriptors in a single forward pass, trained without human annotations via Homographic Adaptation on synthetic shapes and MS-COCO images.",
+      "tags": [
+        "computer-vision",
+        "keypoint-detection",
+        "local-descriptors",
+        "image-matching",
+        "self-supervised"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "comparedWith": [
+        "xfeat"
+      ],
+      "failureModes": [],
+      "domain": "features",
+      "arch_family": "cnn",
+      "params": "~1.3M (estimate; not stated in paper)",
+      "sources": {
+        "primary": "detone2018-superpoint",
+        "references": [
+          "rosten2006-fast",
+          "harris1988-corner",
+          "shi-tomasi1994-features"
+        ],
+        "notes": "§3.1 shared VGG-style encoder: eight 3×3 conv layers (64-64-64-64-128-\n128-128-128) with three 2×2 max-pools → H_c = H/8, W_c = W/8. ReLU +\nBatchNorm throughout. §3.2 detector head: 65-class softmax (8×8 grid +\n\"no-keypoint\" dustbin), pixel-shuffle reshape to H×W (no learned\nupsampling). §3.3 descriptor head: 256-D semi-dense map at H/8 × W/8,\nbicubic upsample + L2 normalise. §3.4 / Eq. 1 total loss = detector\ncross-entropy (Eq. 2-3) + λ · descriptor hinge (Eq. 5-6) with λ=0.0001,\nλ_d=250, m_p=1, m_n=0.2. §4 MagicPoint pre-training on Synthetic Shapes.\n§5 / Eq. 10 Homographic Adaptation: aggregate detections from N_h=100\nrandom homographies into pseudo-labels. §6 joint training on MS-COCO\n2014 (80k grayscale, 240×320), Adam lr=0.001. §7.1 70 FPS on Titan X\nat 480×640. Table 4 HPatches: NN mAP 0.821 (vs SIFT 0.694, LIFT 0.664,\nORB 0.735); MLE 1.158 px (vs SIFT 0.833 — SuperPoint outputs cell-\naligned integer positions, no subpixel refinement). §7.3 Figure 8\nexplicit failure mode: \"extreme in-plane rotation not seen in the\ntraining examples.\"\n"
+      },
+      "relatedAlgorithms": [
+        "harris-corner-detector",
+        "shi-tomasi-corner-detector",
+        "fast-corner-detector"
+      ],
+      "date": "2026-05-02"
+    }
+  },
+  {
     "slug": "xfeat",
     "frontmatter": {
       "title": "XFeat",
@@ -859,7 +1217,6 @@ export const modelPages: ModelIndexEntry[] = [
         "cnn"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
@@ -868,7 +1225,7 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "comparedWith": [],
       "failureModes": [],
-      "category": "detection",
+      "domain": "features",
       "arch_family": "cnn",
       "flops": "64-D descriptors at H/8 × W/8 resolution",
       "sources": {
@@ -896,6 +1253,125 @@ export const modelPages: ModelIndexEntry[] = [
 
 export const conceptPages: ConceptIndexEntry[] = [
   {
+    "slug": "camera-distortion-models",
+    "frontmatter": {
+      "title": "Camera Distortion Models",
+      "summary": "Mathematical models for departures from the ideal pinhole projection — radial barrel/pincushion, tangential decentering, thin-prism — and the historical lineage from Brown's photogrammetric polynomial through Tsai's one-term radial, Weng's full Brown-Conrady, and Zhang's two-term planar formulation.",
+      "tags": [
+        "calibration",
+        "lens-distortion",
+        "intrinsics",
+        "camera-model"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [],
+      "related": [
+        "tsai-versatile-calibration",
+        "zhang-planar-calibration",
+        "kumar-generalized-rac"
+      ],
+      "domain": "image-formation",
+      "sources": {
+        "references": [
+          "tsai1987-versatile",
+          "weng1992-camera",
+          "zhang2000-flexible",
+          "kumar2014-grac"
+        ]
+      },
+      "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "chessboard-x-corner-detection",
+    "frontmatter": {
+      "title": "Chessboard X-Corner Detection",
+      "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
+      "tags": [
+        "calibration",
+        "chessboard",
+        "corner-detection",
+        "survey"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "related": [
+        "chess-corners",
+        "rochade",
+        "geiger-chessboard-detector",
+        "pyramidal-blur-aware-xcorner",
+        "shu-topological-grid",
+        "laureano-topological-chessboard",
+        "ocpad",
+        "puzzleboard",
+        "duda-radon-corners",
+        "ccdn-checkerboard-detector",
+        "mate-checkerboard-detector",
+        "gp-checkerboard-enhancement",
+        "hessian-saddle-response",
+        "topological-grid-recovery"
+      ],
+      "domain": "features",
+      "sources": {
+        "references": [
+          "bennett2013-chess",
+          "placht2014-rochade",
+          "fuersattel2016-ocpad",
+          "donne2016-mate",
+          "abeles2021-pyramidal",
+          "geiger2012-automatic",
+          "laureano2013-topological",
+          "shu2009-topological",
+          "duda2018-accurate",
+          "chen2023-ccdn",
+          "stelldinger2024-puzzleboard",
+          "hillen2023-enhanced"
+        ]
+      },
+      "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "dlt-normalisation",
+    "frontmatter": {
+      "title": "DLT Normalisation",
+      "summary": "A two-line similarity transform — translate the point centroid to the origin, isotropically scale so the average distance is √2 — that conditions the design matrix of any DLT-based estimator (homography, fundamental matrix, projective camera, Moving DLT) by ~10⁸, and is the difference between unusable and reliable linear solutions.",
+      "tags": [
+        "geometry",
+        "linear-algebra",
+        "numerical-conditioning",
+        "dlt"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "related": [
+        "homography",
+        "epipolar-geometry",
+        "apap-image-stitching",
+        "fundamental-matrix-eight-point"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "references": [
+          "hartley1997-eight-point",
+          "zaragoza2013-apap"
+        ]
+      },
+      "date": "2026-05-02"
+    }
+  },
+  {
     "slug": "epipolar-geometry",
     "frontmatter": {
       "title": "Epipolar Geometry",
@@ -910,9 +1386,53 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
-      "related": [],
-      "category": "geometry",
+      "related": [
+        "dlt-normalisation"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "references": [
+          "hartley1997-eight-point"
+        ]
+      },
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "hessian-saddle-response",
+    "frontmatter": {
+      "title": "Hessian Saddle Response",
+      "summary": "A scalar response computed from the determinant of the image Hessian, negative at saddle points (X-corners) and zero at flat regions, edges, and blobs — the discriminator at the heart of every modern checkerboard X-corner detector.",
+      "tags": [
+        "feature-theory",
+        "corner-detection",
+        "calibration",
+        "hessian"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "related": [
+        "chess-corners",
+        "rochade",
+        "laureano-topological-chessboard",
+        "puzzleboard",
+        "structure-tensor"
+      ],
+      "domain": "features",
+      "sources": {
+        "references": [
+          "chen2005-xcorner",
+          "stelldinger2024-puzzleboard",
+          "laureano2013-topological",
+          "placht2014-rochade"
+        ]
+      },
+      "date": "2026-05-02"
     }
   },
   {
@@ -932,9 +1452,10 @@ export const conceptPages: ConceptIndexEntry[] = [
       "prerequisites": [],
       "related": [
         "zhang-planar-calibration",
-        "apap-image-stitching"
+        "apap-image-stitching",
+        "dlt-normalisation"
       ],
-      "category": "geometry",
+      "domain": "geometry",
       "sources": {
         "references": [
           "hartley1997-eight-point",
@@ -966,7 +1487,7 @@ export const conceptPages: ConceptIndexEntry[] = [
         "fast-corner-detector",
         "pyramidal-blur-aware-xcorner"
       ],
-      "category": "feature-theory",
+      "domain": "features",
       "date": "2026-04-30"
     }
   },
@@ -989,8 +1510,45 @@ export const conceptPages: ConceptIndexEntry[] = [
         "chess-corners",
         "pyramidal-blur-aware-xcorner"
       ],
-      "category": "image-formation",
+      "domain": "image-formation",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "spatially-varying-image-stitching",
+    "frontmatter": {
+      "title": "Spatially Varying Image Stitching",
+      "summary": "A 2011–2013 lineage of stitching methods that replace the single global homography with a spatially varying warp field — fitted as either two homographies + spatial blend (Gao 2011), a smooth affine deviation field (Lin 2011), or a per-cell weighted-DLT projective grid (Zaragoza 2013, APAP) — to absorb parallax and non-rotational camera motion that no single homography can represent.",
+      "tags": [
+        "image-stitching",
+        "homography",
+        "panorama",
+        "spatially-varying-warp",
+        "survey"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "homography"
+      ],
+      "related": [
+        "apap-image-stitching",
+        "gao-dual-homography-stitching",
+        "lin-sva-stitching",
+        "dlt-normalisation"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "references": [
+          "gao2011-dual-homography",
+          "lin2011-svastitching",
+          "zaragoza2013-apap",
+          "hartley1997-eight-point"
+        ]
+      },
+      "date": "2026-05-02"
     }
   },
   {
@@ -1014,8 +1572,42 @@ export const conceptPages: ConceptIndexEntry[] = [
         "harris-corner-detector",
         "shi-tomasi-corner-detector"
       ],
-      "category": "feature-theory",
+      "domain": "features",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "topological-grid-recovery",
+    "frontmatter": {
+      "title": "Topological Grid Recovery",
+      "summary": "Verify candidate calibration-pattern corners by constructing a graph over them (Delaunay triangulation, k-nearest-neighbours, or proximity) and accepting only configurations that match the expected chessboard topology — false positives are eliminated by structural rules rather than per-pixel response thresholds.",
+      "tags": [
+        "calibration",
+        "chessboard",
+        "topology",
+        "graph-algorithms"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [],
+      "related": [
+        "shu-topological-grid",
+        "laureano-topological-chessboard",
+        "ocpad",
+        "puzzleboard"
+      ],
+      "domain": "features",
+      "sources": {
+        "references": [
+          "shu2009-topological",
+          "laureano2013-topological",
+          "fuersattel2016-ocpad",
+          "stelldinger2024-puzzleboard"
+        ]
+      },
+      "date": "2026-05-02"
     }
   }
 ];

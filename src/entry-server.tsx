@@ -5,14 +5,14 @@ import { ClerkProvider } from "@clerk/clerk-react";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import AlgorithmIndex from "./pages/AlgorithmIndex.tsx";
-import AlgorithmPost from "./pages/AlgorithmPost.tsx";
-import ConceptPost from "./pages/ConceptPost.tsx";
-import ModelPost from "./pages/ModelPost.tsx";
+import AtlasPost from "./pages/AtlasPost.tsx";
 import DemoIndex from "./pages/DemoIndex.tsx";
 import DemoPage from "./pages/DemoPage.tsx";
 import Navbar from "./components/layout/Navbar.tsx";
 import Footer from "./components/layout/Footer.tsx";
 import { StaticContentProvider, type StaticContentContextValue } from "./lib/content/ssr-content.tsx";
+import { PapersProvider } from "./lib/atlas/papersIndex.tsx";
+import type { PapersById } from "./generated/papers-index.ts";
 
 // In SSR (postbuild), Vite doesn't substitute import.meta.env — read from process.env instead.
 // ClerkProvider is required because Navbar renders <SignedOut>/<SignedIn>.
@@ -22,10 +22,15 @@ import { StaticContentProvider, type StaticContentContextValue } from "./lib/con
 const SSR_PUBLISHABLE_KEY =
     process.env.VITE_CLERK_PUBLISHABLE_KEY ?? "pk_test_Y2xlcmsuZXhhbXBsZS5jb20k";
 
-export function render(url: string, staticContent: StaticContentContextValue | null = null): string {
+export function render(
+    url: string,
+    staticContent: StaticContentContextValue | null = null,
+    papers: PapersById = {},
+): string {
     return renderToString(
         <ClerkProvider publishableKey={SSR_PUBLISHABLE_KEY}>
         <StaticContentProvider value={staticContent}>
+        <PapersProvider initial={papers}>
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
                 <MemoryRouter initialEntries={[url]}>
                     <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
@@ -34,10 +39,8 @@ export function render(url: string, staticContent: StaticContentContextValue | n
                             <Routes>
                                 <Route path="/blog" element={<Blog />} />
                                 <Route path="/blog/:slug" element={<BlogPost />} />
-                                <Route path="/algorithms" element={<AlgorithmIndex />} />
-                                <Route path="/algorithms/models/:slug" element={<ModelPost />} />
-                                <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
-                                <Route path="/concepts/:slug" element={<ConceptPost />} />
+                                <Route path="/atlas" element={<AlgorithmIndex />} />
+                                <Route path="/atlas/:slug" element={<AtlasPost />} />
                                 <Route path="/demos" element={<DemoIndex />} />
                                 <Route path="/demos/:slug" element={<DemoPage />} />
                                 <Route path="/tools/target-generator" element={
@@ -54,6 +57,7 @@ export function render(url: string, staticContent: StaticContentContextValue | n
                     </div>
                 </MemoryRouter>
             </ThemeProvider>
+        </PapersProvider>
         </StaticContentProvider>
         </ClerkProvider>,
     );

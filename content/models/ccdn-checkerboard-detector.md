@@ -3,13 +3,13 @@ title: "CCDN"
 date: 2026-04-18
 summary: "Fully convolutional network that regresses a per-pixel checkerboard-corner response map; trained with weighted cross-entropy and paired with threshold + NMS + k-means post-processing."
 tags: ["calibration", "corner-detection", "cnn"]
-category: calibration-learning
+domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: cnn
-draft: true
 params: "16,301"
 prerequisites: [image-gradient]
+related: [chessboard-x-corner-detection]
 comparedWith: []
 failureModes: []
 sources:
@@ -52,22 +52,7 @@ Detect the inner corners of a planar checkerboard pattern in a single forward pa
 
 **Blocks.** Six convolutional layers with ReLU after each. Conv1 uses a $9 \times 9 \times 1$ kernel; conv2–conv6 use $3 \times 3$ kernels. Max-pooling of size $2 \times 2$ follows conv1 and conv4. The defining design choice is **stride 1 on every convolution and max-pool** with zero-padding, so the response map retains the input's spatial resolution (§2.1). Weights are initialised from $\mathcal{N}(0, 0.1^2)$; biases constant $0.1$. Parameter count: 16,301 (conv1 1,640 + conv2–5 each 3,620 + conv6 181).
 
-```mermaid
-flowchart LR
-    X["input<br/>H×W, gray"] --> C1["conv 9×9×1<br/>20 ch"]
-    C1 --> P1["maxpool 2×2<br/>stride 1"]
-    P1 --> C2["conv 3×3<br/>20 ch"]
-    C2 --> C3["conv 3×3<br/>20 ch"]
-    C3 --> C4["conv 3×3<br/>20 ch"]
-    C4 --> P2["maxpool 2×2<br/>stride 1"]
-    P2 --> C5["conv 3×3<br/>20 ch"]
-    C5 --> C6["conv 3×3<br/>1 ch"]
-    C6 --> R["response map<br/>H×W"]
-    R --> T["threshold<br/>0.5 · max"]
-    T --> N["NMS<br/>4×4, IoU 0.5"]
-    N --> K["k-means++<br/>k=10, drop N<2"]
-    K --> O["corner set"]
-```
+![ccdn-checkerboard-detector pipeline: 11-stage flow from grayscale input through six convolutional layers with two stride-1 max-pools, producing a full-resolution response map post-processed by adaptive threshold, NMS, and k-means++ cluster pruning to the final corner set.](./images/ccdn-checkerboard-detector/pipeline.svg)
 
 :::definition[Weighted cross-entropy loss]
 Per-pixel cross-entropy normalised by the count of ground-truth positives $N_p$ and negatives $N_N$ to compensate for the $\sim 10^{-4}$ positive-label fraction, with $L_2$ regularisation coefficient $\lambda = 0.01$.
@@ -113,6 +98,10 @@ One public TensorFlow implementation. The repository carries no LICENSE file, wh
 - OCamCalib reaches 0.319 px / 0 % missed on the same uEye set by exploiting known pattern dimensions; CCDN trades that precision for pattern-agnosticism (Table 1).
 - The only public TensorFlow implementation is unlicensed, unmaintained since 2018, ships no trained weights, and has no documented provenance from the paper's authors — downstream use requires retraining from scratch and resolving the licensing question.
 - The cluster-size floor $N_i \ge 2$ and the fixed $k = 10$ in k-means++ are hand-tuned; sparse partial checkerboards with only a few visible corners at the image border risk being pruned as outliers.
+
+# Remarks
+
+- Compared with MATE: see [When to choose MATE over CCDN](/atlas/mate-checkerboard-detector#when-to-choose-mate-over-ccdn) on the [MATE](/atlas/mate-checkerboard-detector) page, which hosts the comparison per the older-paper-hosts rule. CCDN doubles MATE's depth (six vs three convolutions), replaces MSE with positive-negative-balanced cross-entropy, enforces stride-1 max-pools to preserve input resolution, and adds adaptive-threshold + NMS + k-means++ post-processing.
 
 # References
 

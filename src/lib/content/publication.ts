@@ -9,7 +9,7 @@ import type {
 interface StructuredArticleFrontmatter {
     title: string;
     summary: string;
-    author: string;
+    author?: string;
     date: string;
     updated?: string;
     coverImage?: string;
@@ -30,7 +30,7 @@ function buildStructuredArticleJsonLd(
         description: frontmatter.summary,
         datePublished: frontmatter.date,
         ...(frontmatter.updated && { dateModified: frontmatter.updated }),
-        author: { "@type": "Person", name: frontmatter.author },
+        ...(frontmatter.author && { author: { "@type": "Person", name: frontmatter.author } }),
         ...(frontmatter.coverImage && { image: frontmatter.coverImage }),
         keywords: frontmatter.tags.join(", "),
         ...(frontmatter.readingTimeMinutes && { timeRequired: `PT${frontmatter.readingTimeMinutes}M` }),
@@ -57,7 +57,7 @@ export function buildAlgorithmJsonLd(
     return buildStructuredArticleJsonLd(
         "TechArticle",
         frontmatter,
-        `/algorithms/${slug}`,
+        `/atlas/${slug}`,
     );
 }
 
@@ -79,7 +79,7 @@ export function buildModelJsonLd(
     return buildStructuredArticleJsonLd(
         "TechArticle",
         frontmatter,
-        `/algorithms/models/${slug}`,
+        `/atlas/${slug}`,
     );
 }
 
@@ -90,7 +90,7 @@ export function buildConceptJsonLd(
     return buildStructuredArticleJsonLd(
         "TechArticle",
         frontmatter,
-        `/concepts/${slug}`,
+        `/atlas/${slug}`,
     );
 }
 

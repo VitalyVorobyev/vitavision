@@ -7,14 +7,16 @@ export interface SearchRecord {
     title: string;
     summary: string;
     tags: string[];
-    category?: string;
+    domain?: string;
     headings: string[];
+    authors?: string[];
+    venue?: string;
 }
 
 export const searchRecords: SearchRecord[] = [
   {
     "slug": "apap-image-stitching",
-    "path": "/algorithms/apap-image-stitching",
+    "path": "/atlas/apap-image-stitching",
     "type": "algorithm",
     "title": "As-Projective-As-Possible Image Stitching",
     "summary": "Replace a global homography with a spatially varying field of homographies, each fit by a per-cell weighted DLT (Moving DLT) on the same point correspondences, so the warp stays globally projective but adapts locally where the projective model is inadequate.",
@@ -24,14 +26,21 @@ export const searchRecords: SearchRecord[] = [
       "projective-warp",
       "dlt"
     ],
-    "category": "calibration-targets",
+    "domain": "stitching",
     "headings": [
       "Procedure"
-    ]
+    ],
+    "authors": [
+      "J. Zaragoza",
+      "T.-J. Chin",
+      "M. S. Brown",
+      "D. Suter"
+    ],
+    "venue": "IEEE CVPR"
   },
   {
     "slug": "chess-corners",
-    "path": "/algorithms/chess-corners",
+    "path": "/atlas/chess-corners",
     "type": "algorithm",
     "title": "ChESS Corners",
     "summary": "A chessboard-specific corner detector: scores each pixel by how well its local neighborhood matches an alternating bright-dark X-junction pattern, using 16 fixed integer offsets on a radius-5 ring.",
@@ -40,14 +49,23 @@ export const searchRecords: SearchRecord[] = [
       "calibration",
       "chessboard"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
-      "Procedure"
-    ]
+      "Procedure",
+      "When to choose ChESS over ROCHADE",
+      "When to choose ChESS over Pyramidal",
+      "When to choose ChESS over Duda-Radon",
+      "When to choose ChESS over PuzzleBoard"
+    ],
+    "authors": [
+      "S. Bennett",
+      "J. Lasenby"
+    ],
+    "venue": "arXiv"
   },
   {
     "slug": "laureano-topological-chessboard",
-    "path": "/algorithms/laureano-topological-chessboard",
+    "path": "/atlas/laureano-topological-chessboard",
     "type": "algorithm",
     "title": "Chessboard Detection via X-Corners and Topology",
     "summary": "Detect every corner of a chessboard calibration pattern and assign it an integer grid coordinate by counting ring-alternations to locate X-junctions, Delaunay-triangulating the corner set, and keeping only triangles that respect the two-colour neighbourhood regularity of the pattern.",
@@ -56,14 +74,20 @@ export const searchRecords: SearchRecord[] = [
       "chessboard",
       "corner-detection"
     ],
-    "category": "calibration-targets",
+    "domain": "targets",
     "headings": [
       "Procedure"
-    ]
+    ],
+    "authors": [
+      "G. T. Laureano",
+      "M. S. V. de Paiva",
+      "A. S. da Silva"
+    ],
+    "venue": "IPCV (WorldComp)"
   },
   {
     "slug": "daniilidis-dual-quaternion-handeye",
-    "path": "/algorithms/daniilidis-dual-quaternion-handeye",
+    "path": "/atlas/daniilidis-dual-quaternion-handeye",
     "type": "algorithm",
     "title": "Daniilidis Dual-Quaternion Hand-Eye Calibration",
     "summary": "Solve the hand-eye equation AX=XB jointly for rotation and translation by parametrising rigid motions as unit dual quaternions and extracting X from the right null space of a single linear system.",
@@ -72,12 +96,16 @@ export const searchRecords: SearchRecord[] = [
       "hand-eye",
       "robotics"
     ],
-    "category": "calibration",
-    "headings": []
+    "domain": "calibration",
+    "headings": [],
+    "authors": [
+      "K. Daniilidis"
+    ],
+    "venue": "The International Journal of Robotics Research"
   },
   {
     "slug": "fast-corner-detector",
-    "path": "/algorithms/fast-corner-detector",
+    "path": "/atlas/fast-corner-detector",
     "type": "algorithm",
     "title": "FAST Corner Detector",
     "summary": "Segment-test corner detector on a 16-pixel Bresenham ring of radius 3 around each candidate; classifies a point as a corner when N contiguous ring pixels are all brighter (or all darker) than the centre by a margin t.",
@@ -85,10 +113,94 @@ export const searchRecords: SearchRecord[] = [
       "feature-detection",
       "corner"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
       "Procedure"
-    ]
+    ],
+    "authors": [
+      "E. Rosten",
+      "T. Drummond"
+    ],
+    "venue": "ECCV"
+  },
+  {
+    "slug": "gao-dual-homography-stitching",
+    "path": "/atlas/gao-dual-homography-stitching",
+    "type": "algorithm",
+    "title": "Gao Dual-Homography Stitching",
+    "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group with RANSAC, and blending per pixel by inverse-distance weights — the direct two-plane predecessor of APAP's continuous grid of per-cell homographies.",
+    "tags": [
+      "image-stitching",
+      "homography",
+      "panorama",
+      "multi-plane"
+    ],
+    "domain": "stitching",
+    "headings": [
+      "When to choose Gao DHW over APAP"
+    ],
+    "authors": [
+      "J. Gao",
+      "S. J. Kim",
+      "M. S. Brown"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "geiger-chessboard-detector",
+    "path": "/atlas/geiger-chessboard-detector",
+    "type": "algorithm",
+    "title": "Geiger Chessboard Corner Detector",
+    "summary": "Detect checkerboard X-corners by computing a four-quadrant corner likelihood at each pixel using axis-aligned and 45°-rotated prototype filters at three fixed scales, verifying candidates by gradient-orientation statistics, and refining to subpixel accuracy via gradient-orthogonality weighted least squares — the libcbdetect detector that anchors many subsequent calibration pipelines.",
+    "tags": [
+      "calibration",
+      "chessboard",
+      "corner-detection"
+    ],
+    "domain": "features",
+    "headings": [
+      "Stage 1 — Corner likelihood (§III-A)",
+      "Stage 2 — Subpixel + orientation refinement (§III-B)",
+      "Stage 3 — Structure recovery (§III-C)",
+      "When to choose Geiger over Pyramidal"
+    ],
+    "authors": [
+      "A. Geiger",
+      "F. Moosmann",
+      "O. Car",
+      "B. Schuster"
+    ],
+    "venue": "IEEE ICRA"
+  },
+  {
+    "slug": "gp-checkerboard-enhancement",
+    "path": "/atlas/gp-checkerboard-enhancement",
+    "type": "algorithm",
+    "title": "GP Checkerboard Enhancement (PyCBD)",
+    "summary": "Post-process a partially detected checkerboard by training two Gaussian processes (one per pixel coordinate) on the allocated (boardXY, boardUV) pairs to allocate unassigned detections to grid positions, predict UV for occluded or out-of-frame corners, and apply a global-consistency refinement to every allocated corner.",
+    "tags": [
+      "calibration",
+      "chessboard",
+      "gaussian-processes"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "Stage 1 — Iterative corner allocation (§2.2, Algorithm 1)",
+      "Stage 2 — GP refinement (§2.3)",
+      "Stage 3 — Unwarping by-product (§5)"
+    ],
+    "authors": [
+      "M. Hillen",
+      "I. De Boi",
+      "T. De Kerf",
+      "S. Sels",
+      "E. Cardenas De La Hoz",
+      "J. Gladines",
+      "G. Steenackers",
+      "R. Penne",
+      "S. Vanlanduit"
+    ],
+    "venue": "Mathematics (MDPI)"
   },
   {
     "slug": "gp-checkerboard-enhancement",
@@ -108,7 +220,7 @@ export const searchRecords: SearchRecord[] = [
   },
   {
     "slug": "harris-corner-detector",
-    "path": "/algorithms/harris-corner-detector",
+    "path": "/atlas/harris-corner-detector",
     "type": "algorithm",
     "title": "Harris Corner Detector",
     "summary": "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum.",
@@ -116,14 +228,22 @@ export const searchRecords: SearchRecord[] = [
       "feature-detection",
       "corner"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
-      "Procedure"
-    ]
+      "Procedure",
+      "When to choose Harris over Shi-Tomasi",
+      "When to choose Harris over FAST",
+      "When to choose Harris over ChESS"
+    ],
+    "authors": [
+      "C. Harris",
+      "M. J. Stephens"
+    ],
+    "venue": "Alvey Vision Conference"
   },
   {
     "slug": "kumar-generalized-rac",
-    "path": "/algorithms/kumar-generalized-rac",
+    "path": "/atlas/kumar-generalized-rac",
     "type": "algorithm",
     "title": "Kumar-Ahuja Generalized Radial Alignment Constraint",
     "summary": "Extend Tsai's radial alignment constraint to a non-frontal sensor by modelling lens–sensor tilt as a 2-DoF rotation, projecting observations onto a hypothesized frontal sensor, and solving a seven-parameter linear system for the extrinsic rotation and tilt.",
@@ -131,12 +251,42 @@ export const searchRecords: SearchRecord[] = [
       "camera-calibration",
       "lens-sensor-tilt"
     ],
-    "category": "calibration",
-    "headings": []
+    "domain": "calibration",
+    "headings": [],
+    "authors": [
+      "A. Kumar",
+      "N. Ahuja"
+    ],
+    "venue": "International Conference on Pattern Recognition (ICPR)"
+  },
+  {
+    "slug": "lin-sva-stitching",
+    "path": "/atlas/lin-sva-stitching",
+    "type": "algorithm",
+    "title": "Lin Smoothly Varying Affine Stitching",
+    "summary": "Stitch two images under moderate parallax by replacing the global affine with a per-feature deviation field, regularised to be smooth via a Gaussian-kernel CPD-style EM that jointly estimates correspondence and warp — the contemporary affine-model competitor to APAP's per-cell projective grid.",
+    "tags": [
+      "image-stitching",
+      "spatially-varying-warp",
+      "affine",
+      "non-rigid-registration"
+    ],
+    "domain": "stitching",
+    "headings": [
+      "When to choose Lin SVA over APAP"
+    ],
+    "authors": [
+      "W.-Y. Lin",
+      "S. Liu",
+      "Y. Matsushita",
+      "T.-T. Ng",
+      "L.-F. Cheong"
+    ],
+    "venue": "IEEE CVPR"
   },
   {
     "slug": "duda-radon-corners",
-    "path": "/algorithms/duda-radon-corners",
+    "path": "/atlas/duda-radon-corners",
     "type": "algorithm",
     "title": "Localized Radon Checkerboard Corners",
     "summary": "Detect checkerboard X-junctions by approximating a localized Radon transform with 1-D box filters on rotated copies of the image; the per-pixel response is the squared difference between the maximum and minimum directional line integrals over four discrete angles.",
@@ -145,14 +295,38 @@ export const searchRecords: SearchRecord[] = [
       "calibration",
       "chessboard"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
       "Procedure"
-    ]
+    ],
+    "authors": [
+      "A. Duda",
+      "U. Frese"
+    ],
+    "venue": "British Machine Vision Conference (BMVC)"
+  },
+  {
+    "slug": "fundamental-matrix-eight-point",
+    "path": "/atlas/fundamental-matrix-eight-point",
+    "type": "algorithm",
+    "title": "Normalised Eight-Point Algorithm",
+    "summary": "Compute the fundamental matrix from n ≥ 8 point correspondences by conditioning the linear DLT system via a similarity normalisation, recovering accuracy comparable to iterative methods at a fraction of the cost.",
+    "tags": [
+      "geometry",
+      "stereo",
+      "two-view-geometry",
+      "fundamental-matrix"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "R. I. Hartley"
+    ],
+    "venue": "IEEE TPAMI"
   },
   {
     "slug": "ocpad",
-    "path": "/algorithms/ocpad",
+    "path": "/atlas/ocpad",
     "type": "algorithm",
     "title": "OCPAD: Occluded Checkerboard Pattern Detection",
     "summary": "Recover the largest visible checkerboard subgraph from a partially occluded pattern by running VF2 subgraph isomorphism against a model graph under a binary-search driver over vertex counts, then closing gaps by breadth-first region growing from a quad-density anchor.",
@@ -160,14 +334,23 @@ export const searchRecords: SearchRecord[] = [
       "calibration",
       "chessboard"
     ],
-    "category": "calibration-targets",
+    "domain": "targets",
     "headings": [
       "Procedure"
-    ]
+    ],
+    "authors": [
+      "P. Fürsattel",
+      "S. Dotenco",
+      "S. Placht",
+      "M. Balda",
+      "A. Maier",
+      "C. Riess"
+    ],
+    "venue": "IEEE WACV"
   },
   {
     "slug": "puzzleboard",
-    "path": "/algorithms/puzzleboard",
+    "path": "/atlas/puzzleboard",
     "type": "algorithm",
     "title": "PuzzleBoard",
     "summary": "Detect and decode a self-identifying checkerboard calibration pattern: saddle-point corners from a Hessian response, grid reconstruction via Kruskal minimum spanning forest on the 9-nearest-neighbour graph, absolute corner position on a $501 \\times 501$ grid from cross-correlation against two binary de Bruijn factor maps.",
@@ -176,14 +359,20 @@ export const searchRecords: SearchRecord[] = [
       "chessboard",
       "self-identifying-pattern"
     ],
-    "category": "calibration-targets",
+    "domain": "targets",
     "headings": [
       "Procedure"
-    ]
+    ],
+    "authors": [
+      "P. Stelldinger",
+      "N. Schönherr",
+      "J. Biermann"
+    ],
+    "venue": "arXiv"
   },
   {
     "slug": "pyramidal-blur-aware-xcorner",
-    "path": "/algorithms/pyramidal-blur-aware-xcorner",
+    "path": "/atlas/pyramidal-blur-aware-xcorner",
     "type": "algorithm",
     "title": "Pyramidal Blur-Aware X-Corner Chessboard Detector",
     "summary": "Detect chessboard X-junctions in heavily blurred or high-resolution images by computing a 16-sample circular x-corner intensity at every level of an image pyramid, selecting per corner the level that maximises intensity per resolution, then assembling a chessboard graph with blur-aware edge validation.",
@@ -192,47 +381,18 @@ export const searchRecords: SearchRecord[] = [
       "chessboard",
       "corner-detection"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
       "Procedure"
-    ]
-  },
-  {
-    "slug": "02-demo-blocks",
-    "path": "/algorithms/02-demo-blocks",
-    "type": "algorithm",
-    "title": "Rich Algorithm Content Demo",
-    "summary": "A draft algorithm page that exercises semantic blocks, math, diagrams, code, and related-link metadata.",
-    "tags": [
-      "meta",
-      "demo",
-      "authoring"
     ],
-    "category": "explainers",
-    "headings": [
-      "Typography Basics",
-      "Heading Hierarchy",
-      "Lists",
-      "Inline Math and Display Math",
-      "Code Blocks",
-      "Semantic Blocks",
-      "Definitions",
-      "Theorems and Proofs",
-      "Lemma",
-      "Notes and Warnings",
-      "Examples",
-      "Algorithm",
-      "Quote",
-      "Tables",
-      "Blockquote (Standard Markdown)",
-      "Mermaid Diagram",
-      "Inline Colored Text",
-      "Emphasized Phrase Block"
-    ]
+    "authors": [
+      "P. Abeles"
+    ],
+    "venue": "arXiv (Cornell University)"
   },
   {
     "slug": "rochade",
-    "path": "/algorithms/rochade",
+    "path": "/atlas/rochade",
     "type": "algorithm",
     "title": "ROCHADE: Robust Checkerboard Advanced Detection",
     "summary": "Detect a full planar checkerboard in an image by reducing the gradient-magnitude edge set to a single-pixel centreline graph, extracting inner corners as graph saddle points, then refining each corner to subpixel accuracy by fitting a bivariate quadratic to a cone-filtered neighbourhood and solving for its stationary point.",
@@ -240,14 +400,25 @@ export const searchRecords: SearchRecord[] = [
       "calibration",
       "chessboard"
     ],
-    "category": "calibration-targets",
+    "domain": "targets",
     "headings": [
-      "Procedure"
-    ]
+      "Procedure",
+      "When to choose ROCHADE over Pyramidal"
+    ],
+    "authors": [
+      "S. Placht",
+      "P. Fürsattel",
+      "E. A. Mengue",
+      "H. Hofmann",
+      "C. Schaller",
+      "M. Balda",
+      "E. Angelopoulou"
+    ],
+    "venue": "ECCV"
   },
   {
     "slug": "shi-tomasi-corner-detector",
-    "path": "/algorithms/shi-tomasi-corner-detector",
+    "path": "/atlas/shi-tomasi-corner-detector",
     "type": "algorithm",
     "title": "Shi-Tomasi Corner Detector",
     "summary": "Scores each pixel by the smaller eigenvalue of the gradient structure tensor M; returns integer pixel locations where that eigenvalue exceeds a threshold, derived from a feature-tracking quality criterion.",
@@ -255,14 +426,40 @@ export const searchRecords: SearchRecord[] = [
       "feature-detection",
       "corner"
     ],
-    "category": "corner-detection",
+    "domain": "features",
     "headings": [
       "Procedure"
-    ]
+    ],
+    "authors": [
+      "J. Shi",
+      "C. Tomasi"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "sturm-plane-based-calibration",
+    "path": "/atlas/sturm-plane-based-calibration",
+    "type": "algorithm",
+    "title": "Sturm-Maybank Plane-Based Calibration",
+    "summary": "Recover camera intrinsics from one or more views of one or more planar targets via the same two IAC-on-homography constraints as Zhang's method, with an exhaustive singularity catalogue and a generalisation to variable intrinsics (zooming cameras) — the concurrent CVPR 1999 derivation of plane-based calibration.",
+    "tags": [
+      "calibration",
+      "intrinsics",
+      "iac",
+      "singularity-analysis",
+      "variable-intrinsics"
+    ],
+    "domain": "calibration",
+    "headings": [],
+    "authors": [
+      "P. Sturm",
+      "S. J. Maybank"
+    ],
+    "venue": "IEEE CVPR"
   },
   {
     "slug": "shu-topological-grid",
-    "path": "/algorithms/shu-topological-grid",
+    "path": "/atlas/shu-topological-grid",
     "type": "algorithm",
     "title": "Topological Grid Finding",
     "summary": "Recover the integer $(i, j)$ grid coordinate of every corner in a checkerboard calibration image by Delaunay-triangulating the corners, merging same-colour triangle pairs into quads, topologically and geometrically filtering illegal quads, and flood-filling coordinates through the resulting mesh.",
@@ -270,14 +467,21 @@ export const searchRecords: SearchRecord[] = [
       "calibration",
       "chessboard"
     ],
-    "category": "calibration-targets",
+    "domain": "targets",
     "headings": [
-      "Procedure"
-    ]
+      "Procedure",
+      "When to choose Shu over Laureano"
+    ],
+    "authors": [
+      "C. Shu",
+      "A. Brunton",
+      "M. A. Fiala"
+    ],
+    "venue": "Machine Vision and Applications"
   },
   {
     "slug": "tsai-lenz-handeye",
-    "path": "/algorithms/tsai-lenz-handeye",
+    "path": "/atlas/tsai-lenz-handeye",
     "type": "algorithm",
     "title": "Tsai-Lenz Hand-Eye Calibration",
     "summary": "Recover the constant rigid transform from a robot gripper to a rigidly mounted camera by solving the AX=XB equation in two stages — modified Rodrigues rotation, then translation.",
@@ -286,12 +490,42 @@ export const searchRecords: SearchRecord[] = [
       "hand-eye",
       "robotics"
     ],
-    "category": "calibration",
-    "headings": []
+    "domain": "calibration",
+    "headings": [
+      "When to choose Tsai-Lenz over Daniilidis"
+    ],
+    "authors": [
+      "R. Y. Tsai",
+      "R. K. Lenz"
+    ],
+    "venue": "IEEE Transactions on Robotics and Automation"
+  },
+  {
+    "slug": "tsai-versatile-calibration",
+    "path": "/atlas/tsai-versatile-calibration",
+    "type": "algorithm",
+    "title": "Tsai's Versatile Camera Calibration",
+    "summary": "Two-stage camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns.",
+    "tags": [
+      "calibration",
+      "intrinsics",
+      "extrinsics",
+      "radial-distortion"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "Stage 1 — extrinsic + scale (linear)",
+      "When to choose Tsai over Zhang",
+      "When to choose Tsai over Kumar gRAC"
+    ],
+    "authors": [
+      "R. Y. Tsai"
+    ],
+    "venue": "IEEE Journal on Robotics and Automation"
   },
   {
     "slug": "zhang-planar-calibration",
-    "path": "/algorithms/zhang-planar-calibration",
+    "path": "/atlas/zhang-planar-calibration",
     "type": "algorithm",
     "title": "Zhang's Planar Camera Calibration",
     "summary": "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations.",
@@ -300,12 +534,18 @@ export const searchRecords: SearchRecord[] = [
       "intrinsics",
       "homography"
     ],
-    "category": "calibration",
-    "headings": []
+    "domain": "calibration",
+    "headings": [
+      "When to choose Zhang over Sturm-Maybank"
+    ],
+    "authors": [
+      "Z. Zhang"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
     "slug": "ccdn-checkerboard-detector",
-    "path": "/algorithms/models/ccdn-checkerboard-detector",
+    "path": "/atlas/ccdn-checkerboard-detector",
     "type": "model",
     "title": "CCDN",
     "summary": "Fully convolutional network that regresses a per-pixel checkerboard-corner response map; trained with weighted cross-entropy and paired with threshold + NMS + k-means post-processing.",
@@ -314,12 +554,67 @@ export const searchRecords: SearchRecord[] = [
       "corner-detection",
       "cnn"
     ],
-    "category": "calibration-learning",
-    "headings": []
+    "domain": "calibration",
+    "headings": [],
+    "authors": [
+      "B. Chen",
+      "C. Xiong",
+      "Q. Zhang"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "mate-checkerboard-detector",
+    "path": "/atlas/mate-checkerboard-detector",
+    "type": "model",
+    "title": "MATE",
+    "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
+    "tags": [
+      "calibration",
+      "corner-detection",
+      "cnn"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "Novelty",
+      "Limitations",
+      "When to choose MATE over CCDN"
+    ],
+    "authors": [
+      "S. Donné",
+      "J. De Vylder",
+      "B. Goossens",
+      "W. Philips"
+    ],
+    "venue": "Sensors"
+  },
+  {
+    "slug": "superpoint",
+    "path": "/atlas/superpoint",
+    "type": "model",
+    "title": "SuperPoint",
+    "summary": "Fully-convolutional CNN that jointly detects interest points and computes 256-D descriptors in a single forward pass, trained without human annotations via Homographic Adaptation on synthetic shapes and MS-COCO images.",
+    "tags": [
+      "computer-vision",
+      "keypoint-detection",
+      "local-descriptors",
+      "image-matching",
+      "self-supervised"
+    ],
+    "domain": "features",
+    "headings": [
+      "When to choose SuperPoint over XFeat"
+    ],
+    "authors": [
+      "D. DeTone",
+      "T. Malisiewicz",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR Workshop (Deep Learning for Visual SLAM)"
   },
   {
     "slug": "xfeat",
-    "path": "/algorithms/models/xfeat",
+    "path": "/atlas/xfeat",
     "type": "model",
     "title": "XFeat",
     "summary": "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices.",
@@ -329,12 +624,80 @@ export const searchRecords: SearchRecord[] = [
       "local-descriptors",
       "cnn"
     ],
-    "category": "detection",
-    "headings": []
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "G. Potje",
+      "F. Cadar",
+      "A. Araujo",
+      "R. Martins",
+      "E. R. Nascimento"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "camera-distortion-models",
+    "path": "/atlas/camera-distortion-models",
+    "type": "concept",
+    "title": "Camera Distortion Models",
+    "summary": "Mathematical models for departures from the ideal pinhole projection — radial barrel/pincushion, tangential decentering, thin-prism — and the historical lineage from Brown's photogrammetric polynomial through Tsai's one-term radial, Weng's full Brown-Conrady, and Zhang's two-term planar formulation.",
+    "tags": [
+      "calibration",
+      "lens-distortion",
+      "intrinsics",
+      "camera-model"
+    ],
+    "domain": "image-formation",
+    "headings": [
+      "The Brown polynomial (1966)",
+      "Tsai 1987 — one term, radial only",
+      "Weng 1992 — full Brown-Conrady with tangential",
+      "Zhang 2000 — two-term radial, no tangential",
+      "Kumar gRAC 2014 — radial generalised to non-frontal sensors",
+      "Inverse distortion (rectification)",
+      "Coefficient estimation in calibration"
+    ]
+  },
+  {
+    "slug": "chessboard-x-corner-detection",
+    "path": "/atlas/chessboard-x-corner-detection",
+    "type": "concept",
+    "title": "Chessboard X-Corner Detection",
+    "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
+    "tags": [
+      "calibration",
+      "chessboard",
+      "corner-detection",
+      "survey"
+    ],
+    "domain": "features",
+    "headings": [
+      "The four design axes"
+    ]
+  },
+  {
+    "slug": "dlt-normalisation",
+    "path": "/atlas/dlt-normalisation",
+    "type": "concept",
+    "title": "DLT Normalisation",
+    "summary": "A two-line similarity transform — translate the point centroid to the origin, isotropically scale so the average distance is √2 — that conditions the design matrix of any DLT-based estimator (homography, fundamental matrix, projective camera, Moving DLT) by ~10⁸, and is the difference between unusable and reliable linear solutions.",
+    "tags": [
+      "geometry",
+      "linear-algebra",
+      "numerical-conditioning",
+      "dlt"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Why the design matrix needs conditioning",
+      "Why the rank-2 SVD truncation is the most-perturbed step",
+      "Isotropic vs anisotropic normalisation",
+      "Reuse in Moving-DLT (APAP)"
+    ]
   },
   {
     "slug": "epipolar-geometry",
-    "path": "/concepts/epipolar-geometry",
+    "path": "/atlas/epipolar-geometry",
     "type": "concept",
     "title": "Epipolar Geometry",
     "summary": "The intrinsic projective geometry of two views of a scene, encoding the constraint that a point visible in one image must lie on a specific line in the other image determined entirely by the camera positions.",
@@ -343,7 +706,7 @@ export const searchRecords: SearchRecord[] = [
       "stereo",
       "two-view-geometry"
     ],
-    "category": "geometry",
+    "domain": "geometry",
     "headings": [
       "Fundamental matrix",
       "Essential matrix",
@@ -351,8 +714,28 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "hessian-saddle-response",
+    "path": "/atlas/hessian-saddle-response",
+    "type": "concept",
+    "title": "Hessian Saddle Response",
+    "summary": "A scalar response computed from the determinant of the image Hessian, negative at saddle points (X-corners) and zero at flat regions, edges, and blobs — the discriminator at the heart of every modern checkerboard X-corner detector.",
+    "tags": [
+      "feature-theory",
+      "corner-detection",
+      "calibration",
+      "hessian"
+    ],
+    "domain": "features",
+    "headings": [
+      "Origin: Chen-Zhang 2005",
+      "Variants in the wild",
+      "Relation to the structure tensor",
+      "ChESS as an alternative discriminator"
+    ]
+  },
+  {
     "slug": "homography",
-    "path": "/concepts/homography",
+    "path": "/atlas/homography",
     "type": "concept",
     "title": "Homography",
     "summary": "An invertible projective transformation of the plane, represented by a 3×3 matrix defined up to a non-zero scalar, mapping points between two images of a planar surface or capturing a pure camera rotation.",
@@ -361,7 +744,7 @@ export const searchRecords: SearchRecord[] = [
       "projective-geometry",
       "calibration"
     ],
-    "category": "geometry",
+    "domain": "geometry",
     "headings": [
       "Projective geometry of the homography",
       "Special cases",
@@ -372,7 +755,7 @@ export const searchRecords: SearchRecord[] = [
   },
   {
     "slug": "image-gradient",
-    "path": "/concepts/image-gradient",
+    "path": "/atlas/image-gradient",
     "type": "concept",
     "title": "Image Gradient",
     "summary": "The 2-vector of partial derivatives of image intensity with respect to spatial coordinates, measuring the rate and direction of brightness change at each pixel.",
@@ -381,7 +764,7 @@ export const searchRecords: SearchRecord[] = [
       "derivatives",
       "filtering"
     ],
-    "category": "feature-theory",
+    "domain": "features",
     "headings": [
       "Discrete derivative kernels",
       "Gradient of a Gaussian",
@@ -391,7 +774,7 @@ export const searchRecords: SearchRecord[] = [
   },
   {
     "slug": "scale-space",
-    "path": "/concepts/scale-space",
+    "path": "/atlas/scale-space",
     "type": "concept",
     "title": "Scale Space",
     "summary": "A one-parameter family of images obtained by progressively blurring an input image with Gaussians of increasing standard deviation, providing a principled multi-scale representation for detecting and describing image features.",
@@ -400,7 +783,7 @@ export const searchRecords: SearchRecord[] = [
       "multi-scale",
       "gaussian-filtering"
     ],
-    "category": "image-formation",
+    "domain": "image-formation",
     "headings": [
       "Axiomatic characterization",
       "Heat equation connection",
@@ -411,8 +794,28 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "spatially-varying-image-stitching",
+    "path": "/atlas/spatially-varying-image-stitching",
+    "type": "concept",
+    "title": "Spatially Varying Image Stitching",
+    "summary": "A 2011–2013 lineage of stitching methods that replace the single global homography with a spatially varying warp field — fitted as either two homographies + spatial blend (Gao 2011), a smooth affine deviation field (Lin 2011), or a per-cell weighted-DLT projective grid (Zaragoza 2013, APAP) — to absorb parallax and non-rotational camera motion that no single homography can represent.",
+    "tags": [
+      "image-stitching",
+      "homography",
+      "panorama",
+      "spatially-varying-warp",
+      "survey"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Gao DHW — discrete two-plane decomposition",
+      "SVA — continuous affine deviation field",
+      "APAP — continuous projective field via Moving DLT"
+    ]
+  },
+  {
     "slug": "structure-tensor",
-    "path": "/concepts/structure-tensor",
+    "path": "/atlas/structure-tensor",
     "type": "concept",
     "title": "Structure Tensor",
     "summary": "A symmetric 2×2 matrix formed by summing the outer products of the image gradient over a local window, encoding the dominant orientation and anisotropy of local image structure.",
@@ -421,13 +824,33 @@ export const searchRecords: SearchRecord[] = [
       "corner-detection",
       "linear-algebra"
     ],
-    "category": "feature-theory",
+    "domain": "features",
     "headings": [
       "Eigenvalue classification",
       "Corner response functions",
       "Anisotropy and coherence",
       "Two-scale construction",
       "Relation to the autocorrelation surface"
+    ]
+  },
+  {
+    "slug": "topological-grid-recovery",
+    "path": "/atlas/topological-grid-recovery",
+    "type": "concept",
+    "title": "Topological Grid Recovery",
+    "summary": "Verify candidate calibration-pattern corners by constructing a graph over them (Delaunay triangulation, k-nearest-neighbours, or proximity) and accepting only configurations that match the expected chessboard topology — false positives are eliminated by structural rules rather than per-pixel response thresholds.",
+    "tags": [
+      "calibration",
+      "chessboard",
+      "topology",
+      "graph-algorithms"
+    ],
+    "domain": "features",
+    "headings": [
+      "The shared shape",
+      "Variants — what \"topology\" means in each method",
+      "Detection–verification decoupling",
+      "Comparison summary"
     ]
   }
 ];

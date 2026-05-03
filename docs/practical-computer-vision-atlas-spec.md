@@ -1,5 +1,17 @@
 # Practical Computer Vision Atlas — Obsidian + LLM Wiki + React Site Specification
 
+> **Historical document.** This was the original spec from the brainstorming phase, before
+> a `/grill-me` design pass cut roughly 60% of it as either already-built or unjustified
+> ceremony. The actual implementation diverged significantly: no Obsidian vault, no parallel
+> content tree, single quality field instead of 7-state status, forward edges authored with
+> reverse derived, and so on. Kept here for context only.
+>
+> For the system as built, read:
+> - `docs/README.md` — atlas authoring guide
+> - `~/.claude/plans/i-want-to-brainstorm-splendid-scott.md` — implementation plan
+> - `.claude/CLAUDE.md` — current authoring policy
+> - The four skill SKILL.md files under `.claude/skills/{paper-ingest,algo-page,deep-model-page,concept-page}/`
+
 ## 1. Purpose
 
 Build a modern, ergonomic, and maintainable **Computer Vision Algorithm Atlas** for `vitavision.dev`.

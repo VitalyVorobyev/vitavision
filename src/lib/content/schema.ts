@@ -5,7 +5,7 @@ const publicationFrontmatterBaseObjectSchema = z.object({
     date: z.coerce.date(),
     summary: z.string().min(1),
     tags: z.array(z.string().min(1)).min(1),
-    author: z.string().min(1),
+    author: z.string().min(1).optional(),
     draft: z.boolean().optional(),
     updated: z.coerce.date().optional(),
     coverImage: z.string().optional(),
@@ -33,21 +33,25 @@ export const blogFrontmatterSchema = publicationFrontmatterBaseObjectSchema.exte
 
 export type BlogFrontmatter = z.infer<typeof blogFrontmatterSchema>;
 
-/** Algorithm category — used to group cards on the /algorithms index. */
-export const algorithmCategoryValues = [
-    "corner-detection",
-    "calibration-targets",
-    "subpixel-refinement",
-    "explainers",
-    "calibration"
+/** Unified domain taxonomy — orthogonal to kind. */
+export const domainValues = [
+    "image-formation",
+    "features",
+    "geometry",
+    "targets",
+    "calibration",
+    "stitching",
+    "depth",
+    "detection",
 ] as const;
-export type AlgorithmCategory = (typeof algorithmCategoryValues)[number];
+export type Domain = (typeof domainValues)[number];
 
 /** Zod schema for algorithm page frontmatter. */
 export const algorithmFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
-        category: z.enum(algorithmCategoryValues),
+        dev: z.boolean().optional(),
+        domain: z.enum(domainValues).optional(),
         relatedPosts: z.array(z.string().min(1)).optional(),
         relatedAlgorithms: z.array(z.string().min(1)).optional(),
         relatedDemos: z.array(z.string().min(1)).optional(),
@@ -131,22 +135,13 @@ export interface DemoEntry extends DemoIndexEntry {
     html: string;
 }
 
-/** Model category — used to group cards on the /algorithms/models index. */
-export const modelCategoryValues = [
-    "detection",
-    "depth-stereo",
-    "pose-geometry",
-    "segmentation-flow",
-    "foundation-ssl",
-    "calibration-learning",
-] as const;
-export type ModelCategory = (typeof modelCategoryValues)[number];
-
 /** Zod schema for model page frontmatter. */
 export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
-        category: z.enum(modelCategoryValues),
+        dev: z.boolean().optional(),
+        domain: z.enum(domainValues).optional(),
+        noPublicImpl: z.boolean().optional(),
         arch_family: z.enum(["cnn", "vit", "encoder-decoder", "diffusion", "gan", "hybrid"]).optional(),
         params: z.string().optional(),
         flops: z.string().optional(),
@@ -163,7 +158,7 @@ export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
             license: z.string().min(1),
             weights_url: z.string().url().optional(),
             weights_license: z.string().min(1).optional(),
-        })).min(1).optional(), // required on non-drafts; enforced in content-build
+        })).min(1).optional(), // required on non-drafts unless noPublicImpl: true; enforced in content-build
         relatedPosts: z.array(z.string().min(1)).optional(),
         relatedAlgorithms: z.array(z.string().min(1)).optional(),
         relatedDemos: z.array(z.string().min(1)).optional(),
@@ -183,20 +178,12 @@ export interface ModelEntry extends ModelIndexEntry {
     html: string;
 }
 
-/** Concept category — used to group concept cards on the atlas index. */
-export const conceptCategoryValues = [
-    "image-formation",
-    "geometry",
-    "feature-theory",
-    "calibration-theory",
-] as const;
-export type ConceptCategory = (typeof conceptCategoryValues)[number];
-
 /** Zod schema for concept page frontmatter. */
 export const conceptFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
-        category: z.enum(conceptCategoryValues),
+        dev: z.boolean().optional(),
+        domain: z.enum(domainValues).optional(),
         sources: z.object({
             primary: z.string().min(1).optional(),
             references: z.array(z.string().min(1)).optional(),

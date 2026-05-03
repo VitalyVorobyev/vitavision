@@ -130,113 +130,7 @@ $$
 
 ## Illustrations
 
-Math and code carry the content, but a figure earns its place when it encodes a geometric arrangement, a functional surface, or a pipeline order that prose can only describe laboriously. Four native primitives are wired into the site; pick the right one for the job:
-
-| Primitive | Syntax | Use for |
-|---|---|---|
-| **KaTeX** | `$...$`, `$$...$$` | All math. Already required for symbol lists and quantity definitions. |
-| **Mermaid** | ` ```mermaid ` fence — `flowchart LR`, `graph`, `stateDiagram`, `sequenceDiagram` | Pipelines, procedure stages, control flow, state machines. Renders client-side to interactive SVG via `src/hooks/useMermaid.ts`. No asset file. |
-| **Hand-authored SVG** | `![alt](./images/<slug>/file.svg)` | Simple geometric schemes with < ~15 primitives: sampling patterns on a pixel grid, a 1/3-edge circle placement, a saddle-shape sketch. Stored under `content/images/<slug>/`. |
-| **Generated SVG** | `![alt](./images/<slug>/file.svg)` — **script at `py/generate_<slug>_<name>.py`** | Data-driven figures: functional surfaces, response regions, parametric sweeps, density/contour plots, anything with > ~20 plotted elements or a closed-form equation to evaluate. See the "Generated figures" subsection below. |
-
-The two SVG primitives share the same markdown syntax and output location (`content/images/<slug>/`); they differ only in how the file is produced. The build (`scripts/content-build.ts`) rewrites relative paths to `/content/images/...` regardless.
-
-**Blocked.** Inline `<svg>` markup in markdown is stripped by `rehype-sanitize` (`scripts/content-build.ts:57-120`). Paste raw SVG into a `.svg` file under `content/images/<slug>/` and reference it with markdown image syntax; do not paste it into the page body. Interactive React components are possible but hardcoded per algorithm (`src/lib/content/useArticleIllustrations.tsx` currently only knows `chess-response`); do not invent new ones from a skill pass — request a code change.
-
-### Choosing the primitive
-
-**Good signals for including a figure:**
-
-- The procedure has $\geq 3$ stages in a definite order with branching or filtering steps → Mermaid pipeline.
-- The math references a geometric arrangement of samples, axes, or regions that a reader cannot reconstruct mentally from the formula alone (a 16-offset ring, an eigenvalue ellipse, a 1/3-edge circle placement) → SVG.
-- A named quantity has a visual interpretation more compact than its formula (the shape of a saddle, the empty-circumcircle property, a response's zero-level contour) → SVG.
-
-**Hand-authored vs generated:**
-
-- If the figure is < ~15 strokes/labels and the geometry is fixed (integer offsets, named axes, a single labelled region), **hand-author** it.
-- If the figure plots a function, evaluates an equation over a grid, encodes a parametric region, shows a contour / filled area between curves, a density, or anything that would be tedious to place by eye, **generate it from a Python script**. This also holds when parameters of the page (e.g. Harris $k = 0.04$, ChESS ring radius $= 5$) are baked into the figure — a generator makes the figure follow the page if a constant changes.
-
-**Drop the figure when:**
-
-- It restates what the formula already says (e.g. a bar chart of two numbers from a two-term definition).
-- It shows the algorithm's output on a real photograph — that belongs in the demo (`editorAlgorithmId`), not in the reference card.
-- It is a second restatement of Mermaid pipeline stages already written as the `:::algorithm[...]` procedure.
-
-**Quality floor.** No draft-quality figures. If a figure is worth including, it must be either:
-
-1. A clean Mermaid diagram that previews correctly at ≤ 360 px width; or
-2. A hand-authored SVG following the authoring rules below; or
-3. A generated SVG from a committed Python script that reproduces byte-identically on re-run.
-
-If none of these is feasible under the current budget, omit the figure — do not commit a low-fidelity sketch, a raster screenshot of a notebook, or a "coming soon" caption. The one exception is the **placeholder convention** below, and only for figures that genuinely depend on algorithm output on a real image.
-
-### Hand-authored SVG rules
-
-- Author the file under `content/images/<slug>/<name>.svg`. Match the existing style in `content/images/01-chess/*.svg`: `viewBox`, `class="h-auto w-full text-foreground"`, inline `style="color:#…"` fallback, `role="img"`, `aria-label` with a one-sentence description.
-- Every numerical label on the figure (offset coordinates, ellipse axes, ratios) must match the page's math verbatim. A `1/3` on the page must be `1/3` on the figure, not `0.33`.
-- Plain strokes on white background; small semantic colour accents only (e.g. ring samples in one hue, central cross in another). No decorative gradients.
-- Keep the viewBox aspect squareish (1:1 to 3:1 landscape). Tall-narrow figures overflow the content column badly on mobile.
-
-### Generated figures
-
-Data-driven plots are generated by a Python script committed under `py/`, and both the script and the output SVG are checked in. This keeps the plot reproducible, re-renderable when a page's parameters drift, and auditable — the script is the source of truth for every label and value in the figure.
-
-**Canonical example.** `py/generate_harris_eigenvalue_regions.py` → `content/images/harris-corner-detector/eigenvalue-classification.svg`. It evaluates $R = \lambda_1 \lambda_2 - k(\lambda_1 + \lambda_2)^2$ on a grid, fills the corner/edge regions using `contourf`, overlays the $R = 0$ zero-level lines solved in closed form, and annotates the flat region, diagonal, and zero contours. Study this script before writing a new one.
-
-**Setup.** Use the repo-root `.venv` for all generator scripts. It is preinstalled with matplotlib and numpy; extend with additional packages as needed. Do not create per-script venvs.
-
-```bash
-.venv/bin/python py/generate_<slug>_<name>.py
-```
-
-**Filesystem convention.**
-
-- Script: `py/generate_<slug>_<name>.py`. The slug matches the page slug in `content/algorithms/`; the name matches the SVG filename.
-- Output: `content/images/<slug>/<name>.svg`. The script must compute `REPO_ROOT = Path(__file__).resolve().parents[1]` and write to the derived absolute path so it runs from any cwd.
-- CLI: accept an optional positional `output_path` argument plus the key parameters of the plot (e.g. `--k` for Harris's sensitivity), so a reviewer can re-render with alternative values without editing code. Default all parameters to the values used by the page.
-
-**Tool choice.** matplotlib + numpy is the default — it covers contour plots, scatter plots, vector fields, parametric regions, filled areas, and LaTeX-rendered labels. Other tools are fine when they fit the figure better:
-
-- **matplotlib** — default; best for 2-D functional plots, contour fills, eigenvalue / parameter spaces, marginal histograms.
-- **scipy + matplotlib** — when the figure needs a numerical solver (ODE, optimisation, spline fit) to produce its data.
-- **PIL / Pillow** — synthetic discrete pixel grids: FAST-16 sampling pattern overlaid on a checkerboard, integer neighbourhood stencils. Export to SVG via `cairosvg` or render a high-DPI PNG if vector is not essential.
-- **`svgwrite` / direct SVG emission** — when the figure is mostly vector primitives (circles, polylines, labels) with no data dependency; this is the middle ground between hand-authored and matplotlib.
-- **pycairo / svgwrite** — when matplotlib's layout engine fights the figure (e.g. a multi-panel schematic with text flowing between panels).
-
-Any tool is acceptable as long as the three requirements below are satisfied.
-
-**Requirements for every generator script** (non-negotiable):
-
-1. **Deterministic output.** The same script on the same inputs produces byte-identical SVG, so git diffs of the output file track real content changes. With matplotlib this means setting `svg.hashsalt` in `plt.rcParams` and pinning `metadata={"Date": "<static date>"}` on `savefig`. With other tools, disable timestamp / random-id generation.
-2. **Accessibility.** Inject `<title id="title">...</title>` and `<desc id="desc">...</desc>` children at the top of the `<svg>` element, and add `role="img" aria-labelledby="title desc"` to `<svg>`. The Harris script demonstrates this via a post-pass `add_svg_accessibility()` that rewrites the file after `savefig`. The `<title>` is the short figure name; the `<desc>` is the one-sentence visual summary used by screen readers.
-3. **Typography passthrough.** Set `svg.fonttype: "none"` (matplotlib) or equivalent so text renders with the site's font stack instead of being converted to `<path>`. This also keeps file size small and lets KaTeX-rendered math inside the page and the SVG share styling.
-
-**Colour palette.** Match the site's slate/indigo-on-white aesthetic. Good defaults: text `#111827`, muted text `#475569`, axis/tick `#475569`–`#64748b`, grid `#cbd5e1`, and fills from the Tailwind 200 / 300 family (`#bfdbfe`, `#bbf7d0`, `#e2e8f0`) with matched 600 / 700 strokes (`#2563eb`, `#047857`, `#64748b`). Never use a diverging viridis / plasma ramp unless the data is genuinely diverging.
-
-**Background.** Do not hard-code pure white for the figure patch — a large white rectangle clashes with the article's dark theme. Render the whole figure as a soft light card: `fig.patch.set_facecolor("#f8fafc")` (Tailwind slate-50) and `ax.set_facecolor("#ffffff")` so the axes card reads one step brighter than the figure margin. Save with `facecolor=fig.get_facecolor()`. Keeping the figure patch opaque is essential: the title, axis labels, and any outside-axes annotations live in that margin, and a transparent patch would render dark text on the dark page background. The slate-50 card reads well in both themes; the site's `border border-border rounded-md` supplies the card edge.
-
-**Every label is load-bearing.** A label on the figure is a claim, and the working-notes audit (Workflow §8) checks every label the same way it checks numerical constants in the page body. Prefer few, precisely-placed labels over dense annotation.
-
-**Typography floor.** The smallest text on the figure must be ≥ 12 pt, not just the base `rcParams` size. Check each inner label, annotation, callout, and tick after `savefig`: anything under 12 pt in the rendered SVG will fall below 4 pt on a 320 px column and is illegible. If a label cannot fit at 12 pt, drop it or shrink what it annotates — do not downsize the type. Reserve 9–11 pt only for corner metadata (author tag on a standalone plot, etc.), never for load-bearing content. Axis labels and the title read at larger sizes (15 pt axes, 17 pt title are typical).
-
-**Label pruning.** Every label on the figure is a claim; every duplicate claim is noise. Before finalizing:
-
-- Drop any label that restates an axis label or the subtitle formula (e.g. a diagonal `$\lambda_1 = \lambda_2$` line when both axes are already labelled, or a footer caption that repeats the page's `# Goal`).
-- One word is better than a phrase; a phrase is better than a sentence. `flat` beats `flat\nsmall λ₁, λ₂`.
-- No inside-the-figure caption paragraph. Captions belong in the markdown prose immediately after the `![alt](...)` image reference.
-
-**Mobile check.** Aspect ratio roughly 4:3 or squarer. After rendering, view the SVG at 320 px wide and confirm every label is readable — not just the title.
-
-### Placeholder convention
-
-When a figure is genuinely valuable but depends on real-image data that the generator cannot synthesize (an algorithm heatmap on a specific photograph, a before/after demo on user-provided input), emit `<!-- TODO figure: <one-line description of the missing figure> -->` inline where it would go and add a bullet to working notes. Do not commit empty image files, broken image references, or "coming soon" captions. If you find yourself reaching for this for a mathematical plot, stop and write the generator script instead.
-
-### Mermaid authoring notes
-
-- Prefer `flowchart LR` for left-to-right pipelines; `flowchart TB` when stages don't fit horizontally on mobile.
-- Use `<br/>` for line breaks inside node labels; keep each label ≤ 3 short lines.
-- Arithmetic symbols inside node labels can clash with Mermaid syntax; the usual fix is to wrap the label in double quotes: `A["s = f_xy² − f_xx·f_yy"] --> B`.
-- Preview at mobile width (≤ 360 px) — long single-line pipelines wrap awkwardly; split into two rows with `subgraph` or switch to `TB` if it does.
+See `.claude/skills/_shared/illustrations.md` — covers the primitive choice (KaTeX / Mermaid / hand-authored SVG / generated SVG), authoring rules, generator-script requirements, palette, typography floor, and Mermaid notes.
 
 ## Frontmatter
 
@@ -277,6 +171,10 @@ comparedWith: []    # algorithms that this is directly contrasted with (author o
 failureModes: []    # failure-mode page slugs (always empty in MVP; required as placeholder)
 ```
 
+**Source kinds.** `sources.primary` and `sources.references[]` accept `<bare-id>` (defaults to `paper`), `paper:<id>`, `repo:<url>@<sha>`, or `doc:<repo-relative-path>`. The validator dispatches on prefix and resolves against `docs/papers/index.yaml` (papers and repos) or the filesystem (docs).
+
+**`repo:` references vs `sources.impl`.** Use `repo:` in `sources.references[]` when a repo is cited as background, comparison, or upstream — analogous to citing a paper. Use the dedicated `sources.impl` field when the repo IS the page's reference implementation (the one the `# Implementation` snippet was modeled on); `sources.impl` is richer-typed (commit-pinned files, fetched via `bun impls:fetch`) and license-verified.
+
 `relatedDemos` and `editorAlgorithmId` should be considered for every page. `sources` is required for every new page — see the Workflow section below.
 
 ### `editorAlgorithmId` — deep-link must be one-click runnable
@@ -293,12 +191,14 @@ A deep-link that leaves the user in gallery mode with no image is worse than no 
 
 ## Research-note awareness
 
-Before drafting or editing a page, check `docs/research/notes/<sources.primary>.md`. If it exists, treat the bullets in its `## NEW: <slug>` or `## UPDATE: <slug>` block as authoritative content guidance for the section being edited. The note's other sections (Setting, Core idea, Assumptions, Failure regime, Numerical sensitivity, Applicability, Connections) are reasoning context to draw from.
+Research notes at `docs/research/notes/<sources.primary>.md` are the **canonical input** for this skill. The Draft contract reads them, not the paper cache. Before any draft pass, verify the note exists for the primary source AND for every reference in `sources.references`. If any required note is missing, the skill stops and reports: *"Cannot draft — research note `docs/research/notes/<id>.md` does not exist. Run `/paper-ingest <id-or-arxiv-ref>` first."*
+
+The note's `## NEW: <slug>` or `## UPDATE: <slug>` block provides authoritative content guidance for the section being drafted. The note's other sections (Setting, Core idea, Assumptions, Failure regime, Numerical sensitivity, Applicability, Connections) are the reasoning substrate the Draft subagent works from.
 
 **Two invocation paths:**
 
-- **Bootstrap** (new page from scratch): supply `arxiv:<id>`, `doi:<doi>`, or a URL. Runs Bootstrap B1–B9 below.
-- **Apply from research note** (update existing page): invoke as `/algo-page <existing-slug>`. The skill reads `docs/research/notes/<sources.primary>.md` and applies `## UPDATE: <slug>` bullets — synthesizing them into the page format, not copying them verbatim.
+- **Bootstrap** (new page from scratch): supply `arxiv:<id>`, `doi:<doi>`, or a URL. Runs Bootstrap B1–B9 below. The research note for `sources.primary` **must exist** before continuing to Workflow §7 (Draft contract delegation). If it is absent after Bootstrap completes, stop and instruct the user to run `paper-ingest` first.
+- **Apply from research note** (update existing page): invoke as `/algo-page <existing-slug>`. The research note for `sources.primary` **must exist**. If it is missing, stop and instruct the user to run `/paper-ingest <primary-id>` first. The Draft subagent reads the note and applies `## UPDATE: <slug>` bullets per the Draft contract in Workflow §7 — not by copying them verbatim, and not by reading the paper cache.
 
 **Explicit rules:**
 
@@ -316,8 +216,8 @@ This procedure is mandatory for any new or rewritten algorithm page. It codifies
 
 ### Trigger
 
-- **Bootstrap mode** fires whenever the user supplies an input token — `arxiv:<id>`, `doi:<doi>`, or a PDF / publisher URL — without a pre-filled frontmatter file. Example triggers: "draft arxiv:1301.5491", "draft doi:10.1007/s00138-009-0202-2", "draft https://…/paper.pdf". Run Bootstrap §B1–B9 below, then continue with Workflow §4.
-- **Legacy mode** fires when a page file already exists with a filled `sources` frontmatter. Skip Bootstrap and start at Workflow §1.
+- **Bootstrap mode** fires whenever the user supplies an input token — `arxiv:<id>`, `doi:<doi>`, or a PDF / publisher URL — without a pre-filled frontmatter file. Example triggers: "draft arxiv:1301.5491", "draft doi:10.1007/s00138-009-0202-2", "draft https://…/paper.pdf". Run Bootstrap §B1–B9 below, then continue with Workflow §1.
+- **Legacy mode** fires when a page file already exists with a filled `sources` frontmatter AND the research note for `sources.primary` exists at `docs/research/notes/<primary-id>.md`. Skip Bootstrap and start at Workflow §1. If the note is missing, stop and instruct the user to run `/paper-ingest <primary-id>` first — do not fall back to reading the cache.
 
 ### Bootstrap (Claude-driven, for entirely new pages)
 
@@ -338,7 +238,7 @@ B4. **Curate the cites list.** Each `<name><year>-???` entry is a paper the prim
 
 B5. **Cache PDFs + text + ar5iv HTML.** `bun papers:fetch`. The script walks `docs/papers/index.yaml`, downloads any missing PDFs into `docs/papers/.cache/`, runs `pdftotext -layout` into `<id>.txt`, and — for entries with an `arxiv:` field — also curls `https://ar5iv.labs.arxiv.org/html/<arxiv-id>` into `<id>.html`. Second run is all cache hits — no network.
 
-B6. **Read the primary.** For arxiv papers, prefer `docs/papers/.cache/<primary-id>.html` (ar5iv preserves LaTeX source in `<annotation encoding="application/x-tex">...</annotation>` blocks, and keeps section structure in `<section id="Sx…">` — equations transcribe directly without OCR artefacts). For non-arxiv papers, or when ar5iv returned 404, fall back to `<primary-id>.txt` (pdftotext -layout). Extract the abstract, method section(s), defining equations, and the symbol/constant table into working notes. Re-run B4 on any remaining `???` once the primary's bibliography is clearer.
+B6. **Ensure the research note exists.** Run `bun ls docs/research/notes/<primary-id>.md`. If absent, stop and tell the user: *"Bootstrap requires the research note. Run `/paper-ingest <input>` first to create `docs/research/notes/<primary-id>.md`, then rerun `algo-page`."* Do NOT load the cache file into orchestrator context — drafting happens in Workflow §7 via the Draft contract.
 
 B7. **Choose the page slug.** Kebab-case, descriptive to a reader browsing the algorithms register — not an id echo. `shu-topological-grid`, not `shu2009`. `harris-corner-detector`, not `harris-combined`.
 
@@ -359,18 +259,23 @@ B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no b
 | Paper metadata stanza | `docs/papers/index.yaml` | Edit tool (B3, B4) |
 | Cached PDF + `pdftotext` output | `docs/papers/.cache/<id>.{pdf,txt}` | `bun papers:fetch` (B5) |
 | Cached ar5iv HTML (arxiv papers) | `docs/papers/.cache/<id>.html` | `bun papers:fetch` (B5) |
+| Research note | `docs/research/notes/<primary-id>.md` | Created by `paper-ingest` — required precondition |
 | Page frontmatter (no body) | `content/algorithms/<slug>.md` | Write tool (B9) |
-| Page body | `content/algorithms/<slug>.md` | Workflow §7 drafting |
+| Page body | `content/algorithms/<slug>.md` | Workflow §7 (Draft contract delegation; Opus assembles + writes once) |
 
 ### Workflow steps
 
-1. **Read `sources` from the page frontmatter.** If the page has none, run Bootstrap above.
-2. **Cache the papers.** `bun papers:fetch <primary-id>` and `bun papers:fetch <ref-id>` for each entry in `sources.references`. The script downloads each PDF and runs `pdftotext -layout` into `docs/papers/.cache/<id>.txt`.
-3. **Cache the impl.** `bun impls:fetch <slug>` if `sources.impl` is set. The script fetches each file from `raw.githubusercontent.com/<owner>/<repo>/<sha>/<file>` into `docs/impls/.cache/<owner>/<repo>/<sha>/<file>`.
-4. **Read the primary paper.** For arxiv papers, open `docs/papers/.cache/<primary-id>.html` (ar5iv rendering — LaTeX equations preserved, section structure clean). For non-arxiv papers or when the HTML is absent, open `<primary-id>.txt`. Locate the algorithm's defining equations, named quantities, and the operational procedure. Note section/equation numbers — you will reference them in working notes.
-5. **Read the impl.** Open the cached impl files. Locate the canonical constants — offset tables, threshold values, magic numbers — that the page must match exactly.
-6. **Query the citation graph.** `bun papers:query cites <primary-id>` returns ids that the primary references — these are candidates for `# References` and for `relatedAlgorithms`. `bun papers:query pages-using <ref-id>` for each cited paper finds existing algorithm pages that share a source — also candidates for `relatedAlgorithms`.
-7. **Draft.** Use the 5-section template (Goal, Algorithm, Implementation, Remarks, References) and the typography blocks (`:::definition[...]` for named quantities, `:::algorithm[...]` with `::input[...]`/`::output[...]` for the procedure). When the algorithm depends heavily on a graph data structure not codeable in ≤ 40 lines, omit `# Implementation` and note this in one bullet in `# Remarks`.
+1. **Read `sources` from the page frontmatter.** If absent, run Bootstrap above.
+2. **Confirm research notes.** Verify `docs/research/notes/<primary-id>.md` exists. For each `<ref-id>` in `sources.references`, verify `docs/research/notes/<ref-id>.md` exists. Any missing note → stop, tell the user to run `/paper-ingest` first. Do NOT fall back to reading the cache.
+3. **Cache the impl** (only if `sources.impl` is set). `bun impls:fetch <slug>` writes raw files into `docs/impls/.cache/<owner>/<repo>/<sha>/<file>`. Opus will pass these paths to the Draft subagent in Step 7.
+4. **Query the citation graph** (lightweight, in-orchestrator). `bun papers:query cites <primary-id>` and `bun papers:query pages-using <ref-id>` for each reference — used to populate `relatedAlgorithms` candidates. Output is small (slug list).
+5. **Read frontmatter of candidate cross-link pages.** For each candidate slug from §4, read only the page's frontmatter (cheap, ~200 tokens each). Do not load page bodies. Use the frontmatter `summary` and `sources.primary` to confirm a cross-link makes sense.
+6. **Assemble the Draft contract input.** Collect: primary note path, reference note paths, cached impl file paths, page-template skeleton path (`references/algo-page-template.md`), target slug. **Opus does NOT read the notes themselves at this step** — the Draft subagent will.
+7. **Delegate the page draft to Sonnet.** Invoke the Draft contract from `.claude/skills/_shared/subagent-prompts.md` with the inputs from §6. Sonnet returns:
+   - The full page body as a markdown string in its reply
+   - A `<<<AUDIT>>>{json}<<<END>>>` block listing every constant / equation / symbol used in the body and the source note that supplied each
+
+   Sonnet **does not** write any file. Sonnet **does not** read cache files. If Sonnet returns `blocked: missing <kind> <name> for <source-id>`, the note is incomplete — fix the note (extend it by hand or rerun paper-ingest after deleting the note) and retry the delegation.
 7.5. **Illustration pass.** Scan each section against the "good signals" in the Illustrations section above. Choose the primitive by content:
   - Control flow / pipeline stages → Mermaid (inline, no asset).
   - Small fixed geometric scheme (≤ ~15 primitives) → hand-authored SVG under `content/images/<slug>/`.
@@ -378,22 +283,18 @@ B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no b
   - Real-image data the generator cannot synthesize → `<!-- TODO figure: ... -->` placeholder and a bullet in working notes.
 
   At most two figures per page — one pipeline diagram plus one geometric / data-driven scheme is the usual ceiling. Every label and constant in the figure must land on the working-notes list that step 8 audits. Do not commit draft-quality figures; if the production-ready version is not feasible under the current pass, omit the figure and leave a TODO.
-8. **Quality gate.** In working notes (not committed, not in the page), enumerate every numerical constant, symbol, and offset that appears in the drafted page — **including every label and coordinate in any figure added in step 7.5**. For each, write the source line: paper section/equation number, or impl file path + line. Anything not traceable to a source is either fabricated or implementation-detail noise — fix or remove. *This gate is what catches the failures: a "bilinear interpolation" claim with no paper citation; an "8-bit" qualifier whose only source is the impl's `u8` pixel type.*
-9. **Verify.** `bun run build && bun run lint && npx vitest run`.
+8. **Quality gate.** Verify the AUDIT JSON against the cited notes using the verification recipe in `_shared/subagent-prompts.md`:
+   ```bash
+   # For each entry in AUDIT, grep -F the value in the named source note
+   # Zero MISS lines = page faithfully copies from notes
+   ```
+   Any MISS line means either (a) the note is incomplete and should be extended, or (b) Sonnet hallucinated. In case (a), extend the note and re-delegate. In case (b), reject the draft and re-delegate with a stricter prompt.
+9. **Assemble and write.** Opus assembles `--- frontmatter ---\n<body string from Sonnet>` and calls `Write` once. The frontmatter `prerequisites` / `relatedAlgorithms` / `comparedWith` slugs come from the note's `Connections` section + the §4 citation-graph candidates, NOT from the body string. Cross-check every slug against `knownSlugs` (read from `src/generated/content-graph.ts` or by listing `content/{algorithms,models,concepts}/`).
+10. **Verify.** `bun run build && bun run lint && npx vitest run`.
 
-## Voice rules (reference-entry voice)
+## Voice rules
 
-This voice is distinct from `tech-writer`. Do **not** import its moves.
-
-- **Impersonal.** No "I", no "my", no "in my view", no "one notable property".
-- **Declarative.** Statements of fact or definition. No rhetorical questions, no framing questions.
-- **Minimal glue prose.** Between math/code blocks, one sentence is usually enough. Two is the upper limit.
-- **No narrative arc.** No opening move, no section landings, no closing implications. Each section stops when its content is done.
-- **No acknowledgment or attribution in prose.** The related-tools discussion and author names live in `# References`, not in `# Goal`. Parenthetical asides about alternatives are banned.
-- **No intuition paragraphs around formulas.** The formula defines the quantity; the symbol list explains the symbols. That is sufficient. Do not prepend "A chessboard corner creates an alternating pattern on the ring:" before a formula — just define the quantity.
-- **Sentences are short.** Prefer 10–20 words. If a sentence has more than one clause, consider splitting.
-- **Passive voice is acceptable** when it keeps the subject nominal ("The response map is computed as...").
-- **No softeners, no marketing words, no hedges** — same as tech-writer §18, for the same reasons.
+See `.claude/skills/_shared/voice-rules.md` for the canonical rules. They are binding.
 
 ## Forbidden patterns (taken from real failure modes)
 
@@ -409,6 +310,7 @@ This voice is distinct from `tech-writer`. Do **not** import its moves.
 - "Measured performance: X ms on <hardware>..." as a Remarks bullet. Benchmarks belong in blog posts or READMEs, not in the algorithm reference.
 - "Reference implementation: [crate](github-url)" as a Remarks bullet. The page's `# Implementation` section IS the reference; a crate pointer doubles as endorsement and misleads readers about what counts as standard.
 - Horizontally-overflowing display math: `$$ \Delta = [(0,-3),(1,-3),(2,-2), \ldots ] $$` on one line. Wrap in `\begin{aligned}...\end{aligned}` with `\\` breaks.
+- **Loading the paper cache file (`docs/papers/.cache/*.{html,txt}`) into the orchestrator's context.** All paper reads happen in the Sonnet subagent during `paper-ingest`; the orchestrator works from notes only. If you find yourself opening a `.cache/` file in algo-page, stop — run `/paper-ingest` first to materialize the note.
 
 ## Checklist
 
@@ -435,6 +337,13 @@ Run before handing off a draft.
 - [ ] Illustration pass done: at least one figure is present (Mermaid fence, hand-authored SVG, or generator-produced SVG) or a `<!-- TODO figure: ... -->` placeholder documents what is missing and why. No figure is decorative; every label and constant inside a figure traces to the same source as the page's math.
 - [ ] Every generated SVG under `content/images/<slug>/` has a sibling `py/generate_<slug>_<name>.py` committed alongside it. Re-running the script from `.venv/bin/python` produces byte-identical output, the `<svg>` element carries `role="img"` with `<title>` + `<desc>` children, `svg.fonttype="none"` (or the tool's equivalent) keeps text as text, **every rendered label is ≥ 12 pt** (subscripts inside a math symbol excepted — they're part of the glyph), **the figure patch is an opaque light card** (`fig.patch.set_facecolor("#f8fafc")` with `ax.set_facecolor("#ffffff")`) so title and axis labels stay legible in both light and dark themes, and **there is no inside-the-figure caption paragraph** (captions live in the markdown next to the image).
 - [ ] If `editorAlgorithmId` is set, the sample-id mapping in `src/pages/AlgorithmPost.tsx` covers it and the "Try in the editor" button lands the user in editor mode with an image preloaded and the algorithm preselected — one click to Run.
+- [ ] A research note exists for `sources.primary` AND every entry in `sources.references`. Page draft is the result of the Draft contract on those notes; the orchestrator did not load any `docs/papers/.cache/*` file.
+- [ ] AUDIT JSON returned by the Draft subagent has zero MISS entries when grep-checked against the cited notes (verification recipe in `_shared/subagent-prompts.md`).
+- [ ] Frontmatter `prerequisites` / `relatedAlgorithms` / `comparedWith` slugs were sourced from the primary note's `Connections` section + §4 citation-graph candidates, NOT taken from the body string Sonnet returned.
+
+## Notes on cache file fidelity
+
+For arxiv papers, `docs/papers/.cache/<id>.html` (ar5iv rendering) preserves LaTeX source in `<annotation encoding="application/x-tex">` blocks and section structure in `<section id="Sx…">` — equations transcribe directly without OCR artefacts. For non-arxiv papers, or when ar5iv returned 404, `<id>.txt` (pdftotext -layout) serves as the fallback. These notes are guidance for whoever is creating the research note via `paper-ingest` — the orchestrator (Opus) does not open cache files during `algo-page`.
 
 ## When not to use this skill
 
@@ -450,3 +359,4 @@ If a draft wants to explain the history of an algorithm, contrast it with altern
 - `/Users/vitalyvorobyev/vitavision/docs/papers/index.yaml` — registry of authoritative sources (papers + citation graph). Query via `bun papers:query`.
 - `bun papers:fetch [id]` / `bun papers:fetch-meta <arxiv-id|doi>` / `bun impls:fetch <slug>` / `bun papers:query <relation> <id>` — the four reasoning tools that drive the Workflow above.
 - `.venv/bin/python py/generate_<slug>_<name>.py` — repo-root venv (matplotlib, numpy preinstalled) for running and re-running generator scripts.
+- `.claude/skills/_shared/subagent-prompts.md` — Draft contract template, AUDIT JSON shape, page-vs-note verification recipe.

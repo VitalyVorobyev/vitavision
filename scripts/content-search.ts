@@ -13,8 +13,13 @@ export interface SearchRecord {
     title: string;
     summary: string;
     tags: string[];
-    category?: string;
+    /** Unified domain taxonomy value (replaces per-kind category). */
+    domain?: string;
     headings: string[];
+    /** Source paper authors, joined from `frontmatter.sources.primary`. */
+    authors?: string[];
+    /** Source paper venue (e.g. "CVPR", "ECCV"). */
+    venue?: string;
 }
 
 /** Extract text content of <h2> and <h3> headings from rendered HTML. */
@@ -35,20 +40,18 @@ export interface SearchEntry {
     title: string;
     summary: string;
     tags: string[];
-    category?: string;
+    /** Unified domain taxonomy value. */
+    domain?: string;
     html: string;
+    /** Optional resolved primary-paper metadata (authors, venue). */
+    primary?: { authors?: string[]; venue?: string };
 }
 
 /** Build search records from processed entries. Drafts must be pre-filtered by the caller. */
 export function buildSearchRecords(entries: SearchEntry[]): SearchRecord[] {
     return entries.map((e) => {
-        const path = (() => {
-            switch (e.type) {
-                case "algorithm": return `/algorithms/${e.slug}`;
-                case "model": return `/algorithms/models/${e.slug}`;
-                case "concept": return `/concepts/${e.slug}`;
-            }
-        })();
+        // Single global slug namespace: every atlas page routes through /atlas/<slug>.
+        const path = `/atlas/${e.slug}`;
 
         return {
             slug: e.slug,
@@ -57,8 +60,10 @@ export function buildSearchRecords(entries: SearchEntry[]): SearchRecord[] {
             title: e.title,
             summary: e.summary,
             tags: e.tags,
-            ...(e.category !== undefined ? { category: e.category } : {}),
+            ...(e.domain !== undefined ? { domain: e.domain } : {}),
             headings: extractHeadings(e.html),
+            ...(e.primary?.authors && e.primary.authors.length > 0 ? { authors: e.primary.authors } : {}),
+            ...(e.primary?.venue ? { venue: e.primary.venue } : {}),
         };
     });
 }
@@ -79,8 +84,10 @@ export function emitContentSearch(records: SearchRecord[], outDir: string): void
         "    title: string;",
         "    summary: string;",
         "    tags: string[];",
-        "    category?: string;",
+        "    domain?: string;",
         "    headings: string[];",
+        "    authors?: string[];",
+        "    venue?: string;",
         "}",
         "",
         `export const searchRecords: SearchRecord[] = ${JSON.stringify(records, null, 2)};`,

@@ -20,7 +20,7 @@ describe("entry-server blog prerender", () => {
 describe("entry-server algorithm prerender", () => {
     it("renders algorithm page HTML instead of the loading spinner", async () => {
         const page = await algorithmHtmlLoaders["harris-corner-detector"]();
-        const html = render("/algorithms/harris-corner-detector", {
+        const html = render("/atlas/harris-corner-detector", {
             blogHtmlBySlug: {},
             algorithmHtmlBySlug: { "harris-corner-detector": page.html },
         });

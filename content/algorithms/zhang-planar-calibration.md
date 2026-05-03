@@ -3,12 +3,12 @@ title: "Zhang's Planar Camera Calibration"
 date: 2026-04-20
 summary: "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations."
 tags: ["calibration", "intrinsics", "homography"]
-category: calibration
+domain: calibration
 author: "Vitaly Vorobyev"
 difficulty: advanced
 relatedAlgorithms: ["chess-corners", "rochade", "puzzleboard"]
-prerequisites: [homography]
-comparedWith: []
+prerequisites: [homography, camera-distortion-models]
+comparedWith: [sturm-plane-based-calibration]
 failureModes: []
 sources:
   primary: zhang2000-flexible
@@ -120,15 +120,7 @@ Stacking the rows from $n$ views produces a $2n \times 6$ matrix $V$ and the hom
    with $(x, y)$ the normalised image coordinates and the analogous expression for $\breve v$.
 :::
 
-```mermaid
-flowchart LR
-    A["Detect planar<br/>correspondences<br/>per view"] --> B["Fit homography H_i<br/>(DLT + LM)"]
-    B --> C["Assemble V<br/>(2n × 6)"]
-    C --> D["SVD → b<br/>→ B = A⁻ᵀA⁻¹"]
-    D --> E["Closed-form K<br/>(Appendix B)"]
-    E --> F["Per-view<br/>(R_i, t_i)"]
-    F --> G["LM refine<br/>A, k₁, k₂, R_i, t_i"]
-```
+![zhang-planar-calibration pipeline: 7-stage flow from planar correspondence detection through per-view homography fitting, IAC constraint matrix assembly, SVD null-vector solve, closed-form intrinsic recovery, per-view extrinsic extraction, to full Levenberg-Marquardt refinement.](./images/zhang-planar-calibration/pipeline.svg)
 
 # Implementation
 
@@ -206,6 +198,22 @@ Nonlinear refinement of $(A, k_1, k_2, \{R_i, t_i\})$ over the total reprojectio
 - Parallel orientations of the planar target are degenerate: a second view obtained from the first by a rotation about the plane normal (and any translation) contributes constraints linearly dependent on those of the first view.
 - Minimum view count depends on which intrinsics are fixed: $n \geq 3$ for the full five-parameter $A$, $n \geq 2$ with skew fixed to $\gamma = 0$, and $n = 1$ can only solve two parameters (typical choice: $(\alpha, \beta)$ with principal point at the image centre).
 - Distortion scope is two-term radial only; tangential (decentering) and thin-prism terms belong to the Brown-Conrady / Weng model and are a drop-in extension of the projection function $\breve m$ and its Jacobian in the LM step.
+- Compared with Tsai 1987: see [When to choose Tsai over Zhang](/atlas/tsai-versatile-calibration#when-to-choose-tsai-over-zhang) on the Tsai page, which hosts the comparison per the older-paper-hosts rule.
+
+## When to choose Zhang over Sturm-Maybank
+
+[Sturm-Maybank](/atlas/sturm-plane-based-calibration) (CVPR 1999) and Zhang (ICCV 1999 / TPAMI 2000) are concurrent derivations of the same two linear IAC constraints per planar homography. Neither paper predates the other; both share the core algorithm. Per the "same year → more general scope" tiebreaker, Zhang hosts this comparison: Zhang's page covers the end-to-end calibration pipeline (homography fit, IAC linear initialisation, intrinsic + extrinsic recovery, two-term radial distortion, LM refinement) while Sturm-Maybank focuses on the linear IAC step plus singularity analysis and the variable-intrinsics generalisation.
+
+| | Zhang 2000 | Sturm-Maybank 1999 |
+|---|---|---|
+| Core constraint | Eq. 3-4 (rotation column orthonormality) | Eq. 4 (identical content) |
+| Distortion model | two-term radial $(k_1, k_2)$ + LM refinement | none (pinhole-only; future work in §4.3) |
+| Variable intrinsics | constant across views | per-view $f$ (or $f, u_0, v_0$) accommodated as new design-matrix columns (§4.2) |
+| Singularity catalogue | implicit ("parallel orientations are degenerate") | exhaustive (Tables 1 and 2 enumerate every singular plane configuration) |
+| Closed-form $K$ extraction | Appendix B formulas | Eq. 5 (algebraically equivalent) |
+| End-to-end pipeline | yes (full chain to LM-refined intrinsics + extrinsics + distortion) | no (linear IAC step only; downstream refinement deferred) |
+
+Choose Zhang when (1) you want a complete calibration pipeline including distortion and LM refinement — Zhang's page is the practical end-to-end recipe used by OpenCV, MATLAB, and Kalibr; (2) the camera intrinsics are constant across views (the standard machine-vision case). Choose Sturm-Maybank when (1) the camera intrinsics vary per view (zooming or focusing camera) — this is Sturm-Maybank's unique extension; (2) you need to diagnose a calibration failure and want the explicit singularity catalogue (Tables 1 and 2) to identify which plane orientations make a parameter unrecoverable; (3) you want the cleaner geometric framing via circular-point projections to the IAC, which makes the singularity arguments transparent.
 
 # References
 

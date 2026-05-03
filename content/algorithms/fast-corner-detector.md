@@ -3,7 +3,7 @@ title: "FAST Corner Detector"
 date: 2026-04-15
 summary: "Segment-test corner detector on a 16-pixel Bresenham ring of radius 3 around each candidate; classifies a point as a corner when N contiguous ring pixels are all brighter (or all darker) than the centre by a margin t."
 tags: ["feature-detection", "corner"]
-category: corner-detection
+domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["harris-corner-detector", "shi-tomasi-corner-detector", "chess-corners"]
@@ -143,6 +143,7 @@ The cardinal-point check uses zero-based indices 0, 4, 8, 12 (one-based 1, 5, 9,
 - Limitation: the segment-test criterion produces no continuous gradient response. Non-maximum suppression relies on the score $V$ from equation (8), which adds a constant per-corner cost.
 - Limitation: not rotation-invariant in the strict sense — the discrete ring breaks rotation symmetry. The detector also responds to one-pixel-wide lines at certain angles where the quantised circle misses the line.
 - The 16-pixel ring offset table $\Delta$ is reused by the ChESS corner detector at a scaled radius of 5 pixels (see related algorithms).
+- Compared with Harris: see [When to choose Harris over FAST](/atlas/harris-corner-detector#when-to-choose-harris-over-fast) on the Harris page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

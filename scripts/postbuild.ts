@@ -9,6 +9,7 @@ import { modelHtmlLoaders } from "../src/generated/model-loaders.ts";
 import { conceptHtmlLoaders } from "../src/generated/concept-loaders.ts";
 import { render } from "../src/entry-server.tsx";
 import type { StaticContentContextValue } from "../src/lib/content/ssr-content.tsx";
+import type { PapersById } from "../src/generated/papers-index.ts";
 import {
     buildAlgorithmJsonLd,
     buildBlogJsonLd,
@@ -71,9 +72,10 @@ function writePage(
     outDir: string,
     meta: SeoMeta,
     staticContent: StaticContentContextValue,
+    papers: PapersById,
     extraHead?: string,
 ): void {
-    const html = render(url, staticContent);
+    const html = render(url, staticContent, papers);
     let page = template.replace(
         '<div id="root"></div>',
         `<div id="root">${html}</div>`,
@@ -122,6 +124,12 @@ async function main(): Promise<void> {
         modelHtmlBySlug: await loadHtmlMap(modelHtmlLoaders),
         conceptHtmlBySlug: await loadHtmlMap(conceptHtmlLoaders),
     };
+    // Read the lazily-loaded papers index from disk so SSR can render the
+    // SourceStrip on every prerendered page without an HTTP fetch.
+    const papersJsonPath = join(import.meta.dir, "..", "public", "papers-index.json");
+    const papers: PapersById = existsSync(papersJsonPath)
+        ? (JSON.parse(readFileSync(papersJsonPath, "utf-8")) as PapersById)
+        : {};
     let count = 0;
 
     // Blog index
@@ -129,7 +137,7 @@ async function main(): Promise<void> {
         title: "Blog",
         description:
             "Articles on computer vision algorithms, calibration, and building intelligent systems.",
-    }, staticContent);
+    }, staticContent, papers);
     count++;
 
     // Individual blog posts
@@ -142,28 +150,28 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/blog/${post.slug}`,
-        }, staticContent, jsonLd);
+        }, staticContent, papers, jsonLd);
         count++;
     }
 
-    // Algorithm index
-    writePage(template, "/algorithms", "algorithms", {
-        title: "Algorithms",
-        description: "Computer vision algorithms — explore, understand, and experiment.",
-    }, staticContent);
+    // Atlas index
+    writePage(template, "/atlas", "atlas", {
+        title: "Atlas",
+        description: "Computer vision atlas — algorithms, models, and concepts.",
+    }, staticContent, papers);
     count++;
 
     // Individual algorithm pages
     for (const page of algorithmPages) {
         const { frontmatter } = page;
         const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildAlgorithmJsonLd(frontmatter, page.slug))}</script>`;
-        writePage(template, `/algorithms/${page.slug}`, `algorithms/${page.slug}`, {
+        writePage(template, `/atlas/${page.slug}`, `atlas/${page.slug}`, {
             title: frontmatter.title,
             description: frontmatter.summary,
             ogType: "article",
             ogImage: frontmatter.coverImage,
-            url: `/algorithms/${page.slug}`,
-        }, staticContent, jsonLd);
+            url: `/atlas/${page.slug}`,
+        }, staticContent, papers, jsonLd);
         count++;
     }
 
@@ -171,7 +179,7 @@ async function main(): Promise<void> {
     writePage(template, "/demos", "demos", {
         title: "Demos",
         description: "Interactive demos of computer vision algorithms.",
-    }, staticContent);
+    }, staticContent, papers);
     count++;
 
     // Individual demo pages
@@ -183,21 +191,21 @@ async function main(): Promise<void> {
             description: frontmatter.summary,
             ogType: "article",
             url: `/demos/${demo.slug}`,
-        }, staticContent, jsonLd);
+        }, staticContent, papers, jsonLd);
         count++;
     }
 
-    // Individual model pages (the index at /algorithms/models is served from /algorithms?tab=models)
+    // Individual model pages
     for (const model of modelPages) {
         const { frontmatter } = model;
         const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildModelJsonLd(frontmatter, model.slug))}</script>`;
-        writePage(template, `/algorithms/models/${model.slug}`, `algorithms/models/${model.slug}`, {
+        writePage(template, `/atlas/${model.slug}`, `atlas/${model.slug}`, {
             title: frontmatter.title,
             description: frontmatter.summary,
             ogType: "article",
             ogImage: frontmatter.coverImage,
-            url: `/algorithms/models/${model.slug}`,
-        }, staticContent, jsonLd);
+            url: `/atlas/${model.slug}`,
+        }, staticContent, papers, jsonLd);
         count++;
     }
 
@@ -205,13 +213,13 @@ async function main(): Promise<void> {
     for (const page of conceptPages) {
         const { frontmatter } = page;
         const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildConceptJsonLd(frontmatter, page.slug))}</script>`;
-        writePage(template, `/concepts/${page.slug}`, `concepts/${page.slug}`, {
+        writePage(template, `/atlas/${page.slug}`, `atlas/${page.slug}`, {
             title: frontmatter.title,
             description: frontmatter.summary,
             ogType: "article",
             ogImage: frontmatter.coverImage,
-            url: `/concepts/${page.slug}`,
-        }, staticContent, jsonLd);
+            url: `/atlas/${page.slug}`,
+        }, staticContent, papers, jsonLd);
         count++;
     }
 
@@ -219,16 +227,17 @@ async function main(): Promise<void> {
     writePage(template, "/tools/target-generator", "tools/target-generator", {
         title: "Target Generator",
         description: "Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.",
-    }, staticContent);
+    }, staticContent, papers);
     count++;
 
     // Generate sitemap
     const sitemapPaths = [
         "/", "/blog", ...blogPosts.map((p) => `/blog/${p.slug}`),
-        "/algorithms", ...algorithmPages.map((p) => `/algorithms/${p.slug}`),
+        "/atlas",
+        ...algorithmPages.map((p) => `/atlas/${p.slug}`),
+        ...modelPages.map((m) => `/atlas/${m.slug}`),
+        ...conceptPages.map((c) => `/atlas/${c.slug}`),
         "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
-        ...modelPages.map((m) => `/algorithms/models/${m.slug}`),
-        ...conceptPages.map((c) => `/concepts/${c.slug}`),
         "/tools/target-generator",
     ];
     writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(sitemapPaths), "utf-8");
@@ -255,15 +264,11 @@ async function main(): Promise<void> {
     ].sort(comparePublicationDateDesc);
 
     for (const entry of feedEntries) {
-        const path = entry.kind === "algorithm"
-            ? `/algorithms/${entry.slug}`
+        const path = entry.kind === "blog"
+            ? `/blog/${entry.slug}`
             : entry.kind === "demo"
                 ? `/demos/${entry.slug}`
-                : entry.kind === "model"
-                    ? `/algorithms/models/${entry.slug}`
-                    : entry.kind === "concept"
-                        ? `/concepts/${entry.slug}`
-                        : `/blog/${entry.slug}`;
+                : `/atlas/${entry.slug}`;
         const { frontmatter } = entry;
         feed.addItem({
             title: formatFeedTitle(entry.kind, frontmatter.title),
@@ -271,7 +276,7 @@ async function main(): Promise<void> {
             link: `${SITE_URL}${path}`,
             description: frontmatter.summary,
             date: new Date(frontmatter.date),
-            author: [{ name: frontmatter.author }],
+            ...(frontmatter.author ? { author: [{ name: frontmatter.author }] } : {}),
             ...(frontmatter.coverImage && { image: frontmatter.coverImage }),
         });
     }
@@ -295,19 +300,21 @@ main().catch((err) => {
     process.exit(1);
 });
 
-// Validation guard: ensure no research-note paths leaked into the public build.
-// docs/research/ is a private reasoning substrate and must never appear in dist/.
+// Validation guard: ensure no unpublished docs paths leaked into the public build.
+// docs/research/ is the unpublished reasoning substrate; docs/atlas-vault/ is the
+// generated Obsidian projection. Both are committed to GitHub but must never
+// appear in dist/.
 import { execSync } from "node:child_process";
 
 const distDir = join(import.meta.dir, "..", "dist");
 try {
     const result = execSync(
-        `grep -rl "docs/research/" ${distDir} || true`,
+        `grep -rlE "docs/(research|atlas-vault)/" ${distDir} || true`,
         { encoding: "utf-8" },
     ).trim();
     if (result) {
         throw new Error(
-            `Public build leaks research-note paths: ${result.split("\n").join(", ")}`,
+            `Public build leaks unpublished-docs paths: ${result.split("\n").join(", ")}`,
         );
     }
 } catch (err) {

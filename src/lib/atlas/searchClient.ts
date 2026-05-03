@@ -14,10 +14,13 @@ function getSearchInstance(): MiniSearch<SearchRecord> | null {
     if (_instance) return _instance;
     _instance = new MiniSearch<SearchRecord>({
         idField: "slug",
-        fields: ["title", "summary", "tags", "headings", "category"],
+        fields: ["title", "summary", "tags", "headings", "category", "authors", "venue"],
         storeFields: ["slug", "type"],
         searchOptions: {
-            boost: { title: 3, summary: 1.5, tags: 2 },
+            // Tag/venue/authors boosted above body so a query like "Zaragoza"
+            // or "CVPR" lands on the page that cites them, not on every page
+            // that mentions the word in passing.
+            boost: { title: 3, summary: 1.5, tags: 2, authors: 2.5, venue: 2 },
             prefix: true,
             fuzzy: 0.2,
         },

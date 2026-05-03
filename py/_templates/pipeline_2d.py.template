@@ -1,0 +1,181 @@
+#!/usr/bin/env python3
+"""
+Pipeline diagram generator template for Atlas pages.
+
+Renders a multi-stage pipeline as a 2D grid of labeled boxes with arrows.
+Designed for ≥5-stage pipelines that don't fit a single horizontal row at
+narrow viewports.
+
+Layout: stages arranged into rows of `COLS` boxes each, with snake-direction
+arrows (row 1 LR, row 2 RL, row 3 LR, ...). Final row may be partial.
+
+To adapt:
+1. Copy this file to `py/generate_<slug>_pipeline.py` (or similar).
+2. Edit the STAGES list and OUTPUT path.
+3. Adjust COLS if the default 3-wide grid doesn't suit your stage count.
+4. Run with `.venv/bin/python py/generate_<slug>_pipeline.py`.
+5. Reference the output SVG from the page via `![alt](./images/<slug>/pipeline.svg)`.
+
+Determinism: matplotlib hashsalt + static metadata pinned.
+Accessibility: <title> and <desc> injected into the <svg> element after savefig.
+Typography: 12pt minimum on all labels per the Atlas illustration policy.
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+import sys
+from pathlib import Path
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+
+# ── Adapt below ──────────────────────────────────────────────────────────────
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+# One stage per item. Use \n inside a string for multi-line labels.
+STAGES = [
+    "Stage 1",
+    "Stage 2\nsubtitle",
+    "Stage 3",
+    "Stage 4",
+    "Stage 5",
+]
+
+OUTPUT = REPO_ROOT / "content" / "images" / "<slug>" / "pipeline.svg"
+TITLE = "<one-line figure title>"
+DESC = "<one-sentence visual description for screen readers>"
+
+COLS = 3       # boxes per row; tune if needed
+BOX_W = 1.8    # box width in inches-equivalent units
+BOX_H = 0.9    # box height
+H_GAP = 0.45   # horizontal gap between boxes
+V_GAP = 0.55   # vertical gap between rows
+FONT_PT = 12   # ≥12 pt floor
+
+# ── Layout / rendering ───────────────────────────────────────────────────────
+
+def render(stages, output_path, title, desc, cols=COLS):
+    n = len(stages)
+    rows = (n + cols - 1) // cols
+    fig_w = cols * (BOX_W + H_GAP) - H_GAP + 0.6
+    fig_h = rows * (BOX_H + V_GAP) - V_GAP + 0.6
+
+    plt.rcParams["svg.hashsalt"] = "vitavision-pipeline"
+    plt.rcParams["svg.fonttype"] = "none"
+
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
+    fig.patch.set_facecolor("#f8fafc")
+    ax.set_facecolor("#ffffff")
+    ax.set_xlim(0, cols * (BOX_W + H_GAP) - H_GAP + 0.3)
+    ax.set_ylim(0, rows * (BOX_H + V_GAP) - V_GAP + 0.3)
+    ax.invert_yaxis()  # row 0 at top
+    ax.set_aspect("equal")
+    ax.axis("off")
+
+    # Box + label per stage
+    centers = []
+    for idx, label in enumerate(stages):
+        row = idx // cols
+        col_in_row = idx % cols
+        # snake: even rows LR, odd rows RL
+        col = col_in_row if row % 2 == 0 else (cols - 1 - col_in_row)
+        x = 0.15 + col * (BOX_W + H_GAP)
+        y = 0.15 + row * (BOX_H + V_GAP)
+        cx = x + BOX_W / 2
+        cy = y + BOX_H / 2
+        centers.append((cx, cy, row, col))
+
+        box = FancyBboxPatch(
+            (x, y),
+            BOX_W,
+            BOX_H,
+            boxstyle="round,pad=0.02,rounding_size=0.08",
+            linewidth=1.0,
+            edgecolor="#475569",
+            facecolor="#e2e8f0",
+        )
+        ax.add_patch(box)
+        ax.text(
+            cx,
+            cy,
+            label,
+            ha="center",
+            va="center",
+            fontsize=FONT_PT,
+            color="#111827",
+            linespacing=1.2,
+        )
+
+    # Arrows
+    for i in range(len(centers) - 1):
+        cx1, cy1, r1, c1 = centers[i]
+        cx2, cy2, r2, c2 = centers[i + 1]
+        if r1 == r2:
+            # horizontal arrow on the row
+            if c2 > c1:
+                start = (cx1 + BOX_W / 2, cy1)
+                end = (cx2 - BOX_W / 2, cy2)
+            else:
+                start = (cx1 - BOX_W / 2, cy1)
+                end = (cx2 + BOX_W / 2, cy2)
+        else:
+            # vertical arrow between rows (down) at the column where current row ends
+            start = (cx1, cy1 + BOX_H / 2)
+            end = (cx2, cy2 - BOX_H / 2)
+        arrow = FancyArrowPatch(
+            start,
+            end,
+            arrowstyle="-|>",
+            mutation_scale=12,
+            linewidth=1.0,
+            color="#475569",
+        )
+        ax.add_patch(arrow)
+
+    fig.savefig(
+        output_path,
+        format="svg",
+        facecolor=fig.get_facecolor(),
+        bbox_inches="tight",
+        metadata={"Date": None},
+    )
+    plt.close(fig)
+    inject_accessibility(output_path, title, desc)
+
+
+def inject_accessibility(svg_path: Path, title: str, desc: str) -> None:
+    text = svg_path.read_text()
+    title_xml = f'<title id="title">{title}</title>'
+    desc_xml = f'<desc id="desc">{desc}</desc>'
+    # Add role + aria to <svg ...> tag and inject title/desc as first children.
+    text = re.sub(
+        r"<svg([^>]*)>",
+        rf'<svg\1 role="img" aria-labelledby="title desc">{title_xml}{desc_xml}',
+        text,
+        count=1,
+    )
+    svg_path.write_text(text)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Render a 2D pipeline diagram")
+    parser.add_argument(
+        "output_path",
+        nargs="?",
+        type=Path,
+        default=OUTPUT,
+        help="Output SVG path (default: configured constant)",
+    )
+    args = parser.parse_args(argv)
+    args.output_path.parent.mkdir(parents=True, exist_ok=True)
+    render(STAGES, args.output_path, TITLE, DESC)
+    print(f"wrote {args.output_path}")
+
+
+if __name__ == "__main__":
+    main()

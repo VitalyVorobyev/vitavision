@@ -70,7 +70,13 @@ For symmetric relations (`comparedWith`, `related`), author on one side only. Th
 ### When a topic deserves its own page
 - **Concept page**: only when referenced by 3+ algorithm/model pages AND can support ≥500 words of substantive standalone content (definition, math, numerical concerns, implementation implications).
 - **Failure-mode page**: same criterion (3+ references, ≥500 words). Failure-mode authoring is deferred until natural candidates accumulate.
-- **Comparison page**: prohibited as pairwise. Use `comparedWith:` field + an inline `## When to choose X over Y` section inside the more authoritative page. Surveys allowed only when ≥3 methods are contrasted with ≥800 words and a decision table.
+- **Pairwise comparison page**: prohibited. Use `comparedWith:` field + an inline `## When to choose X over Y` section inside the more authoritative page. The non-host page carries a single Remarks bullet linking to the comparison anchor — never duplicate the prose.
+- **Survey concept page** (3+ methods): a concept page (`content/concepts/<survey-slug>.md`), not an algorithm page. Required: ≥3 surveyed methods, ≥800 words, decision table near the top, every surveyed algorithm page lists the survey concept in its `related`. Author only when ≥3 of the surveyed papers have research notes.
+
+### Comparison authoring discipline
+- **More-authoritative tiebreaker** for which page hosts the `## When to choose X over Y` section: (1) older paper hosts; (2) same year → more general scope hosts; (3) tied → author judgment with reason recorded in the commit message. No "more cited" rule.
+- **Both research notes required.** Comparison content can be written agentically only when `docs/research/notes/<both-paper-ids>.md` both exist. If either is missing, the page-authoring skill must refuse and request `paper-ingest` first. This is enforceable via filesystem check; without it, comparison prose is hallucination.
+- See `docs/README.md` §4 for the full convention with worked examples.
 
 ### Quality field
 - Omitted = normal published page (default).
@@ -80,17 +86,32 @@ For symmetric relations (`comparedWith`, `related`), author on one side only. Th
 `draft: true` remains the publication gate. Do not introduce `status:` or `review:` fields.
 
 ### Sources
-Source IDs in `sources.primary` and `sources.references` must exist in `docs/papers/index.yaml`. Do not invent paper IDs. Concept pages may omit `sources:` if no canonical paper exists.
+
+Frontmatter `sources.primary` and `sources.references[]` accept three source kinds, all registered in `docs/papers/index.yaml`:
+
+- `<bare-id>` or `paper:<id>` — a paper. Default kind; the 45+ existing entries use this form. Do not invent paper IDs.
+- `repo:<https-url>@<sha>` — a GitHub repo pinned at a 7–40-char commit SHA. The index entry must exist with `kind: repo` and matching commit. Use this for repos cited as background or comparison; for the page's own reference implementation use `sources.impl` (algo) or `implementations[]` (model) — those are richer-typed and license-verified.
+- `doc:<repo-relative-path>` — a markdown doc inside this repo. The path must exist under `docs/` or `content/`. Index entry has `kind: doc`.
+
+Bare IDs are treated as `paper:<id>` for backward compatibility. New paper IDs must not start with `repo:` or `doc:`.
+
+Each registered source has a corresponding research note at `docs/research/notes/<source-id>.md` — papers via `paper-ingest`, repos via `bun sources:fetch-repo` then stub-fill via `paper-ingest`, docs via `bun sources:fetch-doc` then stub-fill via `paper-ingest`. Notes are the canonical input the page-authoring skills consume; cache files (`docs/papers/.cache/`, `docs/sources/.cache/`) are read only by the Sonnet Extract subagent during ingestion, never by the orchestrator.
+
+Concept pages may omit `sources:` if no canonical source exists.
 
 ### Validation
 Run `bun run scripts/validate-content.ts` before opening a PR. The build runs the same validation and will fail on broken slugs, prerequisite cycles, missing source IDs, or canonical-quality violations.
 
-### Research notes (private reasoning substrate)
+### Research notes (unpublished reasoning substrate)
 
-Private notes live at `docs/research/notes/<paper-id>.md`, where `<paper-id>`
+Notes live at `docs/research/notes/<paper-id>.md`, where `<paper-id>`
 matches an entry in `docs/papers/index.yaml`. They are reasoning material for
-Claude, not public content — never published, never indexed, never imported
-from `src/**`.
+Claude — committed to the public GitHub repo for reproducibility, but never
+deployed to the site, never indexed, never imported from `src/**`.
+
+**Authoring rule:** write every research note as if a peer reviewer or paper
+author might read it tomorrow. No surprise-attributable critical takes, no
+sensitive third-party material. Personal opinion lives in `content/blog/`.
 
 Discovery: any public page's frontmatter `sources.primary` and
 `sources.references` are paper IDs; the corresponding research note (if
@@ -161,3 +182,11 @@ Shared result/config types live in `src/lib/types.ts`. These describe WASM detec
 - Image pixel-count limit: `WASM_MAX_PIXELS=20_000_000` in `useAlgorithmRunner.ts`
 - WASM runs in Web Workers (off main thread, no DOM access)
 - No shared memory — pixel buffers transferred via `Transferable`
+
+### Touch & mobile interaction
+
+Any interactive SVG, canvas, or react-konva surface that handles drag or in-surface gestures **must** set `touch-action: none` on the interactive element. Without it, the browser claims touches as pan/scroll gestures before pointer-capture can win, and drag becomes impossible on touch devices.
+
+Hover-only affordances (highlight-on-mouseover, tooltips that require pointermove) **must** have a tap-equivalent on touch. Detect via `e.pointerType === "touch"` or `"pen"` inside the pointer handler — do not branch on viewport width, since touch laptops exist. Reuse the same hit-test code; do not duplicate it.
+
+Verify in browser devtools touch emulation (Chrome → Device Toolbar → "Responsive" with touch enabled) before declaring an interactive change complete. Type-check and unit tests do not catch this class of bug.

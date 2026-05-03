@@ -4,7 +4,7 @@ date: 2026-04-30
 summary: "A symmetric 2×2 matrix formed by summing the outer products of the image gradient over a local window, encoding the dominant orientation and anisotropy of local image structure."
 tags: ["feature-theory", "corner-detection", "linear-algebra"]
 author: "Vitaly Vorobyev"
-category: feature-theory
+domain: features
 difficulty: intermediate
 prerequisites:
   - image-gradient

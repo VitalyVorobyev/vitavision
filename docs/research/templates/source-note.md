@@ -8,10 +8,6 @@ created: YYYY-MM-DD
 relevant_atlas_pages: [<slug>, <slug>]
 ---
 
-> **Private — do not publish.** This file is a reasoning substrate for Claude
-> and the repo owner. Public Atlas pages are authored by the page-type skills
-> using the bullets in "Atlas update plan" below.
-
 # Setting
 
 What problem class. Inputs (with preconditions: image type, resolution, noise

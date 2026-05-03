@@ -3,18 +3,18 @@ title: "PuzzleBoard"
 date: 2026-04-16
 summary: "Detect and decode a self-identifying checkerboard calibration pattern: saddle-point corners from a Hessian response, grid reconstruction via Kruskal minimum spanning forest on the 9-nearest-neighbour graph, absolute corner position on a $501 \\times 501$ grid from cross-correlation against two binary de Bruijn factor maps."
 tags: ["calibration", "chessboard", "self-identifying-pattern"]
-category: calibration-targets
+domain: targets
 author: "Vitaly Vorobyev"
 difficulty: advanced
-draft: true
 editorAlgorithmId: puzzleboard
 relatedAlgorithms: ["chess-corners", "harris-corner-detector", "shu-topological-grid"]
-prerequisites: [image-gradient]
+prerequisites: [image-gradient, hessian-saddle-response, topological-grid-recovery]
+related: [chessboard-x-corner-detection]
 comparedWith: []
 failureModes: []
 sources:
   primary: stelldinger2024-puzzleboard
-  references: [harris1988-corner]
+  references: [harris1988-corner, chen2005-xcorner]
   notes: |
     Pattern: checkerboard overlaid with binary circles at every edge midpoint.
     The circles encode a sub-perfect map of type (501, 501; 3, 3)_4 — every
@@ -105,16 +105,7 @@ The formula reconstructs the full position from a coarse-resolution index modulo
 10. Compute $(u, v)$ via the position-decoding formula; assign grid coordinates to every detected corner by offsetting from the decoded anchor.
 :::
 
-```mermaid
-flowchart LR
-    A["Hessian<br/>f_xx, f_xy, f_yy"] --> B["Saddle response s<br/>local maxima"]
-    B --> C["Subpixel refine<br/>3×3 centroid"]
-    C --> D["9-NN + Kruskal<br/>MSF grid"]
-    D --> E["Bit read at<br/>edge midpoints"]
-    E --> F["Majority vote<br/>(3 repetitions)"]
-    F --> G["Cross-correlate<br/>A, A', B, B'"]
-    G --> H["Decode (u, v)<br/>mod 167"]
-```
+![puzzleboard pipeline: 8-stage flow from Hessian computation through saddle response and subpixel refinement, 9-NN Kruskal grid reconstruction, edge-bit reading with majority voting, cross-correlation against factor maps, to absolute grid position decoding.](./images/puzzleboard/pipeline.svg)
 
 # Implementation
 
@@ -148,6 +139,7 @@ The response kernel is arithmetic-only per pixel; the decoder is four modular op
 - Error tolerance: after majority voting across the three repetitions of every row and column, up to $40\%$ of the raw observed bits can be corrupted and the position still decodes correctly. The minimum Hamming distance between the correct alignment and any wrong alignment is $501$ bits.
 - Minimum resolution: decoding succeeds at roughly $5$ pixels per checkerboard edge at full reliability, and recovers under error correction at $3.3$ pixels per edge — substantially below the resolution required by the classic checkerboard detectors.
 - Backward compatibility: the edge-midpoint circles do not interfere with the saddle test, so a generic checkerboard corner detector still locates corners on a PuzzleBoard; the position decoding is an additive capability on top of standard calibration targets.
+- Compared with ChESS: see [When to choose ChESS over PuzzleBoard](/atlas/chess-corners#when-to-choose-chess-over-puzzleboard) on the ChESS page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

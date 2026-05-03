@@ -3,11 +3,12 @@ title: "Pyramidal Blur-Aware X-Corner Chessboard Detector"
 date: 2026-04-18
 summary: "Detect chessboard X-junctions in heavily blurred or high-resolution images by computing a 16-sample circular x-corner intensity at every level of an image pyramid, selecting per corner the level that maximises intensity per resolution, then assembling a chessboard graph with blur-aware edge validation."
 tags: ["calibration", "chessboard", "corner-detection"]
-category: corner-detection
+domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 relatedAlgorithms: ["chess-corners", "rochade", "shu-topological-grid", "shi-tomasi-corner-detector"]
 prerequisites: [image-gradient, scale-space]
+related: [chessboard-x-corner-detection]
 comparedWith: []
 failureModes: []
 sources:
@@ -116,18 +117,7 @@ Level-dependent spacing keeps samples away from the smeared centre of edges inci
 9. If the pattern shape $(r, c)$ is given, return only chessboard graphs of that shape; otherwise return all valid graphs.
 :::
 
-```mermaid
-flowchart LR
-  A["Pyramid"] --> B["Per-level<br/>x-corner I"]
-  B --> C["2x2 box<br/>+ NMS"]
-  C --> D["Cascade<br/>filters"]
-  D --> E["Mean-shift<br/>subpixel"]
-  E --> F["Spokes:<br/>orient + contrast"]
-  F --> G["Cross-level<br/>level select"]
-  G --> H["KNN +<br/>edge validate"]
-  H --> I["Vote +<br/>graph rules"]
-  I --> J["Chessboard<br/>graphs"]
-```
+![pyramidal-blur-aware-xcorner pipeline: 10-stage flow from image pyramid through per-level x-corner intensity, 2×2 box filter and NMS, cascade filters, mean-shift subpixel refinement, spoke orientation, cross-level selection, KNN edge validation, vote and graph-rule enforcement, to chessboard graphs.](./images/pyramidal-blur-aware-xcorner/pipeline.svg)
 
 # Implementation
 
@@ -178,6 +168,8 @@ The intensity loop is the pixel hot path and is run once per pyramid level. Each
 - Sample spacing along candidate edges is set per edge from the pyramid levels of its endpoints. Constant spacing samples the smeared centre of edges incident to blurred corners and produces a uniformly low score regardless of whether an edge exists.
 - The detector returns one or more chessboard graphs and rejects graphs that do not match the requested shape; self-identifying patterns are out of scope and must be decoded by a downstream stage.
 - Output metadata includes the chosen pyramid level per corner. This can be repurposed for autofocus diagnostics, per-corner uncertainty estimates, or rejection of blur-induced false positives.
+- Compared with ChESS: see [When to choose ChESS over Pyramidal](/atlas/chess-corners#when-to-choose-chess-over-pyramidal) on the ChESS page, which hosts the comparison per the older-paper-hosts rule.
+- Compared with ROCHADE: see [When to choose ROCHADE over Pyramidal](/atlas/rochade#when-to-choose-rochade-over-pyramidal) on the ROCHADE page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

@@ -30,3 +30,6 @@ SECURITY_AUDIT.md
 
 docs/papers/.cache/
 docs/impls/.cache/
+
+# Auto-generated from docs/papers/index.yaml during content:build.
+public/papers-index.json

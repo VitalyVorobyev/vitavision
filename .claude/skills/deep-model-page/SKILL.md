@@ -79,17 +79,17 @@ Model-page-specific pointers:
 
 ## Illustrations
 
-Illustration rules are inherited verbatim from `.claude/skills/algo-page/SKILL.md` §"Illustrations" — the decision tree (Mermaid vs hand-authored SVG vs generated SVG), the hand-authored SVG rules, the generator-script requirements, the palette, the typography floor. Do not restate; treat them as binding.
+See `.claude/skills/_shared/illustrations.md` for the primitive choice and authoring rules. Binding.
 
-Model-page-specific pointers:
+Model-specific pointers:
 
 - **Block diagrams are the archetypal earn-your-place figure for a model page.** A transformer encoder, a ResNet bottleneck, a U-Net's skip topology — these are near-impossible to describe in prose and trivial to read from a diagram.
   - If the block is < ~15 primitives (rectangles, arrows, labels) and has no data dependence, **hand-author the SVG** under `content/images/<slug>/block.svg`.
-  - If the figure plots a learning curve, a scaling law, or a parameter-efficiency frontier, **write a generator script** under `py/generate_<slug>_<name>.py` that writes to `content/images/<slug>/<name>.svg`. Deterministic SVG, accessibility post-pass, Tailwind palette — same rules as `algo-page`.
+  - If the figure plots a learning curve, a scaling law, or a parameter-efficiency frontier, **write a generator script** under `py/generate_<slug>_<name>.py` that writes to `content/images/<slug>/<name>.svg`. Same rules as algo-page.
 - **Data-flow pipelines** (training loop, inference pipeline, multi-stage distillation) → Mermaid flowchart, inline.
 - **Architecture block diagrams should not restate the `# Architecture.Blocks` code snippet.** Pick one — if the code is the clearer explanation, omit the figure; if the topology only reads cleanly visually, omit the code snippet.
 
-Real-image output (segmentation masks on an example photo, detection overlays) belongs in a blog post or a demo, not on the reference card. Use `<!-- TODO figure: ... -->` placeholders only for figures that genuinely depend on real-image data; write a generator script for everything else.
+Real-image output (segmentation masks on an example photo, detection overlays) belongs in a blog post or a demo, not on the reference card. Use `<!-- TODO figure: ... -->` placeholders only for figures that genuinely depend on real-image data.
 
 ## Frontmatter
 
@@ -139,14 +139,18 @@ coverImage: "..."
 
 `sources` is required for every non-draft page. `implementations[]` is required for every non-draft page — a model without a referenceable implementation cannot ship as non-draft.
 
+**Source kinds in `sources.references[]`.** Accepts `<bare-id>` (defaults to `paper`), `paper:<id>`, `repo:<url>@<sha>`, or `doc:<path>`. Use `repo:` in `references[]` for repos cited as background, comparison, or upstream — analogous to citing a paper. The page's reference implementations live in the dedicated `implementations[]` field (richer-typed, license-verified per commit), not in `sources.references[]`. A repo can appear in both: as a `repo:` reference if also cited in `# Assessment`, and as a structured `implementations[]` entry.
+
 ## Research-note awareness
 
-Before drafting or editing a page, check `docs/research/notes/<sources.primary>.md`. If it exists, treat the bullets in its `## NEW: <slug>` or `## UPDATE: <slug>` block as authoritative content guidance for the section being edited. The note's other sections (Setting, Core idea, Assumptions, Failure regime, Numerical sensitivity, Applicability, Connections) are reasoning context to draw from.
+Research notes at `docs/research/notes/<sources.primary>.md` are the **canonical input** for this skill. The Draft contract reads them, not the paper cache. Before any draft pass, verify the note exists for the primary source AND for every reference in `sources.references`. If any required note is missing, the skill stops and reports: *"Cannot draft — research note `docs/research/notes/<id>.md` does not exist. Run `/paper-ingest <id-or-arxiv-ref>` first."*
+
+The note's `## NEW: <slug>` or `## UPDATE: <slug>` block provides authoritative content guidance for the section being drafted. The note's other sections (Setting, Core idea, Assumptions, Failure regime, Numerical sensitivity, Applicability, Connections) are the reasoning substrate the Draft subagent works from.
 
 **Two invocation paths:**
 
-- **Bootstrap** (new page from scratch): supply `arxiv:<id>`, `doi:<doi>`, or a URL. Runs Bootstrap B1–B10 below.
-- **Apply from research note** (update existing page): invoke as `/deep-model-page <existing-slug>`. The skill reads `docs/research/notes/<sources.primary>.md` and applies `## UPDATE: <slug>` bullets — synthesizing them into the page format, not copying them verbatim.
+- **Bootstrap** (new page from scratch): supply `arxiv:<id>`, `doi:<doi>`, or a URL. Runs Bootstrap B1–B10 below. The research note for `sources.primary` **must exist** before continuing to Workflow §7 (Draft contract delegation). If it is absent after Bootstrap completes, stop and instruct the user to run `paper-ingest` first.
+- **Apply from research note** (update existing page): invoke as `/deep-model-page <existing-slug>`. The research note for `sources.primary` **must exist**. If it is missing, stop and instruct the user to run `/paper-ingest <primary-id>` first. The Draft subagent reads the note and applies `## UPDATE: <slug>` bullets per the Draft contract in Workflow §7 — not by copying them verbatim, and not by reading the paper cache.
 
 **Model-family vs single-paper pages:**
 
@@ -170,7 +174,7 @@ This procedure is mandatory for any new or rewritten model page.
 ### Trigger
 
 - **Bootstrap mode** fires whenever the user supplies an input token — `arxiv:<id>`, `doi:<doi>`, or a PDF / publisher URL — without a pre-filled frontmatter file. Example triggers: "draft arxiv:1512.03385", "draft doi:10.1109/ICCV.2017.322", "draft https://…/paper.pdf". Run Bootstrap §B1–B10 below, then continue with Workflow §4.
-- **Legacy mode** fires when a page file already exists with filled `sources` and `implementations`. Skip Bootstrap and start at Workflow §1.
+- **Legacy mode** fires when a page file already exists with filled `sources` and `implementations` AND the research note for `sources.primary` exists at `docs/research/notes/<primary-id>.md`. Skip Bootstrap and start at Workflow §1. If the note is missing, stop and instruct the user to run `/paper-ingest <primary-id>` first.
 
 ### Bootstrap (Claude-driven, for entirely new pages)
 
@@ -184,7 +188,7 @@ B4. **Curate the cites list.** Same rules as `algo-page` B4: chase direct antece
 
 B5. **Cache PDFs + text + ar5iv HTML.** `bun papers:fetch`.
 
-B6. **Read the primary.** Prefer `docs/papers/.cache/<primary-id>.html` (ar5iv) for arxiv papers; `<primary-id>.txt` otherwise. Extract: the method section, the architecture block definitions, the training objective, the headline benchmark numbers, the parameter count and FLOPs. Note table and equation numbers — they will be cited in the page.
+B6. **Ensure the research note exists.** Run `bun ls docs/research/notes/<primary-id>.md`. If absent, stop and tell the user: *"Bootstrap requires the research note. Run `/paper-ingest <input>` first to create `docs/research/notes/<primary-id>.md`, then rerun `deep-model-page`."* Do NOT load the cache file into orchestrator context — drafting happens in Workflow §7 via the Draft contract.
 
 B7. **Choose the page slug.** Kebab-case, descriptive — the model's common name. `resnet`, not `he2016`. `superpoint`, not `detone2018`. `swin-transformer`, not `swin` (ambiguous) or `swin-v1` (version-chasing).
 
@@ -210,9 +214,11 @@ B9a. **Gather implementations.** Identify open-source implementations. Typical s
       - `port` — a cross-framework port (e.g. a Caffe→PyTorch port of the official Caffe release). Classify as `port` only when the port's role is faithful reproduction; if the port added novel contributions, it is `community`.
    6. Write the entry into `implementations[]` in the page's frontmatter.
 
-   **Floor.** One verified entry is the minimum for a non-draft page. If no public implementation exists, set `draft: true` and add a `# Assessment.Limitations` bullet noting "no public implementation"; the page can ship as a draft but not as a non-draft reference card.
+   **Floor.** If a public implementation exists, one verified entry is the minimum for a non-draft page. If no public implementation exists for legitimate reasons (closed-source, discontinued, paper-only), set `noPublicImpl: true` in the frontmatter and add a `## Limitations` section to the page body explaining why (with at least one bullet pointing to the constraint: closed-source, paper-only, etc.). The validator enforces this — the page can ship as non-draft. Use `draft: true` only when the page itself is unfinished, not as a workaround for missing implementations.
 
-B10. **Flip `draft: false`** once B9a wrote at least one valid entry. Continue with Workflow §4.
+   Note: License verification stays in the orchestrator (not delegated) because it is small, deterministic, and a security check — the orchestrator must read the LICENSE file directly to grade the page's `implementations[].license` claim.
+
+B10. **Flip `draft: false`** once B9a wrote at least one valid implementations entry, OR set `noPublicImpl: true` with a populated Limitations section. Continue with Workflow §4.
 
 ### What Bootstrap writes where
 
@@ -222,42 +228,43 @@ B10. **Flip `draft: false`** once B9a wrote at least one valid entry. Continue w
 | Cached PDF + `pdftotext` output | `docs/papers/.cache/<id>.{pdf,txt}` | `bun papers:fetch` (B5) |
 | Cached ar5iv HTML (arxiv papers) | `docs/papers/.cache/<id>.html` | `bun papers:fetch` (B5) |
 | Cached LICENSE files (optional) | `docs/impls/.cache/<owner>/<repo>/<sha>/LICENSE` | `curl` in B9a |
+| Research note | `docs/research/notes/<primary-id>.md` | Created by `paper-ingest` — required precondition |
 | Page frontmatter | `content/models/<slug>.md` | Write tool (B9) |
-| Page body | `content/models/<slug>.md` | Workflow §7 drafting |
+| Page body | `content/models/<slug>.md` | Workflow §7 (Draft contract delegation; Opus assembles + writes once) |
 
 ### Workflow steps
 
 1. **Read `sources` and `implementations` from the page frontmatter.** If either is missing, run Bootstrap above.
-2. **Cache the papers.** `bun papers:fetch <primary-id>` and `bun papers:fetch <ref-id>` for each reference.
-3. **Re-verify implementations.** For each entry in `implementations[]`:
+2. **Confirm research notes.** Verify `docs/research/notes/<primary-id>.md` exists. For each `<ref-id>` in `sources.references`, verify `docs/research/notes/<ref-id>.md` exists. Any missing note → stop, tell the user to run `/paper-ingest` first. Do NOT fall back to reading the cache.
+3. **Re-verify implementations** (security check, in orchestrator). For each entry in `implementations[]`:
    - `curl -fLsI <repo>` returns 200/301.
    - `curl -fLs https://raw.githubusercontent.com/<owner>/<repo>/<commit>/LICENSE | head -3` returns the recorded license header.
    - If the repo has moved, rewritten history, or changed license: update the entry (or remove it with a note in working notes).
-4. **Read the primary paper.** Prefer the cached ar5iv HTML for arxiv papers; `.txt` otherwise. Extract: architecture spec, loss definition, training protocol summary, headline benchmark numbers with their table references, parameter count, FLOPs.
-5. **Read a reference implementation** when a design detail is unclear from the paper (attention dimensions, residual pattern, normalization placement, initialization). Pin every architectural claim on the page to either a paper section/equation or an impl file/line.
-6. **Query the citation graph.** `bun papers:query cites <primary-id>` → candidates for `# References` and `relatedAlgorithms`. `bun papers:query pages-using <ref-id>` for each cited paper → cross-link candidates.
-7. **Draft.** Use the 5-section template and the typography blocks. The `# Implementations` section body is empty or a single sentence — the React page renders the table from frontmatter.
+4. **Query the citation graph** (lightweight, in-orchestrator). `bun papers:query cites <primary-id>` and `bun papers:query pages-using <ref-id>` for each reference — used to populate `relatedAlgorithms` candidates. Output is small (slug list).
+5. **Read frontmatter of candidate cross-link pages.** For each candidate slug from §4, read only the page's frontmatter (cheap, ~200 tokens each). Do not load page bodies. Use the frontmatter `summary` and `sources.primary` to confirm a cross-link makes sense.
+6. **Assemble the Draft contract input.** Collect: primary note path, reference note paths, implementations[] entries (with verified licenses from §3), page-template skeleton path (`references/deep-model-page-template.md`), target slug. **Opus does NOT read the notes themselves at this step** — the Draft subagent will. Pass the verified `implementations[]` data to Sonnet so the page text can refer to license/framework/role correctly.
+7. **Delegate the page draft to Sonnet.** Invoke the Draft contract from `.claude/skills/_shared/subagent-prompts.md` with the inputs from §6. Sonnet returns:
+   - The full page body as a markdown string in its reply
+   - A `<<<AUDIT>>>{json}<<<END>>>` block listing every numerical constant, equation, symbol, benchmark number, parameter count, and FLOPs figure used in the body — each pointing to the source note OR the verified implementations[] entry that supplied it
+
+   Sonnet **does not** write any file. Sonnet **does not** read cache files. If Sonnet returns `blocked: missing <kind> <name> for <source-id>`, fix the note and retry.
 7.5. **Illustration pass.** Scan each section against the "good signals" in the shared illustrations guidance. Typical figures for a model page:
    - Data-flow / training pipeline → Mermaid (inline).
    - Architecture block diagram → hand-authored SVG (< ~15 primitives) OR skip and let the code snippet in `# Architecture.Blocks` carry the design.
    - Learning curve, scaling law, efficiency frontier → generator script under `py/generate_<slug>_<name>.py`.
    Do not include real-image output from the model — that belongs in a demo or a blog post. At most two figures per page.
-8. **Quality gate.** Enumerate every numerical constant, symbol, benchmark number, parameter count, and label on any figure. For each, write the source line in working notes: paper §/equation/table, or impl file/line. Anything untraceable is fabricated or implementation noise — fix or remove. *Pay special attention to the `implementations[]` entries: each license must be grounded in the LICENSE file at the pinned commit, each weights-license must be grounded in the README / MODEL_CARD at the matching commit or release.*
-9. **Verify.** `bun run build && bun run lint && npx vitest run`.
+8. **Quality gate.** Verify the AUDIT JSON via the recipe in `_shared/subagent-prompts.md` (page-vs-note grep):
+   ```bash
+   # For each entry in AUDIT, grep -F the value in the named source note
+   # Zero MISS lines = page faithfully copies from notes
+   ```
+   Additionally: every `license`, `weights_license`, `framework`, and `role` claim in the body must match the verified `implementations[]` entry from §3 — string-match. Any mismatch is a hallucination flag. In case of MISS, either extend the note and re-delegate, or reject the draft and re-delegate with a stricter prompt.
+9. **Assemble and write.** Opus assembles `--- frontmatter ---\n<body string from Sonnet>` and calls `Write` once. Frontmatter `relatedAlgorithms` slugs come from §4 candidates + the primary note's `Connections` section, NOT from the body string. Cross-check every slug against `knownSlugs` (read from `src/generated/content-graph.ts` or by listing `content/{algorithms,models,concepts}/`).
+10. **Verify.** `bun run build && bun run lint && npx vitest run`.
 
 ## Voice rules
 
-Voice rules are inherited from `.claude/skills/algo-page/SKILL.md` §"Voice rules". Do not restate; treat them as binding.
-
-The shortlist, for recall:
-
-- Impersonal. No first person.
-- Declarative. Statements of fact or definition.
-- Minimal glue prose. One sentence between math/code blocks, usually.
-- No narrative arc.
-- No attribution in prose; authors live in `# References`.
-- Sentences short; passive voice acceptable when it keeps the subject nominal.
-- No softeners, no marketing words, no hedges.
+See `.claude/skills/_shared/voice-rules.md`. Binding.
 
 ## Forbidden patterns
 
@@ -270,6 +277,7 @@ Inherit the full `algo-page` forbidden-patterns list (first-person sentences, li
 - **No "we" or "our" in Assessment bullets.** The page is not a paper. "Outperforms" and "achieves" are fine; "we outperform" is not.
 - **No "future work" bullet in `# Assessment.Limitations`.** Limitations are actual limitations of the model as it stands, not paper-future-work placeholders.
 - **No personal ranking in `# Implementations` body prose** ("the best PyTorch implementation is X"). If a community impl is materially more used than the official, the frontmatter `role: community` + presence in the table is the signal — do not editorialize in prose.
+- **Loading the paper cache file (`docs/papers/.cache/*.{html,txt}`) into the orchestrator's context.** All paper reads happen in the Sonnet Extract contract during paper-ingest; the orchestrator works from notes only. License verification (LICENSE file at pinned commit) is the one exception — it stays inline because it is security-load-bearing and small.
 
 ## Checklist
 
@@ -296,6 +304,13 @@ Run before handing off a draft.
 - [ ] Every display-math formula fits within the content column — long loss sums use `\begin{aligned}...\end{aligned}` with explicit `\\` breaks.
 - [ ] Illustration pass done: at most two figures. Mermaid pipelines inline; hand-authored SVGs under `content/images/<slug>/`; generated SVGs have a sibling `py/generate_<slug>_<name>.py` committed alongside the SVG, deterministic, accessibility post-pass, Tailwind palette — same rules as `algo-page`.
 - [ ] No real-image model-output figure committed as a reference-card illustration. Real-image figures belong in a demo or blog post.
+- [ ] Research notes exist for `sources.primary` AND every entry in `sources.references`. Page draft is the result of the Draft contract on those notes; the orchestrator did not load any `docs/papers/.cache/*` file.
+- [ ] AUDIT JSON returned by the Draft subagent has zero MISS entries when grep-checked against the cited notes (verification recipe in `_shared/subagent-prompts.md`).
+- [ ] Every `implementations[].license` claim in the body matches the verified entry from Workflow §3 (orchestrator's LICENSE-file check at the pinned commit).
+
+## Notes on cache file fidelity
+
+For arxiv papers, `docs/papers/.cache/<id>.html` (ar5iv rendering) preserves LaTeX source in `<annotation encoding="application/x-tex">` blocks and section structure — equations transcribe directly without OCR artefacts. For non-arxiv papers, or when ar5iv returned 404, `<id>.txt` (pdftotext -layout) serves as the fallback. These notes are guidance for whoever is creating the research note via `paper-ingest` — the orchestrator (Opus) does not open cache files during `deep-model-page`.
 
 ## When not to use this skill
 
@@ -311,3 +326,4 @@ Run before handing off a draft.
 - `bun papers:fetch [id]` / `bun papers:fetch-meta <arxiv-id|doi>` / `bun papers:query <relation> <id>` — the three reasoning tools that drive the Workflow above.
 - `.venv/bin/python py/generate_<slug>_<name>.py` — repo-root venv (matplotlib, numpy preinstalled) for running generator scripts. Model generators on `py/generate_harris_eigenvalue_regions.py`.
 - `https://raw.githubusercontent.com/<owner>/<repo>/<sha>/LICENSE` — the canonical source for an implementation's license string. Read the file; do not infer.
+- `.claude/skills/_shared/subagent-prompts.md` — Draft contract template, AUDIT JSON shape, page-vs-note verification recipe. Inherited from `algo-page`.

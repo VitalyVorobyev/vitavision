@@ -4,12 +4,13 @@ date: 2026-04-30
 summary: "An invertible projective transformation of the plane, represented by a 3×3 matrix defined up to a non-zero scalar, mapping points between two images of a planar surface or capturing a pure camera rotation."
 tags: ["geometry", "projective-geometry", "calibration"]
 author: "Vitaly Vorobyev"
-category: geometry
+domain: geometry
 difficulty: intermediate
 prerequisites: []
 related:
   - zhang-planar-calibration
   - apap-image-stitching
+  - dlt-normalisation
 sources:
   references:
     - hartley1997-eight-point

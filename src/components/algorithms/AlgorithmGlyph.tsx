@@ -1,10 +1,10 @@
 import type { FC } from "react";
-import type { AlgorithmCategory } from "../../lib/content/schema.ts";
+import type { Domain } from "../../lib/content/schema.ts";
 import CategoryGlyph from "./CategoryGlyph.tsx";
 
 interface Props {
     slug: string;
-    category?: AlgorithmCategory;
+    domain?: Domain;
 }
 
 const bg = "bg-[linear-gradient(135deg,hsl(var(--surface)),hsl(var(--muted)))]";
@@ -152,7 +152,7 @@ const GLYPHS: Record<string, FC> = {
     "02-demo-blocks": DemoBlocksGlyph,
 };
 
-export default function AlgorithmGlyph({ slug, category }: Props) {
+export default function AlgorithmGlyph({ slug, domain }: Props) {
     const Glyph = GLYPHS[slug];
     if (Glyph) {
         return (
@@ -161,6 +161,5 @@ export default function AlgorithmGlyph({ slug, category }: Props) {
             </div>
         );
     }
-    if (category) return <CategoryGlyph category={category} />;
-    return <div className={`w-full h-full ${bg}`} />;
+    return <CategoryGlyph domain={domain} />;
 }

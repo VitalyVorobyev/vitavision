@@ -73,7 +73,7 @@ const TOOLS: { tool: ActiveTool; icon: string; title: string; key: string }[] = 
     { tool: "move",   icon: "↔", title: "Move",         key: "V" },
     { tool: "delete", icon: "✕", title: "Delete",       key: "⌫" },
     { tool: "grid",   icon: "▦", title: "Grid warp",    key: "G" },
-    { tool: "hover",  icon: "⊙", title: "Hover info",   key: "H" },
+    { tool: "inspect",  icon: "⊙", title: "Inspect",   key: "H" },
 ];
 
 function formatMinAngle(deg: number): string {
@@ -287,9 +287,9 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                 )}
 
                 {/* ── Hover tooltip (bottom-left) ── */}
-                {hover && activeTool === "hover" && (
+                {hover && activeTool === "inspect" && (
                     <FloatingPanel className="absolute bottom-4 p-2.5 w-[220px]" style={{ left: 80 }}>
-                        <TinyBrow className="mb-1.5">Hover</TinyBrow>
+                        <TinyBrow className="mb-1.5">Inspect</TinyBrow>
                         <div className="flex justify-between text-xs">
                             <span className="text-muted-foreground capitalize">{hover.kind} #{hover.index}</span>
                             <span className="font-mono">area {hover.area.toFixed(4)}</span>

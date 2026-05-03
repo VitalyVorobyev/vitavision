@@ -6,7 +6,7 @@ tags: ["geometry", "stereo", "two-view-geometry"]
 author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: advanced
-prerequisites: []
+prerequisites: [ransac]
 sources:
   references:
     - hartley1997-eight-point

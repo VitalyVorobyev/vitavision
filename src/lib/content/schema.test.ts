@@ -1,5 +1,8 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { algorithmFrontmatterSchema, blogFrontmatterSchema } from "./schema.ts";
+import { parse as parseYaml } from "yaml";
+import { algorithmFrontmatterSchema, blogFrontmatterSchema, modelFrontmatterSchema, taskValues } from "./schema.ts";
 
 describe("blogFrontmatterSchema", () => {
     it("accepts updated metadata", () => {
@@ -166,5 +169,50 @@ describe("algorithmFrontmatterSchema", () => {
         });
 
         expect(parsed).not.toHaveProperty("relations");
+    });
+
+    it("accepts an empty tasks array and rejects unknown task slugs", () => {
+        const ok = algorithmFrontmatterSchema.parse({
+            title: "Tagged Algorithm",
+            date: "2026-05-03",
+            summary: "Tagged with a known task.",
+            tags: ["demo"],
+            author: "Vitaly Vorobyev",
+            tasks: ["camera-calibration"],
+        });
+        expect(ok.tasks).toEqual(["camera-calibration"]);
+
+        expect(() => algorithmFrontmatterSchema.parse({
+            title: "Bad Task",
+            date: "2026-05-03",
+            summary: "Unknown task slug.",
+            tags: ["demo"],
+            author: "Vitaly Vorobyev",
+            tasks: ["video-segmentation"],
+        })).toThrow();
+    });
+});
+
+describe("modelFrontmatterSchema", () => {
+    it("accepts the tasks field for models too", () => {
+        const parsed = modelFrontmatterSchema.parse({
+            title: "Tagged Model",
+            date: "2026-05-03",
+            summary: "Model tagged with multi-valued tasks.",
+            tags: ["demo"],
+            author: "Vitaly Vorobyev",
+            tasks: ["feature-detection", "local-feature-matching"],
+        });
+        expect(parsed.tasks).toEqual(["feature-detection", "local-feature-matching"]);
+    });
+});
+
+describe("tasks vocabulary", () => {
+    it("stays in sync between content/tasks.yaml and taskValues", () => {
+        const yamlPath = path.join(process.cwd(), "content/tasks.yaml");
+        const yaml = parseYaml(readFileSync(yamlPath, "utf8")) as { tasks: { slug: string }[] };
+        const yamlSlugs = yaml.tasks.map((t) => t.slug).sort();
+        const codeSlugs = [...taskValues].sort();
+        expect(yamlSlugs).toEqual(codeSlugs);
     });
 });

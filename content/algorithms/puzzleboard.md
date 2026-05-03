@@ -4,6 +4,7 @@ date: 2026-04-16
 summary: "Detect and decode a self-identifying checkerboard calibration pattern: saddle-point corners from a Hessian response, grid reconstruction via Kruskal minimum spanning forest on the 9-nearest-neighbour graph, absolute corner position on a $501 \\times 501$ grid from cross-correlation against two binary de Bruijn factor maps."
 tags: ["calibration", "chessboard", "self-identifying-pattern"]
 domain: targets
+tasks: [chessboard-detection]
 author: "Vitaly Vorobyev"
 difficulty: advanced
 editorAlgorithmId: puzzleboard

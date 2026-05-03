@@ -4,6 +4,7 @@ date: 2026-04-17
 summary: "Detect a full planar checkerboard in an image by reducing the gradient-magnitude edge set to a single-pixel centreline graph, extracting inner corners as graph saddle points, then refining each corner to subpixel accuracy by fitting a bivariate quadratic to a cone-filtered neighbourhood and solving for its stationary point."
 tags: ["calibration", "chessboard"]
 domain: targets
+tasks: [corner-detection, chessboard-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 prerequisites: [image-gradient, hessian-saddle-response]

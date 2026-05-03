@@ -99,6 +99,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/loy-fast-radial-symmetry",
       "draft": false
     },
+    "fischler-bolles-ransac": {
+      "slug": "fischler-bolles-ransac",
+      "type": "algorithm",
+      "title": "Fischler–Bolles RANSAC",
+      "summary": "Founding random-sample-consensus paradigm: fit a parametric model to data containing an unknown fraction of gross outliers by drawing minimal random subsets, instantiating candidate models, counting consensus inliers, and retaining the largest consensus set.",
+      "path": "/atlas/fischler-bolles-ransac",
+      "draft": false
+    },
     "gao-dual-homography-stitching": {
       "slug": "gao-dual-homography-stitching",
       "type": "algorithm",
@@ -113,6 +121,14 @@ export const contentGraph: ContentGraph = {
       "title": "Geiger Chessboard Corner Detector",
       "summary": "Detect checkerboard X-corners by computing a four-quadrant corner likelihood at each pixel using axis-aligned and 45°-rotated prototype filters at three fixed scales, verifying candidates by gradient-orientation statistics, and refining to subpixel accuracy via gradient-orthogonality weighted least squares — the libcbdetect detector that anchors many subsequent calibration pipelines.",
       "path": "/atlas/geiger-chessboard-detector",
+      "draft": false
+    },
+    "ni-generalized-fast-radial-symmetry": {
+      "slug": "ni-generalized-fast-radial-symmetry",
+      "type": "algorithm",
+      "title": "Generalised Fast Radial Symmetry",
+      "summary": "Affine extension of FRST: each pixel votes along a corrected direction $\\hat V = G M G^{-1} M^{-1} \\nabla I$ at radius $n$, where $G = R D \\in A(2)$ is a rotation–anisotropic-scale pair from a sampled grid, so circles seen as ellipses under bounded perspective converge into a single peak in the per-pixel-max response stack while keeping FRS's $O(K)$ per-radius cost per $G_i$.",
+      "path": "/atlas/ni-generalized-fast-radial-symmetry",
       "draft": false
     },
     "gp-checkerboard-enhancement": {
@@ -153,6 +169,14 @@ export const contentGraph: ContentGraph = {
       "title": "Localized Radon Checkerboard Corners",
       "summary": "Detect checkerboard X-junctions by approximating a localized Radon transform with 1-D box filters on rotated copies of the image; the per-pixel response is the squared difference between the maximum and minimum directional line integrals over four discrete angles.",
       "path": "/atlas/duda-radon-corners",
+      "draft": false
+    },
+    "barath-magsac": {
+      "slug": "barath-magsac",
+      "type": "algorithm",
+      "title": "MAGSAC: Marginalising Sample Consensus",
+      "summary": "Robust estimator that eliminates the user-tuned inlier threshold by treating the noise scale σ as a random variable on [0, σ_max] and marginalising the RANSAC quality function over σ; the final model is a weighted least-squares fit using marginal-likelihood weights via iteratively reweighted least squares (σ-consensus).",
+      "path": "/atlas/barath-magsac",
       "draft": false
     },
     "fundamental-matrix-eight-point": {
@@ -233,6 +257,14 @@ export const contentGraph: ContentGraph = {
       "title": "Tsai's Versatile Camera Calibration",
       "summary": "Two-stage 1987 camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a precision 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns. Superseded for practical use by Zhang's planar method.",
       "path": "/atlas/tsai-versatile-calibration",
+      "draft": false
+    },
+    "raguram-usac": {
+      "slug": "raguram-usac",
+      "type": "algorithm",
+      "title": "USAC: Universal RANSAC Framework",
+      "summary": "Engineering decomposition of practical RANSAC into four pluggable stages — sampling (PROSAC), model verification (SPRT), local optimisation (LO-RANSAC), and degeneracy handling (DEGENSAC) — with a single reference C++ implementation (USAC-1.0) and an SPRT-corrected stopping criterion.",
+      "path": "/atlas/raguram-usac",
       "draft": false
     },
     "zhang-planar-calibration": {
@@ -339,6 +371,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/image-gradient",
       "draft": false
     },
+    "ransac": {
+      "slug": "ransac",
+      "type": "concept",
+      "title": "RANSAC",
+      "summary": "Random sample consensus — a paradigm for fitting a parametric model to data containing an unknown fraction of gross outliers, by drawing minimal random subsets, instantiating candidate models, and selecting the one with the largest globally consistent inlier set.",
+      "path": "/atlas/ransac",
+      "draft": false
+    },
     "scale-space": {
       "slug": "scale-space",
       "type": "concept",
@@ -376,7 +416,8 @@ export const contentGraph: ContentGraph = {
     "apap-image-stitching": {
       "prerequisites": [
         "homography",
-        "dlt-normalisation"
+        "dlt-normalisation",
+        "ransac"
       ],
       "failureModes": [],
       "relations": []
@@ -479,11 +520,38 @@ export const contentGraph: ContentGraph = {
         "image-gradient"
       ],
       "failureModes": [],
-      "relations": []
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "ni-generalized-fast-radial-symmetry",
+          "confidence": "high"
+        }
+      ]
+    },
+    "fischler-bolles-ransac": {
+      "prerequisites": [
+        "ransac"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "raguram-usac",
+          "confidence": "high",
+          "caution": "USAC is a unifying engineering framework, not a single new technique"
+        },
+        {
+          "type": "extended_by",
+          "target": "barath-magsac",
+          "confidence": "high",
+          "caution": "MAGSAC marginalises the inlier threshold rather than fixing it — orthogonal axis to USAC's framework refactor"
+        }
+      ]
     },
     "gao-dual-homography-stitching": {
       "prerequisites": [
-        "homography"
+        "homography",
+        "ransac"
       ],
       "failureModes": [],
       "relations": [
@@ -526,6 +594,13 @@ export const contentGraph: ContentGraph = {
           "mirrored": true
         }
       ]
+    },
+    "ni-generalized-fast-radial-symmetry": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": []
     },
     "gp-checkerboard-enhancement": {
       "prerequisites": [
@@ -578,7 +653,8 @@ export const contentGraph: ContentGraph = {
     },
     "lin-sva-stitching": {
       "prerequisites": [
-        "homography"
+        "homography",
+        "ransac"
       ],
       "failureModes": [],
       "relations": [
@@ -609,11 +685,26 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "barath-magsac": {
+      "prerequisites": [
+        "ransac"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "raguram-usac",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
     "fundamental-matrix-eight-point": {
       "prerequisites": [
         "epipolar-geometry",
         "homography",
-        "dlt-normalisation"
+        "dlt-normalisation",
+        "ransac"
       ],
       "failureModes": [],
       "relations": []
@@ -802,10 +893,24 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "raguram-usac": {
+      "prerequisites": [
+        "ransac"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "barath-magsac",
+          "confidence": "high"
+        }
+      ]
+    },
     "zhang-planar-calibration": {
       "prerequisites": [
         "homography",
-        "camera-distortion-models"
+        "camera-distortion-models",
+        "ransac"
       ],
       "failureModes": [],
       "relations": [
@@ -851,7 +956,8 @@ export const contentGraph: ContentGraph = {
     "ccs-camera-calibration": {
       "prerequisites": [
         "chessboard-x-corner-detection",
-        "camera-distortion-models"
+        "camera-distortion-models",
+        "ransac"
       ],
       "failureModes": [],
       "relations": [
@@ -960,12 +1066,16 @@ export const contentGraph: ContentGraph = {
       "relations": []
     },
     "dlt-normalisation": {
-      "prerequisites": [],
+      "prerequisites": [
+        "ransac"
+      ],
       "failureModes": [],
       "relations": []
     },
     "epipolar-geometry": {
-      "prerequisites": [],
+      "prerequisites": [
+        "ransac"
+      ],
       "failureModes": [],
       "relations": []
     },
@@ -977,11 +1087,18 @@ export const contentGraph: ContentGraph = {
       "relations": []
     },
     "homography": {
-      "prerequisites": [],
+      "prerequisites": [
+        "ransac"
+      ],
       "failureModes": [],
       "relations": []
     },
     "image-gradient": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
+    "ransac": {
       "prerequisites": [],
       "failureModes": [],
       "relations": []
@@ -993,7 +1110,8 @@ export const contentGraph: ContentGraph = {
     },
     "spatially-varying-image-stitching": {
       "prerequisites": [
-        "homography"
+        "homography",
+        "ransac"
       ],
       "failureModes": [],
       "relations": []
@@ -1067,6 +1185,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "fischler-bolles-ransac": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "gao-dual-homography-stitching": {
       "usedBy": [],
       "affects": [],
@@ -1080,6 +1206,16 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "ni-generalized-fast-radial-symmetry": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        "loy-fast-radial-symmetry"
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -1122,6 +1258,16 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "barath-magsac": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        "fischler-bolles-ransac"
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -1206,6 +1352,16 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "raguram-usac": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        "fischler-bolles-ransac"
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -1359,6 +1515,7 @@ export const contentGraph: ContentGraph = {
         "laureano-topological-chessboard",
         "loy-fast-radial-symmetry",
         "mate-checkerboard-detector",
+        "ni-generalized-fast-radial-symmetry",
         "ocpad",
         "puzzleboard",
         "pyramidal-blur-aware-xcorner",
@@ -1368,6 +1525,28 @@ export const contentGraph: ContentGraph = {
         "structure-tensor",
         "superpoint",
         "xfeat"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "ransac": {
+      "usedBy": [
+        "apap-image-stitching",
+        "barath-magsac",
+        "ccs-camera-calibration",
+        "dlt-normalisation",
+        "epipolar-geometry",
+        "fischler-bolles-ransac",
+        "fundamental-matrix-eight-point",
+        "gao-dual-homography-stitching",
+        "homography",
+        "lin-sva-stitching",
+        "raguram-usac",
+        "spatially-varying-image-stitching",
+        "zhang-planar-calibration"
       ],
       "affects": [],
       "generalises": [],

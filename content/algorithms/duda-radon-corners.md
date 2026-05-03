@@ -4,6 +4,7 @@ date: 2026-04-23
 summary: "Detect checkerboard X-junctions by approximating a localized Radon transform with 1-D box filters on rotated copies of the image; the per-pixel response is the squared difference between the maximum and minimum directional line integrals over four discrete angles."
 tags: ["feature-detection", "calibration", "chessboard"]
 domain: features
+tasks: [corner-detection, chessboard-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 prerequisites: [image-gradient]

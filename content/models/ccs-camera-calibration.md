@@ -4,10 +4,11 @@ date: 2026-05-03
 summary: "Three-stage learning-based camera calibration pipeline: a CNN regresses radial-distortion-correction parameters, a UNet predicts per-corner Gaussian heatmaps refined by surface-fit subpixel localisation, and an image-level RANSAC accepts inlier views before Zhang-style intrinsic estimation."
 tags: ["calibration", "corner-detection", "distortion-correction", "cnn"]
 domain: calibration
+tasks: [camera-calibration, chessboard-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: hybrid
-prerequisites: [chessboard-x-corner-detection, camera-distortion-models]
+prerequisites: [chessboard-x-corner-detection, camera-distortion-models, ransac]
 failureModes: []
 relations:
   - type: compared_with

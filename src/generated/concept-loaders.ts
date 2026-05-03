@@ -9,6 +9,7 @@ export const conceptHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModul
   "hessian-saddle-response": () => import("./content/concepts/hessian-saddle-response.ts"),
   "homography": () => import("./content/concepts/homography.ts"),
   "image-gradient": () => import("./content/concepts/image-gradient.ts"),
+  "ransac": () => import("./content/concepts/ransac.ts"),
   "scale-space": () => import("./content/concepts/scale-space.ts"),
   "spatially-varying-image-stitching": () => import("./content/concepts/spatially-varying-image-stitching.ts"),
   "structure-tensor": () => import("./content/concepts/structure-tensor.ts"),

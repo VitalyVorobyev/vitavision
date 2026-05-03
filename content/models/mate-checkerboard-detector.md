@@ -4,6 +4,7 @@ date: 2026-05-02
 summary: "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold."
 tags: ["calibration", "corner-detection", "cnn"]
 domain: calibration
+tasks: [corner-detection, chessboard-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: cnn

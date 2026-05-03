@@ -145,6 +145,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "fischler-bolles-ransac",
+    "path": "/atlas/fischler-bolles-ransac",
+    "type": "algorithm",
+    "title": "Fischler–Bolles RANSAC",
+    "summary": "Founding random-sample-consensus paradigm: fit a parametric model to data containing an unknown fraction of gross outliers by drawing minimal random subsets, instantiating candidate models, counting consensus inliers, and retaining the largest consensus set.",
+    "tags": [
+      "geometry",
+      "robust-estimation",
+      "outlier-rejection",
+      "ransac"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "M. A. Fischler",
+      "R. C. Bolles"
+    ],
+    "venue": "Communications of the ACM"
+  },
+  {
     "slug": "gao-dual-homography-stitching",
     "path": "/atlas/gao-dual-homography-stitching",
     "type": "algorithm",
@@ -190,6 +212,29 @@ export const searchRecords: SearchRecord[] = [
       "B. Schuster"
     ],
     "venue": "IEEE ICRA"
+  },
+  {
+    "slug": "ni-generalized-fast-radial-symmetry",
+    "path": "/atlas/ni-generalized-fast-radial-symmetry",
+    "type": "algorithm",
+    "title": "Generalised Fast Radial Symmetry",
+    "summary": "Affine extension of FRST: each pixel votes along a corrected direction $\\hat V = G M G^{-1} M^{-1} \\nabla I$ at radius $n$, where $G = R D \\in A(2)$ is a rotation–anisotropic-scale pair from a sampled grid, so circles seen as ellipses under bounded perspective converge into a single peak in the per-pixel-max response stack while keeping FRS's $O(K)$ per-radius cost per $G_i$.",
+    "tags": [
+      "feature-detection",
+      "blob-detection",
+      "radial-symmetry",
+      "affine-invariant"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "Jie Ni",
+      "Maneesh K. Singh",
+      "Claus Bahlmann"
+    ],
+    "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)"
   },
   {
     "slug": "gp-checkerboard-enhancement",
@@ -307,6 +352,30 @@ export const searchRecords: SearchRecord[] = [
       "U. Frese"
     ],
     "venue": "British Machine Vision Conference (BMVC)"
+  },
+  {
+    "slug": "barath-magsac",
+    "path": "/atlas/barath-magsac",
+    "type": "algorithm",
+    "title": "MAGSAC: Marginalising Sample Consensus",
+    "summary": "Robust estimator that eliminates the user-tuned inlier threshold by treating the noise scale σ as a random variable on [0, σ_max] and marginalising the RANSAC quality function over σ; the final model is a weighted least-squares fit using marginal-likelihood weights via iteratively reweighted least squares (σ-consensus).",
+    "tags": [
+      "geometry",
+      "robust-estimation",
+      "outlier-rejection",
+      "ransac",
+      "irls"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "D. Barath",
+      "J. Matas",
+      "J. Noskova"
+    ],
+    "venue": "CVPR"
   },
   {
     "slug": "fundamental-matrix-eight-point",
@@ -521,6 +590,33 @@ export const searchRecords: SearchRecord[] = [
       "R. Y. Tsai"
     ],
     "venue": "IEEE Journal on Robotics and Automation"
+  },
+  {
+    "slug": "raguram-usac",
+    "path": "/atlas/raguram-usac",
+    "type": "algorithm",
+    "title": "USAC: Universal RANSAC Framework",
+    "summary": "Engineering decomposition of practical RANSAC into four pluggable stages — sampling (PROSAC), model verification (SPRT), local optimisation (LO-RANSAC), and degeneracy handling (DEGENSAC) — with a single reference C++ implementation (USAC-1.0) and an SPRT-corrected stopping criterion.",
+    "tags": [
+      "geometry",
+      "robust-estimation",
+      "outlier-rejection",
+      "ransac",
+      "sprt"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure",
+      "When to choose USAC over MAGSAC"
+    ],
+    "authors": [
+      "R. Raguram",
+      "O. Chum",
+      "M. Pollefeys",
+      "J. Matas",
+      "J. Frahm"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
     "slug": "zhang-planar-calibration",
@@ -794,6 +890,25 @@ export const searchRecords: SearchRecord[] = [
       "Gradient of a Gaussian",
       "Gradient magnitude and direction",
       "Separability and the structure tensor"
+    ]
+  },
+  {
+    "slug": "ransac",
+    "path": "/atlas/ransac",
+    "type": "concept",
+    "title": "RANSAC",
+    "summary": "Random sample consensus — a paradigm for fitting a parametric model to data containing an unknown fraction of gross outliers, by drawing minimal random subsets, instantiating candidate models, and selecting the one with the largest globally consistent inlier set.",
+    "tags": [
+      "geometry",
+      "robust-estimation",
+      "outlier-rejection",
+      "model-fitting"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Iteration count",
+      "The four design axes of practical RANSAC",
+      "Surveyed methods"
     ]
   },
   {

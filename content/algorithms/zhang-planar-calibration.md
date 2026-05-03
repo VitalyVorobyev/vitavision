@@ -4,9 +4,10 @@ date: 2026-04-20
 summary: "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations."
 tags: ["calibration", "intrinsics", "homography"]
 domain: calibration
+tasks: [camera-calibration]
 author: "Vitaly Vorobyev"
 difficulty: advanced
-prerequisites: [homography, camera-distortion-models]
+prerequisites: [homography, camera-distortion-models, ransac]
 failureModes: []
 relations:
   - type: parallel_foundation_with

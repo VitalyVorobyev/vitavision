@@ -6,7 +6,7 @@ tags: ["geometry", "linear-algebra", "numerical-conditioning", "dlt"]
 author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: intermediate
-prerequisites: []
+prerequisites: [ransac]
 sources:
   references:
     - hartley1997-eight-point

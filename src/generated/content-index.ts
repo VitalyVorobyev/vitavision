@@ -83,10 +83,14 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "homography",
-        "dlt-normalisation"
+        "dlt-normalisation",
+        "ransac"
       ],
       "failureModes": [],
       "domain": "stitching",
+      "tasks": [
+        "image-stitching"
+      ],
       "sources": {
         "primary": "zaragoza2013-apap",
         "references": [
@@ -146,6 +150,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "features",
+      "tasks": [
+        "corner-detection",
+        "chessboard-detection"
+      ],
       "relatedPosts": [
         "01-chesscorners"
       ],
@@ -205,6 +213,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "targets",
+      "tasks": [
+        "chessboard-detection"
+      ],
       "sources": {
         "primary": "laureano2013-topological",
         "references": [
@@ -234,6 +245,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [],
       "failureModes": [],
       "domain": "calibration",
+      "tasks": [
+        "hand-eye-calibration"
+      ],
       "sources": {
         "primary": "daniilidis1999-hand-eye",
         "references": [
@@ -263,6 +277,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "failureModes": [],
       "domain": "features",
+      "tasks": [
+        "corner-detection"
+      ],
       "sources": {
         "primary": "rosten2006-fast",
         "notes": "16-pixel Bresenham ring at radius 3. Segment-test parameter N\ntypically 9 or 12. The high-speed early-rejection test on the four\ncardinal points (indices 1, 5, 9, 13) is what makes the detector\nfast in practice; the full segment test runs only on candidates\nthat pass it. The decision-tree variant trained via ID3 on labeled\ncorners is described in §3 of the paper but is out of scope here\n(the page covers the segment test as the primitive).\n"
@@ -288,11 +305,62 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient"
       ],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "ni-generalized-fast-radial-symmetry",
+          "confidence": "high"
+        }
+      ],
       "domain": "features",
+      "tasks": [
+        "feature-detection"
+      ],
       "editorAlgorithmId": "radsym",
       "sources": {
         "primary": "loy2003-frst",
         "notes": "Multi-radius gradient-vote operator. At each radius $n$, the\norientation projection $O_n$ (signed unit votes) and magnitude\nprojection $M_n$ (signed gradient-magnitude votes) are\naccumulated at the positively- and negatively-affected pixels\n$p^{\\pm} = p \\pm \\mathrm{round}(\\hat{\\mathbf{g}}(p)\\cdot n)$.\nThe per-radius contribution is $S_n = F_n \\ast A_n$ with\n$F_n = |\\tilde O_n|^{\\alpha}\\, \\tilde M_n$, $\\tilde O_n$ and\n$\\tilde M_n$ being max-normalised projections, and $A_n$ a\n2-D Gaussian of size $n \\times n$ and $\\sigma = 0.5n$\n(operative value from Table 1 of the conference version;\nFigure 3 caption gives 0.25n — discrepancy noted in the\nresearch note). Cumulative $S = \\sum_n S_n$; positive\nmaxima localise bright radially-symmetric features, negative\nminima localise dark ones. Recommended parameters from the\npaper: $\\alpha = 2$ (eliminates line responses), $\\beta\n\\approx 20\\%$ of $\\max\\|\\mathbf{g}\\|$. Sparse-radius\napproximation $\\{1,3,5\\}$ replaces the full $\\{1,\\ldots,5\\}$\nset with negligible loss.\n"
+      },
+      "date": "2026-05-03"
+    }
+  },
+  {
+    "slug": "fischler-bolles-ransac",
+    "frontmatter": {
+      "title": "Fischler–Bolles RANSAC",
+      "summary": "Founding random-sample-consensus paradigm: fit a parametric model to data containing an unknown fraction of gross outliers by drawing minimal random subsets, instantiating candidate models, counting consensus inliers, and retaining the largest consensus set.",
+      "tags": [
+        "geometry",
+        "robust-estimation",
+        "outlier-rejection",
+        "ransac"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [
+        "ransac"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "raguram-usac",
+          "confidence": "high",
+          "caution": "USAC is a unifying engineering framework, not a single new technique"
+        },
+        {
+          "type": "extended_by",
+          "target": "barath-magsac",
+          "confidence": "high",
+          "caution": "MAGSAC marginalises the inlier threshold rather than fixing it — orthogonal axis to USAC's framework refactor"
+        }
+      ],
+      "domain": "geometry",
+      "sources": {
+        "primary": "fischler1981-ransac",
+        "notes": "Founding RANSAC paper (Communications of the ACM, June 1981). Inverts the\nclassical regression paradigm: instead of fitting all data and pruning\nresiduals iteratively (smoothing), draw a minimal sample $s$ at random,\ninstantiate a candidate model, count globally consistent inliers within\nthreshold $\\varepsilon$, and retain the best (consensus). Iteration count\n$k = \\log(1 - p) / \\log(1 - w^s)$ derived from the geometric-series\nidentity ($\\S$II.B). Founding application: the Location Determination\nProblem — recovering camera pose from aerial-image landmark\ncorrespondences ($\\S$IV).\n"
       },
       "date": "2026-05-03"
     }
@@ -313,7 +381,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 3,
       "access": "public",
       "prerequisites": [
-        "homography"
+        "homography",
+        "ransac"
       ],
       "failureModes": [],
       "quality": "historical",
@@ -326,6 +395,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "stitching",
+      "tasks": [
+        "image-stitching"
+      ],
       "sources": {
         "primary": "gao2011-dual-homography",
         "references": [
@@ -369,6 +441,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "features",
+      "tasks": [
+        "chessboard-detection"
+      ],
       "sources": {
         "primary": "geiger2012-automatic",
         "references": [
@@ -382,6 +457,39 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Single-shot multi-sensor calibration paper (camera + lidar/RGB-D),\nbut the chessboard detector is self-contained and the workhorse of\nthe open-source libcbdetect. Detector pipeline (§III): (a) four-quadrant\ncorner likelihood (Eq. 1) using axis-aligned + 45°-rotated prototypes,\neach composed of {A, B, C, D} quadrant kernels; min-of-bright + min-of-\ndark suppresses non-checkerboard corners. (b) Conservative NMS. (c)\nGradient-orientation verification via 32-bin Sobel histogram + mean\nshift + expected-template product. (d) Three-scale max at 4×4, 8×8,\n12×12 windows. (e) Subpixel refinement (§III-B, Eq. 3): gradient-\northogonality weighted LS over an 11×11 neighbourhood, closed form.\n(f) Structure recovery (§III-C, Eq. 6-7): energy minimisation\nE_corners + E_struct, greedy expansion from seed corners — recovers\nmultiple unknown checkerboards in one pass without prior on (r, c).\nReported F1 = 0.92 in the abeles2021 benchmark (second-best after\npyramidal at 0.97). Mean reprojection error 0.18 px across 10\ncalibration settings (Table I). Open source: libcbdetect (cvlibs.net).\n"
       },
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "ni-generalized-fast-radial-symmetry",
+    "frontmatter": {
+      "title": "Generalised Fast Radial Symmetry",
+      "summary": "Affine extension of FRST: each pixel votes along a corrected direction $\\hat V = G M G^{-1} M^{-1} \\nabla I$ at radius $n$, where $G = R D \\in A(2)$ is a rotation–anisotropic-scale pair from a sampled grid, so circles seen as ellipses under bounded perspective converge into a single peak in the per-pixel-max response stack while keeping FRS's $O(K)$ per-radius cost per $G_i$.",
+      "tags": [
+        "feature-detection",
+        "blob-detection",
+        "radial-symmetry",
+        "affine-invariant"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "domain": "features",
+      "tasks": [
+        "feature-detection"
+      ],
+      "sources": {
+        "primary": "ni2012-gfrs",
+        "references": [
+          "loy2003-frst"
+        ],
+        "notes": "Each pixel's FRS vote at radius $n$ is warped from\n$g(p) = \\nabla I(p)$ to\n$\\hat V_{q(\\phi)} = G M G^{-1} M^{-1}\\, g(p)$ (Eq. 9), where\n$G = R D \\in A(2)$ encodes rotation $\\theta$ and anisotropic\nscale $D = \\mathrm{diag}(a, b)$, and\n$M = \\begin{pmatrix}0 & 1\\\\ -1 & 0\\end{pmatrix}$ is the 90°\nrotation between tangent and normal. A discrete grid of $G_i$\nsamples $(\\theta, a, b)$ from the constrained affine group;\neach sample drives a full FRS accumulation; per-pixel max\nover the stack yields the GFRS map. Histopathology nuclei\ndetector grid: $a \\in \\{6, 8, 10, 12, 14, 16\\}$ px,\n$b \\in \\{4, 6, 8\\}$ px, $\\theta = i\\pi/8,\\, i = 0,\\ldots,7$ —\nup to $144$ hypotheses. Smoothing kernel becomes anisotropic\nand matched to the current $G_i$; normalising factor $k_n$ is\nrecomputed per $(a, b)$ pair to compensate for varying ellipse\nperimeter length. Anisotropic scale matrix is denoted $D$ in\nthe body to avoid collision with the FRS response symbol $S$\n(the original paper uses $S$ for both). The build emits the\nreverse edge `extending: [loy-fast-radial-symmetry]` from\nFRST's `extended_by` entry — no manual `relations[]` here.\n"
+      },
+      "date": "2026-05-03"
     }
   },
   {
@@ -415,6 +523,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "calibration",
+      "tasks": [
+        "corner-detection",
+        "chessboard-detection"
+      ],
       "sources": {
         "primary": "hillen2023-enhanced",
         "references": [
@@ -466,6 +578,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "features",
+      "tasks": [
+        "corner-detection"
+      ],
       "sources": {
         "primary": "harris1988-corner",
         "references": [
@@ -494,6 +609,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "failureModes": [],
       "domain": "calibration",
+      "tasks": [
+        "camera-calibration"
+      ],
       "sources": {
         "primary": "kumar2014-grac",
         "references": [
@@ -521,7 +639,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
-        "homography"
+        "homography",
+        "ransac"
       ],
       "failureModes": [],
       "relations": [
@@ -533,6 +652,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "stitching",
+      "tasks": [
+        "image-stitching"
+      ],
       "sources": {
         "primary": "lin2011-svastitching",
         "references": [
@@ -571,6 +693,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "features",
+      "tasks": [
+        "corner-detection",
+        "chessboard-detection"
+      ],
       "sources": {
         "primary": "duda2018-accurate",
         "references": [
@@ -581,6 +707,34 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "§3 defines the per-angle line integral R_f^local[x,y,α] = Σ_{k=-m..m}\nf(x+k·cos α, y+k·sin α) and the detector response f_c = (max_α R −\nmin_α R)². §3 restricts α to {0, π/4, π/2, 3π/4}. §3.1 approximates\neach line integral by rotating the image by −α, applying a 1-D box\nblur of half-width m along the x-axis, and rotating back; with the\nfour-angle approximation this reduces to two image rotations\n({0, π/4}) and two blur orientations per rotation (horizontal and\nvertical), yielding four directional integrals. Post-processing:\nbox smoothing of the response, thresholding + NMS, Gaussian peak\nfit for subpixel localisation. §4 uses 1×9 box filter (m=4) and\n2× supersampling before rotation for antialiasing; baseline\ncomparison is Förstner's subpixel operator (Eq. 1) with a 9×9\nwindow and ≥20 iterations. Performance: ≈1/100-pixel accuracy on\ncrisp synthetic corners (§4.1, Fig. 4b); superior to Förstner under\nGaussian image noise (Fig. 5b, 7a).\n"
       },
       "date": "2026-04-23"
+    }
+  },
+  {
+    "slug": "barath-magsac",
+    "frontmatter": {
+      "title": "MAGSAC: Marginalising Sample Consensus",
+      "summary": "Robust estimator that eliminates the user-tuned inlier threshold by treating the noise scale σ as a random variable on [0, σ_max] and marginalising the RANSAC quality function over σ; the final model is a weighted least-squares fit using marginal-likelihood weights via iteratively reweighted least squares (σ-consensus).",
+      "tags": [
+        "geometry",
+        "robust-estimation",
+        "outlier-rejection",
+        "ransac",
+        "irls"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "ransac"
+      ],
+      "failureModes": [],
+      "domain": "geometry",
+      "sources": {
+        "primary": "barath2019-magsac",
+        "notes": "σ-consensus replaces the user-tuned inlier threshold ε with a noise-scale\nupper bound σ_max (10 px in all experiments) and a uniform prior on σ.\nMarginalised quality $Q^*(\\theta, P) = (1/\\sigma_\\mathrm{max}) \\int_0^{\\sigma_\\mathrm{max}} Q(\\theta, \\sigma, P)\\,d\\sigma$\n(Eq. 2) is approximated on a grid of $d = 10$ uniform partitions. For\n$\\chi^2(4)$ residuals (2D point correspondences), the per-σ inlier\nthreshold is $\\tau(\\sigma) = 3.64\\,\\sigma$ (0.95 quantile). Final model\nis weighted least-squares via IRLS on the per-point marginal-likelihood\nweights (Alg. 1, line 14). SPRT pre-screen with $\\tau_\\mathrm{ref} = 1$ px\nis reused from USAC for cheap rejection.\n"
+      },
+      "date": "2026-05-03"
     }
   },
   {
@@ -601,10 +755,14 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "epipolar-geometry",
         "homography",
-        "dlt-normalisation"
+        "dlt-normalisation",
+        "ransac"
       ],
       "failureModes": [],
       "domain": "geometry",
+      "tasks": [
+        "fundamental-matrix-estimation"
+      ],
       "sources": {
         "primary": "hartley1997-eight-point",
         "references": [],
@@ -639,6 +797,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "targets",
+      "tasks": [
+        "corner-detection",
+        "chessboard-detection"
+      ],
       "sources": {
         "primary": "fuersattel2016-ocpad",
         "references": [
@@ -678,6 +840,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "targets",
+      "tasks": [
+        "chessboard-detection"
+      ],
       "editorAlgorithmId": "puzzleboard",
       "sources": {
         "primary": "stelldinger2024-puzzleboard",
@@ -717,6 +882,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "features",
+      "tasks": [
+        "corner-detection",
+        "chessboard-detection"
+      ],
       "sources": {
         "primary": "abeles2021-pyramidal",
         "references": [
@@ -761,6 +930,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "targets",
+      "tasks": [
+        "corner-detection",
+        "chessboard-detection"
+      ],
       "sources": {
         "primary": "placht2014-rochade",
         "references": [
@@ -793,6 +966,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "failureModes": [],
       "domain": "features",
+      "tasks": [
+        "corner-detection"
+      ],
       "sources": {
         "primary": "shi-tomasi1994-features",
         "references": [
@@ -824,6 +1000,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "failureModes": [],
       "domain": "calibration",
+      "tasks": [
+        "camera-calibration"
+      ],
       "sources": {
         "primary": "sturm2003-plane-based",
         "references": [
@@ -871,6 +1050,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "targets",
+      "tasks": [
+        "chessboard-detection"
+      ],
       "sources": {
         "primary": "shu2009-topological",
         "references": [
@@ -906,6 +1088,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "calibration",
+      "tasks": [
+        "hand-eye-calibration"
+      ],
       "sources": {
         "primary": "tsai1989-handeye",
         "references": [
@@ -951,6 +1136,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "calibration",
+      "tasks": [
+        "camera-calibration"
+      ],
       "sources": {
         "primary": "tsai1987-versatile",
         "references": [
@@ -961,6 +1149,41 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Two-stage technique on a precision 3D target. Stage 1 — the radial\nalignment constraint (RAC) eliminates $f$, $\\kappa_1$, $\\kappa_2$, $T_z$\nfrom the projection equation, yielding a linear system in five\n(coplanar) or seven (non-coplanar) unknowns encoding $(R, T_x, T_y)$\nplus the image-scale factor $s_x$. Stage 2 — fixes Stage 1 outputs and\nrecovers $(f, T_z, \\kappa_1)$ by a short nonlinear solve seeded by an\nignoring-distortion linear approximation. One-term radial distortion\nonly; tangential excluded \"to avoid numerical instability\". The\ncoplanar variant requires $s_x$ known a priori (Lenz–Tsai 1987); the\nnon-coplanar variant recovers $s_x$ as part of the calibration.\n"
       },
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "raguram-usac",
+    "frontmatter": {
+      "title": "USAC: Universal RANSAC Framework",
+      "summary": "Engineering decomposition of practical RANSAC into four pluggable stages — sampling (PROSAC), model verification (SPRT), local optimisation (LO-RANSAC), and degeneracy handling (DEGENSAC) — with a single reference C++ implementation (USAC-1.0) and an SPRT-corrected stopping criterion.",
+      "tags": [
+        "geometry",
+        "robust-estimation",
+        "outlier-rejection",
+        "ransac",
+        "sprt"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "ransac"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "barath-magsac",
+          "confidence": "high"
+        }
+      ],
+      "domain": "geometry",
+      "sources": {
+        "primary": "raguram2013-usac",
+        "notes": "Unifying engineering framework over the RANSAC family. Decomposes\npractical RANSAC into four independently swappable stages:\n(1) sampling (PROSAC quality-ordered draws expanding to full set\nafter $T_N$); (2) verification (SPRT — Sequential Probability\nRatio Test, $\\Lambda_j = \\prod p(x_r|H_b)/p(x_r|H_g)$, Eq. 9 —\nrejects bad models early when $\\Lambda_j > A$); (3) degeneracy\nhandling (DEGENSAC — for fundamental matrix, detects ≥ 5 of 7\nminimal-sample correspondences related by a homography and runs\na model-completion step); (4) local optimisation (LO-RANSAC\ninner-loop with iteratively reweighted least-squares refit).\nSPRT-corrected stopping criterion (Eq. 13) at confidence $\\eta_0$\nand nonrandomness significance $\\gamma = 0.05$ (Eq. 12). Tested\ninlier-ratio range 10–92% across homography, fundamental, and\nessential matrix benchmarks. Reference open-source implementation\nis USAC-1.0.\n"
+      },
+      "date": "2026-05-03"
     }
   },
   {
@@ -979,7 +1202,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "homography",
-        "camera-distortion-models"
+        "camera-distortion-models",
+        "ransac"
       ],
       "failureModes": [],
       "relations": [
@@ -991,6 +1215,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         }
       ],
       "domain": "calibration",
+      "tasks": [
+        "camera-calibration"
+      ],
       "sources": {
         "primary": "zhang2000-flexible",
         "references": [
@@ -1082,6 +1309,10 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "domain": "calibration",
+      "tasks": [
+        "corner-detection",
+        "chessboard-detection"
+      ],
       "arch_family": "cnn",
       "params": "16,301",
       "sources": {
@@ -1124,7 +1355,8 @@ export const modelPages: ModelIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "chessboard-x-corner-detection",
-        "camera-distortion-models"
+        "camera-distortion-models",
+        "ransac"
       ],
       "failureModes": [],
       "relations": [
@@ -1146,6 +1378,10 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "domain": "calibration",
+      "tasks": [
+        "camera-calibration",
+        "chessboard-detection"
+      ],
       "arch_family": "hybrid",
       "sources": {
         "primary": "zhang2022-learning-based",
@@ -1213,6 +1449,10 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "domain": "calibration",
+      "tasks": [
+        "corner-detection",
+        "chessboard-detection"
+      ],
       "noPublicImpl": true,
       "arch_family": "cnn",
       "params": "2,939",
@@ -1269,6 +1509,10 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "domain": "features",
+      "tasks": [
+        "feature-detection",
+        "local-feature-matching"
+      ],
       "arch_family": "cnn",
       "params": "~1.3M (estimate; not stated in paper)",
       "sources": {
@@ -1314,6 +1558,10 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "failureModes": [],
       "domain": "features",
+      "tasks": [
+        "feature-detection",
+        "local-feature-matching"
+      ],
       "arch_family": "cnn",
       "flops": "64-D descriptors at H/8 × W/8 resolution",
       "sources": {
@@ -1423,7 +1671,9 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "ransac"
+      ],
       "domain": "geometry",
       "sources": {
         "references": [
@@ -1448,7 +1698,9 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "advanced",
       "readingTimeMinutes": 9,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "ransac"
+      ],
       "domain": "geometry",
       "sources": {
         "references": [
@@ -1502,7 +1754,9 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 9,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "ransac"
+      ],
       "domain": "geometry",
       "sources": {
         "references": [
@@ -1530,6 +1784,33 @@ export const conceptPages: ConceptIndexEntry[] = [
       "prerequisites": [],
       "domain": "features",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "ransac",
+    "frontmatter": {
+      "title": "RANSAC",
+      "summary": "Random sample consensus — a paradigm for fitting a parametric model to data containing an unknown fraction of gross outliers, by drawing minimal random subsets, instantiating candidate models, and selecting the one with the largest globally consistent inlier set.",
+      "tags": [
+        "geometry",
+        "robust-estimation",
+        "outlier-rejection",
+        "model-fitting"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 13,
+      "access": "public",
+      "prerequisites": [],
+      "domain": "geometry",
+      "sources": {
+        "references": [
+          "fischler1981-ransac",
+          "raguram2013-usac",
+          "barath2019-magsac"
+        ]
+      },
+      "date": "2026-05-03"
     }
   },
   {
@@ -1568,7 +1849,8 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
-        "homography"
+        "homography",
+        "ransac"
       ],
       "domain": "geometry",
       "sources": {

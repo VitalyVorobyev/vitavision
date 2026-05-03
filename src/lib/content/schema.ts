@@ -99,12 +99,35 @@ export const domainValues = [
 ] as const;
 export type Domain = (typeof domainValues)[number];
 
+/**
+ * Closed vocabulary of computer-vision tasks for atlas page tagging.
+ * Algorithms and models that solve a user-facing problem self-tag with one
+ * or more tasks via the optional `tasks:` frontmatter field. Computational
+ * primitives and tools (RANSAC, DLT, normalisation, NMS, gradient operators)
+ * carry no `tasks:` value.
+ *
+ * Source of truth: `content/tasks.yaml` (documentation + descriptions).
+ * The list below is the validation enforcer; keep the two in sync.
+ */
+export const taskValues = [
+    "camera-calibration",
+    "chessboard-detection",
+    "corner-detection",
+    "feature-detection",
+    "fundamental-matrix-estimation",
+    "hand-eye-calibration",
+    "image-stitching",
+    "local-feature-matching",
+] as const;
+export type Task = (typeof taskValues)[number];
+
 /** Zod schema for algorithm page frontmatter. */
 export const algorithmFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
         dev: z.boolean().optional(),
         domain: z.enum(domainValues).optional(),
+        tasks: z.array(z.enum(taskValues)).optional(),
         relatedPosts: z.array(z.string().min(1)).optional(),
         relatedDemos: z.array(z.string().min(1)).optional(),
         editorAlgorithmId: z.string().min(1).optional(),
@@ -193,6 +216,7 @@ export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .extend({
         dev: z.boolean().optional(),
         domain: z.enum(domainValues).optional(),
+        tasks: z.array(z.enum(taskValues)).optional(),
         noPublicImpl: z.boolean().optional(),
         arch_family: z.enum(["cnn", "vit", "encoder-decoder", "diffusion", "gan", "hybrid"]).optional(),
         params: z.string().optional(),

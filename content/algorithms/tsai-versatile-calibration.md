@@ -4,6 +4,7 @@ date: 2026-05-02
 summary: "Two-stage 1987 camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a precision 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns. Superseded for practical use by Zhang's planar method."
 tags: ["calibration", "intrinsics", "extrinsics", "radial-distortion"]
 domain: calibration
+tasks: [camera-calibration]
 author: "Vitaly Vorobyev"
 difficulty: advanced
 quality: historical

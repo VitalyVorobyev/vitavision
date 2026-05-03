@@ -954,3 +954,69 @@
     fused-radii variant exposed alongside it. Note: TPAMI PDF is
     paywalled at IEEE Xplore; the cached `.pdf` is the freely-available
     ECCV 2002 conference version (same algorithm).
+
+- id: ni2012-gfrs
+  title: "Fast radial symmetry detection under affine transformations"
+  authors:
+    - Jie Ni
+    - Maneesh K. Singh
+    - Claus Bahlmann
+  year: 2012
+  venue: IEEE Conference on Computer Vision and Pattern Recognition (CVPR)
+  url: https://ieeexplore.ieee.org/document/6247768/
+  doi: "10.1109/CVPR.2012.6247768"
+  pdf: ni2012-gfrs.pdf
+  cites:
+    - loy2003-frst
+  notes: |
+    Generalized Fast Radial Symmetry (GFRS) transform — direct
+    extension of the Loy & Zelinsky FRS to detect radial symmetries
+    that have undergone bounded affine / perspective projection (so
+    circles appear as ellipses). The original FRS uses 1-D voting along
+    the gradient direction at each pixel for a chosen radius `n`; GFRS
+    re-parametrises voting against an underlying affine model so that
+    elliptical symmetries vote into a common centre, retaining FRS's
+    O(N) per-radius cost. Demonstrated on natural images with strongly
+    elliptical radial patterns and applied to the histopathology task
+    of cell-nucleus detection, where it outperforms an FRS baseline
+    and other state-of-the-art nuclei detectors on ROC. PDF placed in
+    cache by the user from the published CVPR 2012 proceedings; IEEE
+    Xplore is paywalled but the cached PDF (8 pages, dated April 2012,
+    from `dvips + GPL Ghostscript`) matches the title/authors recorded
+    on Crossref/OpenAlex for the DOI.
+
+- id: fischler1981-ransac
+  title: "Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography"
+  authors: ["M. A. Fischler", "R. C. Bolles"]
+  year: 1981
+  venue: Communications of the ACM
+  url: https://dl.acm.org/doi/pdf/10.1145/358669.358692
+  doi: "10.1145/358669.358692"
+  pdf: fischler1981-ransac.pdf
+  cites: []
+  notes: # TODO: add notes
+
+- id: raguram2013-usac
+  title: "USAC: A Universal Framework for Random Sample Consensus"
+  authors: ["R. Raguram", "O. Chum", "M. Pollefeys", "J. Matas", "J. Frahm"]
+  year: 2013
+  venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
+  url: https://ieeexplore.ieee.org/document/6365642
+  doi: "10.1109/TPAMI.2012.257"
+  pdf: raguram2013-usac.pdf
+  cites:
+    - fischler1981-ransac
+  notes: # TODO: add notes
+
+- id: barath2019-magsac
+  title: "MAGSAC: marginalizing sample consensus"
+  authors: ["D. Barath", "J. Matas", "J. Noskova"]
+  year: 2019
+  venue: CVPR
+  url: https://arxiv.org/abs/1803.07469
+  doi: "10.1109/CVPR.2019.01044"
+  pdf: barath2019-magsac.pdf
+  cites:
+    - fischler1981-ransac
+    - raguram2013-usac
+  notes: # TODO: add notes

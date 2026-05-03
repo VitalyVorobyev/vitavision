@@ -4,6 +4,7 @@ date: 2026-04-15
 summary: "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum."
 tags: ["feature-detection", "corner"]
 domain: features
+tasks: [corner-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 prerequisites: [image-gradient, structure-tensor]

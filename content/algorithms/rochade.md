@@ -173,7 +173,7 @@ The cone filter $c$ is convolved with $I$ before `refine_saddle` runs; `solve_6x
 - The cone kernel is preferred over a Gaussian because convolution of step-function checkerboards with a sectionally linear kernel produces sectionally defined bivariate quadratics, matching the fit exactly; a Gaussian smears the quadratic structure and biases the saddle location under anisotropic sampling.
 - Dead-end pruning plus rethinning in step 6 eliminates degree-$3$ artefacts induced by short centreline spurs; without it, every spur branch contributes a spurious saddle at its root.
 - The stage-1 graph is the input required by OCPAD to recover partially occluded patterns — OCPAD replaces step 8 with a VF2 subgraph-isomorphism search and the rest of the pipeline is reused verbatim.
-- Compared with ChESS: see [When to choose ChESS over ROCHADE](/algorithms/chess-corners#when-to-choose-chess-over-rochade) on the ChESS page, which hosts the comparison per the older-paper-hosts rule.
+- Compared with ChESS: see [When to choose ChESS over ROCHADE](/atlas/chess-corners#when-to-choose-chess-over-rochade) on the ChESS page, which hosts the comparison per the older-paper-hosts rule.
 
 ## When to choose ROCHADE over Pyramidal
 

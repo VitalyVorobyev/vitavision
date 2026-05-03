@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { LayoutGrid, List, Search, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { algorithmPages, modelPages, conceptPages } from "../generated/content-index.ts";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import AlgorithmCard from "../components/blog/AlgorithmCard.tsx";
@@ -8,6 +8,11 @@ import ConceptCard from "../components/blog/ConceptCard.tsx";
 import AlgorithmsSidebar from "../components/algorithms/AlgorithmsSidebar.tsx";
 import AlgorithmsTagPicker from "../components/algorithms/AlgorithmsTagPicker.tsx";
 import AlgorithmsFilterSheet from "../components/algorithms/AlgorithmsFilterSheet.tsx";
+import AlgorithmsViewToggle from "../components/algorithms/AlgorithmsViewToggle.tsx";
+import AtlasMapView from "../components/atlas/AtlasMapView.tsx";
+import AtlasConstellationView from "../components/atlas/AtlasConstellationView.tsx";
+import AtlasTaskLanding from "../components/atlas/AtlasTaskLanding.tsx";
+import useFirstVisitAtlasGate from "../hooks/useFirstVisitAtlasGate.ts";
 import useAlgorithmsFilters, {
     filterAlgorithms,
     filterModels,
@@ -15,6 +20,7 @@ import useAlgorithmsFilters, {
     computeFacets,
     type AlgorithmsFilters,
     type AlgorithmsKind,
+    type AlgorithmsView,
 } from "../hooks/useAlgorithmsFilters.ts";
 import {
     algorithmCategoryValues,
@@ -403,11 +409,20 @@ function CardGroup({
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function AlgorithmIndex() {
-    const { filters, setKind, setCategoryId, toggleTag, setQuery, setView, reset } =
+    const { filters, setKind, setCategoryId, toggleTag, setTags, setQuery, setView, reset } =
         useAlgorithmsFilters();
     // Per handoff: `lg` and up (≥1024px) = sidebar layout; below = sheet layout.
     const isDesktop = useMediaQuery("(min-width: 1024px)", true);
     const isAdmin = useIsAdmin();
+    const showTaskLanding = useFirstVisitAtlasGate() && isAdmin;
+
+    // Map/Constellation views are admin-only experimental modes. Coerce
+    // non-admins viewing one (e.g. via a stale /atlas?view=map link) back to
+    // a public-safe view without writing the change to localStorage.
+    const effectiveView: AlgorithmsView =
+        !isAdmin && (filters.view === "map" || filters.view === "constellation")
+            ? "grid"
+            : filters.view;
 
     const [tagPickerOpen, setTagPickerOpen] = useState(false);
     const [filterSheetOpen, setFilterSheetOpen] = useState(false);
@@ -512,6 +527,30 @@ export default function AlgorithmIndex() {
     const activeCount =
         filters.tags.length + (filters.categoryId !== "all" ? 1 : 0);
 
+    // ── First-visit landing (overrides everything until the user picks a path) ──
+
+    if (showTaskLanding) {
+        const totalPages = visibleAlgorithms.length + visibleModels.length + visibleConcepts.length;
+        return (
+            <div className="flex flex-1 flex-col">
+                <SeoHead
+                    title="Atlas"
+                    description="Practical computer vision atlas — algorithms, models, and concepts."
+                />
+                <AtlasTaskLanding
+                    totalPages={totalPages}
+                    onApply={(apply) => {
+                        if (apply.kind !== undefined) setKind(apply.kind);
+                        if (apply.categoryId !== undefined) setCategoryId(apply.categoryId);
+                        if (apply.tags !== undefined) setTags(apply.tags);
+                        // setView writes to localStorage — that's what suppresses the gate next visit.
+                        setView(apply.view);
+                    }}
+                />
+            </div>
+        );
+    }
+
     // ── Desktop layout ──────────────────────────────────────────────────────
 
     if (isDesktop) {
@@ -562,35 +601,11 @@ export default function AlgorithmIndex() {
                                     />
                                 </div>
 
-                                {/* View toggle */}
-                                <div className="flex gap-0.5 p-0.5 rounded-md border border-[hsl(var(--border)/0.7)]">
-                                    <button
-                                        type="button"
-                                        aria-label="Grid view"
-                                        aria-pressed={filters.view === "grid"}
-                                        onClick={() => setView("grid")}
-                                        className={`p-[3px] rounded transition-colors ${
-                                            filters.view === "grid"
-                                                ? "bg-[hsl(var(--surface-hi))] text-foreground"
-                                                : "text-muted-foreground hover:text-foreground"
-                                        }`}
-                                    >
-                                        <LayoutGrid size={13} />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        aria-label="List view"
-                                        aria-pressed={filters.view === "list"}
-                                        onClick={() => setView("list")}
-                                        className={`p-[3px] rounded transition-colors ${
-                                            filters.view === "list"
-                                                ? "bg-[hsl(var(--surface-hi))] text-foreground"
-                                                : "text-muted-foreground hover:text-foreground"
-                                        }`}
-                                    >
-                                        <List size={13} />
-                                    </button>
-                                </div>
+                                <AlgorithmsViewToggle
+                                    view={effectiveView}
+                                    onChange={setView}
+                                    showExperimental={isAdmin}
+                                />
                             </div>
                         </div>
 
@@ -600,17 +615,35 @@ export default function AlgorithmIndex() {
                         </p>
 
                         {/* Results */}
-                        <CardGroup
-                            kind={filters.kind}
-                            filteredAlgorithms={filteredAlgorithms}
-                            filteredModels={filteredModels}
-                            filteredConcepts={filteredConcepts}
-                            filters={filters}
-                            groupedAlgorithms={groupedAlgorithms}
-                            groupedModels={groupedModels}
-                            groupedConcepts={groupedConcepts}
-                            layout={filters.view}
-                        />
+                        {effectiveView === "map" ? (
+                            <AtlasMapView
+                                algorithms={visibleAlgorithms}
+                                models={visibleModels}
+                                concepts={visibleConcepts}
+                                filters={filters}
+                                searchMatchedSlugs={searchMatchedSlugs}
+                            />
+                        ) : effectiveView === "constellation" ? (
+                            <AtlasConstellationView
+                                algorithms={visibleAlgorithms}
+                                models={visibleModels}
+                                concepts={visibleConcepts}
+                                filters={filters}
+                                searchMatchedSlugs={searchMatchedSlugs}
+                            />
+                        ) : (
+                            <CardGroup
+                                kind={filters.kind}
+                                filteredAlgorithms={filteredAlgorithms}
+                                filteredModels={filteredModels}
+                                filteredConcepts={filteredConcepts}
+                                filters={filters}
+                                groupedAlgorithms={groupedAlgorithms}
+                                groupedModels={groupedModels}
+                                groupedConcepts={groupedConcepts}
+                                layout={effectiveView === "list" ? "list" : "grid"}
+                            />
+                        )}
                     </main>
                 </div>
 

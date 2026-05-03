@@ -206,7 +206,7 @@ Nonlinear refinement of $(A, k_1, k_2, \{R_i, t_i\})$ over the total reprojectio
 - Parallel orientations of the planar target are degenerate: a second view obtained from the first by a rotation about the plane normal (and any translation) contributes constraints linearly dependent on those of the first view.
 - Minimum view count depends on which intrinsics are fixed: $n \geq 3$ for the full five-parameter $A$, $n \geq 2$ with skew fixed to $\gamma = 0$, and $n = 1$ can only solve two parameters (typical choice: $(\alpha, \beta)$ with principal point at the image centre).
 - Distortion scope is two-term radial only; tangential (decentering) and thin-prism terms belong to the Brown-Conrady / Weng model and are a drop-in extension of the projection function $\breve m$ and its Jacobian in the LM step.
-- Compared with Tsai 1987: see [When to choose Tsai over Zhang](/algorithms/tsai-versatile-calibration#when-to-choose-tsai-over-zhang) on the Tsai page, which hosts the comparison per the older-paper-hosts rule.
+- Compared with Tsai 1987: see [When to choose Tsai over Zhang](/atlas/tsai-versatile-calibration#when-to-choose-tsai-over-zhang) on the Tsai page, which hosts the comparison per the older-paper-hosts rule.
 
 ## When to choose Zhang over Sturm-Maybank
 

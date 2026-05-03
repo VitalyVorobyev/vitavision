@@ -15,9 +15,9 @@ describe("AlgorithmPost", () => {
     it("loads generated algorithm html and structured data on the client", async () => {
         render(
             <HelmetProvider>
-                <MemoryRouter initialEntries={["/algorithms/harris-corner-detector"]}>
+                <MemoryRouter initialEntries={["/atlas/harris-corner-detector"]}>
                     <Routes>
-                        <Route path="/algorithms/:slug" element={<AlgorithmPost />} />
+                        <Route path="/atlas/:slug" element={<AlgorithmPost />} />
                     </Routes>
                 </MemoryRouter>
             </HelmetProvider>,
@@ -30,7 +30,7 @@ describe("AlgorithmPost", () => {
         expect(
             await screen.findByText(/intensity varies strongly in two independent directions/i),
         ).toBeInTheDocument();
-        expect(screen.getByText("Vitaly Vorobyev")).toBeInTheDocument();
+        expect(screen.queryByText("Vitaly Vorobyev")).toBeNull();
         expect(screen.getByText("2026-04-15")).toBeInTheDocument();
 
         const jsonLd = document.querySelector('script[type="application/ld+json"]');

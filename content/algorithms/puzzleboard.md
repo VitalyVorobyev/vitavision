@@ -148,7 +148,7 @@ The response kernel is arithmetic-only per pixel; the decoder is four modular op
 - Error tolerance: after majority voting across the three repetitions of every row and column, up to $40\%$ of the raw observed bits can be corrupted and the position still decodes correctly. The minimum Hamming distance between the correct alignment and any wrong alignment is $501$ bits.
 - Minimum resolution: decoding succeeds at roughly $5$ pixels per checkerboard edge at full reliability, and recovers under error correction at $3.3$ pixels per edge — substantially below the resolution required by the classic checkerboard detectors.
 - Backward compatibility: the edge-midpoint circles do not interfere with the saddle test, so a generic checkerboard corner detector still locates corners on a PuzzleBoard; the position decoding is an additive capability on top of standard calibration targets.
-- Compared with ChESS: see [When to choose ChESS over PuzzleBoard](/algorithms/chess-corners#when-to-choose-chess-over-puzzleboard) on the ChESS page, which hosts the comparison per the older-paper-hosts rule.
+- Compared with ChESS: see [When to choose ChESS over PuzzleBoard](/atlas/chess-corners#when-to-choose-chess-over-puzzleboard) on the ChESS page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

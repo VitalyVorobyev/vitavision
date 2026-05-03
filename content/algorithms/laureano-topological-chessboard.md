@@ -164,7 +164,7 @@ The caller further enforces $T_\ell < I(p_c) < T_h$ on the centre pixel before a
 - The filter requires only that a sufficient subset of the pattern be visible; it does not demand the full grid. Partial occlusion, missing border tiles, and background clutter all reduce to discarded Delaunay triangles.
 - Scope: the method emits ordered integer-coordinate corner lists; it does not solve for camera intrinsics or extrinsics. Those are the downstream calibration problem (e.g. Zhang's method).
 - Failure modes: steep viewing angles defocus the X-junctions and push Delaunay edges across tile corners simultaneously; both detection and topology degrade at the same time rather than catching each other. Low-contrast images starve $N_\mathrm{alt}$ at the first stage.
-- Compared with Shu: see [When to choose Shu over Laureano](/algorithms/shu-topological-grid#when-to-choose-shu-over-laureano) on the Shu page, which hosts the comparison per the older-paper-hosts rule.
+- Compared with Shu: see [When to choose Shu over Laureano](/atlas/shu-topological-grid#when-to-choose-shu-over-laureano) on the Shu page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

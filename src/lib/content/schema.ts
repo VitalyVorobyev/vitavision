@@ -5,7 +5,7 @@ const publicationFrontmatterBaseObjectSchema = z.object({
     date: z.coerce.date(),
     summary: z.string().min(1),
     tags: z.array(z.string().min(1)).min(1),
-    author: z.string().min(1),
+    author: z.string().min(1).optional(),
     draft: z.boolean().optional(),
     updated: z.coerce.date().optional(),
     coverImage: z.string().optional(),

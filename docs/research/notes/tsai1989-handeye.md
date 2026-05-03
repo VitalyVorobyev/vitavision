@@ -154,7 +154,7 @@ The daniilidis1999-hand-eye research note (already written) identified a deferre
 
 Section: Remarks
 - **Add cross-reference bullet (draft, apply via algo-page):**
-  > Compared with Tsai-Lenz: see [When to choose Tsai-Lenz over Daniilidis](/algorithms/tsai-lenz-handeye#when-to-choose-tsai-lenz-over-daniilidis). The Tsai-Lenz page hosts the comparison.
+  > Compared with Tsai-Lenz: see [When to choose Tsai-Lenz over Daniilidis](/atlas/tsai-lenz-handeye#when-to-choose-tsai-lenz-over-daniilidis). The Tsai-Lenz page hosts the comparison.
 
 # Provenance
 

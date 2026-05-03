@@ -179,8 +179,8 @@ The intensity loop is the pixel hot path and is run once per pyramid level. Each
 - Sample spacing along candidate edges is set per edge from the pyramid levels of its endpoints. Constant spacing samples the smeared centre of edges incident to blurred corners and produces a uniformly low score regardless of whether an edge exists.
 - The detector returns one or more chessboard graphs and rejects graphs that do not match the requested shape; self-identifying patterns are out of scope and must be decoded by a downstream stage.
 - Output metadata includes the chosen pyramid level per corner. This can be repurposed for autofocus diagnostics, per-corner uncertainty estimates, or rejection of blur-induced false positives.
-- Compared with ChESS: see [When to choose ChESS over Pyramidal](/algorithms/chess-corners#when-to-choose-chess-over-pyramidal) on the ChESS page, which hosts the comparison per the older-paper-hosts rule.
-- Compared with ROCHADE: see [When to choose ROCHADE over Pyramidal](/algorithms/rochade#when-to-choose-rochade-over-pyramidal) on the ROCHADE page, which hosts the comparison per the older-paper-hosts rule.
+- Compared with ChESS: see [When to choose ChESS over Pyramidal](/atlas/chess-corners#when-to-choose-chess-over-pyramidal) on the ChESS page, which hosts the comparison per the older-paper-hosts rule.
+- Compared with ROCHADE: see [When to choose ROCHADE over Pyramidal](/atlas/rochade#when-to-choose-rochade-over-pyramidal) on the ROCHADE page, which hosts the comparison per the older-paper-hosts rule.
 
 # References
 

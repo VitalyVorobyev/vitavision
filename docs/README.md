@@ -52,7 +52,7 @@ All slugs are validated against a single global namespace covering algorithms + 
 The host page carries a `## When to choose X over Y` section inside `# Remarks` (or as a final subsection of `# Algorithm` when the contrast is purely algorithmic). The non-host page does **not** duplicate the content; it carries a single `# Remarks` bullet pointing back:
 
 ```markdown
-- Compared with Harris: see [When to choose Harris over Shi-Tomasi](/algorithms/harris-corner-detector#when-to-choose-harris-over-shi-tomasi). The Harris page hosts the comparison.
+- Compared with Harris: see [When to choose Harris over Shi-Tomasi](/atlas/harris-corner-detector#when-to-choose-harris-over-shi-tomasi). The Harris page hosts the comparison.
 ```
 
 **More-authoritative tiebreaker**, applied in order:

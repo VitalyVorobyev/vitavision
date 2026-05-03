@@ -113,7 +113,7 @@ Section: Comparison with Tsai-Lenz (deferred — blocked on tsai1989-handeye res
 - Per comparison policy: the `tsai-lenz-handeye` page hosts the `## When to choose Tsai-Lenz over Daniilidis` section because Tsai-Lenz 1989 predates Daniilidis 1999. The `daniilidis-dual-quaternion-handeye` page carries a single Remarks bullet pointing back.
 - **This comparison content is blocked** until `docs/research/notes/tsai1989-handeye.md` is written. The notes for both papers must exist before comparison prose can be authored agentically.
 - Proposed Remarks bullet for the Daniilidis page (draft, do not apply until tsai1989-handeye is ingested):
-  > Compared with Tsai-Lenz: see [When to choose Tsai-Lenz over Daniilidis](/algorithms/tsai-lenz-handeye#when-to-choose-tsai-lenz-over-daniilidis). The Tsai-Lenz page hosts the comparison.
+  > Compared with Tsai-Lenz: see [When to choose Tsai-Lenz over Daniilidis](/atlas/tsai-lenz-handeye#when-to-choose-tsai-lenz-over-daniilidis). The Tsai-Lenz page hosts the comparison.
 
 ## UPDATE: tsai-lenz-handeye
 

@@ -9,8 +9,17 @@ import type {
 // ── Public types ────────────────────────────────────────────────────────────
 
 export type AlgorithmsKind = "all" | "algorithm" | "model" | "concept";
-export type AlgorithmsView = "grid" | "list";
+export type AlgorithmsView = "grid" | "list" | "map" | "constellation";
 export type AlgorithmsSort = "az" | "recent";
+
+/** localStorage key the view selection is persisted to. */
+export const ATLAS_VIEW_STORAGE_KEY = "atlas:view";
+
+const VIEW_VALUES: readonly AlgorithmsView[] = ["grid", "list", "map", "constellation"];
+
+function isAlgorithmsView(value: string | null): value is AlgorithmsView {
+    return value !== null && (VIEW_VALUES as readonly string[]).includes(value);
+}
 
 export interface AlgorithmsFilters {
     kind: AlgorithmsKind;
@@ -336,9 +345,32 @@ function parseFiltersFromParams(params: URLSearchParams): AlgorithmsFilters {
     const tagsRaw = params.get("tags");
     const tags = tagsRaw ? tagsRaw.split(",").filter(Boolean) : [];
     const query = params.get("q") ?? "";
-    const view: AlgorithmsView = params.get("view") === "list" ? "list" : "grid";
+    // URL takes precedence over storage so /atlas?view=map works as a deep link.
+    const rawView = params.get("view");
+    const urlView = isAlgorithmsView(rawView) ? rawView : null;
+    const storedView = readStoredView();
+    const view: AlgorithmsView = urlView ?? storedView ?? DEFAULTS.view;
     const sort: AlgorithmsSort = params.get("sort") === "az" ? "az" : "recent";
     return { kind, categoryId, tags, query, view, sort };
+}
+
+function readStoredView(): AlgorithmsView | null {
+    if (typeof window === "undefined") return null;
+    try {
+        const raw = window.localStorage.getItem(ATLAS_VIEW_STORAGE_KEY);
+        return isAlgorithmsView(raw) ? raw : null;
+    } catch {
+        return null;
+    }
+}
+
+function writeStoredView(view: AlgorithmsView): void {
+    if (typeof window === "undefined") return;
+    try {
+        window.localStorage.setItem(ATLAS_VIEW_STORAGE_KEY, view);
+    } catch {
+        // quota / private mode — silently ignore
+    }
 }
 
 function buildParams(filters: AlgorithmsFilters): URLSearchParams {
@@ -413,7 +445,10 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
     );
 
     const setView = useCallback(
-        (view: AlgorithmsView) => update({ ...filters, view }),
+        (view: AlgorithmsView) => {
+            writeStoredView(view);
+            update({ ...filters, view });
+        },
         [filters, update],
     );
 

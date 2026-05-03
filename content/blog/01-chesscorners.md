@@ -16,7 +16,7 @@ Calibrating visual sensors in challenging setups is part of my job. In practice 
 
 The first question was simple: how should one detect chessboard corners?
 
-Classical detectors such as [Harris](/algorithms/harris-corner-detector), [Shi-Tomasi](/algorithms/shi-tomasi-corner-detector), or [FAST](/algorithms/fast-corner-detector) are designed to react to corner-like structures in general. That is exactly why they are broadly useful, and also why they are not ideal here. A chessboard corner is more specific than a generic corner: locally, it forms an X-junction with an alternating black-white arrangement. Since this structure is known in advance, it is better to encode it directly in the detector.
+Classical detectors such as [Harris](/atlas/harris-corner-detector), [Shi-Tomasi](/atlas/shi-tomasi-corner-detector), or [FAST](/atlas/fast-corner-detector) are designed to react to corner-like structures in general. That is exactly why they are broadly useful, and also why they are not ideal here. A chessboard corner is more specific than a generic corner: locally, it forms an X-junction with an alternating black-white arrangement. Since this structure is known in advance, it is better to encode it directly in the detector.
 
 (OpenCV’s chessboard detector follows a different route: it starts from segmenting black squares and then derives corners from the recovered geometry. That works well, but it couples the problem to global board structure and requires the whole pattern to be visible, which is not acceptable in my case.)
 

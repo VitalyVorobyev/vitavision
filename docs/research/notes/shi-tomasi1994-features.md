@@ -135,7 +135,7 @@ Section: When to choose Harris over Shi-Tomasi (new subsection inside `# Remarks
 The corresponding Remarks bullet on the shi-tomasi page (added when the comparison is authored):
 
 ```markdown
-- Compared with Harris: see [When to choose Harris over Shi-Tomasi](/algorithms/harris-corner-detector#when-to-choose-harris-over-shi-tomasi). The Harris page hosts the comparison.
+- Compared with Harris: see [When to choose Harris over Shi-Tomasi](/atlas/harris-corner-detector#when-to-choose-harris-over-shi-tomasi). The Harris page hosts the comparison.
 ```
 
 ## UPDATE: pyramidal-blur-aware-xcorner

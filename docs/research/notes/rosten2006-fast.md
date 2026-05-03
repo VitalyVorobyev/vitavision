@@ -141,7 +141,7 @@ Section: When to choose Harris over FAST (new subsection inside `# Remarks` or a
 The corresponding Remarks bullet on the fast-corner-detector page (added when the comparison is authored):
 
 ```markdown
-- Compared with Harris: see [When to choose Harris over FAST](/algorithms/harris-corner-detector#when-to-choose-harris-over-fast). The Harris page hosts the comparison.
+- Compared with Harris: see [When to choose Harris over FAST](/atlas/harris-corner-detector#when-to-choose-harris-over-fast). The Harris page hosts the comparison.
 ```
 
 # Provenance

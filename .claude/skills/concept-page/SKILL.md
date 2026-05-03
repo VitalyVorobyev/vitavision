@@ -163,15 +163,7 @@ bun run build && bun run scripts/content-validate.ts
 
 ## Voice rules
 
-Voice rules are inherited from `.claude/skills/algo-page/SKILL.md §"Voice rules"`. The shortlist:
-
-- Impersonal. No first person.
-- Declarative. Statements of fact or definition.
-- Minimal glue prose. One sentence between math blocks, usually.
-- No narrative arc.
-- No attribution in prose; authors live in `# References`.
-- Sentences short; passive voice acceptable.
-- No softeners, no marketing words, no hedges.
+See `.claude/skills/_shared/voice-rules.md`. Binding.
 
 ## Forbidden patterns
 

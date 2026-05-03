@@ -79,17 +79,17 @@ Model-page-specific pointers:
 
 ## Illustrations
 
-Illustration rules are inherited verbatim from `.claude/skills/algo-page/SKILL.md` §"Illustrations" — the decision tree (Mermaid vs hand-authored SVG vs generated SVG), the hand-authored SVG rules, the generator-script requirements, the palette, the typography floor. Do not restate; treat them as binding.
+See `.claude/skills/_shared/illustrations.md` for the primitive choice and authoring rules. Binding.
 
-Model-page-specific pointers:
+Model-specific pointers:
 
 - **Block diagrams are the archetypal earn-your-place figure for a model page.** A transformer encoder, a ResNet bottleneck, a U-Net's skip topology — these are near-impossible to describe in prose and trivial to read from a diagram.
   - If the block is < ~15 primitives (rectangles, arrows, labels) and has no data dependence, **hand-author the SVG** under `content/images/<slug>/block.svg`.
-  - If the figure plots a learning curve, a scaling law, or a parameter-efficiency frontier, **write a generator script** under `py/generate_<slug>_<name>.py` that writes to `content/images/<slug>/<name>.svg`. Deterministic SVG, accessibility post-pass, Tailwind palette — same rules as `algo-page`.
+  - If the figure plots a learning curve, a scaling law, or a parameter-efficiency frontier, **write a generator script** under `py/generate_<slug>_<name>.py` that writes to `content/images/<slug>/<name>.svg`. Same rules as algo-page.
 - **Data-flow pipelines** (training loop, inference pipeline, multi-stage distillation) → Mermaid flowchart, inline.
 - **Architecture block diagrams should not restate the `# Architecture.Blocks` code snippet.** Pick one — if the code is the clearer explanation, omit the figure; if the topology only reads cleanly visually, omit the code snippet.
 
-Real-image output (segmentation masks on an example photo, detection overlays) belongs in a blog post or a demo, not on the reference card. Use `<!-- TODO figure: ... -->` placeholders only for figures that genuinely depend on real-image data; write a generator script for everything else.
+Real-image output (segmentation masks on an example photo, detection overlays) belongs in a blog post or a demo, not on the reference card. Use `<!-- TODO figure: ... -->` placeholders only for figures that genuinely depend on real-image data.
 
 ## Frontmatter
 
@@ -264,17 +264,7 @@ B10. **Flip `draft: false`** once B9a wrote at least one valid implementations e
 
 ## Voice rules
 
-Voice rules are inherited from `.claude/skills/algo-page/SKILL.md` §"Voice rules". Do not restate; treat them as binding.
-
-The shortlist, for recall:
-
-- Impersonal. No first person.
-- Declarative. Statements of fact or definition.
-- Minimal glue prose. One sentence between math/code blocks, usually.
-- No narrative arc.
-- No attribution in prose; authors live in `# References`.
-- Sentences short; passive voice acceptable when it keeps the subject nominal.
-- No softeners, no marketing words, no hedges.
+See `.claude/skills/_shared/voice-rules.md`. Binding.
 
 ## Forbidden patterns
 

@@ -147,6 +147,7 @@ export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
         category: z.enum(modelCategoryValues),
+        noPublicImpl: z.boolean().optional(),
         arch_family: z.enum(["cnn", "vit", "encoder-decoder", "diffusion", "gan", "hybrid"]).optional(),
         params: z.string().optional(),
         flops: z.string().optional(),
@@ -163,7 +164,7 @@ export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
             license: z.string().min(1),
             weights_url: z.string().url().optional(),
             weights_license: z.string().min(1).optional(),
-        })).min(1).optional(), // required on non-drafts; enforced in content-build
+        })).min(1).optional(), // required on non-drafts unless noPublicImpl: true; enforced in content-build
         relatedPosts: z.array(z.string().min(1)).optional(),
         relatedAlgorithms: z.array(z.string().min(1)).optional(),
         relatedDemos: z.array(z.string().min(1)).optional(),

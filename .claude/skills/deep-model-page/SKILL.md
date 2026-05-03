@@ -214,11 +214,11 @@ B9a. **Gather implementations.** Identify open-source implementations. Typical s
       - `port` — a cross-framework port (e.g. a Caffe→PyTorch port of the official Caffe release). Classify as `port` only when the port's role is faithful reproduction; if the port added novel contributions, it is `community`.
    6. Write the entry into `implementations[]` in the page's frontmatter.
 
-   **Floor.** One verified entry is the minimum for a non-draft page. If no public implementation exists, set `draft: true` and add a `# Assessment.Limitations` bullet noting "no public implementation"; the page can ship as a draft but not as a non-draft reference card.
+   **Floor.** If a public implementation exists, one verified entry is the minimum for a non-draft page. If no public implementation exists for legitimate reasons (closed-source, discontinued, paper-only), set `noPublicImpl: true` in the frontmatter and add a `## Limitations` section to the page body explaining why (with at least one bullet pointing to the constraint: closed-source, paper-only, etc.). The validator enforces this — the page can ship as non-draft. Use `draft: true` only when the page itself is unfinished, not as a workaround for missing implementations.
 
    Note: License verification stays in the orchestrator (not delegated) because it is small, deterministic, and a security check — the orchestrator must read the LICENSE file directly to grade the page's `implementations[].license` claim.
 
-B10. **Flip `draft: false`** once B9a wrote at least one valid entry. Continue with Workflow §4.
+B10. **Flip `draft: false`** once B9a wrote at least one valid implementations entry, OR set `noPublicImpl: true` with a populated Limitations section. Continue with Workflow §4.
 
 ### What Bootstrap writes where
 

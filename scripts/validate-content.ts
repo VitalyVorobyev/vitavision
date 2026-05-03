@@ -461,10 +461,45 @@ export async function validateContent(options?: ValidateContentOptions): Promise
     // ── Rule 5: Non-draft model pages must have implementations[] ─────────────
     for (const e of modelFiltered) {
         if (e.isDraft) continue;
+        if (e.frontmatter.noPublicImpl === true) continue;
         const impls = e.frontmatter.implementations as unknown[] | undefined;
         if (!impls || impls.length === 0) {
             errors.push(
-                `[${e.file}] model page is not draft but has no implementations[] entry`,
+                `[${e.file}] model page is not draft but has no implementations[] entry (and noPublicImpl is not set)`,
+            );
+        }
+    }
+
+    // ── Rule 6: noPublicImpl: true requires a non-empty ## Limitations section ─
+    for (const e of modelFiltered) {
+        if (e.frontmatter.noPublicImpl !== true) continue;
+        const lines = e.content.split("\n");
+        let inLimitations = false;
+        let hasLimitationsHeading = false;
+        let hasLimitationsBody = false;
+        for (const line of lines) {
+            if (line.startsWith("## Limitations")) {
+                inLimitations = true;
+                hasLimitationsHeading = true;
+                continue;
+            }
+            if (inLimitations) {
+                if (line.startsWith("## ")) {
+                    break;
+                }
+                if (line.trim() !== "" && !line.startsWith("#")) {
+                    hasLimitationsBody = true;
+                    break;
+                }
+            }
+        }
+        if (!hasLimitationsHeading) {
+            errors.push(
+                `[${e.file}] noPublicImpl: true requires a ## Limitations section`,
+            );
+        } else if (!hasLimitationsBody) {
+            errors.push(
+                `[${e.file}] noPublicImpl: true requires a non-empty ## Limitations section`,
             );
         }
     }

@@ -1,0 +1,66 @@
+# Closed vocabulary of computer-vision tasks for atlas page tagging.
+#
+# Algorithms and models that solve a user-facing problem self-tag with one or
+# more tasks via the optional `tasks:` frontmatter field. Computational
+# primitives and tools (RANSAC, DLT, normalisation, NMS, gradient operators)
+# carry no `tasks:` value — they participate in many tasks without solving any
+# specific one.
+#
+# Source of truth: this file (documentation + descriptions).
+# Validation enforcer: `taskValues` constant in src/lib/content/schema.ts.
+# Keep the two in sync; a unit test checks they match.
+#
+# Adding a new task: append the slug + description here, mirror it in
+# src/lib/content/schema.ts → taskValues, then run validate-content.
+
+tasks:
+  - slug: camera-calibration
+    description: |
+      Recover intrinsic and/or extrinsic camera parameters from images of a
+      known calibration target or scene. Includes pinhole intrinsic estimation,
+      distortion coefficients, and metric pose recovery.
+
+  - slug: chessboard-detection
+    description: |
+      Detect, identify, and order the corners of a chessboard / checkerboard
+      target as input to camera calibration. Distinct from generic corner
+      detection: the algorithm's design objective is the chessboard pattern,
+      not arbitrary 2D structure.
+
+  - slug: corner-detection
+    description: |
+      Detect 2D feature points (corners, X-junctions, Y-junctions) in
+      grayscale images. The output is a set of pixel locations and optionally
+      response scores; downstream algorithms decide which corners to use and
+      how to organise them.
+
+  - slug: feature-detection
+    description: |
+      Detect generic local features beyond corners — blobs, radial-symmetric
+      structures, scale-space extrema. Distinct from corner detection in the
+      shape of the feature being localised.
+
+  - slug: fundamental-matrix-estimation
+    description: |
+      Estimate the 3 × 3 rank-2 fundamental matrix encoding the epipolar
+      constraint between two uncalibrated views of a scene from point
+      correspondences.
+
+  - slug: hand-eye-calibration
+    description: |
+      Recover the rigid transformation between a robot end-effector and a
+      camera mounted on it (or between a stationary camera and a robot base)
+      from synchronised motion sequences.
+
+  - slug: image-stitching
+    description: |
+      Compose two or more overlapping images into a single panorama by
+      estimating a global or spatially-varying warp, blending in the overlap
+      region, and handling parallax.
+
+  - slug: local-feature-matching
+    description: |
+      Detect interest points in two images and assign descriptors that allow
+      cross-image matching, typically as the input to homography or
+      fundamental-matrix estimation. Distinct from feature detection alone:
+      the descriptor + matching machinery is part of the task.

@@ -2,6 +2,23 @@
 
 export type NodeType = "algorithm" | "model" | "concept" | "failure-mode";
 
+export type RelationType =
+    | "generalized_by"
+    | "alternative_formulation_of"
+    | "parallel_foundation_with"
+    | "extended_by"
+    | "compared_with"
+    | "feeds_into"
+    | "learned_alternative_of";
+
+export interface TypedRelation {
+    type: RelationType;
+    target: string;
+    confidence: "high" | "medium" | "low";
+    caution?: string;
+    mirrored?: boolean;
+}
+
 export interface GraphNode {
     slug: string;
     type: NodeType;
@@ -13,16 +30,23 @@ export interface GraphNode {
 
 export interface ForwardEdges {
     prerequisites: string[];
-    related: string[];
-    comparedWith: string[];
     failureModes: string[];
+    relations: TypedRelation[];
+}
+
+export interface ReverseRelation {
+    slug: string;
+    confidence: "high" | "medium" | "low";
+    caution?: string;
 }
 
 export interface ReverseEdges {
     usedBy: string[];
-    relatedFrom: string[];
-    comparedFrom: string[];
     affects: string[];
+    generalises: ReverseRelation[];
+    extending: ReverseRelation[];
+    fedBy: ReverseRelation[];
+    hasLearnedAlternative: ReverseRelation[];
 }
 
 export interface ContentGraph {
@@ -73,11 +97,27 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/fast-corner-detector",
       "draft": false
     },
+    "loy-fast-radial-symmetry": {
+      "slug": "loy-fast-radial-symmetry",
+      "type": "algorithm",
+      "title": "Fast Radial Symmetry Transform",
+      "summary": "Gradient-vote operator that highlights pixels of high local radial symmetry — bright/dark blobs and approximately circular features. Each pixel votes along its gradient direction at one or more radii into orientation and magnitude projection maps; the per-radius contribution is the magnitude projection weighted by a power of the orientation count and Gaussian-smoothed; the cumulative response across radii localises feature centres at $O(K \\cdot |N|)$ cost.",
+      "path": "/atlas/loy-fast-radial-symmetry",
+      "draft": false
+    },
+    "fischler-bolles-ransac": {
+      "slug": "fischler-bolles-ransac",
+      "type": "algorithm",
+      "title": "Fischler–Bolles RANSAC",
+      "summary": "Founding random-sample-consensus paradigm: fit a parametric model to data containing an unknown fraction of gross outliers by drawing minimal random subsets, instantiating candidate models, counting consensus inliers, and retaining the largest consensus set.",
+      "path": "/atlas/fischler-bolles-ransac",
+      "draft": false
+    },
     "gao-dual-homography-stitching": {
       "slug": "gao-dual-homography-stitching",
       "type": "algorithm",
       "title": "Gao Dual-Homography Stitching",
-      "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group with RANSAC, and blending per pixel by inverse-distance weights — the direct two-plane predecessor of APAP's continuous grid of per-cell homographies.",
+      "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group, and blending per pixel by inverse-distance weights. Superseded for practical use by APAP's continuous per-cell grid.",
       "path": "/atlas/gao-dual-homography-stitching",
       "draft": false
     },
@@ -87,6 +127,14 @@ export const contentGraph: ContentGraph = {
       "title": "Geiger Chessboard Corner Detector",
       "summary": "Detect checkerboard X-corners by computing a four-quadrant corner likelihood at each pixel using axis-aligned and 45°-rotated prototype filters at three fixed scales, verifying candidates by gradient-orientation statistics, and refining to subpixel accuracy via gradient-orthogonality weighted least squares — the libcbdetect detector that anchors many subsequent calibration pipelines.",
       "path": "/atlas/geiger-chessboard-detector",
+      "draft": false
+    },
+    "ni-generalized-fast-radial-symmetry": {
+      "slug": "ni-generalized-fast-radial-symmetry",
+      "type": "algorithm",
+      "title": "Generalised Fast Radial Symmetry",
+      "summary": "Affine extension of FRST: each pixel votes along a corrected direction $\\hat V = G M G^{-1} M^{-1} \\nabla I$ at radius $n$, where $G = R D \\in A(2)$ is a rotation–anisotropic-scale pair from a sampled grid, so circles seen as ellipses under bounded perspective converge into a single peak in the per-pixel-max response stack while keeping FRS's $O(K)$ per-radius cost per $G_i$.",
+      "path": "/atlas/ni-generalized-fast-radial-symmetry",
       "draft": false
     },
     "gp-checkerboard-enhancement": {
@@ -135,6 +183,14 @@ export const contentGraph: ContentGraph = {
       "title": "Localized Radon Checkerboard Corners",
       "summary": "Detect checkerboard X-junctions by approximating a localized Radon transform with 1-D box filters on rotated copies of the image; the per-pixel response is the squared difference between the maximum and minimum directional line integrals over four discrete angles.",
       "path": "/atlas/duda-radon-corners",
+      "draft": false
+    },
+    "barath-magsac": {
+      "slug": "barath-magsac",
+      "type": "algorithm",
+      "title": "MAGSAC: Marginalising Sample Consensus",
+      "summary": "Robust estimator that eliminates the user-tuned inlier threshold by treating the noise scale σ as a random variable on [0, σ_max] and marginalising the RANSAC quality function over σ; the final model is a weighted least-squares fit using marginal-likelihood weights via iteratively reweighted least squares (σ-consensus).",
+      "path": "/atlas/barath-magsac",
       "draft": false
     },
     "fundamental-matrix-eight-point": {
@@ -213,8 +269,16 @@ export const contentGraph: ContentGraph = {
       "slug": "tsai-versatile-calibration",
       "type": "algorithm",
       "title": "Tsai's Versatile Camera Calibration",
-      "summary": "Two-stage camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns.",
+      "summary": "Two-stage 1987 camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a precision 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns. Superseded for practical use by Zhang's planar method.",
       "path": "/atlas/tsai-versatile-calibration",
+      "draft": false
+    },
+    "raguram-usac": {
+      "slug": "raguram-usac",
+      "type": "algorithm",
+      "title": "USAC: Universal RANSAC Framework",
+      "summary": "Engineering decomposition of practical RANSAC into four pluggable stages — sampling (PROSAC), model verification (SPRT), local optimisation (LO-RANSAC), and degeneracy handling (DEGENSAC) — with a single reference C++ implementation (USAC-1.0) and an SPRT-corrected stopping criterion.",
+      "path": "/atlas/raguram-usac",
       "draft": false
     },
     "zhang-planar-calibration": {
@@ -233,13 +297,21 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/ccdn-checkerboard-detector",
       "draft": false
     },
+    "ccs-camera-calibration": {
+      "slug": "ccs-camera-calibration",
+      "type": "model",
+      "title": "CCS",
+      "summary": "Three-stage learning-based camera calibration pipeline: a CNN regresses radial-distortion-correction parameters, a UNet predicts per-corner Gaussian heatmaps refined by surface-fit subpixel localisation, and an image-level RANSAC accepts inlier views before Zhang-style intrinsic estimation.",
+      "path": "/atlas/ccs-camera-calibration",
+      "draft": false
+    },
     "mate-checkerboard-detector": {
       "slug": "mate-checkerboard-detector",
       "type": "model",
       "title": "MATE",
       "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
       "path": "/atlas/mate-checkerboard-detector",
-      "draft": true
+      "draft": false
     },
     "superpoint": {
       "slug": "superpoint",
@@ -247,7 +319,7 @@ export const contentGraph: ContentGraph = {
       "title": "SuperPoint",
       "summary": "Fully-convolutional CNN that jointly detects interest points and computes 256-D descriptors in a single forward pass, trained without human annotations via Homographic Adaptation on synthetic shapes and MS-COCO images.",
       "path": "/atlas/superpoint",
-      "draft": true
+      "draft": false
     },
     "xfeat": {
       "slug": "xfeat",
@@ -269,7 +341,7 @@ export const contentGraph: ContentGraph = {
       "slug": "chessboard-x-corner-detection",
       "type": "concept",
       "title": "Chessboard X-Corner Detection",
-      "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
+      "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN) and learned heatmap pipelines (CCS), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
       "path": "/atlas/chessboard-x-corner-detection",
       "draft": false
     },
@@ -313,6 +385,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/image-gradient",
       "draft": false
     },
+    "ransac": {
+      "slug": "ransac",
+      "type": "concept",
+      "title": "RANSAC",
+      "summary": "Random sample consensus — a paradigm for fitting a parametric model to data containing an unknown fraction of gross outliers, by drawing minimal random subsets, instantiating candidate models, and selecting the one with the largest globally consistent inlier set.",
+      "path": "/atlas/ransac",
+      "draft": false
+    },
     "scale-space": {
       "slug": "scale-space",
       "type": "concept",
@@ -350,32 +430,50 @@ export const contentGraph: ContentGraph = {
     "apap-image-stitching": {
       "prerequisites": [
         "homography",
-        "dlt-normalisation"
+        "dlt-normalisation",
+        "ransac"
       ],
-      "related": [
-        "zhang-planar-calibration",
-        "spatially-varying-image-stitching"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "chess-corners": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector",
-        "fast-corner-detector",
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [
-        "rochade",
-        "pyramidal-blur-aware-xcorner",
-        "puzzleboard",
-        "duda-radon-corners"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "rochade",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "pyramidal-blur-aware-xcorner",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "puzzleboard",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "duda-radon-corners",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "harris-corner-detector",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
     },
     "laureano-topological-chessboard": {
       "prerequisites": [
@@ -383,163 +481,267 @@ export const contentGraph: ContentGraph = {
         "hessian-saddle-response",
         "topological-grid-recovery"
       ],
-      "related": [
-        "shu-topological-grid",
-        "chess-corners",
-        "fast-corner-detector",
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "alternative_formulation_of",
+          "target": "geiger-chessboard-detector",
+          "confidence": "medium",
+          "caution": "Less influential in practice than Geiger but methodologically distinct — the X-corner detector is a ring-alternation count rather than a quadrant template, and the topology filter operates on Delaunay triangles directly."
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "shu-topological-grid",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
     },
     "daniilidis-dual-quaternion-handeye": {
       "prerequisites": [],
-      "related": [
-        "tsai-lenz-handeye",
-        "zhang-planar-calibration"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "alternative_formulation_of",
+          "target": "tsai-lenz-handeye",
+          "confidence": "high",
+          "caution": "Daniilidis's dual-quaternion solver couples rotation and translation simultaneously; both methods remain in practitioner use.",
+          "mirrored": true
+        }
+      ]
     },
     "fast-corner-detector": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector",
-        "chess-corners"
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "harris-corner-detector",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
+    "loy-fast-radial-symmetry": {
+      "prerequisites": [
+        "image-gradient"
       ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "ni-generalized-fast-radial-symmetry",
+          "confidence": "high"
+        }
+      ]
+    },
+    "fischler-bolles-ransac": {
+      "prerequisites": [
+        "ransac"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "raguram-usac",
+          "confidence": "high",
+          "caution": "USAC is a unifying engineering framework, not a single new technique"
+        },
+        {
+          "type": "extended_by",
+          "target": "barath-magsac",
+          "confidence": "high",
+          "caution": "MAGSAC marginalises the inlier threshold rather than fixing it — orthogonal axis to USAC's framework refactor"
+        }
+      ]
     },
     "gao-dual-homography-stitching": {
       "prerequisites": [
-        "homography"
+        "homography",
+        "ransac"
       ],
-      "related": [
-        "apap-image-stitching",
-        "spatially-varying-image-stitching"
-      ],
-      "comparedWith": [
-        "apap-image-stitching"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "apap-image-stitching",
+          "confidence": "high",
+          "caution": "APAP's continuous grid of per-cell homographies subsumes the two-plane parametrisation; the two methods are not peer practitioner choices."
+        }
+      ]
     },
     "geiger-chessboard-detector": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "chess-corners",
-        "rochade",
-        "pyramidal-blur-aware-xcorner",
-        "chessboard-x-corner-detection"
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "pyramidal-blur-aware-xcorner",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "alternative_formulation_of",
+          "target": "laureano-topological-chessboard",
+          "confidence": "medium",
+          "caution": "Less influential in practice than Geiger but methodologically distinct — the X-corner detector is a ring-alternation count rather than a quadrant template, and the topology filter operates on Delaunay triangles directly.",
+          "mirrored": true
+        },
+        {
+          "type": "alternative_formulation_of",
+          "target": "shu-topological-grid",
+          "confidence": "medium",
+          "caution": "Different abstraction layer — topological grid recovery from a candidate corner set vs single-shot detection that integrates corner finding and grid linking. Not superseded by Geiger; both remain in practitioner use.",
+          "mirrored": true
+        }
+      ]
+    },
+    "ni-generalized-fast-radial-symmetry": {
+      "prerequisites": [
+        "image-gradient"
       ],
-      "comparedWith": [
-        "pyramidal-blur-aware-xcorner"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "gp-checkerboard-enhancement": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "geiger-chessboard-detector",
-        "ocpad",
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [
-        "ocpad"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "ocpad",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
+      ]
     },
     "harris-corner-detector": {
       "prerequisites": [
         "image-gradient",
         "structure-tensor"
       ],
-      "related": [
-        "chess-corners",
-        "duda-radon-corners",
-        "fast-corner-detector",
-        "laureano-topological-chessboard",
-        "puzzleboard",
-        "pyramidal-blur-aware-xcorner",
-        "shi-tomasi-corner-detector",
-        "shu-topological-grid"
-      ],
-      "comparedWith": [
-        "shi-tomasi-corner-detector",
-        "fast-corner-detector",
-        "chess-corners"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "chess-corners",
+          "confidence": "high"
+        }
+      ]
     },
     "kumar-generalized-rac": {
       "prerequisites": [
         "camera-distortion-models"
       ],
-      "related": [
-        "zhang-planar-calibration"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "lin-sva-stitching": {
       "prerequisites": [
-        "homography"
+        "homography",
+        "ransac"
       ],
-      "related": [
-        "apap-image-stitching",
-        "gao-dual-homography-stitching",
-        "spatially-varying-image-stitching"
-      ],
-      "comparedWith": [
-        "apap-image-stitching"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "apap-image-stitching",
+          "confidence": "medium",
+          "caution": "Affine deviation field remains a useful baseline; APAP's projective per-cell grid is more general but not strictly necessary for moderate-parallax planar-scene panoramas."
+        }
+      ]
     },
     "duda-radon-corners": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "chess-corners",
-        "harris-corner-detector",
-        "rochade",
-        "pyramidal-blur-aware-xcorner",
-        "chessboard-x-corner-detection"
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "chess-corners",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
+    "barath-magsac": {
+      "prerequisites": [
+        "ransac"
       ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "raguram-usac",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
     },
     "fundamental-matrix-eight-point": {
       "prerequisites": [
         "epipolar-geometry",
         "homography",
-        "dlt-normalisation"
+        "dlt-normalisation",
+        "ransac"
       ],
-      "related": [
-        "apap-image-stitching"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "ocpad": {
       "prerequisites": [
         "image-gradient",
         "topological-grid-recovery"
       ],
-      "related": [
-        "shu-topological-grid",
-        "puzzleboard",
-        "laureano-topological-chessboard",
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "gp-checkerboard-enhancement",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
     },
     "puzzleboard": {
       "prerequisites": [
@@ -547,696 +749,824 @@ export const contentGraph: ContentGraph = {
         "hessian-saddle-response",
         "topological-grid-recovery"
       ],
-      "related": [
-        "chess-corners",
-        "harris-corner-detector",
-        "shu-topological-grid",
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "chess-corners",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
     },
     "pyramidal-blur-aware-xcorner": {
       "prerequisites": [
         "image-gradient",
         "scale-space"
       ],
-      "related": [
-        "chess-corners",
-        "rochade",
-        "shu-topological-grid",
-        "shi-tomasi-corner-detector",
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "chess-corners",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "geiger-chessboard-detector",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "rochade",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
     },
     "rochade": {
       "prerequisites": [
         "image-gradient",
         "hessian-saddle-response"
       ],
-      "related": [
-        "ocpad",
-        "chess-corners",
-        "laureano-topological-chessboard",
-        "shu-topological-grid",
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [
-        "pyramidal-blur-aware-xcorner"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "pyramidal-blur-aware-xcorner",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "chess-corners",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
     },
     "shi-tomasi-corner-detector": {
       "prerequisites": [
         "image-gradient",
         "structure-tensor"
       ],
-      "related": [
-        "harris-corner-detector",
-        "fast-corner-detector",
-        "chess-corners"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "harris-corner-detector",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
     },
     "sturm-plane-based-calibration": {
       "prerequisites": [
         "homography"
       ],
-      "related": [
-        "zhang-planar-calibration"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "zhang-planar-calibration",
+          "confidence": "high",
+          "caution": "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis.",
+          "mirrored": true
+        }
+      ]
     },
     "shu-topological-grid": {
       "prerequisites": [
         "image-gradient",
         "topological-grid-recovery"
       ],
-      "related": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector",
-        "chess-corners",
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [
-        "laureano-topological-chessboard"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "laureano-topological-chessboard",
+          "confidence": "high"
+        },
+        {
+          "type": "alternative_formulation_of",
+          "target": "geiger-chessboard-detector",
+          "confidence": "medium",
+          "caution": "Different abstraction layer — topological grid recovery from a candidate corner set vs single-shot detection that integrates corner finding and grid linking. Not superseded by Geiger; both remain in practitioner use."
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
+      ]
     },
     "tsai-lenz-handeye": {
       "prerequisites": [],
-      "related": [
-        "daniilidis-dual-quaternion-handeye",
-        "zhang-planar-calibration"
-      ],
-      "comparedWith": [
-        "daniilidis-dual-quaternion-handeye"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "alternative_formulation_of",
+          "target": "daniilidis-dual-quaternion-handeye",
+          "confidence": "high",
+          "caution": "Daniilidis's dual-quaternion solver couples rotation and translation simultaneously; both methods remain in practitioner use."
+        }
+      ]
     },
     "tsai-versatile-calibration": {
       "prerequisites": [
         "camera-distortion-models"
       ],
-      "related": [
-        "zhang-planar-calibration",
-        "tsai-lenz-handeye",
-        "kumar-generalized-rac"
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "tsai-lenz-handeye",
+          "confidence": "high",
+          "caution": "Tsai 1987's per-station extrinsics are the canonical input format for the Tsai-Lenz hand-eye AX = XB solver."
+        }
+      ]
+    },
+    "raguram-usac": {
+      "prerequisites": [
+        "ransac"
       ],
-      "comparedWith": [
-        "zhang-planar-calibration",
-        "kumar-generalized-rac"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "barath-magsac",
+          "confidence": "high"
+        }
+      ]
     },
     "zhang-planar-calibration": {
       "prerequisites": [
         "homography",
-        "camera-distortion-models"
+        "camera-distortion-models",
+        "ransac"
       ],
-      "related": [
-        "chess-corners",
-        "rochade",
-        "puzzleboard"
-      ],
-      "comparedWith": [
-        "sturm-plane-based-calibration"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "sturm-plane-based-calibration",
+          "confidence": "high",
+          "caution": "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis."
+        }
+      ]
     },
     "ccdn-checkerboard-detector": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "chess-corners",
-        "rochade",
-        "fast-corner-detector",
-        "harris-corner-detector",
-        "chessboard-x-corner-detection"
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "chess-corners",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "ccs-camera-calibration",
+          "confidence": "high",
+          "caution": "Peer at the corner-detection level only; CCS adds distortion correction and RANSAC parameter estimation on top.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "mate-checkerboard-detector",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
+    "ccs-camera-calibration": {
+      "prerequisites": [
+        "chessboard-x-corner-detection",
+        "camera-distortion-models",
+        "ransac"
       ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "ccdn-checkerboard-detector",
+          "confidence": "high",
+          "caution": "Peer at the corner-detection level only; CCS adds distortion correction and RANSAC parameter estimation on top."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "chess-corners",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mate-checkerboard-detector",
+          "confidence": "high",
+          "caution": "Different scope: MATE is a detector, CCS is a full calibration pipeline; comparison is at the corner-detection level.",
+          "mirrored": true
+        }
+      ]
     },
     "mate-checkerboard-detector": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "chess-corners",
-        "rochade",
-        "fast-corner-detector",
-        "chessboard-x-corner-detection"
-      ],
-      "comparedWith": [
-        "ccdn-checkerboard-detector"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "ccdn-checkerboard-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "ccs-camera-calibration",
+          "confidence": "high",
+          "caution": "Different scope: MATE is a detector, CCS is a full calibration pipeline; comparison is at the corner-detection level."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "chess-corners",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
+      ]
     },
     "superpoint": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector",
-        "fast-corner-detector"
-      ],
-      "comparedWith": [
-        "xfeat"
-      ],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "xfeat",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "harris-corner-detector",
+          "confidence": "high",
+          "caution": "SuperPoint replaces classical sparse keypoint+descriptor pipelines (Harris/Shi-Tomasi + SIFT/ORB) with a single learned model; it does not literally re-implement the Harris response."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high"
+        }
+      ]
     },
     "xfeat": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "superpoint",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
     },
     "camera-distortion-models": {
       "prerequisites": [],
-      "related": [
-        "tsai-versatile-calibration",
-        "zhang-planar-calibration",
-        "kumar-generalized-rac"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "chessboard-x-corner-detection": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "chess-corners",
-        "rochade",
-        "geiger-chessboard-detector",
-        "pyramidal-blur-aware-xcorner",
-        "shu-topological-grid",
-        "laureano-topological-chessboard",
-        "ocpad",
-        "puzzleboard",
-        "duda-radon-corners",
-        "ccdn-checkerboard-detector",
-        "mate-checkerboard-detector",
-        "gp-checkerboard-enhancement",
-        "hessian-saddle-response",
-        "topological-grid-recovery"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "dlt-normalisation": {
-      "prerequisites": [],
-      "related": [
-        "homography",
-        "epipolar-geometry",
-        "apap-image-stitching",
-        "fundamental-matrix-eight-point"
+      "prerequisites": [
+        "ransac"
       ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "epipolar-geometry": {
-      "prerequisites": [],
-      "related": [
-        "dlt-normalisation"
+      "prerequisites": [
+        "ransac"
       ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "hessian-saddle-response": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "chess-corners",
-        "rochade",
-        "laureano-topological-chessboard",
-        "puzzleboard",
-        "structure-tensor"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "homography": {
-      "prerequisites": [],
-      "related": [
-        "zhang-planar-calibration",
-        "apap-image-stitching",
-        "dlt-normalisation"
+      "prerequisites": [
+        "ransac"
       ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "image-gradient": {
       "prerequisites": [],
-      "related": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector",
-        "chess-corners",
-        "fast-corner-detector",
-        "pyramidal-blur-aware-xcorner"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
+    },
+    "ransac": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
     },
     "scale-space": {
       "prerequisites": [],
-      "related": [
-        "chess-corners",
-        "pyramidal-blur-aware-xcorner"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "spatially-varying-image-stitching": {
       "prerequisites": [
-        "homography"
+        "homography",
+        "ransac"
       ],
-      "related": [
-        "apap-image-stitching",
-        "gao-dual-homography-stitching",
-        "lin-sva-stitching",
-        "dlt-normalisation"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "structure-tensor": {
       "prerequisites": [
         "image-gradient"
       ],
-      "related": [
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     },
     "topological-grid-recovery": {
       "prerequisites": [],
-      "related": [
-        "shu-topological-grid",
-        "laureano-topological-chessboard",
-        "ocpad",
-        "puzzleboard"
-      ],
-      "comparedWith": [],
-      "failureModes": []
+      "failureModes": [],
+      "relations": []
     }
   },
   "reverse": {
     "apap-image-stitching": {
       "usedBy": [],
-      "relatedFrom": [
-        "gao-dual-homography-stitching",
-        "lin-sva-stitching",
-        "fundamental-matrix-eight-point",
-        "dlt-normalisation",
-        "homography",
-        "spatially-varying-image-stitching"
+      "affects": [],
+      "generalises": [
+        {
+          "slug": "gao-dual-homography-stitching",
+          "confidence": "high",
+          "caution": "APAP's continuous grid of per-cell homographies subsumes the two-plane parametrisation; the two methods are not peer practitioner choices."
+        },
+        {
+          "slug": "lin-sva-stitching",
+          "confidence": "medium",
+          "caution": "Affine deviation field remains a useful baseline; APAP's projective per-cell grid is more general but not strictly necessary for moderate-parallax planar-scene panoramas."
+        }
       ],
-      "comparedFrom": [
-        "gao-dual-homography-stitching",
-        "lin-sva-stitching"
-      ],
-      "affects": []
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "chess-corners": {
       "usedBy": [],
-      "relatedFrom": [
-        "laureano-topological-chessboard",
-        "fast-corner-detector",
-        "geiger-chessboard-detector",
-        "harris-corner-detector",
-        "duda-radon-corners",
-        "puzzleboard",
-        "pyramidal-blur-aware-xcorner",
-        "rochade",
-        "shi-tomasi-corner-detector",
-        "shu-topological-grid",
-        "zhang-planar-calibration",
-        "ccdn-checkerboard-detector",
-        "mate-checkerboard-detector",
-        "chessboard-x-corner-detection",
-        "hessian-saddle-response",
-        "image-gradient",
-        "scale-space"
-      ],
-      "comparedFrom": [
-        "harris-corner-detector"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": [
+        {
+          "slug": "ccdn-checkerboard-detector",
+          "confidence": "high"
+        },
+        {
+          "slug": "ccs-camera-calibration",
+          "confidence": "high"
+        },
+        {
+          "slug": "mate-checkerboard-detector",
+          "confidence": "high"
+        }
+      ]
     },
     "laureano-topological-chessboard": {
       "usedBy": [],
-      "relatedFrom": [
-        "harris-corner-detector",
-        "ocpad",
-        "rochade",
-        "chessboard-x-corner-detection",
-        "hessian-saddle-response",
-        "topological-grid-recovery"
-      ],
-      "comparedFrom": [
-        "shu-topological-grid"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "daniilidis-dual-quaternion-handeye": {
       "usedBy": [],
-      "relatedFrom": [
-        "tsai-lenz-handeye"
-      ],
-      "comparedFrom": [
-        "tsai-lenz-handeye"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "fast-corner-detector": {
       "usedBy": [],
-      "relatedFrom": [
-        "chess-corners",
-        "laureano-topological-chessboard",
-        "harris-corner-detector",
-        "shi-tomasi-corner-detector",
-        "ccdn-checkerboard-detector",
-        "mate-checkerboard-detector",
-        "superpoint",
-        "image-gradient"
-      ],
-      "comparedFrom": [
-        "harris-corner-detector"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "loy-fast-radial-symmetry": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "fischler-bolles-ransac": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "gao-dual-homography-stitching": {
       "usedBy": [],
-      "relatedFrom": [
-        "lin-sva-stitching",
-        "spatially-varying-image-stitching"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "geiger-chessboard-detector": {
       "usedBy": [],
-      "relatedFrom": [
-        "gp-checkerboard-enhancement",
-        "chessboard-x-corner-detection"
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "ni-generalized-fast-radial-symmetry": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "loy-fast-radial-symmetry",
+          "confidence": "high"
+        }
       ],
-      "comparedFrom": [],
-      "affects": []
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "gp-checkerboard-enhancement": {
       "usedBy": [],
-      "relatedFrom": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "harris-corner-detector": {
       "usedBy": [],
-      "relatedFrom": [
-        "chess-corners",
-        "fast-corner-detector",
-        "duda-radon-corners",
-        "puzzleboard",
-        "shi-tomasi-corner-detector",
-        "shu-topological-grid",
-        "ccdn-checkerboard-detector",
-        "superpoint",
-        "image-gradient",
-        "structure-tensor"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "SuperPoint replaces classical sparse keypoint+descriptor pipelines (Harris/Shi-Tomasi + SIFT/ORB) with a single learned model; it does not literally re-implement the Harris response."
+        }
+      ]
     },
     "kumar-generalized-rac": {
       "usedBy": [],
-      "relatedFrom": [
-        "tsai-versatile-calibration",
-        "camera-distortion-models"
-      ],
-      "comparedFrom": [
-        "tsai-versatile-calibration"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "lin-sva-stitching": {
       "usedBy": [],
-      "relatedFrom": [
-        "spatially-varying-image-stitching"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "duda-radon-corners": {
       "usedBy": [],
-      "relatedFrom": [
-        "harris-corner-detector",
-        "chessboard-x-corner-detection"
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "barath-magsac": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "fischler-bolles-ransac",
+          "confidence": "high",
+          "caution": "MAGSAC marginalises the inlier threshold rather than fixing it — orthogonal axis to USAC's framework refactor"
+        }
       ],
-      "comparedFrom": [
-        "chess-corners"
-      ],
-      "affects": []
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "fundamental-matrix-eight-point": {
       "usedBy": [],
-      "relatedFrom": [
-        "dlt-normalisation"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "ocpad": {
       "usedBy": [],
-      "relatedFrom": [
-        "gp-checkerboard-enhancement",
-        "rochade",
-        "chessboard-x-corner-detection",
-        "topological-grid-recovery"
-      ],
-      "comparedFrom": [
-        "gp-checkerboard-enhancement"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "puzzleboard": {
       "usedBy": [],
-      "relatedFrom": [
-        "harris-corner-detector",
-        "ocpad",
-        "zhang-planar-calibration",
-        "chessboard-x-corner-detection",
-        "hessian-saddle-response",
-        "topological-grid-recovery"
-      ],
-      "comparedFrom": [
-        "chess-corners"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "pyramidal-blur-aware-xcorner": {
       "usedBy": [],
-      "relatedFrom": [
-        "geiger-chessboard-detector",
-        "harris-corner-detector",
-        "duda-radon-corners",
-        "chessboard-x-corner-detection",
-        "image-gradient",
-        "scale-space"
-      ],
-      "comparedFrom": [
-        "chess-corners",
-        "geiger-chessboard-detector",
-        "rochade"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "rochade": {
       "usedBy": [],
-      "relatedFrom": [
-        "geiger-chessboard-detector",
-        "duda-radon-corners",
-        "pyramidal-blur-aware-xcorner",
-        "zhang-planar-calibration",
-        "ccdn-checkerboard-detector",
-        "mate-checkerboard-detector",
-        "chessboard-x-corner-detection",
-        "hessian-saddle-response"
-      ],
-      "comparedFrom": [
-        "chess-corners"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "shi-tomasi-corner-detector": {
       "usedBy": [],
-      "relatedFrom": [
-        "chess-corners",
-        "fast-corner-detector",
-        "harris-corner-detector",
-        "pyramidal-blur-aware-xcorner",
-        "shu-topological-grid",
-        "superpoint",
-        "image-gradient",
-        "structure-tensor"
-      ],
-      "comparedFrom": [
-        "harris-corner-detector"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": [
+        {
+          "slug": "superpoint",
+          "confidence": "high"
+        }
+      ]
     },
     "sturm-plane-based-calibration": {
       "usedBy": [],
-      "relatedFrom": [],
-      "comparedFrom": [
-        "zhang-planar-calibration"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "shu-topological-grid": {
       "usedBy": [],
-      "relatedFrom": [
-        "laureano-topological-chessboard",
-        "harris-corner-detector",
-        "ocpad",
-        "puzzleboard",
-        "pyramidal-blur-aware-xcorner",
-        "rochade",
-        "chessboard-x-corner-detection",
-        "topological-grid-recovery"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "tsai-lenz-handeye": {
       "usedBy": [],
-      "relatedFrom": [
-        "daniilidis-dual-quaternion-handeye",
-        "tsai-versatile-calibration"
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "tsai-versatile-calibration",
+          "confidence": "high",
+          "caution": "Tsai 1987's per-station extrinsics are the canonical input format for the Tsai-Lenz hand-eye AX = XB solver."
+        }
       ],
-      "comparedFrom": [],
-      "affects": []
+      "hasLearnedAlternative": []
     },
     "tsai-versatile-calibration": {
       "usedBy": [],
-      "relatedFrom": [
-        "camera-distortion-models"
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "raguram-usac": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "fischler-bolles-ransac",
+          "confidence": "high",
+          "caution": "USAC is a unifying engineering framework, not a single new technique"
+        }
       ],
-      "comparedFrom": [],
-      "affects": []
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "zhang-planar-calibration": {
       "usedBy": [],
-      "relatedFrom": [
-        "apap-image-stitching",
-        "daniilidis-dual-quaternion-handeye",
-        "kumar-generalized-rac",
-        "sturm-plane-based-calibration",
-        "tsai-lenz-handeye",
-        "tsai-versatile-calibration",
-        "camera-distortion-models",
-        "homography"
+      "affects": [],
+      "generalises": [
+        {
+          "slug": "tsai-versatile-calibration",
+          "confidence": "high"
+        }
       ],
-      "comparedFrom": [
-        "tsai-versatile-calibration"
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "ccdn-checkerboard-detector",
+          "confidence": "high"
+        },
+        {
+          "slug": "ccs-camera-calibration",
+          "confidence": "high"
+        },
+        {
+          "slug": "chess-corners",
+          "confidence": "high"
+        },
+        {
+          "slug": "duda-radon-corners",
+          "confidence": "high"
+        },
+        {
+          "slug": "geiger-chessboard-detector",
+          "confidence": "high"
+        },
+        {
+          "slug": "gp-checkerboard-enhancement",
+          "confidence": "high"
+        },
+        {
+          "slug": "laureano-topological-chessboard",
+          "confidence": "high"
+        },
+        {
+          "slug": "mate-checkerboard-detector",
+          "confidence": "high"
+        },
+        {
+          "slug": "ocpad",
+          "confidence": "high"
+        },
+        {
+          "slug": "puzzleboard",
+          "confidence": "high"
+        },
+        {
+          "slug": "pyramidal-blur-aware-xcorner",
+          "confidence": "high"
+        },
+        {
+          "slug": "rochade",
+          "confidence": "high"
+        },
+        {
+          "slug": "shu-topological-grid",
+          "confidence": "high"
+        }
       ],
-      "affects": []
+      "hasLearnedAlternative": []
     },
     "ccdn-checkerboard-detector": {
       "usedBy": [],
-      "relatedFrom": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedFrom": [
-        "mate-checkerboard-detector"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "ccs-camera-calibration": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "mate-checkerboard-detector": {
       "usedBy": [],
-      "relatedFrom": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "superpoint": {
       "usedBy": [],
-      "relatedFrom": [],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "xfeat": {
       "usedBy": [],
-      "relatedFrom": [],
-      "comparedFrom": [
-        "superpoint"
-      ],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "camera-distortion-models": {
       "usedBy": [
+        "ccs-camera-calibration",
         "kumar-generalized-rac",
         "tsai-versatile-calibration",
         "zhang-planar-calibration"
       ],
-      "relatedFrom": [],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "chessboard-x-corner-detection": {
-      "usedBy": [],
-      "relatedFrom": [
-        "chess-corners",
-        "laureano-topological-chessboard",
-        "geiger-chessboard-detector",
-        "gp-checkerboard-enhancement",
-        "duda-radon-corners",
-        "ocpad",
-        "puzzleboard",
-        "pyramidal-blur-aware-xcorner",
-        "rochade",
-        "shu-topological-grid",
-        "ccdn-checkerboard-detector",
-        "mate-checkerboard-detector"
+      "usedBy": [
+        "ccs-camera-calibration"
       ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "dlt-normalisation": {
       "usedBy": [
         "apap-image-stitching",
         "fundamental-matrix-eight-point"
       ],
-      "relatedFrom": [
-        "epipolar-geometry",
-        "homography",
-        "spatially-varying-image-stitching"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "epipolar-geometry": {
       "usedBy": [
         "fundamental-matrix-eight-point"
       ],
-      "relatedFrom": [
-        "dlt-normalisation"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "hessian-saddle-response": {
       "usedBy": [
@@ -1244,83 +1574,109 @@ export const contentGraph: ContentGraph = {
         "puzzleboard",
         "rochade"
       ],
-      "relatedFrom": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "homography": {
       "usedBy": [
         "apap-image-stitching",
+        "fundamental-matrix-eight-point",
         "gao-dual-homography-stitching",
         "lin-sva-stitching",
-        "fundamental-matrix-eight-point",
+        "spatially-varying-image-stitching",
         "sturm-plane-based-calibration",
-        "zhang-planar-calibration",
-        "spatially-varying-image-stitching"
+        "zhang-planar-calibration"
       ],
-      "relatedFrom": [
-        "dlt-normalisation"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "image-gradient": {
       "usedBy": [
+        "ccdn-checkerboard-detector",
         "chess-corners",
-        "laureano-topological-chessboard",
+        "chessboard-x-corner-detection",
+        "duda-radon-corners",
         "fast-corner-detector",
         "geiger-chessboard-detector",
         "gp-checkerboard-enhancement",
         "harris-corner-detector",
-        "duda-radon-corners",
+        "hessian-saddle-response",
+        "laureano-topological-chessboard",
+        "loy-fast-radial-symmetry",
+        "mate-checkerboard-detector",
+        "ni-generalized-fast-radial-symmetry",
         "ocpad",
         "puzzleboard",
         "pyramidal-blur-aware-xcorner",
         "rochade",
         "shi-tomasi-corner-detector",
         "shu-topological-grid",
-        "ccdn-checkerboard-detector",
-        "mate-checkerboard-detector",
+        "structure-tensor",
         "superpoint",
-        "xfeat",
-        "chessboard-x-corner-detection",
-        "hessian-saddle-response",
-        "structure-tensor"
+        "xfeat"
       ],
-      "relatedFrom": [],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "ransac": {
+      "usedBy": [
+        "apap-image-stitching",
+        "barath-magsac",
+        "ccs-camera-calibration",
+        "dlt-normalisation",
+        "epipolar-geometry",
+        "fischler-bolles-ransac",
+        "fundamental-matrix-eight-point",
+        "gao-dual-homography-stitching",
+        "homography",
+        "lin-sva-stitching",
+        "raguram-usac",
+        "spatially-varying-image-stitching",
+        "zhang-planar-calibration"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "scale-space": {
       "usedBy": [
         "pyramidal-blur-aware-xcorner"
       ],
-      "relatedFrom": [],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "spatially-varying-image-stitching": {
       "usedBy": [],
-      "relatedFrom": [
-        "apap-image-stitching",
-        "gao-dual-homography-stitching",
-        "lin-sva-stitching"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "structure-tensor": {
       "usedBy": [
         "harris-corner-detector",
         "shi-tomasi-corner-detector"
       ],
-      "relatedFrom": [
-        "hessian-saddle-response"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "topological-grid-recovery": {
       "usedBy": [
@@ -1329,11 +1685,11 @@ export const contentGraph: ContentGraph = {
         "puzzleboard",
         "shu-topological-grid"
       ],
-      "relatedFrom": [
-        "chessboard-x-corner-detection"
-      ],
-      "comparedFrom": [],
-      "affects": []
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     }
   }
 };

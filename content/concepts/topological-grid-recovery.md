@@ -7,11 +7,6 @@ author: "Vitaly Vorobyev"
 domain: features
 difficulty: advanced
 prerequisites: []
-related:
-  - shu-topological-grid
-  - laureano-topological-chessboard
-  - ocpad
-  - puzzleboard
 sources:
   references:
     - shu2009-topological

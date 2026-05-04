@@ -4,18 +4,23 @@ date: 2026-04-20
 summary: "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations."
 tags: ["calibration", "intrinsics", "homography"]
 domain: calibration
+tasks: [camera-calibration]
 author: "Vitaly Vorobyev"
 difficulty: advanced
-relatedAlgorithms: ["chess-corners", "rochade", "puzzleboard"]
-prerequisites: [homography, camera-distortion-models]
-comparedWith: [sturm-plane-based-calibration]
+prerequisites: [homography, camera-distortion-models, ransac]
 failureModes: []
+relations:
+  - type: parallel_foundation_with
+    target: sturm-plane-based-calibration
+    confidence: high
+    caution: "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis."
 sources:
   primary: zhang2000-flexible
   references:
     - tsai1987-versatile
     - weng1992-camera
     - sturm2003-plane-based
+    - zhang2022-learning-based
   notes: |
     Page follows the MSR-TR-98-71 (Zhang, updated 2008) presentation:
     §2 basic equations; §3.1 closed-form linear initialization from
@@ -199,6 +204,8 @@ Nonlinear refinement of $(A, k_1, k_2, \{R_i, t_i\})$ over the total reprojectio
 - Minimum view count depends on which intrinsics are fixed: $n \geq 3$ for the full five-parameter $A$, $n \geq 2$ with skew fixed to $\gamma = 0$, and $n = 1$ can only solve two parameters (typical choice: $(\alpha, \beta)$ with principal point at the image centre).
 - Distortion scope is two-term radial only; tangential (decentering) and thin-prism terms belong to the Brown-Conrady / Weng model and are a drop-in extension of the projection function $\breve m$ and its Jacobian in the LM step.
 - Compared with Tsai 1987: see [When to choose Tsai over Zhang](/atlas/tsai-versatile-calibration#when-to-choose-tsai-over-zhang) on the Tsai page, which hosts the comparison per the older-paper-hosts rule.
+- Image-level RANSAC extension: [CCS](/atlas/ccs-camera-calibration) (Zhang et al., RA-L 2022) augments the LM stage with a view-selection RANSAC — randomly sample a subset of views, estimate intrinsics via the linear + LM steps above, score by reprojection error on all views, retain views below an inlier threshold, repeat until inlier count is sufficient (§III-C). View-level (rather than corner-level) RANSAC suffices because the upstream UNet detector already rejects per-corner outliers via the heatmap variance $\sigma$.
+- The CCS RANSAC extension reduces real-data reprojection error from 0.45 px (STD 0.10) for a Matlab Zhang implementation to 0.37 px (STD 0.02) on a HIKROBOT 1440×1080 sensor (Table II) — a five-fold reduction in run-to-run standard deviation attributed to the view-selection step.
 
 ## When to choose Zhang over Sturm-Maybank
 
@@ -221,3 +228,4 @@ Choose Zhang when (1) you want a complete calibration pipeline including distort
 2. R. Y. Tsai. *A versatile camera calibration technique for high-accuracy 3D machine vision metrology using off-the-shelf TV cameras and lenses.* IEEE Journal on Robotics and Automation 3(4):323–344, 1987. [pdf](https://cecas.clemson.edu/~stb/ece847/internal/classic_vision_papers/tsai_calibration1987.pdf)
 3. P. Sturm and S. J. Maybank. *On plane-based camera calibration: A general algorithm, singularities, applications.* IEEE CVPR, 1999. [pdf](https://inria.hal.science/inria-00525681/document)
 4. J. Weng, P. Cohen, and M. Herniou. *Camera calibration with distortion models and accuracy evaluation.* IEEE TPAMI 14(10):965–980, 1992. [pdf](https://www.cs.auckland.ac.nz/courses/compsci773s1c/lectures/camera%20distortion.pdf)
+5. Y. Zhang, X. Zhao, D. Qian. *Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration.* IEEE Robotics and Automation Letters 7(4):10470–10477, 2022. [arXiv](https://arxiv.org/pdf/2202.00158)

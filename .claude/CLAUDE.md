@@ -60,30 +60,63 @@ Currently present:
 The site's algorithm/model/concept pages form a connected practical CV atlas. When authoring or editing content, follow these rules:
 
 ### Single global slug namespace
-All relationship fields (`prerequisites`, `related`, `comparedWith`, `failureModes`, `relatedAlgorithms`) use a single slug namespace covering algorithms (`content/algorithms/`), models (`content/models/`), and concepts (`content/concepts/`). Unknown slugs are hard build errors. Verify slugs exist on disk before adding them.
+All relationship fields (`prerequisites`, `failureModes`, `relations[].target`) use a single slug namespace covering algorithms (`content/algorithms/`), models (`content/models/`), and concepts (`content/concepts/`). Unknown slugs are hard build errors. Verify slugs exist on disk before adding them.
 
 ### Authored vs derived edges
-Authors write only forward edges. The build emits `src/generated/content-graph.ts` with derived reverse edges (`usedBy`, `comparedFrom`, `relatedFrom`, `affects`). **Never** add `usedBy: [...]` or similar reverse fields manually — they will be ignored at best and confusing at worst.
+Authors write only forward edges. The build emits `src/generated/content-graph.ts` with derived reverse edges (`usedBy`, `affects`, `generalises`, `extending`, `fedBy`, `hasLearnedAlternative`). **Never** add a reverse field manually — the build computes them from forward `relations[]`.
 
-For symmetric relations (`comparedWith`, `related`), author on one side only. The graph mirrors them.
+For symmetric relation types (`compared_with`, `alternative_formulation_of`, `parallel_foundation_with`), author on one side only. The build mirrors them onto the target's forward edges so both pages render the same relation.
 
 ### When a topic deserves its own page
 - **Concept page**: only when referenced by 3+ algorithm/model pages AND can support ≥500 words of substantive standalone content (definition, math, numerical concerns, implementation implications).
 - **Failure-mode page**: same criterion (3+ references, ≥500 words). Failure-mode authoring is deferred until natural candidates accumulate.
-- **Pairwise comparison page**: prohibited. Use `comparedWith:` field + an inline `## When to choose X over Y` section inside the more authoritative page. The non-host page carries a single Remarks bullet linking to the comparison anchor — never duplicate the prose.
+- **Pairwise comparison page**: prohibited. Use `relations[type=compared_with]` + an inline `## When to choose X over Y` section inside the more authoritative page. The non-host page carries a single Remarks bullet linking to the comparison anchor — never duplicate the prose. When the relationship is supersession, alternative formulation, parallel foundation, extension, pipeline, or cross-paradigm rather than peer practitioner-choice, pick the appropriate `type` from the Relations field vocabulary below.
 - **Survey concept page** (3+ methods): a concept page (`content/concepts/<survey-slug>.md`), not an algorithm page. Required: ≥3 surveyed methods, ≥800 words, decision table near the top, every surveyed algorithm page lists the survey concept in its `related`. Author only when ≥3 of the surveyed papers have research notes.
 
 ### Comparison authoring discipline
-- **More-authoritative tiebreaker** for which page hosts the `## When to choose X over Y` section: (1) older paper hosts; (2) same year → more general scope hosts; (3) tied → author judgment with reason recorded in the commit message. No "more cited" rule.
+- **More-authoritative tiebreaker** for which page hosts the `## When to choose X over Y` section: (1) older paper hosts; (2) same year → more general scope hosts; (3) tied → author judgment with reason recorded in the commit message. No "more cited" rule. The tiebreaker applies only to **peer** comparisons; it does not apply when one method supersedes the other (see Rule A).
 - **Both research notes required.** Comparison content can be written agentically only when `docs/research/notes/<both-paper-ids>.md` both exist. If either is missing, the page-authoring skill must refuse and request `paper-ingest` first. This is enforceable via filesystem check; without it, comparison prose is hallucination.
+- **Rule A — supersession is not comparison.** When method B is a same-domain generalisation of method A (B recovers everything A recovers, plus strictly more, in the same problem class), do not use `compared_with`. Use `generalized_by` instead. The strong form — A is preserved only for citation lineage and B is the practical replacement — sets `quality: "historical"` on A AND adds `{ type: generalized_by, target: B, confidence: high }`. The weaker form (B generalises A but A retains practical relevance, e.g. as a faster baseline) keeps `quality:` omitted and uses `confidence: medium` plus a `caution:` note. Worked example: Tsai 1987 → Zhang 2000 — Zhang's planar method recovers everything Tsai recovers from a precision 3D fixture, plus the image-scale factor $s_x$ from $\geq 3$ planar views; Tsai is preserved as `quality: "historical"` with `generalized_by`/high to `zhang-planar-calibration`.
+- **Rule B — cross-domain methods are not comparable.** If methods A and B address different problem classes, do not link them. The reader interprets a `relations[]` entry as a meaningful relationship within a shared problem; cross-domain pairings are misleading. Omit the link entirely. Worked example: Tsai 1987 (frontal-sensor calibration) vs Kumar gRAC (tilted-optics calibration) — same RAC family but different problem; no relation type applies.
+- **Rule C — pick the right `relations[].type`.** When two methods are both alive but differ in formulation, use `alternative_formulation_of` (Daniilidis dual-quaternion ↔ Tsai-Lenz hand-eye). When two methods are concurrent peers, use `parallel_foundation_with` (Sturm-Maybank ↔ Zhang). When the target paper extends this one without replacing it, use `extended_by` (FRST → RSD). When there's a typical pipeline edge (one method's output feeds another), use `feeds_into` (chess-corners → zhang-planar-calibration). When a deep-learning model replaces a classical algorithm, use `learned_alternative_of` on the model side (MATE → chess-corners). Reach for `caution:` on any entry where the relationship is nuanced and a casual reader might misinterpret it.
 - See `docs/README.md` §4 for the full convention with worked examples.
 
 ### Quality field
 - Omitted = normal published page (default).
 - `quality: "stub"` = public placeholder; reader-visible warning badge.
 - `quality: "canonical"` = flagship reviewed page; reader-visible badge; passes stricter validation (sources, prerequisites, no TODO).
+- `quality: "historical"` = preserved for citation/lineage; method is superseded for practical use. Renders a "Historical" badge and a prominent "Superseded by" link derived from the page's `relations[]`. Body is trimmed to `# Goal` + `# Historical context` + `# References` only — no `# Algorithm`, no `# Implementation`, no `# Remarks`. Requires at least one `relations[]` entry of type `generalized_by` with `confidence: high`. Drops `editorAlgorithmId` (no Try-in-editor CTA) and any `comparedWith:` entries.
 
 `draft: true` remains the publication gate. Do not introduce `status:` or `review:` fields.
+
+### Relations field
+
+`relations: <TypedRelation>[]` carries every typed inter-page link except `prerequisites` (knowledge dependency) and `failureModes` (placeholder). It replaces the legacy generic catch-alls `related`, `relatedAlgorithms`, and `comparedWith`. Available on algorithms, models, and concepts.
+
+Each entry has:
+
+- `type` — one of a small fixed vocabulary, organised in three categories:
+
+  **Lineage** (theoretical evolution):
+  - `generalized_by` — same problem, target strictly more general/robust. Asymmetric (A→B). The historical-supersession case when paired with `confidence: high` and `quality: "historical"`.
+  - `alternative_formulation_of` — same problem, different mathematical formulation; both methods coexist (Daniilidis ↔ Tsai-Lenz). Symmetric.
+  - `parallel_foundation_with` — concurrent peers that founded the field together; neither supersedes the other (Sturm-Maybank ↔ Zhang). Symmetric.
+  - `extended_by` — target builds on this method without replacing it (FRST → RSD fused-radii). Asymmetric (A→B).
+
+  **Practice** (practitioner choice / pipeline):
+  - `compared_with` — peer practitioner choice; reader picks between A and B (Harris ↔ Shi-Tomasi ↔ FAST). Symmetric.
+  - `feeds_into` — A's output is consumed by B in a typical pipeline (Harris → ChESS; ChESS → Zhang). Asymmetric (A→B).
+
+  **Cross-paradigm**:
+  - `learned_alternative_of` — model A is a deep-learning replacement for classical algorithm B (MATE → chess-corners; SuperPoint → harris-corner-detector). Asymmetric (model→algorithm only).
+
+- `target` — slug that must resolve to a non-draft on-disk page; validated.
+- `confidence` — `high` | `medium` | `low`. Required, no default — authors must commit. The renderer hides the confidence label only when it's `high`; medium / low surface in the UI to flag editorial uncertainty.
+- `caution` — optional one-line note (free text, ≤ 200 chars) rendered next to the relation. Use to encode editorial nuance ("Newer and more coupled, but not a universal replacement"). Don't write paragraphs; use a research note for those.
+
+Symmetric types are mirrored by the build onto the target's `relations[]`. Asymmetric types produce typed reverse buckets on the target (`generalises`, `extending`, `fedBy`, `hasLearnedAlternative`). Author one side only — the renderer composes the reader-visible bidirectional view.
+
+The renderer groups entries into three sidebar sections by category — **Lineage**, **Practice**, **Cross-paradigm** — each entry showing its specific type label, target link, confidence-if-not-high, and optional caution. The legacy fields `related`, `relatedAlgorithms`, and `comparedWith` are removed; do not introduce them.
 
 ### Sources
 

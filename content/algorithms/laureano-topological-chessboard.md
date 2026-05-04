@@ -4,13 +4,19 @@ date: 2026-04-16
 summary: "Detect every corner of a chessboard calibration pattern and assign it an integer grid coordinate by counting ring-alternations to locate X-junctions, Delaunay-triangulating the corner set, and keeping only triangles that respect the two-colour neighbourhood regularity of the pattern."
 tags: ["calibration", "chessboard", "corner-detection"]
 domain: targets
+tasks: [chessboard-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["shu-topological-grid", "chess-corners", "fast-corner-detector"]
 prerequisites: [image-gradient, hessian-saddle-response, topological-grid-recovery]
-related: [chessboard-x-corner-detection]
-comparedWith: []
 failureModes: []
+relations:
+  - type: alternative_formulation_of
+    target: geiger-chessboard-detector
+    confidence: medium
+    caution: "Less influential in practice than Geiger but methodologically distinct — the X-corner detector is a ring-alternation count rather than a quadrant template, and the topology filter operates on Delaunay triangles directly."
+  - type: feeds_into
+    target: zhang-planar-calibration
+    confidence: high
 sources:
   primary: laureano2013-topological
   references: [shu2009-topological, rosten2006-fast, chen2005-xcorner]

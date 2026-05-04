@@ -6,11 +6,7 @@ tags: ["geometry", "projective-geometry", "calibration"]
 author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: intermediate
-prerequisites: []
-related:
-  - zhang-planar-calibration
-  - apap-image-stitching
-  - dlt-normalisation
+prerequisites: [ransac]
 sources:
   references:
     - hartley1997-eight-point

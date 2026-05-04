@@ -95,6 +95,14 @@ export default function AlgorithmPost() {
     const jsonLd = buildAlgorithmJsonLd(frontmatter, slug ?? page.slug);
     const resolvedSlug = slug ?? page.slug;
 
+    // The "Superseded by" amber section renders only on `quality: "historical"`
+    // pages. The validator (Rule 4b) guarantees that such pages have at least
+    // one `generalized_by` / `confidence: high` relation; pick the first such
+    // entry as the supersession target.
+    const supersededBy = frontmatter.quality === "historical"
+        ? frontmatter.relations?.find((r) => r.type === "generalized_by" && r.confidence === "high")?.target
+        : undefined;
+
     return (
         <div className="w-full mx-auto max-w-[1140px] px-4 sm:px-8 py-8 lg:py-12 grid lg:grid-cols-[minmax(0,720px)_280px] lg:gap-14 animate-in fade-in">
             <SeoHead
@@ -168,7 +176,10 @@ export default function AlgorithmPost() {
                 <div className="lg:hidden">
                     <RelatedPosts slugs={frontmatter.relatedPosts} type="blog" />
                     <RelatedPosts slugs={frontmatter.relatedDemos} type="demo" />
-                    <RelationshipPanel slug={resolvedSlug} />
+                    <RelationshipPanel
+                        slug={resolvedSlug}
+                        supersededBy={supersededBy}
+                    />
                 </div>
 
                 {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (
@@ -205,6 +216,7 @@ export default function AlgorithmPost() {
                         slug={resolvedSlug}
                         relatedPosts={frontmatter.relatedPosts}
                         relatedDemos={frontmatter.relatedDemos}
+                        supersededBy={supersededBy}
                     />
                     {frontmatter.sources?.primary && <AIDisclosure />}
                 </div>

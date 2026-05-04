@@ -56,9 +56,16 @@ page body.
 **Inputs (provided by orchestrator):**
 - Primary research note path (`docs/research/notes/<id>.md`)
 - List of reference note paths (for cited references and competing methods)
-- Page-template skeleton path (defines the 5-section structure)
+- Page-template skeleton path. The orchestrator selects the template on
+  `frontmatter.quality`: pass `algo-page-template-historical.md` (trimmed:
+  Goal + Historical context + References) when the page is `quality: "historical"`;
+  otherwise pass the default `algo-page-template.md` (the standard 5-section
+  structure). The Draft subagent reads whichever skeleton is supplied and
+  matches its voice and structure verbatim — there is no per-section gating
+  inside the subagent.
 - Optional implementation-file paths (Rust/Python source for the
-  `# Implementation` snippet)
+  `# Implementation` snippet) — omitted when the historical template is used
+  (historical pages have no Implementation section).
 - Target slug
 
 **Output (reply):**

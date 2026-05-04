@@ -6,9 +6,7 @@ tags: ["geometry", "stereo", "two-view-geometry"]
 author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: advanced
-prerequisites: []
-related:
-  - dlt-normalisation
+prerequisites: [ransac]
 sources:
   references:
     - hartley1997-eight-point

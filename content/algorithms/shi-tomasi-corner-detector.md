@@ -4,11 +4,10 @@ date: 2026-04-15
 summary: "Scores each pixel by the smaller eigenvalue of the gradient structure tensor M; returns integer pixel locations where that eigenvalue exceeds a threshold, derived from a feature-tracking quality criterion."
 tags: ["feature-detection", "corner"]
 domain: features
+tasks: [corner-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-relatedAlgorithms: ["harris-corner-detector", "fast-corner-detector", "chess-corners"]
 prerequisites: [image-gradient, structure-tensor]
-comparedWith: []
 failureModes: []
 sources:
   primary: shi-tomasi1994-features

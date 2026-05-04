@@ -11,8 +11,6 @@ import AlgorithmsFilterSheet from "../components/algorithms/AlgorithmsFilterShee
 import AlgorithmsViewToggle from "../components/algorithms/AlgorithmsViewToggle.tsx";
 import AtlasMapView from "../components/atlas/AtlasMapView.tsx";
 import AtlasConstellationView from "../components/atlas/AtlasConstellationView.tsx";
-import AtlasTaskLanding from "../components/atlas/AtlasTaskLanding.tsx";
-import useFirstVisitAtlasGate from "../hooks/useFirstVisitAtlasGate.ts";
 import useAlgorithmsFilters, {
     filterAlgorithms,
     filterModels,
@@ -407,12 +405,11 @@ function CardGroup({
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function AlgorithmIndex() {
-    const { filters, setKind, setCategoryId, toggleTag, setTags, setQuery, setView, reset } =
+    const { filters, setKind, setCategoryId, toggleTag, setQuery, setView, reset } =
         useAlgorithmsFilters();
     // Per handoff: `lg` and up (≥1024px) = sidebar layout; below = sheet layout.
     const isDesktop = useMediaQuery("(min-width: 1024px)", true);
     const isAdmin = useIsAdmin();
-    const showTaskLanding = useFirstVisitAtlasGate() && isAdmin;
 
     // Map/Constellation views are admin-only experimental modes. Coerce
     // non-admins viewing one (e.g. via a stale /atlas?view=map link) back to
@@ -518,30 +515,6 @@ export default function AlgorithmIndex() {
     // Mobile active filter badge count
     const activeCount =
         filters.tags.length + (filters.categoryId !== "all" ? 1 : 0);
-
-    // ── First-visit landing (overrides everything until the user picks a path) ──
-
-    if (showTaskLanding) {
-        const totalPages = visibleAlgorithms.length + visibleModels.length + visibleConcepts.length;
-        return (
-            <div className="flex flex-1 flex-col">
-                <SeoHead
-                    title="Atlas"
-                    description="Practical computer vision atlas — algorithms, models, and concepts."
-                />
-                <AtlasTaskLanding
-                    totalPages={totalPages}
-                    onApply={(apply) => {
-                        if (apply.kind !== undefined) setKind(apply.kind);
-                        if (apply.categoryId !== undefined) setCategoryId(apply.categoryId);
-                        if (apply.tags !== undefined) setTags(apply.tags);
-                        // setView writes to localStorage — that's what suppresses the gate next visit.
-                        setView(apply.view);
-                    }}
-                />
-            </div>
-        );
-    }
 
     // ── Desktop layout ──────────────────────────────────────────────────────
 

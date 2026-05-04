@@ -8,9 +8,6 @@ domain: features
 difficulty: intermediate
 prerequisites:
   - image-gradient
-related:
-  - harris-corner-detector
-  - shi-tomasi-corner-detector
 ---
 
 # Definition

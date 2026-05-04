@@ -3,6 +3,7 @@ export interface GeneratedHtmlModule { html: string; }
 
 export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
   "ccdn-checkerboard-detector": () => import("./content/models/ccdn-checkerboard-detector.ts"),
+  "ccs-camera-calibration": () => import("./content/models/ccs-camera-calibration.ts"),
   "mate-checkerboard-detector": () => import("./content/models/mate-checkerboard-detector.ts"),
   "superpoint": () => import("./content/models/superpoint.ts"),
   "xfeat": () => import("./content/models/xfeat.ts"),

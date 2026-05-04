@@ -6,12 +6,7 @@ tags: ["image-stitching", "homography", "panorama", "spatially-varying-warp", "s
 author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: advanced
-prerequisites: [homography]
-related:
-  - apap-image-stitching
-  - gao-dual-homography-stitching
-  - lin-sva-stitching
-  - dlt-normalisation
+prerequisites: [homography, ransac]
 sources:
   references:
     - gao2011-dual-homography

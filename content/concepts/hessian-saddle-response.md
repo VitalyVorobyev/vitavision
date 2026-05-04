@@ -8,12 +8,6 @@ domain: features
 difficulty: intermediate
 prerequisites:
   - image-gradient
-related:
-  - chess-corners
-  - rochade
-  - laureano-topological-chessboard
-  - puzzleboard
-  - structure-tensor
 sources:
   references:
     - chen2005-xcorner

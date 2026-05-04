@@ -201,6 +201,9 @@ const sanitizeSchema = {
         "mglyph",
         "figure",
         "figcaption",
+        // KaTeX SVG output for tall stretchy delimiters
+        "svg",
+        "path",
     ],
     attributes: {
         ...defaultSchema.attributes,
@@ -234,6 +237,8 @@ const sanitizeSchema = {
         pre: [...(defaultSchema.attributes?.pre ?? []), "className", "style", "tabindex", "tabIndex"],
         math: ["xmlns", "display"],
         annotation: ["encoding"],
+        svg: ["xmlns", "viewBox", "preserveAspectRatio", "width", "height", "style", "aria-hidden", "ariaHidden"],
+        path: ["d"],
         // Allow KaTeX classes on all elements
         "*": ["className", "style"],
     },
@@ -638,14 +643,20 @@ async function main(): Promise<void> {
         highlighter,
     );
 
-    // Enforce: any non-draft, non-dev model page must have at least one implementations entry.
+    // Enforce: any non-draft, non-dev model page must have at least one implementations entry,
+    // unless `noPublicImpl: true` declares no public implementation exists for legitimate reasons.
     // This check runs before the draft filter so draft pages can freely omit implementations.
     for (const entry of rawModelPages) {
-        const fm = entry.frontmatter as { draft?: boolean; dev?: boolean; implementations?: unknown[] };
-        if (!fm.draft && !fm.dev) {
+        const fm = entry.frontmatter as {
+            draft?: boolean;
+            dev?: boolean;
+            noPublicImpl?: boolean;
+            implementations?: unknown[];
+        };
+        if (!fm.draft && !fm.dev && !fm.noPublicImpl) {
             if (!fm.implementations || fm.implementations.length === 0) {
                 throw new Error(
-                    `content:build failed: model page "${entry.slug}" is not draft but has no implementations[] entry. See .claude/skills/deep-model-page/SKILL.md §Workflow B9a.`,
+                    `content:build failed: model page "${entry.slug}" is not draft but has no implementations[] entry (and noPublicImpl is not set). See .claude/skills/deep-model-page/SKILL.md §Workflow B9a.`,
                 );
             }
         }
@@ -713,6 +724,11 @@ async function main(): Promise<void> {
     // Build content graph from all non-draft, non-dev entries.
     // dev:true pages are excluded from relationship edges and slug lookups so
     // they do not appear in navigation. They remain routable via direct URL.
+    type FrontmatterRel = {
+        prerequisites?: string[];
+        failureModes?: string[];
+        relations?: ContentEntry["relations"];
+    };
     const graphEntries: ContentEntry[] = [
         ...algorithmPublished.map((e) => ({
             slug: e.slug,
@@ -720,11 +736,9 @@ async function main(): Promise<void> {
             title: e.frontmatter.title,
             summary: e.frontmatter.summary,
             draft: e.frontmatter.draft === true,
-            relatedAlgorithms: (e.frontmatter as { relatedAlgorithms?: string[] }).relatedAlgorithms,
-            prerequisites: (e.frontmatter as { prerequisites?: string[] }).prerequisites,
-            related: (e.frontmatter as { related?: string[] }).related,
-            comparedWith: (e.frontmatter as { comparedWith?: string[] }).comparedWith,
-            failureModes: (e.frontmatter as { failureModes?: string[] }).failureModes,
+            prerequisites: (e.frontmatter as FrontmatterRel).prerequisites,
+            failureModes: (e.frontmatter as FrontmatterRel).failureModes,
+            relations: (e.frontmatter as FrontmatterRel).relations,
         })),
         ...modelPublished.map((e) => ({
             slug: e.slug,
@@ -732,11 +746,9 @@ async function main(): Promise<void> {
             title: e.frontmatter.title,
             summary: e.frontmatter.summary,
             draft: e.frontmatter.draft === true,
-            relatedAlgorithms: (e.frontmatter as { relatedAlgorithms?: string[] }).relatedAlgorithms,
-            prerequisites: (e.frontmatter as { prerequisites?: string[] }).prerequisites,
-            related: (e.frontmatter as { related?: string[] }).related,
-            comparedWith: (e.frontmatter as { comparedWith?: string[] }).comparedWith,
-            failureModes: (e.frontmatter as { failureModes?: string[] }).failureModes,
+            prerequisites: (e.frontmatter as FrontmatterRel).prerequisites,
+            failureModes: (e.frontmatter as FrontmatterRel).failureModes,
+            relations: (e.frontmatter as FrontmatterRel).relations,
         })),
         ...conceptPublished.map((e) => ({
             slug: e.slug,
@@ -744,10 +756,9 @@ async function main(): Promise<void> {
             title: e.frontmatter.title,
             summary: e.frontmatter.summary,
             draft: e.frontmatter.draft === true,
-            prerequisites: (e.frontmatter as { prerequisites?: string[] }).prerequisites,
-            related: (e.frontmatter as { related?: string[] }).related,
-            comparedWith: (e.frontmatter as { comparedWith?: string[] }).comparedWith,
-            failureModes: (e.frontmatter as { failureModes?: string[] }).failureModes,
+            prerequisites: (e.frontmatter as FrontmatterRel).prerequisites,
+            failureModes: (e.frontmatter as FrontmatterRel).failureModes,
+            relations: (e.frontmatter as FrontmatterRel).relations,
         })),
     ];
 

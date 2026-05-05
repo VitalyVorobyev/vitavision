@@ -1054,3 +1054,14 @@
   pdf: lowe2004-sift.pdf
   cites: [harris1988-corner]
   notes: # TODO: add notes
+
+- id: canny1986-edge
+  title: "A Computational Approach to Edge Detection"
+  authors: ["J. Canny"]
+  year: 1986
+  venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
+  url: https://perso.limsi.fr/vezien/PAPIERS_ACS/canny1986.pdf
+  doi: "10.1109/TPAMI.1986.4767851"
+  pdf: canny1986-edge.pdf
+  cites: []
+  notes: # TODO: add notes

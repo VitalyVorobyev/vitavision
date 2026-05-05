@@ -65,6 +65,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/apap-image-stitching",
       "draft": false
     },
+    "canny-edge-detector": {
+      "slug": "canny-edge-detector",
+      "type": "algorithm",
+      "title": "Canny Edge Detector",
+      "summary": "Detect thin step edges in greyscale images by smoothing with a Gaussian, computing gradient magnitude and direction, suppressing non-maxima along the gradient direction, then linking surviving pixels via hysteresis double-thresholding; the filter shape is derived as the variational optimum of three criteria — detection SNR, localisation, and single-response spacing — under an additive-white-Gaussian-noise step-edge model.",
+      "path": "/atlas/canny-edge-detector",
+      "draft": false
+    },
     "chess-corners": {
       "slug": "chess-corners",
       "type": "algorithm",
@@ -448,6 +456,13 @@ export const contentGraph: ContentGraph = {
         "homography",
         "dlt-normalisation",
         "ransac"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "canny-edge-detector": {
+      "prerequisites": [
+        "image-gradient"
       ],
       "failureModes": [],
       "relations": []
@@ -1269,6 +1284,14 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "canny-edge-detector": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "chess-corners": {
       "usedBy": [],
       "affects": [],
@@ -1752,6 +1775,7 @@ export const contentGraph: ContentGraph = {
     },
     "image-gradient": {
       "usedBy": [
+        "canny-edge-detector",
         "ccdn-checkerboard-detector",
         "chess-corners",
         "chessboard-x-corner-detection",

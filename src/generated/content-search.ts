@@ -39,6 +39,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE CVPR"
   },
   {
+    "slug": "canny-edge-detector",
+    "path": "/atlas/canny-edge-detector",
+    "type": "algorithm",
+    "title": "Canny Edge Detector",
+    "summary": "Detect thin step edges in greyscale images by smoothing with a Gaussian, computing gradient magnitude and direction, suppressing non-maxima along the gradient direction, then linking surviving pixels via hysteresis double-thresholding; the filter shape is derived as the variational optimum of three criteria — detection SNR, localisation, and single-response spacing — under an additive-white-Gaussian-noise step-edge model.",
+    "tags": [
+      "edge-detection",
+      "non-maximum-suppression",
+      "hysteresis",
+      "gradient"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure",
+      "Multi-scale and directional extensions"
+    ],
+    "authors": [
+      "J. Canny"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "chess-corners",
     "path": "/atlas/chess-corners",
     "type": "algorithm",

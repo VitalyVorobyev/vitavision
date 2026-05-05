@@ -46,22 +46,6 @@ export const blogPosts: BlogIndexEntry[] = [
       "access": "public",
       "date": "2026-03-22"
     }
-  },
-  {
-    "slug": "02-demo-blocks",
-    "frontmatter": {
-      "title": "Rich Content Demo: Semantic Blocks, Math, and Code",
-      "summary": "A demonstration of all supported content features including semantic blocks, math rendering, syntax highlighting, and typography.",
-      "tags": [
-        "meta",
-        "demo"
-      ],
-      "author": "Vitaly Vorobyev",
-      "draft": true,
-      "readingTimeMinutes": 5,
-      "access": "public",
-      "date": "2026-03-22"
-    }
   }
 ];
 
@@ -257,6 +241,36 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Page tracks Daniilidis 1999 §3–§6. Rigid motion encoded as unit dual\nquaternion q̂ = q + εq′ with q = (cos θ/2, sin(θ/2) n) and\nq′ = (1/2) t ⊗ q (screw form q̂ = cos(θ̂/2) + sin(θ̂/2) l̂ with\nθ̂ = θ + εd, l̂ = l + εm). Screw congruence: corresponding hand and\neye motions share (θ, d); the scalar parts of â and b̂ coincide and\ncancel from the constraint â x̂ = x̂ b̂. Remaining imaginary-part\nequations stack into the 6×8 system (Eq. 31)\n    | a − b   [a+b]_×    0   0_{3×3} |\n    | a′ − b′ [a′+b′]_×  a−b [a+b]_× |\nper motion pair. SVD of the stacked ≥6M×8 matrix T yields a\ntwo-dim null space span{v₇, v₈}; the physical x̂ = λ₁ v₇ + λ₂ v₈\nis fixed by |q|² = 1 and q·q′ = 0 (a quadratic in s = λ₁/λ₂).\nRecover R from q and t = 2 q′ q*.\n"
       },
       "date": "2026-04-20"
+    }
+  },
+  {
+    "slug": "epnp",
+    "frontmatter": {
+      "title": "EPnP: O(n) Perspective-n-Point",
+      "summary": "Non-iterative O(n) solver for the calibrated Perspective-n-Point problem: express the n reference points as weighted sums of four virtual control points, recover their camera-frame coordinates from the null space of a 12×12 matrix, and extract pose by absolute orientation.",
+      "tags": [
+        "pose-estimation",
+        "perspective-n-point",
+        "geometry"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "dlt-normalisation",
+        "ransac"
+      ],
+      "failureModes": [],
+      "domain": "geometry",
+      "sources": {
+        "primary": "lepetit2009-epnp",
+        "references": [
+          "fischler1981-ransac"
+        ],
+        "notes": "EPnP — Lepetit, Moreno-Noguer, Fua, IJCV 2009 (received April 2008).\nReduces calibrated PnP to recovering the camera-frame coordinates of\nfour virtual control points whose barycentric weights describe the n\nreference points (Eqs. 1–2). Stacks two equations per correspondence\ninto Mx = 0 where x is the 12-vector of control-point camera\ncoordinates (Eqs. 5–7); solves in the null space of MᵀM (12×12)\nexpressed as a linear combination of N null eigenvectors v_i (Eq. 8).\nEffective null-space dimension N varies from 1 to 4 with focal length\nand noise; the method computes solutions for all four N and keeps the\none with smallest reprojection error (Eq. 9). β coefficients are\nrecovered from inter-control-point distance constraints — closed form\nfor N=1 (Eq. 11), pseudoinverse / inverse on Lβ = ρ for N=2,3\n(Eq. 13), relinearisation (Kipnis–Shamir 1999, Eq. 14) for N=4.\nOptional Gauss-Newton refinement minimises pairwise distance residuals\nover only four scalar β's (Eqs. 15–16) — constant time, fewer than\n10 iterations. Planar fallback uses three control points and a 2n×9\nsystem. Linear-time scaling is dominated by the MᵀM product (O(n)),\nwhich kicks in around n ≈ 15.\n"
+      },
+      "date": "2026-05-04"
     }
   },
   {
@@ -553,7 +567,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
         "image-gradient",
@@ -948,6 +962,40 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "scaramuzza-omni-calibration",
+    "frontmatter": {
+      "title": "Scaramuzza Omnidirectional Camera Calibration",
+      "summary": "Calibrate any central catadioptric or fisheye camera from a few planar checkerboard views by fitting a radially-symmetric Taylor-polynomial imaging function with a linear estimate followed by maximum-likelihood refinement.",
+      "tags": [
+        "calibration",
+        "omnidirectional",
+        "fisheye",
+        "catadioptric"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "camera-distortion-models"
+      ],
+      "failureModes": [],
+      "domain": "calibration",
+      "tasks": [
+        "camera-calibration"
+      ],
+      "sources": {
+        "primary": "scaramuzza2006-omni",
+        "references": [
+          "zhang2000-flexible",
+          "rufli2008-blurred"
+        ],
+        "notes": "Page follows the IROS 2006 paper §III–V: §III defines the imaging\nfunction as the Taylor polynomial f(ρ) = a₀ + a₂ρ² + … + a_N ρ^N\nwith the closure a₁ = 0; §IV factors the calibration into a linear\nleast-squares stage that recovers per-view extrinsics together with\nthe Taylor coefficients followed by Levenberg–Marquardt refinement\nof the maximum-likelihood reprojection cost; §V adds an iterative\ncoarse-to-fine search for the image center O_c that minimises the\nsum of squared reprojection errors.\n"
+      },
+      "date": "2026-05-05"
+    }
+  },
+  {
     "slug": "shi-tomasi-corner-detector",
     "frontmatter": {
       "title": "Shi-Tomasi Corner Detector",
@@ -958,7 +1006,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 4,
+      "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
         "image-gradient",
@@ -977,6 +1025,74 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Uses the same structure tensor M as Harris, but replaces the Harris\nresponse with R = min(λ₁, λ₂) — the smaller eigenvalue of M. The\nthreshold then encodes a feature-tracking quality criterion derived\nin §3 of the paper.\n"
       },
       "date": "2026-04-15"
+    }
+  },
+  {
+    "slug": "sift",
+    "frontmatter": {
+      "title": "SIFT: Scale-Invariant Feature Transform",
+      "summary": "Detects keypoints as scale-space extrema in a Difference-of-Gaussian image pyramid, refines location and scale by 3D quadratic interpolation, assigns canonical orientation from local gradient histograms, and emits a 128-D descriptor invariant to scale, rotation, and moderate affine and illumination change.",
+      "tags": [
+        "feature-detection",
+        "local-descriptors",
+        "scale-invariant",
+        "matching"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "scale-space",
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "harris-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "gao-dual-homography-stitching",
+          "confidence": "high",
+          "caution": "SIFT correspondences are the standard input to dual-homography stitching"
+        },
+        {
+          "type": "feeds_into",
+          "target": "lin-sva-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "apap-image-stitching",
+          "confidence": "high"
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "feature-detection",
+        "local-feature-matching"
+      ],
+      "sources": {
+        "primary": "lowe2004-sift",
+        "references": [
+          "harris1988-corner"
+        ],
+        "notes": "Four-stage cascade. Stage 1 (§3): Gaussian pyramid with s=3 intervals/octave\n(k=2^(1/3)), σ=1.6 initial blur, optional 2× upsampling for fine-scale\nrecovery; DoG D(x,y,σ) = L(x,y,kσ) − L(x,y,σ) (Eq. 1) approximates\nσ²∇²G; 26-neighbor extrema in (x,y,σ). Stage 2 (§4): Taylor expansion to\nsecond order (Eq. 2); sub-pixel offset x̂ = −H⁻¹·∂D/∂x (Eq. 3); reject\n|D(x̂)| < 0.03 (low-contrast); reject Tr(H_2D)²/Det(H_2D) ≥ (r+1)²/r with\nr=10 → threshold 12.1 (edge response, Eq. 4). Stage 3 (§5): 36-bin\ngradient-orientation histogram in Gaussian window σ_w = 1.5×σ_keypoint;\nsecondary peaks within 80% of dominant peak emit additional keypoints\n(~15% multi-orientation rate). Stage 4 (§6.1): 16×16 sample grid rotated\nto keypoint frame; 4×4 array of 8-bin orientation histograms with\ntrilinear interpolation; Gaussian weighting σ = half-window; L2-normalize,\nclamp to 0.2 (illumination robustness), renormalize → 128-D vector.\nMatching (§7.1): nearest/second-nearest ratio < 0.8 discards ~90% false\nmatches with <5% correct-match loss.\n"
+      },
+      "date": "2026-05-05"
     }
   },
   {
@@ -1506,6 +1622,12 @@ export const modelPages: ModelIndexEntry[] = [
           "type": "learned_alternative_of",
           "target": "shi-tomasi-corner-detector",
           "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "sift",
+          "confidence": "high",
+          "caution": "SuperPoint replaces SIFT's hand-crafted DoG + 128-D descriptor with a single learned encoder + dual decoder heads."
         }
       ],
       "domain": "features",
@@ -1557,6 +1679,14 @@ export const modelPages: ModelIndexEntry[] = [
         "image-gradient"
       ],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "sift",
+          "confidence": "high",
+          "caution": "XFeat targets CPU-grade compute and replaces SIFT's classical hand-crafted pipeline with a featherweight learned model."
+        }
+      ],
       "domain": "features",
       "tasks": [
         "feature-detection",
@@ -1825,7 +1955,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [],
       "domain": "image-formation",

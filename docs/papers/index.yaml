@@ -1020,3 +1020,37 @@
     - fischler1981-ransac
     - raguram2013-usac
   notes: # TODO: add notes
+
+- id: lepetit2009-epnp
+  title: "EPnP: An Accurate O(n) Solution to the PnP Problem"
+  authors: ["V. Lepetit", "F. Moreno-Noguer", "P. Fua"]
+  year: 2009
+  venue: International Journal of Computer Vision
+  url: http://hdl.handle.net/2117/10327
+  doi: "10.1007/s11263-008-0152-6"
+  pdf: lepetit2009-epnp.pdf
+  cites:
+    - fischler1981-ransac
+  notes: # TODO: add notes
+
+- id: scaramuzza2006-omni
+  title: "A Toolbox for Easily Calibrating Omnidirectional Cameras"
+  authors: ["D. Scaramuzza", "A. Martinelli", "R. Siegwart"]
+  year: 2006
+  venue: IEEE/RSJ IROS
+  url: https://rpg.ifi.uzh.ch/docs/IROS06_scaramuzza.pdf
+  doi: "10.1109/iros.2006.282372"
+  pdf: scaramuzza2006-omni.pdf
+  cites: []
+  notes: # TODO: add notes
+
+- id: lowe2004-sift
+  title: "Distinctive Image Features from Scale-Invariant Keypoints"
+  authors: ["D. G. Lowe"]
+  year: 2004
+  venue: International Journal of Computer Vision
+  url: https://www.cs.ubc.ca/~lowe/papers/ijcv04.pdf
+  doi: "10.1023/B:VISI.0000029664.99615.94"
+  pdf: lowe2004-sift.pdf
+  cites: [harris1988-corner]
+  notes: # TODO: add notes

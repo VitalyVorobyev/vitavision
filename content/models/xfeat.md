@@ -11,6 +11,11 @@ arch_family: cnn
 flops: "64-D descriptors at H/8 × W/8 resolution"
 prerequisites: [image-gradient]
 failureModes: []
+relations:
+  - type: learned_alternative_of
+    target: sift
+    confidence: high
+    caution: "XFeat targets CPU-grade compute and replaces SIFT's classical hand-crafted pipeline with a featherweight learned model."
 sources:
   primary: potje2024-xfeat
   references:

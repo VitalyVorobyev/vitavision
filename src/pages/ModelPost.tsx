@@ -237,7 +237,14 @@ export default function ModelPost() {
     const jsonLd = buildModelJsonLd(frontmatter, slug ?? page.slug);
     const resolvedSlug = slug ?? page.slug;
 
-    const modelBadges = (
+    const hasModelBadges = Boolean(
+        frontmatter.quality ||
+            frontmatter.noPublicImpl ||
+            frontmatter.arch_family ||
+            frontmatter.params ||
+            frontmatter.flops,
+    );
+    const modelBadges = hasModelBadges ? (
         <>
             <QualityBadge quality={frontmatter.quality} />
             {frontmatter.noPublicImpl && (
@@ -261,7 +268,7 @@ export default function ModelPost() {
                 </span>
             )}
         </>
-    );
+    ) : undefined;
 
     return (
         <div className="w-full mx-auto max-w-[1140px] px-4 sm:px-8 py-8 lg:py-12 grid lg:grid-cols-[minmax(0,720px)_280px] lg:gap-14 animate-in fade-in">

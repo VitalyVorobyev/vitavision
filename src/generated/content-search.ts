@@ -104,6 +104,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "The International Journal of Robotics Research"
   },
   {
+    "slug": "epnp",
+    "path": "/atlas/epnp",
+    "type": "algorithm",
+    "title": "EPnP: O(n) Perspective-n-Point",
+    "summary": "Non-iterative O(n) solver for the calibrated Perspective-n-Point problem: express the n reference points as weighted sums of four virtual control points, recover their camera-frame coordinates from the null space of a 12×12 matrix, and extract pose by absolute orientation.",
+    "tags": [
+      "pose-estimation",
+      "perspective-n-point",
+      "geometry"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "β recovery",
+      "Procedure"
+    ],
+    "authors": [
+      "V. Lepetit",
+      "F. Moreno-Noguer",
+      "P. Fua"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
     "slug": "fast-corner-detector",
     "path": "/atlas/fast-corner-detector",
     "type": "algorithm",
@@ -281,7 +304,8 @@ export const searchRecords: SearchRecord[] = [
       "Procedure",
       "When to choose Harris over Shi-Tomasi",
       "When to choose Harris over FAST",
-      "When to choose Harris over ChESS"
+      "When to choose Harris over ChESS",
+      "When to choose Harris over SIFT"
     ],
     "authors": [
       "C. Harris",
@@ -489,6 +513,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "ECCV"
   },
   {
+    "slug": "scaramuzza-omni-calibration",
+    "path": "/atlas/scaramuzza-omni-calibration",
+    "type": "algorithm",
+    "title": "Scaramuzza Omnidirectional Camera Calibration",
+    "summary": "Calibrate any central catadioptric or fisheye camera from a few planar checkerboard views by fitting a radially-symmetric Taylor-polynomial imaging function with a linear estimate followed by maximum-likelihood refinement.",
+    "tags": [
+      "calibration",
+      "omnidirectional",
+      "fisheye",
+      "catadioptric"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "D. Scaramuzza",
+      "A. Martinelli",
+      "R. Siegwart"
+    ],
+    "venue": "IEEE/RSJ IROS"
+  },
+  {
     "slug": "shi-tomasi-corner-detector",
     "path": "/atlas/shi-tomasi-corner-detector",
     "type": "algorithm",
@@ -500,13 +547,36 @@ export const searchRecords: SearchRecord[] = [
     ],
     "domain": "features",
     "headings": [
-      "Procedure"
+      "Procedure",
+      "When to choose Shi-Tomasi over SIFT"
     ],
     "authors": [
       "J. Shi",
       "C. Tomasi"
     ],
     "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "sift",
+    "path": "/atlas/sift",
+    "type": "algorithm",
+    "title": "SIFT: Scale-Invariant Feature Transform",
+    "summary": "Detects keypoints as scale-space extrema in a Difference-of-Gaussian image pyramid, refines location and scale by 3D quadratic interpolation, assigns canonical orientation from local gradient histograms, and emits a 128-D descriptor invariant to scale, rotation, and moderate affine and illumination change.",
+    "tags": [
+      "feature-detection",
+      "local-descriptors",
+      "scale-invariant",
+      "matching"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure",
+      "When to choose SIFT over FAST"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
   },
   {
     "slug": "sturm-plane-based-calibration",

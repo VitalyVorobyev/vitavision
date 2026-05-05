@@ -89,6 +89,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/daniilidis-dual-quaternion-handeye",
       "draft": false
     },
+    "epnp": {
+      "slug": "epnp",
+      "type": "algorithm",
+      "title": "EPnP: O(n) Perspective-n-Point",
+      "summary": "Non-iterative O(n) solver for the calibrated Perspective-n-Point problem: express the n reference points as weighted sums of four virtual control points, recover their camera-frame coordinates from the null space of a 12×12 matrix, and extract pose by absolute orientation.",
+      "path": "/atlas/epnp",
+      "draft": false
+    },
     "fast-corner-detector": {
       "slug": "fast-corner-detector",
       "type": "algorithm",
@@ -225,12 +233,28 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/rochade",
       "draft": false
     },
+    "scaramuzza-omni-calibration": {
+      "slug": "scaramuzza-omni-calibration",
+      "type": "algorithm",
+      "title": "Scaramuzza Omnidirectional Camera Calibration",
+      "summary": "Calibrate any central catadioptric or fisheye camera from a few planar checkerboard views by fitting a radially-symmetric Taylor-polynomial imaging function with a linear estimate followed by maximum-likelihood refinement.",
+      "path": "/atlas/scaramuzza-omni-calibration",
+      "draft": false
+    },
     "shi-tomasi-corner-detector": {
       "slug": "shi-tomasi-corner-detector",
       "type": "algorithm",
       "title": "Shi-Tomasi Corner Detector",
       "summary": "Scores each pixel by the smaller eigenvalue of the gradient structure tensor M; returns integer pixel locations where that eigenvalue exceeds a threshold, derived from a feature-tracking quality criterion.",
       "path": "/atlas/shi-tomasi-corner-detector",
+      "draft": false
+    },
+    "sift": {
+      "slug": "sift",
+      "type": "algorithm",
+      "title": "SIFT: Scale-Invariant Feature Transform",
+      "summary": "Detects keypoints as scale-space extrema in a Difference-of-Gaussian image pyramid, refines location and scale by 3D quadratic interpolation, assigns canonical orientation from local gradient histograms, and emits a 128-D descriptor invariant to scale, rotation, and moderate affine and illumination change.",
+      "path": "/atlas/sift",
       "draft": false
     },
     "sturm-plane-based-calibration": {
@@ -507,6 +531,14 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "epnp": {
+      "prerequisites": [
+        "dlt-normalisation",
+        "ransac"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
     "fast-corner-detector": {
       "prerequisites": [
         "image-gradient"
@@ -516,6 +548,12 @@ export const contentGraph: ContentGraph = {
         {
           "type": "compared_with",
           "target": "harris-corner-detector",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "sift",
           "confidence": "high",
           "mirrored": true
         }
@@ -647,6 +685,12 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "chess-corners",
           "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "sift",
+          "confidence": "high",
+          "mirrored": true
         }
       ]
     },
@@ -813,6 +857,13 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "scaramuzza-omni-calibration": {
+      "prerequisites": [
+        "camera-distortion-models"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
     "shi-tomasi-corner-detector": {
       "prerequisites": [
         "image-gradient",
@@ -825,6 +876,52 @@ export const contentGraph: ContentGraph = {
           "target": "harris-corner-detector",
           "confidence": "high",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "sift",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
+    "sift": {
+      "prerequisites": [
+        "scale-space",
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "harris-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "gao-dual-homography-stitching",
+          "confidence": "high",
+          "caution": "SIFT correspondences are the standard input to dual-homography stitching"
+        },
+        {
+          "type": "feeds_into",
+          "target": "lin-sva-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "apap-image-stitching",
+          "confidence": "high"
         }
       ]
     },
@@ -1042,6 +1139,12 @@ export const contentGraph: ContentGraph = {
           "type": "learned_alternative_of",
           "target": "shi-tomasi-corner-detector",
           "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "sift",
+          "confidence": "high",
+          "caution": "SuperPoint replaces SIFT's hand-crafted DoG + 128-D descriptor with a single learned encoder + dual decoder heads."
         }
       ]
     },
@@ -1051,6 +1154,12 @@ export const contentGraph: ContentGraph = {
       ],
       "failureModes": [],
       "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "sift",
+          "confidence": "high",
+          "caution": "XFeat targets CPU-grade compute and replaces SIFT's classical hand-crafted pipeline with a featherweight learned model."
+        },
         {
           "type": "compared_with",
           "target": "superpoint",
@@ -1152,7 +1261,12 @@ export const contentGraph: ContentGraph = {
         }
       ],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "sift",
+          "confidence": "high"
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "chess-corners": {
@@ -1192,6 +1306,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "epnp": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "fast-corner-detector": {
       "usedBy": [],
       "affects": [],
@@ -1221,7 +1343,13 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "sift",
+          "confidence": "high",
+          "caution": "SIFT correspondences are the standard input to dual-homography stitching"
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "geiger-chessboard-detector": {
@@ -1280,7 +1408,12 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "sift",
+          "confidence": "high"
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "duda-radon-corners": {
@@ -1345,6 +1478,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "scaramuzza-omni-calibration": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "shi-tomasi-corner-detector": {
       "usedBy": [],
       "affects": [],
@@ -1355,6 +1496,25 @@ export const contentGraph: ContentGraph = {
         {
           "slug": "superpoint",
           "confidence": "high"
+        }
+      ]
+    },
+    "sift": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "SuperPoint replaces SIFT's hand-crafted DoG + 128-D descriptor with a single learned encoder + dual decoder heads."
+        },
+        {
+          "slug": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat targets CPU-grade compute and replaces SIFT's classical hand-crafted pipeline with a featherweight learned model."
         }
       ]
     },
@@ -1520,6 +1680,7 @@ export const contentGraph: ContentGraph = {
       "usedBy": [
         "ccs-camera-calibration",
         "kumar-generalized-rac",
+        "scaramuzza-omni-calibration",
         "tsai-versatile-calibration",
         "zhang-planar-calibration"
       ],
@@ -1542,6 +1703,7 @@ export const contentGraph: ContentGraph = {
     "dlt-normalisation": {
       "usedBy": [
         "apap-image-stitching",
+        "epnp",
         "fundamental-matrix-eight-point"
       ],
       "affects": [],
@@ -1609,6 +1771,7 @@ export const contentGraph: ContentGraph = {
         "rochade",
         "shi-tomasi-corner-detector",
         "shu-topological-grid",
+        "sift",
         "structure-tensor",
         "superpoint",
         "xfeat"
@@ -1626,6 +1789,7 @@ export const contentGraph: ContentGraph = {
         "ccs-camera-calibration",
         "dlt-normalisation",
         "epipolar-geometry",
+        "epnp",
         "fischler-bolles-ransac",
         "fundamental-matrix-eight-point",
         "gao-dual-homography-stitching",
@@ -1643,7 +1807,8 @@ export const contentGraph: ContentGraph = {
     },
     "scale-space": {
       "usedBy": [
-        "pyramidal-blur-aware-xcorner"
+        "pyramidal-blur-aware-xcorner",
+        "sift"
       ],
       "affects": [],
       "generalises": [],

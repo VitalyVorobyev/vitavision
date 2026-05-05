@@ -22,6 +22,10 @@ relations:
   - type: learned_alternative_of
     target: shi-tomasi-corner-detector
     confidence: high
+  - type: learned_alternative_of
+    target: sift
+    confidence: high
+    caution: "SuperPoint replaces SIFT's hand-crafted DoG + 128-D descriptor with a single learned encoder + dual decoder heads."
 sources:
   primary: detone2018-superpoint
   references:

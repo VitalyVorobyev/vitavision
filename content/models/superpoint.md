@@ -34,6 +34,10 @@ relations:
     target: brief
     confidence: high
     caution: "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
+  - type: learned_alternative_of
+    target: orb
+    confidence: high
+    caution: "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
 sources:
   primary: detone2018-superpoint
   references:

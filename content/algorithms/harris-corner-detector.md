@@ -19,6 +19,10 @@ relations:
   - type: compared_with
     target: chess-corners
     confidence: high
+  - type: feeds_into
+    target: orb
+    confidence: medium
+    caution: "Used only as a corner-strength filter to rank FAST keypoints, not as a detector."
 sources:
   primary: harris1988-corner
   references: [shi-tomasi1994-features]
@@ -115,6 +119,7 @@ fn harris_response(img: &[f32], w: usize, h: usize, sigma: f32, k: f32) -> Vec<f
 - The detector is not scale-invariant. Response peaks at the scale of the integration window $\sigma$. Multi-scale detection requires running the detector on a Gaussian image pyramid.
 - The detector responds to general 2D intensity variation; it does not encode X-junction geometry. For chessboard calibration targets, a domain-specific detector yields higher selectivity.
 - Scope: this page covers the corner-detection path only. The original paper additionally defines edge pixels as $R < 0$ local minima in the dominant gradient direction, producing a combined edge-vertex map; that path is omitted here.
+- ORB uses the Harris response to rank FAST keypoints rather than as a stand-alone detector: at each pyramid level, FAST-9 generates candidates, then $R$ orders them and the top-$N$ per level survive. The two-stage arrangement avoids the per-pixel cost of a full Harris pass while keeping the edge-rejection property — Harris's $\det(M)$ term penalises the edge-aligned eigenvalue ratio that FAST is known to produce on linear features.
 
 ## When to choose Harris over Shi-Tomasi
 

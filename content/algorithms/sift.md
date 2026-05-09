@@ -19,6 +19,9 @@ relations:
   - type: compared_with
     target: fast-corner-detector
     confidence: high
+  - type: compared_with
+    target: orb
+    confidence: high
   - type: feeds_into
     target: gao-dual-homography-stitching
     confidence: high
@@ -174,6 +177,7 @@ fn refine_keypoint(dog: &[[[f32; 3]; 3]; 3]) -> Option<(Vector3<f32>, f32)> {
 - Low-texture or uniform regions produce no DoG extrema and thus no keypoints. Repetitive periodic patterns (brickwork, fabric, gratings) produce many ambiguous matches that the ratio test fails to disambiguate. Viewpoint changes beyond approximately 50° tilt for planar surfaces cause matching reliability to fall below 50%.
 - The descriptor encodes gradient magnitude and orientation from a grayscale image only. Color extensions (RootSIFT, ColorSIFT) exist but are not part of this algorithm. For dense per-pixel correspondence, SIFT is not applicable — it is a sparse detector by design.
 - The practitioner comparison of SIFT against the Harris corner detector is hosted on the Harris page (Harris 1988 is the older paper). See [harris-corner-detector §When to choose SIFT over Harris](../harris-corner-detector#when-to-choose-sift-over-harris).
+- ORB (2011) couples FAST-9 with a steered, learned binary descriptor and matches via Hamming distance, eliminating the floating-point gradient histograms that dominate SIFT's per-keypoint cost. The two methods overlap on textured rigid scenes; SIFT's DoG blob detector localises better on graffiti-style monochromatic regions where FAST corners are sparse. See [§When to choose SIFT over ORB](#when-to-choose-sift-over-orb) for the practitioner-choice breakdown.
 
 ## When to choose SIFT over FAST
 
@@ -186,6 +190,18 @@ SIFT (2004) is the older method; this page hosts the comparison.
 **Computational cost.** FAST is an order of magnitude faster than SIFT on CPU: its ring-pixel brightness comparison requires no convolution and no floating-point gradient computation. FAST was designed for real-time video tracking under bounded scale change. Use FAST for high-frame-rate tracking where scale variation is controlled and descriptor cost matters.
 
 **Wide-baseline accuracy on textured rigid scenes.** When images are taken from significantly different viewpoints (different zoom, different distance) and the scene is textured and approximately rigid, SIFT keypoints repeat more reliably and descriptors disambiguate matches more accurately than FAST + lightweight descriptors. Use SIFT for wide-baseline matching, panorama assembly, and structure-from-motion pipelines.
+
+## When to choose SIFT over ORB
+
+SIFT (2004) is the older method; this page hosts the comparison.
+
+**Detector regime.** SIFT detects scale-space extrema in a Difference-of-Gaussian pyramid — blob-like structures localised at a continuous scale $\sigma$. ORB detects FAST-9 corners at five discrete pyramid levels and ranks them by Harris cornerness. On graffiti-style monochromatic regions where corner responses are sparse, SIFT's blob detector finds keypoints that ORB does not. Use SIFT when the scene contains few corner-like structures and the image-matching budget allows continuous scale-space construction.
+
+**Subpixel scale.** SIFT carries an explicit subpixel scale $\sigma$ per keypoint via 3D quadratic interpolation in $(x, y, \sigma)$. ORB's scale is the discrete pyramid level the keypoint survived at — there is no sub-level interpolation. Use SIFT when downstream geometry (homography, fundamental-matrix estimation under wide-baseline) benefits from precise scale matching.
+
+**Descriptor capacity.** SIFT emits a 128-D float descriptor with gradient-histogram cells; ORB emits a 256-bit binary descriptor with rotated pixel-pair tests. SIFT's higher descriptor capacity disambiguates more aggressively in dense scenes; ORB's Hamming-distance matching is integer-only and an order of magnitude faster but trades absolute discriminability for compute. Use SIFT when descriptor capacity matters more than match cost — bag-of-words retrieval over million-image corpora, re-identification, fine-grained classification.
+
+**Compute and storage.** ORB is roughly two orders of magnitude faster than SIFT on the same CPU at $640 \times 480$ — its integer-only pipeline (FAST + integral-image box-sums + bitwise tests + popcount) suits real-time tracking, embedded vision, and mobile devices. Storage is 32 bytes per ORB descriptor against 512 bytes per SIFT descriptor (128 floats). Use ORB when frame budget, descriptor storage, or matching throughput dominates the decision.
 
 # References
 

@@ -39,9 +39,9 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not â€
     Node: fast-corner-detector.
 +16. Calonder et al. BRIEF: Binary Robust Independent Elementary Features. ECCV, 2010.
     Node: brief.
-17. Rublee et al. ORB: An Efficient Alternative to SIFT or SURF. ICCV, 2011.
++17. Rublee et al. ORB: An Efficient Alternative to SIFT or SURF. ICCV, 2011.
     Node: orb.
-18. DeTone, Malisiewicz, Rabinovich. SuperPoint: Self-Supervised Interest Point Detection and Description. CVPRW, 2018.
++18. DeTone, Malisiewicz, Rabinovich. SuperPoint: Self-Supervised Interest Point Detection and Description. CVPRW, 2018.
     Node: superpoint.
 19. Sarlin et al. SuperGlue: Learning Feature Matching with Graph Neural Networks. CVPR, 2020.
     Node: superglue.

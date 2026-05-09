@@ -23,6 +23,7 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "barath-magsac": () => import("./content/algorithms/barath-magsac.ts"),
   "fundamental-matrix-eight-point": () => import("./content/algorithms/fundamental-matrix-eight-point.ts"),
   "ocpad": () => import("./content/algorithms/ocpad.ts"),
+  "orb": () => import("./content/algorithms/orb.ts"),
   "puzzleboard": () => import("./content/algorithms/puzzleboard.ts"),
   "pyramidal-blur-aware-xcorner": () => import("./content/algorithms/pyramidal-blur-aware-xcorner.ts"),
   "02-demo-blocks": () => import("./content/algorithms/02-demo-blocks.ts"),

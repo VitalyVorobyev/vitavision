@@ -117,13 +117,19 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 6,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
         "image-gradient"
       ],
       "failureModes": [],
       "relations": [
+        {
+          "type": "extended_by",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "rBRIEF steers BRIEF via a 30-bin orientation LUT and replaces the random offset table with 256 learned, low-correlation tests."
+        },
         {
           "type": "compared_with",
           "target": "sift",
@@ -391,7 +397,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 5,
+      "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
         "image-gradient"
@@ -401,6 +407,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         {
           "type": "feeds_into",
           "target": "brief",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "orb",
           "confidence": "high"
         }
       ],
@@ -681,7 +692,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 10,
+      "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [
         "image-gradient",
@@ -703,6 +714,12 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "type": "compared_with",
           "target": "chess-corners",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "orb",
+          "confidence": "medium",
+          "caution": "Used only as a corner-strength filter to rank FAST keypoints, not as a detector."
         }
       ],
       "domain": "features",
@@ -941,6 +958,45 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "orb",
+    "frontmatter": {
+      "title": "ORB: Oriented FAST and Rotated BRIEF",
+      "summary": "Detects rotation-invariant oriented keypoints by running FAST-9 on a √2 image pyramid, ranking by Harris cornerness, and assigning orientation from the intensity centroid; describes each keypoint with a 256-bit rBRIEF binary string formed by greedy selection of low-correlation, high-variance pairwise pixel-intensity tests on a smoothed 31×31 patch.",
+      "tags": [
+        "feature-detection",
+        "local-descriptors",
+        "binary-descriptor",
+        "matching"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient",
+        "scale-space"
+      ],
+      "failureModes": [],
+      "domain": "features",
+      "tasks": [
+        "feature-detection",
+        "local-feature-matching"
+      ],
+      "sources": {
+        "primary": "rublee2011-orb",
+        "references": [
+          "calonder2010-brief",
+          "rosten2006-fast",
+          "harris1988-corner",
+          "lowe2004-sift",
+          "bay2006-surf"
+        ],
+        "notes": "Method (Rublee et al. 2011, ICCV). Two-stage pipeline:\noFAST (detector) + rBRIEF (descriptor).\n\noFAST (§3): FAST-9 candidates at each level of a 5-level\nimage pyramid (scale factor √2, area-based interpolation).\nAdaptive intensity threshold yields ≥ N candidates; Harris\ncornerness response orders them and the top-N per level\nsurvive. Orientation θ = atan2(m_{01}, m_{10}) (Eq. 3) from\nthe first-order moments of a circular patch of radius r equal\nto the patch half-width (Eq. 1: m_{pq} = Σ x^p y^q I(x,y);\nEq. 2: C = (m_{10}/m_{00}, m_{01}/m_{00})).\n\nrBRIEF (§4): binary tests on the smoothed 31×31 patch via an\nintegral image; each test compares the mean intensity of two\n5×5 sub-windows (so the candidate-pair pool size is\nM = (wp − wt)² choose-2 with overlap eliminated → 205,590).\nThe test set S = [(x_i, y_i)] (2×n matrix) is steered to S_θ\n= R_θ S using θ from oFAST, discretised to 2π/30 (12°)\nincrements via a precomputed lookup table — 30 LUT entries.\nGreedy learning (§4.3) selects 256 tests on ~300k PASCAL 2006\nkeypoints by ranking |mean − 0.5| and rejecting any candidate\nwhose absolute pairwise correlation with the running set\nexceeds a threshold (raised if fewer than 256 survive).\nEq. 4–6 define τ, f_n, g_n.\n\nMatching: Hamming distance via XOR + popcount (SSE 4.2 in\nthe paper). Large-scale retrieval: multi-probe LSH with a\nsub-signature-of-bits hash, 16-bit sub-signature, 4–20 hash\ntables.\n\nBenchmarks (§6.1, 640×480, Intel i7 2.8 GHz, single thread):\nPyramid 4.43 ms, oFAST 8.68 ms, rBRIEF 2.12 ms, total ≈\n15.3 ms; SURF 217.3 ms, SIFT 5228.7 ms on the same data.\nCellphone (1 GHz ARM, ~400 points): ORB 66.6 ms, matching\n72.8 ms, H-fit 20.9 ms — ~7 Hz at 640×480 (§6.3).\n\nInlier rates (§4.4): outdoor \"Boat\" — ORB 45.8%, SURF 28.6%,\nSIFT 30.2%; indoor \"Magazines\" — ORB 36.2%, SURF 38.3%, SIFT\n34.0%. Rotation robustness (Fig. 7) > 70% inliers across all\nangles under Gaussian noise σ = 10; BRIEF (without steering)\ndrops sharply beyond ~10°.\n\nScope: ORB targets in-plane rotation and modest scale; per-\nkeypoint scale is a discrete pyramid level, not a continuous\nestimate. BSD-licensed reference implementation in OpenCV\n2.3+.\n"
+      },
+      "date": "2026-05-09"
+    }
+  },
+  {
     "slug": "puzzleboard",
     "frontmatter": {
       "title": "PuzzleBoard",
@@ -1154,7 +1210,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 7,
+      "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [
         "scale-space",
@@ -1175,6 +1231,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         {
           "type": "compared_with",
           "target": "fast-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "orb",
           "confidence": "high"
         },
         {
@@ -1257,7 +1318,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 5,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
         "scale-space",
@@ -1285,6 +1346,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "type": "compared_with",
           "target": "shi-tomasi-corner-detector",
           "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "orb",
+          "confidence": "high"
         },
         {
           "type": "feeds_into",
@@ -1829,6 +1895,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "brief",
           "confidence": "high",
           "caution": "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
         }
       ],
       "domain": "features",
@@ -1898,6 +1970,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "brief",
           "confidence": "high",
           "caution": "XFeat replaces the FAST+BRIEF binary-descriptor pipeline with a featherweight learned model targeting CPU inference."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
         }
       ],
       "domain": "features",

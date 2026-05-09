@@ -644,3 +644,13 @@
   doi: "10.1007/978-3-642-15561-1_56"
   pdf: calonder2010-brief.pdf
   cites: [rosten2006-fast, bay2006-surf, lowe2004-sift]
+
+- id: rublee2011-orb
+  title: "ORB: An efficient alternative to SIFT or SURF"
+  authors: ["E. Rublee", "V. Rabaud", "K. Konolige", "G. Bradski"]
+  year: 2011
+  venue: ICCV
+  url: https://doi.org/10.1109/ICCV.2011.6126544
+  doi: "10.1109/ICCV.2011.6126544"
+  pdf: rublee2011-orb.pdf
+  cites: [calonder2010-brief, rosten2006-fast, bay2006-surf, harris1988-corner, lowe2004-sift, lepetit2009-epnp]

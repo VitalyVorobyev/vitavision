@@ -491,6 +491,32 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE WACV"
   },
   {
+    "slug": "orb",
+    "path": "/atlas/orb",
+    "type": "algorithm",
+    "title": "ORB: Oriented FAST and Rotated BRIEF",
+    "summary": "Detects rotation-invariant oriented keypoints by running FAST-9 on a √2 image pyramid, ranking by Harris cornerness, and assigning orientation from the intensity centroid; describes each keypoint with a 256-bit rBRIEF binary string formed by greedy selection of low-correlation, high-variance pairwise pixel-intensity tests on a smoothed 31×31 patch.",
+    "tags": [
+      "feature-detection",
+      "local-descriptors",
+      "binary-descriptor",
+      "matching"
+    ],
+    "domain": "features",
+    "headings": [
+      "oFAST: oriented FAST",
+      "rBRIEF: rotated BRIEF",
+      "Greedy uncorrelated-test selection"
+    ],
+    "authors": [
+      "E. Rublee",
+      "V. Rabaud",
+      "K. Konolige",
+      "G. Bradski"
+    ],
+    "venue": "ICCV"
+  },
+  {
     "slug": "puzzleboard",
     "path": "/atlas/puzzleboard",
     "type": "algorithm",
@@ -617,7 +643,8 @@ export const searchRecords: SearchRecord[] = [
     "domain": "features",
     "headings": [
       "Procedure",
-      "When to choose SIFT over FAST"
+      "When to choose SIFT over FAST",
+      "When to choose SIFT over ORB"
     ],
     "authors": [
       "D. G. Lowe"
@@ -659,7 +686,9 @@ export const searchRecords: SearchRecord[] = [
       "matching"
     ],
     "domain": "features",
-    "headings": [],
+    "headings": [
+      "When to choose SURF over ORB"
+    ],
     "authors": [
       "H. Bay",
       "T. Tuytelaars",

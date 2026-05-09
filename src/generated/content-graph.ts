@@ -273,6 +273,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/sturm-plane-based-calibration",
       "draft": false
     },
+    "surf": {
+      "slug": "surf",
+      "type": "algorithm",
+      "title": "SURF: Speeded Up Robust Features",
+      "summary": "Detects scale- and rotation-invariant blob keypoints as scale-space maxima of the Hessian determinant, approximated with box filters on an integral image, and emits a 64-D Haar-wavelet response descriptor matched by Euclidean distance with a Laplacian-sign pre-filter.",
+      "path": "/atlas/surf",
+      "draft": false
+    },
     "shu-topological-grid": {
       "slug": "shu-topological-grid",
       "type": "algorithm",
@@ -571,6 +579,13 @@ export const contentGraph: ContentGraph = {
           "target": "sift",
           "confidence": "high",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "surf",
+          "confidence": "medium",
+          "caution": "FAST is detector-only; SURF bundles a descriptor.",
+          "mirrored": true
         }
       ]
     },
@@ -705,6 +720,12 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "sift",
           "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "surf",
+          "confidence": "medium",
           "mirrored": true
         }
       ]
@@ -897,6 +918,12 @@ export const contentGraph: ContentGraph = {
           "target": "sift",
           "confidence": "high",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "surf",
+          "confidence": "medium",
+          "mirrored": true
         }
       ]
     },
@@ -937,6 +964,12 @@ export const contentGraph: ContentGraph = {
           "type": "feeds_into",
           "target": "apap-image-stitching",
           "confidence": "high"
+        },
+        {
+          "type": "alternative_formulation_of",
+          "target": "surf",
+          "confidence": "high",
+          "mirrored": true
         }
       ]
     },
@@ -952,6 +985,51 @@ export const contentGraph: ContentGraph = {
           "confidence": "high",
           "caution": "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis.",
           "mirrored": true
+        }
+      ]
+    },
+    "surf": {
+      "prerequisites": [
+        "scale-space",
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "alternative_formulation_of",
+          "target": "sift",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-corner-detector",
+          "confidence": "medium",
+          "caution": "FAST is detector-only; SURF bundles a descriptor."
+        },
+        {
+          "type": "compared_with",
+          "target": "harris-corner-detector",
+          "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "gao-dual-homography-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "lin-sva-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "apap-image-stitching",
+          "confidence": "high"
         }
       ]
     },
@@ -1160,6 +1238,12 @@ export const contentGraph: ContentGraph = {
           "target": "sift",
           "confidence": "high",
           "caution": "SuperPoint replaces SIFT's hand-crafted DoG + 128-D descriptor with a single learned encoder + dual decoder heads."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "surf",
+          "confidence": "high",
+          "caution": "SuperPoint replaces SURF's box-filter Hessian detector + 64-D Haar-wavelet descriptor with a learned VGG encoder + dual decoder heads."
         }
       ]
     },
@@ -1174,6 +1258,12 @@ export const contentGraph: ContentGraph = {
           "target": "sift",
           "confidence": "high",
           "caution": "XFeat targets CPU-grade compute and replaces SIFT's classical hand-crafted pipeline with a featherweight learned model."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "surf",
+          "confidence": "high",
+          "caution": "XFeat replaces SURF's integral-image Hessian detector + Haar-wavelet descriptor with a featherweight learned model targeting CPU inference."
         },
         {
           "type": "compared_with",
@@ -1280,6 +1370,10 @@ export const contentGraph: ContentGraph = {
         {
           "slug": "sift",
           "confidence": "high"
+        },
+        {
+          "slug": "surf",
+          "confidence": "high"
         }
       ],
       "hasLearnedAlternative": []
@@ -1371,6 +1465,10 @@ export const contentGraph: ContentGraph = {
           "slug": "sift",
           "confidence": "high",
           "caution": "SIFT correspondences are the standard input to dual-homography stitching"
+        },
+        {
+          "slug": "surf",
+          "confidence": "high"
         }
       ],
       "hasLearnedAlternative": []
@@ -1434,6 +1532,10 @@ export const contentGraph: ContentGraph = {
       "fedBy": [
         {
           "slug": "sift",
+          "confidence": "high"
+        },
+        {
+          "slug": "surf",
           "confidence": "high"
         }
       ],
@@ -1548,6 +1650,25 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
+    },
+    "surf": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "SuperPoint replaces SURF's box-filter Hessian detector + 64-D Haar-wavelet descriptor with a learned VGG encoder + dual decoder heads."
+        },
+        {
+          "slug": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat replaces SURF's integral-image Hessian detector + Haar-wavelet descriptor with a featherweight learned model targeting CPU inference."
+        }
+      ]
     },
     "shu-topological-grid": {
       "usedBy": [],
@@ -1798,6 +1919,7 @@ export const contentGraph: ContentGraph = {
         "sift",
         "structure-tensor",
         "superpoint",
+        "surf",
         "xfeat"
       ],
       "affects": [],
@@ -1832,7 +1954,8 @@ export const contentGraph: ContentGraph = {
     "scale-space": {
       "usedBy": [
         "pyramidal-blur-aware-xcorner",
-        "sift"
+        "sift",
+        "surf"
       ],
       "affects": [],
       "generalises": [],

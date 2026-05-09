@@ -622,6 +622,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE CVPR"
   },
   {
+    "slug": "surf",
+    "path": "/atlas/surf",
+    "type": "algorithm",
+    "title": "SURF: Speeded Up Robust Features",
+    "summary": "Detects scale- and rotation-invariant blob keypoints as scale-space maxima of the Hessian determinant, approximated with box filters on an integral image, and emits a 64-D Haar-wavelet response descriptor matched by Euclidean distance with a Laplacian-sign pre-filter.",
+    "tags": [
+      "feature-detection",
+      "local-descriptors",
+      "scale-invariant",
+      "blob-detection",
+      "matching"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "H. Bay",
+      "T. Tuytelaars",
+      "L. V. Gool"
+    ],
+    "venue": "Lecture notes in computer science"
+  },
+  {
     "slug": "shu-topological-grid",
     "path": "/atlas/shu-topological-grid",
     "type": "algorithm",

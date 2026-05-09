@@ -33,7 +33,7 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not â€
     Node: shi-tomasi-corner-detector.
 +13. Lowe. Distinctive Image Features from Scale-Invariant Keypoints. IJCV, 2004.
     Node: sift.
-14. Bay, Tuytelaars, Van Gool. SURF: Speeded Up Robust Features. ECCV, 2006.
++14. Bay, Tuytelaars, Van Gool. SURF: Speeded Up Robust Features. ECCV, 2006.
     Node: surf.
 15. Rosten, Drummond. Machine Learning for High-Speed Corner Detection. ECCV, 2006.
     Node: fast-corner-detector.

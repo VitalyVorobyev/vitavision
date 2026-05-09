@@ -1173,6 +1173,81 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "surf",
+    "frontmatter": {
+      "title": "SURF: Speeded Up Robust Features",
+      "summary": "Detects scale- and rotation-invariant blob keypoints as scale-space maxima of the Hessian determinant, approximated with box filters on an integral image, and emits a 64-D Haar-wavelet response descriptor matched by Euclidean distance with a Laplacian-sign pre-filter.",
+      "tags": [
+        "feature-detection",
+        "local-descriptors",
+        "scale-invariant",
+        "blob-detection",
+        "matching"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 4,
+      "access": "public",
+      "prerequisites": [
+        "scale-space",
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "alternative_formulation_of",
+          "target": "sift",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-corner-detector",
+          "confidence": "medium",
+          "caution": "FAST is detector-only; SURF bundles a descriptor."
+        },
+        {
+          "type": "compared_with",
+          "target": "harris-corner-detector",
+          "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "gao-dual-homography-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "lin-sva-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "apap-image-stitching",
+          "confidence": "high"
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "feature-detection",
+        "local-feature-matching"
+      ],
+      "sources": {
+        "primary": "bay2006-surf",
+        "references": [
+          "lowe2004-sift",
+          "harris1988-corner"
+        ],
+        "notes": "Three pillars (Bay et al. 2006). Pillar 1 — Fast-Hessian detector (§3):\nintegral image $I_\\Sigma(x,y) = \\sum_{i \\le x, j \\le y} I(i, j)$ enables\nconstant-time rectangular sums; box filters $D_{xx}, D_{yy}, D_{xy}$\napproximate Gaussian second derivatives with empirical balancing\n$\\det(\\mathcal{H}_\\text{approx}) = D_{xx} D_{yy} - (0.9\\, D_{xy})^2$\n(Eq. 2). The factor 0.9 ≈ ratio of Frobenius norms of the lobes;\nsquared as 0.81 in the cross-term. Scale-space upscales filters\ninstead of downsampling: octave 1 uses 9×9, 15×15, 21×21, 27×27\n(σ = 1.2 at 9×9, σ = 3.6 at 27×27); octave step doubles per octave\n(6, 12, 24). NMS in 3×3×3 (image+scale); sub-pixel/sub-scale via\nquadratic fit (Brown). Pillar 2 — Orientation (§4.1): Haar-wavelet\nresponses $d_x, d_y$ at sample step $s$ in a $6s$-radius circular\nneighbourhood (wavelet side $4s$), Gaussian-weighted with σ = 2.5s,\nsliding 60° (π/3) angular window picks the longest summed vector.\nU-SURF skips this step (~28% speed gain). Pillar 3 — Descriptor\n(§4.2): aligned 20s × 20s window, 4×4 sub-region grid, 5×5 sample\npoints per sub-region, Haar size 2s, Gaussian σ = 3.3s; per\nsub-region $v = (\\sum d_x, \\sum |d_x|, \\sum d_y, \\sum |d_y|)$ ⇒ 64-D\nvector; L2-normalized to unit length. Laplacian-sign of the keypoint\nindexes matching for early reject. SURF-128 splits sums by sign of\nthe orthogonal axis. Matching: nearest-neighbour-ratio at 0.7.\n"
+      },
+      "date": "2026-05-09"
+    }
+  },
+  {
     "slug": "shu-topological-grid",
     "frontmatter": {
       "title": "Topological Grid Finding",
@@ -1671,6 +1746,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "sift",
           "confidence": "high",
           "caution": "SuperPoint replaces SIFT's hand-crafted DoG + 128-D descriptor with a single learned encoder + dual decoder heads."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "surf",
+          "confidence": "high",
+          "caution": "SuperPoint replaces SURF's box-filter Hessian detector + 64-D Haar-wavelet descriptor with a learned VGG encoder + dual decoder heads."
         }
       ],
       "domain": "features",
@@ -1728,6 +1809,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "sift",
           "confidence": "high",
           "caution": "XFeat targets CPU-grade compute and replaces SIFT's classical hand-crafted pipeline with a featherweight learned model."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "surf",
+          "confidence": "high",
+          "caution": "XFeat replaces SURF's integral-image Hessian detector + Haar-wavelet descriptor with a featherweight learned model targeting CPU inference."
         }
       ],
       "domain": "features",

@@ -624,3 +624,13 @@
   doi: "10.1109/TPAMI.1986.4767851"
   pdf: canny1986-edge.pdf
   cites: []
+
+- id: bay2006-surf
+  title: "SURF: Speeded Up Robust Features"
+  authors: ["H. Bay", "T. Tuytelaars", "L. V. Gool"]
+  year: 2006
+  venue: Lecture notes in computer science
+  url: https://link.springer.com/content/pdf/10.1007/11744023_32.pdf
+  doi: "10.1007/11744023_32"
+  pdf: bay2006-surf.pdf
+  cites: [harris1988-corner, lowe2004-sift]

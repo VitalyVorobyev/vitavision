@@ -30,6 +30,7 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "shi-tomasi-corner-detector": () => import("./content/algorithms/shi-tomasi-corner-detector.ts"),
   "sift": () => import("./content/algorithms/sift.ts"),
   "sturm-plane-based-calibration": () => import("./content/algorithms/sturm-plane-based-calibration.ts"),
+  "surf": () => import("./content/algorithms/surf.ts"),
   "shu-topological-grid": () => import("./content/algorithms/shu-topological-grid.ts"),
   "tsai-lenz-handeye": () => import("./content/algorithms/tsai-lenz-handeye.ts"),
   "tsai-versatile-calibration": () => import("./content/algorithms/tsai-versatile-calibration.ts"),

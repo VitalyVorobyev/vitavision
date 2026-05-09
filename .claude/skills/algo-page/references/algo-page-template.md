@@ -101,10 +101,20 @@ with NumPy-style vectorization.>
 <!-- Figures (illustration pass, SKILL §7.5). One per primitive below. Delete unused rows. -->
 
 <!-- Mermaid pipeline — inline, no asset file. Place after the Procedure block.
-     Use for control flow / pipeline stages / state machines. -->
+     Use for control flow / pipeline stages / state machines.
+     Hard rules (see _shared/illustrations.md §"Mermaid authoring notes"):
+       - ≤ 4 stages: flowchart LR or TB are both acceptable.
+       - ≥ 5 stages: forbidden as flowchart LR. Either use flowchart TB,
+         or generate a 2D SVG, or DROP the diagram if it merely
+         restates the :::algorithm[...] procedure.
+       - Never duplicate the :::algorithm[...] procedure as a Mermaid
+         pipeline. A pipeline figure earns its place by encoding
+         branching, parallelism, fan-out, or feedback loops that the
+         numbered procedure cannot show. A linear restatement is
+         redundant; delete it. -->
 
 ```mermaid
-flowchart LR
+flowchart TB
     A["Stage 1"] --> B["Stage 2"]
     B --> C["Stage 3"]
 ```

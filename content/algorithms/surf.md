@@ -109,16 +109,6 @@ The first-octave box-filter sizes are $9, 15, 21, 27$ pixels with the $9 \times 
 10. L2-normalize the descriptor to a unit vector; record the sign of the Hessian trace (Laplacian sign) for matching pre-filter.
 :::
 
-```mermaid
-flowchart LR
-    A["Integral image"] --> B["Box-filter Hessian det"]
-    B --> C["Threshold + 3x3x3 NMS"]
-    C --> D["Sub-pixel quadratic fit"]
-    D --> E["Orientation (Haar, 60 deg window)"]
-    E --> F["64-D descriptor (4x4 sub-regions)"]
-    F --> G["L2 normalize + Laplacian sign"]
-```
-
 # Implementation
 
 The Hessian-determinant evaluation is the per-pixel kernel; the integral image makes each box-filter response a constant-time sum. The per-pixel detector response in Rust:

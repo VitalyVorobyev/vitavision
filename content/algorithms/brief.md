@@ -112,15 +112,6 @@ The offset table $\{(x_i, y_i)\}$ is drawn once before any descriptors are compu
 5. Match across images by computing $d_H(\mathbf{f}_a, \mathbf{f}_b)$ with bitwise XOR plus a popcount instruction; nearest-neighbour search with a left-right consistency check is recommended for outlier removal.
 :::
 
-```mermaid
-flowchart LR
-    A["Input image"] --> B["Gaussian smooth (sigma=2, 9x9)"]
-    B --> C["Extract S x S patch at keypoint"]
-    C --> D["n_d pixel-pair tests"]
-    D --> E["Pack into 64-bit words"]
-    E --> F["Match by XOR + popcount"]
-```
-
 # Implementation
 
 Per-keypoint test-and-pack in Rust on an already-smoothed greyscale image. The offset table is integer and shared across all calls; the descriptor is stored as 64-bit words so that matching reduces to word-wise XOR and `count_ones()`.

@@ -112,6 +112,8 @@ The offset table $\{(x_i, y_i)\}$ is drawn once before any descriptors are compu
 5. Match across images by computing $d_H(\mathbf{f}_a, \mathbf{f}_b)$ with bitwise XOR plus a popcount instruction; nearest-neighbour search with a left-right consistency check is recommended for outlier removal.
 :::
 
+![BRIEF descriptor extraction pipeline: greyscale input → Gaussian smoothing → S × S patch extraction at each keypoint → n_d pixel-pair binary tests → packing into 64-bit words → Hamming-distance matching via bitwise XOR + popcount.](./images/brief/pipeline.svg)
+
 # Implementation
 
 Per-keypoint test-and-pack in Rust on an already-smoothed greyscale image. The offset table is integer and shared across all calls; the descriptor is stored as 64-bit words so that matching reduces to word-wise XOR and `count_ones()`.

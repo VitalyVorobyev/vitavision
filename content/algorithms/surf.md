@@ -109,6 +109,8 @@ The first-octave box-filter sizes are $9, 15, 21, 27$ pixels with the $9 \times 
 10. L2-normalize the descriptor to a unit vector; record the sign of the Hessian trace (Laplacian sign) for matching pre-filter.
 :::
 
+![SURF detect-and-describe pipeline: integral image → box-filter Hessian-determinant evaluation → threshold + 3×3×3 NMS → sub-pixel quadratic refinement → Haar-wavelet orientation assignment → 64-D descriptor extraction over 4×4 sub-regions → L2 normalisation with Laplacian-sign indexing.](./images/surf/pipeline.svg)
+
 # Implementation
 
 The Hessian-determinant evaluation is the per-pixel kernel; the integral image makes each box-filter response a constant-time sum. The per-pixel detector response in Rust:

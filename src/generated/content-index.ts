@@ -1257,7 +1257,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 4,
+      "readingTimeMinutes": 5,
       "access": "public",
       "prerequisites": [
         "scale-space",

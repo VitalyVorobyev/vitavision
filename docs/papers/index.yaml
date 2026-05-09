@@ -634,3 +634,13 @@
   doi: "10.1007/11744023_32"
   pdf: bay2006-surf.pdf
   cites: [harris1988-corner, lowe2004-sift]
+
+- id: calonder2010-brief
+  title: "BRIEF: Binary Robust Independent Elementary Features"
+  authors: ["M. Calonder", "V. Lepetit", "C. Strecha", "P. Fua"]
+  year: 2010
+  venue: Lecture notes in computer science
+  url: https://link.springer.com/content/pdf/10.1007/978-3-642-15561-1_56.pdf
+  doi: "10.1007/978-3-642-15561-1_56"
+  pdf: calonder2010-brief.pdf
+  cites: [rosten2006-fast, bay2006-surf, lowe2004-sift]

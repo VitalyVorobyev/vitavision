@@ -105,6 +105,70 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "brief",
+    "frontmatter": {
+      "title": "BRIEF: Binary Robust Independent Elementary Features",
+      "summary": "Encodes a Gaussian-smoothed image patch around a detected keypoint as a 128/256/512-bit binary string by running a fixed table of pairwise pixel-intensity tests; matched between images by Hamming distance via bitwise XOR + popcount.",
+      "tags": [
+        "local-descriptors",
+        "binary-descriptor",
+        "matching",
+        "feature-matching"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "sift",
+          "confidence": "medium",
+          "caution": "BRIEF is descriptor-only; SIFT/SURF bundle a detector."
+        },
+        {
+          "type": "compared_with",
+          "target": "surf",
+          "confidence": "medium",
+          "caution": "BRIEF is descriptor-only; SIFT/SURF bundle a detector."
+        },
+        {
+          "type": "feeds_into",
+          "target": "gao-dual-homography-stitching",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "lin-sva-stitching",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "apap-image-stitching",
+          "confidence": "medium"
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "local-feature-matching"
+      ],
+      "sources": {
+        "primary": "calonder2010-brief",
+        "references": [
+          "rosten2006-fast",
+          "bay2006-surf",
+          "lowe2004-sift"
+        ],
+        "notes": "Method (§3, Calonder et al. 2010). Pixel-pair test (Eq. 1):\nτ(p; x, y) = 1 if p(x) < p(y) else 0, where p is the Gaussian-smoothed\npatch (σ = 2, 9×9 discrete kernel — §3.1). Descriptor packing (Eq. 2):\nf_{n_d}(p) = Σ_{1≤i≤n_d} 2^{i-1} τ(p; x_i, y_i) with n_d ∈ {128, 256, 512}\nbits → BRIEF-16, BRIEF-32, BRIEF-64 (trailing number is bytes).\nPatch size S = 48 px (paper convention; the txt cache asserts\nS × S without an explicit numerical value, so this is the standard\ninterpretation).\nFive spatial sampling distributions for (x_i, y_i) evaluated in §3.2:\nG I uniform; G II i.i.d. Gaussian(0, S²/25) — best, used in all further\nexperiments; G III two-step Gaussian with σ² = S²/100 on the second\nsample; G IV coarse polar grid; G V x_i = (0,0) with y_i scanning a\npolar grid (consistently worst). Matching: Hamming distance (XOR +\npopcount). Speed (§4 Table, 512 keypoints, 2.66 GHz x86-64): BRIEF-32\ndescription 8.87 ms vs SURF-64 335 ms (35–41×); BRIEF-32 matching 4.35\nms vs 28.3 ms (4–13×). Storage 16/32/64 bytes vs 256 bytes for SURF-64.\nRotation sensitivity (§4 Fig. 9-right): little degradation up to\n10–15°, precipitous drop beyond. Recognition rate matches or exceeds\nSURF/U-SURF on Wall, Fountain, Trees, Jpg, Light; underperforms on\nGraffiti (rotation + monochromatic regions).\n"
+      },
+      "date": "2026-05-09"
+    }
+  },
+  {
     "slug": "canny-edge-detector",
     "frontmatter": {
       "title": "Canny Edge Detector",
@@ -333,6 +397,13 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient"
       ],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "brief",
+          "confidence": "high"
+        }
+      ],
       "domain": "features",
       "tasks": [
         "corner-detection"
@@ -1186,7 +1257,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 4,
+      "readingTimeMinutes": 5,
       "access": "public",
       "prerequisites": [
         "scale-space",
@@ -1752,6 +1823,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "surf",
           "confidence": "high",
           "caution": "SuperPoint replaces SURF's box-filter Hessian detector + 64-D Haar-wavelet descriptor with a learned VGG encoder + dual decoder heads."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "brief",
+          "confidence": "high",
+          "caution": "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
         }
       ],
       "domain": "features",
@@ -1815,6 +1892,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "surf",
           "confidence": "high",
           "caution": "XFeat replaces SURF's integral-image Hessian detector + Haar-wavelet descriptor with a featherweight learned model targeting CPU inference."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "brief",
+          "confidence": "high",
+          "caution": "XFeat replaces the FAST+BRIEF binary-descriptor pipeline with a featherweight learned model targeting CPU inference."
         }
       ],
       "domain": "features",

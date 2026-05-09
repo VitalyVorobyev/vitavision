@@ -100,14 +100,34 @@ with NumPy-style vectorization.>
 
 <!-- Figures (illustration pass, SKILL §7.5). One per primitive below. Delete unused rows. -->
 
-<!-- Mermaid pipeline — inline, no asset file. Place after the Procedure block.
-     Use for control flow / pipeline stages / state machines. -->
+<!-- Pipeline figure — choose ONE of the two patterns below by stage count.
+
+     ≤ 4 stages: inline Mermaid is fine (no asset file). flowchart LR or TB
+     both acceptable; preview at 360 px width.
+
+     ≥ 5 stages: GENERATED SVG only. flowchart LR is FORBIDDEN at this size
+     because it overflows narrow viewports. Model the script on the canonical
+     pattern at py/generate_gp_checkerboard_pipeline.py — matplotlib
+     FancyBboxPatch boxes, snake layout (cols=3 wraps to 3+3+1...),
+     slate-50 figure patch, white axes, 12-pt labels, deterministic
+     svg.hashsalt, accessibility post-pass injecting <title>/<desc>.
+     A pipeline figure earns its place when it visualizes flow (snake
+     wrap, parallel paths, fan-out, feedback) the numbered :::algorithm[...]
+     cannot show at a glance — even if every box parallels a numbered step. -->
+
+<!-- Pattern A — Mermaid for short pipelines (≤ 4 stages). -->
 
 ```mermaid
-flowchart LR
+flowchart TB
     A["Stage 1"] --> B["Stage 2"]
     B --> C["Stage 3"]
 ```
+
+<!-- Pattern B — Generated SVG for ≥ 5 stages. Script lives at
+     py/generate_<slug>_pipeline.py; output committed at
+     content/images/<slug>/pipeline.svg. Re-run with .venv/bin/python. -->
+
+![<slug> pipeline: <one-sentence flow description>.](./images/<slug>/pipeline.svg)
 
 <!-- Hand-authored SVG — store at content/images/<slug>/<name>.svg.
      Use for small fixed geometric schemes (< ~15 primitives). Place near the defining formula. -->

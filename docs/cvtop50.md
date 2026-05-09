@@ -35,9 +35,9 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not â€
     Node: sift.
 +14. Bay, Tuytelaars, Van Gool. SURF: Speeded Up Robust Features. ECCV, 2006.
     Node: surf.
-15. Rosten, Drummond. Machine Learning for High-Speed Corner Detection. ECCV, 2006.
++15. Rosten, Drummond. Machine Learning for High-Speed Corner Detection. ECCV, 2006.
     Node: fast-corner-detector.
-16. Calonder et al. BRIEF: Binary Robust Independent Elementary Features. ECCV, 2010.
++16. Calonder et al. BRIEF: Binary Robust Independent Elementary Features. ECCV, 2010.
     Node: brief.
 17. Rublee et al. ORB: An Efficient Alternative to SIFT or SURF. ICCV, 2011.
     Node: orb.

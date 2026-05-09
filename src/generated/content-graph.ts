@@ -65,6 +65,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/apap-image-stitching",
       "draft": false
     },
+    "brief": {
+      "slug": "brief",
+      "type": "algorithm",
+      "title": "BRIEF: Binary Robust Independent Elementary Features",
+      "summary": "Encodes a Gaussian-smoothed image patch around a detected keypoint as a 128/256/512-bit binary string by running a fixed table of pairwise pixel-intensity tests; matched between images by Hamming distance via bitwise XOR + popcount.",
+      "path": "/atlas/brief",
+      "draft": false
+    },
     "canny-edge-detector": {
       "slug": "canny-edge-detector",
       "type": "algorithm",
@@ -468,6 +476,41 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": []
     },
+    "brief": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "sift",
+          "confidence": "medium",
+          "caution": "BRIEF is descriptor-only; SIFT/SURF bundle a detector."
+        },
+        {
+          "type": "compared_with",
+          "target": "surf",
+          "confidence": "medium",
+          "caution": "BRIEF is descriptor-only; SIFT/SURF bundle a detector."
+        },
+        {
+          "type": "feeds_into",
+          "target": "gao-dual-homography-stitching",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "lin-sva-stitching",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "apap-image-stitching",
+          "confidence": "medium"
+        }
+      ]
+    },
     "canny-edge-detector": {
       "prerequisites": [
         "image-gradient"
@@ -568,6 +611,11 @@ export const contentGraph: ContentGraph = {
       ],
       "failureModes": [],
       "relations": [
+        {
+          "type": "feeds_into",
+          "target": "brief",
+          "confidence": "high"
+        },
         {
           "type": "compared_with",
           "target": "harris-corner-detector",
@@ -966,6 +1014,13 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
+          "type": "compared_with",
+          "target": "brief",
+          "confidence": "medium",
+          "caution": "BRIEF is descriptor-only; SIFT/SURF bundle a detector.",
+          "mirrored": true
+        },
+        {
           "type": "alternative_formulation_of",
           "target": "surf",
           "confidence": "high",
@@ -1030,6 +1085,13 @@ export const contentGraph: ContentGraph = {
           "type": "feeds_into",
           "target": "apap-image-stitching",
           "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "brief",
+          "confidence": "medium",
+          "caution": "BRIEF is descriptor-only; SIFT/SURF bundle a detector.",
+          "mirrored": true
         }
       ]
     },
@@ -1244,6 +1306,12 @@ export const contentGraph: ContentGraph = {
           "target": "surf",
           "confidence": "high",
           "caution": "SuperPoint replaces SURF's box-filter Hessian detector + 64-D Haar-wavelet descriptor with a learned VGG encoder + dual decoder heads."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "brief",
+          "confidence": "high",
+          "caution": "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
         }
       ]
     },
@@ -1264,6 +1332,12 @@ export const contentGraph: ContentGraph = {
           "target": "surf",
           "confidence": "high",
           "caution": "XFeat replaces SURF's integral-image Hessian detector + Haar-wavelet descriptor with a featherweight learned model targeting CPU inference."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "brief",
+          "confidence": "high",
+          "caution": "XFeat replaces the FAST+BRIEF binary-descriptor pipeline with a featherweight learned model targeting CPU inference."
         },
         {
           "type": "compared_with",
@@ -1368,6 +1442,10 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [
         {
+          "slug": "brief",
+          "confidence": "medium"
+        },
+        {
           "slug": "sift",
           "confidence": "high"
         },
@@ -1377,6 +1455,30 @@ export const contentGraph: ContentGraph = {
         }
       ],
       "hasLearnedAlternative": []
+    },
+    "brief": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "fast-corner-detector",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
+        },
+        {
+          "slug": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat replaces the FAST+BRIEF binary-descriptor pipeline with a featherweight learned model targeting CPU inference."
+        }
+      ]
     },
     "canny-edge-detector": {
       "usedBy": [],
@@ -1462,6 +1564,10 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [
         {
+          "slug": "brief",
+          "confidence": "medium"
+        },
+        {
           "slug": "sift",
           "confidence": "high",
           "caution": "SIFT correspondences are the standard input to dual-homography stitching"
@@ -1530,6 +1636,10 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [],
       "fedBy": [
+        {
+          "slug": "brief",
+          "confidence": "medium"
+        },
         {
           "slug": "sift",
           "confidence": "high"
@@ -1896,6 +2006,7 @@ export const contentGraph: ContentGraph = {
     },
     "image-gradient": {
       "usedBy": [
+        "brief",
         "canny-edge-detector",
         "ccdn-checkerboard-detector",
         "chess-corners",

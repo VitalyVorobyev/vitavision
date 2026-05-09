@@ -39,6 +39,30 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE CVPR"
   },
   {
+    "slug": "brief",
+    "path": "/atlas/brief",
+    "type": "algorithm",
+    "title": "BRIEF: Binary Robust Independent Elementary Features",
+    "summary": "Encodes a Gaussian-smoothed image patch around a detected keypoint as a 128/256/512-bit binary string by running a fixed table of pairwise pixel-intensity tests; matched between images by Hamming distance via bitwise XOR + popcount.",
+    "tags": [
+      "local-descriptors",
+      "binary-descriptor",
+      "matching",
+      "feature-matching"
+    ],
+    "domain": "features",
+    "headings": [
+      "Sampling distributions"
+    ],
+    "authors": [
+      "M. Calonder",
+      "V. Lepetit",
+      "C. Strecha",
+      "P. Fua"
+    ],
+    "venue": "Lecture notes in computer science"
+  },
+  {
     "slug": "canny-edge-detector",
     "path": "/atlas/canny-edge-detector",
     "type": "algorithm",

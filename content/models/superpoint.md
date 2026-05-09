@@ -30,6 +30,10 @@ relations:
     target: surf
     confidence: high
     caution: "SuperPoint replaces SURF's box-filter Hessian detector + 64-D Haar-wavelet descriptor with a learned VGG encoder + dual decoder heads."
+  - type: learned_alternative_of
+    target: brief
+    confidence: high
+    caution: "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
 sources:
   primary: detone2018-superpoint
   references:

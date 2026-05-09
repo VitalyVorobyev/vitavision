@@ -20,6 +20,10 @@ relations:
     target: surf
     confidence: high
     caution: "XFeat replaces SURF's integral-image Hessian detector + Haar-wavelet descriptor with a featherweight learned model targeting CPU inference."
+  - type: learned_alternative_of
+    target: brief
+    confidence: high
+    caution: "XFeat replaces the FAST+BRIEF binary-descriptor pipeline with a featherweight learned model targeting CPU inference."
 sources:
   primary: potje2024-xfeat
   references:

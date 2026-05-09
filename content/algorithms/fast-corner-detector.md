@@ -9,6 +9,10 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 prerequisites: [image-gradient]
 failureModes: []
+relations:
+  - type: feeds_into
+    target: brief
+    confidence: high
 sources:
   primary: rosten2006-fast
   notes: |

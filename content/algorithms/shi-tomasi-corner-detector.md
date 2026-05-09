@@ -118,6 +118,22 @@ fn shi_tomasi_response(img: &[f32], w: usize, h: usize, sigma: f32) -> Vec<f32> 
 - No free sensitivity parameter analogous to Harris's $k$: the threshold $\tau$ has a direct interpretation as a tracking-quality bound derived from the linear displacement system (equation (8) of the paper).
 - Compared with Harris: see [When to choose Harris over Shi-Tomasi](/atlas/harris-corner-detector#when-to-choose-harris-over-shi-tomasi) on the Harris page, which hosts the comparison per the older-paper-hosts rule.
 
+## When to choose Shi-Tomasi over SIFT
+
+[SIFT](/atlas/sift) detects scale-space extrema in a DoG pyramid and bundles a 128-D descriptor; Shi-Tomasi computes a single-scale corner-response score from the structure-tensor minimum eigenvalue. They solve different problems — Shi-Tomasi locates corners at a fixed integration scale, SIFT produces matchable keypoints across scale.
+
+| | Shi-Tomasi | SIFT |
+|---|---|---|
+| Scale handling | single scale; multi-scale only by external pyramid | scale-invariant by construction |
+| Output | corner-response score per pixel | keypoint $(x, y, \sigma, \theta)$ + 128-D descriptor |
+| Per-detection cost | gradient + 3 convolutions + 1 sqrt | full DoG pyramid, sub-pixel refinement, orientation histogram, descriptor |
+| Descriptor | none | bundled 128-D L2-normalised vector |
+| Threshold meaning | minimum-eigenvalue value, transfers across exposures | DoG contrast threshold + Hessian-ratio edge test |
+
+Choose Shi-Tomasi when (1) scale is controlled by the application — KLT tracking is the canonical use case (Shi-Tomasi corners are the highest-quality features for the linear displacement model the paper derives); (2) the exposure-portable threshold matters more than scale invariance; (3) downstream code does its own descriptor or operates on raw patches.
+
+Choose SIFT when (1) images differ in scale, distance, or focal length and corners must repeat across scale; (2) a single-step detect-and-describe pipeline is required; (3) the matching task is wide-baseline rather than frame-to-frame tracking.
+
 # References
 
 1. J. Shi, C. Tomasi. *Good Features to Track.* IEEE CVPR, 1994. DOI: [10.1109/CVPR.1994.323794](https://doi.org/10.1109/CVPR.1994.323794)

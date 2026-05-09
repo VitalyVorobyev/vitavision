@@ -39,6 +39,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE CVPR"
   },
   {
+    "slug": "canny-edge-detector",
+    "path": "/atlas/canny-edge-detector",
+    "type": "algorithm",
+    "title": "Canny Edge Detector",
+    "summary": "Detect thin step edges in greyscale images by smoothing with a Gaussian, computing gradient magnitude and direction, suppressing non-maxima along the gradient direction, then linking surviving pixels via hysteresis double-thresholding; the filter shape is derived as the variational optimum of three criteria — detection SNR, localisation, and single-response spacing — under an additive-white-Gaussian-noise step-edge model.",
+    "tags": [
+      "edge-detection",
+      "non-maximum-suppression",
+      "hysteresis",
+      "gradient"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure",
+      "Multi-scale and directional extensions"
+    ],
+    "authors": [
+      "J. Canny"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "chess-corners",
     "path": "/atlas/chess-corners",
     "type": "algorithm",
@@ -102,6 +124,29 @@ export const searchRecords: SearchRecord[] = [
       "K. Daniilidis"
     ],
     "venue": "The International Journal of Robotics Research"
+  },
+  {
+    "slug": "epnp",
+    "path": "/atlas/epnp",
+    "type": "algorithm",
+    "title": "EPnP: O(n) Perspective-n-Point",
+    "summary": "Non-iterative O(n) solver for the calibrated Perspective-n-Point problem: express the n reference points as weighted sums of four virtual control points, recover their camera-frame coordinates from the null space of a 12×12 matrix, and extract pose by absolute orientation.",
+    "tags": [
+      "pose-estimation",
+      "perspective-n-point",
+      "geometry"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "β recovery",
+      "Procedure"
+    ],
+    "authors": [
+      "V. Lepetit",
+      "F. Moreno-Noguer",
+      "P. Fua"
+    ],
+    "venue": "International Journal of Computer Vision"
   },
   {
     "slug": "fast-corner-detector",
@@ -281,7 +326,8 @@ export const searchRecords: SearchRecord[] = [
       "Procedure",
       "When to choose Harris over Shi-Tomasi",
       "When to choose Harris over FAST",
-      "When to choose Harris over ChESS"
+      "When to choose Harris over ChESS",
+      "When to choose Harris over SIFT"
     ],
     "authors": [
       "C. Harris",
@@ -489,6 +535,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "ECCV"
   },
   {
+    "slug": "scaramuzza-omni-calibration",
+    "path": "/atlas/scaramuzza-omni-calibration",
+    "type": "algorithm",
+    "title": "Scaramuzza Omnidirectional Camera Calibration",
+    "summary": "Calibrate any central catadioptric or fisheye camera from a few planar checkerboard views by fitting a radially-symmetric Taylor-polynomial imaging function with a linear estimate followed by maximum-likelihood refinement.",
+    "tags": [
+      "calibration",
+      "omnidirectional",
+      "fisheye",
+      "catadioptric"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "D. Scaramuzza",
+      "A. Martinelli",
+      "R. Siegwart"
+    ],
+    "venue": "IEEE/RSJ IROS"
+  },
+  {
     "slug": "shi-tomasi-corner-detector",
     "path": "/atlas/shi-tomasi-corner-detector",
     "type": "algorithm",
@@ -500,13 +569,36 @@ export const searchRecords: SearchRecord[] = [
     ],
     "domain": "features",
     "headings": [
-      "Procedure"
+      "Procedure",
+      "When to choose Shi-Tomasi over SIFT"
     ],
     "authors": [
       "J. Shi",
       "C. Tomasi"
     ],
     "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "sift",
+    "path": "/atlas/sift",
+    "type": "algorithm",
+    "title": "SIFT: Scale-Invariant Feature Transform",
+    "summary": "Detects keypoints as scale-space extrema in a Difference-of-Gaussian image pyramid, refines location and scale by 3D quadratic interpolation, assigns canonical orientation from local gradient histograms, and emits a 128-D descriptor invariant to scale, rotation, and moderate affine and illumination change.",
+    "tags": [
+      "feature-detection",
+      "local-descriptors",
+      "scale-invariant",
+      "matching"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure",
+      "When to choose SIFT over FAST"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
   },
   {
     "slug": "sturm-plane-based-calibration",
@@ -528,6 +620,28 @@ export const searchRecords: SearchRecord[] = [
       "S. J. Maybank"
     ],
     "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "surf",
+    "path": "/atlas/surf",
+    "type": "algorithm",
+    "title": "SURF: Speeded Up Robust Features",
+    "summary": "Detects scale- and rotation-invariant blob keypoints as scale-space maxima of the Hessian determinant, approximated with box filters on an integral image, and emits a 64-D Haar-wavelet response descriptor matched by Euclidean distance with a Laplacian-sign pre-filter.",
+    "tags": [
+      "feature-detection",
+      "local-descriptors",
+      "scale-invariant",
+      "blob-detection",
+      "matching"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "H. Bay",
+      "T. Tuytelaars",
+      "L. V. Gool"
+    ],
+    "venue": "Lecture notes in computer science"
   },
   {
     "slug": "shu-topological-grid",

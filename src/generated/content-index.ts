@@ -105,6 +105,33 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "canny-edge-detector",
+    "frontmatter": {
+      "title": "Canny Edge Detector",
+      "summary": "Detect thin step edges in greyscale images by smoothing with a Gaussian, computing gradient magnitude and direction, suppressing non-maxima along the gradient direction, then linking surviving pixels via hysteresis double-thresholding; the filter shape is derived as the variational optimum of three criteria — detection SNR, localisation, and single-response spacing — under an additive-white-Gaussian-noise step-edge model.",
+      "tags": [
+        "edge-detection",
+        "non-maximum-suppression",
+        "hysteresis",
+        "gradient"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "domain": "features",
+      "sources": {
+        "primary": "canny1986-edge",
+        "notes": "Variational derivation over three criteria: detection SNR Σ (Eq. 3),\nlocalisation Λ (Eq. 9), and single-response spacing x_max = kW (Eq. 13).\nComposite criterion ΣΛ is scale-invariant (Eq. 21), giving a unique\noperator shape up to spatial scaling. The first derivative of a Gaussian\nG'(x) = -(x/σ²) exp(-x²/(2σ²)) (Eq. 42) is ~20% below optimal in ΣΛ and\n~10% below in r, but is preferred in 2D because of Gaussian separability.\nPerformance terms (Eq. 43): ∫f²= 1/(√2 σ), ∫f'²= 1/(4σ³), ∫f''²= 1/(8σ⁵).\nFDoG values: ΣΛ = 0.92/(3σ) (Eq. 44), r ≈ 0.51 (Eq. 45). Optimal\nconstrained filter (filter 6, Fig. 4): r ≈ 0.576. Pipeline: smooth →\ngradient (Eq. 46) → NMS as zero-crossing of directional second derivative\n(Eq. 47) → hysteresis with T_h/T_l ∈ [2, 3] (§VI). Directional operators\nuse 6 orientations with d/σ ≈ 1.4 and 5 samples per mask (§IX).\n"
+      },
+      "date": "2026-05-05"
+    }
+  },
+  {
     "slug": "chess-corners",
     "frontmatter": {
       "title": "ChESS Corners",
@@ -257,6 +284,36 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Page tracks Daniilidis 1999 §3–§6. Rigid motion encoded as unit dual\nquaternion q̂ = q + εq′ with q = (cos θ/2, sin(θ/2) n) and\nq′ = (1/2) t ⊗ q (screw form q̂ = cos(θ̂/2) + sin(θ̂/2) l̂ with\nθ̂ = θ + εd, l̂ = l + εm). Screw congruence: corresponding hand and\neye motions share (θ, d); the scalar parts of â and b̂ coincide and\ncancel from the constraint â x̂ = x̂ b̂. Remaining imaginary-part\nequations stack into the 6×8 system (Eq. 31)\n    | a − b   [a+b]_×    0   0_{3×3} |\n    | a′ − b′ [a′+b′]_×  a−b [a+b]_× |\nper motion pair. SVD of the stacked ≥6M×8 matrix T yields a\ntwo-dim null space span{v₇, v₈}; the physical x̂ = λ₁ v₇ + λ₂ v₈\nis fixed by |q|² = 1 and q·q′ = 0 (a quadratic in s = λ₁/λ₂).\nRecover R from q and t = 2 q′ q*.\n"
       },
       "date": "2026-04-20"
+    }
+  },
+  {
+    "slug": "epnp",
+    "frontmatter": {
+      "title": "EPnP: O(n) Perspective-n-Point",
+      "summary": "Non-iterative O(n) solver for the calibrated Perspective-n-Point problem: express the n reference points as weighted sums of four virtual control points, recover their camera-frame coordinates from the null space of a 12×12 matrix, and extract pose by absolute orientation.",
+      "tags": [
+        "pose-estimation",
+        "perspective-n-point",
+        "geometry"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "dlt-normalisation",
+        "ransac"
+      ],
+      "failureModes": [],
+      "domain": "geometry",
+      "sources": {
+        "primary": "lepetit2009-epnp",
+        "references": [
+          "fischler1981-ransac"
+        ],
+        "notes": "EPnP — Lepetit, Moreno-Noguer, Fua, IJCV 2009 (received April 2008).\nReduces calibrated PnP to recovering the camera-frame coordinates of\nfour virtual control points whose barycentric weights describe the n\nreference points (Eqs. 1–2). Stacks two equations per correspondence\ninto Mx = 0 where x is the 12-vector of control-point camera\ncoordinates (Eqs. 5–7); solves in the null space of MᵀM (12×12)\nexpressed as a linear combination of N null eigenvectors v_i (Eq. 8).\nEffective null-space dimension N varies from 1 to 4 with focal length\nand noise; the method computes solutions for all four N and keeps the\none with smallest reprojection error (Eq. 9). β coefficients are\nrecovered from inter-control-point distance constraints — closed form\nfor N=1 (Eq. 11), pseudoinverse / inverse on Lβ = ρ for N=2,3\n(Eq. 13), relinearisation (Kipnis–Shamir 1999, Eq. 14) for N=4.\nOptional Gauss-Newton refinement minimises pairwise distance residuals\nover only four scalar β's (Eqs. 15–16) — constant time, fewer than\n10 iterations. Planar fallback uses three control points and a 2n×9\nsystem. Linear-time scaling is dominated by the MᵀM product (O(n)),\nwhich kicks in around n ≈ 15.\n"
+      },
+      "date": "2026-05-04"
     }
   },
   {
@@ -553,7 +610,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
         "image-gradient",
@@ -948,6 +1005,40 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "scaramuzza-omni-calibration",
+    "frontmatter": {
+      "title": "Scaramuzza Omnidirectional Camera Calibration",
+      "summary": "Calibrate any central catadioptric or fisheye camera from a few planar checkerboard views by fitting a radially-symmetric Taylor-polynomial imaging function with a linear estimate followed by maximum-likelihood refinement.",
+      "tags": [
+        "calibration",
+        "omnidirectional",
+        "fisheye",
+        "catadioptric"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "camera-distortion-models"
+      ],
+      "failureModes": [],
+      "domain": "calibration",
+      "tasks": [
+        "camera-calibration"
+      ],
+      "sources": {
+        "primary": "scaramuzza2006-omni",
+        "references": [
+          "zhang2000-flexible",
+          "rufli2008-blurred"
+        ],
+        "notes": "Page follows the IROS 2006 paper §III–V: §III defines the imaging\nfunction as the Taylor polynomial f(ρ) = a₀ + a₂ρ² + … + a_N ρ^N\nwith the closure a₁ = 0; §IV factors the calibration into a linear\nleast-squares stage that recovers per-view extrinsics together with\nthe Taylor coefficients followed by Levenberg–Marquardt refinement\nof the maximum-likelihood reprojection cost; §V adds an iterative\ncoarse-to-fine search for the image center O_c that minimises the\nsum of squared reprojection errors.\n"
+      },
+      "date": "2026-05-05"
+    }
+  },
+  {
     "slug": "shi-tomasi-corner-detector",
     "frontmatter": {
       "title": "Shi-Tomasi Corner Detector",
@@ -958,7 +1049,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 4,
+      "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
         "image-gradient",
@@ -977,6 +1068,74 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Uses the same structure tensor M as Harris, but replaces the Harris\nresponse with R = min(λ₁, λ₂) — the smaller eigenvalue of M. The\nthreshold then encodes a feature-tracking quality criterion derived\nin §3 of the paper.\n"
       },
       "date": "2026-04-15"
+    }
+  },
+  {
+    "slug": "sift",
+    "frontmatter": {
+      "title": "SIFT: Scale-Invariant Feature Transform",
+      "summary": "Detects keypoints as scale-space extrema in a Difference-of-Gaussian image pyramid, refines location and scale by 3D quadratic interpolation, assigns canonical orientation from local gradient histograms, and emits a 128-D descriptor invariant to scale, rotation, and moderate affine and illumination change.",
+      "tags": [
+        "feature-detection",
+        "local-descriptors",
+        "scale-invariant",
+        "matching"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "scale-space",
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "harris-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "gao-dual-homography-stitching",
+          "confidence": "high",
+          "caution": "SIFT correspondences are the standard input to dual-homography stitching"
+        },
+        {
+          "type": "feeds_into",
+          "target": "lin-sva-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "apap-image-stitching",
+          "confidence": "high"
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "feature-detection",
+        "local-feature-matching"
+      ],
+      "sources": {
+        "primary": "lowe2004-sift",
+        "references": [
+          "harris1988-corner"
+        ],
+        "notes": "Four-stage cascade. Stage 1 (§3): Gaussian pyramid with s=3 intervals/octave\n(k=2^(1/3)), σ=1.6 initial blur, optional 2× upsampling for fine-scale\nrecovery; DoG D(x,y,σ) = L(x,y,kσ) − L(x,y,σ) (Eq. 1) approximates\nσ²∇²G; 26-neighbor extrema in (x,y,σ). Stage 2 (§4): Taylor expansion to\nsecond order (Eq. 2); sub-pixel offset x̂ = −H⁻¹·∂D/∂x (Eq. 3); reject\n|D(x̂)| < 0.03 (low-contrast); reject Tr(H_2D)²/Det(H_2D) ≥ (r+1)²/r with\nr=10 → threshold 12.1 (edge response, Eq. 4). Stage 3 (§5): 36-bin\ngradient-orientation histogram in Gaussian window σ_w = 1.5×σ_keypoint;\nsecondary peaks within 80% of dominant peak emit additional keypoints\n(~15% multi-orientation rate). Stage 4 (§6.1): 16×16 sample grid rotated\nto keypoint frame; 4×4 array of 8-bin orientation histograms with\ntrilinear interpolation; Gaussian weighting σ = half-window; L2-normalize,\nclamp to 0.2 (illumination robustness), renormalize → 128-D vector.\nMatching (§7.1): nearest/second-nearest ratio < 0.8 discards ~90% false\nmatches with <5% correct-match loss.\n"
+      },
+      "date": "2026-05-05"
     }
   },
   {
@@ -1011,6 +1170,81 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Concurrent with Zhang 1999 (ICCV; published as TPAMI 2000). Same two\nIAC linear constraints per homography (Eq. 4 in Sturm-Maybank, Eqs. 3-4\nin Zhang). Primary distinguishing contributions: (a) exhaustive\nsingularity catalogue for one- and two-plane setups (Tables 1 and 2);\n(b) variable-intrinsics extension for zooming cameras (§4.2 — additional\ncolumns in the design matrix per zoom position); (c) prior-knowledge\nincorporation as linear constraints (§4.1). Numerical: column rescaling\nof A \"proved to be crucial\" for reliable IAC recovery; row rescaling\nexplicitly avoided (§4.3) because near-zero rows magnify noise. Note\npaper_id \"2003\" is an index artefact — paper is CVPR 1999.\n"
       },
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "surf",
+    "frontmatter": {
+      "title": "SURF: Speeded Up Robust Features",
+      "summary": "Detects scale- and rotation-invariant blob keypoints as scale-space maxima of the Hessian determinant, approximated with box filters on an integral image, and emits a 64-D Haar-wavelet response descriptor matched by Euclidean distance with a Laplacian-sign pre-filter.",
+      "tags": [
+        "feature-detection",
+        "local-descriptors",
+        "scale-invariant",
+        "blob-detection",
+        "matching"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 4,
+      "access": "public",
+      "prerequisites": [
+        "scale-space",
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "alternative_formulation_of",
+          "target": "sift",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-corner-detector",
+          "confidence": "medium",
+          "caution": "FAST is detector-only; SURF bundles a descriptor."
+        },
+        {
+          "type": "compared_with",
+          "target": "harris-corner-detector",
+          "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "gao-dual-homography-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "lin-sva-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "apap-image-stitching",
+          "confidence": "high"
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "feature-detection",
+        "local-feature-matching"
+      ],
+      "sources": {
+        "primary": "bay2006-surf",
+        "references": [
+          "lowe2004-sift",
+          "harris1988-corner"
+        ],
+        "notes": "Three pillars (Bay et al. 2006). Pillar 1 — Fast-Hessian detector (§3):\nintegral image $I_\\Sigma(x,y) = \\sum_{i \\le x, j \\le y} I(i, j)$ enables\nconstant-time rectangular sums; box filters $D_{xx}, D_{yy}, D_{xy}$\napproximate Gaussian second derivatives with empirical balancing\n$\\det(\\mathcal{H}_\\text{approx}) = D_{xx} D_{yy} - (0.9\\, D_{xy})^2$\n(Eq. 2). The factor 0.9 ≈ ratio of Frobenius norms of the lobes;\nsquared as 0.81 in the cross-term. Scale-space upscales filters\ninstead of downsampling: octave 1 uses 9×9, 15×15, 21×21, 27×27\n(σ = 1.2 at 9×9, σ = 3.6 at 27×27); octave step doubles per octave\n(6, 12, 24). NMS in 3×3×3 (image+scale); sub-pixel/sub-scale via\nquadratic fit (Brown). Pillar 2 — Orientation (§4.1): Haar-wavelet\nresponses $d_x, d_y$ at sample step $s$ in a $6s$-radius circular\nneighbourhood (wavelet side $4s$), Gaussian-weighted with σ = 2.5s,\nsliding 60° (π/3) angular window picks the longest summed vector.\nU-SURF skips this step (~28% speed gain). Pillar 3 — Descriptor\n(§4.2): aligned 20s × 20s window, 4×4 sub-region grid, 5×5 sample\npoints per sub-region, Haar size 2s, Gaussian σ = 3.3s; per\nsub-region $v = (\\sum d_x, \\sum |d_x|, \\sum d_y, \\sum |d_y|)$ ⇒ 64-D\nvector; L2-normalized to unit length. Laplacian-sign of the keypoint\nindexes matching for early reject. SURF-128 splits sums by sign of\nthe orthogonal axis. Matching: nearest-neighbour-ratio at 0.7.\n"
+      },
+      "date": "2026-05-09"
     }
   },
   {
@@ -1506,6 +1740,18 @@ export const modelPages: ModelIndexEntry[] = [
           "type": "learned_alternative_of",
           "target": "shi-tomasi-corner-detector",
           "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "sift",
+          "confidence": "high",
+          "caution": "SuperPoint replaces SIFT's hand-crafted DoG + 128-D descriptor with a single learned encoder + dual decoder heads."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "surf",
+          "confidence": "high",
+          "caution": "SuperPoint replaces SURF's box-filter Hessian detector + 64-D Haar-wavelet descriptor with a learned VGG encoder + dual decoder heads."
         }
       ],
       "domain": "features",
@@ -1557,6 +1803,20 @@ export const modelPages: ModelIndexEntry[] = [
         "image-gradient"
       ],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "sift",
+          "confidence": "high",
+          "caution": "XFeat targets CPU-grade compute and replaces SIFT's classical hand-crafted pipeline with a featherweight learned model."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "surf",
+          "confidence": "high",
+          "caution": "XFeat replaces SURF's integral-image Hessian detector + Haar-wavelet descriptor with a featherweight learned model targeting CPU inference."
+        }
+      ],
       "domain": "features",
       "tasks": [
         "feature-detection",
@@ -1825,7 +2085,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [],
       "domain": "image-formation",

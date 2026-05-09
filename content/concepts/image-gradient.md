@@ -115,6 +115,7 @@ The image gradient is the lowest-level quantity on which feature detection and i
 - **fast-corner-detector** — does not use gradients directly; pixel-intensity comparisons on a circle substitute for gradient computation, which is one reason FAST is faster than Harris.
 - **pyramidal-blur-aware-xcorner** — operates on an image pyramid, computing gradients at each pyramid level; scale selection is driven by gradient-based saddle-point measures.
 - **loy-fast-radial-symmetry** — votes along the gradient orientation $\hat{\mathbf{g}}(p) = \mathbf{g}(p)/\|\mathbf{g}(p)\|$ at each pixel; positively- and negatively-affected pixels at distance $n$ accumulate magnitude and orientation contributions, yielding a symmetry-contribution map per radius.
+- **sift** — gradient magnitude $m(x,y) = \sqrt{(L_{x+1}-L_{x-1})^2 + (L_{y+1}-L_{y-1})^2}$ and orientation $\theta(x,y) = \arctan\bigl((L_{y+1}-L_{y-1})/(L_{x+1}-L_{x-1})\bigr)$ are the fundamental inputs to both orientation assignment (36-bin histogram, $\sigma_w = 1.5 \times \sigma_\text{keypoint}$) and descriptor construction (4×4 array of 8-bin histograms; 128-D total). One of the most cited downstream consumers of image-gradient computation.
 
 # References
 

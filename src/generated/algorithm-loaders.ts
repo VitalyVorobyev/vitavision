@@ -3,9 +3,11 @@ export interface GeneratedHtmlModule { html: string; }
 
 export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
   "apap-image-stitching": () => import("./content/algorithms/apap-image-stitching.ts"),
+  "canny-edge-detector": () => import("./content/algorithms/canny-edge-detector.ts"),
   "chess-corners": () => import("./content/algorithms/chess-corners.ts"),
   "laureano-topological-chessboard": () => import("./content/algorithms/laureano-topological-chessboard.ts"),
   "daniilidis-dual-quaternion-handeye": () => import("./content/algorithms/daniilidis-dual-quaternion-handeye.ts"),
+  "epnp": () => import("./content/algorithms/epnp.ts"),
   "fast-corner-detector": () => import("./content/algorithms/fast-corner-detector.ts"),
   "loy-fast-radial-symmetry": () => import("./content/algorithms/loy-fast-radial-symmetry.ts"),
   "fischler-bolles-ransac": () => import("./content/algorithms/fischler-bolles-ransac.ts"),
@@ -24,8 +26,11 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "pyramidal-blur-aware-xcorner": () => import("./content/algorithms/pyramidal-blur-aware-xcorner.ts"),
   "02-demo-blocks": () => import("./content/algorithms/02-demo-blocks.ts"),
   "rochade": () => import("./content/algorithms/rochade.ts"),
+  "scaramuzza-omni-calibration": () => import("./content/algorithms/scaramuzza-omni-calibration.ts"),
   "shi-tomasi-corner-detector": () => import("./content/algorithms/shi-tomasi-corner-detector.ts"),
+  "sift": () => import("./content/algorithms/sift.ts"),
   "sturm-plane-based-calibration": () => import("./content/algorithms/sturm-plane-based-calibration.ts"),
+  "surf": () => import("./content/algorithms/surf.ts"),
   "shu-topological-grid": () => import("./content/algorithms/shu-topological-grid.ts"),
   "tsai-lenz-handeye": () => import("./content/algorithms/tsai-lenz-handeye.ts"),
   "tsai-versatile-calibration": () => import("./content/algorithms/tsai-versatile-calibration.ts"),

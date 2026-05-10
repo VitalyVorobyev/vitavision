@@ -732,3 +732,14 @@
   doi: "10.1038/293133a0"
   pdf: longuet-higgins1981-eight-point.pdf
   cites: []
+
+- id: rother2004-grabcut
+  title: "GrabCut: Interactive Foreground Extraction using Iterated Graph Cuts"
+  authors: ["C. Rother", "V. Kolmogorov", "A. Blake"]
+  year: 2004
+  venue: ACM Transactions on Graphics (SIGGRAPH)
+  url: https://doi.org/10.1145/1015706.1015720
+  doi: "10.1145/1015706.1015720"
+  pdf: rother2004-grabcut.pdf
+  cites:
+  - boykov2001-graph-cut-segmentation

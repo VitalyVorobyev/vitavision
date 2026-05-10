@@ -231,73 +231,78 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 178.32028800000003,
     "cluster": "applications"
   },
+  "grabcut-iterative-segmentation": {
+    "x": 915.077667,
+    "y": 188.8111488,
+    "cluster": "applications"
+  },
   "graph-cut-segmentation": {
-    "x": 917.9031540000001,
-    "y": 179.1557184,
+    "x": 737.3031540000001,
+    "y": 259.7957184,
     "cluster": "applications"
   },
   "kumar-generalized-rac": {
-    "x": 730.1730660000001,
+    "x": 790.3730660000001,
     "y": 250.2447168,
     "cluster": "applications"
   },
   "laureano-topological-chessboard": {
-    "x": 783.1881960000001,
+    "x": 843.388196,
     "y": 268.8443328,
     "cluster": "applications"
   },
   "lin-sva-stitching": {
-    "x": 845.5246940000001,
+    "x": 905.7246940000001,
     "y": 271.7062464,
     "cluster": "applications"
   },
   "mate-checkerboard-detector": {
-    "x": 918.231846,
-    "y": 260.2360128,
+    "x": 737.631846,
+    "y": 340.87601280000007,
     "cluster": "applications"
   },
   "ocpad": {
-    "x": 740.250847,
+    "x": 800.4508470000001,
     "y": 329.6005248000001,
     "cluster": "applications"
   },
   "puzzleboard": {
-    "x": 796.5086500000001,
+    "x": 856.70865,
     "y": 339.1035456000001,
     "cluster": "applications"
   },
   "rochade": {
-    "x": 844.850454,
+    "x": 905.0504540000001,
     "y": 351.44307840000005,
     "cluster": "applications"
   },
   "scaramuzza-omni-calibration": {
-    "x": 909.3234500000001,
-    "y": 328.9429056000001,
+    "x": 728.7234500000001,
+    "y": 409.58290560000006,
     "cluster": "applications"
   },
   "shu-topological-grid": {
-    "x": 724.056445,
+    "x": 784.2564450000001,
     "y": 416.77155840000006,
     "cluster": "applications"
   },
   "sturm-plane-based-calibration": {
-    "x": 783.754979,
+    "x": 843.954979,
     "y": 416.09982720000005,
     "cluster": "applications"
   },
   "tsai-lenz-handeye": {
-    "x": 851.007108,
+    "x": 911.2071080000001,
     "y": 412.10613120000005,
     "cluster": "applications"
   },
   "tsai-versatile-calibration": {
-    "x": 917.127778,
-    "y": 420.03707520000006,
+    "x": 736.527778,
+    "y": 500.67707520000005,
     "cluster": "applications"
   },
   "zhang-planar-calibration": {
-    "x": 730.97794,
+    "x": 791.17794,
     "y": 493.2428736,
     "cluster": "applications"
   }

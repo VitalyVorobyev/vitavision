@@ -359,6 +359,31 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Mathematics (MDPI)"
   },
   {
+    "slug": "grabcut-iterative-segmentation",
+    "path": "/atlas/grabcut-iterative-segmentation",
+    "type": "algorithm",
+    "title": "GrabCut Iterative Segmentation",
+    "summary": "Extract a foreground from a colour image using a single bounding rectangle as the only required input by alternating Gaussian mixture component assignment, GMM parameter re-estimation, and global s-t min-cut on a contrast-weighted MRF — the iteration decreases a Gibbs energy $E(\\alpha, k, \\theta, z) = U + V$ monotonically — then refine the contour with a regularised 1-D $\\alpha$-profile in a $\\pm 6$-pixel border ribbon.",
+    "tags": [
+      "image-segmentation",
+      "graph-cut",
+      "min-cut-max-flow",
+      "gaussian-mixture-model",
+      "interactive-segmentation",
+      "border-matting"
+    ],
+    "domain": "segmentation",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "C. Rother",
+      "V. Kolmogorov",
+      "A. Blake"
+    ],
+    "venue": "ACM Transactions on Graphics (SIGGRAPH)"
+  },
+  {
     "slug": "graph-cut-segmentation",
     "path": "/atlas/graph-cut-segmentation",
     "type": "algorithm",

@@ -17,6 +17,7 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "geiger-chessboard-detector": () => import("./content/algorithms/geiger-chessboard-detector.ts"),
   "ni-generalized-fast-radial-symmetry": () => import("./content/algorithms/ni-generalized-fast-radial-symmetry.ts"),
   "gp-checkerboard-enhancement": () => import("./content/algorithms/gp-checkerboard-enhancement.ts"),
+  "grabcut-iterative-segmentation": () => import("./content/algorithms/grabcut-iterative-segmentation.ts"),
   "graph-cut-segmentation": () => import("./content/algorithms/graph-cut-segmentation.ts"),
   "harris-corner-detector": () => import("./content/algorithms/harris-corner-detector.ts"),
   "kumar-generalized-rac": () => import("./content/algorithms/kumar-generalized-rac.ts"),

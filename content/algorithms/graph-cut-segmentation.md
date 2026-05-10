@@ -9,6 +9,10 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 prerequisites: []
 failureModes: []
+relations:
+  - type: extended_by
+    target: grabcut-iterative-segmentation
+    confidence: high
 sources:
   primary: boykov2001-graph-cut-segmentation
   notes: |
@@ -136,7 +140,7 @@ fn build_graph<G: GraphBuilder>(
 - Globality: a single min-cut yields the global minimum of $E(A)$ subject to the hard seed constraints — failures trace to the energy definition, not to a local minimiser.
 - The pairwise boundary term carries a shrinking bias towards short cuts; $\lambda$ requires per-image tuning: too small produces small segments, too large fragments the result through region competition.
 - Scope: the formulation is binary. Multi-region segmentation requires repeated binary cuts (sequential foreground/background passes) or different formulations such as $\alpha$-expansion.
-- Common extension: GrabCut replaces fixed seed histograms with iterative Gaussian mixture models, reducing seed-placement effort.
+- Common extension: GrabCut replaces dense seed strokes with a single bounding-box prior, swaps the fixed seed histograms for full-covariance RGB Gaussian mixture models re-fit at each pass, and adds a regularised 1-D $\alpha$-profile in a $\pm 6$-pixel ribbon for sub-pixel boundary transitions. See `grabcut-iterative-segmentation`.
 
 # References
 

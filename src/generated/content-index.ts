@@ -710,6 +710,39 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "grabcut-iterative-segmentation",
+    "frontmatter": {
+      "title": "GrabCut Iterative Segmentation",
+      "summary": "Extract a foreground from a colour image using a single bounding rectangle as the only required input by alternating Gaussian mixture component assignment, GMM parameter re-estimation, and global s-t min-cut on a contrast-weighted MRF — the iteration decreases a Gibbs energy $E(\\alpha, k, \\theta, z) = U + V$ monotonically — then refine the contour with a regularised 1-D $\\alpha$-profile in a $\\pm 6$-pixel border ribbon.",
+      "tags": [
+        "image-segmentation",
+        "graph-cut",
+        "min-cut-max-flow",
+        "gaussian-mixture-model",
+        "interactive-segmentation",
+        "border-matting"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "sources": {
+        "primary": "rother2004-grabcut",
+        "references": [
+          "boykov2001-graph-cut-segmentation"
+        ],
+        "notes": "Extends Boykov–Jolly 2001 graph cut along three coupled axes: full-covariance\nK-component RGB GMMs (paper uses K = 5) replace grey-level histograms; an\niterative coordinate-descent loop (assign → learn → min-cut) replaces the\none-shot cut and is monotone in E; the user input collapses from a full\ninner+outer trimap to a single bounding rectangle (incomplete trimap, T_F = ∅).\nEnergy E(α, k, θ, z) = U(α, k, θ, z) + V(α, z) (Eq. 7); data term D = -log π +\n½ log det Σ + ½ (z - μ)^T Σ^-1 (z - μ) (Eqs. 8–9); smoothness V = γ Σ\n[α_n ≠ α_m] exp(-β |z_m - z_n|^2) with β = (2⟨(z_m - z_n)^2⟩)^-1 (Eqs. 5, 11).\nConstants: γ = 50 (15-image training set, §2.2), K = 5 components per side,\n8-connected pixel graph. Convergence: each step minimises E in one variable\ngroup, so E decreases monotonically; ~12 iterations on the llama example\n(§3.2, Fig. 4a). Border matting (§4): regularised 1-D α-profile g(r_n; Δ_t,\nσ_t) along contour C in a ±w = 6-pixel ribbon, fitted by DP with\nλ_1 = 50, λ_2 = 10^3, Δ_t at 30 levels, σ_t at 10, neighbourhood patch\nL = 41 (§4.1). Foreground colour estimation by pixel stealing from T_F (§4.2).\n"
+      },
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "graph-cut-segmentation",
     "frontmatter": {
       "title": "Graph-Cut Interactive Segmentation",
@@ -727,6 +760,13 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "high"
+        }
+      ],
       "domain": "segmentation",
       "tasks": [
         "image-segmentation"

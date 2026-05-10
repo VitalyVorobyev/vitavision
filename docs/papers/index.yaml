@@ -676,3 +676,14 @@
   doi: "10.1109/cvpr46437.2021.00881"
   pdf: sun2021-loftr.pdf
   cites: [detone2018-superpoint, sarlin2020-superglue, lowe2004-sift, rublee2011-orb]
+
+- id: lindenberger2023-lightglue
+  title: "LightGlue: Local Feature Matching at Light Speed"
+  authors: ["P. Lindenberger", "P. Sarlin", "M. Pollefeys"]
+  year: 2023
+  venue: ICCV
+  url: https://arxiv.org/pdf/2306.13643
+  arxiv: "2306.13643"
+  doi: "10.48550/arxiv.2306.13643"
+  pdf: lindenberger2023-lightglue.pdf
+  cites: [sarlin2020-superglue, detone2018-superpoint, sun2021-loftr, lowe2004-sift]

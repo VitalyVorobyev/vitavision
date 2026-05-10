@@ -1778,6 +1778,61 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "lightglue",
+    "frontmatter": {
+      "title": "LightGlue",
+      "summary": "Adaptive-depth Transformer matcher for sparse local features: stacks 9 self+cross-attention layers with rotary positional encoding and a per-token confidence head, exits early on easy image pairs, and replaces SuperGlue's Sinkhorn solver with a dual-softmax × matchability assignment head — over 2× faster than SuperGlue at equivalent or better pose-estimation accuracy.",
+      "tags": [
+        "computer-vision",
+        "image-matching",
+        "local-features",
+        "transformer",
+        "attention"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "high",
+          "caution": "Different paradigm — LoFTR is detector-free dense, LightGlue is detector-based sparse. LoFTR wins in textureless regions; LightGlue wins on speed."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "local-feature-matching"
+      ],
+      "arch_family": "hybrid",
+      "sources": {
+        "primary": "lindenberger2023-lightglue",
+        "references": [
+          "sarlin2020-superglue",
+          "detone2018-superpoint",
+          "sun2021-loftr",
+          "lowe2004-sift"
+        ],
+        "notes": "§3 / Eq. 1–2 attention update + message aggregation inherited from\nSuperGlue. §3 / Eq. 3–4 rotary positional encoding R(p_j − p_i) at\nevery self-attention layer; learned 2D basis vectors b_k ∈ ℝ², one per\nd/2 = 128 subspace. §3 / Eq. 5 bidirectional cross-attention saves ~2×.\n§3 / Eq. 6 pairwise similarity S_ij = Linear(x_i^A)^⊤ Linear(x_j^B).\n§3 / Eq. 7 matchability σ_i = Sigmoid(Linear(x_i)). §3 / Eq. 8 dual-\nsoftmax × matchability assignment P_ij. §3 / Eq. 9 per-layer confidence\nc_i = Sigmoid(MLP(x_i)). §3 / Eq. 10 exit criterion (fraction confident\n> α). §3 / Eq. 11 deep-supervision loss averaged over L layers. §4\nL=9 layers, 4 attention heads, d=256, 2k keypoints/img, batch 32 on\n24 GB GPU with mixed precision + gradient checkpointing. §4 pre-train\non synthetic homographies from 1M images, fine-tune on MegaDepth\n(196 landmarks, 1M images). Table 2 (MegaDepth-1500) LightGlue+SP\nLO-RANSAC AUC 66.7/79.3/87.9 @ 5°/10°/20°, 44.2 ms; adaptive variant\n66.3/79.0/87.9 @ 31.4 ms; SuperGlue 65.8/78.7/87.5 @ 70.0 ms. Table 4\nLightGlue precision 86.8 / recall 96.3 / 19.4 ms vs SuperGlue\n74.6 / 90.5 / 29.1 ms. Table 5 average stopping layer 5.7 (easy 4.7,\nmedium 5.5, hard 6.9), per-difficulty speedup 1.86×/1.33×/1.16×,\naggregate 33% runtime reduction. Figure 1 caption: accuracy \"closer to\nthe dense matcher LoFTR at an 8× higher speed.\"\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/cvg/LightGlue",
+          "commit": "edb2b838efb2ecfe3f88097c5fad9887d95aedad",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_url": "https://github.com/cvg/LightGlue/releases/tag/v0.1_arxiv",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "loftr",
     "frontmatter": {
       "title": "LoFTR",
@@ -1806,6 +1861,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "xfeat",
           "confidence": "high",
           "caution": "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm."
+        },
+        {
+          "type": "compared_with",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1)."
         }
       ],
       "domain": "features",
@@ -1818,7 +1879,8 @@ export const modelPages: ModelIndexEntry[] = [
         "references": [
           "sarlin2020-superglue",
           "detone2018-superpoint",
-          "potje2024-xfeat"
+          "potje2024-xfeat",
+          "lindenberger2023-lightglue"
         ],
         "notes": "§3 four sub-modules: (1) FPN-ResNet backbone → coarse maps at 1/8,\nfine maps at 1/2; (2) Local Feature Transformer with $N_c$ interleaved\nself/cross attention layers, ELU+1 Linear Transformer kernel\n$\\phi(x) = \\text{elu}(x) + 1$ for $O(N)$ complexity; (3) coarse\nmatching via dual-softmax (LoFTR-DS) or Sinkhorn (LoFTR-OT, 3 iters)\n+ MNN + confidence threshold; (4) fine refinement: $w \\times w$\ncorrelation window → sub-pixel expectation. §3.5 score matrix\n$\\mathcal{S}(i,j) = (1/\\tau) \\langle \\tilde{F}^A_{tr}(i),\n\\tilde{F}^B_{tr}(j) \\rangle$. §4.1 HPatches homography SOTA AUC@3px\n/5px/10px. §4.2 ScanNet pose AUC@10° improves SuperGlue by 13%, DRC\nby 61%. §4.4 runtime 116 ms (DS) / 130 ms (OT) per 640×480 pair on\nRTX 2080Ti. §B training: 64 GTX 1080Ti GPUs, ~24 h indoor; ScanNet\n640×480, MegaDepth 840 long-side training / 1200 long-side eval.\n"
       },
@@ -1923,6 +1985,12 @@ export const modelPages: ModelIndexEntry[] = [
           "type": "compared_with",
           "target": "loftr",
           "confidence": "high"
+        },
+        {
+          "type": "extended_by",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "LightGlue retains SuperGlue's graph-attention matcher framework; adds adaptive depth + token pruning + dual-softmax head for >2× speedup at comparable or better accuracy. SuperGlue remains the reference baseline."
         }
       ],
       "domain": "features",
@@ -1935,7 +2003,8 @@ export const modelPages: ModelIndexEntry[] = [
         "primary": "sarlin2020-superglue",
         "references": [
           "detone2018-superpoint",
-          "sun2021-loftr"
+          "sun2021-loftr",
+          "lindenberger2023-lightglue"
         ],
         "notes": "§3 architecture: Attentional GNN + Optimal Matching Layer. §4 / Eq. 2\nkeypoint encoder MLP shape (32, 64, 128, 256, D), ~100k params.\n§4 / Eqs. 3–5 multiplex GNN, L=9 alternating self/cross attention\nlayers, 4 heads, D=256, ~0.66M params per layer, ~12M total.\n§3.2 / Eqs. 7–9 optimal matching layer: score $S_{ij} = \\langle f_i^A,\nf_j^B \\rangle$, dustbin scalar z, Sinkhorn T=100 iterations.\nEq. 10 NLL loss over augmented assignment $\\bar{P}$. §4 Adam lr 1e-4\ndecayed. §4 / Appendix C: 69 ms / 15 FPS at 512 kp on GTX 1080;\n270 ms at 2048 kp. §5.2 Table 2 ScanNet AUC@20° 51.84% (vs OANet\n43.85%). §5.3 Table 3 PhotoTourism AUC@20° 64.16%, precision 84.9%.\n§5.4 end-to-end training improves AUC@20° to 53.38%.\n"
       },
@@ -1984,6 +2053,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "superglue",
           "confidence": "high",
           "caution": "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
+        },
+        {
+          "type": "feeds_into",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "LightGlue ships SuperPoint-paired pretrained weights as the default configuration; recommended over SuperGlue for new pipelines (faster, Apache-2.0)."
         },
         {
           "type": "learned_alternative_of",
@@ -2094,6 +2169,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "orb",
           "confidence": "high",
           "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
+        },
+        {
+          "type": "feeds_into",
+          "target": "lightglue",
+          "confidence": "medium",
+          "caution": "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
         }
       ],
       "domain": "features",

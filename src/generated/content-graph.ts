@@ -353,6 +353,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/ccs-camera-calibration",
       "draft": false
     },
+    "lightglue": {
+      "slug": "lightglue",
+      "type": "model",
+      "title": "LightGlue",
+      "summary": "Adaptive-depth Transformer matcher for sparse local features: stacks 9 self+cross-attention layers with rotary positional encoding and a per-token confidence head, exits early on easy image pairs, and replaces SuperGlue's Sinkhorn solver with a dual-softmax × matchability assignment head — over 2× faster than SuperGlue at equivalent or better pose-estimation accuracy.",
+      "path": "/atlas/lightglue",
+      "draft": false
+    },
     "loftr": {
       "slug": "loftr",
       "type": "model",
@@ -1316,6 +1324,18 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "lightglue": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "high",
+          "caution": "Different paradigm — LoFTR is detector-free dense, LightGlue is detector-based sparse. LoFTR wins in textureless regions; LightGlue wins on speed."
+        }
+      ]
+    },
     "loftr": {
       "prerequisites": [],
       "failureModes": [],
@@ -1330,6 +1350,12 @@ export const contentGraph: ContentGraph = {
           "target": "xfeat",
           "confidence": "high",
           "caution": "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm."
+        },
+        {
+          "type": "compared_with",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1)."
         }
       ]
     },
@@ -1370,6 +1396,12 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "loftr",
           "confidence": "high"
+        },
+        {
+          "type": "extended_by",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "LightGlue retains SuperGlue's graph-attention matcher framework; adds adaptive depth + token pruning + dual-softmax head for >2× speedup at comparable or better accuracy. SuperGlue remains the reference baseline."
         }
       ]
     },
@@ -1389,6 +1421,12 @@ export const contentGraph: ContentGraph = {
           "target": "superglue",
           "confidence": "high",
           "caution": "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
+        },
+        {
+          "type": "feeds_into",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "LightGlue ships SuperPoint-paired pretrained weights as the default configuration; recommended over SuperGlue for new pipelines (faster, Apache-2.0)."
         },
         {
           "type": "learned_alternative_of",
@@ -1456,6 +1494,12 @@ export const contentGraph: ContentGraph = {
           "target": "orb",
           "confidence": "high",
           "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
+        },
+        {
+          "type": "feeds_into",
+          "target": "lightglue",
+          "confidence": "medium",
+          "caution": "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
         },
         {
           "type": "compared_with",
@@ -2064,6 +2108,31 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [],
       "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "lightglue": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "superglue",
+          "confidence": "high",
+          "caution": "LightGlue retains SuperGlue's graph-attention matcher framework; adds adaptive depth + token pruning + dual-softmax head for >2× speedup at comparable or better accuracy. SuperGlue remains the reference baseline."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "LightGlue ships SuperPoint-paired pretrained weights as the default configuration; recommended over SuperGlue for new pipelines (faster, Apache-2.0)."
+        },
+        {
+          "slug": "xfeat",
+          "confidence": "medium",
+          "caution": "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "loftr": {

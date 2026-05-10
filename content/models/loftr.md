@@ -18,12 +18,17 @@ relations:
     target: xfeat
     confidence: high
     caution: "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm."
+  - type: compared_with
+    target: lightglue
+    confidence: high
+    caution: "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1)."
 sources:
   primary: sun2021-loftr
   references:
     - sarlin2020-superglue
     - detone2018-superpoint
     - potje2024-xfeat
+    - lindenberger2023-lightglue
   notes: |
     §3 four sub-modules: (1) FPN-ResNet backbone → coarse maps at 1/8,
     fine maps at 1/2; (2) Local Feature Transformer with $N_c$ interleaved
@@ -135,7 +140,7 @@ Official PyTorch release with Apache-2.0 code and Apache-2.0 pretrained weights.
 **Limitations.**
 
 - Dense attention at $1/8$ resolution imposes a memory cost proportional to $(HW/64)^2$ even with linear attention. At 640×480 the coarse sequence length is 4800; at inference time on high-resolution inputs, memory and runtime scale quadratically in the image area before any linear-attention savings.
-- Slower per pair than sparse SuperPoint+SuperGlue at modest keypoint counts: 116 ms (LoFTR-DS) or 130 ms (LoFTR-OT) per 640×480 pair on RTX 2080Ti, whereas SuperGlue at 512 keypoints runs at approximately 69 ms on GTX 1080.
+- Slower per pair than sparse SuperPoint+SuperGlue at modest keypoint counts: 116 ms (LoFTR-DS) or 130 ms (LoFTR-OT) per 640×480 pair on RTX 2080Ti, whereas SuperGlue at 512 keypoints runs at approximately 69 ms on GTX 1080. The newer SuperPoint+[LightGlue](/atlas/lightglue) widens this gap further — Lindenberger et al. Fig. 1 reports approximately 8× the throughput of LoFTR at comparable accuracy on standard benchmarks.
 - Two separate model weights exist for indoor (ScanNet) and outdoor (MegaDepth) scenes; inference-time domain mismatch between trained weights and scene type degrades performance, and no single universal model is available.
 
 # References
@@ -144,3 +149,4 @@ Official PyTorch release with Apache-2.0 code and Apache-2.0 pretrained weights.
 2. P. Sarlin, D. DeTone, T. Malisiewicz, A. Rabinovich. *SuperGlue: Learning Feature Matching with Graph Neural Networks.* CVPR, 2020. [arXiv:1911.11763](https://arxiv.org/pdf/1911.11763)
 3. D. DeTone, T. Malisiewicz, A. Rabinovich. *SuperPoint: Self-Supervised Interest Point Detection and Description.* CVPR Workshops, 2018. [arXiv:1712.07629](https://arxiv.org/abs/1712.07629)
 4. G. Potje, F. Cadar, A. Araujo, R. Martins, E. R. Nascimento. *XFeat: Accelerated Features for Lightweight Image Matching.* CVPR, 2024. [arXiv:2404.19174](https://arxiv.org/pdf/2404.19174)
+5. P. Lindenberger, P. Sarlin, M. Pollefeys. *LightGlue: Local Feature Matching at Light Speed.* ICCV, 2023. [arXiv:2306.13643](https://arxiv.org/pdf/2306.13643)

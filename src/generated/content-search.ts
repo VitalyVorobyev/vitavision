@@ -849,6 +849,30 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Robotics and Automation Letters"
   },
   {
+    "slug": "lightglue",
+    "path": "/atlas/lightglue",
+    "type": "model",
+    "title": "LightGlue",
+    "summary": "Adaptive-depth Transformer matcher for sparse local features: stacks 9 self+cross-attention layers with rotary positional encoding and a per-token confidence head, exits early on easy image pairs, and replaces SuperGlue's Sinkhorn solver with a dual-softmax × matchability assignment head — over 2× faster than SuperGlue at equivalent or better pose-estimation accuracy.",
+    "tags": [
+      "computer-vision",
+      "image-matching",
+      "local-features",
+      "transformer",
+      "attention"
+    ],
+    "domain": "features",
+    "headings": [
+      "When to choose LightGlue over SuperGlue"
+    ],
+    "authors": [
+      "P. Lindenberger",
+      "P. Sarlin",
+      "M. Pollefeys"
+    ],
+    "venue": "ICCV"
+  },
+  {
     "slug": "loftr",
     "path": "/atlas/loftr",
     "type": "model",

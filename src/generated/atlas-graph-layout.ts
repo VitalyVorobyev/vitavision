@@ -116,68 +116,73 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 267.7944,
     "cluster": "detectors"
   },
+  "lightglue": {
+    "x": 643.632341,
+    "y": 246.25666560000002,
+    "cluster": "detectors"
+  },
   "loftr": {
-    "x": 632.848715,
+    "x": 693.048715,
     "y": 260.0356224,
     "cluster": "detectors"
   },
   "loy-fast-radial-symmetry": {
-    "x": 695.912128,
-    "y": 250.4309952,
+    "x": 515.312128,
+    "y": 331.0709952,
     "cluster": "detectors"
   },
   "ni-generalized-fast-radial-symmetry": {
-    "x": 518.2535,
+    "x": 578.4535000000001,
     "y": 335.01106560000005,
     "cluster": "detectors"
   },
   "orb": {
-    "x": 579.3363330000001,
+    "x": 639.536333,
     "y": 349.63392000000005,
     "cluster": "detectors"
   },
   "pyramidal-blur-aware-xcorner": {
-    "x": 640.6467220000001,
+    "x": 700.8467220000001,
     "y": 337.68105600000007,
     "cluster": "detectors"
   },
   "shi-tomasi-corner-detector": {
-    "x": 699.024167,
-    "y": 348.67994880000003,
+    "x": 518.424167,
+    "y": 429.3199488,
     "cluster": "detectors"
   },
   "sift": {
-    "x": 518.341994,
+    "x": 578.541994,
     "y": 415.76960640000004,
     "cluster": "detectors"
   },
   "structure-tensor": {
-    "x": 586.8498950000001,
+    "x": 647.049895,
     "y": 412.11459840000003,
     "cluster": "detectors"
   },
   "superglue": {
-    "x": 642.9180680000001,
+    "x": 703.1180680000001,
     "y": 421.36360320000006,
     "cluster": "detectors"
   },
   "superpoint": {
-    "x": 693.6513170000001,
-    "y": 422.12282880000004,
+    "x": 513.051317,
+    "y": 502.7628288,
     "cluster": "detectors"
   },
   "surf": {
-    "x": 508.13990000000007,
+    "x": 568.3399000000001,
     "y": 510.9675456,
     "cluster": "detectors"
   },
   "topological-grid-recovery": {
-    "x": 573.7928160000001,
+    "x": 633.9928160000001,
     "y": 490.0479168,
     "cluster": "detectors"
   },
   "xfeat": {
-    "x": 647.498686,
+    "x": 707.6986860000001,
     "y": 508.1395008,
     "cluster": "detectors"
   },

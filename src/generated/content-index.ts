@@ -1778,6 +1778,65 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "loftr",
+    "frontmatter": {
+      "title": "LoFTR",
+      "summary": "Detector-free dense feature matcher: shared CNN backbone produces coarse and fine feature maps, a Linear Transformer with interleaved self- and cross-attention establishes confidence-thresholded mutual nearest-neighbour correspondences, and a fine module refines each match to sub-pixel accuracy.",
+      "tags": [
+        "computer-vision",
+        "image-matching",
+        "transformer",
+        "detector-free",
+        "dense-matching"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "superglue",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "local-feature-matching"
+      ],
+      "arch_family": "hybrid",
+      "sources": {
+        "primary": "sun2021-loftr",
+        "references": [
+          "sarlin2020-superglue",
+          "detone2018-superpoint",
+          "potje2024-xfeat"
+        ],
+        "notes": "§3 four sub-modules: (1) FPN-ResNet backbone → coarse maps at 1/8,\nfine maps at 1/2; (2) Local Feature Transformer with $N_c$ interleaved\nself/cross attention layers, ELU+1 Linear Transformer kernel\n$\\phi(x) = \\text{elu}(x) + 1$ for $O(N)$ complexity; (3) coarse\nmatching via dual-softmax (LoFTR-DS) or Sinkhorn (LoFTR-OT, 3 iters)\n+ MNN + confidence threshold; (4) fine refinement: $w \\times w$\ncorrelation window → sub-pixel expectation. §3.5 score matrix\n$\\mathcal{S}(i,j) = (1/\\tau) \\langle \\tilde{F}^A_{tr}(i),\n\\tilde{F}^B_{tr}(j) \\rangle$. §4.1 HPatches homography SOTA AUC@3px\n/5px/10px. §4.2 ScanNet pose AUC@10° improves SuperGlue by 13%, DRC\nby 61%. §4.4 runtime 116 ms (DS) / 130 ms (OT) per 640×480 pair on\nRTX 2080Ti. §B training: 64 GTX 1080Ti GPUs, ~24 h indoor; ScanNet\n640×480, MegaDepth 840 long-side training / 1200 long-side eval.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/zju3dv/LoFTR",
+          "commit": "df7ca80f917334b94cfbe32cc2901e09a80e70a8",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_url": "https://drive.google.com/drive/folders/1DOcOPZb3-5cWxLqn256AhwUVjBPifhuf?usp=sharing",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "mate-checkerboard-detector",
     "frontmatter": {
       "title": "MATE",
@@ -1842,6 +1901,59 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "superglue",
+    "frontmatter": {
+      "title": "SuperGlue",
+      "summary": "Graph neural network that matches two sets of sparse local features by jointly finding correspondences and rejecting unmatched keypoints in one differentiable forward pass, trained end-to-end with a Sinkhorn optimal-transport assignment over augmented dustbin scores.",
+      "tags": [
+        "computer-vision",
+        "image-matching",
+        "local-features",
+        "graph-neural-network",
+        "attention"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "high"
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "local-feature-matching"
+      ],
+      "arch_family": "hybrid",
+      "params": "~12M",
+      "sources": {
+        "primary": "sarlin2020-superglue",
+        "references": [
+          "detone2018-superpoint",
+          "sun2021-loftr"
+        ],
+        "notes": "§3 architecture: Attentional GNN + Optimal Matching Layer. §4 / Eq. 2\nkeypoint encoder MLP shape (32, 64, 128, 256, D), ~100k params.\n§4 / Eqs. 3–5 multiplex GNN, L=9 alternating self/cross attention\nlayers, 4 heads, D=256, ~0.66M params per layer, ~12M total.\n§3.2 / Eqs. 7–9 optimal matching layer: score $S_{ij} = \\langle f_i^A,\nf_j^B \\rangle$, dustbin scalar z, Sinkhorn T=100 iterations.\nEq. 10 NLL loss over augmented assignment $\\bar{P}$. §4 Adam lr 1e-4\ndecayed. §4 / Appendix C: 69 ms / 15 FPS at 512 kp on GTX 1080;\n270 ms at 2048 kp. §5.2 Table 2 ScanNet AUC@20° 51.84% (vs OANet\n43.85%). §5.3 Table 3 PhotoTourism AUC@20° 64.16%, precision 84.9%.\n§5.4 end-to-end training improves AUC@20° to 53.38%.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/magicleap/SuperGluePretrainedNetwork",
+          "commit": "ddcf11f42e7e0732a0c4607648f9448ea8d73590",
+          "framework": "pytorch",
+          "license": "noncommercial-research-only",
+          "weights_url": "https://github.com/magicleap/SuperGluePretrainedNetwork/tree/ddcf11f42e7e0732a0c4607648f9448ea8d73590/models/weights",
+          "weights_license": "noncommercial-research-only"
+        }
+      ],
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "superpoint",
     "frontmatter": {
       "title": "SuperPoint",
@@ -1866,6 +1978,12 @@ export const modelPages: ModelIndexEntry[] = [
           "type": "compared_with",
           "target": "xfeat",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "superglue",
+          "confidence": "high",
+          "caution": "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
         },
         {
           "type": "learned_alternative_of",

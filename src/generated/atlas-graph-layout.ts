@@ -116,58 +116,68 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 267.7944,
     "cluster": "detectors"
   },
+  "loftr": {
+    "x": 632.848715,
+    "y": 260.0356224,
+    "cluster": "detectors"
+  },
   "loy-fast-radial-symmetry": {
-    "x": 635.712128,
+    "x": 695.912128,
     "y": 250.4309952,
     "cluster": "detectors"
   },
   "ni-generalized-fast-radial-symmetry": {
-    "x": 698.8535,
-    "y": 254.3710656,
+    "x": 518.2535,
+    "y": 335.01106560000005,
     "cluster": "detectors"
   },
   "orb": {
-    "x": 519.136333,
+    "x": 579.3363330000001,
     "y": 349.63392000000005,
     "cluster": "detectors"
   },
   "pyramidal-blur-aware-xcorner": {
-    "x": 580.4467220000001,
+    "x": 640.6467220000001,
     "y": 337.68105600000007,
     "cluster": "detectors"
   },
   "shi-tomasi-corner-detector": {
-    "x": 638.824167,
+    "x": 699.024167,
     "y": 348.67994880000003,
     "cluster": "detectors"
   },
   "sift": {
-    "x": 698.941994,
-    "y": 335.12960640000006,
+    "x": 518.341994,
+    "y": 415.76960640000004,
     "cluster": "detectors"
   },
   "structure-tensor": {
-    "x": 526.649895,
+    "x": 586.8498950000001,
     "y": 412.11459840000003,
     "cluster": "detectors"
   },
+  "superglue": {
+    "x": 642.9180680000001,
+    "y": 421.36360320000006,
+    "cluster": "detectors"
+  },
   "superpoint": {
-    "x": 573.2513170000001,
+    "x": 693.6513170000001,
     "y": 422.12282880000004,
     "cluster": "detectors"
   },
   "surf": {
-    "x": 628.5399,
-    "y": 430.3275456,
+    "x": 508.13990000000007,
+    "y": 510.9675456,
     "cluster": "detectors"
   },
   "topological-grid-recovery": {
-    "x": 694.1928160000001,
-    "y": 409.4079168,
+    "x": 573.7928160000001,
+    "y": 490.0479168,
     "cluster": "detectors"
   },
   "xfeat": {
-    "x": 527.098686,
+    "x": 647.498686,
     "y": 508.1395008,
     "cluster": "detectors"
   },

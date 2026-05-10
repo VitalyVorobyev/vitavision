@@ -43,9 +43,9 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not �
     Node: orb.
 +18. DeTone, Malisiewicz, Rabinovich. SuperPoint: Self-Supervised Interest Point Detection and Description. CVPRW, 2018.
     Node: superpoint.
-19. Sarlin et al. SuperGlue: Learning Feature Matching with Graph Neural Networks. CVPR, 2020.
++19. Sarlin et al. SuperGlue: Learning Feature Matching with Graph Neural Networks. CVPR, 2020.
     Node: superglue.
-20. Sun et al. LoFTR: Detector-Free Local Feature Matching with Transformers. CVPR, 2021.
++20. Sun et al. LoFTR: Detector-Free Local Feature Matching with Transformers. CVPR, 2021.
     Node: loftr. It is useful as the modern “detector-free matching” branch: coarse dense matching plus transformer self/cross-attention instead of detect-describe-match.  ￼
 
 ⸻

@@ -849,6 +849,30 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Robotics and Automation Letters"
   },
   {
+    "slug": "loftr",
+    "path": "/atlas/loftr",
+    "type": "model",
+    "title": "LoFTR",
+    "summary": "Detector-free dense feature matcher: shared CNN backbone produces coarse and fine feature maps, a Linear Transformer with interleaved self- and cross-attention establishes confidence-thresholded mutual nearest-neighbour correspondences, and a fine module refines each match to sub-pixel accuracy.",
+    "tags": [
+      "computer-vision",
+      "image-matching",
+      "transformer",
+      "detector-free",
+      "dense-matching"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "J. Sun",
+      "Z. Shen",
+      "Y. Wang",
+      "H. Bao",
+      "X. Zhou"
+    ],
+    "venue": "CVPR"
+  },
+  {
     "slug": "mate-checkerboard-detector",
     "path": "/atlas/mate-checkerboard-detector",
     "type": "model",
@@ -873,6 +897,31 @@ export const searchRecords: SearchRecord[] = [
       "W. Philips"
     ],
     "venue": "Sensors"
+  },
+  {
+    "slug": "superglue",
+    "path": "/atlas/superglue",
+    "type": "model",
+    "title": "SuperGlue",
+    "summary": "Graph neural network that matches two sets of sparse local features by jointly finding correspondences and rejecting unmatched keypoints in one differentiable forward pass, trained end-to-end with a Sinkhorn optimal-transport assignment over augmented dustbin scores.",
+    "tags": [
+      "computer-vision",
+      "image-matching",
+      "local-features",
+      "graph-neural-network",
+      "attention"
+    ],
+    "domain": "features",
+    "headings": [
+      "When to choose SuperGlue over LoFTR"
+    ],
+    "authors": [
+      "P. Sarlin",
+      "D. DeTone",
+      "T. Malisiewicz",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR"
   },
   {
     "slug": "superpoint",

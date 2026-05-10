@@ -654,3 +654,25 @@
   doi: "10.1109/ICCV.2011.6126544"
   pdf: rublee2011-orb.pdf
   cites: [calonder2010-brief, rosten2006-fast, bay2006-surf, harris1988-corner, lowe2004-sift, lepetit2009-epnp]
+
+- id: sarlin2020-superglue
+  title: "SuperGlue: Learning Feature Matching with Graph Neural Networks"
+  authors: ["P. Sarlin", "D. DeTone", "T. Malisiewicz", "A. Rabinovich"]
+  year: 2020
+  venue: CVPR
+  url: https://arxiv.org/pdf/1911.11763
+  arxiv: "1911.11763"
+  doi: "10.1109/cvpr42600.2020.00499"
+  pdf: sarlin2020-superglue.pdf
+  cites: [detone2018-superpoint, lowe2004-sift, rublee2011-orb, fischler1981-ransac]
+
+- id: sun2021-loftr
+  title: "LoFTR: Detector-Free Local Feature Matching with Transformers"
+  authors: ["J. Sun", "Z. Shen", "Y. Wang", "H. Bao", "X. Zhou"]
+  year: 2021
+  venue: CVPR
+  url: https://arxiv.org/pdf/2104.00680
+  arxiv: "2104.00680"
+  doi: "10.1109/cvpr46437.2021.00881"
+  pdf: sun2021-loftr.pdf
+  cites: [detone2018-superpoint, sarlin2020-superglue, lowe2004-sift, rublee2011-orb]

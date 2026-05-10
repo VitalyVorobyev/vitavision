@@ -15,6 +15,10 @@ relations:
   - type: compared_with
     target: xfeat
     confidence: high
+  - type: feeds_into
+    target: superglue
+    confidence: high
+    caution: "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
   - type: learned_alternative_of
     target: harris-corner-detector
     confidence: high

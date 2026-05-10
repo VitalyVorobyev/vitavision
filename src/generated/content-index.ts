@@ -1989,6 +1989,54 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "fcn-semantic-segmentation",
+    "frontmatter": {
+      "title": "FCN: Fully Convolutional Networks",
+      "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
+      "tags": [
+        "computer-vision",
+        "semantic-segmentation",
+        "dense-prediction",
+        "encoder-decoder",
+        "transfer-learning"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "params": "134M (FCN-VGG16, Table 1)",
+      "sources": {
+        "primary": "long2015-fcn",
+        "notes": "§3.1 fully convolutional reinterpretation: fc6/fc7 of VGG-16 become\n1×1 convs of widths 4096/4096; the 1000-way classifier becomes a\n21-channel 1×1 conv (PASCAL VOC). Total stride 32 (Table 1, five\nstride-2 max-pools). §4.1 backbone comparison — VGG-16 best:\nFCN-VGG16 mean IU 56.0 / 59.4 (with extra data) vs FCN-AlexNet 39.8\nand FCN-GoogLeNet 42.5 on PASCAL VOC 2011 val (Table 1). §4.2 skip\narchitecture (Figure 3): pool3 + pool4 + conv7 score maps fused via\nelement-wise sum (not concatenation; max fusion impedes learning,\nfootnote 6); FCN-32s → FCN-16s (+3.0 mean IU) → FCN-8s (+0.3 mean\nIU). §4.3 staged learning: ~3 days on a single Tesla K40c for\nFCN-32s, then ~1 day each for FCN-16s and FCN-8s; SGD momentum 0.9,\nweight decay 5×10^-4 (or 2×10^-4), lr 10^-4 for FCN-VGG16,\nminibatch 20 images, no class weighting. Bilinear-init deconvolution\nlayers; pool3/pool4 1×1 prediction layers zero-initialised; learning\nrate decreased 100× when adding each skip. Headline numbers — Table\n3: FCN-8s 62.7 / 62.2 / ~175 ms on PASCAL VOC 2011 / 2012 test;\n20% relative gain over SDS at 52.6. Table 4: NYUDv2 RGB-HHA late\nfusion mean IU 34.0 (FCN-16s). Table 5: SIFT Flow geometric pixel\naccuracy 94.3, mean IU 39.5. Table 1: 134 M parameters, receptive\nfield 404 px, ~210 ms forward pass at 500×500 on K40c. §5: ~286×\ninference speedup over SDS (overall pipeline) and ~114× (convnet\nonly).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/shelhamer/fcn.berkeleyvision.org",
+          "commit": "1305c7378a9f0ab44b2c936f4d60e4687e3d8743",
+          "framework": "caffe",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "7af698794eded568735f9519593603c1ec889eba",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause"
+        }
+      ],
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "lightglue",
     "frontmatter": {
       "title": "LightGlue",

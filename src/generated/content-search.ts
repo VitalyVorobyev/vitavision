@@ -961,6 +961,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Robotics and Automation Letters"
   },
   {
+    "slug": "fcn-semantic-segmentation",
+    "path": "/atlas/fcn-semantic-segmentation",
+    "type": "model",
+    "title": "FCN: Fully Convolutional Networks",
+    "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
+    "tags": [
+      "computer-vision",
+      "semantic-segmentation",
+      "dense-prediction",
+      "encoder-decoder",
+      "transfer-learning"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "J. Long",
+      "E. Shelhamer",
+      "T. Darrell"
+    ],
+    "venue": "CVPR"
+  },
+  {
     "slug": "lightglue",
     "path": "/atlas/lightglue",
     "type": "model",

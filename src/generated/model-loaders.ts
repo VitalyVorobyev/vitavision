@@ -4,6 +4,7 @@ export interface GeneratedHtmlModule { html: string; }
 export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
   "ccdn-checkerboard-detector": () => import("./content/models/ccdn-checkerboard-detector.ts"),
   "ccs-camera-calibration": () => import("./content/models/ccs-camera-calibration.ts"),
+  "fcn-semantic-segmentation": () => import("./content/models/fcn-semantic-segmentation.ts"),
   "lightglue": () => import("./content/models/lightglue.ts"),
   "loftr": () => import("./content/models/loftr.ts"),
   "mate-checkerboard-detector": () => import("./content/models/mate-checkerboard-detector.ts"),

@@ -743,3 +743,13 @@
   pdf: rother2004-grabcut.pdf
   cites:
   - boykov2001-graph-cut-segmentation
+
+- id: long2015-fcn
+  title: "Fully Convolutional Networks for Semantic Segmentation"
+  authors: ["J. Long", "E. Shelhamer", "T. Darrell"]
+  year: 2015
+  venue: CVPR
+  url: https://arxiv.org/abs/1411.4038
+  doi: "10.1109/cvpr.2015.7298965"
+  pdf: long2015-fcn.pdf
+  cites: []

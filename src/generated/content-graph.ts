@@ -393,6 +393,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/ccs-camera-calibration",
       "draft": false
     },
+    "fcn-semantic-segmentation": {
+      "slug": "fcn-semantic-segmentation",
+      "type": "model",
+      "title": "FCN: Fully Convolutional Networks",
+      "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
+      "path": "/atlas/fcn-semantic-segmentation",
+      "draft": false
+    },
     "lightglue": {
       "slug": "lightglue",
       "type": "model",
@@ -1464,6 +1472,11 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "fcn-semantic-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
     "lightglue": {
       "prerequisites": [],
       "failureModes": [],
@@ -2304,6 +2317,14 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "ccs-camera-calibration": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "fcn-semantic-segmentation": {
       "usedBy": [],
       "affects": [],
       "generalises": [],

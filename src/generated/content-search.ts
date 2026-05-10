@@ -214,6 +214,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "felzenszwalb-graph-segmentation",
+    "path": "/atlas/felzenszwalb-graph-segmentation",
+    "type": "algorithm",
+    "title": "Felzenszwalb–Huttenlocher Graph-Based Image Segmentation",
+    "summary": "Partition an image into perceptually coherent regions by a Kruskal-style greedy merge over a pixel graph, accepting an inter-component edge as a non-boundary when its weight does not exceed the components' internal variation plus a size-adaptive threshold $\\tau(C) = k/|C|$; runs in $O(m \\log m)$ time and produces partitions that are simultaneously not too fine and not too coarse.",
+    "tags": [
+      "image-segmentation",
+      "graph-algorithms",
+      "minimum-spanning-tree",
+      "union-find"
+    ],
+    "domain": "segmentation",
+    "headings": [
+      "Graph constructions",
+      "Procedure"
+    ],
+    "authors": [
+      "P. F. Felzenszwalb",
+      "D. P. Huttenlocher"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
     "slug": "fischler-bolles-ransac",
     "path": "/atlas/fischler-bolles-ransac",
     "type": "algorithm",
@@ -336,6 +359,54 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Mathematics (MDPI)"
   },
   {
+    "slug": "grabcut-iterative-segmentation",
+    "path": "/atlas/grabcut-iterative-segmentation",
+    "type": "algorithm",
+    "title": "GrabCut Iterative Segmentation",
+    "summary": "Extract a foreground from a colour image using a single bounding rectangle as the only required input by alternating Gaussian mixture component assignment, GMM parameter re-estimation, and global s-t min-cut on a contrast-weighted MRF — the iteration decreases a Gibbs energy $E(\\alpha, k, \\theta, z) = U + V$ monotonically — then refine the contour with a regularised 1-D $\\alpha$-profile in a $\\pm 6$-pixel border ribbon.",
+    "tags": [
+      "image-segmentation",
+      "graph-cut",
+      "min-cut-max-flow",
+      "gaussian-mixture-model",
+      "interactive-segmentation",
+      "border-matting"
+    ],
+    "domain": "segmentation",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "C. Rother",
+      "V. Kolmogorov",
+      "A. Blake"
+    ],
+    "venue": "ACM Transactions on Graphics (SIGGRAPH)"
+  },
+  {
+    "slug": "graph-cut-segmentation",
+    "path": "/atlas/graph-cut-segmentation",
+    "type": "algorithm",
+    "title": "Graph-Cut Interactive Segmentation",
+    "summary": "Compute the global minimum of a binary region-and-boundary MRF energy as a single s-t min-cut on a pixel graph; user-marked seeds enter as hard constraints, the output is a binary labelling $A : P \\to \\{\\text{obj}, \\text{bkg}\\}$ with topology-free segments.",
+    "tags": [
+      "image-segmentation",
+      "graph-cut",
+      "min-cut-max-flow",
+      "markov-random-field",
+      "interactive-segmentation"
+    ],
+    "domain": "segmentation",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "Y. Boykov",
+      "M.-P. Jolly"
+    ],
+    "venue": "ICCV"
+  },
+  {
     "slug": "harris-corner-detector",
     "path": "/atlas/harris-corner-detector",
     "type": "algorithm",
@@ -422,6 +493,24 @@ export const searchRecords: SearchRecord[] = [
       "U. Frese"
     ],
     "venue": "British Machine Vision Conference (BMVC)"
+  },
+  {
+    "slug": "longuet-higgins-eight-point",
+    "path": "/atlas/longuet-higgins-eight-point",
+    "type": "algorithm",
+    "title": "Longuet-Higgins Linear Eight-Point Algorithm",
+    "summary": "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm.",
+    "tags": [
+      "geometry",
+      "two-view-geometry",
+      "essential-matrix"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "H. C. Longuet-Higgins"
+    ],
+    "venue": "Nature"
   },
   {
     "slug": "barath-magsac",
@@ -786,6 +875,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "yang-sub-pixel-corner-fit",
+    "path": "/atlas/yang-sub-pixel-corner-fit",
+    "type": "algorithm",
+    "title": "Yang Parametric-Model Sub-Pixel Corner Fit",
+    "summary": "Refine pixel-level chessboard corner positions to sub-pixel accuracy by nonlinear least-squares fitting a seven-parameter ideal blurred-corner model directly to the raw image patch, then reject unreliable corners via a boxplot-based fit-quality self-check before passing to PnP.",
+    "tags": [
+      "subpixel-refinement",
+      "calibration",
+      "chessboard"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "T. Yang",
+      "Q. Zhao",
+      "W. Xian",
+      "Q. Zhou"
+    ],
+    "venue": "Applied Sciences"
+  },
+  {
     "slug": "zhang-planar-calibration",
     "path": "/atlas/zhang-planar-calibration",
     "type": "algorithm",
@@ -847,6 +959,52 @@ export const searchRecords: SearchRecord[] = [
       "D. Qian"
     ],
     "venue": "IEEE Robotics and Automation Letters"
+  },
+  {
+    "slug": "fcn-semantic-segmentation",
+    "path": "/atlas/fcn-semantic-segmentation",
+    "type": "model",
+    "title": "FCN: Fully Convolutional Networks",
+    "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
+    "tags": [
+      "computer-vision",
+      "semantic-segmentation",
+      "dense-prediction",
+      "encoder-decoder",
+      "transfer-learning"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "J. Long",
+      "E. Shelhamer",
+      "T. Darrell"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "lightglue",
+    "path": "/atlas/lightglue",
+    "type": "model",
+    "title": "LightGlue",
+    "summary": "Adaptive-depth Transformer matcher for sparse local features: stacks 9 self+cross-attention layers with rotary positional encoding and a per-token confidence head, exits early on easy image pairs, and replaces SuperGlue's Sinkhorn solver with a dual-softmax × matchability assignment head — over 2× faster than SuperGlue at equivalent or better pose-estimation accuracy.",
+    "tags": [
+      "computer-vision",
+      "image-matching",
+      "local-features",
+      "transformer",
+      "attention"
+    ],
+    "domain": "features",
+    "headings": [
+      "When to choose LightGlue over SuperGlue"
+    ],
+    "authors": [
+      "P. Lindenberger",
+      "P. Sarlin",
+      "M. Pollefeys"
+    ],
+    "venue": "ICCV"
   },
   {
     "slug": "loftr",

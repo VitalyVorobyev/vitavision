@@ -15,11 +15,16 @@ relations:
   - type: compared_with
     target: loftr
     confidence: high
+  - type: extended_by
+    target: lightglue
+    confidence: high
+    caution: "LightGlue retains SuperGlue's graph-attention matcher framework; adds adaptive depth + token pruning + dual-softmax head for >2× speedup at comparable or better accuracy. SuperGlue remains the reference baseline."
 sources:
   primary: sarlin2020-superglue
   references:
     - detone2018-superpoint
     - sun2021-loftr
+    - lindenberger2023-lightglue
   notes: |
     §3 architecture: Attentional GNN + Optimal Matching Layer. §4 / Eq. 2
     keypoint encoder MLP shape (32, 64, 128, 256, D), ~100k params.
@@ -132,6 +137,7 @@ The official Magic Leap PyTorch release ships pretrained indoor and outdoor mode
 - Quadratic memory in keypoint count: cross-attention computes over the full $M \times N$ product, and the Sinkhorn layer operates on an $(M+1) \times (N+1)$ matrix — at 2048 keypoints this reaches 270 ms on GTX 1080 (Fig. 11).
 - Restrictive license: the official Magic Leap repository ships code and weights under a noncommercial-research-only agreement; commercial deployment requires a separate licensing arrangement or retraining under a permissive license.
 - Inference is bound to one image pair per forward pass: multi-image consistency (loop closure, bundle adjustment) is not enforced by the architecture and must be handled by a separate back-end.
+- For new pipelines, [LightGlue](/atlas/lightglue) (Lindenberger et al., 2023) extends this matcher with adaptive depth, token pruning, and a dual-softmax assignment head, achieving over 2× faster matching at equivalent or better pose-estimation accuracy. The LightGlue matcher half is Apache-2.0 (the SuperPoint front-end retains its Magic-Leap restriction either way — see LightGlue's Limitations). SuperGlue is retained as the historical reference and for teams already integrated with the Magic Leap release.
 
 ## When to choose SuperGlue over LoFTR
 
@@ -146,3 +152,4 @@ Choose LoFTR when matching must succeed in textureless or homogeneous regions wh
 1. P. Sarlin, D. DeTone, T. Malisiewicz, A. Rabinovich. *SuperGlue: Learning Feature Matching with Graph Neural Networks.* CVPR, 2020. [arXiv:1911.11763](https://arxiv.org/pdf/1911.11763)
 2. D. DeTone, T. Malisiewicz, A. Rabinovich. *SuperPoint: Self-Supervised Interest Point Detection and Description.* CVPR Workshops, 2018. [arXiv:1712.07629](https://arxiv.org/abs/1712.07629)
 3. J. Sun, Z. Shen, Y. Wang, H. Bao, X. Zhou. *LoFTR: Detector-Free Local Feature Matching with Transformers.* CVPR, 2021. [arXiv:2104.00680](https://arxiv.org/pdf/2104.00680)
+4. P. Lindenberger, P. Sarlin, M. Pollefeys. *LightGlue: Local Feature Matching at Light Speed.* ICCV, 2023. [arXiv:2306.13643](https://arxiv.org/pdf/2306.13643)

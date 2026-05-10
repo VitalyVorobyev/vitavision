@@ -19,6 +19,10 @@ relations:
     target: superglue
     confidence: high
     caution: "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
+  - type: feeds_into
+    target: lightglue
+    confidence: high
+    caution: "LightGlue ships SuperPoint-paired pretrained weights as the default configuration; recommended over SuperGlue for new pipelines (faster, Apache-2.0)."
   - type: learned_alternative_of
     target: harris-corner-detector
     confidence: high

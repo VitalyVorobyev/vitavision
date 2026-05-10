@@ -4,7 +4,7 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not â€
 
 +1. Fischler, Bolles. Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and Automated Cartography. CACM, 1981.
     Node: ransac.
-2. Longuet-Higgins. A Computer Algorithm for Reconstructing a Scene from Two Projections. Nature, 1981.
++2. Longuet-Higgins. A Computer Algorithm for Reconstructing a Scene from Two Projections. Nature, 1981.
     Node: eight-point-algorithm, essential-matrix.
 +3. Hartley. In Defense of the Eight-Point Algorithm. TPAMI, 1997.
     Node: hartley-normalization.
@@ -52,13 +52,13 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not â€
 
 # Segmentation, grouping, dense prediction
 
-21. Canny. A Computational Approach to Edge Detection. TPAMI, 1986.
++21. Canny. A Computational Approach to Edge Detection. TPAMI, 1986.
     Node: canny-edge-detector.
 22. Marr, Hildreth. Theory of Edge Detection. Proceedings of the Royal Society B, 1980.
     Node: log-edge-detection, scale-space.
-23. Felzenszwalb, Huttenlocher. Efficient Graph-Based Image Segmentation. IJCV, 2004.
++23. Felzenszwalb, Huttenlocher. Efficient Graph-Based Image Segmentation. IJCV, 2004.
     Node: graph-based-segmentation.
-24. Boykov, Jolly. Interactive Graph Cuts for Optimal Boundary and Region Segmentation of Objects in N-D Images. ICCV, 2001.
++24. Boykov, Jolly. Interactive Graph Cuts for Optimal Boundary and Region Segmentation of Objects in N-D Images. ICCV, 2001.
     Node: graph-cut-segmentation.
 25. Rother, Kolmogorov, Blake. GrabCut: Interactive Foreground Extraction Using Iterated Graph Cuts. SIGGRAPH, 2004.
     Node: grabcut.

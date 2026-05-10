@@ -676,3 +676,80 @@
   doi: "10.1109/cvpr46437.2021.00881"
   pdf: sun2021-loftr.pdf
   cites: [detone2018-superpoint, sarlin2020-superglue, lowe2004-sift, rublee2011-orb]
+
+- id: lindenberger2023-lightglue
+  title: "LightGlue: Local Feature Matching at Light Speed"
+  authors: ["P. Lindenberger", "P. Sarlin", "M. Pollefeys"]
+  year: 2023
+  venue: ICCV
+  url: https://arxiv.org/pdf/2306.13643
+  arxiv: "2306.13643"
+  doi: "10.48550/arxiv.2306.13643"
+  pdf: lindenberger2023-lightglue.pdf
+  cites: [sarlin2020-superglue, detone2018-superpoint, sun2021-loftr, lowe2004-sift]
+
+- id: felzenszwalb2004-graph-segm
+  title: "Efficient Graph-Based Image Segmentation"
+  authors: ["P. F. Felzenszwalb", "D. P. Huttenlocher"]
+  year: 2004
+  venue: International Journal of Computer Vision
+  url: https://cs.brown.edu/people/pfelzens/papers/seg-ijcv.pdf
+  doi: "10.1023/b:visi.0000022288.19776.77"
+  pdf: felzenszwalb2004-graph-segm.pdf
+  cites: []
+
+- id: boykov2001-graph-cut-segmentation
+  title: "Interactive Graph Cuts for Optimal Boundary & Region Segmentation of Objects in N-D Images"
+  authors: ["Y. Boykov", "M.-P. Jolly"]
+  year: 2001
+  venue: ICCV
+  url: https://www.csd.uwo.ca/~yboykov/Papers/iccv01.pdf
+  doi: "10.1109/iccv.2001.937505"
+  pdf: boykov2001-graph-cut-segmentation.pdf
+  cites: []
+
+- id: yang2018-sub-pixel
+  title: "Sub-Pixel Chessboard Corner Localization for Camera Calibration and Pose Estimation"
+  authors: ["T. Yang", "Q. Zhao", "W. Xian", "Q. Zhou"]
+  year: 2018
+  venue: Applied Sciences
+  url: https://www.mdpi.com/2076-3417/8/11/2118/pdf
+  doi: "10.3390/app8112118"
+  pdf: yang2018-sub-pixel.pdf
+  cites:
+  - placht2014-rochade
+  - chen2005-xcorner
+  - lucchese2003-saddle
+  - lepetit2009-epnp
+  - zhang2000-flexible
+
+- id: longuet-higgins1981-eight-point
+  title: "A computer algorithm for reconstructing a scene from two projections"
+  authors: ["H. C. Longuet-Higgins"]
+  year: 1981
+  venue: Nature
+  url: https://doi.org/10.1038/293133a0
+  doi: "10.1038/293133a0"
+  pdf: longuet-higgins1981-eight-point.pdf
+  cites: []
+
+- id: rother2004-grabcut
+  title: "GrabCut: Interactive Foreground Extraction using Iterated Graph Cuts"
+  authors: ["C. Rother", "V. Kolmogorov", "A. Blake"]
+  year: 2004
+  venue: ACM Transactions on Graphics (SIGGRAPH)
+  url: https://doi.org/10.1145/1015706.1015720
+  doi: "10.1145/1015706.1015720"
+  pdf: rother2004-grabcut.pdf
+  cites:
+  - boykov2001-graph-cut-segmentation
+
+- id: long2015-fcn
+  title: "Fully Convolutional Networks for Semantic Segmentation"
+  authors: ["J. Long", "E. Shelhamer", "T. Darrell"]
+  year: 2015
+  venue: CVPR
+  url: https://arxiv.org/abs/1411.4038
+  doi: "10.1109/cvpr.2015.7298965"
+  pdf: long2015-fcn.pdf
+  cites: []

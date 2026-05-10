@@ -129,6 +129,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/loy-fast-radial-symmetry",
       "draft": false
     },
+    "felzenszwalb-graph-segmentation": {
+      "slug": "felzenszwalb-graph-segmentation",
+      "type": "algorithm",
+      "title": "Felzenszwalb–Huttenlocher Graph-Based Image Segmentation",
+      "summary": "Partition an image into perceptually coherent regions by a Kruskal-style greedy merge over a pixel graph, accepting an inter-component edge as a non-boundary when its weight does not exceed the components' internal variation plus a size-adaptive threshold $\\tau(C) = k/|C|$; runs in $O(m \\log m)$ time and produces partitions that are simultaneously not too fine and not too coarse.",
+      "path": "/atlas/felzenszwalb-graph-segmentation",
+      "draft": false
+    },
     "fischler-bolles-ransac": {
       "slug": "fischler-bolles-ransac",
       "type": "algorithm",
@@ -169,6 +177,22 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/gp-checkerboard-enhancement",
       "draft": false
     },
+    "grabcut-iterative-segmentation": {
+      "slug": "grabcut-iterative-segmentation",
+      "type": "algorithm",
+      "title": "GrabCut Iterative Segmentation",
+      "summary": "Extract a foreground from a colour image using a single bounding rectangle as the only required input by alternating Gaussian mixture component assignment, GMM parameter re-estimation, and global s-t min-cut on a contrast-weighted MRF — the iteration decreases a Gibbs energy $E(\\alpha, k, \\theta, z) = U + V$ monotonically — then refine the contour with a regularised 1-D $\\alpha$-profile in a $\\pm 6$-pixel border ribbon.",
+      "path": "/atlas/grabcut-iterative-segmentation",
+      "draft": false
+    },
+    "graph-cut-segmentation": {
+      "slug": "graph-cut-segmentation",
+      "type": "algorithm",
+      "title": "Graph-Cut Interactive Segmentation",
+      "summary": "Compute the global minimum of a binary region-and-boundary MRF energy as a single s-t min-cut on a pixel graph; user-marked seeds enter as hard constraints, the output is a binary labelling $A : P \\to \\{\\text{obj}, \\text{bkg}\\}$ with topology-free segments.",
+      "path": "/atlas/graph-cut-segmentation",
+      "draft": false
+    },
     "harris-corner-detector": {
       "slug": "harris-corner-detector",
       "type": "algorithm",
@@ -199,6 +223,14 @@ export const contentGraph: ContentGraph = {
       "title": "Localized Radon Checkerboard Corners",
       "summary": "Detect checkerboard X-junctions by approximating a localized Radon transform with 1-D box filters on rotated copies of the image; the per-pixel response is the squared difference between the maximum and minimum directional line integrals over four discrete angles.",
       "path": "/atlas/duda-radon-corners",
+      "draft": false
+    },
+    "longuet-higgins-eight-point": {
+      "slug": "longuet-higgins-eight-point",
+      "type": "algorithm",
+      "title": "Longuet-Higgins Linear Eight-Point Algorithm",
+      "summary": "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm.",
+      "path": "/atlas/longuet-higgins-eight-point",
       "draft": false
     },
     "barath-magsac": {
@@ -329,6 +361,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/raguram-usac",
       "draft": false
     },
+    "yang-sub-pixel-corner-fit": {
+      "slug": "yang-sub-pixel-corner-fit",
+      "type": "algorithm",
+      "title": "Yang Parametric-Model Sub-Pixel Corner Fit",
+      "summary": "Refine pixel-level chessboard corner positions to sub-pixel accuracy by nonlinear least-squares fitting a seven-parameter ideal blurred-corner model directly to the raw image patch, then reject unreliable corners via a boxplot-based fit-quality self-check before passing to PnP.",
+      "path": "/atlas/yang-sub-pixel-corner-fit",
+      "draft": false
+    },
     "zhang-planar-calibration": {
       "slug": "zhang-planar-calibration",
       "type": "algorithm",
@@ -351,6 +391,22 @@ export const contentGraph: ContentGraph = {
       "title": "CCS",
       "summary": "Three-stage learning-based camera calibration pipeline: a CNN regresses radial-distortion-correction parameters, a UNet predicts per-corner Gaussian heatmaps refined by surface-fit subpixel localisation, and an image-level RANSAC accepts inlier views before Zhang-style intrinsic estimation.",
       "path": "/atlas/ccs-camera-calibration",
+      "draft": false
+    },
+    "fcn-semantic-segmentation": {
+      "slug": "fcn-semantic-segmentation",
+      "type": "model",
+      "title": "FCN: Fully Convolutional Networks",
+      "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
+      "path": "/atlas/fcn-semantic-segmentation",
+      "draft": false
+    },
+    "lightglue": {
+      "slug": "lightglue",
+      "type": "model",
+      "title": "LightGlue",
+      "summary": "Adaptive-depth Transformer matcher for sparse local features: stacks 9 self+cross-attention layers with rotary positional encoding and a per-token confidence head, exits early on easy image pairs, and replaces SuperGlue's Sinkhorn solver with a dual-softmax × matchability assignment head — over 2× faster than SuperGlue at equivalent or better pose-estimation accuracy.",
+      "path": "/atlas/lightglue",
       "draft": false
     },
     "loftr": {
@@ -685,6 +741,11 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "felzenszwalb-graph-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
     "fischler-bolles-ransac": {
       "prerequisites": [
         "ransac"
@@ -749,6 +810,12 @@ export const contentGraph: ContentGraph = {
           "confidence": "medium",
           "caution": "Different abstraction layer — topological grid recovery from a candidate corner set vs single-shot detection that integrates corner finding and grid linking. Not superseded by Geiger; both remain in practitioner use.",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
+          "confidence": "high",
+          "mirrored": true
         }
       ]
     },
@@ -773,6 +840,22 @@ export const contentGraph: ContentGraph = {
         {
           "type": "feeds_into",
           "target": "zhang-planar-calibration",
+          "confidence": "high"
+        }
+      ]
+    },
+    "grabcut-iterative-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
+    "graph-cut-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "grabcut-iterative-segmentation",
           "confidence": "high"
         }
       ]
@@ -857,6 +940,25 @@ export const contentGraph: ContentGraph = {
           "target": "chess-corners",
           "confidence": "high",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "mirrored": true
+        }
+      ]
+    },
+    "longuet-higgins-eight-point": {
+      "prerequisites": [
+        "epipolar-geometry"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "fundamental-matrix-eight-point",
+          "confidence": "high"
         }
       ]
     },
@@ -975,6 +1077,13 @@ export const contentGraph: ContentGraph = {
           "target": "rochade",
           "confidence": "high",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "caution": "Pyramidal builds on ROCHADE; yang2018 fits a parametric saddle model — different mechanism",
+          "mirrored": true
         }
       ]
     },
@@ -998,6 +1107,12 @@ export const contentGraph: ContentGraph = {
         {
           "type": "compared_with",
           "target": "chess-corners",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
           "confidence": "high",
           "mirrored": true
         }
@@ -1236,6 +1351,47 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "yang-sub-pixel-corner-fit": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "rochade",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "geiger-chessboard-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "pyramidal-blur-aware-xcorner",
+          "confidence": "medium",
+          "caution": "Pyramidal builds on ROCHADE; yang2018 fits a parametric saddle model — different mechanism"
+        },
+        {
+          "type": "compared_with",
+          "target": "duda-radon-corners",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "medium",
+          "caution": "Yang2018 explicitly targets Zhang-style planar calibration as the downstream consumer"
+        },
+        {
+          "type": "feeds_into",
+          "target": "epnp",
+          "confidence": "medium",
+          "caution": "Self-check is motivated by EPnP downstream use"
+        }
+      ]
+    },
     "zhang-planar-calibration": {
       "prerequisites": [
         "homography",
@@ -1316,6 +1472,23 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "fcn-semantic-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
+    "lightglue": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "high",
+          "caution": "Different paradigm — LoFTR is detector-free dense, LightGlue is detector-based sparse. LoFTR wins in textureless regions; LightGlue wins on speed."
+        }
+      ]
+    },
     "loftr": {
       "prerequisites": [],
       "failureModes": [],
@@ -1330,6 +1503,12 @@ export const contentGraph: ContentGraph = {
           "target": "xfeat",
           "confidence": "high",
           "caution": "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm."
+        },
+        {
+          "type": "compared_with",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1)."
         }
       ]
     },
@@ -1370,6 +1549,12 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "loftr",
           "confidence": "high"
+        },
+        {
+          "type": "extended_by",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "LightGlue retains SuperGlue's graph-attention matcher framework; adds adaptive depth + token pruning + dual-softmax head for >2× speedup at comparable or better accuracy. SuperGlue remains the reference baseline."
         }
       ]
     },
@@ -1389,6 +1574,12 @@ export const contentGraph: ContentGraph = {
           "target": "superglue",
           "confidence": "high",
           "caution": "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
+        },
+        {
+          "type": "feeds_into",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "LightGlue ships SuperPoint-paired pretrained weights as the default configuration; recommended over SuperGlue for new pipelines (faster, Apache-2.0)."
         },
         {
           "type": "learned_alternative_of",
@@ -1456,6 +1647,12 @@ export const contentGraph: ContentGraph = {
           "target": "orb",
           "confidence": "high",
           "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
+        },
+        {
+          "type": "feeds_into",
+          "target": "lightglue",
+          "confidence": "medium",
+          "caution": "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
         },
         {
           "type": "compared_with",
@@ -1655,7 +1852,13 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "caution": "Self-check is motivated by EPnP downstream use"
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "fast-corner-detector": {
@@ -1667,6 +1870,14 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "loy-fast-radial-symmetry": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "felzenszwalb-graph-segmentation": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -1733,6 +1944,27 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "grabcut-iterative-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "graph-cut-segmentation",
+          "confidence": "high"
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "graph-cut-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "harris-corner-detector": {
       "usedBy": [],
       "affects": [],
@@ -1784,6 +2016,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "longuet-higgins-eight-point": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "barath-magsac": {
       "usedBy": [],
       "affects": [],
@@ -1801,7 +2041,12 @@ export const contentGraph: ContentGraph = {
     "fundamental-matrix-eight-point": {
       "usedBy": [],
       "affects": [],
-      "generalises": [],
+      "generalises": [
+        {
+          "slug": "longuet-higgins-eight-point",
+          "confidence": "high"
+        }
+      ],
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
@@ -1984,6 +2229,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "yang-sub-pixel-corner-fit": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "zhang-planar-calibration": {
       "usedBy": [],
       "affects": [],
@@ -2046,6 +2299,11 @@ export const contentGraph: ContentGraph = {
         {
           "slug": "shu-topological-grid",
           "confidence": "high"
+        },
+        {
+          "slug": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "caution": "Yang2018 explicitly targets Zhang-style planar calibration as the downstream consumer"
         }
       ],
       "hasLearnedAlternative": []
@@ -2064,6 +2322,39 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [],
       "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "fcn-semantic-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "lightglue": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "superglue",
+          "confidence": "high",
+          "caution": "LightGlue retains SuperGlue's graph-attention matcher framework; adds adaptive depth + token pruning + dual-softmax head for >2× speedup at comparable or better accuracy. SuperGlue remains the reference baseline."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "LightGlue ships SuperPoint-paired pretrained weights as the default configuration; recommended over SuperGlue for new pipelines (faster, Apache-2.0)."
+        },
+        {
+          "slug": "xfeat",
+          "confidence": "medium",
+          "caution": "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "loftr": {
@@ -2150,7 +2441,8 @@ export const contentGraph: ContentGraph = {
     },
     "epipolar-geometry": {
       "usedBy": [
-        "fundamental-matrix-eight-point"
+        "fundamental-matrix-eight-point",
+        "longuet-higgins-eight-point"
       ],
       "affects": [],
       "generalises": [],
@@ -2214,7 +2506,8 @@ export const contentGraph: ContentGraph = {
         "structure-tensor",
         "superpoint",
         "surf",
-        "xfeat"
+        "xfeat",
+        "yang-sub-pixel-corner-fit"
       ],
       "affects": [],
       "generalises": [],

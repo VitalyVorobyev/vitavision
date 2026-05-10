@@ -464,6 +464,34 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "felzenszwalb-graph-segmentation",
+    "frontmatter": {
+      "title": "Felzenszwalb–Huttenlocher Graph-Based Image Segmentation",
+      "summary": "Partition an image into perceptually coherent regions by a Kruskal-style greedy merge over a pixel graph, accepting an inter-component edge as a non-boundary when its weight does not exceed the components' internal variation plus a size-adaptive threshold $\\tau(C) = k/|C|$; runs in $O(m \\log m)$ time and produces partitions that are simultaneously not too fine and not too coarse.",
+      "tags": [
+        "image-segmentation",
+        "graph-algorithms",
+        "minimum-spanning-tree",
+        "union-find"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "sources": {
+        "primary": "felzenszwalb2004-graph-segm",
+        "notes": "Three named quantities: Int(C) = max edge in MST(C) (Eq. 1); Dif(C₁,C₂) =\nmin cross-boundary edge weight (Eq. 2); MInt = min(Int(Cᵢ) + τ(Cᵢ)) with\nτ(C) = k/|C| (Eqs. 4–5). Boundary predicate D = [Dif > MInt] (Eq. 3).\nAlgorithm: sort all edges by weight (non-decreasing), then for each edge\nin order union-find-merge if w ≤ MInt at that moment (Algorithm 1).\nBecause edges are visited in sorted order, the merge edge is always the\nminimum-weight edge between the two components — identical to Kruskal's\nMST criterion — so Int updates in O(1) per merge (Section 4.1).\nTwo graph constructions: 8-connected grid (m = O(n), runtime\nO(n log n)) and feature-space NN graph on (x, y, r, g, b) with 10\nnearest neighbours (Section 6). Pre-process: Gaussian smoothing with\nσ = 0.8. Recommended k: 150 for 128×128 images, 300 for 320×240+.\nColor: run three independent monochrome segmentations and intersect.\nTheorems: (1) not too fine — every adjacent component pair has a boundary\nedge satisfying D; (2) not too coarse — no proper refinement preserves\n(1); (3) order-independent on equal-weight ties. Theorem 4: replacing\nmin in Dif with any K-th quantile makes optimal segmentation NP-hard.\n"
+      },
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "fischler-bolles-ransac",
     "frontmatter": {
       "title": "Fischler–Bolles RANSAC",
@@ -682,6 +710,75 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "grabcut-iterative-segmentation",
+    "frontmatter": {
+      "title": "GrabCut Iterative Segmentation",
+      "summary": "Extract a foreground from a colour image using a single bounding rectangle as the only required input by alternating Gaussian mixture component assignment, GMM parameter re-estimation, and global s-t min-cut on a contrast-weighted MRF — the iteration decreases a Gibbs energy $E(\\alpha, k, \\theta, z) = U + V$ monotonically — then refine the contour with a regularised 1-D $\\alpha$-profile in a $\\pm 6$-pixel border ribbon.",
+      "tags": [
+        "image-segmentation",
+        "graph-cut",
+        "min-cut-max-flow",
+        "gaussian-mixture-model",
+        "interactive-segmentation",
+        "border-matting"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "sources": {
+        "primary": "rother2004-grabcut",
+        "references": [
+          "boykov2001-graph-cut-segmentation"
+        ],
+        "notes": "Extends Boykov–Jolly 2001 graph cut along three coupled axes: full-covariance\nK-component RGB GMMs (paper uses K = 5) replace grey-level histograms; an\niterative coordinate-descent loop (assign → learn → min-cut) replaces the\none-shot cut and is monotone in E; the user input collapses from a full\ninner+outer trimap to a single bounding rectangle (incomplete trimap, T_F = ∅).\nEnergy E(α, k, θ, z) = U(α, k, θ, z) + V(α, z) (Eq. 7); data term D = -log π +\n½ log det Σ + ½ (z - μ)^T Σ^-1 (z - μ) (Eqs. 8–9); smoothness V = γ Σ\n[α_n ≠ α_m] exp(-β |z_m - z_n|^2) with β = (2⟨(z_m - z_n)^2⟩)^-1 (Eqs. 5, 11).\nConstants: γ = 50 (15-image training set, §2.2), K = 5 components per side,\n8-connected pixel graph. Convergence: each step minimises E in one variable\ngroup, so E decreases monotonically; ~12 iterations on the llama example\n(§3.2, Fig. 4a). Border matting (§4): regularised 1-D α-profile g(r_n; Δ_t,\nσ_t) along contour C in a ±w = 6-pixel ribbon, fitted by DP with\nλ_1 = 50, λ_2 = 10^3, Δ_t at 30 levels, σ_t at 10, neighbourhood patch\nL = 41 (§4.1). Foreground colour estimation by pixel stealing from T_F (§4.2).\n"
+      },
+      "date": "2026-05-10"
+    }
+  },
+  {
+    "slug": "graph-cut-segmentation",
+    "frontmatter": {
+      "title": "Graph-Cut Interactive Segmentation",
+      "summary": "Compute the global minimum of a binary region-and-boundary MRF energy as a single s-t min-cut on a pixel graph; user-marked seeds enter as hard constraints, the output is a binary labelling $A : P \\to \\{\\text{obj}, \\text{bkg}\\}$ with topology-free segments.",
+      "tags": [
+        "image-segmentation",
+        "graph-cut",
+        "min-cut-max-flow",
+        "markov-random-field",
+        "interactive-segmentation"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 4,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "high"
+        }
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "sources": {
+        "primary": "boykov2001-graph-cut-segmentation",
+        "notes": "Energy E(A) = λR(A) + B(A) (Eq. 1). Region term R(A) = Σ_p Rp(Ap) with\nRp(\"obj\") = −ln Pr(Ip|O) and Rp(\"bkg\") = −ln Pr(Ip|B) learnt from seed\nintensity histograms (§4 preamble). Boundary term B(A) = Σ B_{p,q}·δ\nwith B_{p,q} ∝ exp(−(Ip−Iq)²/2σ²)/dist(p,q) (§4 preamble), σ estimated\nas camera noise. Graph (§3): node per pixel plus source S and sink T;\nn-links carry B_{p,q}; t-links carry λRp(·) for unlabelled pixels and\nK for seeds, with K = 1 + max_p Σ_q B_{p,q} so seeds are never severed\nby the minimum cut. Min-cut on this graph equals the global minimum of\nE(A) under the hard seed constraints (Theorem 1, §3). Neighbourhood is\n8-connected in 2D, 26-connected in 3D. On a new seed only the affected\npixel's t-links change, so the existing flow can be re-augmented.\n"
+      },
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "harris-corner-detector",
     "frontmatter": {
       "title": "Harris Corner Detector",
@@ -855,6 +952,46 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "longuet-higgins-eight-point",
+    "frontmatter": {
+      "title": "Longuet-Higgins Linear Eight-Point Algorithm",
+      "summary": "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm.",
+      "tags": [
+        "geometry",
+        "two-view-geometry",
+        "essential-matrix"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 4,
+      "access": "public",
+      "prerequisites": [
+        "epipolar-geometry"
+      ],
+      "failureModes": [],
+      "quality": "historical",
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "fundamental-matrix-eight-point",
+          "confidence": "high"
+        }
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "fundamental-matrix-estimation"
+      ],
+      "sources": {
+        "primary": "longuet-higgins1981-eight-point",
+        "references": [
+          "hartley1997-eight-point"
+        ],
+        "notes": "Linear 8-point method for the essential matrix Q = R·S, where S is the\nskew-symmetric matrix of the unit-norm translation T. Eq. 12 of the paper\ngives the bilinear constraint x'^T Q x = 0; Eq. 13 supplies one linear\nequation per correspondence; eight correspondences determine the ratios\nof Q's nine entries. Translation magnitude is fixed by tr(Q^T Q) = 2\n(Eq. 16). Rotation is recovered from W_α = Q_α × T via R_α = W_α + W_β × W_γ\n(Eq. 27). Six-step algorithm given at the end of the paper. Inputs are\ncalibrated projective coordinates x = X_1/X_3 (Eq. 1), so the conditioning\nproblem that Hartley 1997 addresses for raw pixel coordinates does not\narise within the original setting.\n"
+      },
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "barath-magsac",
     "frontmatter": {
       "title": "MAGSAC: Marginalising Sample Consensus",
@@ -910,7 +1047,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "sources": {
         "primary": "hartley1997-eight-point",
-        "references": [],
+        "references": [
+          "longuet-higgins1981-eight-point"
+        ],
         "notes": "Two-line fix to the Longuet-Higgins (1981) linear DLT for the\nfundamental matrix: translate each image's points to zero centroid,\nisotropically scale so the average distance to origin is √2, then\nrun the standard DLT, enforce rank 2 by SVD truncation, and\ndenormalise. Without normalisation, the design matrix A^T A has\ncondition number κ ~ 10^11–10^13 on typical 200×200 images;\nnormalisation drops κ to ~10^3–10^5 (Graph 1 of paper). Empirical\nfinding: the normalised linear method is \"almost indistinguishable\"\nfrom the optimal iterative gold-standard estimator at n ≥ 10\ncorrespondences, while running ~20× faster (§7.3, §8). The same\nnormalisation argument applies to the homography DLT.\n"
       },
       "date": "2026-05-02"
@@ -1558,6 +1697,78 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "yang-sub-pixel-corner-fit",
+    "frontmatter": {
+      "title": "Yang Parametric-Model Sub-Pixel Corner Fit",
+      "summary": "Refine pixel-level chessboard corner positions to sub-pixel accuracy by nonlinear least-squares fitting a seven-parameter ideal blurred-corner model directly to the raw image patch, then reject unreliable corners via a boxplot-based fit-quality self-check before passing to PnP.",
+      "tags": [
+        "subpixel-refinement",
+        "calibration",
+        "chessboard"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "rochade",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "geiger-chessboard-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "pyramidal-blur-aware-xcorner",
+          "confidence": "medium",
+          "caution": "Pyramidal builds on ROCHADE; yang2018 fits a parametric saddle model — different mechanism"
+        },
+        {
+          "type": "compared_with",
+          "target": "duda-radon-corners",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "medium",
+          "caution": "Yang2018 explicitly targets Zhang-style planar calibration as the downstream consumer"
+        },
+        {
+          "type": "feeds_into",
+          "target": "epnp",
+          "confidence": "medium",
+          "caution": "Self-check is motivated by EPnP downstream use"
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "corner-detection",
+        "chessboard-detection"
+      ],
+      "sources": {
+        "primary": "yang2018-sub-pixel",
+        "references": [
+          "zhang2000-flexible",
+          "lepetit2009-epnp",
+          "placht2014-rochade",
+          "harris1988-corner",
+          "chen2005-xcorner"
+        ],
+        "notes": "Seven-parameter ideal continuous chessboard corner model\nC_s(u,v; μ, υ, α, β, λ, κ, σ) = λ·G_σ ⊛ [E(α)·E(β)] + κ\nfit by Gauss–Newton over a (2r+1)² ROI, r ≈ 14–15 px (§3.1–3.2,\nEq. 3–7). Gaussian erf inside the convolution is replaced by\ntanh(ρx) with ρ ≈ 1.1 (§3.2, Fig. 3); residual Δ(u,v) from the\nintegration-by-parts surrogate is compensated explicitly (Eq. 8–9).\nSub-pixel output c_s = c_p − [μ, υ]ᵀ (Eq. 10). Self-check (§3.3,\nEq. 11–12): per-corner RMSE Ẽ_{m,n} compared against the modified\nboxplot interval [2.5Q₁ − 1.5Q₃, 2.5Q₃ − 1.5Q₁]; failing corners\nreceive PnP weight w_{m,n} = 0 (Eq. 15, Rodrigues recommended).\n"
+      },
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "zhang-planar-calibration",
     "frontmatter": {
       "title": "Zhang's Planar Camera Calibration",
@@ -1778,6 +1989,109 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "fcn-semantic-segmentation",
+    "frontmatter": {
+      "title": "FCN: Fully Convolutional Networks",
+      "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
+      "tags": [
+        "computer-vision",
+        "semantic-segmentation",
+        "dense-prediction",
+        "encoder-decoder",
+        "transfer-learning"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "params": "134M (FCN-VGG16, Table 1)",
+      "sources": {
+        "primary": "long2015-fcn",
+        "notes": "§3.1 fully convolutional reinterpretation: fc6/fc7 of VGG-16 become\n1×1 convs of widths 4096/4096; the 1000-way classifier becomes a\n21-channel 1×1 conv (PASCAL VOC). Total stride 32 (Table 1, five\nstride-2 max-pools). §4.1 backbone comparison — VGG-16 best:\nFCN-VGG16 mean IU 56.0 / 59.4 (with extra data) vs FCN-AlexNet 39.8\nand FCN-GoogLeNet 42.5 on PASCAL VOC 2011 val (Table 1). §4.2 skip\narchitecture (Figure 3): pool3 + pool4 + conv7 score maps fused via\nelement-wise sum (not concatenation; max fusion impedes learning,\nfootnote 6); FCN-32s → FCN-16s (+3.0 mean IU) → FCN-8s (+0.3 mean\nIU). §4.3 staged learning: ~3 days on a single Tesla K40c for\nFCN-32s, then ~1 day each for FCN-16s and FCN-8s; SGD momentum 0.9,\nweight decay 5×10^-4 (or 2×10^-4), lr 10^-4 for FCN-VGG16,\nminibatch 20 images, no class weighting. Bilinear-init deconvolution\nlayers; pool3/pool4 1×1 prediction layers zero-initialised; learning\nrate decreased 100× when adding each skip. Headline numbers — Table\n3: FCN-8s 62.7 / 62.2 / ~175 ms on PASCAL VOC 2011 / 2012 test;\n20% relative gain over SDS at 52.6. Table 4: NYUDv2 RGB-HHA late\nfusion mean IU 34.0 (FCN-16s). Table 5: SIFT Flow geometric pixel\naccuracy 94.3, mean IU 39.5. Table 1: 134 M parameters, receptive\nfield 404 px, ~210 ms forward pass at 500×500 on K40c. §5: ~286×\ninference speedup over SDS (overall pipeline) and ~114× (convnet\nonly).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/shelhamer/fcn.berkeleyvision.org",
+          "commit": "1305c7378a9f0ab44b2c936f4d60e4687e3d8743",
+          "framework": "caffe",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "7af698794eded568735f9519593603c1ec889eba",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause"
+        }
+      ],
+      "date": "2026-05-10"
+    }
+  },
+  {
+    "slug": "lightglue",
+    "frontmatter": {
+      "title": "LightGlue",
+      "summary": "Adaptive-depth Transformer matcher for sparse local features: stacks 9 self+cross-attention layers with rotary positional encoding and a per-token confidence head, exits early on easy image pairs, and replaces SuperGlue's Sinkhorn solver with a dual-softmax × matchability assignment head — over 2× faster than SuperGlue at equivalent or better pose-estimation accuracy.",
+      "tags": [
+        "computer-vision",
+        "image-matching",
+        "local-features",
+        "transformer",
+        "attention"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "high",
+          "caution": "Different paradigm — LoFTR is detector-free dense, LightGlue is detector-based sparse. LoFTR wins in textureless regions; LightGlue wins on speed."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "local-feature-matching"
+      ],
+      "arch_family": "hybrid",
+      "sources": {
+        "primary": "lindenberger2023-lightglue",
+        "references": [
+          "sarlin2020-superglue",
+          "detone2018-superpoint",
+          "sun2021-loftr",
+          "lowe2004-sift"
+        ],
+        "notes": "§3 / Eq. 1–2 attention update + message aggregation inherited from\nSuperGlue. §3 / Eq. 3–4 rotary positional encoding R(p_j − p_i) at\nevery self-attention layer; learned 2D basis vectors b_k ∈ ℝ², one per\nd/2 = 128 subspace. §3 / Eq. 5 bidirectional cross-attention saves ~2×.\n§3 / Eq. 6 pairwise similarity S_ij = Linear(x_i^A)^⊤ Linear(x_j^B).\n§3 / Eq. 7 matchability σ_i = Sigmoid(Linear(x_i)). §3 / Eq. 8 dual-\nsoftmax × matchability assignment P_ij. §3 / Eq. 9 per-layer confidence\nc_i = Sigmoid(MLP(x_i)). §3 / Eq. 10 exit criterion (fraction confident\n> α). §3 / Eq. 11 deep-supervision loss averaged over L layers. §4\nL=9 layers, 4 attention heads, d=256, 2k keypoints/img, batch 32 on\n24 GB GPU with mixed precision + gradient checkpointing. §4 pre-train\non synthetic homographies from 1M images, fine-tune on MegaDepth\n(196 landmarks, 1M images). Table 2 (MegaDepth-1500) LightGlue+SP\nLO-RANSAC AUC 66.7/79.3/87.9 @ 5°/10°/20°, 44.2 ms; adaptive variant\n66.3/79.0/87.9 @ 31.4 ms; SuperGlue 65.8/78.7/87.5 @ 70.0 ms. Table 4\nLightGlue precision 86.8 / recall 96.3 / 19.4 ms vs SuperGlue\n74.6 / 90.5 / 29.1 ms. Table 5 average stopping layer 5.7 (easy 4.7,\nmedium 5.5, hard 6.9), per-difficulty speedup 1.86×/1.33×/1.16×,\naggregate 33% runtime reduction. Figure 1 caption: accuracy \"closer to\nthe dense matcher LoFTR at an 8× higher speed.\"\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/cvg/LightGlue",
+          "commit": "edb2b838efb2ecfe3f88097c5fad9887d95aedad",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_url": "https://github.com/cvg/LightGlue/releases/tag/v0.1_arxiv",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "loftr",
     "frontmatter": {
       "title": "LoFTR",
@@ -1806,6 +2120,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "xfeat",
           "confidence": "high",
           "caution": "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm."
+        },
+        {
+          "type": "compared_with",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1)."
         }
       ],
       "domain": "features",
@@ -1818,7 +2138,8 @@ export const modelPages: ModelIndexEntry[] = [
         "references": [
           "sarlin2020-superglue",
           "detone2018-superpoint",
-          "potje2024-xfeat"
+          "potje2024-xfeat",
+          "lindenberger2023-lightglue"
         ],
         "notes": "§3 four sub-modules: (1) FPN-ResNet backbone → coarse maps at 1/8,\nfine maps at 1/2; (2) Local Feature Transformer with $N_c$ interleaved\nself/cross attention layers, ELU+1 Linear Transformer kernel\n$\\phi(x) = \\text{elu}(x) + 1$ for $O(N)$ complexity; (3) coarse\nmatching via dual-softmax (LoFTR-DS) or Sinkhorn (LoFTR-OT, 3 iters)\n+ MNN + confidence threshold; (4) fine refinement: $w \\times w$\ncorrelation window → sub-pixel expectation. §3.5 score matrix\n$\\mathcal{S}(i,j) = (1/\\tau) \\langle \\tilde{F}^A_{tr}(i),\n\\tilde{F}^B_{tr}(j) \\rangle$. §4.1 HPatches homography SOTA AUC@3px\n/5px/10px. §4.2 ScanNet pose AUC@10° improves SuperGlue by 13%, DRC\nby 61%. §4.4 runtime 116 ms (DS) / 130 ms (OT) per 640×480 pair on\nRTX 2080Ti. §B training: 64 GTX 1080Ti GPUs, ~24 h indoor; ScanNet\n640×480, MegaDepth 840 long-side training / 1200 long-side eval.\n"
       },
@@ -1923,6 +2244,12 @@ export const modelPages: ModelIndexEntry[] = [
           "type": "compared_with",
           "target": "loftr",
           "confidence": "high"
+        },
+        {
+          "type": "extended_by",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "LightGlue retains SuperGlue's graph-attention matcher framework; adds adaptive depth + token pruning + dual-softmax head for >2× speedup at comparable or better accuracy. SuperGlue remains the reference baseline."
         }
       ],
       "domain": "features",
@@ -1935,7 +2262,8 @@ export const modelPages: ModelIndexEntry[] = [
         "primary": "sarlin2020-superglue",
         "references": [
           "detone2018-superpoint",
-          "sun2021-loftr"
+          "sun2021-loftr",
+          "lindenberger2023-lightglue"
         ],
         "notes": "§3 architecture: Attentional GNN + Optimal Matching Layer. §4 / Eq. 2\nkeypoint encoder MLP shape (32, 64, 128, 256, D), ~100k params.\n§4 / Eqs. 3–5 multiplex GNN, L=9 alternating self/cross attention\nlayers, 4 heads, D=256, ~0.66M params per layer, ~12M total.\n§3.2 / Eqs. 7–9 optimal matching layer: score $S_{ij} = \\langle f_i^A,\nf_j^B \\rangle$, dustbin scalar z, Sinkhorn T=100 iterations.\nEq. 10 NLL loss over augmented assignment $\\bar{P}$. §4 Adam lr 1e-4\ndecayed. §4 / Appendix C: 69 ms / 15 FPS at 512 kp on GTX 1080;\n270 ms at 2048 kp. §5.2 Table 2 ScanNet AUC@20° 51.84% (vs OANet\n43.85%). §5.3 Table 3 PhotoTourism AUC@20° 64.16%, precision 84.9%.\n§5.4 end-to-end training improves AUC@20° to 53.38%.\n"
       },
@@ -1984,6 +2312,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "superglue",
           "confidence": "high",
           "caution": "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
+        },
+        {
+          "type": "feeds_into",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "LightGlue ships SuperPoint-paired pretrained weights as the default configuration; recommended over SuperGlue for new pipelines (faster, Apache-2.0)."
         },
         {
           "type": "learned_alternative_of",
@@ -2094,6 +2428,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "orb",
           "confidence": "high",
           "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
+        },
+        {
+          "type": "feeds_into",
+          "target": "lightglue",
+          "confidence": "medium",
+          "caution": "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
         }
       ],
       "domain": "features",
@@ -2169,7 +2509,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 10,
+      "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [
         "image-gradient"
@@ -2189,7 +2529,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "chen2023-ccdn",
           "zhang2022-learning-based",
           "stelldinger2024-puzzleboard",
-          "hillen2023-enhanced"
+          "hillen2023-enhanced",
+          "yang2018-sub-pixel"
         ]
       },
       "date": "2026-05-02"

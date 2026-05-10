@@ -137,7 +137,7 @@ The official Magic Leap PyTorch release ships pretrained indoor and outdoor mode
 - Quadratic memory in keypoint count: cross-attention computes over the full $M \times N$ product, and the Sinkhorn layer operates on an $(M+1) \times (N+1)$ matrix — at 2048 keypoints this reaches 270 ms on GTX 1080 (Fig. 11).
 - Restrictive license: the official Magic Leap repository ships code and weights under a noncommercial-research-only agreement; commercial deployment requires a separate licensing arrangement or retraining under a permissive license.
 - Inference is bound to one image pair per forward pass: multi-image consistency (loop closure, bundle adjustment) is not enforced by the architecture and must be handled by a separate back-end.
-- For new pipelines, [LightGlue](/atlas/lightglue) (Lindenberger et al., 2023) extends this matcher with adaptive depth, token pruning, and a dual-softmax assignment head, achieving over 2× faster matching at equivalent or better pose-estimation accuracy under an Apache-2.0 license. SuperGlue is retained as the historical reference and for teams already integrated with the Magic Leap release.
+- For new pipelines, [LightGlue](/atlas/lightglue) (Lindenberger et al., 2023) extends this matcher with adaptive depth, token pruning, and a dual-softmax assignment head, achieving over 2× faster matching at equivalent or better pose-estimation accuracy. The LightGlue matcher half is Apache-2.0 (the SuperPoint front-end retains its Magic-Leap restriction either way — see LightGlue's Limitations). SuperGlue is retained as the historical reference and for teams already integrated with the Magic Leap release.
 
 ## When to choose SuperGlue over LoFTR
 

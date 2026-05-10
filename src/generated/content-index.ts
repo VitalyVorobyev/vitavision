@@ -1791,7 +1791,7 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [],
       "failureModes": [],

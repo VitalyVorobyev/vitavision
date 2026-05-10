@@ -110,7 +110,7 @@ def assign(x_a: torch.Tensor, x_b: torch.Tensor,
 
 # Implementations
 
-The official `cvg/LightGlue` PyTorch package (Apache-2.0) ships pretrained weights for SuperPoint, DISK, SIFT, ALIKED, and DoGHardNet front-ends.
+The official `cvg/LightGlue` PyTorch package ships pretrained matcher weights for SuperPoint, DISK, SIFT, ALIKED, and DoGHardNet front-ends; the matcher code and the `*_lightglue.pth` checkpoints are Apache-2.0, but the bundled SuperPoint inference file and its Magic Leap pretrained weights are noncommercial-research-only — see Limitations before pairing with SuperPoint in a commercial pipeline.
 
 # Assessment
 
@@ -125,17 +125,18 @@ The official `cvg/LightGlue` PyTorch package (Apache-2.0) ships pretrained weigh
 - On MegaDepth-1500, the adaptive LightGlue+SuperPoint variant matches SuperGlue's pose accuracy (LO-RANSAC AUC 66.3 / 79.0 / 87.9 vs SuperGlue 65.8 / 78.7 / 87.5) at 31.4 ms vs 70.0 ms — over 2× faster (Table 2).
 - Ablation (Table 4) shows a substantial quality improvement over SuperGlue on precision (86.8 vs 74.6) and recall (96.3 vs 90.5), confirming that the architectural changes improve accuracy and not only speed.
 - Adaptive compute is most effective on easy pairs: average stopping layer 4.7 on easy inputs yields a 1.86× speedup per pair; Figure 1 reports accuracy "closer to the dense matcher LoFTR at an 8× higher speed."
-- Apache-2.0 code and weights license — commercial deployment is unrestricted with all five front-ends.
+- The LightGlue matcher itself (code + the five released matcher checkpoints `*_lightglue.pth`) is Apache-2.0, removing the SuperGlue Magic-Leap restriction on the matcher half of the pipeline. Front-end licenses are heterogeneous and must be reviewed separately — see Limitations.
 
 **Limitations.**
 
 - Trained per front-end: a model trained on SuperPoint descriptors cannot be applied to SIFT descriptors without retraining; zero-shot transfer across front-end types is not supported (§4 and Assumption 4 in the note).
 - Cross-attention memory at high keypoint counts: at $N=M=4096$, the similarity matrix alone occupies approximately 272 MB float32; FlashAttention is used for self-attention but cross-attention memory remains a constraint (§ Numerical sensitivity).
 - Inherits the failure mode of all sparse matchers: repeated or periodic textures cause precision to collapse because attention cannot disambiguate mutually similar token sets; the matchability head mitigates but does not eliminate this.
+- Front-end licenses are heterogeneous and override the matcher's Apache-2.0 grant for the affected pipeline. Per the official `cvg/LightGlue` README "License" section: DISK is Apache-2.0; ALIKED is BSD-3-Clause; SuperPoint (both the inference file [`lightglue/superpoint.py`](https://github.com/cvg/LightGlue/blob/v0.2/lightglue/superpoint.py) bundled in this repo and the Magic Leap pretrained weights it loads) is **noncommercial-research-only**. Commercial pipelines using LightGlue+SuperPoint inherit the SuperPoint restriction; commercial deployments should pair LightGlue with DISK, ALIKED, or a freely-licensed SIFT/DoG implementation.
 
 ## When to choose LightGlue over SuperGlue
 
-LightGlue is the default choice for any new pipeline using a sparse detector front-end. Its adaptive depth delivers over 2× reduction in mean matching time at equivalent or better accuracy (Table 2), and its Apache-2.0 license removes the noncommercial-research-only restriction of the official SuperGlue weights. SuperGlue remains a well-understood reference baseline for ablation studies and for teams whose infrastructure is already built around the Magic Leap release.
+LightGlue is the default choice for any new pipeline using a sparse detector front-end. Its adaptive depth delivers over 2× reduction in mean matching time at equivalent or better accuracy (Table 2), and the Apache-2.0 license on the matcher half removes the noncommercial-research-only restriction inherited from the official SuperGlue weights. The SuperPoint front-end retains its Magic-Leap restriction whether paired with SuperGlue or LightGlue (see Limitations); pairing LightGlue with DISK or ALIKED is the unrestricted commercial path. SuperGlue remains a well-understood reference baseline for ablation studies and for teams whose infrastructure is already built around the Magic Leap release.
 
 Choose LoFTR (detector-free, dense) over LightGlue when matching must succeed in textureless or homogeneous regions where a sparse front-end finds no repeatable keypoints, and a per-pair latency of 116 ms on RTX 2080Ti is acceptable. LightGlue's 8× speed advantage over LoFTR (Figure 1) is decisive in tracking, large-scale mapping, and video applications; LoFTR's detector-free paradigm wins on featureless surfaces.
 

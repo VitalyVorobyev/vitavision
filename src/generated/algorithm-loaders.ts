@@ -22,6 +22,7 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "kumar-generalized-rac": () => import("./content/algorithms/kumar-generalized-rac.ts"),
   "lin-sva-stitching": () => import("./content/algorithms/lin-sva-stitching.ts"),
   "duda-radon-corners": () => import("./content/algorithms/duda-radon-corners.ts"),
+  "longuet-higgins-eight-point": () => import("./content/algorithms/longuet-higgins-eight-point.ts"),
   "barath-magsac": () => import("./content/algorithms/barath-magsac.ts"),
   "fundamental-matrix-eight-point": () => import("./content/algorithms/fundamental-matrix-eight-point.ts"),
   "ocpad": () => import("./content/algorithms/ocpad.ts"),
@@ -39,5 +40,6 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "tsai-lenz-handeye": () => import("./content/algorithms/tsai-lenz-handeye.ts"),
   "tsai-versatile-calibration": () => import("./content/algorithms/tsai-versatile-calibration.ts"),
   "raguram-usac": () => import("./content/algorithms/raguram-usac.ts"),
+  "yang-sub-pixel-corner-fit": () => import("./content/algorithms/yang-sub-pixel-corner-fit.ts"),
   "zhang-planar-calibration": () => import("./content/algorithms/zhang-planar-calibration.ts"),
 };

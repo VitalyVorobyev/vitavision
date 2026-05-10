@@ -470,6 +470,24 @@ export const searchRecords: SearchRecord[] = [
     "venue": "British Machine Vision Conference (BMVC)"
   },
   {
+    "slug": "longuet-higgins-eight-point",
+    "path": "/atlas/longuet-higgins-eight-point",
+    "type": "algorithm",
+    "title": "Longuet-Higgins Linear Eight-Point Algorithm",
+    "summary": "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm.",
+    "tags": [
+      "geometry",
+      "two-view-geometry",
+      "essential-matrix"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "H. C. Longuet-Higgins"
+    ],
+    "venue": "Nature"
+  },
+  {
     "slug": "barath-magsac",
     "path": "/atlas/barath-magsac",
     "type": "algorithm",
@@ -830,6 +848,29 @@ export const searchRecords: SearchRecord[] = [
       "J. Frahm"
     ],
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "yang-sub-pixel-corner-fit",
+    "path": "/atlas/yang-sub-pixel-corner-fit",
+    "type": "algorithm",
+    "title": "Yang Parametric-Model Sub-Pixel Corner Fit",
+    "summary": "Refine pixel-level chessboard corner positions to sub-pixel accuracy by nonlinear least-squares fitting a seven-parameter ideal blurred-corner model directly to the raw image patch, then reject unreliable corners via a boxplot-based fit-quality self-check before passing to PnP.",
+    "tags": [
+      "subpixel-refinement",
+      "calibration",
+      "chessboard"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "T. Yang",
+      "Q. Zhao",
+      "W. Xian",
+      "Q. Zhou"
+    ],
+    "venue": "Applied Sciences"
   },
   {
     "slug": "zhang-planar-calibration",

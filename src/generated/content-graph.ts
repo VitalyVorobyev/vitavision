@@ -217,6 +217,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/duda-radon-corners",
       "draft": false
     },
+    "longuet-higgins-eight-point": {
+      "slug": "longuet-higgins-eight-point",
+      "type": "algorithm",
+      "title": "Longuet-Higgins Linear Eight-Point Algorithm",
+      "summary": "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm.",
+      "path": "/atlas/longuet-higgins-eight-point",
+      "draft": false
+    },
     "barath-magsac": {
       "slug": "barath-magsac",
       "type": "algorithm",
@@ -343,6 +351,14 @@ export const contentGraph: ContentGraph = {
       "title": "USAC: Universal RANSAC Framework",
       "summary": "Engineering decomposition of practical RANSAC into four pluggable stages — sampling (PROSAC), model verification (SPRT), local optimisation (LO-RANSAC), and degeneracy handling (DEGENSAC) — with a single reference C++ implementation (USAC-1.0) and an SPRT-corrected stopping criterion.",
       "path": "/atlas/raguram-usac",
+      "draft": false
+    },
+    "yang-sub-pixel-corner-fit": {
+      "slug": "yang-sub-pixel-corner-fit",
+      "type": "algorithm",
+      "title": "Yang Parametric-Model Sub-Pixel Corner Fit",
+      "summary": "Refine pixel-level chessboard corner positions to sub-pixel accuracy by nonlinear least-squares fitting a seven-parameter ideal blurred-corner model directly to the raw image patch, then reject unreliable corners via a boxplot-based fit-quality self-check before passing to PnP.",
+      "path": "/atlas/yang-sub-pixel-corner-fit",
       "draft": false
     },
     "zhang-planar-calibration": {
@@ -778,6 +794,12 @@ export const contentGraph: ContentGraph = {
           "confidence": "medium",
           "caution": "Different abstraction layer — topological grid recovery from a candidate corner set vs single-shot detection that integrates corner finding and grid linking. Not superseded by Geiger; both remain in practitioner use.",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
+          "confidence": "high",
+          "mirrored": true
         }
       ]
     },
@@ -891,6 +913,25 @@ export const contentGraph: ContentGraph = {
           "target": "chess-corners",
           "confidence": "high",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "mirrored": true
+        }
+      ]
+    },
+    "longuet-higgins-eight-point": {
+      "prerequisites": [
+        "epipolar-geometry"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "fundamental-matrix-eight-point",
+          "confidence": "high"
         }
       ]
     },
@@ -1009,6 +1050,13 @@ export const contentGraph: ContentGraph = {
           "target": "rochade",
           "confidence": "high",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "caution": "Pyramidal builds on ROCHADE; yang2018 fits a parametric saddle model — different mechanism",
+          "mirrored": true
         }
       ]
     },
@@ -1032,6 +1080,12 @@ export const contentGraph: ContentGraph = {
         {
           "type": "compared_with",
           "target": "chess-corners",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
           "confidence": "high",
           "mirrored": true
         }
@@ -1267,6 +1321,47 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "barath-magsac",
           "confidence": "high"
+        }
+      ]
+    },
+    "yang-sub-pixel-corner-fit": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "rochade",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "geiger-chessboard-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "pyramidal-blur-aware-xcorner",
+          "confidence": "medium",
+          "caution": "Pyramidal builds on ROCHADE; yang2018 fits a parametric saddle model — different mechanism"
+        },
+        {
+          "type": "compared_with",
+          "target": "duda-radon-corners",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "medium",
+          "caution": "Yang2018 explicitly targets Zhang-style planar calibration as the downstream consumer"
+        },
+        {
+          "type": "feeds_into",
+          "target": "epnp",
+          "confidence": "medium",
+          "caution": "Self-check is motivated by EPnP downstream use"
         }
       ]
     },
@@ -1725,7 +1820,13 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "caution": "Self-check is motivated by EPnP downstream use"
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "fast-corner-detector": {
@@ -1870,6 +1971,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "longuet-higgins-eight-point": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "barath-magsac": {
       "usedBy": [],
       "affects": [],
@@ -1887,7 +1996,12 @@ export const contentGraph: ContentGraph = {
     "fundamental-matrix-eight-point": {
       "usedBy": [],
       "affects": [],
-      "generalises": [],
+      "generalises": [
+        {
+          "slug": "longuet-higgins-eight-point",
+          "confidence": "high"
+        }
+      ],
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
@@ -2070,6 +2184,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "yang-sub-pixel-corner-fit": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "zhang-planar-calibration": {
       "usedBy": [],
       "affects": [],
@@ -2132,6 +2254,11 @@ export const contentGraph: ContentGraph = {
         {
           "slug": "shu-topological-grid",
           "confidence": "high"
+        },
+        {
+          "slug": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "caution": "Yang2018 explicitly targets Zhang-style planar calibration as the downstream consumer"
         }
       ],
       "hasLearnedAlternative": []
@@ -2261,7 +2388,8 @@ export const contentGraph: ContentGraph = {
     },
     "epipolar-geometry": {
       "usedBy": [
-        "fundamental-matrix-eight-point"
+        "fundamental-matrix-eight-point",
+        "longuet-higgins-eight-point"
       ],
       "affects": [],
       "generalises": [],
@@ -2325,7 +2453,8 @@ export const contentGraph: ContentGraph = {
         "structure-tensor",
         "superpoint",
         "surf",
-        "xfeat"
+        "xfeat",
+        "yang-sub-pixel-corner-fit"
       ],
       "affects": [],
       "generalises": [],

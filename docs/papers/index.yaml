@@ -707,3 +707,28 @@
   doi: "10.1109/iccv.2001.937505"
   pdf: boykov2001-graph-cut-segmentation.pdf
   cites: []
+
+- id: yang2018-sub-pixel
+  title: "Sub-Pixel Chessboard Corner Localization for Camera Calibration and Pose Estimation"
+  authors: ["T. Yang", "Q. Zhao", "W. Xian", "Q. Zhou"]
+  year: 2018
+  venue: Applied Sciences
+  url: https://www.mdpi.com/2076-3417/8/11/2118/pdf
+  doi: "10.3390/app8112118"
+  pdf: yang2018-sub-pixel.pdf
+  cites:
+  - placht2014-rochade
+  - chen2005-xcorner
+  - lucchese2003-saddle
+  - lepetit2009-epnp
+  - zhang2000-flexible
+
+- id: longuet-higgins1981-eight-point
+  title: "A computer algorithm for reconstructing a scene from two projections"
+  authors: ["H. C. Longuet-Higgins"]
+  year: 1981
+  venue: Nature
+  url: https://doi.org/10.1038/293133a0
+  doi: "10.1038/293133a0"
+  pdf: longuet-higgins1981-eight-point.pdf
+  cites: []

@@ -11,7 +11,7 @@ prerequisites: [epipolar-geometry, homography, dlt-normalisation, ransac]
 failureModes: []
 sources:
   primary: hartley1997-eight-point
-  references: []
+  references: [longuet-higgins1981-eight-point]
   notes: |
     Two-line fix to the Longuet-Higgins (1981) linear DLT for the
     fundamental matrix: translate each image's points to zero centroid,
@@ -28,7 +28,7 @@ sources:
 
 # Goal
 
-Estimate the $3 \times 3$ rank-2 fundamental matrix $F$ satisfying $\mathbf{u}'^T F\,\mathbf{u} = 0$ for all inlier correspondences $\mathbf{u}_i \leftrightarrow \mathbf{u}'_i$ across two uncalibrated views. The contribution is **not** the linear DLT itself — that is Longuet-Higgins (1981) — but a similarity normalisation step that conditions the design matrix and makes the linear solution numerically reliable. The normalised linear method is the standard initialisation for any geometric refinement (Sampson, gold-standard) and the natural non-minimal solver inside RANSAC.
+Estimate the $3 \times 3$ rank-2 fundamental matrix $F$ satisfying $\mathbf{u}'^T F\,\mathbf{u} = 0$ for all inlier correspondences $\mathbf{u}_i \leftrightarrow \mathbf{u}'_i$ across two uncalibrated views. The contribution is **not** the linear DLT itself — that is the [Longuet-Higgins linear eight-point algorithm](/atlas/longuet-higgins-eight-point) (1981) — but a similarity normalisation step that conditions the design matrix and makes the linear solution numerically reliable. The normalised linear method is the standard initialisation for any geometric refinement (Sampson, gold-standard) and the natural non-minimal solver inside RANSAC.
 
 # Algorithm
 

@@ -912,6 +912,46 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "longuet-higgins-eight-point",
+    "frontmatter": {
+      "title": "Longuet-Higgins Linear Eight-Point Algorithm",
+      "summary": "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm.",
+      "tags": [
+        "geometry",
+        "two-view-geometry",
+        "essential-matrix"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 4,
+      "access": "public",
+      "prerequisites": [
+        "epipolar-geometry"
+      ],
+      "failureModes": [],
+      "quality": "historical",
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "fundamental-matrix-eight-point",
+          "confidence": "high"
+        }
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "fundamental-matrix-estimation"
+      ],
+      "sources": {
+        "primary": "longuet-higgins1981-eight-point",
+        "references": [
+          "hartley1997-eight-point"
+        ],
+        "notes": "Linear 8-point method for the essential matrix Q = R·S, where S is the\nskew-symmetric matrix of the unit-norm translation T. Eq. 12 of the paper\ngives the bilinear constraint x'^T Q x = 0; Eq. 13 supplies one linear\nequation per correspondence; eight correspondences determine the ratios\nof Q's nine entries. Translation magnitude is fixed by tr(Q^T Q) = 2\n(Eq. 16). Rotation is recovered from W_α = Q_α × T via R_α = W_α + W_β × W_γ\n(Eq. 27). Six-step algorithm given at the end of the paper. Inputs are\ncalibrated projective coordinates x = X_1/X_3 (Eq. 1), so the conditioning\nproblem that Hartley 1997 addresses for raw pixel coordinates does not\narise within the original setting.\n"
+      },
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "barath-magsac",
     "frontmatter": {
       "title": "MAGSAC: Marginalising Sample Consensus",
@@ -967,7 +1007,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "sources": {
         "primary": "hartley1997-eight-point",
-        "references": [],
+        "references": [
+          "longuet-higgins1981-eight-point"
+        ],
         "notes": "Two-line fix to the Longuet-Higgins (1981) linear DLT for the\nfundamental matrix: translate each image's points to zero centroid,\nisotropically scale so the average distance to origin is √2, then\nrun the standard DLT, enforce rank 2 by SVD truncation, and\ndenormalise. Without normalisation, the design matrix A^T A has\ncondition number κ ~ 10^11–10^13 on typical 200×200 images;\nnormalisation drops κ to ~10^3–10^5 (Graph 1 of paper). Empirical\nfinding: the normalised linear method is \"almost indistinguishable\"\nfrom the optimal iterative gold-standard estimator at n ≥ 10\ncorrespondences, while running ~20× faster (§7.3, §8). The same\nnormalisation argument applies to the homography DLT.\n"
       },
       "date": "2026-05-02"
@@ -1612,6 +1654,78 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Unifying engineering framework over the RANSAC family. Decomposes\npractical RANSAC into four independently swappable stages:\n(1) sampling (PROSAC quality-ordered draws expanding to full set\nafter $T_N$); (2) verification (SPRT — Sequential Probability\nRatio Test, $\\Lambda_j = \\prod p(x_r|H_b)/p(x_r|H_g)$, Eq. 9 —\nrejects bad models early when $\\Lambda_j > A$); (3) degeneracy\nhandling (DEGENSAC — for fundamental matrix, detects ≥ 5 of 7\nminimal-sample correspondences related by a homography and runs\na model-completion step); (4) local optimisation (LO-RANSAC\ninner-loop with iteratively reweighted least-squares refit).\nSPRT-corrected stopping criterion (Eq. 13) at confidence $\\eta_0$\nand nonrandomness significance $\\gamma = 0.05$ (Eq. 12). Tested\ninlier-ratio range 10–92% across homography, fundamental, and\nessential matrix benchmarks. Reference open-source implementation\nis USAC-1.0.\n"
       },
       "date": "2026-05-03"
+    }
+  },
+  {
+    "slug": "yang-sub-pixel-corner-fit",
+    "frontmatter": {
+      "title": "Yang Parametric-Model Sub-Pixel Corner Fit",
+      "summary": "Refine pixel-level chessboard corner positions to sub-pixel accuracy by nonlinear least-squares fitting a seven-parameter ideal blurred-corner model directly to the raw image patch, then reject unreliable corners via a boxplot-based fit-quality self-check before passing to PnP.",
+      "tags": [
+        "subpixel-refinement",
+        "calibration",
+        "chessboard"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "rochade",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "geiger-chessboard-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "pyramidal-blur-aware-xcorner",
+          "confidence": "medium",
+          "caution": "Pyramidal builds on ROCHADE; yang2018 fits a parametric saddle model — different mechanism"
+        },
+        {
+          "type": "compared_with",
+          "target": "duda-radon-corners",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "medium",
+          "caution": "Yang2018 explicitly targets Zhang-style planar calibration as the downstream consumer"
+        },
+        {
+          "type": "feeds_into",
+          "target": "epnp",
+          "confidence": "medium",
+          "caution": "Self-check is motivated by EPnP downstream use"
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "corner-detection",
+        "chessboard-detection"
+      ],
+      "sources": {
+        "primary": "yang2018-sub-pixel",
+        "references": [
+          "zhang2000-flexible",
+          "lepetit2009-epnp",
+          "placht2014-rochade",
+          "harris1988-corner",
+          "chen2005-xcorner"
+        ],
+        "notes": "Seven-parameter ideal continuous chessboard corner model\nC_s(u,v; μ, υ, α, β, λ, κ, σ) = λ·G_σ ⊛ [E(α)·E(β)] + κ\nfit by Gauss–Newton over a (2r+1)² ROI, r ≈ 14–15 px (§3.1–3.2,\nEq. 3–7). Gaussian erf inside the convolution is replaced by\ntanh(ρx) with ρ ≈ 1.1 (§3.2, Fig. 3); residual Δ(u,v) from the\nintegration-by-parts surrogate is compensated explicitly (Eq. 8–9).\nSub-pixel output c_s = c_p − [μ, υ]ᵀ (Eq. 10). Self-check (§3.3,\nEq. 11–12): per-corner RMSE Ẽ_{m,n} compared against the modified\nboxplot interval [2.5Q₁ − 1.5Q₃, 2.5Q₃ − 1.5Q₁]; failing corners\nreceive PnP weight w_{m,n} = 0 (Eq. 15, Rodrigues recommended).\n"
+      },
+      "date": "2026-05-10"
     }
   },
   {
@@ -2307,7 +2421,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 10,
+      "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [
         "image-gradient"
@@ -2327,7 +2441,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "chen2023-ccdn",
           "zhang2022-learning-based",
           "stelldinger2024-puzzleboard",
-          "hillen2023-enhanced"
+          "hillen2023-enhanced",
+          "yang2018-sub-pixel"
         ]
       },
       "date": "2026-05-02"

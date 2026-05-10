@@ -52,6 +52,15 @@ tasks:
       camera mounted on it (or between a stationary camera and a robot base)
       from synchronised motion sequences.
 
+  - slug: image-segmentation
+    description: |
+      Partition an image into perceptually coherent regions without prior
+      knowledge of scene content or a fixed number of regions. Output is a
+      label map or set of pixel-component assignments suitable as input to
+      object proposals, superpixel preprocessing, or region-based downstream
+      tasks. Distinct from semantic segmentation models that predict a class
+      per pixel — this task covers unsupervised partitioning by appearance.
+
   - slug: image-stitching
     description: |
       Compose two or more overlapping images into a single panorama by

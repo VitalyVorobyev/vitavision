@@ -464,6 +464,34 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "felzenszwalb-graph-segmentation",
+    "frontmatter": {
+      "title": "Felzenszwalb–Huttenlocher Graph-Based Image Segmentation",
+      "summary": "Partition an image into perceptually coherent regions by a Kruskal-style greedy merge over a pixel graph, accepting an inter-component edge as a non-boundary when its weight does not exceed the components' internal variation plus a size-adaptive threshold $\\tau(C) = k/|C|$; runs in $O(m \\log m)$ time and produces partitions that are simultaneously not too fine and not too coarse.",
+      "tags": [
+        "image-segmentation",
+        "graph-algorithms",
+        "minimum-spanning-tree",
+        "union-find"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "sources": {
+        "primary": "felzenszwalb2004-graph-segm",
+        "notes": "Three named quantities: Int(C) = max edge in MST(C) (Eq. 1); Dif(C₁,C₂) =\nmin cross-boundary edge weight (Eq. 2); MInt = min(Int(Cᵢ) + τ(Cᵢ)) with\nτ(C) = k/|C| (Eqs. 4–5). Boundary predicate D = [Dif > MInt] (Eq. 3).\nAlgorithm: sort all edges by weight (non-decreasing), then for each edge\nin order union-find-merge if w ≤ MInt at that moment (Algorithm 1).\nBecause edges are visited in sorted order, the merge edge is always the\nminimum-weight edge between the two components — identical to Kruskal's\nMST criterion — so Int updates in O(1) per merge (Section 4.1).\nTwo graph constructions: 8-connected grid (m = O(n), runtime\nO(n log n)) and feature-space NN graph on (x, y, r, g, b) with 10\nnearest neighbours (Section 6). Pre-process: Gaussian smoothing with\nσ = 0.8. Recommended k: 150 for 128×128 images, 300 for 320×240+.\nColor: run three independent monochrome segmentations and intersect.\nTheorems: (1) not too fine — every adjacent component pair has a boundary\nedge satisfying D; (2) not too coarse — no proper refinement preserves\n(1); (3) order-independent on equal-weight ties. Theorem 4: replacing\nmin in Dif with any K-th quantile makes optimal segmentation NP-hard.\n"
+      },
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "fischler-bolles-ransac",
     "frontmatter": {
       "title": "Fischler–Bolles RANSAC",
@@ -679,6 +707,35 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Algorithm page authored from the Hillen 2023 research note (private\nreasoning substrate, not bundled). PyCBD library wraps\nany upstream checkerboard detector (paper benchmarks Geiger 2012);\ntwo GPs predict U and V from `boardXY` via SE kernel (Hillen Eq. 6);\nhyperparameters fit by L-BFGS on log marginal likelihood (Hillen\nEq. 7, Rasmussen 2006 Ch. 5). Iterative outward expansion\n(Algorithm 1, `maxNrOfIterations` default 10) allocates unassigned\ndetections; retrained GPs fill in occluded grid positions and\nsmooth all allocated corners via posterior mean. Cost dominated\nby O(n^3) Cholesky factorisation; sparse-GP extension (Rasmussen\nCh. 8) not implemented in PyCBD. Library:\n`pip install pycbd` / github.com/InViLabUAntwerp/PyCBD.\nComplementary to OCPAD (subgraph isomorphism) — covered in the\nRemarks comparison.\n"
       },
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "graph-cut-segmentation",
+    "frontmatter": {
+      "title": "Graph-Cut Interactive Segmentation",
+      "summary": "Compute the global minimum of a binary region-and-boundary MRF energy as a single s-t min-cut on a pixel graph; user-marked seeds enter as hard constraints, the output is a binary labelling $A : P \\to \\{\\text{obj}, \\text{bkg}\\}$ with topology-free segments.",
+      "tags": [
+        "image-segmentation",
+        "graph-cut",
+        "min-cut-max-flow",
+        "markov-random-field",
+        "interactive-segmentation"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 4,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "sources": {
+        "primary": "boykov2001-graph-cut-segmentation",
+        "notes": "Energy E(A) = λR(A) + B(A) (Eq. 1). Region term R(A) = Σ_p Rp(Ap) with\nRp(\"obj\") = −ln Pr(Ip|O) and Rp(\"bkg\") = −ln Pr(Ip|B) learnt from seed\nintensity histograms (§4 preamble). Boundary term B(A) = Σ B_{p,q}·δ\nwith B_{p,q} ∝ exp(−(Ip−Iq)²/2σ²)/dist(p,q) (§4 preamble), σ estimated\nas camera noise. Graph (§3): node per pixel plus source S and sink T;\nn-links carry B_{p,q}; t-links carry λRp(·) for unlabelled pixels and\nK for seeds, with K = 1 + max_p Σ_q B_{p,q} so seeds are never severed\nby the minimum cut. Min-cut on this graph equals the global minimum of\nE(A) under the hard seed constraints (Theorem 1, §3). Neighbourhood is\n8-connected in 2D, 26-connected in 3D. On a new seed only the affected\npixel's t-links change, so the existing flow can be re-augmented.\n"
+      },
+      "date": "2026-05-10"
     }
   },
   {

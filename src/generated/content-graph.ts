@@ -129,6 +129,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/loy-fast-radial-symmetry",
       "draft": false
     },
+    "felzenszwalb-graph-segmentation": {
+      "slug": "felzenszwalb-graph-segmentation",
+      "type": "algorithm",
+      "title": "Felzenszwalb–Huttenlocher Graph-Based Image Segmentation",
+      "summary": "Partition an image into perceptually coherent regions by a Kruskal-style greedy merge over a pixel graph, accepting an inter-component edge as a non-boundary when its weight does not exceed the components' internal variation plus a size-adaptive threshold $\\tau(C) = k/|C|$; runs in $O(m \\log m)$ time and produces partitions that are simultaneously not too fine and not too coarse.",
+      "path": "/atlas/felzenszwalb-graph-segmentation",
+      "draft": false
+    },
     "fischler-bolles-ransac": {
       "slug": "fischler-bolles-ransac",
       "type": "algorithm",
@@ -167,6 +175,14 @@ export const contentGraph: ContentGraph = {
       "title": "GP Checkerboard Enhancement (PyCBD)",
       "summary": "Post-process a partially detected checkerboard by training two Gaussian processes (one per pixel coordinate) on the allocated (boardXY, boardUV) pairs to allocate unassigned detections to grid positions, predict UV for occluded or out-of-frame corners, and apply a global-consistency refinement to every allocated corner.",
       "path": "/atlas/gp-checkerboard-enhancement",
+      "draft": false
+    },
+    "graph-cut-segmentation": {
+      "slug": "graph-cut-segmentation",
+      "type": "algorithm",
+      "title": "Graph-Cut Interactive Segmentation",
+      "summary": "Compute the global minimum of a binary region-and-boundary MRF energy as a single s-t min-cut on a pixel graph; user-marked seeds enter as hard constraints, the output is a binary labelling $A : P \\to \\{\\text{obj}, \\text{bkg}\\}$ with topology-free segments.",
+      "path": "/atlas/graph-cut-segmentation",
       "draft": false
     },
     "harris-corner-detector": {
@@ -693,6 +709,11 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "felzenszwalb-graph-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
     "fischler-bolles-ransac": {
       "prerequisites": [
         "ransac"
@@ -784,6 +805,11 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         }
       ]
+    },
+    "graph-cut-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
     },
     "harris-corner-detector": {
       "prerequisites": [
@@ -1718,6 +1744,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "felzenszwalb-graph-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "fischler-bolles-ransac": {
       "usedBy": [],
       "affects": [],
@@ -1770,6 +1804,14 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "gp-checkerboard-enhancement": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "graph-cut-segmentation": {
       "usedBy": [],
       "affects": [],
       "generalises": [],

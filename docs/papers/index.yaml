@@ -687,3 +687,23 @@
   doi: "10.48550/arxiv.2306.13643"
   pdf: lindenberger2023-lightglue.pdf
   cites: [sarlin2020-superglue, detone2018-superpoint, sun2021-loftr, lowe2004-sift]
+
+- id: felzenszwalb2004-graph-segm
+  title: "Efficient Graph-Based Image Segmentation"
+  authors: ["P. F. Felzenszwalb", "D. P. Huttenlocher"]
+  year: 2004
+  venue: International Journal of Computer Vision
+  url: https://cs.brown.edu/people/pfelzens/papers/seg-ijcv.pdf
+  doi: "10.1023/b:visi.0000022288.19776.77"
+  pdf: felzenszwalb2004-graph-segm.pdf
+  cites: []
+
+- id: boykov2001-graph-cut-segmentation
+  title: "Interactive Graph Cuts for Optimal Boundary & Region Segmentation of Objects in N-D Images"
+  authors: ["Y. Boykov", "M.-P. Jolly"]
+  year: 2001
+  venue: ICCV
+  url: https://www.csd.uwo.ca/~yboykov/Papers/iccv01.pdf
+  doi: "10.1109/iccv.2001.937505"
+  pdf: boykov2001-graph-cut-segmentation.pdf
+  cites: []

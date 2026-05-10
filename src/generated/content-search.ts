@@ -214,6 +214,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "felzenszwalb-graph-segmentation",
+    "path": "/atlas/felzenszwalb-graph-segmentation",
+    "type": "algorithm",
+    "title": "Felzenszwalb–Huttenlocher Graph-Based Image Segmentation",
+    "summary": "Partition an image into perceptually coherent regions by a Kruskal-style greedy merge over a pixel graph, accepting an inter-component edge as a non-boundary when its weight does not exceed the components' internal variation plus a size-adaptive threshold $\\tau(C) = k/|C|$; runs in $O(m \\log m)$ time and produces partitions that are simultaneously not too fine and not too coarse.",
+    "tags": [
+      "image-segmentation",
+      "graph-algorithms",
+      "minimum-spanning-tree",
+      "union-find"
+    ],
+    "domain": "segmentation",
+    "headings": [
+      "Graph constructions",
+      "Procedure"
+    ],
+    "authors": [
+      "P. F. Felzenszwalb",
+      "D. P. Huttenlocher"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
     "slug": "fischler-bolles-ransac",
     "path": "/atlas/fischler-bolles-ransac",
     "type": "algorithm",
@@ -334,6 +357,29 @@ export const searchRecords: SearchRecord[] = [
       "S. Vanlanduit"
     ],
     "venue": "Mathematics (MDPI)"
+  },
+  {
+    "slug": "graph-cut-segmentation",
+    "path": "/atlas/graph-cut-segmentation",
+    "type": "algorithm",
+    "title": "Graph-Cut Interactive Segmentation",
+    "summary": "Compute the global minimum of a binary region-and-boundary MRF energy as a single s-t min-cut on a pixel graph; user-marked seeds enter as hard constraints, the output is a binary labelling $A : P \\to \\{\\text{obj}, \\text{bkg}\\}$ with topology-free segments.",
+    "tags": [
+      "image-segmentation",
+      "graph-cut",
+      "min-cut-max-flow",
+      "markov-random-field",
+      "interactive-segmentation"
+    ],
+    "domain": "segmentation",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "Y. Boykov",
+      "M.-P. Jolly"
+    ],
+    "venue": "ICCV"
   },
   {
     "slug": "harris-corner-detector",

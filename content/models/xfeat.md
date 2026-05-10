@@ -24,6 +24,10 @@ relations:
     target: brief
     confidence: high
     caution: "XFeat replaces the FAST+BRIEF binary-descriptor pipeline with a featherweight learned model targeting CPU inference."
+  - type: learned_alternative_of
+    target: orb
+    confidence: high
+    caution: "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
 sources:
   primary: potje2024-xfeat
   references:

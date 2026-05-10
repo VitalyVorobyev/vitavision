@@ -117,13 +117,19 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 6,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
         "image-gradient"
       ],
       "failureModes": [],
       "relations": [
+        {
+          "type": "extended_by",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "rBRIEF steers BRIEF via a 30-bin orientation LUT and replaces the random offset table with 256 learned, low-correlation tests."
+        },
         {
           "type": "compared_with",
           "target": "sift",
@@ -391,7 +397,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 5,
+      "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
         "image-gradient"
@@ -401,6 +407,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         {
           "type": "feeds_into",
           "target": "brief",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "orb",
           "confidence": "high"
         }
       ],
@@ -681,7 +692,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 10,
+      "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [
         "image-gradient",
@@ -703,6 +714,12 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "type": "compared_with",
           "target": "chess-corners",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "orb",
+          "confidence": "medium",
+          "caution": "Used only as a corner-strength filter to rank FAST keypoints, not as a detector."
         }
       ],
       "domain": "features",
@@ -941,6 +958,45 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "orb",
+    "frontmatter": {
+      "title": "ORB: Oriented FAST and Rotated BRIEF",
+      "summary": "Detects rotation-invariant oriented keypoints by running FAST-9 on a √2 image pyramid, ranking by Harris cornerness, and assigning orientation from the intensity centroid; describes each keypoint with a 256-bit rBRIEF binary string formed by greedy selection of low-correlation, high-variance pairwise pixel-intensity tests on a smoothed 31×31 patch.",
+      "tags": [
+        "feature-detection",
+        "local-descriptors",
+        "binary-descriptor",
+        "matching"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient",
+        "scale-space"
+      ],
+      "failureModes": [],
+      "domain": "features",
+      "tasks": [
+        "feature-detection",
+        "local-feature-matching"
+      ],
+      "sources": {
+        "primary": "rublee2011-orb",
+        "references": [
+          "calonder2010-brief",
+          "rosten2006-fast",
+          "harris1988-corner",
+          "lowe2004-sift",
+          "bay2006-surf"
+        ],
+        "notes": "Method (Rublee et al. 2011, ICCV). Two-stage pipeline:\noFAST (detector) + rBRIEF (descriptor).\n\noFAST (§3): FAST-9 candidates at each level of a 5-level\nimage pyramid (scale factor √2, area-based interpolation).\nAdaptive intensity threshold yields ≥ N candidates; Harris\ncornerness response orders them and the top-N per level\nsurvive. Orientation θ = atan2(m_{01}, m_{10}) (Eq. 3) from\nthe first-order moments of a circular patch of radius r equal\nto the patch half-width (Eq. 1: m_{pq} = Σ x^p y^q I(x,y);\nEq. 2: C = (m_{10}/m_{00}, m_{01}/m_{00})).\n\nrBRIEF (§4): binary tests on the smoothed 31×31 patch via an\nintegral image; each test compares the mean intensity of two\n5×5 sub-windows (so the candidate-pair pool size is\nM = (wp − wt)² choose-2 with overlap eliminated → 205,590).\nThe test set S = [(x_i, y_i)] (2×n matrix) is steered to S_θ\n= R_θ S using θ from oFAST, discretised to 2π/30 (12°)\nincrements via a precomputed lookup table — 30 LUT entries.\nGreedy learning (§4.3) selects 256 tests on ~300k PASCAL 2006\nkeypoints by ranking |mean − 0.5| and rejecting any candidate\nwhose absolute pairwise correlation with the running set\nexceeds a threshold (raised if fewer than 256 survive).\nEq. 4–6 define τ, f_n, g_n.\n\nMatching: Hamming distance via XOR + popcount (SSE 4.2 in\nthe paper). Large-scale retrieval: multi-probe LSH with a\nsub-signature-of-bits hash, 16-bit sub-signature, 4–20 hash\ntables.\n\nBenchmarks (§6.1, 640×480, Intel i7 2.8 GHz, single thread):\nPyramid 4.43 ms, oFAST 8.68 ms, rBRIEF 2.12 ms, total ≈\n15.3 ms; SURF 217.3 ms, SIFT 5228.7 ms on the same data.\nCellphone (1 GHz ARM, ~400 points): ORB 66.6 ms, matching\n72.8 ms, H-fit 20.9 ms — ~7 Hz at 640×480 (§6.3).\n\nInlier rates (§4.4): outdoor \"Boat\" — ORB 45.8%, SURF 28.6%,\nSIFT 30.2%; indoor \"Magazines\" — ORB 36.2%, SURF 38.3%, SIFT\n34.0%. Rotation robustness (Fig. 7) > 70% inliers across all\nangles under Gaussian noise σ = 10; BRIEF (without steering)\ndrops sharply beyond ~10°.\n\nScope: ORB targets in-plane rotation and modest scale; per-\nkeypoint scale is a discrete pyramid level, not a continuous\nestimate. BSD-licensed reference implementation in OpenCV\n2.3+.\n"
+      },
+      "date": "2026-05-09"
+    }
+  },
+  {
     "slug": "puzzleboard",
     "frontmatter": {
       "title": "PuzzleBoard",
@@ -1154,7 +1210,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 7,
+      "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [
         "scale-space",
@@ -1175,6 +1231,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         {
           "type": "compared_with",
           "target": "fast-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "orb",
           "confidence": "high"
         },
         {
@@ -1257,7 +1318,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 5,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
         "scale-space",
@@ -1285,6 +1346,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "type": "compared_with",
           "target": "shi-tomasi-corner-detector",
           "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "orb",
+          "confidence": "high"
         },
         {
           "type": "feeds_into",
@@ -1712,6 +1778,65 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "loftr",
+    "frontmatter": {
+      "title": "LoFTR",
+      "summary": "Detector-free dense feature matcher: shared CNN backbone produces coarse and fine feature maps, a Linear Transformer with interleaved self- and cross-attention establishes confidence-thresholded mutual nearest-neighbour correspondences, and a fine module refines each match to sub-pixel accuracy.",
+      "tags": [
+        "computer-vision",
+        "image-matching",
+        "transformer",
+        "detector-free",
+        "dense-matching"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "superglue",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "local-feature-matching"
+      ],
+      "arch_family": "hybrid",
+      "sources": {
+        "primary": "sun2021-loftr",
+        "references": [
+          "sarlin2020-superglue",
+          "detone2018-superpoint",
+          "potje2024-xfeat"
+        ],
+        "notes": "§3 four sub-modules: (1) FPN-ResNet backbone → coarse maps at 1/8,\nfine maps at 1/2; (2) Local Feature Transformer with $N_c$ interleaved\nself/cross attention layers, ELU+1 Linear Transformer kernel\n$\\phi(x) = \\text{elu}(x) + 1$ for $O(N)$ complexity; (3) coarse\nmatching via dual-softmax (LoFTR-DS) or Sinkhorn (LoFTR-OT, 3 iters)\n+ MNN + confidence threshold; (4) fine refinement: $w \\times w$\ncorrelation window → sub-pixel expectation. §3.5 score matrix\n$\\mathcal{S}(i,j) = (1/\\tau) \\langle \\tilde{F}^A_{tr}(i),\n\\tilde{F}^B_{tr}(j) \\rangle$. §4.1 HPatches homography SOTA AUC@3px\n/5px/10px. §4.2 ScanNet pose AUC@10° improves SuperGlue by 13%, DRC\nby 61%. §4.4 runtime 116 ms (DS) / 130 ms (OT) per 640×480 pair on\nRTX 2080Ti. §B training: 64 GTX 1080Ti GPUs, ~24 h indoor; ScanNet\n640×480, MegaDepth 840 long-side training / 1200 long-side eval.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/zju3dv/LoFTR",
+          "commit": "df7ca80f917334b94cfbe32cc2901e09a80e70a8",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_url": "https://drive.google.com/drive/folders/1DOcOPZb3-5cWxLqn256AhwUVjBPifhuf?usp=sharing",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "mate-checkerboard-detector",
     "frontmatter": {
       "title": "MATE",
@@ -1776,6 +1901,59 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "superglue",
+    "frontmatter": {
+      "title": "SuperGlue",
+      "summary": "Graph neural network that matches two sets of sparse local features by jointly finding correspondences and rejecting unmatched keypoints in one differentiable forward pass, trained end-to-end with a Sinkhorn optimal-transport assignment over augmented dustbin scores.",
+      "tags": [
+        "computer-vision",
+        "image-matching",
+        "local-features",
+        "graph-neural-network",
+        "attention"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "high"
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "local-feature-matching"
+      ],
+      "arch_family": "hybrid",
+      "params": "~12M",
+      "sources": {
+        "primary": "sarlin2020-superglue",
+        "references": [
+          "detone2018-superpoint",
+          "sun2021-loftr"
+        ],
+        "notes": "§3 architecture: Attentional GNN + Optimal Matching Layer. §4 / Eq. 2\nkeypoint encoder MLP shape (32, 64, 128, 256, D), ~100k params.\n§4 / Eqs. 3–5 multiplex GNN, L=9 alternating self/cross attention\nlayers, 4 heads, D=256, ~0.66M params per layer, ~12M total.\n§3.2 / Eqs. 7–9 optimal matching layer: score $S_{ij} = \\langle f_i^A,\nf_j^B \\rangle$, dustbin scalar z, Sinkhorn T=100 iterations.\nEq. 10 NLL loss over augmented assignment $\\bar{P}$. §4 Adam lr 1e-4\ndecayed. §4 / Appendix C: 69 ms / 15 FPS at 512 kp on GTX 1080;\n270 ms at 2048 kp. §5.2 Table 2 ScanNet AUC@20° 51.84% (vs OANet\n43.85%). §5.3 Table 3 PhotoTourism AUC@20° 64.16%, precision 84.9%.\n§5.4 end-to-end training improves AUC@20° to 53.38%.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/magicleap/SuperGluePretrainedNetwork",
+          "commit": "ddcf11f42e7e0732a0c4607648f9448ea8d73590",
+          "framework": "pytorch",
+          "license": "noncommercial-research-only",
+          "weights_url": "https://github.com/magicleap/SuperGluePretrainedNetwork/tree/ddcf11f42e7e0732a0c4607648f9448ea8d73590/models/weights",
+          "weights_license": "noncommercial-research-only"
+        }
+      ],
+      "date": "2026-05-10"
+    }
+  },
+  {
     "slug": "superpoint",
     "frontmatter": {
       "title": "SuperPoint",
@@ -1800,6 +1978,12 @@ export const modelPages: ModelIndexEntry[] = [
           "type": "compared_with",
           "target": "xfeat",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "superglue",
+          "confidence": "high",
+          "caution": "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
         },
         {
           "type": "learned_alternative_of",
@@ -1829,6 +2013,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "brief",
           "confidence": "high",
           "caution": "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
         }
       ],
       "domain": "features",
@@ -1898,6 +2088,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "brief",
           "confidence": "high",
           "caution": "XFeat replaces the FAST+BRIEF binary-descriptor pipeline with a featherweight learned model targeting CPU inference."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
         }
       ],
       "domain": "features",

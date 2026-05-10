@@ -11,6 +11,7 @@ import RelationsSidebar from "../components/atlas/RelationsSidebar.tsx";
 import AtlasPageHeader from "../components/atlas/AtlasPageHeader.tsx";
 import AIDisclosure from "../components/atlas/AIDisclosure.tsx";
 import QualityBadge from "../components/atlas/QualityBadge.tsx";
+import ImplementationsList from "../components/atlas/ImplementationsList.tsx";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
 import { proseClasses } from "../lib/prose-classes";
 import { useStaticContent } from "../lib/content/ssr-content.tsx";
@@ -19,148 +20,6 @@ import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.
 import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import NotFound from "./NotFound.tsx";
-import type { ModelFrontmatterSerialized } from "../lib/content/schema.ts";
-
-/** Parse "owner/repo" from a full GitHub URL. Falls back to the raw URL on failure. */
-function parseRepoLabel(repoUrl: string): string {
-    try {
-        const parts = new URL(repoUrl).pathname.split("/").filter(Boolean);
-        if (parts.length >= 2) return `${parts[parts.length - 2]}/${parts[parts.length - 1]}`;
-    } catch {
-        // fall through
-    }
-    return repoUrl;
-}
-
-interface ImplementationsTableProps {
-    implementations: NonNullable<ModelFrontmatterSerialized["implementations"]>;
-}
-
-function ImplementationsTable({ implementations }: ImplementationsTableProps) {
-    return (
-        <section aria-label="Implementations" className="mb-10">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                Implementations
-            </h2>
-
-            {/* Desktop table */}
-            <div className="hidden sm:block overflow-x-auto">
-            <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
-                <thead>
-                    <tr className="bg-muted/50">
-                        <th className="text-left px-3 py-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground border-b border-border">Repo</th>
-                        <th className="text-left px-3 py-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground border-b border-border">Role</th>
-                        <th className="text-left px-3 py-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground border-b border-border">Framework</th>
-                        <th className="text-left px-3 py-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground border-b border-border">License</th>
-                        <th className="text-left px-3 py-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground border-b border-border">Weights</th>
-                        <th className="text-left px-3 py-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground border-b border-border">Commit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {implementations.map((impl, i) => (
-                        <tr key={i} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
-                            <td className="px-3 py-2">
-                                <a
-                                    href={impl.repo}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-primary underline hover:text-primary/80 font-mono text-xs"
-                                >
-                                    {parseRepoLabel(impl.repo)}
-                                </a>
-                            </td>
-                            <td className="px-3 py-2">
-                                <span className="inline-flex items-center rounded border border-border px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-                                    {impl.role}
-                                </span>
-                            </td>
-                            <td className="px-3 py-2 text-muted-foreground">{impl.framework}</td>
-                            <td className="px-3 py-2 text-muted-foreground">{impl.license}</td>
-                            <td className="px-3 py-2">
-                                {impl.weights_url ? (
-                                    <a
-                                        href={impl.weights_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary underline hover:text-primary/80 text-xs"
-                                    >
-                                        {impl.weights_license ?? "link"}
-                                    </a>
-                                ) : (
-                                    <span className="text-muted-foreground">&mdash;</span>
-                                )}
-                            </td>
-                            <td className="px-3 py-2">
-                                <a
-                                    href={`${impl.repo}/commit/${impl.commit}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-mono text-xs text-primary underline hover:text-primary/80"
-                                >
-                                    {impl.commit.slice(0, 7)}
-                                </a>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            </div>
-
-            {/* Mobile stacked list */}
-            <ul className="sm:hidden space-y-3">
-                {implementations.map((impl, i) => (
-                    <li key={i} className="rounded-lg border border-border p-3 space-y-1.5 text-sm">
-                        <div>
-                            <a
-                                href={impl.repo}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary underline hover:text-primary/80 font-mono text-xs font-semibold"
-                            >
-                                {parseRepoLabel(impl.repo)}
-                            </a>
-                        </div>
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                            <span><span className="font-semibold text-foreground">Role:</span>{" "}
-                                <span className="inline-flex items-center rounded border border-border px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider">
-                                    {impl.role}
-                                </span>
-                            </span>
-                            <span><span className="font-semibold text-foreground">Framework:</span> {impl.framework}</span>
-                            <span><span className="font-semibold text-foreground">License:</span> {impl.license}</span>
-                            <span>
-                                <span className="font-semibold text-foreground">Weights:</span>{" "}
-                                {impl.weights_url ? (
-                                    <a
-                                        href={impl.weights_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary underline hover:text-primary/80"
-                                    >
-                                        {impl.weights_license ?? "link"}
-                                    </a>
-                                ) : (
-                                    <span>&mdash;</span>
-                                )}
-                            </span>
-                            <span>
-                                <span className="font-semibold text-foreground">Commit:</span>{" "}
-                                <a
-                                    href={`${impl.repo}/commit/${impl.commit}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-mono text-primary underline hover:text-primary/80"
-                                >
-                                    {impl.commit.slice(0, 7)}
-                                </a>
-                            </span>
-                        </div>
-                    </li>
-                ))}
-            </ul>
-        </section>
-    );
-}
 
 export default function ModelPost() {
     const { slug } = useParams<{ slug: string }>();
@@ -294,7 +153,7 @@ export default function ModelPost() {
                 />
 
                 {frontmatter.implementations && frontmatter.implementations.length >= 1 && (
-                    <ImplementationsTable implementations={frontmatter.implementations} />
+                    <ImplementationsList implementations={frontmatter.implementations} />
                 )}
 
                 {html === null ? (

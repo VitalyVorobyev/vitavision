@@ -225,6 +225,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/ocpad",
       "draft": false
     },
+    "orb": {
+      "slug": "orb",
+      "type": "algorithm",
+      "title": "ORB: Oriented FAST and Rotated BRIEF",
+      "summary": "Detects rotation-invariant oriented keypoints by running FAST-9 on a √2 image pyramid, ranking by Harris cornerness, and assigning orientation from the intensity centroid; describes each keypoint with a 256-bit rBRIEF binary string formed by greedy selection of low-correlation, high-variance pairwise pixel-intensity tests on a smoothed 31×31 patch.",
+      "path": "/atlas/orb",
+      "draft": false
+    },
     "puzzleboard": {
       "slug": "puzzleboard",
       "type": "algorithm",
@@ -345,12 +353,28 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/ccs-camera-calibration",
       "draft": false
     },
+    "loftr": {
+      "slug": "loftr",
+      "type": "model",
+      "title": "LoFTR",
+      "summary": "Detector-free dense feature matcher: shared CNN backbone produces coarse and fine feature maps, a Linear Transformer with interleaved self- and cross-attention establishes confidence-thresholded mutual nearest-neighbour correspondences, and a fine module refines each match to sub-pixel accuracy.",
+      "path": "/atlas/loftr",
+      "draft": false
+    },
     "mate-checkerboard-detector": {
       "slug": "mate-checkerboard-detector",
       "type": "model",
       "title": "MATE",
       "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
       "path": "/atlas/mate-checkerboard-detector",
+      "draft": false
+    },
+    "superglue": {
+      "slug": "superglue",
+      "type": "model",
+      "title": "SuperGlue",
+      "summary": "Graph neural network that matches two sets of sparse local features by jointly finding correspondences and rejecting unmatched keypoints in one differentiable forward pass, trained end-to-end with a Sinkhorn optimal-transport assignment over augmented dustbin scores.",
+      "path": "/atlas/superglue",
       "draft": false
     },
     "superpoint": {
@@ -483,6 +507,12 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": [
         {
+          "type": "extended_by",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "rBRIEF steers BRIEF via a 30-bin orientation LUT and replaces the random offset table with 256 learned, low-correlation tests."
+        },
+        {
           "type": "compared_with",
           "target": "sift",
           "confidence": "medium",
@@ -614,6 +644,11 @@ export const contentGraph: ContentGraph = {
         {
           "type": "feeds_into",
           "target": "brief",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "orb",
           "confidence": "high"
         },
         {
@@ -765,6 +800,12 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
+          "type": "feeds_into",
+          "target": "orb",
+          "confidence": "medium",
+          "caution": "Used only as a corner-strength filter to rank FAST keypoints, not as a detector."
+        },
+        {
           "type": "compared_with",
           "target": "sift",
           "confidence": "high",
@@ -858,6 +899,27 @@ export const contentGraph: ContentGraph = {
         {
           "type": "compared_with",
           "target": "gp-checkerboard-enhancement",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
+    "orb": {
+      "prerequisites": [
+        "image-gradient",
+        "scale-space"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "sift",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "surf",
           "confidence": "high",
           "mirrored": true
         }
@@ -998,6 +1060,11 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
+          "type": "compared_with",
+          "target": "orb",
+          "confidence": "high"
+        },
+        {
           "type": "feeds_into",
           "target": "gao-dual-homography-stitching",
           "confidence": "high",
@@ -1070,6 +1137,11 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "shi-tomasi-corner-detector",
           "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "orb",
+          "confidence": "high"
         },
         {
           "type": "feeds_into",
@@ -1244,6 +1316,23 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "loftr": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "superglue",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm."
+        }
+      ]
+    },
     "mate-checkerboard-detector": {
       "prerequisites": [
         "image-gradient"
@@ -1273,6 +1362,17 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "superglue": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "high"
+        }
+      ]
+    },
     "superpoint": {
       "prerequisites": [
         "image-gradient"
@@ -1283,6 +1383,12 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "xfeat",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "superglue",
+          "confidence": "high",
+          "caution": "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
         },
         {
           "type": "learned_alternative_of",
@@ -1312,6 +1418,12 @@ export const contentGraph: ContentGraph = {
           "target": "brief",
           "confidence": "high",
           "caution": "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
         }
       ]
     },
@@ -1338,6 +1450,19 @@ export const contentGraph: ContentGraph = {
           "target": "brief",
           "confidence": "high",
           "caution": "XFeat replaces the FAST+BRIEF binary-descriptor pipeline with a featherweight learned model targeting CPU inference."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
+        },
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "high",
+          "caution": "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm.",
+          "mirrored": true
         },
         {
           "type": "compared_with",
@@ -1689,6 +1814,41 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "orb": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "brief",
+          "confidence": "high",
+          "caution": "rBRIEF steers BRIEF via a 30-bin orientation LUT and replaces the random offset table with 256 learned, low-correlation tests."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "fast-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "slug": "harris-corner-detector",
+          "confidence": "medium",
+          "caution": "Used only as a corner-strength filter to rank FAST keypoints, not as a detector."
+        }
+      ],
+      "hasLearnedAlternative": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
+        },
+        {
+          "slug": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
+        }
+      ]
+    },
     "puzzleboard": {
       "usedBy": [],
       "affects": [],
@@ -1906,12 +2066,34 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "loftr": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "mate-checkerboard-detector": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
       "extending": [],
       "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "superglue": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "superpoint": {
@@ -2022,6 +2204,7 @@ export const contentGraph: ContentGraph = {
         "mate-checkerboard-detector",
         "ni-generalized-fast-radial-symmetry",
         "ocpad",
+        "orb",
         "puzzleboard",
         "pyramidal-blur-aware-xcorner",
         "rochade",
@@ -2064,6 +2247,7 @@ export const contentGraph: ContentGraph = {
     },
     "scale-space": {
       "usedBy": [
+        "orb",
         "pyramidal-blur-aware-xcorner",
         "sift",
         "surf"

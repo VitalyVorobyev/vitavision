@@ -23,6 +23,9 @@ relations:
   - type: compared_with
     target: shi-tomasi-corner-detector
     confidence: medium
+  - type: compared_with
+    target: orb
+    confidence: high
   - type: feeds_into
     target: gao-dual-homography-stitching
     confidence: high
@@ -159,6 +162,19 @@ fn fast_hessian(ii: &[u32], w: usize, x: i32, y: i32, l: i32) -> f32 {
 - Integral-image precision must be 64-bit for image dimensions beyond approximately $4100 \times 4100$ pixels; 32-bit unsigned overflows on the cumulative sum at 8-bit input.
 - Affine and large out-of-plane viewpoint changes are out of scope — the detector is scale- and rotation-invariant only.
 - U-SURF drops the orientation-assignment step for additional speed at the cost of in-plane rotation invariance; valid only when the camera stays approximately upright.
+- ORB (2011) replaces SURF's box-filter Hessian detector and 64-D Haar-wavelet descriptor with a FAST-9 + Harris-ranked detector and a 256-bit rBRIEF binary descriptor, yielding an order-of-magnitude speedup at comparable inlier rates on textured outdoor scenes — at the cost of SURF's continuous scale estimate and float descriptor capacity. See [§When to choose SURF over ORB](#when-to-choose-surf-over-orb).
+
+## When to choose SURF over ORB
+
+SURF (2006) is the older method; this page hosts the comparison.
+
+**Subpixel scale.** SURF carries a continuous scale $\sigma$ per keypoint via quadratic interpolation in $(x, y, \sigma)$ across the box-filter response stack. ORB's scale is the discrete pyramid level on which the keypoint survived; there is no sub-level interpolation. Use SURF when downstream geometry — wide-baseline reconstruction, scale-precise stitching — needs an explicit per-keypoint scale.
+
+**Blob versus corner detection.** SURF's $\det(\mathcal{H}^\sigma)$ response detects blob-like structures: spots, junctions, and rounded features. ORB detects FAST-9 corners. On graffiti-style monochromatic regions with sparse corners but visible blobs (illumination gradients, painted shapes), SURF localises keypoints where ORB does not. Use SURF when the scene's salient structure is blob-like rather than corner-like.
+
+**Descriptor capacity.** SURF emits a 64-D float descriptor; ORB emits a 256-bit binary descriptor. SURF's float-valued Haar-wavelet responses retain more discriminative information per keypoint, helping in dense or repetitive scenes where binary tests collide. Use SURF when descriptor capacity dominates the decision — fine-grained recognition, retrieval over highly similar imagery, scene re-identification.
+
+**Compute and storage.** ORB is roughly an order of magnitude faster than SURF on the same CPU at $640 \times 480$, with 32-byte binary descriptors against SURF's 256-byte float descriptors and Hamming-distance matching that reduces to bitwise XOR + popcount. Use ORB when frame budget, descriptor storage, or matching throughput dominates the decision.
 
 # References
 

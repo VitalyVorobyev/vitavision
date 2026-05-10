@@ -10,6 +10,10 @@ difficulty: intermediate
 prerequisites: [image-gradient]
 failureModes: []
 relations:
+  - type: extended_by
+    target: orb
+    confidence: high
+    caution: "rBRIEF steers BRIEF via a 30-bin orientation LUT and replaces the random offset table with 256 learned, low-correlation tests."
   - type: compared_with
     target: sift
     confidence: medium
@@ -158,7 +162,7 @@ fn hamming(a: &Descriptor, b: &Descriptor) -> u32 {
 - The descriptor is rotation-sensitive: recognition rate is approximately constant up to $10$–$15^\circ$ in-plane rotation and drops steeply beyond, because no orientation normalisation is applied.
 - Distribution G II (i.i.d. Gaussian, $\sigma^2 = S^2/25$) consistently outperforms the four alternatives across the paper's benchmark; the regular polar design G V is the worst.
 - A constant offset table is required for any two descriptors to be comparable — resampling between query and database is a silent match failure.
-- ORB extends BRIEF with a keypoint orientation estimate and a learned re-sampling of the offset table to recover rotation invariance.
+- ORB extends BRIEF by steering the offset table $S$ to the keypoint orientation $\theta$ via a 30-bin angle lookup table ($2\pi/30$ resolution), then replaces the i.i.d. Gaussian sampling of the offsets with 256 tests selected by greedy uncorrelated-test search over $\sim 205\,590$ candidate pairs on $\sim 300\,000$ PASCAL 2006 keypoints. Naive steering alone collapses descriptor variance; the learned offset table is what restores it. ORB's $31 \times 31$ patch and $5 \times 5$ sub-window sizes also differ from BRIEF's $48 \times 48$ patch — the two descriptors are not bit-for-bit comparable.
 
 # References
 

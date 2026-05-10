@@ -15,6 +15,10 @@ relations:
   - type: compared_with
     target: xfeat
     confidence: high
+  - type: feeds_into
+    target: superglue
+    confidence: high
+    caution: "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
   - type: learned_alternative_of
     target: harris-corner-detector
     confidence: high
@@ -34,6 +38,10 @@ relations:
     target: brief
     confidence: high
     caution: "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
+  - type: learned_alternative_of
+    target: orb
+    confidence: high
+    caution: "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
 sources:
   primary: detone2018-superpoint
   references:

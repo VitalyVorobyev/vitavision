@@ -787,3 +787,18 @@
   pdf: he2017-maskrcnn.pdf
   cites:
   - long2015-fcn
+
+- id: kirillov2023-sam
+  title: "Segment Anything"
+  authors: ["A. Kirillov", "E. Mintun", "N. Ravi", "H. Mao", "C. Rolland", "L. Gustafson", "T. Xiao", "S. Whitehead", "A. C. Berg", "W. Lo", "P. Dollár", "R. Girshick"]
+  year: 2023
+  venue: ICCV
+  url: https://arxiv.org/abs/2304.02643
+  doi: "10.1109/iccv51070.2023.00371"
+  pdf: kirillov2023-sam.pdf
+  cites:
+  - felzenszwalb2004-graph-segm
+  - long2015-fcn
+  - ronneberger2015-unet
+  - he2017-maskrcnn
+  - chen2018-deeplab

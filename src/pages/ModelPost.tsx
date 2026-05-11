@@ -170,6 +170,8 @@ export default function ModelPost() {
                     <ErrorBoundary>
                         <article
                             ref={articleRef}
+                            data-atlas-slug={resolvedSlug}
+                            data-atlas-kind="model"
                             className={proseClasses}
                             dangerouslySetInnerHTML={{ __html: html }}
                         />

@@ -1989,6 +1989,64 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "deeplab-semantic-segmentation",
+    "frontmatter": {
+      "title": "DeepLab",
+      "summary": "Dense semantic segmentation by repurposing an ImageNet classifier with atrous (dilated) convolution to preserve spatial resolution, an Atrous Spatial Pyramid Pooling head for multi-scale context, and a fully-connected CRF post-processor for boundary refinement — multi-year state of the art on PASCAL VOC 2012.",
+      "tags": [
+        "computer-vision",
+        "semantic-segmentation",
+        "dense-prediction",
+        "dilated-convolution"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "unet-segmentation",
+          "confidence": "high",
+          "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation."
+        }
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "chen2018-deeplab",
+        "references": [
+          "long2015-fcn",
+          "ronneberger2015-unet"
+        ],
+        "notes": "1-D atrous convolution: y[i] = Σ_k x[i + r·k] w[k] (Eq. 1, §3.1). Effective\nreceptive size k_e = k + (k-1)(r-1). Output stride 8 via stride-1 last two\npools + atrous r=2 and r=4, followed by 8× bilinear upsampling (§3.1).\nASPP-L head: four parallel 3×3 atrous convs at rates {6,12,18,24} summed\n(§4.1.2). ASPP-S uses {2,4,8,12}. Dense CRF pairwise potential (Eqs. 2-3,\n§3.3): bilateral appearance kernel (σ_α, σ_β) + spatial smoothness kernel\n(σ_γ); 10 mean-field iterations; fixed w_2=3, σ_γ=3; cross-validation on\n100 VOC val images. Training v2: SGD momentum 0.9, weight decay 5e-4,\n\"poly\" LR (init 0.001 / 0.01 classifier), batch 10, 20K iterations\n(§4.1.2); multi-scale fusion {0.5, 0.75, 1}. Headline: 79.7% VOC test mIoU\n(Table V), 77.69% val (Table IV), 45.7% PASCAL-Context (Table VI), 63.1%\nPASCAL-Person-Part (Table VII), 63.1% Cityscapes test (Table VIII). 8 FPS\nTitan X / 0.5 s CRF per image (§1). Trainaug 10,582 images (§4.1).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://bitbucket.org/aquariusjay/deeplab-public-ver2",
+          "commit": "071ef5a59aad8d9e6e1f5b8dff3d7a5c984a3d3a",
+          "framework": "caffe",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/kazuto1011/deeplab-pytorch",
+          "commit": "4219467fa5de07985f834f1bd8c04c186dc8f6d8",
+          "framework": "pytorch",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-05-11"
+    }
+  },
+  {
     "slug": "fcn-semantic-segmentation",
     "frontmatter": {
       "title": "FCN: Fully Convolutional Networks",
@@ -2013,6 +2071,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "unet-segmentation",
           "confidence": "high",
           "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+        },
+        {
+          "type": "extended_by",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
         }
       ],
       "domain": "segmentation",

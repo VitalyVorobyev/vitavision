@@ -198,122 +198,127 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
   },
   "apap-image-stitching": {
     "x": 730.737742,
-    "y": 89.72112000000001,
+    "y": 91.16760000000001,
     "cluster": "applications"
   },
   "ccdn-checkerboard-detector": {
     "x": 795.8365170000001,
-    "y": 109.7234688,
+    "y": 107.836224,
     "cluster": "applications"
   },
   "ccs-camera-calibration": {
     "x": 854.934556,
-    "y": 94.8070848,
+    "y": 95.405904,
     "cluster": "applications"
   },
   "daniilidis-dual-quaternion-handeye": {
     "x": 904.652231,
-    "y": 94.2059136,
+    "y": 94.90492800000001,
+    "cluster": "applications"
+  },
+  "deeplab-semantic-segmentation": {
+    "x": 729.146957,
+    "y": 167.792064,
     "cluster": "applications"
   },
   "fcn-semantic-segmentation": {
-    "x": 732.623507,
-    "y": 186.32743680000002,
+    "x": 792.8235070000001,
+    "y": 171.67286400000003,
     "cluster": "applications"
   },
   "felzenszwalb-graph-segmentation": {
-    "x": 794.6186710000001,
-    "y": 188.73212160000003,
+    "x": 854.818671,
+    "y": 173.67676800000004,
     "cluster": "applications"
   },
   "gao-dual-homography-stitching": {
-    "x": 858.539633,
-    "y": 165.49248000000003,
+    "x": 918.739633,
+    "y": 154.31040000000002,
     "cluster": "applications"
   },
   "gp-checkerboard-enhancement": {
-    "x": 917.279482,
-    "y": 178.32028800000003,
+    "x": 736.679482,
+    "y": 232.20024,
     "cluster": "applications"
   },
   "grabcut-iterative-segmentation": {
-    "x": 734.477667,
-    "y": 269.4511488,
+    "x": 794.677667,
+    "y": 240.94262400000002,
     "cluster": "applications"
   },
   "graph-cut-segmentation": {
-    "x": 797.5031540000001,
-    "y": 259.7957184,
+    "x": 857.703154,
+    "y": 232.896432,
     "cluster": "applications"
   },
   "kumar-generalized-rac": {
-    "x": 850.573066,
-    "y": 250.2447168,
+    "x": 910.7730660000001,
+    "y": 224.937264,
     "cluster": "applications"
   },
   "laureano-topological-chessboard": {
-    "x": 903.588196,
-    "y": 268.8443328,
+    "x": 722.988196,
+    "y": 307.63694399999997,
     "cluster": "applications"
   },
   "lin-sva-stitching": {
-    "x": 725.1246940000001,
-    "y": 352.34624640000004,
+    "x": 785.3246940000001,
+    "y": 310.021872,
     "cluster": "applications"
   },
   "mate-checkerboard-detector": {
-    "x": 797.831846,
-    "y": 340.87601280000007,
+    "x": 858.031846,
+    "y": 300.463344,
     "cluster": "applications"
   },
   "ocpad": {
-    "x": 860.650847,
-    "y": 329.6005248000001,
+    "x": 920.850847,
+    "y": 291.067104,
     "cluster": "applications"
   },
   "puzzleboard": {
-    "x": 916.9086500000001,
-    "y": 339.1035456000001,
+    "x": 736.3086500000001,
+    "y": 366.18628800000005,
     "cluster": "applications"
   },
   "rochade": {
-    "x": 724.450454,
-    "y": 432.08307840000003,
+    "x": 784.6504540000001,
+    "y": 376.46923200000003,
     "cluster": "applications"
   },
   "scaramuzza-omni-calibration": {
-    "x": 788.9234500000001,
-    "y": 409.58290560000006,
+    "x": 849.12345,
+    "y": 357.71908800000006,
     "cluster": "applications"
   },
   "shu-topological-grid": {
-    "x": 844.456445,
-    "y": 416.77155840000006,
+    "x": 904.6564450000001,
+    "y": 363.70963200000006,
     "cluster": "applications"
   },
   "sturm-plane-based-calibration": {
-    "x": 904.154979,
-    "y": 416.09982720000005,
+    "x": 723.554979,
+    "y": 430.349856,
     "cluster": "applications"
   },
   "tsai-lenz-handeye": {
-    "x": 730.607108,
-    "y": 492.74613120000004,
+    "x": 790.8071080000001,
+    "y": 427.021776,
     "cluster": "applications"
   },
   "tsai-versatile-calibration": {
-    "x": 796.7277780000001,
-    "y": 500.67707520000005,
+    "x": 856.927778,
+    "y": 433.63089599999995,
     "cluster": "applications"
   },
   "unet-segmentation": {
-    "x": 847.233471,
-    "y": 501.13148160000003,
+    "x": 907.433471,
+    "y": 434.009568,
     "cluster": "applications"
   },
   "zhang-planar-calibration": {
-    "x": 911.57794,
-    "y": 493.2428736,
+    "x": 730.97794,
+    "y": 494.63572800000003,
     "cluster": "applications"
   }
 };

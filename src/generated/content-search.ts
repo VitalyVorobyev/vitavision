@@ -961,6 +961,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Robotics and Automation Letters"
   },
   {
+    "slug": "deeplab-semantic-segmentation",
+    "path": "/atlas/deeplab-semantic-segmentation",
+    "type": "model",
+    "title": "DeepLab",
+    "summary": "Dense semantic segmentation by repurposing an ImageNet classifier with atrous (dilated) convolution to preserve spatial resolution, an Atrous Spatial Pyramid Pooling head for multi-scale context, and a fully-connected CRF post-processor for boundary refinement — multi-year state of the art on PASCAL VOC 2012.",
+    "tags": [
+      "computer-vision",
+      "semantic-segmentation",
+      "dense-prediction",
+      "dilated-convolution"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "L. Chen",
+      "G. Papandreou",
+      "I. Kokkinos",
+      "K. Murphy",
+      "A. Yuille"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "fcn-semantic-segmentation",
     "path": "/atlas/fcn-semantic-segmentation",
     "type": "model",

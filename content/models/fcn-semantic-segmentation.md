@@ -16,6 +16,10 @@ relations:
     target: unet-segmentation
     confidence: high
     caution: "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+  - type: extended_by
+    target: deeplab-semantic-segmentation
+    confidence: high
+    caution: "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
 sources:
   primary: long2015-fcn
   notes: |

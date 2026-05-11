@@ -393,6 +393,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/ccs-camera-calibration",
       "draft": false
     },
+    "deeplab-semantic-segmentation": {
+      "slug": "deeplab-semantic-segmentation",
+      "type": "model",
+      "title": "DeepLab",
+      "summary": "Dense semantic segmentation by repurposing an ImageNet classifier with atrous (dilated) convolution to preserve spatial resolution, an Atrous Spatial Pyramid Pooling head for multi-scale context, and a fully-connected CRF post-processor for boundary refinement — multi-year state of the art on PASCAL VOC 2012.",
+      "path": "/atlas/deeplab-semantic-segmentation",
+      "draft": false
+    },
     "fcn-semantic-segmentation": {
       "slug": "fcn-semantic-segmentation",
       "type": "model",
@@ -1480,6 +1488,18 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "deeplab-semantic-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "unet-segmentation",
+          "confidence": "high",
+          "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation."
+        }
+      ]
+    },
     "fcn-semantic-segmentation": {
       "prerequisites": [],
       "failureModes": [],
@@ -1489,6 +1509,12 @@ export const contentGraph: ContentGraph = {
           "target": "unet-segmentation",
           "confidence": "high",
           "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+        },
+        {
+          "type": "extended_by",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
         }
       ]
     },
@@ -1636,7 +1662,15 @@ export const contentGraph: ContentGraph = {
     "unet-segmentation": {
       "prerequisites": [],
       "failureModes": [],
-      "relations": []
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation.",
+          "mirrored": true
+        }
+      ]
     },
     "xfeat": {
       "prerequisites": [
@@ -2341,6 +2375,20 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "deeplab-semantic-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
+        }
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },

@@ -764,3 +764,15 @@
   pdf: ronneberger2015-unet.pdf
   cites:
   - long2015-fcn
+
+- id: chen2018-deeplab
+  title: "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs"
+  authors: ["L. Chen", "G. Papandreou", "I. Kokkinos", "K. Murphy", "A. Yuille"]
+  year: 2018
+  venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
+  url: https://arxiv.org/abs/1606.00915
+  doi: "10.1109/tpami.2017.2699184"
+  pdf: chen2018-deeplab.pdf
+  cites:
+  - long2015-fcn
+  - ronneberger2015-unet

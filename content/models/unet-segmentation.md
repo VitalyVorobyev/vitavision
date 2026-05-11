@@ -128,7 +128,7 @@ Headline metrics (paper tables):
 :::definition[Weighted cross-entropy loss]
 Pixel-wise weighted softmax cross-entropy that simultaneously balances class frequencies and penalises mis-labelling of the narrow gaps between touching cell instances (Section 3, Eq. 1–2):
 
-$$E = \sum_{\mathbf{x} \in \Omega} w(\mathbf{x}) \log p_{\ell(\mathbf{x})}(\mathbf{x})$$
+$$E = -\sum_{\mathbf{x} \in \Omega} w(\mathbf{x}) \log p_{\ell(\mathbf{x})}(\mathbf{x})$$
 
 $$
 w(\mathbf{x}) = w_c(\mathbf{x}) + w_0 \cdot \exp\!\left(-\frac{(d_1(\mathbf{x}) + d_2(\mathbf{x}))^2}{2\sigma^2}\right)

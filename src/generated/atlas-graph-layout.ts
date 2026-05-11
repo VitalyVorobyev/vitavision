@@ -266,58 +266,63 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 310.021872,
     "cluster": "applications"
   },
+  "mask-rcnn": {
+    "x": 844.606042,
+    "y": 308.9964,
+    "cluster": "applications"
+  },
   "mate-checkerboard-detector": {
-    "x": 858.031846,
+    "x": 918.231846,
     "y": 300.463344,
     "cluster": "applications"
   },
   "ocpad": {
-    "x": 920.850847,
-    "y": 291.067104,
+    "x": 740.250847,
+    "y": 358.267104,
     "cluster": "applications"
   },
   "puzzleboard": {
-    "x": 736.3086500000001,
+    "x": 796.5086500000001,
     "y": 366.18628800000005,
     "cluster": "applications"
   },
   "rochade": {
-    "x": 784.6504540000001,
+    "x": 844.850454,
     "y": 376.46923200000003,
     "cluster": "applications"
   },
   "scaramuzza-omni-calibration": {
-    "x": 849.12345,
+    "x": 909.3234500000001,
     "y": 357.71908800000006,
     "cluster": "applications"
   },
   "shu-topological-grid": {
-    "x": 904.6564450000001,
-    "y": 363.70963200000006,
+    "x": 724.056445,
+    "y": 430.909632,
     "cluster": "applications"
   },
   "sturm-plane-based-calibration": {
-    "x": 723.554979,
+    "x": 783.754979,
     "y": 430.349856,
     "cluster": "applications"
   },
   "tsai-lenz-handeye": {
-    "x": 790.8071080000001,
+    "x": 851.007108,
     "y": 427.021776,
     "cluster": "applications"
   },
   "tsai-versatile-calibration": {
-    "x": 856.927778,
+    "x": 917.127778,
     "y": 433.63089599999995,
     "cluster": "applications"
   },
   "unet-segmentation": {
-    "x": 907.433471,
-    "y": 434.009568,
+    "x": 726.833471,
+    "y": 501.20956800000005,
     "cluster": "applications"
   },
   "zhang-planar-calibration": {
-    "x": 730.97794,
+    "x": 791.17794,
     "y": 494.63572800000003,
     "cluster": "applications"
   }

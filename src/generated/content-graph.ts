@@ -425,6 +425,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/loftr",
       "draft": false
     },
+    "mask-rcnn": {
+      "slug": "mask-rcnn",
+      "type": "model",
+      "title": "Mask R-CNN",
+      "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
+      "path": "/atlas/mask-rcnn",
+      "draft": false
+    },
     "mate-checkerboard-detector": {
       "slug": "mate-checkerboard-detector",
       "type": "model",
@@ -1515,6 +1523,12 @@ export const contentGraph: ContentGraph = {
           "target": "deeplab-semantic-segmentation",
           "confidence": "high",
           "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
+        },
+        {
+          "type": "extended_by",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
         }
       ]
     },
@@ -1552,6 +1566,11 @@ export const contentGraph: ContentGraph = {
           "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1)."
         }
       ]
+    },
+    "mask-rcnn": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
     },
     "mate-checkerboard-detector": {
       "prerequisites": [
@@ -2430,6 +2449,20 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "mask-rcnn": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        }
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },

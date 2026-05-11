@@ -776,3 +776,14 @@
   cites:
   - long2015-fcn
   - ronneberger2015-unet
+
+- id: he2017-maskrcnn
+  title: "Mask R-CNN"
+  authors: ["K. He", "G. Gkioxari", "P. Dollár", "R. Girshick"]
+  year: 2017
+  venue: ICCV
+  url: https://arxiv.org/abs/1703.06870
+  doi: "10.1109/iccv.2017.322"
+  pdf: he2017-maskrcnn.pdf
+  cites:
+  - long2015-fcn

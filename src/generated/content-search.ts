@@ -1054,6 +1054,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR"
   },
   {
+    "slug": "mask-rcnn",
+    "path": "/atlas/mask-rcnn",
+    "type": "model",
+    "title": "Mask R-CNN",
+    "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
+    "tags": [
+      "computer-vision",
+      "instance-segmentation",
+      "object-detection",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "K. He",
+      "G. Gkioxari",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "ICCV"
+  },
+  {
     "slug": "mate-checkerboard-detector",
     "path": "/atlas/mate-checkerboard-detector",
     "type": "model",

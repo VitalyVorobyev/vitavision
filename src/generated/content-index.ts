@@ -2077,6 +2077,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "deeplab-semantic-segmentation",
           "confidence": "high",
           "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
+        },
+        {
+          "type": "extended_by",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
         }
       ],
       "domain": "segmentation",
@@ -2227,6 +2233,55 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "date": "2026-05-10"
+    }
+  },
+  {
+    "slug": "mask-rcnn",
+    "frontmatter": {
+      "title": "Mask R-CNN",
+      "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
+      "tags": [
+        "computer-vision",
+        "instance-segmentation",
+        "object-detection",
+        "dense-prediction"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "he2017-maskrcnn",
+        "references": [
+          "long2015-fcn"
+        ],
+        "notes": "Multi-task loss per RoI: L = L_cls + L_box + L_mask (§3 Mask R-CNN).\nMask branch outputs Km^2-dim tensor — K binary masks of resolution\nm × m, per-pixel sigmoid; L_mask is the binary cross-entropy on the\nk-th channel only, where k is the ground-truth class. Mask resolution\nm=14 for ResNet-C4 head, m=28 for FPN head (Figure 4). RoIAlign uses\nx/16 (no rounding) with bilinear interpolation at four regularly\nspaced sampling points per bin; RoIPool used [x/16] quantization\ninstead (§3 RoIAlign, Figure 3). Training: COCO train2017, 80 classes,\nSGD momentum 0.9, weight decay 1e-4, LR 0.02 → 0.002 step at 120k of\n160k iters, 8 GPUs at 2 images/GPU effective batch 16 (§3.1 Training);\nResNeXt variants 1 image/GPU, LR 0.01. Headline COCO test-dev mask AP\n(Table 1): ResNet-101-FPN 35.7, ResNeXt-101-FPN 37.1; FCIS+++ baseline\n33.6. RoIAlign vs RoIPool ablation (Table 2c, ResNet-50-C4): ~3 AP /\n~5 AP_75 gain. Per-class sigmoid vs softmax (Table 2b): +5.5 AP\n(30.3 vs 24.8). Inference: 5 fps Tesla M40, ~195 ms/image ResNet-101-\nFPN; ResNet-101-C4 ~400 ms/image (§4.4). Mask branch adds ~20%\noverhead over Faster R-CNN counterpart.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/detectron2",
+          "commit": "d1e04565d3bec8719335b88be9e9b961bf3ec464",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/matterport/Mask_RCNN",
+          "commit": "555126ee899a144ceff09e90b5b2cf46c321200c",
+          "framework": "tensorflow",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-05-11"
     }
   },
   {

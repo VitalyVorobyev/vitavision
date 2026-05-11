@@ -753,3 +753,14 @@
   doi: "10.1109/cvpr.2015.7298965"
   pdf: long2015-fcn.pdf
   cites: []
+
+- id: ronneberger2015-unet
+  title: "U-Net: Convolutional Networks for Biomedical Image Segmentation"
+  authors: ["O. Ronneberger", "P. Fischer", "T. Brox"]
+  year: 2015
+  venue: MICCAI (Lecture Notes in Computer Science)
+  url: https://arxiv.org/abs/1505.04597
+  doi: "10.1007/978-3-319-24574-4_28"
+  pdf: ronneberger2015-unet.pdf
+  cites:
+  - long2015-fcn

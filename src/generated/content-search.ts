@@ -1106,6 +1106,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR Workshop (Deep Learning for Visual SLAM)"
   },
   {
+    "slug": "unet-segmentation",
+    "path": "/atlas/unet-segmentation",
+    "type": "model",
+    "title": "U-Net",
+    "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
+    "tags": [
+      "computer-vision",
+      "semantic-segmentation",
+      "biomedical-imaging",
+      "encoder-decoder",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "O. Ronneberger",
+      "P. Fischer",
+      "T. Brox"
+    ],
+    "venue": "MICCAI (Lecture Notes in Computer Science)"
+  },
+  {
     "slug": "xfeat",
     "path": "/atlas/xfeat",
     "type": "model",

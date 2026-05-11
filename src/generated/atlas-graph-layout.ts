@@ -306,8 +306,13 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 500.67707520000005,
     "cluster": "applications"
   },
+  "unet-segmentation": {
+    "x": 847.233471,
+    "y": 501.13148160000003,
+    "cluster": "applications"
+  },
   "zhang-planar-calibration": {
-    "x": 851.37794,
+    "x": 911.57794,
     "y": 493.2428736,
     "cluster": "applications"
   }

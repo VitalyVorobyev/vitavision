@@ -10,5 +10,6 @@ export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>
   "mate-checkerboard-detector": () => import("./content/models/mate-checkerboard-detector.ts"),
   "superglue": () => import("./content/models/superglue.ts"),
   "superpoint": () => import("./content/models/superpoint.ts"),
+  "unet-segmentation": () => import("./content/models/unet-segmentation.ts"),
   "xfeat": () => import("./content/models/xfeat.ts"),
 };

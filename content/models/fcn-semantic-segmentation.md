@@ -11,6 +11,11 @@ arch_family: cnn
 params: "134M (FCN-VGG16, Table 1)"
 prerequisites: []
 failureModes: []
+relations:
+  - type: extended_by
+    target: unet-segmentation
+    confidence: high
+    caution: "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
 sources:
   primary: long2015-fcn
   notes: |

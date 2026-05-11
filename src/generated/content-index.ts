@@ -2007,6 +2007,14 @@ export const modelPages: ModelIndexEntry[] = [
       "access": "public",
       "prerequisites": [],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "unet-segmentation",
+          "confidence": "high",
+          "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+        }
+      ],
       "domain": "segmentation",
       "tasks": [
         "image-segmentation"
@@ -2383,6 +2391,59 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "unet-segmentation",
+    "frontmatter": {
+      "title": "U-Net",
+      "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
+      "tags": [
+        "computer-vision",
+        "semantic-segmentation",
+        "biomedical-imaging",
+        "encoder-decoder",
+        "dense-prediction"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "encoder-decoder",
+      "params": "~31M (milesial PyTorch port at v4.0, 1-channel input, 2-class)",
+      "sources": {
+        "primary": "ronneberger2015-unet",
+        "references": [
+          "long2015-fcn"
+        ],
+        "notes": "Architecture: 23 conv layers (Section 2, Fig. 1). Contracting path =\n2×(3×3 unpadded conv + ReLU) + 2×2 max-pool stride 2, channel-doubling\n64→128→256→512→1024 at bottleneck. Expansive path = 2×2 up-conv (halving\nchannels) + concatenation with cropped encoder feature map + 2×(3×3 conv\n+ ReLU). Final 1×1 conv maps 64-channel features to K class scores.\nCropping is required because of unpadded convs. Input 572×572 → output\n388×388 (Fig. 1). Overlap-tile strategy with mirror-padding for\narbitrarily large images (Fig. 2).\n\nLoss (Section 3, Eq. 1 & 2): weighted cross-entropy\nE = Σ_x w(x) log p_ℓ(x)(x); weight map\nw(x) = w_c(x) + w_0 · exp(-(d_1(x)+d_2(x))² / (2σ²)),\nwith paper values w_0=10, σ≈5 px. d_1, d_2 are distances to nearest\nand second-nearest cell borders.\n\nTraining (Section 3, 3.1): SGD momentum 0.99 (high to compensate for\neffective batch size of 1), Gaussian He-style weight init with stddev\n√(2/N), example N = 9×64 = 576 for a 3×3 conv on 64 channels.\nRandom elastic deformations from a 3×3 grid, displacement stddev\n10 px. Training ~10 hours on NVidia Titan 6 GB (Section 5).\n\nHeadline numbers — ISBI 2012 EM (Table 1): warping error 0.0003529,\nrand error 0.0382 (rank 1). ISBI 2015 cell-tracking (Table 2): IoU\n92.03% on PhC-U373 (second-best 83%), IoU 77.5% on DIC-HeLa (second-\nbest 46%).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/lmb-freiburg/Unet-Segmentation",
+          "commit": "870e50366fcdabd7401e7936d1f2a6294dba488d",
+          "framework": "caffe",
+          "license": "GPL-3.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/milesial/Pytorch-UNet",
+          "commit": "bf69aa7655c99c77b51c9c0cee7a6cc4efb85c83",
+          "framework": "pytorch",
+          "license": "GPL-3.0",
+          "weights_url": "https://github.com/milesial/Pytorch-UNet/releases/tag/v3.0",
+          "weights_license": "GPL-3.0"
+        }
+      ],
+      "date": "2026-05-11"
     }
   },
   {

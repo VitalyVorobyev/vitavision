@@ -441,6 +441,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/superpoint",
       "draft": false
     },
+    "unet-segmentation": {
+      "slug": "unet-segmentation",
+      "type": "model",
+      "title": "U-Net",
+      "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
+      "path": "/atlas/unet-segmentation",
+      "draft": false
+    },
     "xfeat": {
       "slug": "xfeat",
       "type": "model",
@@ -1475,7 +1483,14 @@ export const contentGraph: ContentGraph = {
     "fcn-semantic-segmentation": {
       "prerequisites": [],
       "failureModes": [],
-      "relations": []
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "unet-segmentation",
+          "confidence": "high",
+          "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+        }
+      ]
     },
     "lightglue": {
       "prerequisites": [],
@@ -1617,6 +1632,11 @@ export const contentGraph: ContentGraph = {
           "caution": "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
         }
       ]
+    },
+    "unet-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
     },
     "xfeat": {
       "prerequisites": [
@@ -2392,6 +2412,20 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "unet-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+        }
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },

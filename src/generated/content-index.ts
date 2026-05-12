@@ -1989,6 +1989,64 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "deeplab-semantic-segmentation",
+    "frontmatter": {
+      "title": "DeepLab",
+      "summary": "Dense semantic segmentation by repurposing an ImageNet classifier with atrous (dilated) convolution to preserve spatial resolution, an Atrous Spatial Pyramid Pooling head for multi-scale context, and a fully-connected CRF post-processor for boundary refinement — multi-year state of the art on PASCAL VOC 2012.",
+      "tags": [
+        "computer-vision",
+        "semantic-segmentation",
+        "dense-prediction",
+        "dilated-convolution"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "unet-segmentation",
+          "confidence": "high",
+          "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation."
+        }
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "chen2018-deeplab",
+        "references": [
+          "long2015-fcn",
+          "ronneberger2015-unet"
+        ],
+        "notes": "1-D atrous convolution: y[i] = Σ_k x[i + r·k] w[k] (Eq. 1, §3.1). Effective\nreceptive size k_e = k + (k-1)(r-1). Output stride 8 via stride-1 last two\npools + atrous r=2 and r=4, followed by 8× bilinear upsampling (§3.1).\nASPP-L head: four parallel 3×3 atrous convs at rates {6,12,18,24} summed\n(§4.1.2). ASPP-S uses {2,4,8,12}. Dense CRF pairwise potential (Eqs. 2-3,\n§3.3): bilateral appearance kernel (σ_α, σ_β) + spatial smoothness kernel\n(σ_γ); 10 mean-field iterations; fixed w_2=3, σ_γ=3; cross-validation on\n100 VOC val images. Training v2: SGD momentum 0.9, weight decay 5e-4,\n\"poly\" LR (init 0.001 / 0.01 classifier), batch 10, 20K iterations\n(§4.1.2); multi-scale fusion {0.5, 0.75, 1}. Headline: 79.7% VOC test mIoU\n(Table V), 77.69% val (Table IV), 45.7% PASCAL-Context (Table VI), 63.1%\nPASCAL-Person-Part (Table VII), 63.1% Cityscapes test (Table VIII). 8 FPS\nTitan X / 0.5 s CRF per image (§1). Trainaug 10,582 images (§4.1).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://bitbucket.org/aquariusjay/deeplab-public-ver2",
+          "commit": "071ef5a59aad8d9e6e1f5b8dff3d7a5c984a3d3a",
+          "framework": "caffe",
+          "license": "BSD-2-Clause"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/kazuto1011/deeplab-pytorch",
+          "commit": "4219467fa5de07985f834f1bd8c04c186dc8f6d8",
+          "framework": "pytorch",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-05-11"
+    }
+  },
+  {
     "slug": "fcn-semantic-segmentation",
     "frontmatter": {
       "title": "FCN: Fully Convolutional Networks",
@@ -2007,6 +2065,26 @@ export const modelPages: ModelIndexEntry[] = [
       "access": "public",
       "prerequisites": [],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "unet-segmentation",
+          "confidence": "high",
+          "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+        },
+        {
+          "type": "extended_by",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
+        },
+        {
+          "type": "extended_by",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        }
+      ],
       "domain": "segmentation",
       "tasks": [
         "image-segmentation"
@@ -2155,6 +2233,55 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "date": "2026-05-10"
+    }
+  },
+  {
+    "slug": "mask-rcnn",
+    "frontmatter": {
+      "title": "Mask R-CNN",
+      "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
+      "tags": [
+        "computer-vision",
+        "instance-segmentation",
+        "object-detection",
+        "dense-prediction"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "he2017-maskrcnn",
+        "references": [
+          "long2015-fcn"
+        ],
+        "notes": "Multi-task loss per RoI: L = L_cls + L_box + L_mask (§3 Mask R-CNN).\nMask branch outputs Km^2-dim tensor — K binary masks of resolution\nm × m, per-pixel sigmoid; L_mask is the binary cross-entropy on the\nk-th channel only, where k is the ground-truth class. Mask resolution\nm=14 for ResNet-C4 head, m=28 for FPN head (Figure 4). RoIAlign uses\nx/16 (no rounding) with bilinear interpolation at four regularly\nspaced sampling points per bin; RoIPool used [x/16] quantization\ninstead (§3 RoIAlign, Figure 3). Training: COCO train2017, 80 classes,\nSGD momentum 0.9, weight decay 1e-4, LR 0.02 → 0.002 step at 120k of\n160k iters, 8 GPUs at 2 images/GPU effective batch 16 (§3.1 Training);\nResNeXt variants 1 image/GPU, LR 0.01. Headline COCO test-dev mask AP\n(Table 1): ResNet-101-FPN 35.7, ResNeXt-101-FPN 37.1; FCIS+++ baseline\n33.6. RoIAlign vs RoIPool ablation (Table 2c, ResNet-50-C4): ~3 AP /\n~5 AP_75 gain. Per-class sigmoid vs softmax (Table 2b): +5.5 AP\n(30.3 vs 24.8). Inference: 5 fps Tesla M40, ~195 ms/image ResNet-101-\nFPN; ResNet-101-C4 ~400 ms/image (§4.4). Mask branch adds ~20%\noverhead over Faster R-CNN counterpart.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/detectron2",
+          "commit": "d1e04565d3bec8719335b88be9e9b961bf3ec464",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/matterport/Mask_RCNN",
+          "commit": "555126ee899a144ceff09e90b5b2cf46c321200c",
+          "framework": "tensorflow",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-05-11"
     }
   },
   {
@@ -2383,6 +2510,59 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "unet-segmentation",
+    "frontmatter": {
+      "title": "U-Net",
+      "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
+      "tags": [
+        "computer-vision",
+        "semantic-segmentation",
+        "biomedical-imaging",
+        "encoder-decoder",
+        "dense-prediction"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "encoder-decoder",
+      "params": "~31M (milesial PyTorch port at v4.0, 1-channel input, 2-class)",
+      "sources": {
+        "primary": "ronneberger2015-unet",
+        "references": [
+          "long2015-fcn"
+        ],
+        "notes": "Architecture: 23 conv layers (Section 2, Fig. 1). Contracting path =\n2×(3×3 unpadded conv + ReLU) + 2×2 max-pool stride 2, channel-doubling\n64→128→256→512→1024 at bottleneck. Expansive path = 2×2 up-conv (halving\nchannels) + concatenation with cropped encoder feature map + 2×(3×3 conv\n+ ReLU). Final 1×1 conv maps 64-channel features to K class scores.\nCropping is required because of unpadded convs. Input 572×572 → output\n388×388 (Fig. 1). Overlap-tile strategy with mirror-padding for\narbitrarily large images (Fig. 2).\n\nLoss (Section 3, Eq. 1 & 2): weighted cross-entropy\nE = Σ_x w(x) log p_ℓ(x)(x); weight map\nw(x) = w_c(x) + w_0 · exp(-(d_1(x)+d_2(x))² / (2σ²)),\nwith paper values w_0=10, σ≈5 px. d_1, d_2 are distances to nearest\nand second-nearest cell borders.\n\nTraining (Section 3, 3.1): SGD momentum 0.99 (high to compensate for\neffective batch size of 1), Gaussian He-style weight init with stddev\n√(2/N), example N = 9×64 = 576 for a 3×3 conv on 64 channels.\nRandom elastic deformations from a 3×3 grid, displacement stddev\n10 px. Training ~10 hours on NVidia Titan 6 GB (Section 5).\n\nHeadline numbers — ISBI 2012 EM (Table 1): warping error 0.0003529,\nrand error 0.0382 (rank 1). ISBI 2015 cell-tracking (Table 2): IoU\n92.03% on PhC-U373 (second-best 83%), IoU 77.5% on DIC-HeLa (second-\nbest 46%).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/lmb-freiburg/Unet-Segmentation",
+          "commit": "870e50366fcdabd7401e7936d1f2a6294dba488d",
+          "framework": "caffe",
+          "license": "GPL-3.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/milesial/Pytorch-UNet",
+          "commit": "bf69aa7655c99c77b51c9c0cee7a6cc4efb85c83",
+          "framework": "pytorch",
+          "license": "GPL-3.0",
+          "weights_url": "https://github.com/milesial/Pytorch-UNet/releases/tag/v3.0",
+          "weights_license": "GPL-3.0"
+        }
+      ],
+      "date": "2026-05-11"
     }
   },
   {

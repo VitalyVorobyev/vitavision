@@ -140,6 +140,8 @@ export default function AlgorithmPost() {
                     <ErrorBoundary>
                         <article
                             ref={articleRef}
+                            data-atlas-slug={resolvedSlug}
+                            data-atlas-kind="algorithm"
                             className={proseClasses}
                             dangerouslySetInnerHTML={{ __html: html }}
                         />

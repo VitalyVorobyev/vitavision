@@ -12,6 +12,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
 import { PapersProvider } from './lib/atlas/papersIndex.tsx';
+import { StaticContentProvider, type StaticContentContextValue } from './lib/content/ssr-content.tsx';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 if (!PUBLISHABLE_KEY) {
@@ -94,18 +95,20 @@ function AppLayout() {
     );
 }
 
-function App() {
+function App({ ssrSnapshot = {} }: { ssrSnapshot?: StaticContentContextValue }) {
     return (
         <ClerkProvider publishableKey={PUBLISHABLE_KEY!}>
             <HelmetProvider>
-                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-                    <PapersProvider>
-                        <Router>
-                            <AppLayout />
-                        </Router>
-                    </PapersProvider>
-                    <Toaster richColors closeButton position="bottom-right" />
-                </ThemeProvider>
+                <StaticContentProvider value={ssrSnapshot}>
+                    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                        <PapersProvider>
+                            <Router>
+                                <AppLayout />
+                            </Router>
+                        </PapersProvider>
+                        <Toaster richColors closeButton position="bottom-right" />
+                    </ThemeProvider>
+                </StaticContentProvider>
             </HelmetProvider>
         </ClerkProvider>
     );

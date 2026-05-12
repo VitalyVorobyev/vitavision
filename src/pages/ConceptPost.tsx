@@ -131,6 +131,8 @@ export default function ConceptPost() {
                     <ErrorBoundary>
                         <article
                             ref={articleRef}
+                            data-atlas-slug={resolvedSlug}
+                            data-atlas-kind="concept"
                             className={proseClasses}
                             dangerouslySetInnerHTML={{ __html: html }}
                         />

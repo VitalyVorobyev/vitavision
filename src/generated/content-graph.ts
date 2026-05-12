@@ -393,6 +393,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/ccs-camera-calibration",
       "draft": false
     },
+    "deeplab-semantic-segmentation": {
+      "slug": "deeplab-semantic-segmentation",
+      "type": "model",
+      "title": "DeepLab",
+      "summary": "Dense semantic segmentation by repurposing an ImageNet classifier with atrous (dilated) convolution to preserve spatial resolution, an Atrous Spatial Pyramid Pooling head for multi-scale context, and a fully-connected CRF post-processor for boundary refinement — multi-year state of the art on PASCAL VOC 2012.",
+      "path": "/atlas/deeplab-semantic-segmentation",
+      "draft": false
+    },
     "fcn-semantic-segmentation": {
       "slug": "fcn-semantic-segmentation",
       "type": "model",
@@ -417,6 +425,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/loftr",
       "draft": false
     },
+    "mask-rcnn": {
+      "slug": "mask-rcnn",
+      "type": "model",
+      "title": "Mask R-CNN",
+      "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
+      "path": "/atlas/mask-rcnn",
+      "draft": false
+    },
     "mate-checkerboard-detector": {
       "slug": "mate-checkerboard-detector",
       "type": "model",
@@ -439,6 +455,14 @@ export const contentGraph: ContentGraph = {
       "title": "SuperPoint",
       "summary": "Fully-convolutional CNN that jointly detects interest points and computes 256-D descriptors in a single forward pass, trained without human annotations via Homographic Adaptation on synthetic shapes and MS-COCO images.",
       "path": "/atlas/superpoint",
+      "draft": false
+    },
+    "unet-segmentation": {
+      "slug": "unet-segmentation",
+      "type": "model",
+      "title": "U-Net",
+      "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
+      "path": "/atlas/unet-segmentation",
       "draft": false
     },
     "xfeat": {
@@ -1472,10 +1496,41 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "deeplab-semantic-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "unet-segmentation",
+          "confidence": "high",
+          "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation."
+        }
+      ]
+    },
     "fcn-semantic-segmentation": {
       "prerequisites": [],
       "failureModes": [],
-      "relations": []
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "unet-segmentation",
+          "confidence": "high",
+          "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+        },
+        {
+          "type": "extended_by",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
+        },
+        {
+          "type": "extended_by",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        }
+      ]
     },
     "lightglue": {
       "prerequisites": [],
@@ -1511,6 +1566,11 @@ export const contentGraph: ContentGraph = {
           "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1)."
         }
       ]
+    },
+    "mask-rcnn": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
     },
     "mate-checkerboard-detector": {
       "prerequisites": [
@@ -1615,6 +1675,19 @@ export const contentGraph: ContentGraph = {
           "target": "orb",
           "confidence": "high",
           "caution": "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
+        }
+      ]
+    },
+    "unet-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation.",
+          "mirrored": true
         }
       ]
     },
@@ -2324,6 +2397,20 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "deeplab-semantic-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "fcn-semantic-segmentation": {
       "usedBy": [],
       "affects": [],
@@ -2365,6 +2452,20 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "mask-rcnn": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "mate-checkerboard-detector": {
       "usedBy": [],
       "affects": [],
@@ -2392,6 +2493,20 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "unet-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+        }
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },

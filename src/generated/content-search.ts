@@ -961,6 +961,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Robotics and Automation Letters"
   },
   {
+    "slug": "deeplab-semantic-segmentation",
+    "path": "/atlas/deeplab-semantic-segmentation",
+    "type": "model",
+    "title": "DeepLab",
+    "summary": "Dense semantic segmentation by repurposing an ImageNet classifier with atrous (dilated) convolution to preserve spatial resolution, an Atrous Spatial Pyramid Pooling head for multi-scale context, and a fully-connected CRF post-processor for boundary refinement — multi-year state of the art on PASCAL VOC 2012.",
+    "tags": [
+      "computer-vision",
+      "semantic-segmentation",
+      "dense-prediction",
+      "dilated-convolution"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "L. Chen",
+      "G. Papandreou",
+      "I. Kokkinos",
+      "K. Murphy",
+      "A. Yuille"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "fcn-semantic-segmentation",
     "path": "/atlas/fcn-semantic-segmentation",
     "type": "model",
@@ -1029,6 +1052,28 @@ export const searchRecords: SearchRecord[] = [
       "X. Zhou"
     ],
     "venue": "CVPR"
+  },
+  {
+    "slug": "mask-rcnn",
+    "path": "/atlas/mask-rcnn",
+    "type": "model",
+    "title": "Mask R-CNN",
+    "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
+    "tags": [
+      "computer-vision",
+      "instance-segmentation",
+      "object-detection",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "K. He",
+      "G. Gkioxari",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "ICCV"
   },
   {
     "slug": "mate-checkerboard-detector",
@@ -1104,6 +1149,28 @@ export const searchRecords: SearchRecord[] = [
       "A. Rabinovich"
     ],
     "venue": "CVPR Workshop (Deep Learning for Visual SLAM)"
+  },
+  {
+    "slug": "unet-segmentation",
+    "path": "/atlas/unet-segmentation",
+    "type": "model",
+    "title": "U-Net",
+    "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
+    "tags": [
+      "computer-vision",
+      "semantic-segmentation",
+      "biomedical-imaging",
+      "encoder-decoder",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "O. Ronneberger",
+      "P. Fischer",
+      "T. Brox"
+    ],
+    "venue": "MICCAI (Lecture Notes in Computer Science)"
   },
   {
     "slug": "xfeat",

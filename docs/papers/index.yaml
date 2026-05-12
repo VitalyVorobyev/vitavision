@@ -753,3 +753,52 @@
   doi: "10.1109/cvpr.2015.7298965"
   pdf: long2015-fcn.pdf
   cites: []
+
+- id: ronneberger2015-unet
+  title: "U-Net: Convolutional Networks for Biomedical Image Segmentation"
+  authors: ["O. Ronneberger", "P. Fischer", "T. Brox"]
+  year: 2015
+  venue: MICCAI (Lecture Notes in Computer Science)
+  url: https://arxiv.org/abs/1505.04597
+  doi: "10.1007/978-3-319-24574-4_28"
+  pdf: ronneberger2015-unet.pdf
+  cites:
+  - long2015-fcn
+
+- id: chen2018-deeplab
+  title: "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs"
+  authors: ["L. Chen", "G. Papandreou", "I. Kokkinos", "K. Murphy", "A. Yuille"]
+  year: 2018
+  venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
+  url: https://arxiv.org/abs/1606.00915
+  doi: "10.1109/tpami.2017.2699184"
+  pdf: chen2018-deeplab.pdf
+  cites:
+  - long2015-fcn
+  - ronneberger2015-unet
+
+- id: he2017-maskrcnn
+  title: "Mask R-CNN"
+  authors: ["K. He", "G. Gkioxari", "P. Dollár", "R. Girshick"]
+  year: 2017
+  venue: ICCV
+  url: https://arxiv.org/abs/1703.06870
+  doi: "10.1109/iccv.2017.322"
+  pdf: he2017-maskrcnn.pdf
+  cites:
+  - long2015-fcn
+
+- id: kirillov2023-sam
+  title: "Segment Anything"
+  authors: ["A. Kirillov", "E. Mintun", "N. Ravi", "H. Mao", "C. Rolland", "L. Gustafson", "T. Xiao", "S. Whitehead", "A. C. Berg", "W. Lo", "P. Dollár", "R. Girshick"]
+  year: 2023
+  venue: ICCV
+  url: https://arxiv.org/abs/2304.02643
+  doi: "10.1109/iccv51070.2023.00371"
+  pdf: kirillov2023-sam.pdf
+  cites:
+  - felzenszwalb2004-graph-segm
+  - long2015-fcn
+  - ronneberger2015-unet
+  - he2017-maskrcnn
+  - chen2018-deeplab

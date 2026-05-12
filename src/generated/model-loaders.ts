@@ -4,11 +4,14 @@ export interface GeneratedHtmlModule { html: string; }
 export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
   "ccdn-checkerboard-detector": () => import("./content/models/ccdn-checkerboard-detector.ts"),
   "ccs-camera-calibration": () => import("./content/models/ccs-camera-calibration.ts"),
+  "deeplab-semantic-segmentation": () => import("./content/models/deeplab-semantic-segmentation.ts"),
   "fcn-semantic-segmentation": () => import("./content/models/fcn-semantic-segmentation.ts"),
   "lightglue": () => import("./content/models/lightglue.ts"),
   "loftr": () => import("./content/models/loftr.ts"),
+  "mask-rcnn": () => import("./content/models/mask-rcnn.ts"),
   "mate-checkerboard-detector": () => import("./content/models/mate-checkerboard-detector.ts"),
   "superglue": () => import("./content/models/superglue.ts"),
   "superpoint": () => import("./content/models/superpoint.ts"),
+  "unet-segmentation": () => import("./content/models/unet-segmentation.ts"),
   "xfeat": () => import("./content/models/xfeat.ts"),
 };

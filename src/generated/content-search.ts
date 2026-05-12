@@ -875,6 +875,35 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "viola-jones-detector",
+    "path": "/atlas/viola-jones-detector",
+    "type": "algorithm",
+    "title": "Viola–Jones Object Detector",
+    "summary": "Real-time frontal-face detection by sliding a fixed 24×24 sub-window across a grayscale image at multiple scales, scoring each position with an AdaBoost-selected ensemble of integral-image rectangle features arranged in a 38-stage attentional cascade that rejects most background regions after evaluating ~10 features per sub-window.",
+    "tags": [
+      "object-detection",
+      "face-detection",
+      "boosting",
+      "adaboost",
+      "integral-image",
+      "haar-features",
+      "cascade-classifier"
+    ],
+    "domain": "detection",
+    "headings": [
+      "Integral image",
+      "Rectangle features",
+      "AdaBoost feature selection",
+      "Attentional cascade",
+      "Procedure"
+    ],
+    "authors": [
+      "P. Viola",
+      "M. Jones"
+    ],
+    "venue": "CVPR"
+  },
+  {
     "slug": "yang-sub-pixel-corner-fit",
     "path": "/atlas/yang-sub-pixel-corner-fit",
     "type": "algorithm",

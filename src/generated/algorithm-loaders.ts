@@ -41,6 +41,7 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "tsai-lenz-handeye": () => import("./content/algorithms/tsai-lenz-handeye.ts"),
   "tsai-versatile-calibration": () => import("./content/algorithms/tsai-versatile-calibration.ts"),
   "raguram-usac": () => import("./content/algorithms/raguram-usac.ts"),
+  "viola-jones-detector": () => import("./content/algorithms/viola-jones-detector.ts"),
   "yang-sub-pixel-corner-fit": () => import("./content/algorithms/yang-sub-pixel-corner-fit.ts"),
   "zhang-planar-calibration": () => import("./content/algorithms/zhang-planar-calibration.ts"),
 };

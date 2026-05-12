@@ -802,3 +802,12 @@
   - ronneberger2015-unet
   - he2017-maskrcnn
   - chen2018-deeplab
+
+- id: viola2001-detector
+  title: "Rapid object detection using a boosted cascade of simple features"
+  authors: ["P. Viola", "M. Jones"]
+  year: 2001
+  venue: CVPR
+  url: https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/viola-cvpr-01.pdf
+  doi: "10.1109/CVPR.2001.990517"
+  pdf: viola2001-detector.pdf

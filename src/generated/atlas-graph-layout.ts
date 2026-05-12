@@ -186,13 +186,18 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 424.773264,
     "cluster": "detectors"
   },
+  "viola-jones-detector": {
+    "x": 700.6823760000001,
+    "y": 432.017424,
+    "cluster": "detectors"
+  },
   "xfeat": {
-    "x": 707.6986860000001,
-    "y": 439.849584,
+    "x": 527.098686,
+    "y": 507.04958400000004,
     "cluster": "detectors"
   },
   "yang-sub-pixel-corner-fit": {
-    "x": 511.32357700000006,
+    "x": 571.523577,
     "y": 500.64038400000004,
     "cluster": "detectors"
   },

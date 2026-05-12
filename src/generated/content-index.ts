@@ -167,7 +167,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "references": [
           "rosten2006-fast",
           "bay2006-surf",
-          "lowe2004-sift"
+          "lowe2004-sift",
+          "viola2001-detector"
         ],
         "notes": "Method (§3, Calonder et al. 2010). Pixel-pair test (Eq. 1):\nτ(p; x, y) = 1 if p(x) < p(y) else 0, where p is the Gaussian-smoothed\npatch (σ = 2, 9×9 discrete kernel — §3.1). Descriptor packing (Eq. 2):\nf_{n_d}(p) = Σ_{1≤i≤n_d} 2^{i-1} τ(p; x_i, y_i) with n_d ∈ {128, 256, 512}\nbits → BRIEF-16, BRIEF-32, BRIEF-64 (trailing number is bytes).\nPatch size S = 48 px (paper convention; the txt cache asserts\nS × S without an explicit numerical value, so this is the standard\ninterpretation).\nFive spatial sampling distributions for (x_i, y_i) evaluated in §3.2:\nG I uniform; G II i.i.d. Gaussian(0, S²/25) — best, used in all further\nexperiments; G III two-step Gaussian with σ² = S²/100 on the second\nsample; G IV coarse polar grid; G V x_i = (0,0) with y_i scanning a\npolar grid (consistently worst). Matching: Hamming distance (XOR +\npopcount). Speed (§4 Table, 512 keypoints, 2.66 GHz x86-64): BRIEF-32\ndescription 8.87 ms vs SURF-64 335 ms (35–41×); BRIEF-32 matching 4.35\nms vs 28.3 ms (4–13×). Storage 16/32/64 bytes vs 256 bytes for SURF-64.\nRotation sensitivity (§4 Fig. 9-right): little degradation up to\n10–15°, precipitous drop beyond. Recognition rate matches or exceeds\nSURF/U-SURF on Wall, Fountain, Trees, Jpg, Light; underperforms on\nGraffiti (rotation + monochromatic regions).\n"
       },
@@ -1128,7 +1129,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "rosten2006-fast",
           "harris1988-corner",
           "lowe2004-sift",
-          "bay2006-surf"
+          "bay2006-surf",
+          "viola2001-detector"
         ],
         "notes": "Method (Rublee et al. 2011, ICCV). Two-stage pipeline:\noFAST (detector) + rBRIEF (descriptor).\n\noFAST (§3): FAST-9 candidates at each level of a 5-level\nimage pyramid (scale factor √2, area-based interpolation).\nAdaptive intensity threshold yields ≥ N candidates; Harris\ncornerness response orders them and the top-N per level\nsurvive. Orientation θ = atan2(m_{01}, m_{10}) (Eq. 3) from\nthe first-order moments of a circular patch of radius r equal\nto the patch half-width (Eq. 1: m_{pq} = Σ x^p y^q I(x,y);\nEq. 2: C = (m_{10}/m_{00}, m_{01}/m_{00})).\n\nrBRIEF (§4): binary tests on the smoothed 31×31 patch via an\nintegral image; each test compares the mean intensity of two\n5×5 sub-windows (so the candidate-pair pool size is\nM = (wp − wt)² choose-2 with overlap eliminated → 205,590).\nThe test set S = [(x_i, y_i)] (2×n matrix) is steered to S_θ\n= R_θ S using θ from oFAST, discretised to 2π/30 (12°)\nincrements via a precomputed lookup table — 30 LUT entries.\nGreedy learning (§4.3) selects 256 tests on ~300k PASCAL 2006\nkeypoints by ranking |mean − 0.5| and rejecting any candidate\nwhose absolute pairwise correlation with the running set\nexceeds a threshold (raised if fewer than 256 survive).\nEq. 4–6 define τ, f_n, g_n.\n\nMatching: Hamming distance via XOR + popcount (SSE 4.2 in\nthe paper). Large-scale retrieval: multi-probe LSH with a\nsub-signature-of-bits hash, 16-bit sub-signature, 4–20 hash\ntables.\n\nBenchmarks (§6.1, 640×480, Intel i7 2.8 GHz, single thread):\nPyramid 4.43 ms, oFAST 8.68 ms, rBRIEF 2.12 ms, total ≈\n15.3 ms; SURF 217.3 ms, SIFT 5228.7 ms on the same data.\nCellphone (1 GHz ARM, ~400 points): ORB 66.6 ms, matching\n72.8 ms, H-fit 20.9 ms — ~7 Hz at 640×480 (§6.3).\n\nInlier rates (§4.4): outdoor \"Boat\" — ORB 45.8%, SURF 28.6%,\nSIFT 30.2%; indoor \"Magazines\" — ORB 36.2%, SURF 38.3%, SIFT\n34.0%. Rotation robustness (Fig. 7) > 70% inliers across all\nangles under Gaussian noise σ = 10; BRIEF (without steering)\ndrops sharply beyond ~10°.\n\nScope: ORB targets in-plane rotation and modest scale; per-\nkeypoint scale is a discrete pyramid level, not a continuous\nestimate. BSD-licensed reference implementation in OpenCV\n2.3+.\n"
       },
@@ -1516,7 +1518,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "bay2006-surf",
         "references": [
           "lowe2004-sift",
-          "harris1988-corner"
+          "harris1988-corner",
+          "viola2001-detector"
         ],
         "notes": "Three pillars (Bay et al. 2006). Pillar 1 — Fast-Hessian detector (§3):\nintegral image $I_\\Sigma(x,y) = \\sum_{i \\le x, j \\le y} I(i, j)$ enables\nconstant-time rectangular sums; box filters $D_{xx}, D_{yy}, D_{xy}$\napproximate Gaussian second derivatives with empirical balancing\n$\\det(\\mathcal{H}_\\text{approx}) = D_{xx} D_{yy} - (0.9\\, D_{xy})^2$\n(Eq. 2). The factor 0.9 ≈ ratio of Frobenius norms of the lobes;\nsquared as 0.81 in the cross-term. Scale-space upscales filters\ninstead of downsampling: octave 1 uses 9×9, 15×15, 21×21, 27×27\n(σ = 1.2 at 9×9, σ = 3.6 at 27×27); octave step doubles per octave\n(6, 12, 24). NMS in 3×3×3 (image+scale); sub-pixel/sub-scale via\nquadratic fit (Brown). Pillar 2 — Orientation (§4.1): Haar-wavelet\nresponses $d_x, d_y$ at sample step $s$ in a $6s$-radius circular\nneighbourhood (wavelet side $4s$), Gaussian-weighted with σ = 2.5s,\nsliding 60° (π/3) angular window picks the longest summed vector.\nU-SURF skips this step (~28% speed gain). Pillar 3 — Descriptor\n(§4.2): aligned 20s × 20s window, 4×4 sub-region grid, 5×5 sample\npoints per sub-region, Haar size 2s, Gaussian σ = 3.3s; per\nsub-region $v = (\\sum d_x, \\sum |d_x|, \\sum d_y, \\sum |d_y|)$ ⇒ 64-D\nvector; L2-normalized to unit length. Laplacian-sign of the keypoint\nindexes matching for early reject. SURF-128 splits sums by sign of\nthe orthogonal axis. Matching: nearest-neighbour-ratio at 0.7.\n"
       },
@@ -1694,6 +1697,34 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Unifying engineering framework over the RANSAC family. Decomposes\npractical RANSAC into four independently swappable stages:\n(1) sampling (PROSAC quality-ordered draws expanding to full set\nafter $T_N$); (2) verification (SPRT — Sequential Probability\nRatio Test, $\\Lambda_j = \\prod p(x_r|H_b)/p(x_r|H_g)$, Eq. 9 —\nrejects bad models early when $\\Lambda_j > A$); (3) degeneracy\nhandling (DEGENSAC — for fundamental matrix, detects ≥ 5 of 7\nminimal-sample correspondences related by a homography and runs\na model-completion step); (4) local optimisation (LO-RANSAC\ninner-loop with iteratively reweighted least-squares refit).\nSPRT-corrected stopping criterion (Eq. 13) at confidence $\\eta_0$\nand nonrandomness significance $\\gamma = 0.05$ (Eq. 12). Tested\ninlier-ratio range 10–92% across homography, fundamental, and\nessential matrix benchmarks. Reference open-source implementation\nis USAC-1.0.\n"
       },
       "date": "2026-05-03"
+    }
+  },
+  {
+    "slug": "viola-jones-detector",
+    "frontmatter": {
+      "title": "Viola–Jones Object Detector",
+      "summary": "Real-time frontal-face detection by sliding a fixed 24×24 sub-window across a grayscale image at multiple scales, scoring each position with an AdaBoost-selected ensemble of integral-image rectangle features arranged in a 38-stage attentional cascade that rejects most background regions after evaluating ~10 features per sub-window.",
+      "tags": [
+        "object-detection",
+        "face-detection",
+        "boosting",
+        "adaboost",
+        "integral-image",
+        "haar-features",
+        "cascade-classifier"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "detection",
+      "sources": {
+        "primary": "viola2001-detector",
+        "notes": "Three orthogonal contributions: (1) integral image $ii(x,y) = \\sum_{x' \\le x, y' \\le y} i(x',y')$ allowing any axis-aligned rectangular sum in four array reads (Section 2.1, Eq. 1–2); (2) AdaBoost weak classifier $h_j(x) = [\\![ p_j f_j(x) < p_j \\theta_j ]\\!]$ over ~180,000 rectangle features on a 24×24 sub-window (Section 3, Table 1); (3) attentional cascade with per-stage detection rate $d_i$ and false-positive rate $f_i$ giving $D = \\prod_i d_i$ and $F = \\prod_i f_i$ (Section 4). Final cascade: 38 layers, 6,061 features, layer 1–5 sizes 1, 10, 25, 25, 50. Average ~10 feature evaluations per sub-window. Frame rate 15 fps on 700 MHz Pentium III, 384×288 images. Trained on 4,916 hand-labelled faces; non-face training via bootstrapping on 9,544 images (~350 million sub-windows). Sub-windows variance-normalised by $\\sigma = \\sqrt{\\mu_2 - \\mu^2}$ computed from two integral images (one over pixels, one over squared pixels).\n"
+      },
+      "date": "2026-05-12"
     }
   },
   {

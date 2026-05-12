@@ -33,7 +33,7 @@ relations:
     confidence: medium
 sources:
   primary: calonder2010-brief
-  references: [rosten2006-fast, bay2006-surf, lowe2004-sift]
+  references: [rosten2006-fast, bay2006-surf, lowe2004-sift, viola2001-detector]
   notes: |
     Method (§3, Calonder et al. 2010). Pixel-pair test (Eq. 1):
     τ(p; x, y) = 1 if p(x) < p(y) else 0, where p is the Gaussian-smoothed

@@ -361,6 +361,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/raguram-usac",
       "draft": false
     },
+    "viola-jones-detector": {
+      "slug": "viola-jones-detector",
+      "type": "algorithm",
+      "title": "Viola–Jones Object Detector",
+      "summary": "Real-time frontal-face detection by sliding a fixed 24×24 sub-window across a grayscale image at multiple scales, scoring each position with an AdaBoost-selected ensemble of integral-image rectangle features arranged in a 38-stage attentional cascade that rejects most background regions after evaluating ~10 features per sub-window.",
+      "path": "/atlas/viola-jones-detector",
+      "draft": false
+    },
     "yang-sub-pixel-corner-fit": {
       "slug": "yang-sub-pixel-corner-fit",
       "type": "algorithm",
@@ -1375,6 +1383,11 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "viola-jones-detector": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
     "yang-sub-pixel-corner-fit": {
       "prerequisites": [
         "image-gradient"
@@ -2299,6 +2312,14 @@ export const contentGraph: ContentGraph = {
           "caution": "USAC is a unifying engineering framework, not a single new technique"
         }
       ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "viola-jones-detector": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
     },

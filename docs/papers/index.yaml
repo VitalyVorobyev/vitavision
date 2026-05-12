@@ -811,3 +811,27 @@
   url: https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/viola-cvpr-01.pdf
   doi: "10.1109/CVPR.2001.990517"
   pdf: viola2001-detector.pdf
+
+- id: dalal2005-hog
+  title: "Histograms of Oriented Gradients for Human Detection"
+  authors: ["N. Dalal", "B. Triggs"]
+  year: 2005
+  venue: CVPR
+  url: https://inria.hal.science/inria-00548512
+  doi: "10.1109/CVPR.2005.177"
+  pdf: dalal2005-hog.pdf
+  cites:
+  - lowe2004-sift
+
+- id: felzenszwalb2010-detection
+  title: "Object Detection with Discriminatively Trained Part-Based Models"
+  authors: ["P. F. Felzenszwalb", "R. B. Girshick", "D. McAllester", "D. Ramanan"]
+  year: 2010
+  venue: IEEE TPAMI
+  url: https://cs.brown.edu/people/pfelzens/papers/lsvm-pami.pdf
+  doi: "10.1109/TPAMI.2009.167"
+  pdf: felzenszwalb2010-detection.pdf
+  cites:
+  - lowe2004-sift
+  - dalal2005-hog
+  - viola2001-detector

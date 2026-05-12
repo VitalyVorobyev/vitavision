@@ -358,6 +358,47 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "felzenszwalb-deformable-parts",
+    "frontmatter": {
+      "title": "Deformable Part Models",
+      "summary": "Detect a target object class in arbitrary images by scoring every position and scale in a HOG feature pyramid with a mixture of star-structured part-based templates — a coarse root filter and $n=6$ finer-resolution part filters with quadratic deformation costs — trained as a latent SVM with hard-negative mining.",
+      "tags": [
+        "object-detection",
+        "deformable-parts-model",
+        "latent-svm",
+        "hog",
+        "part-based",
+        "structured-prediction"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Different operational regimes — VJ is real-time cascade for rigid faces; DPM is offline part-based for general deformable objects."
+        }
+      ],
+      "domain": "detection",
+      "sources": {
+        "primary": "felzenszwalb2010-detection",
+        "references": [
+          "dalal2005-hog",
+          "viola2001-detector"
+        ],
+        "notes": "Star model $(F_0, P_1, \\ldots, P_n, b)$ with $n = 6$ parts at twice the spatial resolution of the root ($l_i = l_0 - \\lambda$ in a HOG feature pyramid with $\\lambda = 10$ levels per octave at test time, $\\lambda = 5$ at training time). Score (Eq. 2): $\\operatorname{score}(z) = \\sum_{i=0}^{n} F_i' \\cdot \\phi(H, p_i) - \\sum_{i=1}^{n} d_i \\cdot \\phi_d(dx_i, dy_i) + b$, with deformation feature $\\phi_d(dx, dy) = (dx, dy, dx^2, dy^2)$ (Eq. 4) and displacement $(dx_i, dy_i) = (x_i, y_i) - (2(x_0, y_0) + v_i)$ (Eq. 3). Inference via distance transforms (Eq. 8): $D_{i,l}(x,y) = \\max_{dx,dy}[R_{i,l}(x+dx,y+dy) - d_i \\cdot \\phi_d(dx,dy)]$, total cost $O(nk)$ once filter responses are computed. Mixture of $m = 2$ components per category for PASCAL. Latent SVM (Eq. 14): $L_D(\\beta) = \\tfrac{1}{2}\\|\\beta\\|^2 + C\\sum_i \\max(0, 1 - y_i f_\\beta(x_i))$ with $f_\\beta(x) = \\max_{z \\in Z(x)} \\beta \\cdot \\Phi(x, z)$ (Eq. 13); semi-convex (convex for $y_i = -1$). Training: coordinate descent (relabel positives → SGD on $\\beta$) plus hard-negative mining (Theorem 1). HOG feature parameters: cell size $k = 8$, truncation $\\alpha = 0.2$, $p = 9$ contrast-insensitive orientations; analytic 31-dimensional projection (9 contrast-insensitive + 18 contrast-sensitive + 4 energy channels) replacing the 36-dimensional HOG vector (Section 6.2). Part initialisation $d_i = (0, 0, 0.1, 0.1)$ with quadratic floor $\\geq 0.01$. PASCAL VOC IoU threshold $0.5$; bounding-box prediction by least-squares regression on a $2n+3$-dimensional configuration vector (Section 7.1). Runtime ~2 s/image on an 8-core desktop.\n"
+      },
+      "date": "2026-05-12"
+    }
+  },
+  {
     "slug": "epnp",
     "frontmatter": {
       "title": "EPnP: O(n) Perspective-n-Point",
@@ -832,6 +873,51 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Structure tensor M = sum_w [Ix^2, IxIy; IxIy, Iy^2] over a Gaussian-weighted\nwindow w. Response R = det(M) - k * tr(M)^2 with empirical k ~ 0.04-0.06.\n"
       },
       "date": "2026-04-15"
+    }
+  },
+  {
+    "slug": "hog-descriptor",
+    "frontmatter": {
+      "title": "HOG: Histograms of Oriented Gradients",
+      "summary": "Compute a fixed-length descriptor for an image window by binning pixel gradients into 8×8 cells of 9 unsigned-orientation histograms, normalising overlapping 2×2-cell blocks with L2-Hys, and concatenating the 3780 block values into a single vector fed to a linear SVM — the canonical pre-CNN pedestrian detector.",
+      "tags": [
+        "object-detection",
+        "pedestrian-detection",
+        "gradient-histograms",
+        "feature-descriptor",
+        "linear-svm"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Both classical sliding-window detectors. Viola-Jones: Haar + AdaBoost cascade on faces. HOG: gradient histograms + linear SVM on pedestrians."
+        },
+        {
+          "type": "feeds_into",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high",
+          "caution": "DPM uses HOG cells (k=8 px, α=0.2) with an analytic 31-dim projection of the 36-dim HOG vector as its base feature pyramid."
+        }
+      ],
+      "domain": "detection",
+      "sources": {
+        "primary": "dalal2005-hog",
+        "references": [
+          "lowe2004-sift"
+        ],
+        "notes": "HOG descriptor for a 64×128 detection window: gradient via centred $[-1, 0, 1]$ (no smoothing, $\\sigma = 0$); 8×8-pixel cells; 9 unsigned (0°–180°) orientation bins with bilinear interpolation in orientation and position; 2×2-cell (16×16-pixel) blocks at 8-pixel stride (50% overlap); Gaussian spatial window $\\sigma = 0.5 \\times$ block width $= 8$ px; L2-Hys normalisation (L2-norm, clip to 0.2, renormalise — from Lowe SIFT); descriptor dimension $7 \\times 15 \\times 4 \\times 9 = 3780$; soft linear SVM at $C = 0.01$ with hard-example mining (§4, §6, Fig. 4–5). Empirical breakers: any prior Gaussian smoothing ($\\sigma = 2$ drops recall 89%→80% at $10^{-4}$ FPPW); omitting block normalisation (−27%); fewer than 9 orientation bins; signed gradients for pedestrians; non-overlapping blocks (−4%); shrinking the 16-px window border to 8 px (−6%).\n"
+      },
+      "date": "2026-05-12"
     }
   },
   {
@@ -1715,7 +1801,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 8,
+      "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
       "failureModes": [],
@@ -2284,6 +2370,14 @@ export const modelPages: ModelIndexEntry[] = [
       "access": "public",
       "prerequisites": [],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "medium",
+          "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        }
+      ],
       "domain": "segmentation",
       "tasks": [
         "image-segmentation"

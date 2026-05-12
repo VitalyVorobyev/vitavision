@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "vitavision-dev",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5173
+    },
+    {
+      "name": "vitavision-dist",
+      "runtimeExecutable": "bunx",
+      "runtimeArgs": ["serve", "dist", "-p", "4321", "-s"],
+      "port": 4321
+    }
+  ]
+}

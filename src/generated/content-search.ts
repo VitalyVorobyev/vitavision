@@ -150,6 +150,37 @@ export const searchRecords: SearchRecord[] = [
     "venue": "The International Journal of Robotics Research"
   },
   {
+    "slug": "felzenszwalb-deformable-parts",
+    "path": "/atlas/felzenszwalb-deformable-parts",
+    "type": "algorithm",
+    "title": "Deformable Part Models",
+    "summary": "Detect a target object class in arbitrary images by scoring every position and scale in a HOG feature pyramid with a mixture of star-structured part-based templates — a coarse root filter and $n=6$ finer-resolution part filters with quadratic deformation costs — trained as a latent SVM with hard-negative mining.",
+    "tags": [
+      "object-detection",
+      "deformable-parts-model",
+      "latent-svm",
+      "hog",
+      "part-based",
+      "structured-prediction"
+    ],
+    "domain": "detection",
+    "headings": [
+      "Feature pyramid",
+      "Hypothesis score",
+      "Efficient inference via distance transform",
+      "Mixture model",
+      "Latent SVM training",
+      "Procedure"
+    ],
+    "authors": [
+      "P. F. Felzenszwalb",
+      "R. B. Girshick",
+      "D. McAllester",
+      "D. Ramanan"
+    ],
+    "venue": "IEEE TPAMI"
+  },
+  {
     "slug": "epnp",
     "path": "/atlas/epnp",
     "type": "algorithm",
@@ -429,6 +460,27 @@ export const searchRecords: SearchRecord[] = [
       "M. J. Stephens"
     ],
     "venue": "Alvey Vision Conference"
+  },
+  {
+    "slug": "hog-descriptor",
+    "path": "/atlas/hog-descriptor",
+    "type": "algorithm",
+    "title": "HOG: Histograms of Oriented Gradients",
+    "summary": "Compute a fixed-length descriptor for an image window by binning pixel gradients into 8×8 cells of 9 unsigned-orientation histograms, normalising overlapping 2×2-cell blocks with L2-Hys, and concatenating the 3780 block values into a single vector fed to a linear SVM — the canonical pre-CNN pedestrian detector.",
+    "tags": [
+      "object-detection",
+      "pedestrian-detection",
+      "gradient-histograms",
+      "feature-descriptor",
+      "linear-svm"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "N. Dalal",
+      "B. Triggs"
+    ],
+    "venue": "CVPR"
   },
   {
     "slug": "kumar-generalized-rac",

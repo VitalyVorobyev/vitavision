@@ -105,6 +105,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/daniilidis-dual-quaternion-handeye",
       "draft": false
     },
+    "felzenszwalb-deformable-parts": {
+      "slug": "felzenszwalb-deformable-parts",
+      "type": "algorithm",
+      "title": "Deformable Part Models",
+      "summary": "Detect a target object class in arbitrary images by scoring every position and scale in a HOG feature pyramid with a mixture of star-structured part-based templates — a coarse root filter and $n=6$ finer-resolution part filters with quadratic deformation costs — trained as a latent SVM with hard-negative mining.",
+      "path": "/atlas/felzenszwalb-deformable-parts",
+      "draft": false
+    },
     "epnp": {
       "slug": "epnp",
       "type": "algorithm",
@@ -199,6 +207,14 @@ export const contentGraph: ContentGraph = {
       "title": "Harris Corner Detector",
       "summary": "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum.",
       "path": "/atlas/harris-corner-detector",
+      "draft": false
+    },
+    "hog-descriptor": {
+      "slug": "hog-descriptor",
+      "type": "algorithm",
+      "title": "HOG: Histograms of Oriented Gradients",
+      "summary": "Compute a fixed-length descriptor for an image window by binning pixel gradients into 8×8 cells of 9 unsigned-orientation histograms, normalising overlapping 2×2-cell blocks with L2-Hys, and concatenating the 3780 block values into a single vector fed to a linear SVM — the canonical pre-CNN pedestrian detector.",
+      "path": "/atlas/hog-descriptor",
       "draft": false
     },
     "kumar-generalized-rac": {
@@ -715,6 +731,20 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "felzenszwalb-deformable-parts": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Different operational regimes — VJ is real-time cascade for rigid faces; DPM is offline part-based for general deformable objects."
+        }
+      ]
+    },
     "epnp": {
       "prerequisites": [
         "dlt-normalisation",
@@ -931,6 +961,26 @@ export const contentGraph: ContentGraph = {
           "target": "surf",
           "confidence": "medium",
           "mirrored": true
+        }
+      ]
+    },
+    "hog-descriptor": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Both classical sliding-window detectors. Viola-Jones: Haar + AdaBoost cascade on faces. HOG: gradient histograms + linear SVM on pedestrians."
+        },
+        {
+          "type": "feeds_into",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high",
+          "caution": "DPM uses HOG cells (k=8 px, α=0.2) with an analytic 31-dim projection of the 36-dim HOG vector as its base feature pyramid."
         }
       ]
     },
@@ -1386,7 +1436,22 @@ export const contentGraph: ContentGraph = {
     "viola-jones-detector": {
       "prerequisites": [],
       "failureModes": [],
-      "relations": []
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "medium",
+          "caution": "Different operational regimes — VJ is real-time cascade for rigid faces; DPM is offline part-based for general deformable objects.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "hog-descriptor",
+          "confidence": "medium",
+          "caution": "Both classical sliding-window detectors. Viola-Jones: Haar + AdaBoost cascade on faces. HOG: gradient histograms + linear SVM on pedestrians.",
+          "mirrored": true
+        }
+      ]
     },
     "yang-sub-pixel-corner-fit": {
       "prerequisites": [
@@ -1583,7 +1648,14 @@ export const contentGraph: ContentGraph = {
     "mask-rcnn": {
       "prerequisites": [],
       "failureModes": [],
-      "relations": []
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "medium",
+          "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        }
+      ]
     },
     "mate-checkerboard-detector": {
       "prerequisites": [
@@ -1933,6 +2005,26 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "felzenszwalb-deformable-parts": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "hog-descriptor",
+          "confidence": "high",
+          "caution": "DPM uses HOG cells (k=8 px, α=0.2) with an analytic 31-dim projection of the 36-dim HOG vector as its base feature pyramid."
+        }
+      ],
+      "hasLearnedAlternative": [
+        {
+          "slug": "mask-rcnn",
+          "confidence": "medium",
+          "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        }
+      ]
+    },
     "epnp": {
       "usedBy": [],
       "affects": [],
@@ -2064,6 +2156,14 @@ export const contentGraph: ContentGraph = {
           "caution": "SuperPoint replaces classical sparse keypoint+descriptor pipelines (Harris/Shi-Tomasi + SIFT/ORB) with a single learned model; it does not literally re-implement the Harris response."
         }
       ]
+    },
+    "hog-descriptor": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "kumar-generalized-rac": {
       "usedBy": [],
@@ -2623,10 +2723,12 @@ export const contentGraph: ContentGraph = {
         "chessboard-x-corner-detection",
         "duda-radon-corners",
         "fast-corner-detector",
+        "felzenszwalb-deformable-parts",
         "geiger-chessboard-detector",
         "gp-checkerboard-enhancement",
         "harris-corner-detector",
         "hessian-saddle-response",
+        "hog-descriptor",
         "laureano-topological-chessboard",
         "loy-fast-radial-symmetry",
         "mate-checkerboard-detector",

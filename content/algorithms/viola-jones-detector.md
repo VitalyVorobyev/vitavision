@@ -202,6 +202,7 @@ def eval_weak_classifier(ii, x_off, y_off, feature, alpha):
 - The method is single-class and pose-restricted: the classifier is trained on frontal, roughly upright instances of one target class. Profile or strongly rotated instances are not detected.
 - Training requires hard-negative bootstrapping: false positives produced by each partial cascade pass over the non-face set are collected as training negatives for subsequent stages. The training set consists of 4,916 labelled positive examples; the non-face set spans approximately 350 million sub-windows across 9,544 images.
 - Overlapping detections across scale and position are merged by partitioning into groups of mutually overlapping rectangles and replacing each group with the mean of its members' bounding-box corners.
+- For full-body pedestrian detection the peer classical sliding-window detector is HOG + linear SVM (Dalal & Triggs, CVPR 2005), which outperforms Haar-wavelet-based detectors — including an extended version of this feature set — by more than an order of magnitude in false-positives-per-window on INRIA. See [`hog-descriptor`](/algorithms/hog-descriptor).
 
 # References
 

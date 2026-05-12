@@ -835,3 +835,37 @@
   - lowe2004-sift
   - dalal2005-hog
   - viola2001-detector
+
+- id: krizhevsky2012-alexnet
+  title: "ImageNet Classification with Deep Convolutional Neural Networks"
+  authors: ["A. Krizhevsky", "I. Sutskever", "G. E. Hinton"]
+  year: 2012
+  venue: NeurIPS
+  url: https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
+  doi: "10.1145/3065386"
+  pdf: krizhevsky2012-alexnet.pdf
+
+- id: simonyan2014-vgg
+  title: "Very Deep Convolutional Networks for Large-Scale Image Recognition"
+  authors: ["K. Simonyan", "A. Zisserman"]
+  year: 2014
+  venue: ICLR 2015 / arXiv
+  url: https://arxiv.org/pdf/1409.1556
+  arxiv: "1409.1556"
+  doi: "10.48550/arxiv.1409.1556"
+  pdf: simonyan2014-vgg.pdf
+  cites:
+  - krizhevsky2012-alexnet
+  - long2015-fcn
+
+- id: szegedy2015-inception
+  title: "Going deeper with convolutions"
+  authors: ["C. Szegedy", "W. Liu", "Y. Jia", "P. Sermanet", "S. Reed", "D. Anguelov", "D. Erhan", "V. Vanhoucke", "A. Rabinovich"]
+  year: 2015
+  venue: CVPR 2015
+  url: https://arxiv.org/pdf/1409.4842
+  arxiv: "1409.4842"
+  doi: "10.1109/CVPR.2015.7298594"
+  pdf: szegedy2015-inception.pdf
+  cites:
+  - krizhevsky2012-alexnet

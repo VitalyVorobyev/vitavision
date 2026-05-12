@@ -1978,6 +1978,68 @@ export const demoPages: DemoIndexEntry[] = [
 
 export const modelPages: ModelIndexEntry[] = [
   {
+    "slug": "alexnet",
+    "frontmatter": {
+      "title": "AlexNet",
+      "summary": "Eight-layer convolutional neural network for 1000-class image classification on ImageNet, trained end-to-end on two GPUs with ReLU activations, local response normalisation, overlapping max-pooling, and dropout; the first deep CNN to win ILSVRC by a large margin.",
+      "tags": [
+        "computer-vision",
+        "image-classification",
+        "cnn",
+        "deep-learning"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "vgg",
+          "confidence": "high",
+          "caution": "VGG extends AlexNet's CNN classifier paradigm from 8 to 16/19 weight layers via stacked 3×3 conv blocks; same task, deeper architecture, same training framework."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "60M (paper §3.5); 61.1M (torchvision impl)",
+      "flops": "~720 MMAC @ 224×224 (torchvision impl)",
+      "sources": {
+        "primary": "krizhevsky2012-alexnet",
+        "references": [
+          "szegedy2015-inception"
+        ],
+        "notes": "Paper §3.5 architecture: 5 conv + 3 FC, 60M params, 650K neurons; per-GPU\nkernel widths 48–128–192–192–128 (totals 96–256–384–384–256 across both\nGPUs); FC widths 4096-4096-1000. Torchvision single-GPU port collapses the\nchannels to 64–192–384–256–256 (see torchvision/models/alexnet.py). §3.1 ReLU f(x)=max(0,x); §3.2 two-GPU\nsplit with cross-GPU connectivity only at conv3 and FC layers; §3.3 LRN\nwith k=2, n=5, α=1e-4, β=0.75 reduces top-1/top-5 by 1.4%/1.2%; §3.4\noverlapping pooling z=3, s=2 reduces top-1/top-5 by 0.4%/0.3%; §4.1\ndata augmentation (random 224×224 crops from 256×256, horizontal flips,\nPCA colour jitter with α_i ~ N(0, 0.1²)); §4.2 dropout p=0.5 in first\ntwo FC layers; §5 SGD batch 128, momentum 0.9, weight decay 0.0005,\ninitial LR ε=0.01 divided by 10 three times, 90 epochs, 5–6 days on\ntwo GTX 580 3GB GPUs, weight init N(0, 0.01²), bias init 1 for conv2,\nconv4, conv5, FC6, FC7 (0 elsewhere). Results: Table 1 (ILSVRC-2010)\ntop-1 37.5% / top-5 17.0% vs prior best 45.7% / 25.7%; Table 2 (ILSVRC-2012)\ntop-5 15.3% ensemble vs 26.2% second place. Section 7: removing a middle\nconv layer costs ~2% top-1. Note: practical implementations use 227×227\ninput to make the §3.5 stride-4 11×11 first conv produce a 55×55 feature\nmap; the paper's stated 224×224 is a typographical inconsistency.\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "336d36e8db990a905498c73933e35231876e28bc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause",
+          "weights_url": "https://download.pytorch.org/models/alexnet-owt-7be5be79.pth",
+          "weights_license": "BSD-3-Clause"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/BVLC/caffe",
+          "commit": "eeebdab16155d34ff8f5f42137da7df4d1c7eab0",
+          "framework": "caffe",
+          "license": "BSD-2-Clause",
+          "weights_url": "http://dl.caffe.berkeleyvision.org/bvlc_alexnet.caffemodel",
+          "weights_license": "unrestricted"
+        }
+      ],
+      "date": "2026-05-12"
+    }
+  },
+  {
     "slug": "ccdn-checkerboard-detector",
     "frontmatter": {
       "title": "CCDN",
@@ -2229,6 +2291,83 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "date": "2026-05-10"
+    }
+  },
+  {
+    "slug": "googlenet",
+    "frontmatter": {
+      "title": "GoogLeNet",
+      "summary": "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet).",
+      "tags": [
+        "computer-vision",
+        "image-classification",
+        "cnn",
+        "deep-learning",
+        "inception"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "vgg",
+          "confidence": "high",
+          "caution": "Both ILSVRC-2014 entries — GoogLeNet won classification (6.67% top-5), VGG won localisation. Different design philosophies: Inception modules vs homogeneous 3×3 depth scaling."
+        },
+        {
+          "type": "compared_with",
+          "target": "alexnet",
+          "confidence": "high",
+          "caution": "22 layers vs AlexNet's 8; 7M vs 60M parameters; 56.5% relative reduction in top-5 error vs AlexNet (16.4% → 6.67%) over two ILSVRC years."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "7M (paper §1; 12× fewer than AlexNet)",
+      "flops": "~1.5 billion multiply-adds @ 224×224 (paper §1 target budget)",
+      "sources": {
+        "primary": "szegedy2015-inception",
+        "references": [
+          "krizhevsky2012-alexnet",
+          "simonyan2014-vgg"
+        ],
+        "notes": "Paper §1 design target: 1.5 billion multiply-adds at inference;\n12× fewer parameters than AlexNet (7M vs ~60M). §3 motivation:\nHebbian principle + Arora et al. 2013 theorem on approximating\nsparse network topologies via correlation clustering. §4 Inception\nmodule: parallel 1×1, 3×3, 5×5 convs and 3×3 max-pool concatenated\non channel axis (Figure 2a naïve, Figure 2b with 1×1 reduction\nbottlenecks before 3×3/5×5 and 1×1 projection after pool). 1×1\nconvolutions sourced from Lin et al. Network-in-Network 2013. §5 /\nTable 1: full layer-by-layer architecture, 22 weight layers (27\nwith pooling), 9 Inception modules (3a, 3b, 4a–4e, 5a, 5b), stem\n7×7/2 conv → 3×3/2 max-pool → 3×3/1 conv → 3×3/2 max-pool before\nInception modules. Global average pooling before final softmax\n(improves top-1 by ~0.6% over FC layers, requires dropout in\nauxiliary classifier still). Auxiliary classifiers at Inception\n(4a) and (4d): 5×5 avg-pool stride 3 → 1×1/128 conv → FC-1024 +\nReLU → dropout 0.7 → FC-1000 softmax; auxiliary loss weight 0.3\nat training, discarded at inference. §6 training: DistBelief\ndistributed system, async SGD momentum 0.9, LR polynomial decrease\nby 4% every 8 epochs, Polyak averaging for inference. Augmentation:\naspect-ratio sampling area 8%–100%, ratio ∈ [3/4, 4/3], photometric\ndistortions, random interpolation. §7 / Table 2 / Table 3 ILSVRC\n2014 classification: ensemble top-5 6.67% (7 models × 144 crops),\nsingle model 7.9% (vs single VGG-16 7.0%). 56.5% relative reduction\nvs ILSVRC 2012 SuperVision (AlexNet 16.4%). §8 / Table 4 / Table 5\nILSVRC 2014 detection: 6-net ensemble mAP 43.9%, single model\n38.02%; uses Selective Search proposals; no bounding-box regression\n\"due to lack of time\". §7 test-time: 4 scales × 3 squares × 6 crops\n× 2 mirrors = 144 crops per image, softmax averaged. Torchvision\nInception block (336d36e): branches 1×1, 1×1→3×3, 1×1→3×3 (known\nbug, paper specifies 5×5), 3×3 maxpool→1×1; see pytorch/vision#906.\nTorchvision weights trained by maintainers, not the original BVLC\nGoogLeNet weights (which achieve 68.7% top-1 / 88.9% top-5 single\ncentre crop per BVLC model zoo readme).\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "336d36e8db990a905498c73933e35231876e28bc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause",
+          "weights_url": "https://download.pytorch.org/models/googlenet-1378be20.pth",
+          "weights_license": "BSD-3-Clause"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/BVLC/caffe",
+          "commit": "eeebdab16155d34ff8f5f42137da7df4d1c7eab0",
+          "framework": "caffe",
+          "license": "BSD-2-Clause",
+          "weights_url": "http://dl.caffe.berkeleyvision.org/bvlc_googlenet.caffemodel",
+          "weights_license": "unrestricted"
+        }
+      ],
+      "date": "2026-05-12"
     }
   },
   {
@@ -2688,6 +2827,76 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "date": "2026-05-11"
+    }
+  },
+  {
+    "slug": "vgg",
+    "frontmatter": {
+      "title": "VGG",
+      "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
+      "tags": [
+        "computer-vision",
+        "image-classification",
+        "cnn",
+        "deep-learning",
+        "backbone"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "VGG-16 is FCN's canonical backbone per FCN Table 1; FCN-VGG16 mean IU 56.0 vs FCN-AlexNet 39.8."
+        },
+        {
+          "type": "feeds_into",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "138M (VGG-16); 144M (VGG-19) (Table 2)",
+      "flops": "~15.5 GMAC @ 224×224 (VGG-16, torchvision)",
+      "sources": {
+        "primary": "simonyan2014-vgg",
+        "references": [
+          "krizhevsky2012-alexnet",
+          "szegedy2015-inception"
+        ],
+        "notes": "Paper §2.1 architecture: 224×224 RGB input, 3×3 conv stride 1 padding 1\nthroughout (1×1 in config C only), 2×2 max-pool stride 2 after each\nblock, three FC layers (4096, 4096, 1000-way softmax), ReLU on all\nhidden layers, LRN only in config A-LRN (no help, removed in others).\n§2.2 / Table 1: configs A (11), A-LRN (11), B (13), C (16, with 1×1\nconvs), D (16, all 3×3 — \"VGG-16\"), E (19 — \"VGG-19\"). Channel schedule\n64 → 128 → 256 → 512 → 512, doubles after each pool. Table 2 parameter\ncounts: A/A-LRN 133M, B 133M, C 134M, D 138M, E 144M. §2.3 receptive-field\nargument: stack of three 3×3 convs has 7×7 receptive field with 3(3²C²)\n= 27C² parameters vs 7²C² = 49C² for a single 7×7 conv (45% fewer);\nalso adds two non-linearities per stack. §3.1 training: SGD batch 256,\nmomentum 0.9, weight decay 5·10⁻⁴, dropout 0.5 in first two FC layers,\ninitial LR 10⁻² divided by 10 three times → 370K iterations / 74 epochs.\nInitialisation: A from N(0, 10⁻²); deeper nets seed first 4 conv +\nlast 3 FC layers from trained A, middle from N(0, 10⁻²). Augmentation:\nisotropic rescale to shorter side S then random 224×224 crops + flips\n+ RGB jitter; fixed-scale (S=256 or S=384) and multi-scale (S ∈ [256,\n512]) regimes. Test: dense evaluation (FC → 1×1 conv) at scale Q,\noptionally averaged over multi-scale {S−32, S, S+32}, optionally\ncombined with multi-crop. §4 / Table 3: error decreases monotonically\nA → B → C → D and saturates at E; D top-5 8.1% at fixed S=[256;512] Q=384.\n§4.2 / Table 4: best single-network val 24.8% top-1 / 7.5% top-5 (D or E,\nmulti-scale). §4.5 / Table 7: single VGG-16 7.0% top-5 vs single GoogLeNet\n7.9%; 7-net VGG ensemble 7.3% (2nd place classification, 1st place\nlocalisation); post-submission 2-net VGG ensemble 6.8%; GoogLeNet 7-net\n6.7%. §3.1 training time: 2–3 weeks per net on 4 NVIDIA Titan Black GPUs.\n§5 generalisation: VGG features transfer strongly to PASCAL VOC and other\nrecognition tasks.\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "336d36e8db990a905498c73933e35231876e28bc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause",
+          "weights_url": "https://download.pytorch.org/models/vgg16-397923af.pth",
+          "weights_license": "BSD-3-Clause"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/keras-team/keras",
+          "commit": "b7f0905d8ae5076ec501fe58f8b8c85fa7d22d43",
+          "framework": "tensorflow",
+          "license": "Apache-2.0",
+          "weights_url": "https://storage.googleapis.com/tensorflow/keras-applications/vgg16/vgg16_weights_tf_dim_ordering_tf_kernels.h5",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-12"
     }
   },
   {

@@ -401,6 +401,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/zhang-planar-calibration",
       "draft": false
     },
+    "alexnet": {
+      "slug": "alexnet",
+      "type": "model",
+      "title": "AlexNet",
+      "summary": "Eight-layer convolutional neural network for 1000-class image classification on ImageNet, trained end-to-end on two GPUs with ReLU activations, local response normalisation, overlapping max-pooling, and dropout; the first deep CNN to win ILSVRC by a large margin.",
+      "path": "/atlas/alexnet",
+      "draft": false
+    },
     "ccdn-checkerboard-detector": {
       "slug": "ccdn-checkerboard-detector",
       "type": "model",
@@ -431,6 +439,14 @@ export const contentGraph: ContentGraph = {
       "title": "FCN: Fully Convolutional Networks",
       "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
       "path": "/atlas/fcn-semantic-segmentation",
+      "draft": false
+    },
+    "googlenet": {
+      "slug": "googlenet",
+      "type": "model",
+      "title": "GoogLeNet",
+      "summary": "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet).",
+      "path": "/atlas/googlenet",
       "draft": false
     },
     "lightglue": {
@@ -487,6 +503,14 @@ export const contentGraph: ContentGraph = {
       "title": "U-Net",
       "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
       "path": "/atlas/unet-segmentation",
+      "draft": false
+    },
+    "vgg": {
+      "slug": "vgg",
+      "type": "model",
+      "title": "VGG",
+      "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
+      "path": "/atlas/vgg",
       "draft": false
     },
     "xfeat": {
@@ -1510,6 +1534,25 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "alexnet": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "vgg",
+          "confidence": "high",
+          "caution": "VGG extends AlexNet's CNN classifier paradigm from 8 to 16/19 weight layers via stacked 3×3 conv blocks; same task, deeper architecture, same training framework."
+        },
+        {
+          "type": "compared_with",
+          "target": "googlenet",
+          "confidence": "high",
+          "caution": "22 layers vs AlexNet's 8; 7M vs 60M parameters; 56.5% relative reduction in top-5 error vs AlexNet (16.4% → 6.67%) over two ILSVRC years.",
+          "mirrored": true
+        }
+      ]
+    },
     "ccdn-checkerboard-detector": {
       "prerequisites": [
         "image-gradient"
@@ -1607,6 +1650,30 @@ export const contentGraph: ContentGraph = {
           "target": "mask-rcnn",
           "confidence": "high",
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        }
+      ]
+    },
+    "googlenet": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "vgg",
+          "confidence": "high",
+          "caution": "Both ILSVRC-2014 entries — GoogLeNet won classification (6.67% top-5), VGG won localisation. Different design philosophies: Inception modules vs homogeneous 3×3 depth scaling."
+        },
+        {
+          "type": "compared_with",
+          "target": "alexnet",
+          "confidence": "high",
+          "caution": "22 layers vs AlexNet's 8; 7M vs 60M parameters; 56.5% relative reduction in top-5 error vs AlexNet (16.4% → 6.67%) over two ILSVRC years."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
         }
       ]
     },
@@ -1772,6 +1839,31 @@ export const contentGraph: ContentGraph = {
           "target": "deeplab-semantic-segmentation",
           "confidence": "high",
           "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation.",
+          "mirrored": true
+        }
+      ]
+    },
+    "vgg": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "VGG-16 is FCN's canonical backbone per FCN Table 1; FCN-VGG16 mean IU 56.0 vs FCN-AlexNet 39.8."
+        },
+        {
+          "type": "feeds_into",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
+        },
+        {
+          "type": "parallel_foundation_with",
+          "target": "googlenet",
+          "confidence": "high",
+          "caution": "Both ILSVRC-2014 entries — GoogLeNet won classification (6.67% top-5), VGG won localisation. Different design philosophies: Inception modules vs homogeneous 3×3 depth scaling.",
           "mirrored": true
         }
       ]
@@ -2502,6 +2594,14 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "alexnet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "ccdn-checkerboard-detector": {
       "usedBy": [],
       "affects": [],
@@ -2529,10 +2629,35 @@ export const contentGraph: ContentGraph = {
           "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
         }
       ],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "vgg",
+          "confidence": "high",
+          "caution": "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "fcn-semantic-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "googlenet",
+          "confidence": "medium",
+          "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
+        },
+        {
+          "slug": "vgg",
+          "confidence": "high",
+          "caution": "VGG-16 is FCN's canonical backbone per FCN Table 1; FCN-VGG16 mean IU 56.0 vs FCN-AlexNet 39.8."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "googlenet": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -2626,6 +2751,20 @@ export const contentGraph: ContentGraph = {
           "slug": "fcn-semantic-segmentation",
           "confidence": "high",
           "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "vgg": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "alexnet",
+          "confidence": "high",
+          "caution": "VGG extends AlexNet's CNN classifier paradigm from 8 to 16/19 weight layers via stacked 3×3 conv blocks; same task, deeper architecture, same training framework."
         }
       ],
       "fedBy": [],

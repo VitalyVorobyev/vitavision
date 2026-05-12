@@ -83,11 +83,11 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not â€
     Node: hog.
 #33. Felzenszwalb et al. Object Detection with Discriminatively Trained Part-Based Models. TPAMI, 2010.
     Node: deformable-part-model.
-34. Krizhevsky, Sutskever, Hinton. ImageNet Classification with Deep Convolutional Neural Networks. NeurIPS, 2012.
++34. Krizhevsky, Sutskever, Hinton. ImageNet Classification with Deep Convolutional Neural Networks. NeurIPS, 2012.
     Node: alexnet.
-35. Simonyan, Zisserman. Very Deep Convolutional Networks for Large-Scale Image Recognition. ICLR, 2015.
++35. Simonyan, Zisserman. Very Deep Convolutional Networks for Large-Scale Image Recognition. ICLR, 2015.
     Node: vgg.
-36. Szegedy et al. Going Deeper with Convolutions. CVPR, 2015.
++36. Szegedy et al. Going Deeper with Convolutions. CVPR, 2015.
     Node: inception.
 37. He, Zhang, Ren, Sun. Deep Residual Learning for Image Recognition. CVPR, 2016.
     Node: resnet.

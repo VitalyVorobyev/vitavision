@@ -999,6 +999,27 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "alexnet",
+    "path": "/atlas/alexnet",
+    "type": "model",
+    "title": "AlexNet",
+    "summary": "Eight-layer convolutional neural network for 1000-class image classification on ImageNet, trained end-to-end on two GPUs with ReLU activations, local response normalisation, overlapping max-pooling, and dropout; the first deep CNN to win ILSVRC by a large margin.",
+    "tags": [
+      "computer-vision",
+      "image-classification",
+      "cnn",
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "A. Krizhevsky",
+      "I. Sutskever",
+      "G. E. Hinton"
+    ],
+    "venue": "NeurIPS"
+  },
+  {
     "slug": "ccdn-checkerboard-detector",
     "path": "/atlas/ccdn-checkerboard-detector",
     "type": "model",
@@ -1085,6 +1106,34 @@ export const searchRecords: SearchRecord[] = [
       "T. Darrell"
     ],
     "venue": "CVPR"
+  },
+  {
+    "slug": "googlenet",
+    "path": "/atlas/googlenet",
+    "type": "model",
+    "title": "GoogLeNet",
+    "summary": "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet).",
+    "tags": [
+      "computer-vision",
+      "image-classification",
+      "cnn",
+      "deep-learning",
+      "inception"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "C. Szegedy",
+      "W. Liu",
+      "Y. Jia",
+      "P. Sermanet",
+      "S. Reed",
+      "D. Anguelov",
+      "D. Erhan",
+      "V. Vanhoucke",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR 2015"
   },
   {
     "slug": "lightglue",
@@ -1252,6 +1301,27 @@ export const searchRecords: SearchRecord[] = [
       "T. Brox"
     ],
     "venue": "MICCAI (Lecture Notes in Computer Science)"
+  },
+  {
+    "slug": "vgg",
+    "path": "/atlas/vgg",
+    "type": "model",
+    "title": "VGG",
+    "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
+    "tags": [
+      "computer-vision",
+      "image-classification",
+      "cnn",
+      "deep-learning",
+      "backbone"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "K. Simonyan",
+      "A. Zisserman"
+    ],
+    "venue": "ICLR 2015 / arXiv"
   },
   {
     "slug": "xfeat",

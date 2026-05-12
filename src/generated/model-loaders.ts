@@ -2,10 +2,12 @@
 export interface GeneratedHtmlModule { html: string; }
 
 export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
+  "alexnet": () => import("./content/models/alexnet.ts"),
   "ccdn-checkerboard-detector": () => import("./content/models/ccdn-checkerboard-detector.ts"),
   "ccs-camera-calibration": () => import("./content/models/ccs-camera-calibration.ts"),
   "deeplab-semantic-segmentation": () => import("./content/models/deeplab-semantic-segmentation.ts"),
   "fcn-semantic-segmentation": () => import("./content/models/fcn-semantic-segmentation.ts"),
+  "googlenet": () => import("./content/models/googlenet.ts"),
   "lightglue": () => import("./content/models/lightglue.ts"),
   "loftr": () => import("./content/models/loftr.ts"),
   "mask-rcnn": () => import("./content/models/mask-rcnn.ts"),
@@ -13,5 +15,6 @@ export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>
   "superglue": () => import("./content/models/superglue.ts"),
   "superpoint": () => import("./content/models/superpoint.ts"),
   "unet-segmentation": () => import("./content/models/unet-segmentation.ts"),
+  "vgg": () => import("./content/models/vgg.ts"),
   "xfeat": () => import("./content/models/xfeat.ts"),
 };

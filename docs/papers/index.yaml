@@ -941,6 +941,14 @@
   url: https://www.ri.cmu.edu/pub_files/pub3/lucas_bruce_d_1981_2/lucas_bruce_d_1981_2.pdf
   pdf: lucas1981-lucas-kanade.pdf
 
+- id: tomasi1991-detection-tracking
+  title: "Detection and Tracking of Point Features"
+  authors: ["C. Tomasi", "T. Kanade"]
+  year: 1991
+  venue: Carnegie Mellon University Technical Report CMU-CS-91-132
+  url: https://kilthub.cmu.edu/articles/journal_contribution/Detection_and_tracking_of_point_features/6603148
+  pdf: tomasi1991.pdf
+
 - id: horn1981-horn-schunck
   title: "Determining optical flow"
   authors: ["B. K. P. Horn", "B. G. Schunck"]

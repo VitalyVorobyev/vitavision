@@ -95,7 +95,7 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not â€
     Node: faster-rcnn.
 +39. Redmon et al. You Only Look Once: Unified, Real-Time Object Detection. CVPR, 2016.
     Node: yolo.
-40. Lin et al. Focal Loss for Dense Object Detection. ICCV, 2017.
++40. Lin et al. Focal Loss for Dense Object Detection. ICCV, 2017.
     Node: retinanet, focal-loss.
 
 â¸»

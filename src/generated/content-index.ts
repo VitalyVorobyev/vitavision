@@ -105,6 +105,38 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "black-anandan-robust-flow",
+    "frontmatter": {
+      "title": "Black-Anandan Robust Optical Flow",
+      "summary": "Optical flow that replaces the quadratic data and smoothness penalties of variational flow with redescending M-estimators, solved by SOR within a graduated non-convexity continuation; recovers piecewise-smooth flow without explicit line processes and a robust affine variant for multiple parametric motions.",
+      "tags": [
+        "motion",
+        "optical-flow",
+        "robust-statistics",
+        "variational"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 11,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient",
+        "scale-space"
+      ],
+      "failureModes": [],
+      "domain": "features",
+      "sources": {
+        "primary": "black1996-robust",
+        "references": [
+          "horn1981-horn-schunck",
+          "lucas1981-lucas-kanade"
+        ],
+        "notes": "Robust data + regularization energy (§4, eq. 12–14):\n$E(u,v) = \\sum_s \\rho_D(I_x u_s + I_y v_s + I_t, \\sigma_D)\n        + \\lambda \\sum_{s,n \\in N(s)} \\rho_S(u_s - u_n, \\sigma_S) + \\rho_S(v_s - v_n, \\sigma_S)$.\nLorentzian: $\\rho(x,\\sigma) = \\log(1 + \\tfrac{1}{2}(x/\\sigma)^2)$,\n$\\psi(x,\\sigma) = 2x/(2\\sigma^2 + x^2)$ (Fig. 8).\nGeman-McClure: $\\rho(x,\\sigma) = x^2/(\\sigma + x^2)$,\n$\\psi(x,\\sigma) = 2x\\sigma/(\\sigma+x^2)^2$.\nSOR update (§4.1.1, eq. 15-16): $u_s^{n+1} = u_s^n - (\\omega/T(u_s)) \\partial E/\\partial u_s$\nwith $\\omega \\in (0,2)$; convex initial scale $\\sigma_{\\text{init}} = r_{\\max}/\\sqrt{2}$\nfor Lorentzian. Outlier threshold: $\\tau = \\sqrt{2}\\,\\sigma$ (Lorentzian),\n$\\sigma/\\sqrt{3}$ (Geman-McClure). Coarse-to-fine pyramid with backward-warp\nimage warping (§4.2, Appendix B eq. 29-34) handles displacements > 1 px.\n"
+      },
+      "date": "2026-05-13"
+    }
+  },
+  {
     "slug": "brief",
     "frontmatter": {
       "title": "BRIEF: Binary Robust Independent Elementary Features",
@@ -944,6 +976,12 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "lucas-kanade",
           "confidence": "high",
           "caution": "Dense variational vs sparse local LSQ — co-founded optical flow in 1981; pick by problem (dense flow field vs sparse displacement of features)."
+        },
+        {
+          "type": "extended_by",
+          "target": "black-anandan-robust-flow",
+          "confidence": "high",
+          "caution": "Robust M-estimator extension of the quadratic data and smoothness terms; non-convex but more tolerant of outliers and motion discontinuities."
         }
       ],
       "domain": "features",
@@ -1140,6 +1178,12 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "shi-tomasi-corner-detector",
           "confidence": "high",
           "caution": "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
+        },
+        {
+          "type": "extended_by",
+          "target": "black-anandan-robust-flow",
+          "confidence": "high",
+          "caution": "Robust M-estimator version of the parametric variant; same machinery as Black-Anandan's piecewise-smooth flow."
         }
       ],
       "domain": "features",

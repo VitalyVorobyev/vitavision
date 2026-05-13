@@ -108,7 +108,7 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not â€
     Node: horn-schunck.
 +43. Tomasi, Kanade. Detection and Tracking of Point Features. CMU Technical Report, 1991.
     Node: kanade-lucas-tomasi-tracker.
-44. Black, Anandan. The Robust Estimation of Multiple Motions: Parametric and Piecewise-Smooth Flow Fields. CVIU, 1996.
++44. Black, Anandan. The Robust Estimation of Multiple Motions: Parametric and Piecewise-Smooth Flow Fields. CVIU, 1996.
     Node: robust-optical-flow.
 45. Brox et al. High Accuracy Optical Flow Estimation Based on a Theory for Warping. ECCV, 2004.
     Node: brox-optical-flow.

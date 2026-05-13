@@ -3,6 +3,7 @@ export interface GeneratedHtmlModule { html: string; }
 
 export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
   "apap-image-stitching": () => import("./content/algorithms/apap-image-stitching.ts"),
+  "black-anandan-robust-flow": () => import("./content/algorithms/black-anandan-robust-flow.ts"),
   "brief": () => import("./content/algorithms/brief.ts"),
   "canny-edge-detector": () => import("./content/algorithms/canny-edge-detector.ts"),
   "chess-corners": () => import("./content/algorithms/chess-corners.ts"),

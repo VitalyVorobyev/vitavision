@@ -39,6 +39,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE CVPR"
   },
   {
+    "slug": "black-anandan-robust-flow",
+    "path": "/atlas/black-anandan-robust-flow",
+    "type": "algorithm",
+    "title": "Black-Anandan Robust Optical Flow",
+    "summary": "Optical flow that replaces the quadratic data and smoothness penalties of variational flow with redescending M-estimators, solved by SOR within a graduated non-convexity continuation; recovers piecewise-smooth flow without explicit line processes and a robust affine variant for multiple parametric motions.",
+    "tags": [
+      "motion",
+      "optical-flow",
+      "robust-statistics",
+      "variational"
+    ],
+    "domain": "features",
+    "headings": [
+      "Piecewise-smooth (dense) variant",
+      "Parametric (affine) variant"
+    ],
+    "authors": [
+      "M. J. Black",
+      "P. Anandan"
+    ],
+    "venue": "Computer Vision and Image Understanding"
+  },
+  {
     "slug": "brief",
     "path": "/atlas/brief",
     "type": "algorithm",

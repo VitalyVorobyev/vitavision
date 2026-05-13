@@ -23,6 +23,10 @@ relations:
     target: shi-tomasi-corner-detector
     confidence: high
     caution: "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
+  - type: extended_by
+    target: black-anandan-robust-flow
+    confidence: high
+    caution: "Robust M-estimator version of the parametric variant; same machinery as Black-Anandan's piecewise-smooth flow."
 ---
 
 # Goal
@@ -153,6 +157,7 @@ The accumulators `a11, a12, a22` form the $2 \times 2$ structure tensor; `b1, b2
 - Brightness consistency between $F$ and $G$ is assumed; an explicit linear photometric correction can be absorbed into the same quadratic form when exposure or gain differs between the images.
 - The translation, affine, and photometric variants share one derivation: linearise the residual, differentiate the squared error, solve the resulting normal equation, iterate.
 - The method is the basis of sparse optical-flow trackers and the gradient-based stage of many direct visual-odometry frontends; the dense variant is Horn-Schunck rather than Lucas-Kanade.
+- Replacing the squared photometric residual with a redescending M-estimator (Lorentzian or Geman-McClure) and solving by IRLS within a graduated non-convexity schedule yields a robust parametric-motion variant that handles multiple motions and outliers within $R$; see [black-anandan-robust-flow](../algorithms/black-anandan-robust-flow). The same machinery extends to the piecewise-smooth dense flow case.
 
 # References
 

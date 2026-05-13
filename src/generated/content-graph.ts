@@ -65,6 +65,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/apap-image-stitching",
       "draft": false
     },
+    "black-anandan-robust-flow": {
+      "slug": "black-anandan-robust-flow",
+      "type": "algorithm",
+      "title": "Black-Anandan Robust Optical Flow",
+      "summary": "Optical flow that replaces the quadratic data and smoothness penalties of variational flow with redescending M-estimators, solved by SOR within a graduated non-convexity continuation; recovers piecewise-smooth flow without explicit line processes and a robust affine variant for multiple parametric motions.",
+      "path": "/atlas/black-anandan-robust-flow",
+      "draft": false
+    },
     "brief": {
       "slug": "brief",
       "type": "algorithm",
@@ -668,6 +676,14 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": []
     },
+    "black-anandan-robust-flow": {
+      "prerequisites": [
+        "image-gradient",
+        "scale-space"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
     "brief": {
       "prerequisites": [
         "image-gradient"
@@ -1059,6 +1075,12 @@ export const contentGraph: ContentGraph = {
           "target": "lucas-kanade",
           "confidence": "high",
           "caution": "Dense variational vs sparse local LSQ — co-founded optical flow in 1981; pick by problem (dense flow field vs sparse displacement of features)."
+        },
+        {
+          "type": "extended_by",
+          "target": "black-anandan-robust-flow",
+          "confidence": "high",
+          "caution": "Robust M-estimator extension of the quadratic data and smoothness terms; non-convex but more tolerant of outliers and motion discontinuities."
         }
       ]
     },
@@ -1134,6 +1156,12 @@ export const contentGraph: ContentGraph = {
           "target": "shi-tomasi-corner-detector",
           "confidence": "high",
           "caution": "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
+        },
+        {
+          "type": "extended_by",
+          "target": "black-anandan-robust-flow",
+          "confidence": "high",
+          "caution": "Robust M-estimator version of the parametric variant; same machinery as Black-Anandan's piecewise-smooth flow."
         },
         {
           "type": "parallel_foundation_with",
@@ -2200,6 +2228,25 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "black-anandan-robust-flow": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "horn-schunck",
+          "confidence": "high",
+          "caution": "Robust M-estimator extension of the quadratic data and smoothness terms; non-convex but more tolerant of outliers and motion discontinuities."
+        },
+        {
+          "slug": "lucas-kanade",
+          "confidence": "high",
+          "caution": "Robust M-estimator version of the parametric variant; same machinery as Black-Anandan's piecewise-smooth flow."
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "brief": {
       "usedBy": [],
       "affects": [],
@@ -3120,6 +3167,7 @@ export const contentGraph: ContentGraph = {
     },
     "image-gradient": {
       "usedBy": [
+        "black-anandan-robust-flow",
         "brief",
         "canny-edge-detector",
         "ccdn-checkerboard-detector",
@@ -3184,6 +3232,7 @@ export const contentGraph: ContentGraph = {
     },
     "scale-space": {
       "usedBy": [
+        "black-anandan-robust-flow",
         "orb",
         "pyramidal-blur-aware-xcorner",
         "sift",

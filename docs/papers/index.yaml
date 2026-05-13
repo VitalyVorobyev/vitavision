@@ -958,3 +958,15 @@
   doi: "10.1016/0004-3702(81)90024-2"
   pdf: horn1981-horn-schunck.pdf
 
+- id: black1996-robust
+  title: "The Robust Estimation of Multiple Motions: Parametric and Piecewise-Smooth Flow Fields"
+  authors: ["M. J. Black", "P. Anandan"]
+  year: 1996
+  venue: Computer Vision and Image Understanding
+  url: https://doi.org/10.1006/cviu.1996.0006
+  doi: "10.1006/cviu.1996.0006"
+  pdf: black1996-robust.pdf
+  cites:
+    - lucas1981-lucas-kanade
+    - horn1981-horn-schunck
+

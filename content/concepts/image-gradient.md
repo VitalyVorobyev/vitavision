@@ -117,6 +117,7 @@ The image gradient is the lowest-level quantity on which feature detection and i
 - **loy-fast-radial-symmetry** — votes along the gradient orientation $\hat{\mathbf{g}}(p) = \mathbf{g}(p)/\|\mathbf{g}(p)\|$ at each pixel; positively- and negatively-affected pixels at distance $n$ accumulate magnitude and orientation contributions, yielding a symmetry-contribution map per radius.
 - **sift** — gradient magnitude $m(x,y) = \sqrt{(L_{x+1}-L_{x-1})^2 + (L_{y+1}-L_{y-1})^2}$ and orientation $\theta(x,y) = \arctan\bigl((L_{y+1}-L_{y-1})/(L_{x+1}-L_{x-1})\bigr)$ are the fundamental inputs to both orientation assignment (36-bin histogram, $\sigma_w = 1.5 \times \sigma_\text{keypoint}$) and descriptor construction (4×4 array of 8-bin histograms; 128-D total). One of the most cited downstream consumers of image-gradient computation.
 - **lucas-kanade** — enters the registration update in two roles: as the per-pixel rate of intensity change with respect to displacement (linearising the photometric residual) and as the outer-product sum that forms the $n \times n$ coefficient matrix of the per-iteration normal equation.
+- **horn-schunck** — extends the gradient to the temporal axis: $(E_x, E_y, E_t)$ is estimated as the average of four first differences taken along parallel edges of a $2 \times 2 \times 2$ spatiotemporal cube, ensuring all three partial derivatives refer to the same cube-centre in $(x, y, t)$. The brightness-constancy equation $E_x u + E_y v + E_t = 0$ links the spatiotemporal gradient to the per-pixel flow velocity.
 
 # References
 

@@ -104,7 +104,7 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not â€
 
 +41. Lucas, Kanade. An Iterative Image Registration Technique with an Application to Stereo Vision. IJCAI, 1981.
     Node: lucas-kanade.
-42. Horn, Schunck. Determining Optical Flow. Artificial Intelligence, 1981.
++42. Horn, Schunck. Determining Optical Flow. Artificial Intelligence, 1981.
     Node: horn-schunck.
 43. Tomasi, Kanade. Detection and Tracking of Point Features. CMU Technical Report, 1991.
     Node: kanade-lucas-tomasi-tracker.

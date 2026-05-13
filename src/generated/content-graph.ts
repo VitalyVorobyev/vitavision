@@ -217,6 +217,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/hog-descriptor",
       "draft": false
     },
+    "horn-schunck": {
+      "slug": "horn-schunck",
+      "type": "algorithm",
+      "title": "Horn-Schunck Optical Flow",
+      "summary": "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation.",
+      "path": "/atlas/horn-schunck",
+      "draft": false
+    },
     "kumar-generalized-rac": {
       "slug": "kumar-generalized-rac",
       "type": "algorithm",
@@ -1040,6 +1048,20 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "horn-schunck": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "lucas-kanade",
+          "confidence": "high",
+          "caution": "Dense variational vs sparse local LSQ — co-founded optical flow in 1981; pick by problem (dense flow field vs sparse displacement of features)."
+        }
+      ]
+    },
     "kumar-generalized-rac": {
       "prerequisites": [
         "camera-distortion-models"
@@ -1112,6 +1134,13 @@ export const contentGraph: ContentGraph = {
           "target": "shi-tomasi-corner-detector",
           "confidence": "high",
           "caution": "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
+        },
+        {
+          "type": "parallel_foundation_with",
+          "target": "horn-schunck",
+          "confidence": "high",
+          "caution": "Dense variational vs sparse local LSQ — co-founded optical flow in 1981; pick by problem (dense flow field vs sparse displacement of features).",
+          "mirrored": true
         }
       ]
     },
@@ -2409,6 +2438,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "horn-schunck": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "kumar-generalized-rac": {
       "usedBy": [],
       "affects": [],
@@ -3096,6 +3133,7 @@ export const contentGraph: ContentGraph = {
         "harris-corner-detector",
         "hessian-saddle-response",
         "hog-descriptor",
+        "horn-schunck",
         "laureano-topological-chessboard",
         "loy-fast-radial-symmetry",
         "lucas-kanade",

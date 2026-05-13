@@ -483,6 +483,27 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR"
   },
   {
+    "slug": "horn-schunck",
+    "path": "/atlas/horn-schunck",
+    "type": "algorithm",
+    "title": "Horn-Schunck Optical Flow",
+    "summary": "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation.",
+    "tags": [
+      "motion",
+      "optical-flow",
+      "variational"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "B. K. P. Horn",
+      "B. G. Schunck"
+    ],
+    "venue": "Artificial Intelligence"
+  },
+  {
     "slug": "kumar-generalized-rac",
     "path": "/atlas/kumar-generalized-rac",
     "type": "algorithm",

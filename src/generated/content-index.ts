@@ -921,6 +921,43 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "horn-schunck",
+    "frontmatter": {
+      "title": "Horn-Schunck Optical Flow",
+      "summary": "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation.",
+      "tags": [
+        "motion",
+        "optical-flow",
+        "variational"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 4,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "lucas-kanade",
+          "confidence": "high",
+          "caution": "Dense variational vs sparse local LSQ — co-founded optical flow in 1981; pick by problem (dense flow field vs sparse displacement of features)."
+        }
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "horn1981-horn-schunck",
+        "references": [
+          "lucas1981-lucas-kanade"
+        ],
+        "notes": "Brightness-constancy equation (§4): $E_x u + E_y v + E_t = 0$.\nVariational energy (§9): $\\mathcal{E}^2 = \\iint (\\alpha^2 \\mathcal{E}_b^2 + \\mathcal{E}_s^2)\\,dx\\,dy$\nwith $\\mathcal{E}_b = E_x u + E_y v + E_t$ and $\\mathcal{E}_s = \\|\\nabla u\\|^2 + \\|\\nabla v\\|^2$.\nIterative update (§12) substitutes the discrete Laplacian\n$\\nabla^2 u \\approx K(\\bar{u} - u)$ with $K = 3$ for the weighted 3x3 stencil\n(§8). Gradients $E_x, E_y, E_t$ are the average of four first-differences\nover a 2x2x2 spatiotemporal cube (§7). Boundary: zero normal derivative,\nedge pixels copy from interior (§12). Convergence: 32 iterations to ~10%\nerror at 32x32, 1% noise (§17).\n"
+      },
+      "date": "2026-05-13"
+    }
+  },
+  {
     "slug": "kumar-generalized-rac",
     "frontmatter": {
       "title": "Kumar-Ahuja Generalized Radial Alignment Constraint",

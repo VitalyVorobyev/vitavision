@@ -22,6 +22,7 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "graph-cut-segmentation": () => import("./content/algorithms/graph-cut-segmentation.ts"),
   "harris-corner-detector": () => import("./content/algorithms/harris-corner-detector.ts"),
   "hog-descriptor": () => import("./content/algorithms/hog-descriptor.ts"),
+  "horn-schunck": () => import("./content/algorithms/horn-schunck.ts"),
   "kumar-generalized-rac": () => import("./content/algorithms/kumar-generalized-rac.ts"),
   "lin-sva-stitching": () => import("./content/algorithms/lin-sva-stitching.ts"),
   "duda-radon-corners": () => import("./content/algorithms/duda-radon-corners.ts"),

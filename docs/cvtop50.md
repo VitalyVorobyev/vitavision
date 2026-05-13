@@ -91,7 +91,7 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not â€
     Node: inception.
 +37. He, Zhang, Ren, Sun. Deep Residual Learning for Image Recognition. CVPR, 2016.
     Node: resnet.
-38. Ren, He, Girshick, Sun. Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks. NeurIPS, 2015.
++38. Ren, He, Girshick, Sun. Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks. NeurIPS, 2015.
     Node: faster-rcnn.
 39. Redmon et al. You Only Look Once: Unified, Real-Time Object Detection. CVPR, 2016.
     Node: yolo.

@@ -433,6 +433,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/deeplab-semantic-segmentation",
       "draft": false
     },
+    "faster-rcnn": {
+      "slug": "faster-rcnn",
+      "type": "model",
+      "title": "Faster R-CNN",
+      "summary": "Two-stage CNN object detector that replaces external Selective Search / EdgeBoxes proposals with a learned Region Proposal Network sharing conv features with the Fast R-CNN head — yielding near-real-time multi-class detection on GPU (5 fps with VGG-16) and ImageNet-pretrained backbones swapped freely from ZF through ResNet-101.",
+      "path": "/atlas/faster-rcnn",
+      "draft": false
+    },
     "fcn-semantic-segmentation": {
       "slug": "fcn-semantic-segmentation",
       "type": "model",
@@ -1637,6 +1645,28 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "faster-rcnn": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Viola-Jones targets real-time face detection on CPUs; Faster R-CNN is general multi-class detection on GPUs — replacement is paradigm-level, not drop-in."
+        },
+        {
+          "type": "extended_by",
+          "target": "mask-rcnn",
+          "confidence": "high"
+        }
+      ]
+    },
     "fcn-semantic-segmentation": {
       "prerequisites": [],
       "failureModes": [],
@@ -2168,6 +2198,10 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": [
         {
+          "slug": "faster-rcnn",
+          "confidence": "high"
+        },
+        {
           "slug": "mask-rcnn",
           "confidence": "medium",
           "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
@@ -2570,7 +2604,13 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [],
       "fedBy": [],
-      "hasLearnedAlternative": []
+      "hasLearnedAlternative": [
+        {
+          "slug": "faster-rcnn",
+          "confidence": "medium",
+          "caution": "Viola-Jones targets real-time face detection on CPUs; Faster R-CNN is general multi-class detection on GPUs — replacement is paradigm-level, not drop-in."
+        }
+      ]
     },
     "yang-sub-pixel-corner-fit": {
       "usedBy": [],
@@ -2700,6 +2740,14 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "faster-rcnn": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "fcn-semantic-segmentation": {
       "usedBy": [],
       "affects": [],
@@ -2776,6 +2824,10 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [
+        {
+          "slug": "faster-rcnn",
+          "confidence": "high"
+        },
         {
           "slug": "fcn-semantic-segmentation",
           "confidence": "high",

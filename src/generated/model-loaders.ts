@@ -6,6 +6,7 @@ export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>
   "ccdn-checkerboard-detector": () => import("./content/models/ccdn-checkerboard-detector.ts"),
   "ccs-camera-calibration": () => import("./content/models/ccs-camera-calibration.ts"),
   "deeplab-semantic-segmentation": () => import("./content/models/deeplab-semantic-segmentation.ts"),
+  "faster-rcnn": () => import("./content/models/faster-rcnn.ts"),
   "fcn-semantic-segmentation": () => import("./content/models/fcn-semantic-segmentation.ts"),
   "googlenet": () => import("./content/models/googlenet.ts"),
   "lightglue": () => import("./content/models/lightglue.ts"),

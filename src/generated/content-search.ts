@@ -1086,6 +1086,30 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "faster-rcnn",
+    "path": "/atlas/faster-rcnn",
+    "type": "model",
+    "title": "Faster R-CNN",
+    "summary": "Two-stage CNN object detector that replaces external Selective Search / EdgeBoxes proposals with a learned Region Proposal Network sharing conv features with the Fast R-CNN head — yielding near-real-time multi-class detection on GPU (5 fps with VGG-16) and ImageNet-pretrained backbones swapped freely from ZF through ResNet-101.",
+    "tags": [
+      "computer-vision",
+      "object-detection",
+      "two-stage-detector",
+      "region-proposal-network",
+      "cnn",
+      "anchor-based"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "S. Ren",
+      "K. He",
+      "R. Girshick",
+      "J. Sun"
+    ],
+    "venue": "NeurIPS 2015"
+  },
+  {
     "slug": "fcn-semantic-segmentation",
     "path": "/atlas/fcn-semantic-segmentation",
     "type": "model",

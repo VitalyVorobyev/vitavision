@@ -155,7 +155,7 @@ fn dt_1d(resp: &[f32], c: f32, e: f32, out: &mut [f32]) {
 - A mixture of $m = 2$ components handles aspect-ratio and viewpoint variation; categories with three or more distinct aspects are poorly served — bird AP is 0.006 in PASCAL VOC 2007 Table 2.
 - The deformable assumption is a star topology: each part connects only to the root, not to other parts. Within-part articulation and joint-chain kinematics (e.g. extreme limb foreshortening) violate the quadratic deformation model.
 - Hard-negative mining requires multiple passes over the training set; convergence to $\beta^*(D)$ is guaranteed only when the cache contains all hard examples, but memory limits in practice impose a fixed iteration count rather than full convergence.
-- Dominant on PASCAL VOC 2007/2008 — first or second place in 17 of 20 categories (Table 3) — until the R-CNN family (Girshick et al., 2014) replaced HOG + latent SVM with CNN features.
+- Dominant on PASCAL VOC 2007/2008 — first or second place in 17 of 20 categories (Table 3) — until the R-CNN family (Girshick et al., 2014) replaced HOG + latent SVM with CNN features. The end-to-end learned replacement in general object detection is [Faster R-CNN](../models/faster-rcnn), which folds proposal generation into a shared-conv RPN head and supersedes the sliding-window + deformable-template pipeline on PASCAL VOC 2007 (DPM ≈33% mAP vs Faster R-CNN VGG-16 73.2%, ResNet-101 76.4%).
 
 # References
 

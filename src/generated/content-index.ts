@@ -2227,6 +2227,83 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "faster-rcnn",
+    "frontmatter": {
+      "title": "Faster R-CNN",
+      "summary": "Two-stage CNN object detector that replaces external Selective Search / EdgeBoxes proposals with a learned Region Proposal Network sharing conv features with the Fast R-CNN head — yielding near-real-time multi-class detection on GPU (5 fps with VGG-16) and ImageNet-pretrained backbones swapped freely from ZF through ResNet-101.",
+      "tags": [
+        "computer-vision",
+        "object-detection",
+        "two-stage-detector",
+        "region-proposal-network",
+        "cnn",
+        "anchor-based"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Viola-Jones targets real-time face detection on CPUs; Faster R-CNN is general multi-class detection on GPUs — replacement is paradigm-level, not drop-in."
+        },
+        {
+          "type": "extended_by",
+          "target": "mask-rcnn",
+          "confidence": "high"
+        }
+      ],
+      "domain": "detection",
+      "arch_family": "cnn",
+      "params": "≈138M (VGG-16 backbone) or ≈62M (ZF backbone); RPN head adds ≈2.4M atop VGG-16",
+      "sources": {
+        "primary": "ren2015-faster",
+        "references": [
+          "long2015-fcn",
+          "krizhevsky2012-alexnet",
+          "he2016-resnet",
+          "he2017-maskrcnn"
+        ],
+        "notes": "Two-stage detector: RPN (3×3 sliding conv → 1×1 cls/reg branches, k=9 anchors:\n3 scales {128², 256², 512²} px × 3 ratios {1:1, 1:2, 2:1}) shares conv features\nwith a Fast R-CNN head. Multi-task loss (Eq. 1): L = (1/N_cls) Σ L_cls + λ (1/N_reg) Σ p* L_reg,\nwith λ=10, N_cls=256 mini-batch, N_reg≈2400 anchor locations (§3.1.2).\nAnchor parameterisation (Eq. 2): log-space for w,h, linear for centre offsets.\nPositive IoU ≥0.7, negative IoU <0.3 (§3.1.2). 4-step alternating training\n(§3.2); approximate joint training 25–50% faster.\nHeadline results: VGG-16 + 07+12 trainval → 73.2% mAP PASCAL VOC 2007 test\nat 5 fps (198 ms/image, K40, Tables III, V); VGG-16 → 42.1% mAP@0.5 /\n21.5% mAP@[.5,.95] COCO test-dev (Table XI); ResNet-101 → 48.4%/27.2%\nCOCO val, 1st place ILSVRC & COCO 2015 detection (§4).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/ShaoqingRen/faster_rcnn",
+          "commit": "49ad0990512a5d6e34f56e3c6596eb5fbf22f651",
+          "framework": "caffe",
+          "license": "MIT"
+        },
+        {
+          "role": "port",
+          "repo": "https://github.com/rbgirshick/py-faster-rcnn",
+          "commit": "781a917b378dbfdedb45b6a56189a31982da1b43",
+          "framework": "caffe",
+          "license": "MIT"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/facebookresearch/detectron2",
+          "commit": "d1e04565d3bec8719335b88be9e9b961bf3ec464",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-13"
+    }
+  },
+  {
     "slug": "fcn-semantic-segmentation",
     "frontmatter": {
       "title": "FCN: Fully Convolutional Networks",
@@ -2530,6 +2607,7 @@ export const modelPages: ModelIndexEntry[] = [
       "sources": {
         "primary": "he2017-maskrcnn",
         "references": [
+          "ren2015-faster",
           "long2015-fcn",
           "he2016-resnet"
         ],

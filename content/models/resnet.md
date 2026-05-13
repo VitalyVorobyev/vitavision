@@ -183,7 +183,7 @@ The original Caffe release accompanies the paper; the PyTorch torchvision port (
 
 - ILSVRC-2015 classification winner: 6-model ensemble **3.57% top-5** on the test set (Table 5) — versus GoogLeNet (ILSVRC-2014) ensemble **6.66%** top-5 (Table 5), a 46% relative reduction with a single architectural change (residual shortcuts).
 - Depth scaling yields monotone improvement up to 152 layers: ResNet-152 single model 4.49% top-5 val beats BN-Inception 5.81%, PReLU-net 5.71%, and GoogLeNet 7.89% all single-model (Table 4).
-- Transfer to detection is directly measurable: replacing VGG-16 with ResNet-101 in Faster R-CNN raises PASCAL VOC 2007 mAP from 73.2% to 76.4% and COCO mAP@[.5,.95] from 21.2% to 27.2% (Tables 7, 8).
+- Transfer to detection is directly measurable: replacing VGG-16 with ResNet-101 in [Faster R-CNN](faster-rcnn) raises PASCAL VOC 2007 mAP from 73.2% to 76.4% and COCO mAP@[.5,.95] from 21.2% to 27.2% (Tables 7, 8).
 - Pretrained torchvision weights are BSD-3-Clause licensed and cover five depth variants with ImageNet-pretrained checkpoints; the architecture supports `replace_stride_with_dilation` for dilated-convolution dense-prediction variants without retraining.
 
 **Limitations.**

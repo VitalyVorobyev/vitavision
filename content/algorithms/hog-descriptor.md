@@ -137,6 +137,7 @@ fn l2_hys(v: &mut [f32; BLOCK_DIM]) {
 - Hard-example mining — retraining the linear SVM on its own false positives from the negative set — adds approximately 5% detection rate at $10^{-4}$ FPPW.
 - Unsigned orientation ($[0, \pi)$, 9 bins) suits pedestrian detection because clothing contrast polarity is variable; signed orientation ($[0, 2\pi)$) is preferable for object classes with consistent contrast polarity.
 - Deformable Part Models (Felzenszwalb et al., 2010) build a deformable mixture of HOG filters on top of this descriptor.
+- The HOG + linear-SVM and HOG + DPM sliding-window pipelines were superseded for general object detection by [Faster R-CNN](../models/faster-rcnn), which replaces handcrafted gradient histograms with shared convolutional features and a learned Region Proposal Network.
 
 # References
 

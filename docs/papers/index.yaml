@@ -884,3 +884,16 @@
   - simonyan2014-vgg
   - szegedy2015-inception
   - long2015-fcn
+
+- id: ren2015-faster
+  title: "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks"
+  authors: ["S. Ren", "K. He", "R. Girshick", "J. Sun"]
+  year: 2015
+  venue: NeurIPS 2015
+  url: https://arxiv.org/pdf/1506.01497
+  arxiv: "1506.01497"
+  doi: "10.48550/arxiv.1506.01497"
+  pdf: ren2015-faster.pdf
+  cites:
+  - long2015-fcn
+  - krizhevsky2012-alexnet

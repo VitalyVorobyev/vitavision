@@ -869,3 +869,18 @@
   pdf: szegedy2015-inception.pdf
   cites:
   - krizhevsky2012-alexnet
+
+- id: he2016-resnet
+  title: "Deep Residual Learning for Image Recognition"
+  authors: ["K. He", "X. Zhang", "S. Ren", "J. Sun"]
+  year: 2016
+  venue: CVPR 2016
+  url: https://arxiv.org/pdf/1512.03385
+  arxiv: "1512.03385"
+  doi: "10.1109/CVPR.2016.90"
+  pdf: he2016-resnet.pdf
+  cites:
+  - krizhevsky2012-alexnet
+  - simonyan2014-vgg
+  - szegedy2015-inception
+  - long2015-fcn

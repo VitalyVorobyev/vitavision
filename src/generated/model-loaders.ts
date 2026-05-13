@@ -12,6 +12,7 @@ export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>
   "loftr": () => import("./content/models/loftr.ts"),
   "mask-rcnn": () => import("./content/models/mask-rcnn.ts"),
   "mate-checkerboard-detector": () => import("./content/models/mate-checkerboard-detector.ts"),
+  "resnet": () => import("./content/models/resnet.ts"),
   "superglue": () => import("./content/models/superglue.ts"),
   "superpoint": () => import("./content/models/superpoint.ts"),
   "unet-segmentation": () => import("./content/models/unet-segmentation.ts"),

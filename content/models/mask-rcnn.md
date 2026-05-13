@@ -19,6 +19,7 @@ sources:
   primary: he2017-maskrcnn
   references:
     - long2015-fcn
+    - he2016-resnet
   notes: |
     Multi-task loss per RoI: L = L_cls + L_box + L_mask (§3 Mask R-CNN).
     Mask branch outputs Km^2-dim tensor — K binary masks of resolution

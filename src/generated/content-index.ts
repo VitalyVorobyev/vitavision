@@ -2202,7 +2202,8 @@ export const modelPages: ModelIndexEntry[] = [
         "primary": "chen2018-deeplab",
         "references": [
           "long2015-fcn",
-          "ronneberger2015-unet"
+          "ronneberger2015-unet",
+          "he2016-resnet"
         ],
         "notes": "1-D atrous convolution: y[i] = Σ_k x[i + r·k] w[k] (Eq. 1, §3.1). Effective\nreceptive size k_e = k + (k-1)(r-1). Output stride 8 via stride-1 last two\npools + atrous r=2 and r=4, followed by 8× bilinear upsampling (§3.1).\nASPP-L head: four parallel 3×3 atrous convs at rates {6,12,18,24} summed\n(§4.1.2). ASPP-S uses {2,4,8,12}. Dense CRF pairwise potential (Eqs. 2-3,\n§3.3): bilateral appearance kernel (σ_α, σ_β) + spatial smoothness kernel\n(σ_γ); 10 mean-field iterations; fixed w_2=3, σ_γ=3; cross-validation on\n100 VOC val images. Training v2: SGD momentum 0.9, weight decay 5e-4,\n\"poly\" LR (init 0.001 / 0.01 classifier), batch 10, 20K iterations\n(§4.1.2); multi-scale fusion {0.5, 0.75, 1}. Headline: 79.7% VOC test mIoU\n(Table V), 77.69% val (Table IV), 45.7% PASCAL-Context (Table VI), 63.1%\nPASCAL-Person-Part (Table VII), 63.1% Cityscapes test (Table VIII). 8 FPS\nTitan X / 0.5 s CRF per image (§1). Trainaug 10,582 images (§4.1).\n"
       },
@@ -2272,6 +2273,9 @@ export const modelPages: ModelIndexEntry[] = [
       "params": "134M (FCN-VGG16, Table 1)",
       "sources": {
         "primary": "long2015-fcn",
+        "references": [
+          "he2016-resnet"
+        ],
         "notes": "§3.1 fully convolutional reinterpretation: fc6/fc7 of VGG-16 become\n1×1 convs of widths 4096/4096; the 1000-way classifier becomes a\n21-channel 1×1 conv (PASCAL VOC). Total stride 32 (Table 1, five\nstride-2 max-pools). §4.1 backbone comparison — VGG-16 best:\nFCN-VGG16 mean IU 56.0 / 59.4 (with extra data) vs FCN-AlexNet 39.8\nand FCN-GoogLeNet 42.5 on PASCAL VOC 2011 val (Table 1). §4.2 skip\narchitecture (Figure 3): pool3 + pool4 + conv7 score maps fused via\nelement-wise sum (not concatenation; max fusion impedes learning,\nfootnote 6); FCN-32s → FCN-16s (+3.0 mean IU) → FCN-8s (+0.3 mean\nIU). §4.3 staged learning: ~3 days on a single Tesla K40c for\nFCN-32s, then ~1 day each for FCN-16s and FCN-8s; SGD momentum 0.9,\nweight decay 5×10^-4 (or 2×10^-4), lr 10^-4 for FCN-VGG16,\nminibatch 20 images, no class weighting. Bilinear-init deconvolution\nlayers; pool3/pool4 1×1 prediction layers zero-initialised; learning\nrate decreased 100× when adding each skip. Headline numbers — Table\n3: FCN-8s 62.7 / 62.2 / ~175 ms on PASCAL VOC 2011 / 2012 test;\n20% relative gain over SDS at 52.6. Table 4: NYUDv2 RGB-HHA late\nfusion mean IU 34.0 (FCN-16s). Table 5: SIFT Flow geometric pixel\naccuracy 94.3, mean IU 39.5. Table 1: 134 M parameters, receptive\nfield 404 px, ~210 ms forward pass at 500×500 on K40c. §5: ~286×\ninference speedup over SDS (overall pipeline) and ~114× (convnet\nonly).\n"
       },
       "implementations": [
@@ -2473,7 +2477,8 @@ export const modelPages: ModelIndexEntry[] = [
           "sarlin2020-superglue",
           "detone2018-superpoint",
           "potje2024-xfeat",
-          "lindenberger2023-lightglue"
+          "lindenberger2023-lightglue",
+          "he2016-resnet"
         ],
         "notes": "§3 four sub-modules: (1) FPN-ResNet backbone → coarse maps at 1/8,\nfine maps at 1/2; (2) Local Feature Transformer with $N_c$ interleaved\nself/cross attention layers, ELU+1 Linear Transformer kernel\n$\\phi(x) = \\text{elu}(x) + 1$ for $O(N)$ complexity; (3) coarse\nmatching via dual-softmax (LoFTR-DS) or Sinkhorn (LoFTR-OT, 3 iters)\n+ MNN + confidence threshold; (4) fine refinement: $w \\times w$\ncorrelation window → sub-pixel expectation. §3.5 score matrix\n$\\mathcal{S}(i,j) = (1/\\tau) \\langle \\tilde{F}^A_{tr}(i),\n\\tilde{F}^B_{tr}(j) \\rangle$. §4.1 HPatches homography SOTA AUC@3px\n/5px/10px. §4.2 ScanNet pose AUC@10° improves SuperGlue by 13%, DRC\nby 61%. §4.4 runtime 116 ms (DS) / 130 ms (OT) per 640×480 pair on\nRTX 2080Ti. §B training: 64 GTX 1080Ti GPUs, ~24 h indoor; ScanNet\n640×480, MegaDepth 840 long-side training / 1200 long-side eval.\n"
       },
@@ -2525,7 +2530,8 @@ export const modelPages: ModelIndexEntry[] = [
       "sources": {
         "primary": "he2017-maskrcnn",
         "references": [
-          "long2015-fcn"
+          "long2015-fcn",
+          "he2016-resnet"
         ],
         "notes": "Multi-task loss per RoI: L = L_cls + L_box + L_mask (§3 Mask R-CNN).\nMask branch outputs Km^2-dim tensor — K binary masks of resolution\nm × m, per-pixel sigmoid; L_mask is the binary cross-entropy on the\nk-th channel only, where k is the ground-truth class. Mask resolution\nm=14 for ResNet-C4 head, m=28 for FPN head (Figure 4). RoIAlign uses\nx/16 (no rounding) with bilinear interpolation at four regularly\nspaced sampling points per bin; RoIPool used [x/16] quantization\ninstead (§3 RoIAlign, Figure 3). Training: COCO train2017, 80 classes,\nSGD momentum 0.9, weight decay 1e-4, LR 0.02 → 0.002 step at 120k of\n160k iters, 8 GPUs at 2 images/GPU effective batch 16 (§3.1 Training);\nResNeXt variants 1 image/GPU, LR 0.01. Headline COCO test-dev mask AP\n(Table 1): ResNet-101-FPN 35.7, ResNeXt-101-FPN 37.1; FCIS+++ baseline\n33.6. RoIAlign vs RoIPool ablation (Table 2c, ResNet-50-C4): ~3 AP /\n~5 AP_75 gain. Per-class sigmoid vs softmax (Table 2b): +5.5 AP\n(30.3 vs 24.8). Inference: 5 fps Tesla M40, ~195 ms/image ResNet-101-\nFPN; ResNet-101-C4 ~400 ms/image (§4.4). Mask branch adds ~20%\noverhead over Faster R-CNN counterpart.\n"
       },
@@ -2610,6 +2616,96 @@ export const modelPages: ModelIndexEntry[] = [
         "notes": "Stub page authored from secondary sources only — the MDPI PDF for\nDonné et al. 2016 (doi:10.3390/s16111858) returned HTTP 403 to\nautomated fetchers and could not be cached. All claims are derived\nfrom the chen2023-ccdn research note, the existing CCDN page\n(`content/models/ccdn-checkerboard-detector.md`), and the\nindex.yaml `donne2016-mate` notes. Architecture: 3 conv\nlayers + ReLU; per-pixel response map; max-pool with stride > 1\n(output spatially coarser than input). Loss: MSE between predicted\nresponse and binary corner mask (no positive/negative balancing).\nPost-processing: fixed 0.5 threshold; no NMS, no clustering.\nBenchmarks (via CCDN Tables 1–2): uEye 1.009 px / 3.065 % missed /\n0.809 % doubles / 492 FP; GoPro 0.835 px / 4.566 % / 4.556 % / 389 FP.\nPromote past stub when the paper PDF becomes accessible and the\narchitectural specifics (kernel sizes, channel counts, max-pool\nstrides, training hyperparameters) can be verified against the\nprimary text.\n"
       },
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "resnet",
+    "frontmatter": {
+      "title": "ResNet",
+      "summary": "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation.",
+      "tags": [
+        "computer-vision",
+        "image-classification",
+        "cnn",
+        "deep-learning",
+        "backbone",
+        "residual"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "googlenet",
+          "confidence": "high",
+          "caution": "Both push depth beyond VGG: GoogLeNet 22 layers via Inception modules, ResNet up to 152 via residual blocks. ResNet-152 single model 4.49% top-5 val vs GoogLeNet ensemble 6.66% top-5 test (Tables 4/5)."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN's headline backbones are ResNet-50/101 and ResNeXt-101 paired with FPN."
+        },
+        {
+          "type": "feeds_into",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab v2 onward uses ResNet-101 as the dense-prediction backbone; v1 used VGG-16."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "The torchvision FCN-ResNet50/101 port swaps the paper's VGG-16 backbone for ResNet; not the design Long et al. published."
+        },
+        {
+          "type": "feeds_into",
+          "target": "loftr",
+          "confidence": "medium",
+          "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "11.7M (ResNet-18), 25.6M (ResNet-50), 44.5M (ResNet-101), 60.2M (ResNet-152) — torchvision",
+      "flops": "1.8 GMAC (18), 3.8 GMAC (50), 7.6 GMAC (101), 11.3 GMAC (152) @ 224×224 (Table 1)",
+      "sources": {
+        "primary": "he2016-resnet",
+        "references": [
+          "krizhevsky2012-alexnet",
+          "simonyan2014-vgg",
+          "szegedy2015-inception",
+          "long2015-fcn"
+        ],
+        "notes": "Paper §1 / Fig. 1: degradation problem on CIFAR-10 — 56-layer plain net\nhas higher training error than 20-layer plain net, ruling out overfitting.\n§3.1 residual learning: stacked layers learn $\\mathcal{F}(x) := H(x) - x$\nrather than $H(x)$ directly, and the block computes $\\mathcal{F}(x) + x$.\n§3.2 / Eq. 1: $y = \\mathcal{F}(x, \\{W_i\\}) + x$ identity shortcut.\n§3.2 / Eq. 2: $y = \\mathcal{F}(x, \\{W_i\\}) + W_s x$ projection shortcut\nwhen input/output dimensions differ; $W_s$ is a 1×1 convolution.\n§3.3 / Table 1: five stages — conv1 (7×7/stride-2/64); conv2_x at 56×56\nwith 3 blocks (50-layer) / 3 (101-layer) / 3 (152-layer); conv3_x at\n28×28 with 4 / 4 / 8 blocks; conv4_x at 14×14 with 6 / 23 / 36 blocks;\nconv5_x at 7×7 with 3 / 3 / 3 blocks; global average pool + FC-1000 +\nsoftmax. Bottleneck block (§3.3, Fig. 5): 1×1 (reduce) → 3×3 → 1×1\n(restore), 4× channel expansion. Three shortcut options (§3.3, Table 3):\nA zero-padding, B projection only when dims change, C all projections;\nB selected as default. §3.4 implementation: 224×224 crops from short-side\n[256, 480]; per-pixel mean subtracted; standard color augmentation; BN\nafter every conv before activation [16]; He 2015 init [12]; SGD momentum\n0.9, weight decay 10⁻⁴, batch 256, initial LR 0.1 ÷10 at plateau, up to\n60·10⁴ iterations; no dropout. Test: 10-crop standard for comparison;\nfully-convolutional multi-scale {224, 256, 384, 480, 640} for best\nresults. Table 2 (top-1 val, 10-crop): plain-18 27.94%, plain-34 28.54%,\nResNet-18 27.88%, ResNet-34 25.03% — documents plain-net degradation\nand residual-net resolution. Table 4 single-model val: ResNet-152\n19.38% top-1 / 4.49% top-5; BN-Inception 21.99% / 5.81%. Table 5\nensemble test: ResNet 6-model 3.57% top-5; VGG (v5) 6.8%; GoogLeNet\n(ILSVRC'14) 6.66%; BN-Inception 4.82%. §4.2 CIFAR-10 (Table 6):\nResNet-110 6.43% (1.7M params); ResNet-1202 7.93% (19.4M params) —\noverfitting without strong regularization. §4.2 footnote 5: 110-layer\nneeds warm-up LR 0.01 until training error < 80%, then 0.1. §4.3\ntransfer (Table 7): PASCAL VOC 07 test mAP — VGG-16 73.2%, ResNet-101\n76.4%. Table 8 COCO: VGG-16 mAP@[.5,.95] 21.2%, ResNet-101 27.2% —\n28% relative improvement.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/KaimingHe/deep-residual-networks",
+          "commit": "a7026cb6d478e131b765b898c312e25f9f6dc031",
+          "framework": "caffe",
+          "license": "MIT"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "afc54f754c734d903a06194e416495e20d920ff6",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause",
+          "weights_url": "https://download.pytorch.org/models/resnet50-0676ba61.pth",
+          "weights_license": "BSD-3-Clause"
+        }
+      ],
+      "date": "2026-05-13"
     }
   },
   {
@@ -2859,6 +2955,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "deeplab-semantic-segmentation",
           "confidence": "high",
           "caution": "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
+        },
+        {
+          "type": "extended_by",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "ResNet reformulates VGG-style plain depth scaling: identity shortcuts let 152-layer nets train where 19-layer plain nets already plateau (ResNet §1, Fig. 1)."
         }
       ],
       "domain": "features",

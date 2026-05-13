@@ -29,6 +29,7 @@ sources:
     - detone2018-superpoint
     - potje2024-xfeat
     - lindenberger2023-lightglue
+    - he2016-resnet
   notes: |
     §3 four sub-modules: (1) FPN-ResNet backbone → coarse maps at 1/8,
     fine maps at 1/2; (2) Local Feature Transformer with $N_c$ interleaved

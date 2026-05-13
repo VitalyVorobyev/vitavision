@@ -21,6 +21,10 @@ relations:
     target: deeplab-semantic-segmentation
     confidence: high
     caution: "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
+  - type: extended_by
+    target: resnet
+    confidence: high
+    caution: "ResNet reformulates VGG-style plain depth scaling: identity shortcuts let 152-layer nets train where 19-layer plain nets already plateau (ResNet §1, Fig. 1)."
 sources:
   primary: simonyan2014-vgg
   references:

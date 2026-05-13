@@ -481,6 +481,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/mate-checkerboard-detector",
       "draft": false
     },
+    "resnet": {
+      "slug": "resnet",
+      "type": "model",
+      "title": "ResNet",
+      "summary": "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation.",
+      "path": "/atlas/resnet",
+      "draft": false
+    },
     "superglue": {
       "slug": "superglue",
       "type": "model",
@@ -1674,6 +1682,13 @@ export const contentGraph: ContentGraph = {
           "target": "fcn-semantic-segmentation",
           "confidence": "medium",
           "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
+        },
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "Both push depth beyond VGG: GoogLeNet 22 layers via Inception modules, ResNet up to 152 via residual blocks. ResNet-152 single model 4.49% top-5 val vs GoogLeNet ensemble 6.66% top-5 test (Tables 4/5).",
+          "mirrored": true
         }
       ]
     },
@@ -1750,6 +1765,42 @@ export const contentGraph: ContentGraph = {
           "type": "feeds_into",
           "target": "zhang-planar-calibration",
           "confidence": "high"
+        }
+      ]
+    },
+    "resnet": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "googlenet",
+          "confidence": "high",
+          "caution": "Both push depth beyond VGG: GoogLeNet 22 layers via Inception modules, ResNet up to 152 via residual blocks. ResNet-152 single model 4.49% top-5 val vs GoogLeNet ensemble 6.66% top-5 test (Tables 4/5)."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN's headline backbones are ResNet-50/101 and ResNeXt-101 paired with FPN."
+        },
+        {
+          "type": "feeds_into",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab v2 onward uses ResNet-101 as the dense-prediction backbone; v1 used VGG-16."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "The torchvision FCN-ResNet50/101 port swaps the paper's VGG-16 backbone for ResNet; not the design Long et al. published."
+        },
+        {
+          "type": "feeds_into",
+          "target": "loftr",
+          "confidence": "medium",
+          "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
         }
       ]
     },
@@ -1858,6 +1909,12 @@ export const contentGraph: ContentGraph = {
           "target": "deeplab-semantic-segmentation",
           "confidence": "high",
           "caution": "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
+        },
+        {
+          "type": "extended_by",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "ResNet reformulates VGG-style plain depth scaling: identity shortcuts let 152-layer nets train where 19-layer plain nets already plateau (ResNet §1, Fig. 1)."
         },
         {
           "type": "parallel_foundation_with",
@@ -2631,6 +2688,11 @@ export const contentGraph: ContentGraph = {
       ],
       "fedBy": [
         {
+          "slug": "resnet",
+          "confidence": "high",
+          "caution": "DeepLab v2 onward uses ResNet-101 as the dense-prediction backbone; v1 used VGG-16."
+        },
+        {
           "slug": "vgg",
           "confidence": "high",
           "caution": "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
@@ -2648,6 +2710,11 @@ export const contentGraph: ContentGraph = {
           "slug": "googlenet",
           "confidence": "medium",
           "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
+        },
+        {
+          "slug": "resnet",
+          "confidence": "medium",
+          "caution": "The torchvision FCN-ResNet50/101 port swaps the paper's VGG-16 backbone for ResNet; not the design Long et al. published."
         },
         {
           "slug": "vgg",
@@ -2695,7 +2762,13 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "medium",
+          "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "mask-rcnn": {
@@ -2709,7 +2782,13 @@ export const contentGraph: ContentGraph = {
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
         }
       ],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "high",
+          "caution": "Mask R-CNN's headline backbones are ResNet-50/101 and ResNeXt-101 paired with FPN."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "mate-checkerboard-detector": {
@@ -2717,6 +2796,20 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "resnet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "vgg",
+          "confidence": "high",
+          "caution": "ResNet reformulates VGG-style plain depth scaling: identity shortcuts let 152-layer nets train where 19-layer plain nets already plateau (ResNet §1, Fig. 1)."
+        }
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },

@@ -171,58 +171,63 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 326.91504000000003,
     "cluster": "detectors"
   },
+  "resnet": {
+    "x": 509.02694700000006,
+    "y": 383.38003199999997,
+    "cluster": "detectors"
+  },
   "shi-tomasi-corner-detector": {
-    "x": 518.424167,
+    "x": 578.624167,
     "y": 392.37139199999996,
     "cluster": "detectors"
   },
   "sift": {
-    "x": 578.541994,
+    "x": 638.741994,
     "y": 382.692576,
     "cluster": "detectors"
   },
   "structure-tensor": {
-    "x": 647.049895,
+    "x": 707.249895,
     "y": 380.08185599999996,
     "cluster": "detectors"
   },
   "superglue": {
-    "x": 703.1180680000001,
-    "y": 386.688288,
+    "x": 522.5180680000001,
+    "y": 444.288288,
     "cluster": "detectors"
   },
   "superpoint": {
-    "x": 513.051317,
+    "x": 573.2513170000001,
     "y": 444.830592,
     "cluster": "detectors"
   },
   "surf": {
-    "x": 568.3399000000001,
+    "x": 628.5399,
     "y": 450.691104,
     "cluster": "detectors"
   },
   "topological-grid-recovery": {
-    "x": 633.9928160000001,
+    "x": 694.1928160000001,
     "y": 435.748512,
     "cluster": "detectors"
   },
   "vgg": {
-    "x": 706.92331,
-    "y": 447.929184,
+    "x": 526.32331,
+    "y": 505.52918400000004,
     "cluster": "detectors"
   },
   "viola-jones-detector": {
-    "x": 520.0823760000001,
+    "x": 580.2823760000001,
     "y": 499.557792,
     "cluster": "detectors"
   },
   "xfeat": {
-    "x": 587.2986860000001,
+    "x": 647.498686,
     "y": 506.271072,
     "cluster": "detectors"
   },
   "yang-sub-pixel-corner-fit": {
-    "x": 631.723577,
+    "x": 691.923577,
     "y": 500.77747200000005,
     "cluster": "detectors"
   },

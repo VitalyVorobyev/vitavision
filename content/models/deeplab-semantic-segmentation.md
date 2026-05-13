@@ -20,6 +20,7 @@ sources:
   references:
     - long2015-fcn
     - ronneberger2015-unet
+    - he2016-resnet
   notes: |
     1-D atrous convolution: y[i] = Σ_k x[i + r·k] w[k] (Eq. 1, §3.1). Effective
     receptive size k_e = k + (k-1)(r-1). Output stride 8 via stride-1 last two

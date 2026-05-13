@@ -26,6 +26,8 @@ relations:
     caution: "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
 sources:
   primary: long2015-fcn
+  references:
+    - he2016-resnet
   notes: |
     §3.1 fully convolutional reinterpretation: fc6/fc7 of VGG-16 become
     1×1 convs of widths 4096/4096; the 1000-way classifier becomes a

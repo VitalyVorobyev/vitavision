@@ -19,4 +19,5 @@ export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>
   "unet-segmentation": () => import("./content/models/unet-segmentation.ts"),
   "vgg": () => import("./content/models/vgg.ts"),
   "xfeat": () => import("./content/models/xfeat.ts"),
+  "yolo-v1": () => import("./content/models/yolo-v1.ts"),
 };

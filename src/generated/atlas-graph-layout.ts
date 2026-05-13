@@ -236,6 +236,11 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 500.880288,
     "cluster": "detectors"
   },
+  "yolo-v1": {
+    "x": 586.3905690000001,
+    "y": 495.687072,
+    "cluster": "detectors"
+  },
   "apap-image-stitching": {
     "x": 730.737742,
     "y": 91.16760000000001,

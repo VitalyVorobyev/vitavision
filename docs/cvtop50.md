@@ -93,7 +93,7 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not â€
     Node: resnet.
 +38. Ren, He, Girshick, Sun. Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks. NeurIPS, 2015.
     Node: faster-rcnn.
-39. Redmon et al. You Only Look Once: Unified, Real-Time Object Detection. CVPR, 2016.
++39. Redmon et al. You Only Look Once: Unified, Real-Time Object Detection. CVPR, 2016.
     Node: yolo.
 40. Lin et al. Focal Loss for Dense Object Detection. ICCV, 2017.
     Node: retinanet, focal-loss.

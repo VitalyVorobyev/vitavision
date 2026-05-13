@@ -1395,6 +1395,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR"
   },
   {
+    "slug": "yolo-v1",
+    "path": "/atlas/yolo-v1",
+    "type": "model",
+    "title": "YOLOv1",
+    "summary": "Single-stage CNN object detector that frames detection as one regression problem from full-image pixels to a 7×7×30 tensor of grid-cell box offsets, objectness, and 20-class probabilities — trained end-to-end and inferring 98 boxes per image at 45 fps on a Titan X.",
+    "tags": [
+      "computer-vision",
+      "object-detection",
+      "single-stage-detector",
+      "real-time",
+      "cnn"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "J. Redmon",
+      "S. Divvala",
+      "R. Girshick",
+      "A. Farhadi"
+    ],
+    "venue": "CVPR 2016"
+  },
+  {
     "slug": "camera-distortion-models",
     "path": "/atlas/camera-distortion-models",
     "type": "concept",

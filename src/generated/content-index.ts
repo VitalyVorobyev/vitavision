@@ -3157,6 +3157,73 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-04-18"
     }
+  },
+  {
+    "slug": "yolo-v1",
+    "frontmatter": {
+      "title": "YOLOv1",
+      "summary": "Single-stage CNN object detector that frames detection as one regression problem from full-image pixels to a 7×7×30 tensor of grid-cell box offsets, objectness, and 20-class probabilities — trained end-to-end and inferring 98 boxes per image at 45 fps on a Titan X.",
+      "tags": [
+        "computer-vision",
+        "object-detection",
+        "single-stage-detector",
+        "real-time",
+        "cnn"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "faster-rcnn",
+          "confidence": "high",
+          "caution": "YOLO trades localization accuracy and small-object recall for ~3× throughput; same era, different design point."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high",
+          "caution": "Replaces sliding-window deformable templates with single-pass CNN regression; reframes detection as regression rather than classification of proposals."
+        }
+      ],
+      "domain": "detection",
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "redmon2016-yolo",
+        "references": [
+          "szegedy2015-inception",
+          "simonyan2014-vgg",
+          "ren2015-faster",
+          "felzenszwalb2010-detection",
+          "dalal2005-hog"
+        ],
+        "notes": "Detection as a single regression from a 448×448 RGB image to a 7×7×30 tensor\nfor VOC (S=7 grid, B=2 boxes per cell, C=20 classes; per-cell layout =\nB·5 + C). Confidence (§2, eq. 1): Pr(Object)·IOU_pred^truth; class-specific\nscore: Pr(Class_i)·IOU_pred^truth. Backbone is GoogLeNet-style (§2.1,\nFigure 3): 24 conv (alternating 1×1 reduction + 3×3) + 2 FC, leaky ReLU\nslope 0.1 (eq. 2), linear output. Fast YOLO is 9 conv + 2 FC. Multi-part\nSSE loss (§2.2, eq. 3) with λ_coord=5, λ_noobj=0.5, and (√w, √h)\nparametrization to balance large/small box gradients. Pretrain 20 conv on\nImageNet 224×224 (top-5 88%, GoogLeNet-comparable), fine-tune all layers\nat 448×448; LR warmup 10⁻³→10⁻², then 10⁻² × 75 ep, 10⁻³ × 30 ep,\n10⁻⁴ × 30 ep; batch 64, momentum 0.9, weight decay 5×10⁻⁴; dropout 0.5\nafter first FC; data aug ±20% scale/translate, HSV jitter ×1.5.\nHeadline: YOLO 63.4% mAP @ 45 fps; Fast YOLO 52.7% @ 155 fps on VOC 2007\ntest (Table 1). 98 boxes per image at test (§2.3, S·S·B = 7·7·2 = 98);\nNMS adds 2–3% mAP. Error analysis (§4.2): localization-dominant for YOLO;\nFast R-CNN makes almost 3× more background false positives. Ensemble\nrescoring (§4.3): Fast R-CNN 71.8% → 75.0% with YOLO. Generalization to\nartwork (§4.5). VOC 2012 mAP 57.9% with an 8–10% gap on bottle/sheep/\ntv-monitor (§4.4).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/pjreddie/darknet",
+          "commit": "f6afaabcdf85f77e7aff2ec55c020c0e297c77f9",
+          "framework": "other",
+          "license": "Public Domain (Darknet LICENSE v2)",
+          "weights_url": "https://data.pjreddie.com/files/yolov1/yolov1.weights",
+          "weights_license": "Public Domain (Darknet LICENSE v2)"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/abeardear/pytorch-YOLO-v1",
+          "commit": "823c45185a4af4f895d53ca466f725a1edbcfec0",
+          "framework": "pytorch",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-05-13"
+    }
   }
 ];
 

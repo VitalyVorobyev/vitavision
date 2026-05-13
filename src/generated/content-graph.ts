@@ -537,6 +537,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/xfeat",
       "draft": false
     },
+    "yolo-v1": {
+      "slug": "yolo-v1",
+      "type": "model",
+      "title": "YOLOv1",
+      "summary": "Single-stage CNN object detector that frames detection as one regression problem from full-image pixels to a 7×7×30 tensor of grid-cell box offsets, objectness, and 20-class probabilities — trained end-to-end and inferring 98 boxes per image at 45 fps on a Titan X.",
+      "path": "/atlas/yolo-v1",
+      "draft": false
+    },
     "camera-distortion-models": {
       "slug": "camera-distortion-models",
       "type": "concept",
@@ -1664,6 +1672,13 @@ export const contentGraph: ContentGraph = {
           "type": "extended_by",
           "target": "mask-rcnn",
           "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "yolo-v1",
+          "confidence": "high",
+          "caution": "YOLO trades localization accuracy and small-object recall for ~3× throughput; same era, different design point.",
+          "mirrored": true
         }
       ]
     },
@@ -2006,6 +2021,24 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "yolo-v1": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "faster-rcnn",
+          "confidence": "high",
+          "caution": "YOLO trades localization accuracy and small-object recall for ~3× throughput; same era, different design point."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high",
+          "caution": "Replaces sliding-window deformable templates with single-pass CNN regression; reframes detection as regression rather than classification of proposals."
+        }
+      ]
+    },
     "camera-distortion-models": {
       "prerequisites": [],
       "failureModes": [],
@@ -2205,6 +2238,11 @@ export const contentGraph: ContentGraph = {
           "slug": "mask-rcnn",
           "confidence": "medium",
           "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        },
+        {
+          "slug": "yolo-v1",
+          "confidence": "high",
+          "caution": "Replaces sliding-window deformable templates with single-pass CNN regression; reframes detection as regression rather than classification of proposals."
         }
       ]
     },
@@ -2916,6 +2954,14 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "xfeat": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "yolo-v1": {
       "usedBy": [],
       "affects": [],
       "generalises": [],

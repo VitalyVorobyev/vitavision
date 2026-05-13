@@ -11,7 +11,7 @@ prerequisites: [image-gradient, scale-space]
 failureModes: []
 sources:
   primary: rublee2011-orb
-  references: [calonder2010-brief, rosten2006-fast, harris1988-corner, lowe2004-sift, bay2006-surf]
+  references: [calonder2010-brief, rosten2006-fast, harris1988-corner, lowe2004-sift, bay2006-surf, viola2001-detector]
   notes: |
     Method (Rublee et al. 2011, ICCV). Two-stage pipeline:
     oFAST (detector) + rBRIEF (descriptor).

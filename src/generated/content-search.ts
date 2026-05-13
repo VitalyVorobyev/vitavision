@@ -39,6 +39,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE CVPR"
   },
   {
+    "slug": "black-anandan-robust-flow",
+    "path": "/atlas/black-anandan-robust-flow",
+    "type": "algorithm",
+    "title": "Black-Anandan Robust Optical Flow",
+    "summary": "Optical flow that replaces the quadratic data and smoothness penalties of variational flow with redescending M-estimators, solved by SOR within a graduated non-convexity continuation; recovers piecewise-smooth flow without explicit line processes and a robust affine variant for multiple parametric motions.",
+    "tags": [
+      "motion",
+      "optical-flow",
+      "robust-statistics",
+      "variational"
+    ],
+    "domain": "features",
+    "headings": [
+      "Piecewise-smooth (dense) variant",
+      "Parametric (affine) variant"
+    ],
+    "authors": [
+      "M. J. Black",
+      "P. Anandan"
+    ],
+    "venue": "Computer Vision and Image Understanding"
+  },
+  {
     "slug": "brief",
     "path": "/atlas/brief",
     "type": "algorithm",
@@ -148,6 +171,37 @@ export const searchRecords: SearchRecord[] = [
       "K. Daniilidis"
     ],
     "venue": "The International Journal of Robotics Research"
+  },
+  {
+    "slug": "felzenszwalb-deformable-parts",
+    "path": "/atlas/felzenszwalb-deformable-parts",
+    "type": "algorithm",
+    "title": "Deformable Part Models",
+    "summary": "Detect a target object class in arbitrary images by scoring every position and scale in a HOG feature pyramid with a mixture of star-structured part-based templates — a coarse root filter and $n=6$ finer-resolution part filters with quadratic deformation costs — trained as a latent SVM with hard-negative mining.",
+    "tags": [
+      "object-detection",
+      "deformable-parts-model",
+      "latent-svm",
+      "hog",
+      "part-based",
+      "structured-prediction"
+    ],
+    "domain": "detection",
+    "headings": [
+      "Feature pyramid",
+      "Hypothesis score",
+      "Efficient inference via distance transform",
+      "Mixture model",
+      "Latent SVM training",
+      "Procedure"
+    ],
+    "authors": [
+      "P. F. Felzenszwalb",
+      "R. B. Girshick",
+      "D. McAllester",
+      "D. Ramanan"
+    ],
+    "venue": "IEEE TPAMI"
   },
   {
     "slug": "epnp",
@@ -431,6 +485,48 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Alvey Vision Conference"
   },
   {
+    "slug": "hog-descriptor",
+    "path": "/atlas/hog-descriptor",
+    "type": "algorithm",
+    "title": "HOG: Histograms of Oriented Gradients",
+    "summary": "Compute a fixed-length descriptor for an image window by binning pixel gradients into 8×8 cells of 9 unsigned-orientation histograms, normalising overlapping 2×2-cell blocks with L2-Hys, and concatenating the 3780 block values into a single vector fed to a linear SVM — the canonical pre-CNN pedestrian detector.",
+    "tags": [
+      "object-detection",
+      "pedestrian-detection",
+      "gradient-histograms",
+      "feature-descriptor",
+      "linear-svm"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "N. Dalal",
+      "B. Triggs"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "horn-schunck",
+    "path": "/atlas/horn-schunck",
+    "type": "algorithm",
+    "title": "Horn-Schunck Optical Flow",
+    "summary": "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation.",
+    "tags": [
+      "motion",
+      "optical-flow",
+      "variational"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "B. K. P. Horn",
+      "B. G. Schunck"
+    ],
+    "venue": "Artificial Intelligence"
+  },
+  {
     "slug": "kumar-generalized-rac",
     "path": "/atlas/kumar-generalized-rac",
     "type": "algorithm",
@@ -511,6 +607,28 @@ export const searchRecords: SearchRecord[] = [
       "H. C. Longuet-Higgins"
     ],
     "venue": "Nature"
+  },
+  {
+    "slug": "lucas-kanade",
+    "path": "/atlas/lucas-kanade",
+    "type": "algorithm",
+    "title": "Lucas-Kanade Image Registration",
+    "summary": "Iterative Newton-Raphson method that estimates the parametric warp between two images by linearising the residual and solving the resulting weighted normal equation per iteration.",
+    "tags": [
+      "motion",
+      "optical-flow",
+      "image-registration"
+    ],
+    "domain": "features",
+    "headings": [
+      "Coarse-to-fine extension",
+      "Affine and photometric generalisations"
+    ],
+    "authors": [
+      "B. D. Lucas",
+      "T. Kanade"
+    ],
+    "venue": "IJCAI 1981"
   },
   {
     "slug": "barath-magsac",
@@ -875,6 +993,35 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "viola-jones-detector",
+    "path": "/atlas/viola-jones-detector",
+    "type": "algorithm",
+    "title": "Viola–Jones Object Detector",
+    "summary": "Real-time frontal-face detection by sliding a fixed 24×24 sub-window across a grayscale image at multiple scales, scoring each position with an AdaBoost-selected ensemble of integral-image rectangle features arranged in a 38-stage attentional cascade that rejects most background regions after evaluating ~10 features per sub-window.",
+    "tags": [
+      "object-detection",
+      "face-detection",
+      "boosting",
+      "adaboost",
+      "integral-image",
+      "haar-features",
+      "cascade-classifier"
+    ],
+    "domain": "detection",
+    "headings": [
+      "Integral image",
+      "Rectangle features",
+      "AdaBoost feature selection",
+      "Attentional cascade",
+      "Procedure"
+    ],
+    "authors": [
+      "P. Viola",
+      "M. Jones"
+    ],
+    "venue": "CVPR"
+  },
+  {
     "slug": "yang-sub-pixel-corner-fit",
     "path": "/atlas/yang-sub-pixel-corner-fit",
     "type": "algorithm",
@@ -916,6 +1063,27 @@ export const searchRecords: SearchRecord[] = [
       "Z. Zhang"
     ],
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "alexnet",
+    "path": "/atlas/alexnet",
+    "type": "model",
+    "title": "AlexNet",
+    "summary": "Eight-layer convolutional neural network for 1000-class image classification on ImageNet, trained end-to-end on two GPUs with ReLU activations, local response normalisation, overlapping max-pooling, and dropout; the first deep CNN to win ILSVRC by a large margin.",
+    "tags": [
+      "computer-vision",
+      "image-classification",
+      "cnn",
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "A. Krizhevsky",
+      "I. Sutskever",
+      "G. E. Hinton"
+    ],
+    "venue": "NeurIPS"
   },
   {
     "slug": "ccdn-checkerboard-detector",
@@ -984,6 +1152,30 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "faster-rcnn",
+    "path": "/atlas/faster-rcnn",
+    "type": "model",
+    "title": "Faster R-CNN",
+    "summary": "Two-stage CNN object detector that replaces external Selective Search / EdgeBoxes proposals with a learned Region Proposal Network sharing conv features with the Fast R-CNN head — yielding near-real-time multi-class detection on GPU (5 fps with VGG-16) and ImageNet-pretrained backbones swapped freely from ZF through ResNet-101.",
+    "tags": [
+      "computer-vision",
+      "object-detection",
+      "two-stage-detector",
+      "region-proposal-network",
+      "cnn",
+      "anchor-based"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "S. Ren",
+      "K. He",
+      "R. Girshick",
+      "J. Sun"
+    ],
+    "venue": "NeurIPS 2015"
+  },
+  {
     "slug": "fcn-semantic-segmentation",
     "path": "/atlas/fcn-semantic-segmentation",
     "type": "model",
@@ -1004,6 +1196,34 @@ export const searchRecords: SearchRecord[] = [
       "T. Darrell"
     ],
     "venue": "CVPR"
+  },
+  {
+    "slug": "googlenet",
+    "path": "/atlas/googlenet",
+    "type": "model",
+    "title": "GoogLeNet",
+    "summary": "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet).",
+    "tags": [
+      "computer-vision",
+      "image-classification",
+      "cnn",
+      "deep-learning",
+      "inception"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "C. Szegedy",
+      "W. Liu",
+      "Y. Jia",
+      "P. Sermanet",
+      "S. Reed",
+      "D. Anguelov",
+      "D. Erhan",
+      "V. Vanhoucke",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR 2015"
   },
   {
     "slug": "lightglue",
@@ -1102,6 +1322,30 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Sensors"
   },
   {
+    "slug": "resnet",
+    "path": "/atlas/resnet",
+    "type": "model",
+    "title": "ResNet",
+    "summary": "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation.",
+    "tags": [
+      "computer-vision",
+      "image-classification",
+      "cnn",
+      "deep-learning",
+      "backbone",
+      "residual"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "K. He",
+      "X. Zhang",
+      "S. Ren",
+      "J. Sun"
+    ],
+    "venue": "CVPR 2016"
+  },
+  {
     "slug": "superglue",
     "path": "/atlas/superglue",
     "type": "model",
@@ -1173,6 +1417,27 @@ export const searchRecords: SearchRecord[] = [
     "venue": "MICCAI (Lecture Notes in Computer Science)"
   },
   {
+    "slug": "vgg",
+    "path": "/atlas/vgg",
+    "type": "model",
+    "title": "VGG",
+    "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
+    "tags": [
+      "computer-vision",
+      "image-classification",
+      "cnn",
+      "deep-learning",
+      "backbone"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "K. Simonyan",
+      "A. Zisserman"
+    ],
+    "venue": "ICLR 2015 / arXiv"
+  },
+  {
     "slug": "xfeat",
     "path": "/atlas/xfeat",
     "type": "model",
@@ -1194,6 +1459,29 @@ export const searchRecords: SearchRecord[] = [
       "E. R. Nascimento"
     ],
     "venue": "CVPR"
+  },
+  {
+    "slug": "yolo-v1",
+    "path": "/atlas/yolo-v1",
+    "type": "model",
+    "title": "YOLOv1",
+    "summary": "Single-stage CNN object detector that frames detection as one regression problem from full-image pixels to a 7×7×30 tensor of grid-cell box offsets, objectness, and 20-class probabilities — trained end-to-end and inferring 98 boxes per image at 45 fps on a Titan X.",
+    "tags": [
+      "computer-vision",
+      "object-detection",
+      "single-stage-detector",
+      "real-time",
+      "cnn"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "J. Redmon",
+      "S. Divvala",
+      "R. Girshick",
+      "A. Farhadi"
+    ],
+    "venue": "CVPR 2016"
   },
   {
     "slug": "camera-distortion-models",

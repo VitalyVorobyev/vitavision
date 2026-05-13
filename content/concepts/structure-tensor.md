@@ -122,8 +122,9 @@ The structure tensor is the shared algebraic core of every gradient-based corner
 
 - **harris-corner-detector** — computes $M$ as described above; the Harris response $R = \det(M) - k\,\mathrm{tr}(M)^2$ is the standard cornerness score.
 - **shi-tomasi-corner-detector** — identical structure tensor construction; the response is replaced by $\min(\lambda_1, \lambda_2)$, motivating the "Good Features to Track" name.
+- **lucas-kanade** — the iterative image registration update uses $M$ as the coefficient matrix of the per-iteration normal equation; the invertibility of $M$ is the precondition under which the gradient-based displacement estimate is well-defined.
 
-The structure tensor also appears in Lucas-Kanade optical flow (where the optical flow equations form a $2\times 2$ linear system whose coefficient matrix is exactly $M$) and in anisotropic diffusion (where the coherence $C$ steers the diffusion tensor). These algorithms are not yet registered on this site.
+The structure tensor also appears in anisotropic diffusion, where the coherence $C$ steers the diffusion tensor; that algorithm is not yet registered on this site.
 
 # References
 

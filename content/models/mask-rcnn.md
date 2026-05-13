@@ -10,10 +10,17 @@ difficulty: intermediate
 arch_family: cnn
 prerequisites: []
 failureModes: []
+relations:
+  - type: learned_alternative_of
+    target: felzenszwalb-deformable-parts
+    confidence: medium
+    caution: "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
 sources:
   primary: he2017-maskrcnn
   references:
+    - ren2015-faster
     - long2015-fcn
+    - he2016-resnet
   notes: |
     Multi-task loss per RoI: L = L_cls + L_box + L_mask (§3 Mask R-CNN).
     Mask branch outputs Km^2-dim tensor — K binary masks of resolution
@@ -107,6 +114,7 @@ Official PyTorch implementation in `facebookresearch/detectron2` (FAIR's success
 - **Decoupled per-class binary masks** with per-pixel sigmoid + binary cross-entropy on the ground-truth class channel — contrast to FCN-style per-pixel softmax across classes, which forces inter-class competition during mask training.
 - **RoIAlign** replaces RoIPool's two coarse quantizations $[x/16]$ with continuous-coordinate bilinear sampling — direct response to the localization-sensitivity gap that detection's box-only losses hide.
 - Same framework extends naturally to **person keypoint detection** by treating each joint type as a one-hot binary mask channel (§5).
+- Functions as the deep-learning replacement for the classical part-based detection paradigm (Felzenszwalb et al. 2010): CNN features + region proposals supplant HOG + root/part filters, and per-RoI mask prediction extends the output beyond DPM's bounding boxes.
 
 **Strengths.**
 

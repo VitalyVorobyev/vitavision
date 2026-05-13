@@ -65,6 +65,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/apap-image-stitching",
       "draft": false
     },
+    "black-anandan-robust-flow": {
+      "slug": "black-anandan-robust-flow",
+      "type": "algorithm",
+      "title": "Black-Anandan Robust Optical Flow",
+      "summary": "Optical flow that replaces the quadratic data and smoothness penalties of variational flow with redescending M-estimators, solved by SOR within a graduated non-convexity continuation; recovers piecewise-smooth flow without explicit line processes and a robust affine variant for multiple parametric motions.",
+      "path": "/atlas/black-anandan-robust-flow",
+      "draft": false
+    },
     "brief": {
       "slug": "brief",
       "type": "algorithm",
@@ -103,6 +111,14 @@ export const contentGraph: ContentGraph = {
       "title": "Daniilidis Dual-Quaternion Hand-Eye Calibration",
       "summary": "Solve the hand-eye equation AX=XB jointly for rotation and translation by parametrising rigid motions as unit dual quaternions and extracting X from the right null space of a single linear system.",
       "path": "/atlas/daniilidis-dual-quaternion-handeye",
+      "draft": false
+    },
+    "felzenszwalb-deformable-parts": {
+      "slug": "felzenszwalb-deformable-parts",
+      "type": "algorithm",
+      "title": "Deformable Part Models",
+      "summary": "Detect a target object class in arbitrary images by scoring every position and scale in a HOG feature pyramid with a mixture of star-structured part-based templates — a coarse root filter and $n=6$ finer-resolution part filters with quadratic deformation costs — trained as a latent SVM with hard-negative mining.",
+      "path": "/atlas/felzenszwalb-deformable-parts",
       "draft": false
     },
     "epnp": {
@@ -201,6 +217,22 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/harris-corner-detector",
       "draft": false
     },
+    "hog-descriptor": {
+      "slug": "hog-descriptor",
+      "type": "algorithm",
+      "title": "HOG: Histograms of Oriented Gradients",
+      "summary": "Compute a fixed-length descriptor for an image window by binning pixel gradients into 8×8 cells of 9 unsigned-orientation histograms, normalising overlapping 2×2-cell blocks with L2-Hys, and concatenating the 3780 block values into a single vector fed to a linear SVM — the canonical pre-CNN pedestrian detector.",
+      "path": "/atlas/hog-descriptor",
+      "draft": false
+    },
+    "horn-schunck": {
+      "slug": "horn-schunck",
+      "type": "algorithm",
+      "title": "Horn-Schunck Optical Flow",
+      "summary": "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation.",
+      "path": "/atlas/horn-schunck",
+      "draft": false
+    },
     "kumar-generalized-rac": {
       "slug": "kumar-generalized-rac",
       "type": "algorithm",
@@ -231,6 +263,14 @@ export const contentGraph: ContentGraph = {
       "title": "Longuet-Higgins Linear Eight-Point Algorithm",
       "summary": "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm.",
       "path": "/atlas/longuet-higgins-eight-point",
+      "draft": false
+    },
+    "lucas-kanade": {
+      "slug": "lucas-kanade",
+      "type": "algorithm",
+      "title": "Lucas-Kanade Image Registration",
+      "summary": "Iterative Newton-Raphson method that estimates the parametric warp between two images by linearising the residual and solving the resulting weighted normal equation per iteration.",
+      "path": "/atlas/lucas-kanade",
       "draft": false
     },
     "barath-magsac": {
@@ -361,6 +401,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/raguram-usac",
       "draft": false
     },
+    "viola-jones-detector": {
+      "slug": "viola-jones-detector",
+      "type": "algorithm",
+      "title": "Viola–Jones Object Detector",
+      "summary": "Real-time frontal-face detection by sliding a fixed 24×24 sub-window across a grayscale image at multiple scales, scoring each position with an AdaBoost-selected ensemble of integral-image rectangle features arranged in a 38-stage attentional cascade that rejects most background regions after evaluating ~10 features per sub-window.",
+      "path": "/atlas/viola-jones-detector",
+      "draft": false
+    },
     "yang-sub-pixel-corner-fit": {
       "slug": "yang-sub-pixel-corner-fit",
       "type": "algorithm",
@@ -375,6 +423,14 @@ export const contentGraph: ContentGraph = {
       "title": "Zhang's Planar Camera Calibration",
       "summary": "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations.",
       "path": "/atlas/zhang-planar-calibration",
+      "draft": false
+    },
+    "alexnet": {
+      "slug": "alexnet",
+      "type": "model",
+      "title": "AlexNet",
+      "summary": "Eight-layer convolutional neural network for 1000-class image classification on ImageNet, trained end-to-end on two GPUs with ReLU activations, local response normalisation, overlapping max-pooling, and dropout; the first deep CNN to win ILSVRC by a large margin.",
+      "path": "/atlas/alexnet",
       "draft": false
     },
     "ccdn-checkerboard-detector": {
@@ -401,12 +457,28 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/deeplab-semantic-segmentation",
       "draft": false
     },
+    "faster-rcnn": {
+      "slug": "faster-rcnn",
+      "type": "model",
+      "title": "Faster R-CNN",
+      "summary": "Two-stage CNN object detector that replaces external Selective Search / EdgeBoxes proposals with a learned Region Proposal Network sharing conv features with the Fast R-CNN head — yielding near-real-time multi-class detection on GPU (5 fps with VGG-16) and ImageNet-pretrained backbones swapped freely from ZF through ResNet-101.",
+      "path": "/atlas/faster-rcnn",
+      "draft": false
+    },
     "fcn-semantic-segmentation": {
       "slug": "fcn-semantic-segmentation",
       "type": "model",
       "title": "FCN: Fully Convolutional Networks",
       "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
       "path": "/atlas/fcn-semantic-segmentation",
+      "draft": false
+    },
+    "googlenet": {
+      "slug": "googlenet",
+      "type": "model",
+      "title": "GoogLeNet",
+      "summary": "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet).",
+      "path": "/atlas/googlenet",
       "draft": false
     },
     "lightglue": {
@@ -441,6 +513,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/mate-checkerboard-detector",
       "draft": false
     },
+    "resnet": {
+      "slug": "resnet",
+      "type": "model",
+      "title": "ResNet",
+      "summary": "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation.",
+      "path": "/atlas/resnet",
+      "draft": false
+    },
     "superglue": {
       "slug": "superglue",
       "type": "model",
@@ -465,12 +545,28 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/unet-segmentation",
       "draft": false
     },
+    "vgg": {
+      "slug": "vgg",
+      "type": "model",
+      "title": "VGG",
+      "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
+      "path": "/atlas/vgg",
+      "draft": false
+    },
     "xfeat": {
       "slug": "xfeat",
       "type": "model",
       "title": "XFeat",
       "summary": "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices.",
       "path": "/atlas/xfeat",
+      "draft": false
+    },
+    "yolo-v1": {
+      "slug": "yolo-v1",
+      "type": "model",
+      "title": "YOLOv1",
+      "summary": "Single-stage CNN object detector that frames detection as one regression problem from full-image pixels to a 7×7×30 tensor of grid-cell box offsets, objectness, and 20-class probabilities — trained end-to-end and inferring 98 boxes per image at 45 fps on a Titan X.",
+      "path": "/atlas/yolo-v1",
       "draft": false
     },
     "camera-distortion-models": {
@@ -576,6 +672,14 @@ export const contentGraph: ContentGraph = {
         "homography",
         "dlt-normalisation",
         "ransac"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "black-anandan-robust-flow": {
+      "prerequisites": [
+        "image-gradient",
+        "scale-space"
       ],
       "failureModes": [],
       "relations": []
@@ -704,6 +808,20 @@ export const contentGraph: ContentGraph = {
           "confidence": "high",
           "caution": "Daniilidis's dual-quaternion solver couples rotation and translation simultaneously; both methods remain in practitioner use.",
           "mirrored": true
+        }
+      ]
+    },
+    "felzenszwalb-deformable-parts": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Different operational regimes — VJ is real-time cascade for rigid faces; DPM is offline part-based for general deformable objects."
         }
       ]
     },
@@ -926,6 +1044,46 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "hog-descriptor": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Both classical sliding-window detectors. Viola-Jones: Haar + AdaBoost cascade on faces. HOG: gradient histograms + linear SVM on pedestrians."
+        },
+        {
+          "type": "feeds_into",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high",
+          "caution": "DPM uses HOG cells (k=8 px, α=0.2) with an analytic 31-dim projection of the 36-dim HOG vector as its base feature pyramid."
+        }
+      ]
+    },
+    "horn-schunck": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "lucas-kanade",
+          "confidence": "high",
+          "caution": "Dense variational vs sparse local LSQ — co-founded optical flow in 1981; pick by problem (dense flow field vs sparse displacement of features)."
+        },
+        {
+          "type": "extended_by",
+          "target": "black-anandan-robust-flow",
+          "confidence": "high",
+          "caution": "Robust M-estimator extension of the quadratic data and smoothness terms; non-convex but more tolerant of outliers and motion discontinuities."
+        }
+      ]
+    },
     "kumar-generalized-rac": {
       "prerequisites": [
         "camera-distortion-models"
@@ -983,6 +1141,34 @@ export const contentGraph: ContentGraph = {
           "type": "generalized_by",
           "target": "fundamental-matrix-eight-point",
           "confidence": "high"
+        }
+      ]
+    },
+    "lucas-kanade": {
+      "prerequisites": [
+        "image-gradient",
+        "structure-tensor"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high",
+          "caution": "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
+        },
+        {
+          "type": "extended_by",
+          "target": "black-anandan-robust-flow",
+          "confidence": "high",
+          "caution": "Robust M-estimator version of the parametric variant; same machinery as Black-Anandan's piecewise-smooth flow."
+        },
+        {
+          "type": "parallel_foundation_with",
+          "target": "horn-schunck",
+          "confidence": "high",
+          "caution": "Dense variational vs sparse local LSQ — co-founded optical flow in 1981; pick by problem (dense flow field vs sparse displacement of features).",
+          "mirrored": true
         }
       ]
     },
@@ -1375,6 +1561,26 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "viola-jones-detector": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "medium",
+          "caution": "Different operational regimes — VJ is real-time cascade for rigid faces; DPM is offline part-based for general deformable objects.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "hog-descriptor",
+          "confidence": "medium",
+          "caution": "Both classical sliding-window detectors. Viola-Jones: Haar + AdaBoost cascade on faces. HOG: gradient histograms + linear SVM on pedestrians.",
+          "mirrored": true
+        }
+      ]
+    },
     "yang-sub-pixel-corner-fit": {
       "prerequisites": [
         "image-gradient"
@@ -1429,6 +1635,25 @@ export const contentGraph: ContentGraph = {
           "target": "sturm-plane-based-calibration",
           "confidence": "high",
           "caution": "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis."
+        }
+      ]
+    },
+    "alexnet": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "vgg",
+          "confidence": "high",
+          "caution": "VGG extends AlexNet's CNN classifier paradigm from 8 to 16/19 weight layers via stacked 3×3 conv blocks; same task, deeper architecture, same training framework."
+        },
+        {
+          "type": "compared_with",
+          "target": "googlenet",
+          "confidence": "high",
+          "caution": "22 layers vs AlexNet's 8; 7M vs 60M parameters; 56.5% relative reduction in top-5 error vs AlexNet (16.4% → 6.67%) over two ILSVRC years.",
+          "mirrored": true
         }
       ]
     },
@@ -1508,6 +1733,35 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "faster-rcnn": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Viola-Jones targets real-time face detection on CPUs; Faster R-CNN is general multi-class detection on GPUs — replacement is paradigm-level, not drop-in."
+        },
+        {
+          "type": "extended_by",
+          "target": "mask-rcnn",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "yolo-v1",
+          "confidence": "high",
+          "caution": "YOLO trades localization accuracy and small-object recall for ~3× throughput; same era, different design point.",
+          "mirrored": true
+        }
+      ]
+    },
     "fcn-semantic-segmentation": {
       "prerequisites": [],
       "failureModes": [],
@@ -1529,6 +1783,37 @@ export const contentGraph: ContentGraph = {
           "target": "mask-rcnn",
           "confidence": "high",
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        }
+      ]
+    },
+    "googlenet": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "vgg",
+          "confidence": "high",
+          "caution": "Both ILSVRC-2014 entries — GoogLeNet won classification (6.67% top-5), VGG won localisation. Different design philosophies: Inception modules vs homogeneous 3×3 depth scaling."
+        },
+        {
+          "type": "compared_with",
+          "target": "alexnet",
+          "confidence": "high",
+          "caution": "22 layers vs AlexNet's 8; 7M vs 60M parameters; 56.5% relative reduction in top-5 error vs AlexNet (16.4% → 6.67%) over two ILSVRC years."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
+        },
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "Both push depth beyond VGG: GoogLeNet 22 layers via Inception modules, ResNet up to 152 via residual blocks. ResNet-152 single model 4.49% top-5 val vs GoogLeNet ensemble 6.66% top-5 test (Tables 4/5).",
+          "mirrored": true
         }
       ]
     },
@@ -1570,7 +1855,14 @@ export const contentGraph: ContentGraph = {
     "mask-rcnn": {
       "prerequisites": [],
       "failureModes": [],
-      "relations": []
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "medium",
+          "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        }
+      ]
     },
     "mate-checkerboard-detector": {
       "prerequisites": [
@@ -1598,6 +1890,42 @@ export const contentGraph: ContentGraph = {
           "type": "feeds_into",
           "target": "zhang-planar-calibration",
           "confidence": "high"
+        }
+      ]
+    },
+    "resnet": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "googlenet",
+          "confidence": "high",
+          "caution": "Both push depth beyond VGG: GoogLeNet 22 layers via Inception modules, ResNet up to 152 via residual blocks. ResNet-152 single model 4.49% top-5 val vs GoogLeNet ensemble 6.66% top-5 test (Tables 4/5)."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN's headline backbones are ResNet-50/101 and ResNeXt-101 paired with FPN."
+        },
+        {
+          "type": "feeds_into",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab v2 onward uses ResNet-101 as the dense-prediction backbone; v1 used VGG-16."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "The torchvision FCN-ResNet50/101 port swaps the paper's VGG-16 backbone for ResNet; not the design Long et al. published."
+        },
+        {
+          "type": "feeds_into",
+          "target": "loftr",
+          "confidence": "medium",
+          "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
         }
       ]
     },
@@ -1691,6 +2019,37 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "vgg": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "VGG-16 is FCN's canonical backbone per FCN Table 1; FCN-VGG16 mean IU 56.0 vs FCN-AlexNet 39.8."
+        },
+        {
+          "type": "feeds_into",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
+        },
+        {
+          "type": "extended_by",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "ResNet reformulates VGG-style plain depth scaling: identity shortcuts let 152-layer nets train where 19-layer plain nets already plateau (ResNet §1, Fig. 1)."
+        },
+        {
+          "type": "parallel_foundation_with",
+          "target": "googlenet",
+          "confidence": "high",
+          "caution": "Both ILSVRC-2014 entries — GoogLeNet won classification (6.67% top-5), VGG won localisation. Different design philosophies: Inception modules vs homogeneous 3×3 depth scaling.",
+          "mirrored": true
+        }
+      ]
+    },
     "xfeat": {
       "prerequisites": [
         "image-gradient"
@@ -1739,6 +2098,24 @@ export const contentGraph: ContentGraph = {
           "target": "superpoint",
           "confidence": "high",
           "mirrored": true
+        }
+      ]
+    },
+    "yolo-v1": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "faster-rcnn",
+          "confidence": "high",
+          "caution": "YOLO trades localization accuracy and small-object recall for ~3× throughput; same era, different design point."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high",
+          "caution": "Replaces sliding-window deformable templates with single-pass CNN regression; reframes detection as regression rather than classification of proposals."
         }
       ]
     },
@@ -1851,6 +2228,25 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "black-anandan-robust-flow": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "horn-schunck",
+          "confidence": "high",
+          "caution": "Robust M-estimator extension of the quadratic data and smoothness terms; non-convex but more tolerant of outliers and motion discontinuities."
+        },
+        {
+          "slug": "lucas-kanade",
+          "confidence": "high",
+          "caution": "Robust M-estimator version of the parametric variant; same machinery as Black-Anandan's piecewise-smooth flow."
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "brief": {
       "usedBy": [],
       "affects": [],
@@ -1919,6 +2315,35 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
+    },
+    "felzenszwalb-deformable-parts": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "hog-descriptor",
+          "confidence": "high",
+          "caution": "DPM uses HOG cells (k=8 px, α=0.2) with an analytic 31-dim projection of the 36-dim HOG vector as its base feature pyramid."
+        }
+      ],
+      "hasLearnedAlternative": [
+        {
+          "slug": "faster-rcnn",
+          "confidence": "high"
+        },
+        {
+          "slug": "mask-rcnn",
+          "confidence": "medium",
+          "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        },
+        {
+          "slug": "yolo-v1",
+          "confidence": "high",
+          "caution": "Replaces sliding-window deformable templates with single-pass CNN regression; reframes detection as regression rather than classification of proposals."
+        }
+      ]
     },
     "epnp": {
       "usedBy": [],
@@ -2052,6 +2477,22 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "hog-descriptor": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "horn-schunck": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "kumar-generalized-rac": {
       "usedBy": [],
       "affects": [],
@@ -2090,6 +2531,14 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "longuet-higgins-eight-point": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "lucas-kanade": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -2203,7 +2652,13 @@ export const contentGraph: ContentGraph = {
       "usedBy": [],
       "affects": [],
       "generalises": [],
-      "extending": [],
+      "extending": [
+        {
+          "slug": "lucas-kanade",
+          "confidence": "high",
+          "caution": "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
+        }
+      ],
       "fedBy": [],
       "hasLearnedAlternative": [
         {
@@ -2302,6 +2757,20 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "viola-jones-detector": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": [
+        {
+          "slug": "faster-rcnn",
+          "confidence": "medium",
+          "caution": "Viola-Jones targets real-time face detection on CPUs; Faster R-CNN is general multi-class detection on GPUs — replacement is paradigm-level, not drop-in."
+        }
+      ]
+    },
     "yang-sub-pixel-corner-fit": {
       "usedBy": [],
       "affects": [],
@@ -2381,6 +2850,14 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "alexnet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "ccdn-checkerboard-detector": {
       "usedBy": [],
       "affects": [],
@@ -2408,10 +2885,53 @@ export const contentGraph: ContentGraph = {
           "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
         }
       ],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "high",
+          "caution": "DeepLab v2 onward uses ResNet-101 as the dense-prediction backbone; v1 used VGG-16."
+        },
+        {
+          "slug": "vgg",
+          "confidence": "high",
+          "caution": "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "faster-rcnn": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
     "fcn-semantic-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "googlenet",
+          "confidence": "medium",
+          "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
+        },
+        {
+          "slug": "resnet",
+          "confidence": "medium",
+          "caution": "The torchvision FCN-ResNet50/101 port swaps the paper's VGG-16 backbone for ResNet; not the design Long et al. published."
+        },
+        {
+          "slug": "vgg",
+          "confidence": "high",
+          "caution": "VGG-16 is FCN's canonical backbone per FCN Table 1; FCN-VGG16 mean IU 56.0 vs FCN-AlexNet 39.8."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "googlenet": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -2449,7 +2969,13 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "medium",
+          "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "mask-rcnn": {
@@ -2458,12 +2984,22 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [
         {
+          "slug": "faster-rcnn",
+          "confidence": "high"
+        },
+        {
           "slug": "fcn-semantic-segmentation",
           "confidence": "high",
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
         }
       ],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "high",
+          "caution": "Mask R-CNN's headline backbones are ResNet-50/101 and ResNeXt-101 paired with FPN."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "mate-checkerboard-detector": {
@@ -2471,6 +3007,20 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "resnet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "vgg",
+          "confidence": "high",
+          "caution": "ResNet reformulates VGG-style plain depth scaling: identity shortcuts let 152-layer nets train where 19-layer plain nets already plateau (ResNet §1, Fig. 1)."
+        }
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -2510,7 +3060,29 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "vgg": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "alexnet",
+          "confidence": "high",
+          "caution": "VGG extends AlexNet's CNN classifier paradigm from 8 to 16/19 weight layers via stacked 3×3 conv blocks; same task, deeper architecture, same training framework."
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "xfeat": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "yolo-v1": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -2595,6 +3167,7 @@ export const contentGraph: ContentGraph = {
     },
     "image-gradient": {
       "usedBy": [
+        "black-anandan-robust-flow",
         "brief",
         "canny-edge-detector",
         "ccdn-checkerboard-detector",
@@ -2602,12 +3175,16 @@ export const contentGraph: ContentGraph = {
         "chessboard-x-corner-detection",
         "duda-radon-corners",
         "fast-corner-detector",
+        "felzenszwalb-deformable-parts",
         "geiger-chessboard-detector",
         "gp-checkerboard-enhancement",
         "harris-corner-detector",
         "hessian-saddle-response",
+        "hog-descriptor",
+        "horn-schunck",
         "laureano-topological-chessboard",
         "loy-fast-radial-symmetry",
+        "lucas-kanade",
         "mate-checkerboard-detector",
         "ni-generalized-fast-radial-symmetry",
         "ocpad",
@@ -2655,6 +3232,7 @@ export const contentGraph: ContentGraph = {
     },
     "scale-space": {
       "usedBy": [
+        "black-anandan-robust-flow",
         "orb",
         "pyramidal-blur-aware-xcorner",
         "sift",
@@ -2677,6 +3255,7 @@ export const contentGraph: ContentGraph = {
     "structure-tensor": {
       "usedBy": [
         "harris-corner-detector",
+        "lucas-kanade",
         "shi-tomasi-corner-detector"
       ],
       "affects": [],

@@ -60,55 +60,55 @@ Here is a practical top-50 seed corpus for a Computer Vision Atlas. It is not �
     Node: graph-based-segmentation.
 +24. Boykov, Jolly. Interactive Graph Cuts for Optimal Boundary and Region Segmentation of Objects in N-D Images. ICCV, 2001.
     Node: graph-cut-segmentation.
-25. Rother, Kolmogorov, Blake. GrabCut: Interactive Foreground Extraction Using Iterated Graph Cuts. SIGGRAPH, 2004.
++25. Rother, Kolmogorov, Blake. GrabCut: Interactive Foreground Extraction Using Iterated Graph Cuts. SIGGRAPH, 2004.
     Node: grabcut.
-26. Long, Shelhamer, Darrell. Fully Convolutional Networks for Semantic Segmentation. CVPR, 2015.
++26. Long, Shelhamer, Darrell. Fully Convolutional Networks for Semantic Segmentation. CVPR, 2015.
     Node: fcn.
-27. Ronneberger, Fischer, Brox. U-Net: Convolutional Networks for Biomedical Image Segmentation. MICCAI, 2015.
++27. Ronneberger, Fischer, Brox. U-Net: Convolutional Networks for Biomedical Image Segmentation. MICCAI, 2015.
     Node: unet.
-28. Chen et al. DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs. TPAMI, 2018 / arXiv 2016.
++28. Chen et al. DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs. TPAMI, 2018 / arXiv 2016.
     Node: deeplab.
-29. He, Gkioxari, Dollár, Girshick. Mask R-CNN. ICCV, 2017.
++29. He, Gkioxari, Dollár, Girshick. Mask R-CNN. ICCV, 2017.
     Node: mask-rcnn.
-30. Kirillov et al. Segment Anything. ICCV, 2023.
++30. Kirillov et al. Segment Anything. ICCV, 2023.
     Node: segment-anything. This should probably be a model page plus concept nodes for promptable-segmentation and foundation-segmentation-model; the paper introduces the SA task, SAM model, and SA-1B dataset.  ￼
 
 ⸻
 
 # Object detection and recognition models
 
-31. Viola, Jones. Rapid Object Detection Using a Boosted Cascade of Simple Features. CVPR, 2001.
++31. Viola, Jones. Rapid Object Detection Using a Boosted Cascade of Simple Features. CVPR, 2001.
     Node: viola-jones-detector.
-32. Dalal, Triggs. Histograms of Oriented Gradients for Human Detection. CVPR, 2005.
++32. Dalal, Triggs. Histograms of Oriented Gradients for Human Detection. CVPR, 2005.
     Node: hog.
-33. Felzenszwalb et al. Object Detection with Discriminatively Trained Part-Based Models. TPAMI, 2010.
+#33. Felzenszwalb et al. Object Detection with Discriminatively Trained Part-Based Models. TPAMI, 2010.
     Node: deformable-part-model.
-34. Krizhevsky, Sutskever, Hinton. ImageNet Classification with Deep Convolutional Neural Networks. NeurIPS, 2012.
++34. Krizhevsky, Sutskever, Hinton. ImageNet Classification with Deep Convolutional Neural Networks. NeurIPS, 2012.
     Node: alexnet.
-35. Simonyan, Zisserman. Very Deep Convolutional Networks for Large-Scale Image Recognition. ICLR, 2015.
++35. Simonyan, Zisserman. Very Deep Convolutional Networks for Large-Scale Image Recognition. ICLR, 2015.
     Node: vgg.
-36. Szegedy et al. Going Deeper with Convolutions. CVPR, 2015.
++36. Szegedy et al. Going Deeper with Convolutions. CVPR, 2015.
     Node: inception.
-37. He, Zhang, Ren, Sun. Deep Residual Learning for Image Recognition. CVPR, 2016.
++37. He, Zhang, Ren, Sun. Deep Residual Learning for Image Recognition. CVPR, 2016.
     Node: resnet.
-38. Ren, He, Girshick, Sun. Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks. NeurIPS, 2015.
++38. Ren, He, Girshick, Sun. Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks. NeurIPS, 2015.
     Node: faster-rcnn.
-39. Redmon et al. You Only Look Once: Unified, Real-Time Object Detection. CVPR, 2016.
++39. Redmon et al. You Only Look Once: Unified, Real-Time Object Detection. CVPR, 2016.
     Node: yolo.
-40. Lin et al. Focal Loss for Dense Object Detection. ICCV, 2017.
++40. Lin et al. Focal Loss for Dense Object Detection. ICCV, 2017.
     Node: retinanet, focal-loss.
 
 ⸻
 
 # Motion, tracking, optical flow
 
-41. Lucas, Kanade. An Iterative Image Registration Technique with an Application to Stereo Vision. IJCAI, 1981.
++41. Lucas, Kanade. An Iterative Image Registration Technique with an Application to Stereo Vision. IJCAI, 1981.
     Node: lucas-kanade.
-42. Horn, Schunck. Determining Optical Flow. Artificial Intelligence, 1981.
++42. Horn, Schunck. Determining Optical Flow. Artificial Intelligence, 1981.
     Node: horn-schunck.
-43. Tomasi, Kanade. Detection and Tracking of Point Features. CMU Technical Report, 1991.
++43. Tomasi, Kanade. Detection and Tracking of Point Features. CMU Technical Report, 1991.
     Node: kanade-lucas-tomasi-tracker.
-44. Black, Anandan. The Robust Estimation of Multiple Motions: Parametric and Piecewise-Smooth Flow Fields. CVIU, 1996.
++44. Black, Anandan. The Robust Estimation of Multiple Motions: Parametric and Piecewise-Smooth Flow Fields. CVIU, 1996.
     Node: robust-optical-flow.
 45. Brox et al. High Accuracy Optical Flow Estimation Based on a Theory for Warping. ECCV, 2004.
     Node: brox-optical-flow.

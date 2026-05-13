@@ -37,7 +37,7 @@ relations:
     confidence: high
 sources:
   primary: bay2006-surf
-  references: [lowe2004-sift, harris1988-corner]
+  references: [lowe2004-sift, harris1988-corner, viola2001-detector]
   notes: |
     Three pillars (Bay et al. 2006). Pillar 1 — Fast-Hessian detector (§3):
     integral image $I_\Sigma(x,y) = \sum_{i \le x, j \le y} I(i, j)$ enables

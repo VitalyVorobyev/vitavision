@@ -105,6 +105,38 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "black-anandan-robust-flow",
+    "frontmatter": {
+      "title": "Black-Anandan Robust Optical Flow",
+      "summary": "Optical flow that replaces the quadratic data and smoothness penalties of variational flow with redescending M-estimators, solved by SOR within a graduated non-convexity continuation; recovers piecewise-smooth flow without explicit line processes and a robust affine variant for multiple parametric motions.",
+      "tags": [
+        "motion",
+        "optical-flow",
+        "robust-statistics",
+        "variational"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 11,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient",
+        "scale-space"
+      ],
+      "failureModes": [],
+      "domain": "features",
+      "sources": {
+        "primary": "black1996-robust",
+        "references": [
+          "horn1981-horn-schunck",
+          "lucas1981-lucas-kanade"
+        ],
+        "notes": "Robust data + regularization energy (§4, eq. 12–14):\n$E(u,v) = \\sum_s \\rho_D(I_x u_s + I_y v_s + I_t, \\sigma_D)\n        + \\lambda \\sum_{s,n \\in N(s)} \\rho_S(u_s - u_n, \\sigma_S) + \\rho_S(v_s - v_n, \\sigma_S)$.\nLorentzian: $\\rho(x,\\sigma) = \\log(1 + \\tfrac{1}{2}(x/\\sigma)^2)$,\n$\\psi(x,\\sigma) = 2x/(2\\sigma^2 + x^2)$ (Fig. 8).\nGeman-McClure: $\\rho(x,\\sigma) = x^2/(\\sigma + x^2)$,\n$\\psi(x,\\sigma) = 2x\\sigma/(\\sigma+x^2)^2$.\nSOR update (§4.1.1, eq. 15-16): $u_s^{n+1} = u_s^n - (\\omega/T(u_s)) \\partial E/\\partial u_s$\nwith $\\omega \\in (0,2)$; convex initial scale $\\sigma_{\\text{init}} = r_{\\max}/\\sqrt{2}$\nfor Lorentzian. Outlier threshold: $\\tau = \\sqrt{2}\\,\\sigma$ (Lorentzian),\n$\\sigma/\\sqrt{3}$ (Geman-McClure). Coarse-to-fine pyramid with backward-warp\nimage warping (§4.2, Appendix B eq. 29-34) handles displacements > 1 px.\n"
+      },
+      "date": "2026-05-13"
+    }
+  },
+  {
     "slug": "brief",
     "frontmatter": {
       "title": "BRIEF: Binary Robust Independent Elementary Features",
@@ -167,7 +199,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "references": [
           "rosten2006-fast",
           "bay2006-surf",
-          "lowe2004-sift"
+          "lowe2004-sift",
+          "viola2001-detector"
         ],
         "notes": "Method (§3, Calonder et al. 2010). Pixel-pair test (Eq. 1):\nτ(p; x, y) = 1 if p(x) < p(y) else 0, where p is the Gaussian-smoothed\npatch (σ = 2, 9×9 discrete kernel — §3.1). Descriptor packing (Eq. 2):\nf_{n_d}(p) = Σ_{1≤i≤n_d} 2^{i-1} τ(p; x_i, y_i) with n_d ∈ {128, 256, 512}\nbits → BRIEF-16, BRIEF-32, BRIEF-64 (trailing number is bytes).\nPatch size S = 48 px (paper convention; the txt cache asserts\nS × S without an explicit numerical value, so this is the standard\ninterpretation).\nFive spatial sampling distributions for (x_i, y_i) evaluated in §3.2:\nG I uniform; G II i.i.d. Gaussian(0, S²/25) — best, used in all further\nexperiments; G III two-step Gaussian with σ² = S²/100 on the second\nsample; G IV coarse polar grid; G V x_i = (0,0) with y_i scanning a\npolar grid (consistently worst). Matching: Hamming distance (XOR +\npopcount). Speed (§4 Table, 512 keypoints, 2.66 GHz x86-64): BRIEF-32\ndescription 8.87 ms vs SURF-64 335 ms (35–41×); BRIEF-32 matching 4.35\nms vs 28.3 ms (4–13×). Storage 16/32/64 bytes vs 256 bytes for SURF-64.\nRotation sensitivity (§4 Fig. 9-right): little degradation up to\n10–15°, precipitous drop beyond. Recognition rate matches or exceeds\nSURF/U-SURF on Wall, Fountain, Trees, Jpg, Light; underperforms on\nGraffiti (rotation + monochromatic regions).\n"
       },
@@ -354,6 +387,47 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "notes": "Page tracks Daniilidis 1999 §3–§6. Rigid motion encoded as unit dual\nquaternion q̂ = q + εq′ with q = (cos θ/2, sin(θ/2) n) and\nq′ = (1/2) t ⊗ q (screw form q̂ = cos(θ̂/2) + sin(θ̂/2) l̂ with\nθ̂ = θ + εd, l̂ = l + εm). Screw congruence: corresponding hand and\neye motions share (θ, d); the scalar parts of â and b̂ coincide and\ncancel from the constraint â x̂ = x̂ b̂. Remaining imaginary-part\nequations stack into the 6×8 system (Eq. 31)\n    | a − b   [a+b]_×    0   0_{3×3} |\n    | a′ − b′ [a′+b′]_×  a−b [a+b]_× |\nper motion pair. SVD of the stacked ≥6M×8 matrix T yields a\ntwo-dim null space span{v₇, v₈}; the physical x̂ = λ₁ v₇ + λ₂ v₈\nis fixed by |q|² = 1 and q·q′ = 0 (a quadratic in s = λ₁/λ₂).\nRecover R from q and t = 2 q′ q*.\n"
       },
       "date": "2026-04-20"
+    }
+  },
+  {
+    "slug": "felzenszwalb-deformable-parts",
+    "frontmatter": {
+      "title": "Deformable Part Models",
+      "summary": "Detect a target object class in arbitrary images by scoring every position and scale in a HOG feature pyramid with a mixture of star-structured part-based templates — a coarse root filter and $n=6$ finer-resolution part filters with quadratic deformation costs — trained as a latent SVM with hard-negative mining.",
+      "tags": [
+        "object-detection",
+        "deformable-parts-model",
+        "latent-svm",
+        "hog",
+        "part-based",
+        "structured-prediction"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Different operational regimes — VJ is real-time cascade for rigid faces; DPM is offline part-based for general deformable objects."
+        }
+      ],
+      "domain": "detection",
+      "sources": {
+        "primary": "felzenszwalb2010-detection",
+        "references": [
+          "dalal2005-hog",
+          "viola2001-detector"
+        ],
+        "notes": "Star model $(F_0, P_1, \\ldots, P_n, b)$ with $n = 6$ parts at twice the spatial resolution of the root ($l_i = l_0 - \\lambda$ in a HOG feature pyramid with $\\lambda = 10$ levels per octave at test time, $\\lambda = 5$ at training time). Score (Eq. 2): $\\operatorname{score}(z) = \\sum_{i=0}^{n} F_i' \\cdot \\phi(H, p_i) - \\sum_{i=1}^{n} d_i \\cdot \\phi_d(dx_i, dy_i) + b$, with deformation feature $\\phi_d(dx, dy) = (dx, dy, dx^2, dy^2)$ (Eq. 4) and displacement $(dx_i, dy_i) = (x_i, y_i) - (2(x_0, y_0) + v_i)$ (Eq. 3). Inference via distance transforms (Eq. 8): $D_{i,l}(x,y) = \\max_{dx,dy}[R_{i,l}(x+dx,y+dy) - d_i \\cdot \\phi_d(dx,dy)]$, total cost $O(nk)$ once filter responses are computed. Mixture of $m = 2$ components per category for PASCAL. Latent SVM (Eq. 14): $L_D(\\beta) = \\tfrac{1}{2}\\|\\beta\\|^2 + C\\sum_i \\max(0, 1 - y_i f_\\beta(x_i))$ with $f_\\beta(x) = \\max_{z \\in Z(x)} \\beta \\cdot \\Phi(x, z)$ (Eq. 13); semi-convex (convex for $y_i = -1$). Training: coordinate descent (relabel positives → SGD on $\\beta$) plus hard-negative mining (Theorem 1). HOG feature parameters: cell size $k = 8$, truncation $\\alpha = 0.2$, $p = 9$ contrast-insensitive orientations; analytic 31-dimensional projection (9 contrast-insensitive + 18 contrast-sensitive + 4 energy channels) replacing the 36-dimensional HOG vector (Section 6.2). Part initialisation $d_i = (0, 0, 0.1, 0.1)$ with quadratic floor $\\geq 0.01$. PASCAL VOC IoU threshold $0.5$; bounding-box prediction by least-squares regression on a $2n+3$-dimensional configuration vector (Section 7.1). Runtime ~2 s/image on an 8-core desktop.\n"
+      },
+      "date": "2026-05-12"
     }
   },
   {
@@ -834,6 +908,94 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "hog-descriptor",
+    "frontmatter": {
+      "title": "HOG: Histograms of Oriented Gradients",
+      "summary": "Compute a fixed-length descriptor for an image window by binning pixel gradients into 8×8 cells of 9 unsigned-orientation histograms, normalising overlapping 2×2-cell blocks with L2-Hys, and concatenating the 3780 block values into a single vector fed to a linear SVM — the canonical pre-CNN pedestrian detector.",
+      "tags": [
+        "object-detection",
+        "pedestrian-detection",
+        "gradient-histograms",
+        "feature-descriptor",
+        "linear-svm"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Both classical sliding-window detectors. Viola-Jones: Haar + AdaBoost cascade on faces. HOG: gradient histograms + linear SVM on pedestrians."
+        },
+        {
+          "type": "feeds_into",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high",
+          "caution": "DPM uses HOG cells (k=8 px, α=0.2) with an analytic 31-dim projection of the 36-dim HOG vector as its base feature pyramid."
+        }
+      ],
+      "domain": "detection",
+      "sources": {
+        "primary": "dalal2005-hog",
+        "references": [
+          "lowe2004-sift"
+        ],
+        "notes": "HOG descriptor for a 64×128 detection window: gradient via centred $[-1, 0, 1]$ (no smoothing, $\\sigma = 0$); 8×8-pixel cells; 9 unsigned (0°–180°) orientation bins with bilinear interpolation in orientation and position; 2×2-cell (16×16-pixel) blocks at 8-pixel stride (50% overlap); Gaussian spatial window $\\sigma = 0.5 \\times$ block width $= 8$ px; L2-Hys normalisation (L2-norm, clip to 0.2, renormalise — from Lowe SIFT); descriptor dimension $7 \\times 15 \\times 4 \\times 9 = 3780$; soft linear SVM at $C = 0.01$ with hard-example mining (§4, §6, Fig. 4–5). Empirical breakers: any prior Gaussian smoothing ($\\sigma = 2$ drops recall 89%→80% at $10^{-4}$ FPPW); omitting block normalisation (−27%); fewer than 9 orientation bins; signed gradients for pedestrians; non-overlapping blocks (−4%); shrinking the 16-px window border to 8 px (−6%).\n"
+      },
+      "date": "2026-05-12"
+    }
+  },
+  {
+    "slug": "horn-schunck",
+    "frontmatter": {
+      "title": "Horn-Schunck Optical Flow",
+      "summary": "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation.",
+      "tags": [
+        "motion",
+        "optical-flow",
+        "variational"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 4,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "lucas-kanade",
+          "confidence": "high",
+          "caution": "Dense variational vs sparse local LSQ — co-founded optical flow in 1981; pick by problem (dense flow field vs sparse displacement of features)."
+        },
+        {
+          "type": "extended_by",
+          "target": "black-anandan-robust-flow",
+          "confidence": "high",
+          "caution": "Robust M-estimator extension of the quadratic data and smoothness terms; non-convex but more tolerant of outliers and motion discontinuities."
+        }
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "horn1981-horn-schunck",
+        "references": [
+          "lucas1981-lucas-kanade"
+        ],
+        "notes": "Brightness-constancy equation (§4): $E_x u + E_y v + E_t = 0$.\nVariational energy (§9): $\\mathcal{E}^2 = \\iint (\\alpha^2 \\mathcal{E}_b^2 + \\mathcal{E}_s^2)\\,dx\\,dy$\nwith $\\mathcal{E}_b = E_x u + E_y v + E_t$ and $\\mathcal{E}_s = \\|\\nabla u\\|^2 + \\|\\nabla v\\|^2$.\nIterative update (§12) substitutes the discrete Laplacian\n$\\nabla^2 u \\approx K(\\bar{u} - u)$ with $K = 3$ for the weighted 3x3 stencil\n(§8). Gradients $E_x, E_y, E_t$ are the average of four first-differences\nover a 2x2x2 spatiotemporal cube (§7). Boundary: zero normal derivative,\nedge pixels copy from interior (§12). Convergence: 32 iterations to ~10%\nerror at 32x32, 1% noise (§17).\n"
+      },
+      "date": "2026-05-13"
+    }
+  },
+  {
     "slug": "kumar-generalized-rac",
     "frontmatter": {
       "title": "Kumar-Ahuja Generalized Radial Alignment Constraint",
@@ -992,6 +1154,50 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "lucas-kanade",
+    "frontmatter": {
+      "title": "Lucas-Kanade Image Registration",
+      "summary": "Iterative Newton-Raphson method that estimates the parametric warp between two images by linearising the residual and solving the resulting weighted normal equation per iteration.",
+      "tags": [
+        "motion",
+        "optical-flow",
+        "image-registration"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient",
+        "structure-tensor"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high",
+          "caution": "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
+        },
+        {
+          "type": "extended_by",
+          "target": "black-anandan-robust-flow",
+          "confidence": "high",
+          "caution": "Robust M-estimator version of the parametric variant; same machinery as Black-Anandan's piecewise-smooth flow."
+        }
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "lucas1981-lucas-kanade",
+        "references": [
+          "shi-tomasi1994-features"
+        ],
+        "notes": "The 1D scalar update is eq (9) of the paper: $h \\approx \\sum F'(G-F) / \\sum F'^2$.\nThe N-D update (§4.5) replaces $F'$ with the gradient column and the denominator\nwith the gradient outer-product sum — the same matrix later called the structure\ntensor. Affine extension (§4.6, eq 11) and joint photometric ($\\alpha, \\beta$)\nestimation are sketched in the paper; convergence basin proved for $F=\\sin x$\nis $|h_0| < \\pi$ (§4.3).\n"
+      },
+      "date": "2026-05-13"
+    }
+  },
+  {
     "slug": "barath-magsac",
     "frontmatter": {
       "title": "MAGSAC: Marginalising Sample Consensus",
@@ -1128,7 +1334,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "rosten2006-fast",
           "harris1988-corner",
           "lowe2004-sift",
-          "bay2006-surf"
+          "bay2006-surf",
+          "viola2001-detector"
         ],
         "notes": "Method (Rublee et al. 2011, ICCV). Two-stage pipeline:\noFAST (detector) + rBRIEF (descriptor).\n\noFAST (§3): FAST-9 candidates at each level of a 5-level\nimage pyramid (scale factor √2, area-based interpolation).\nAdaptive intensity threshold yields ≥ N candidates; Harris\ncornerness response orders them and the top-N per level\nsurvive. Orientation θ = atan2(m_{01}, m_{10}) (Eq. 3) from\nthe first-order moments of a circular patch of radius r equal\nto the patch half-width (Eq. 1: m_{pq} = Σ x^p y^q I(x,y);\nEq. 2: C = (m_{10}/m_{00}, m_{01}/m_{00})).\n\nrBRIEF (§4): binary tests on the smoothed 31×31 patch via an\nintegral image; each test compares the mean intensity of two\n5×5 sub-windows (so the candidate-pair pool size is\nM = (wp − wt)² choose-2 with overlap eliminated → 205,590).\nThe test set S = [(x_i, y_i)] (2×n matrix) is steered to S_θ\n= R_θ S using θ from oFAST, discretised to 2π/30 (12°)\nincrements via a precomputed lookup table — 30 LUT entries.\nGreedy learning (§4.3) selects 256 tests on ~300k PASCAL 2006\nkeypoints by ranking |mean − 0.5| and rejecting any candidate\nwhose absolute pairwise correlation with the running set\nexceeds a threshold (raised if fewer than 256 survive).\nEq. 4–6 define τ, f_n, g_n.\n\nMatching: Hamming distance via XOR + popcount (SSE 4.2 in\nthe paper). Large-scale retrieval: multi-probe LSH with a\nsub-signature-of-bits hash, 16-bit sub-signature, 4–20 hash\ntables.\n\nBenchmarks (§6.1, 640×480, Intel i7 2.8 GHz, single thread):\nPyramid 4.43 ms, oFAST 8.68 ms, rBRIEF 2.12 ms, total ≈\n15.3 ms; SURF 217.3 ms, SIFT 5228.7 ms on the same data.\nCellphone (1 GHz ARM, ~400 points): ORB 66.6 ms, matching\n72.8 ms, H-fit 20.9 ms — ~7 Hz at 640×480 (§6.3).\n\nInlier rates (§4.4): outdoor \"Boat\" — ORB 45.8%, SURF 28.6%,\nSIFT 30.2%; indoor \"Magazines\" — ORB 36.2%, SURF 38.3%, SIFT\n34.0%. Rotation robustness (Fig. 7) > 70% inliers across all\nangles under Gaussian noise σ = 10; BRIEF (without steering)\ndrops sharply beyond ~10°.\n\nScope: ORB targets in-plane rotation and modest scale; per-\nkeypoint scale is a discrete pyramid level, not a continuous\nestimate. BSD-licensed reference implementation in OpenCV\n2.3+.\n"
       },
@@ -1516,7 +1723,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "bay2006-surf",
         "references": [
           "lowe2004-sift",
-          "harris1988-corner"
+          "harris1988-corner",
+          "viola2001-detector"
         ],
         "notes": "Three pillars (Bay et al. 2006). Pillar 1 — Fast-Hessian detector (§3):\nintegral image $I_\\Sigma(x,y) = \\sum_{i \\le x, j \\le y} I(i, j)$ enables\nconstant-time rectangular sums; box filters $D_{xx}, D_{yy}, D_{xy}$\napproximate Gaussian second derivatives with empirical balancing\n$\\det(\\mathcal{H}_\\text{approx}) = D_{xx} D_{yy} - (0.9\\, D_{xy})^2$\n(Eq. 2). The factor 0.9 ≈ ratio of Frobenius norms of the lobes;\nsquared as 0.81 in the cross-term. Scale-space upscales filters\ninstead of downsampling: octave 1 uses 9×9, 15×15, 21×21, 27×27\n(σ = 1.2 at 9×9, σ = 3.6 at 27×27); octave step doubles per octave\n(6, 12, 24). NMS in 3×3×3 (image+scale); sub-pixel/sub-scale via\nquadratic fit (Brown). Pillar 2 — Orientation (§4.1): Haar-wavelet\nresponses $d_x, d_y$ at sample step $s$ in a $6s$-radius circular\nneighbourhood (wavelet side $4s$), Gaussian-weighted with σ = 2.5s,\nsliding 60° (π/3) angular window picks the longest summed vector.\nU-SURF skips this step (~28% speed gain). Pillar 3 — Descriptor\n(§4.2): aligned 20s × 20s window, 4×4 sub-region grid, 5×5 sample\npoints per sub-region, Haar size 2s, Gaussian σ = 3.3s; per\nsub-region $v = (\\sum d_x, \\sum |d_x|, \\sum d_y, \\sum |d_y|)$ ⇒ 64-D\nvector; L2-normalized to unit length. Laplacian-sign of the keypoint\nindexes matching for early reject. SURF-128 splits sums by sign of\nthe orthogonal axis. Matching: nearest-neighbour-ratio at 0.7.\n"
       },
@@ -1697,6 +1905,34 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "viola-jones-detector",
+    "frontmatter": {
+      "title": "Viola–Jones Object Detector",
+      "summary": "Real-time frontal-face detection by sliding a fixed 24×24 sub-window across a grayscale image at multiple scales, scoring each position with an AdaBoost-selected ensemble of integral-image rectangle features arranged in a 38-stage attentional cascade that rejects most background regions after evaluating ~10 features per sub-window.",
+      "tags": [
+        "object-detection",
+        "face-detection",
+        "boosting",
+        "adaboost",
+        "integral-image",
+        "haar-features",
+        "cascade-classifier"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "domain": "detection",
+      "sources": {
+        "primary": "viola2001-detector",
+        "notes": "Three orthogonal contributions: (1) integral image $ii(x,y) = \\sum_{x' \\le x, y' \\le y} i(x',y')$ allowing any axis-aligned rectangular sum in four array reads (Section 2.1, Eq. 1–2); (2) AdaBoost weak classifier $h_j(x) = [\\![ p_j f_j(x) < p_j \\theta_j ]\\!]$ over ~180,000 rectangle features on a 24×24 sub-window (Section 3, Table 1); (3) attentional cascade with per-stage detection rate $d_i$ and false-positive rate $f_i$ giving $D = \\prod_i d_i$ and $F = \\prod_i f_i$ (Section 4). Final cascade: 38 layers, 6,061 features, layer 1–5 sizes 1, 10, 25, 25, 50. Average ~10 feature evaluations per sub-window. Frame rate 15 fps on 700 MHz Pentium III, 384×288 images. Trained on 4,916 hand-labelled faces; non-face training via bootstrapping on 9,544 images (~350 million sub-windows). Sub-windows variance-normalised by $\\sigma = \\sqrt{\\mu_2 - \\mu^2}$ computed from two integral images (one over pixels, one over squared pixels).\n"
+      },
+      "date": "2026-05-12"
+    }
+  },
+  {
     "slug": "yang-sub-pixel-corner-fit",
     "frontmatter": {
       "title": "Yang Parametric-Model Sub-Pixel Corner Fit",
@@ -1861,6 +2097,68 @@ export const demoPages: DemoIndexEntry[] = [
 
 export const modelPages: ModelIndexEntry[] = [
   {
+    "slug": "alexnet",
+    "frontmatter": {
+      "title": "AlexNet",
+      "summary": "Eight-layer convolutional neural network for 1000-class image classification on ImageNet, trained end-to-end on two GPUs with ReLU activations, local response normalisation, overlapping max-pooling, and dropout; the first deep CNN to win ILSVRC by a large margin.",
+      "tags": [
+        "computer-vision",
+        "image-classification",
+        "cnn",
+        "deep-learning"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "vgg",
+          "confidence": "high",
+          "caution": "VGG extends AlexNet's CNN classifier paradigm from 8 to 16/19 weight layers via stacked 3×3 conv blocks; same task, deeper architecture, same training framework."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "60M (paper §3.5); 61.1M (torchvision impl)",
+      "flops": "~720 MMAC @ 224×224 (torchvision impl)",
+      "sources": {
+        "primary": "krizhevsky2012-alexnet",
+        "references": [
+          "szegedy2015-inception"
+        ],
+        "notes": "Paper §3.5 architecture: 5 conv + 3 FC, 60M params, 650K neurons; per-GPU\nkernel widths 48–128–192–192–128 (totals 96–256–384–384–256 across both\nGPUs); FC widths 4096-4096-1000. Torchvision single-GPU port collapses the\nchannels to 64–192–384–256–256 (see torchvision/models/alexnet.py). §3.1 ReLU f(x)=max(0,x); §3.2 two-GPU\nsplit with cross-GPU connectivity only at conv3 and FC layers; §3.3 LRN\nwith k=2, n=5, α=1e-4, β=0.75 reduces top-1/top-5 by 1.4%/1.2%; §3.4\noverlapping pooling z=3, s=2 reduces top-1/top-5 by 0.4%/0.3%; §4.1\ndata augmentation (random 224×224 crops from 256×256, horizontal flips,\nPCA colour jitter with α_i ~ N(0, 0.1²)); §4.2 dropout p=0.5 in first\ntwo FC layers; §5 SGD batch 128, momentum 0.9, weight decay 0.0005,\ninitial LR ε=0.01 divided by 10 three times, 90 epochs, 5–6 days on\ntwo GTX 580 3GB GPUs, weight init N(0, 0.01²), bias init 1 for conv2,\nconv4, conv5, FC6, FC7 (0 elsewhere). Results: Table 1 (ILSVRC-2010)\ntop-1 37.5% / top-5 17.0% vs prior best 45.7% / 25.7%; Table 2 (ILSVRC-2012)\ntop-5 15.3% ensemble vs 26.2% second place. Section 7: removing a middle\nconv layer costs ~2% top-1. Note: practical implementations use 227×227\ninput to make the §3.5 stride-4 11×11 first conv produce a 55×55 feature\nmap; the paper's stated 224×224 is a typographical inconsistency.\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "336d36e8db990a905498c73933e35231876e28bc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause",
+          "weights_url": "https://download.pytorch.org/models/alexnet-owt-7be5be79.pth",
+          "weights_license": "BSD-3-Clause"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/BVLC/caffe",
+          "commit": "eeebdab16155d34ff8f5f42137da7df4d1c7eab0",
+          "framework": "caffe",
+          "license": "BSD-2-Clause",
+          "weights_url": "http://dl.caffe.berkeleyvision.org/bvlc_alexnet.caffemodel",
+          "weights_license": "unrestricted"
+        }
+      ],
+      "date": "2026-05-12"
+    }
+  },
+  {
     "slug": "ccdn-checkerboard-detector",
     "frontmatter": {
       "title": "CCDN",
@@ -2023,7 +2321,8 @@ export const modelPages: ModelIndexEntry[] = [
         "primary": "chen2018-deeplab",
         "references": [
           "long2015-fcn",
-          "ronneberger2015-unet"
+          "ronneberger2015-unet",
+          "he2016-resnet"
         ],
         "notes": "1-D atrous convolution: y[i] = Σ_k x[i + r·k] w[k] (Eq. 1, §3.1). Effective\nreceptive size k_e = k + (k-1)(r-1). Output stride 8 via stride-1 last two\npools + atrous r=2 and r=4, followed by 8× bilinear upsampling (§3.1).\nASPP-L head: four parallel 3×3 atrous convs at rates {6,12,18,24} summed\n(§4.1.2). ASPP-S uses {2,4,8,12}. Dense CRF pairwise potential (Eqs. 2-3,\n§3.3): bilateral appearance kernel (σ_α, σ_β) + spatial smoothness kernel\n(σ_γ); 10 mean-field iterations; fixed w_2=3, σ_γ=3; cross-validation on\n100 VOC val images. Training v2: SGD momentum 0.9, weight decay 5e-4,\n\"poly\" LR (init 0.001 / 0.01 classifier), batch 10, 20K iterations\n(§4.1.2); multi-scale fusion {0.5, 0.75, 1}. Headline: 79.7% VOC test mIoU\n(Table V), 77.69% val (Table IV), 45.7% PASCAL-Context (Table VI), 63.1%\nPASCAL-Person-Part (Table VII), 63.1% Cityscapes test (Table VIII). 8 FPS\nTitan X / 0.5 s CRF per image (§1). Trainaug 10,582 images (§4.1).\n"
       },
@@ -2044,6 +2343,83 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "date": "2026-05-11"
+    }
+  },
+  {
+    "slug": "faster-rcnn",
+    "frontmatter": {
+      "title": "Faster R-CNN",
+      "summary": "Two-stage CNN object detector that replaces external Selective Search / EdgeBoxes proposals with a learned Region Proposal Network sharing conv features with the Fast R-CNN head — yielding near-real-time multi-class detection on GPU (5 fps with VGG-16) and ImageNet-pretrained backbones swapped freely from ZF through ResNet-101.",
+      "tags": [
+        "computer-vision",
+        "object-detection",
+        "two-stage-detector",
+        "region-proposal-network",
+        "cnn",
+        "anchor-based"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Viola-Jones targets real-time face detection on CPUs; Faster R-CNN is general multi-class detection on GPUs — replacement is paradigm-level, not drop-in."
+        },
+        {
+          "type": "extended_by",
+          "target": "mask-rcnn",
+          "confidence": "high"
+        }
+      ],
+      "domain": "detection",
+      "arch_family": "cnn",
+      "params": "≈138M (VGG-16 backbone) or ≈62M (ZF backbone); RPN head adds ≈2.4M atop VGG-16",
+      "sources": {
+        "primary": "ren2015-faster",
+        "references": [
+          "long2015-fcn",
+          "krizhevsky2012-alexnet",
+          "he2016-resnet",
+          "he2017-maskrcnn"
+        ],
+        "notes": "Two-stage detector: RPN (3×3 sliding conv → 1×1 cls/reg branches, k=9 anchors:\n3 scales {128², 256², 512²} px × 3 ratios {1:1, 1:2, 2:1}) shares conv features\nwith a Fast R-CNN head. Multi-task loss (Eq. 1): L = (1/N_cls) Σ L_cls + λ (1/N_reg) Σ p* L_reg,\nwith λ=10, N_cls=256 mini-batch, N_reg≈2400 anchor locations (§3.1.2).\nAnchor parameterisation (Eq. 2): log-space for w,h, linear for centre offsets.\nPositive IoU ≥0.7, negative IoU <0.3 (§3.1.2). 4-step alternating training\n(§3.2); approximate joint training 25–50% faster.\nHeadline results: VGG-16 + 07+12 trainval → 73.2% mAP PASCAL VOC 2007 test\nat 5 fps (198 ms/image, K40, Tables III, V); VGG-16 → 42.1% mAP@0.5 /\n21.5% mAP@[.5,.95] COCO test-dev (Table XI); ResNet-101 → 48.4%/27.2%\nCOCO val, 1st place ILSVRC & COCO 2015 detection (§4).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/ShaoqingRen/faster_rcnn",
+          "commit": "49ad0990512a5d6e34f56e3c6596eb5fbf22f651",
+          "framework": "caffe",
+          "license": "MIT"
+        },
+        {
+          "role": "port",
+          "repo": "https://github.com/rbgirshick/py-faster-rcnn",
+          "commit": "781a917b378dbfdedb45b6a56189a31982da1b43",
+          "framework": "caffe",
+          "license": "MIT"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/facebookresearch/detectron2",
+          "commit": "d1e04565d3bec8719335b88be9e9b961bf3ec464",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-13"
     }
   },
   {
@@ -2093,6 +2469,9 @@ export const modelPages: ModelIndexEntry[] = [
       "params": "134M (FCN-VGG16, Table 1)",
       "sources": {
         "primary": "long2015-fcn",
+        "references": [
+          "he2016-resnet"
+        ],
         "notes": "§3.1 fully convolutional reinterpretation: fc6/fc7 of VGG-16 become\n1×1 convs of widths 4096/4096; the 1000-way classifier becomes a\n21-channel 1×1 conv (PASCAL VOC). Total stride 32 (Table 1, five\nstride-2 max-pools). §4.1 backbone comparison — VGG-16 best:\nFCN-VGG16 mean IU 56.0 / 59.4 (with extra data) vs FCN-AlexNet 39.8\nand FCN-GoogLeNet 42.5 on PASCAL VOC 2011 val (Table 1). §4.2 skip\narchitecture (Figure 3): pool3 + pool4 + conv7 score maps fused via\nelement-wise sum (not concatenation; max fusion impedes learning,\nfootnote 6); FCN-32s → FCN-16s (+3.0 mean IU) → FCN-8s (+0.3 mean\nIU). §4.3 staged learning: ~3 days on a single Tesla K40c for\nFCN-32s, then ~1 day each for FCN-16s and FCN-8s; SGD momentum 0.9,\nweight decay 5×10^-4 (or 2×10^-4), lr 10^-4 for FCN-VGG16,\nminibatch 20 images, no class weighting. Bilinear-init deconvolution\nlayers; pool3/pool4 1×1 prediction layers zero-initialised; learning\nrate decreased 100× when adding each skip. Headline numbers — Table\n3: FCN-8s 62.7 / 62.2 / ~175 ms on PASCAL VOC 2011 / 2012 test;\n20% relative gain over SDS at 52.6. Table 4: NYUDv2 RGB-HHA late\nfusion mean IU 34.0 (FCN-16s). Table 5: SIFT Flow geometric pixel\naccuracy 94.3, mean IU 39.5. Table 1: 134 M parameters, receptive\nfield 404 px, ~210 ms forward pass at 500×500 on K40c. §5: ~286×\ninference speedup over SDS (overall pipeline) and ~114× (convnet\nonly).\n"
       },
       "implementations": [
@@ -2112,6 +2491,83 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "date": "2026-05-10"
+    }
+  },
+  {
+    "slug": "googlenet",
+    "frontmatter": {
+      "title": "GoogLeNet",
+      "summary": "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet).",
+      "tags": [
+        "computer-vision",
+        "image-classification",
+        "cnn",
+        "deep-learning",
+        "inception"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "vgg",
+          "confidence": "high",
+          "caution": "Both ILSVRC-2014 entries — GoogLeNet won classification (6.67% top-5), VGG won localisation. Different design philosophies: Inception modules vs homogeneous 3×3 depth scaling."
+        },
+        {
+          "type": "compared_with",
+          "target": "alexnet",
+          "confidence": "high",
+          "caution": "22 layers vs AlexNet's 8; 7M vs 60M parameters; 56.5% relative reduction in top-5 error vs AlexNet (16.4% → 6.67%) over two ILSVRC years."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "7M (paper §1; 12× fewer than AlexNet)",
+      "flops": "~1.5 billion multiply-adds @ 224×224 (paper §1 target budget)",
+      "sources": {
+        "primary": "szegedy2015-inception",
+        "references": [
+          "krizhevsky2012-alexnet",
+          "simonyan2014-vgg"
+        ],
+        "notes": "Paper §1 design target: 1.5 billion multiply-adds at inference;\n12× fewer parameters than AlexNet (7M vs ~60M). §3 motivation:\nHebbian principle + Arora et al. 2013 theorem on approximating\nsparse network topologies via correlation clustering. §4 Inception\nmodule: parallel 1×1, 3×3, 5×5 convs and 3×3 max-pool concatenated\non channel axis (Figure 2a naïve, Figure 2b with 1×1 reduction\nbottlenecks before 3×3/5×5 and 1×1 projection after pool). 1×1\nconvolutions sourced from Lin et al. Network-in-Network 2013. §5 /\nTable 1: full layer-by-layer architecture, 22 weight layers (27\nwith pooling), 9 Inception modules (3a, 3b, 4a–4e, 5a, 5b), stem\n7×7/2 conv → 3×3/2 max-pool → 3×3/1 conv → 3×3/2 max-pool before\nInception modules. Global average pooling before final softmax\n(improves top-1 by ~0.6% over FC layers, requires dropout in\nauxiliary classifier still). Auxiliary classifiers at Inception\n(4a) and (4d): 5×5 avg-pool stride 3 → 1×1/128 conv → FC-1024 +\nReLU → dropout 0.7 → FC-1000 softmax; auxiliary loss weight 0.3\nat training, discarded at inference. §6 training: DistBelief\ndistributed system, async SGD momentum 0.9, LR polynomial decrease\nby 4% every 8 epochs, Polyak averaging for inference. Augmentation:\naspect-ratio sampling area 8%–100%, ratio ∈ [3/4, 4/3], photometric\ndistortions, random interpolation. §7 / Table 2 / Table 3 ILSVRC\n2014 classification: ensemble top-5 6.67% (7 models × 144 crops),\nsingle model 7.9% (vs single VGG-16 7.0%). 56.5% relative reduction\nvs ILSVRC 2012 SuperVision (AlexNet 16.4%). §8 / Table 4 / Table 5\nILSVRC 2014 detection: 6-net ensemble mAP 43.9%, single model\n38.02%; uses Selective Search proposals; no bounding-box regression\n\"due to lack of time\". §7 test-time: 4 scales × 3 squares × 6 crops\n× 2 mirrors = 144 crops per image, softmax averaged. Torchvision\nInception block (336d36e): branches 1×1, 1×1→3×3, 1×1→3×3 (known\nbug, paper specifies 5×5), 3×3 maxpool→1×1; see pytorch/vision#906.\nTorchvision weights trained by maintainers, not the original BVLC\nGoogLeNet weights (which achieve 68.7% top-1 / 88.9% top-5 single\ncentre crop per BVLC model zoo readme).\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "336d36e8db990a905498c73933e35231876e28bc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause",
+          "weights_url": "https://download.pytorch.org/models/googlenet-1378be20.pth",
+          "weights_license": "BSD-3-Clause"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/BVLC/caffe",
+          "commit": "eeebdab16155d34ff8f5f42137da7df4d1c7eab0",
+          "framework": "caffe",
+          "license": "BSD-2-Clause",
+          "weights_url": "http://dl.caffe.berkeleyvision.org/bvlc_googlenet.caffemodel",
+          "weights_license": "unrestricted"
+        }
+      ],
+      "date": "2026-05-12"
     }
   },
   {
@@ -2217,7 +2673,8 @@ export const modelPages: ModelIndexEntry[] = [
           "sarlin2020-superglue",
           "detone2018-superpoint",
           "potje2024-xfeat",
-          "lindenberger2023-lightglue"
+          "lindenberger2023-lightglue",
+          "he2016-resnet"
         ],
         "notes": "§3 four sub-modules: (1) FPN-ResNet backbone → coarse maps at 1/8,\nfine maps at 1/2; (2) Local Feature Transformer with $N_c$ interleaved\nself/cross attention layers, ELU+1 Linear Transformer kernel\n$\\phi(x) = \\text{elu}(x) + 1$ for $O(N)$ complexity; (3) coarse\nmatching via dual-softmax (LoFTR-DS) or Sinkhorn (LoFTR-OT, 3 iters)\n+ MNN + confidence threshold; (4) fine refinement: $w \\times w$\ncorrelation window → sub-pixel expectation. §3.5 score matrix\n$\\mathcal{S}(i,j) = (1/\\tau) \\langle \\tilde{F}^A_{tr}(i),\n\\tilde{F}^B_{tr}(j) \\rangle$. §4.1 HPatches homography SOTA AUC@3px\n/5px/10px. §4.2 ScanNet pose AUC@10° improves SuperGlue by 13%, DRC\nby 61%. §4.4 runtime 116 ms (DS) / 130 ms (OT) per 640×480 pair on\nRTX 2080Ti. §B training: 64 GTX 1080Ti GPUs, ~24 h indoor; ScanNet\n640×480, MegaDepth 840 long-side training / 1200 long-side eval.\n"
       },
@@ -2253,6 +2710,14 @@ export const modelPages: ModelIndexEntry[] = [
       "access": "public",
       "prerequisites": [],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "medium",
+          "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        }
+      ],
       "domain": "segmentation",
       "tasks": [
         "image-segmentation"
@@ -2261,7 +2726,9 @@ export const modelPages: ModelIndexEntry[] = [
       "sources": {
         "primary": "he2017-maskrcnn",
         "references": [
-          "long2015-fcn"
+          "ren2015-faster",
+          "long2015-fcn",
+          "he2016-resnet"
         ],
         "notes": "Multi-task loss per RoI: L = L_cls + L_box + L_mask (§3 Mask R-CNN).\nMask branch outputs Km^2-dim tensor — K binary masks of resolution\nm × m, per-pixel sigmoid; L_mask is the binary cross-entropy on the\nk-th channel only, where k is the ground-truth class. Mask resolution\nm=14 for ResNet-C4 head, m=28 for FPN head (Figure 4). RoIAlign uses\nx/16 (no rounding) with bilinear interpolation at four regularly\nspaced sampling points per bin; RoIPool used [x/16] quantization\ninstead (§3 RoIAlign, Figure 3). Training: COCO train2017, 80 classes,\nSGD momentum 0.9, weight decay 1e-4, LR 0.02 → 0.002 step at 120k of\n160k iters, 8 GPUs at 2 images/GPU effective batch 16 (§3.1 Training);\nResNeXt variants 1 image/GPU, LR 0.01. Headline COCO test-dev mask AP\n(Table 1): ResNet-101-FPN 35.7, ResNeXt-101-FPN 37.1; FCIS+++ baseline\n33.6. RoIAlign vs RoIPool ablation (Table 2c, ResNet-50-C4): ~3 AP /\n~5 AP_75 gain. Per-class sigmoid vs softmax (Table 2b): +5.5 AP\n(30.3 vs 24.8). Inference: 5 fps Tesla M40, ~195 ms/image ResNet-101-\nFPN; ResNet-101-C4 ~400 ms/image (§4.4). Mask branch adds ~20%\noverhead over Faster R-CNN counterpart.\n"
       },
@@ -2346,6 +2813,96 @@ export const modelPages: ModelIndexEntry[] = [
         "notes": "Stub page authored from secondary sources only — the MDPI PDF for\nDonné et al. 2016 (doi:10.3390/s16111858) returned HTTP 403 to\nautomated fetchers and could not be cached. All claims are derived\nfrom the chen2023-ccdn research note, the existing CCDN page\n(`content/models/ccdn-checkerboard-detector.md`), and the\nindex.yaml `donne2016-mate` notes. Architecture: 3 conv\nlayers + ReLU; per-pixel response map; max-pool with stride > 1\n(output spatially coarser than input). Loss: MSE between predicted\nresponse and binary corner mask (no positive/negative balancing).\nPost-processing: fixed 0.5 threshold; no NMS, no clustering.\nBenchmarks (via CCDN Tables 1–2): uEye 1.009 px / 3.065 % missed /\n0.809 % doubles / 492 FP; GoPro 0.835 px / 4.566 % / 4.556 % / 389 FP.\nPromote past stub when the paper PDF becomes accessible and the\narchitectural specifics (kernel sizes, channel counts, max-pool\nstrides, training hyperparameters) can be verified against the\nprimary text.\n"
       },
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "resnet",
+    "frontmatter": {
+      "title": "ResNet",
+      "summary": "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation.",
+      "tags": [
+        "computer-vision",
+        "image-classification",
+        "cnn",
+        "deep-learning",
+        "backbone",
+        "residual"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "googlenet",
+          "confidence": "high",
+          "caution": "Both push depth beyond VGG: GoogLeNet 22 layers via Inception modules, ResNet up to 152 via residual blocks. ResNet-152 single model 4.49% top-5 val vs GoogLeNet ensemble 6.66% top-5 test (Tables 4/5)."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN's headline backbones are ResNet-50/101 and ResNeXt-101 paired with FPN."
+        },
+        {
+          "type": "feeds_into",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab v2 onward uses ResNet-101 as the dense-prediction backbone; v1 used VGG-16."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "The torchvision FCN-ResNet50/101 port swaps the paper's VGG-16 backbone for ResNet; not the design Long et al. published."
+        },
+        {
+          "type": "feeds_into",
+          "target": "loftr",
+          "confidence": "medium",
+          "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "11.7M (ResNet-18), 25.6M (ResNet-50), 44.5M (ResNet-101), 60.2M (ResNet-152) — torchvision",
+      "flops": "1.8 GMAC (18), 3.8 GMAC (50), 7.6 GMAC (101), 11.3 GMAC (152) @ 224×224 (Table 1)",
+      "sources": {
+        "primary": "he2016-resnet",
+        "references": [
+          "krizhevsky2012-alexnet",
+          "simonyan2014-vgg",
+          "szegedy2015-inception",
+          "long2015-fcn"
+        ],
+        "notes": "Paper §1 / Fig. 1: degradation problem on CIFAR-10 — 56-layer plain net\nhas higher training error than 20-layer plain net, ruling out overfitting.\n§3.1 residual learning: stacked layers learn $\\mathcal{F}(x) := H(x) - x$\nrather than $H(x)$ directly, and the block computes $\\mathcal{F}(x) + x$.\n§3.2 / Eq. 1: $y = \\mathcal{F}(x, \\{W_i\\}) + x$ identity shortcut.\n§3.2 / Eq. 2: $y = \\mathcal{F}(x, \\{W_i\\}) + W_s x$ projection shortcut\nwhen input/output dimensions differ; $W_s$ is a 1×1 convolution.\n§3.3 / Table 1: five stages — conv1 (7×7/stride-2/64); conv2_x at 56×56\nwith 3 blocks (50-layer) / 3 (101-layer) / 3 (152-layer); conv3_x at\n28×28 with 4 / 4 / 8 blocks; conv4_x at 14×14 with 6 / 23 / 36 blocks;\nconv5_x at 7×7 with 3 / 3 / 3 blocks; global average pool + FC-1000 +\nsoftmax. Bottleneck block (§3.3, Fig. 5): 1×1 (reduce) → 3×3 → 1×1\n(restore), 4× channel expansion. Three shortcut options (§3.3, Table 3):\nA zero-padding, B projection only when dims change, C all projections;\nB selected as default. §3.4 implementation: 224×224 crops from short-side\n[256, 480]; per-pixel mean subtracted; standard color augmentation; BN\nafter every conv before activation [16]; He 2015 init [12]; SGD momentum\n0.9, weight decay 10⁻⁴, batch 256, initial LR 0.1 ÷10 at plateau, up to\n60·10⁴ iterations; no dropout. Test: 10-crop standard for comparison;\nfully-convolutional multi-scale {224, 256, 384, 480, 640} for best\nresults. Table 2 (top-1 val, 10-crop): plain-18 27.94%, plain-34 28.54%,\nResNet-18 27.88%, ResNet-34 25.03% — documents plain-net degradation\nand residual-net resolution. Table 4 single-model val: ResNet-152\n19.38% top-1 / 4.49% top-5; BN-Inception 21.99% / 5.81%. Table 5\nensemble test: ResNet 6-model 3.57% top-5; VGG (v5) 6.8%; GoogLeNet\n(ILSVRC'14) 6.66%; BN-Inception 4.82%. §4.2 CIFAR-10 (Table 6):\nResNet-110 6.43% (1.7M params); ResNet-1202 7.93% (19.4M params) —\noverfitting without strong regularization. §4.2 footnote 5: 110-layer\nneeds warm-up LR 0.01 until training error < 80%, then 0.1. §4.3\ntransfer (Table 7): PASCAL VOC 07 test mAP — VGG-16 73.2%, ResNet-101\n76.4%. Table 8 COCO: VGG-16 mAP@[.5,.95] 21.2%, ResNet-101 27.2% —\n28% relative improvement.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/KaimingHe/deep-residual-networks",
+          "commit": "a7026cb6d478e131b765b898c312e25f9f6dc031",
+          "framework": "caffe",
+          "license": "MIT"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "afc54f754c734d903a06194e416495e20d920ff6",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause",
+          "weights_url": "https://download.pytorch.org/models/resnet50-0676ba61.pth",
+          "weights_license": "BSD-3-Clause"
+        }
+      ],
+      "date": "2026-05-13"
     }
   },
   {
@@ -2566,6 +3123,82 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "vgg",
+    "frontmatter": {
+      "title": "VGG",
+      "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
+      "tags": [
+        "computer-vision",
+        "image-classification",
+        "cnn",
+        "deep-learning",
+        "backbone"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "VGG-16 is FCN's canonical backbone per FCN Table 1; FCN-VGG16 mean IU 56.0 vs FCN-AlexNet 39.8."
+        },
+        {
+          "type": "feeds_into",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
+        },
+        {
+          "type": "extended_by",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "ResNet reformulates VGG-style plain depth scaling: identity shortcuts let 152-layer nets train where 19-layer plain nets already plateau (ResNet §1, Fig. 1)."
+        }
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "138M (VGG-16); 144M (VGG-19) (Table 2)",
+      "flops": "~15.5 GMAC @ 224×224 (VGG-16, torchvision)",
+      "sources": {
+        "primary": "simonyan2014-vgg",
+        "references": [
+          "krizhevsky2012-alexnet",
+          "szegedy2015-inception"
+        ],
+        "notes": "Paper §2.1 architecture: 224×224 RGB input, 3×3 conv stride 1 padding 1\nthroughout (1×1 in config C only), 2×2 max-pool stride 2 after each\nblock, three FC layers (4096, 4096, 1000-way softmax), ReLU on all\nhidden layers, LRN only in config A-LRN (no help, removed in others).\n§2.2 / Table 1: configs A (11), A-LRN (11), B (13), C (16, with 1×1\nconvs), D (16, all 3×3 — \"VGG-16\"), E (19 — \"VGG-19\"). Channel schedule\n64 → 128 → 256 → 512 → 512, doubles after each pool. Table 2 parameter\ncounts: A/A-LRN 133M, B 133M, C 134M, D 138M, E 144M. §2.3 receptive-field\nargument: stack of three 3×3 convs has 7×7 receptive field with 3(3²C²)\n= 27C² parameters vs 7²C² = 49C² for a single 7×7 conv (45% fewer);\nalso adds two non-linearities per stack. §3.1 training: SGD batch 256,\nmomentum 0.9, weight decay 5·10⁻⁴, dropout 0.5 in first two FC layers,\ninitial LR 10⁻² divided by 10 three times → 370K iterations / 74 epochs.\nInitialisation: A from N(0, 10⁻²); deeper nets seed first 4 conv +\nlast 3 FC layers from trained A, middle from N(0, 10⁻²). Augmentation:\nisotropic rescale to shorter side S then random 224×224 crops + flips\n+ RGB jitter; fixed-scale (S=256 or S=384) and multi-scale (S ∈ [256,\n512]) regimes. Test: dense evaluation (FC → 1×1 conv) at scale Q,\noptionally averaged over multi-scale {S−32, S, S+32}, optionally\ncombined with multi-crop. §4 / Table 3: error decreases monotonically\nA → B → C → D and saturates at E; D top-5 8.1% at fixed S=[256;512] Q=384.\n§4.2 / Table 4: best single-network val 24.8% top-1 / 7.5% top-5 (D or E,\nmulti-scale). §4.5 / Table 7: single VGG-16 7.0% top-5 vs single GoogLeNet\n7.9%; 7-net VGG ensemble 7.3% (2nd place classification, 1st place\nlocalisation); post-submission 2-net VGG ensemble 6.8%; GoogLeNet 7-net\n6.7%. §3.1 training time: 2–3 weeks per net on 4 NVIDIA Titan Black GPUs.\n§5 generalisation: VGG features transfer strongly to PASCAL VOC and other\nrecognition tasks.\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "336d36e8db990a905498c73933e35231876e28bc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause",
+          "weights_url": "https://download.pytorch.org/models/vgg16-397923af.pth",
+          "weights_license": "BSD-3-Clause"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/keras-team/keras",
+          "commit": "b7f0905d8ae5076ec501fe58f8b8c85fa7d22d43",
+          "framework": "tensorflow",
+          "license": "Apache-2.0",
+          "weights_url": "https://storage.googleapis.com/tensorflow/keras-applications/vgg16/vgg16_weights_tf_dim_ordering_tf_kernels.h5",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-12"
+    }
+  },
+  {
     "slug": "xfeat",
     "frontmatter": {
       "title": "XFeat",
@@ -2642,6 +3275,73 @@ export const modelPages: ModelIndexEntry[] = [
         }
       ],
       "date": "2026-04-18"
+    }
+  },
+  {
+    "slug": "yolo-v1",
+    "frontmatter": {
+      "title": "YOLOv1",
+      "summary": "Single-stage CNN object detector that frames detection as one regression problem from full-image pixels to a 7×7×30 tensor of grid-cell box offsets, objectness, and 20-class probabilities — trained end-to-end and inferring 98 boxes per image at 45 fps on a Titan X.",
+      "tags": [
+        "computer-vision",
+        "object-detection",
+        "single-stage-detector",
+        "real-time",
+        "cnn"
+      ],
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "faster-rcnn",
+          "confidence": "high",
+          "caution": "YOLO trades localization accuracy and small-object recall for ~3× throughput; same era, different design point."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high",
+          "caution": "Replaces sliding-window deformable templates with single-pass CNN regression; reframes detection as regression rather than classification of proposals."
+        }
+      ],
+      "domain": "detection",
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "redmon2016-yolo",
+        "references": [
+          "szegedy2015-inception",
+          "simonyan2014-vgg",
+          "ren2015-faster",
+          "felzenszwalb2010-detection",
+          "dalal2005-hog"
+        ],
+        "notes": "Detection as a single regression from a 448×448 RGB image to a 7×7×30 tensor\nfor VOC (S=7 grid, B=2 boxes per cell, C=20 classes; per-cell layout =\nB·5 + C). Confidence (§2, eq. 1): Pr(Object)·IOU_pred^truth; class-specific\nscore: Pr(Class_i)·IOU_pred^truth. Backbone is GoogLeNet-style (§2.1,\nFigure 3): 24 conv (alternating 1×1 reduction + 3×3) + 2 FC, leaky ReLU\nslope 0.1 (eq. 2), linear output. Fast YOLO is 9 conv + 2 FC. Multi-part\nSSE loss (§2.2, eq. 3) with λ_coord=5, λ_noobj=0.5, and (√w, √h)\nparametrization to balance large/small box gradients. Pretrain 20 conv on\nImageNet 224×224 (top-5 88%, GoogLeNet-comparable), fine-tune all layers\nat 448×448; LR warmup 10⁻³→10⁻², then 10⁻² × 75 ep, 10⁻³ × 30 ep,\n10⁻⁴ × 30 ep; batch 64, momentum 0.9, weight decay 5×10⁻⁴; dropout 0.5\nafter first FC; data aug ±20% scale/translate, HSV jitter ×1.5.\nHeadline: YOLO 63.4% mAP @ 45 fps; Fast YOLO 52.7% @ 155 fps on VOC 2007\ntest (Table 1). 98 boxes per image at test (§2.3, S·S·B = 7·7·2 = 98);\nNMS adds 2–3% mAP. Error analysis (§4.2): localization-dominant for YOLO;\nFast R-CNN makes almost 3× more background false positives. Ensemble\nrescoring (§4.3): Fast R-CNN 71.8% → 75.0% with YOLO. Generalization to\nartwork (§4.5). VOC 2012 mAP 57.9% with an 8–10% gap on bottle/sheep/\ntv-monitor (§4.4).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/pjreddie/darknet",
+          "commit": "f6afaabcdf85f77e7aff2ec55c020c0e297c77f9",
+          "framework": "other",
+          "license": "Public Domain (Darknet LICENSE v2)",
+          "weights_url": "https://data.pjreddie.com/files/yolov1/yolov1.weights",
+          "weights_license": "Public Domain (Darknet LICENSE v2)"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/abeardear/pytorch-YOLO-v1",
+          "commit": "823c45185a4af4f895d53ca466f725a1edbcfec0",
+          "framework": "pytorch",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-05-13"
     }
   }
 ];
@@ -2839,7 +3539,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 8,
+      "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
       "domain": "features",

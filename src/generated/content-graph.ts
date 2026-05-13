@@ -249,6 +249,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/longuet-higgins-eight-point",
       "draft": false
     },
+    "lucas-kanade": {
+      "slug": "lucas-kanade",
+      "type": "algorithm",
+      "title": "Lucas-Kanade Image Registration",
+      "summary": "Iterative Newton-Raphson method that estimates the parametric warp between two images by linearising the residual and solving the resulting weighted normal equation per iteration.",
+      "path": "/atlas/lucas-kanade",
+      "draft": false
+    },
     "barath-magsac": {
       "slug": "barath-magsac",
       "type": "algorithm",
@@ -1089,6 +1097,21 @@ export const contentGraph: ContentGraph = {
           "type": "generalized_by",
           "target": "fundamental-matrix-eight-point",
           "confidence": "high"
+        }
+      ]
+    },
+    "lucas-kanade": {
+      "prerequisites": [
+        "image-gradient",
+        "structure-tensor"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high",
+          "caution": "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
         }
       ]
     },
@@ -2431,6 +2454,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "lucas-kanade": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "barath-magsac": {
       "usedBy": [],
       "affects": [],
@@ -2537,7 +2568,13 @@ export const contentGraph: ContentGraph = {
       "usedBy": [],
       "affects": [],
       "generalises": [],
-      "extending": [],
+      "extending": [
+        {
+          "slug": "lucas-kanade",
+          "confidence": "high",
+          "caution": "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
+        }
+      ],
       "fedBy": [],
       "hasLearnedAlternative": [
         {
@@ -3061,6 +3098,7 @@ export const contentGraph: ContentGraph = {
         "hog-descriptor",
         "laureano-topological-chessboard",
         "loy-fast-radial-symmetry",
+        "lucas-kanade",
         "mate-checkerboard-detector",
         "ni-generalized-fast-radial-symmetry",
         "ocpad",
@@ -3130,6 +3168,7 @@ export const contentGraph: ContentGraph = {
     "structure-tensor": {
       "usedBy": [
         "harris-corner-detector",
+        "lucas-kanade",
         "shi-tomasi-corner-detector"
       ],
       "affects": [],

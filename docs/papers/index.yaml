@@ -913,3 +913,31 @@
   - szegedy2015-inception
   - ren2015-faster
   - simonyan2014-vgg
+
+- id: lin2017-retinanet
+  title: "Focal Loss for Dense Object Detection"
+  authors: ["T. Lin", "P. Goyal", "R. Girshick", "K. He", "P. Dollár"]
+  year: 2017
+  venue: ICCV 2017
+  url: https://arxiv.org/pdf/1708.02002
+  arxiv: "1708.02002"
+  doi: "10.1109/ICCV.2017.324"
+  pdf: lin2017-retinanet.pdf
+  cites:
+  - dalal2005-hog
+  - viola2001-detector
+  - krizhevsky2012-alexnet
+  - he2016-resnet
+  - long2015-fcn
+  - ren2015-faster
+  - he2017-maskrcnn
+  - felzenszwalb2010-detection
+
+- id: lucas1981-lucas-kanade
+  title: "An Iterative Image Registration Technique with an Application to Stereo Vision"
+  authors: ["B. D. Lucas", "T. Kanade"]
+  year: 1981
+  venue: IJCAI 1981
+  url: https://www.ri.cmu.edu/pub_files/pub3/lucas_bruce_d_1981_2/lucas_bruce_d_1981_2.pdf
+  pdf: lucas1981-lucas-kanade.pdf
+

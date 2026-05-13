@@ -1079,6 +1079,44 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "lucas-kanade",
+    "frontmatter": {
+      "title": "Lucas-Kanade Image Registration",
+      "summary": "Iterative Newton-Raphson method that estimates the parametric warp between two images by linearising the residual and solving the resulting weighted normal equation per iteration.",
+      "tags": [
+        "motion",
+        "optical-flow",
+        "image-registration"
+      ],
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient",
+        "structure-tensor"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high",
+          "caution": "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
+        }
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "lucas1981-lucas-kanade",
+        "references": [
+          "shi-tomasi1994-features"
+        ],
+        "notes": "The 1D scalar update is eq (9) of the paper: $h \\approx \\sum F'(G-F) / \\sum F'^2$.\nThe N-D update (§4.5) replaces $F'$ with the gradient column and the denominator\nwith the gradient outer-product sum — the same matrix later called the structure\ntensor. Affine extension (§4.6, eq 11) and joint photometric ($\\alpha, \\beta$)\nestimation are sketched in the paper; convergence basin proved for $F=\\sin x$\nis $|h_0| < \\pi$ (§4.3).\n"
+      },
+      "date": "2026-05-13"
+    }
+  },
+  {
     "slug": "barath-magsac",
     "frontmatter": {
       "title": "MAGSAC: Marginalising Sample Consensus",
@@ -3420,7 +3458,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 8,
+      "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
       "domain": "features",

@@ -565,6 +565,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Nature"
   },
   {
+    "slug": "lucas-kanade",
+    "path": "/atlas/lucas-kanade",
+    "type": "algorithm",
+    "title": "Lucas-Kanade Image Registration",
+    "summary": "Iterative Newton-Raphson method that estimates the parametric warp between two images by linearising the residual and solving the resulting weighted normal equation per iteration.",
+    "tags": [
+      "motion",
+      "optical-flow",
+      "image-registration"
+    ],
+    "domain": "features",
+    "headings": [
+      "Coarse-to-fine extension",
+      "Affine and photometric generalisations"
+    ],
+    "authors": [
+      "B. D. Lucas",
+      "T. Kanade"
+    ],
+    "venue": "IJCAI 1981"
+  },
+  {
     "slug": "barath-magsac",
     "path": "/atlas/barath-magsac",
     "type": "algorithm",

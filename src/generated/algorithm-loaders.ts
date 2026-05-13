@@ -26,6 +26,7 @@ export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlMod
   "lin-sva-stitching": () => import("./content/algorithms/lin-sva-stitching.ts"),
   "duda-radon-corners": () => import("./content/algorithms/duda-radon-corners.ts"),
   "longuet-higgins-eight-point": () => import("./content/algorithms/longuet-higgins-eight-point.ts"),
+  "lucas-kanade": () => import("./content/algorithms/lucas-kanade.ts"),
   "barath-magsac": () => import("./content/algorithms/barath-magsac.ts"),
   "fundamental-matrix-eight-point": () => import("./content/algorithms/fundamental-matrix-eight-point.ts"),
   "ocpad": () => import("./content/algorithms/ocpad.ts"),

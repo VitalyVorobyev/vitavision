@@ -15,6 +15,14 @@ relations:
   - type: compared_with
     target: xfeat
     confidence: high
+  - type: feeds_into
+    target: superglue
+    confidence: high
+    caution: "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
+  - type: feeds_into
+    target: lightglue
+    confidence: high
+    caution: "LightGlue ships SuperPoint-paired pretrained weights as the default configuration; recommended over SuperGlue for new pipelines (faster, Apache-2.0)."
   - type: learned_alternative_of
     target: harris-corner-detector
     confidence: high
@@ -22,6 +30,22 @@ relations:
   - type: learned_alternative_of
     target: shi-tomasi-corner-detector
     confidence: high
+  - type: learned_alternative_of
+    target: sift
+    confidence: high
+    caution: "SuperPoint replaces SIFT's hand-crafted DoG + 128-D descriptor with a single learned encoder + dual decoder heads."
+  - type: learned_alternative_of
+    target: surf
+    confidence: high
+    caution: "SuperPoint replaces SURF's box-filter Hessian detector + 64-D Haar-wavelet descriptor with a learned VGG encoder + dual decoder heads."
+  - type: learned_alternative_of
+    target: brief
+    confidence: high
+    caution: "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
+  - type: learned_alternative_of
+    target: orb
+    confidence: high
+    caution: "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
 sources:
   primary: detone2018-superpoint
   references:

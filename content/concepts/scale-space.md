@@ -103,6 +103,7 @@ Scale space underlies every algorithm that must detect or describe features cons
 
 - **chess-corners** — ChESS computes its ring-pattern response on the image at multiple scales; RING5 corresponds to a ring radius of 5 pixels, which maps to a specific scale in the scale-space sense. Applying the detector across scales and selecting the peak response makes detection robust to target scale variation.
 - **pyramidal-blur-aware-xcorner** — explicitly constructs a Gaussian image pyramid and runs its X-corner detector at each pyramid level; the "pyramidal" in the name refers to this multi-scale search; blur-aware scale selection picks the pyramid level whose blur matches the detector's response model.
+- **sift** — the canonical worked example of DoG scale-space extrema detection. SIFT uses $s = 3$ intervals per octave ($k = 2^{1/3}$), $\sigma_0 = 1.6$ initial blur, and constructs a complete Gaussian pyramid before differencing adjacent levels — a direct practical instantiation of Lindeberg's scale-normalized Laplacian theory.
 
 # References
 

@@ -122,7 +122,7 @@ export default function AlgorithmPost() {
                     backTo="/atlas"
                     backLabel="Back to atlas"
                     frontmatter={frontmatter}
-                    badges={<QualityBadge quality={frontmatter.quality} />}
+                    badges={frontmatter.quality ? <QualityBadge quality={frontmatter.quality} /> : undefined}
                     kind="algorithm"
                 />
 
@@ -140,6 +140,8 @@ export default function AlgorithmPost() {
                     <ErrorBoundary>
                         <article
                             ref={articleRef}
+                            data-atlas-slug={resolvedSlug}
+                            data-atlas-kind="algorithm"
                             className={proseClasses}
                             dangerouslySetInnerHTML={{ __html: html }}
                         />

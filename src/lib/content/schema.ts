@@ -96,6 +96,7 @@ export const domainValues = [
     "stitching",
     "depth",
     "detection",
+    "segmentation",
 ] as const;
 export type Domain = (typeof domainValues)[number];
 
@@ -116,6 +117,8 @@ export const taskValues = [
     "feature-detection",
     "fundamental-matrix-estimation",
     "hand-eye-calibration",
+    "image-classification",
+    "image-segmentation",
     "image-stitching",
     "local-feature-matching",
 ] as const;

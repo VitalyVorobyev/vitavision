@@ -166,6 +166,7 @@ The 16 ring accesses and 5 cross accesses are fixed offsets, so the hot loop com
 - Ring radius is fixed to 5 pixels in the canonical design. For heavy blur or low-resolution targets, the paper also defines a radius-10 ring with the same angular pattern.
 - Orientation is ambiguous from ring samples alone — the response is symmetric under rotation by $90^\circ$. Orientation is recovered post-detection by maximizing the signed measure $M_n = (I_n + I_{n+8}) - (I_{n+4} + I_{n+12})$ over the eight discrete directions.
 - Compared with Harris: see [When to choose Harris over ChESS](/atlas/harris-corner-detector#when-to-choose-harris-over-chess) on the Harris page, which hosts the comparison per the older-paper-hosts rule.
+- Sub-pixel refinement is not built into the detector. A parametric-model option fitting an ideal blurred-corner $C_s(u, v;\,\mu, \upsilon, \alpha, \beta, \lambda, \kappa, \sigma)$ to raw image patches with an integrated boxplot fit-quality self-check is described on the [Yang sub-pixel corner fit](/atlas/yang-sub-pixel-corner-fit) page.
 
 ## When to choose ChESS over ROCHADE
 

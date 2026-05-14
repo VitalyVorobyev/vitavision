@@ -65,6 +65,30 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/apap-image-stitching",
       "draft": false
     },
+    "black-anandan-robust-flow": {
+      "slug": "black-anandan-robust-flow",
+      "type": "algorithm",
+      "title": "Black-Anandan Robust Optical Flow",
+      "summary": "Optical flow that replaces the quadratic data and smoothness penalties of variational flow with redescending M-estimators, solved by SOR within a graduated non-convexity continuation; recovers piecewise-smooth flow without explicit line processes and a robust affine variant for multiple parametric motions.",
+      "path": "/atlas/black-anandan-robust-flow",
+      "draft": false
+    },
+    "brief": {
+      "slug": "brief",
+      "type": "algorithm",
+      "title": "BRIEF: Binary Robust Independent Elementary Features",
+      "summary": "Encodes a Gaussian-smoothed image patch around a detected keypoint as a 128/256/512-bit binary string by running a fixed table of pairwise pixel-intensity tests; matched between images by Hamming distance via bitwise XOR + popcount.",
+      "path": "/atlas/brief",
+      "draft": false
+    },
+    "canny-edge-detector": {
+      "slug": "canny-edge-detector",
+      "type": "algorithm",
+      "title": "Canny Edge Detector",
+      "summary": "Detect thin step edges in greyscale images by smoothing with a Gaussian, computing gradient magnitude and direction, suppressing non-maxima along the gradient direction, then linking surviving pixels via hysteresis double-thresholding; the filter shape is derived as the variational optimum of three criteria — detection SNR, localisation, and single-response spacing — under an additive-white-Gaussian-noise step-edge model.",
+      "path": "/atlas/canny-edge-detector",
+      "draft": false
+    },
     "chess-corners": {
       "slug": "chess-corners",
       "type": "algorithm",
@@ -89,6 +113,22 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/daniilidis-dual-quaternion-handeye",
       "draft": false
     },
+    "felzenszwalb-deformable-parts": {
+      "slug": "felzenszwalb-deformable-parts",
+      "type": "algorithm",
+      "title": "Deformable Part Models",
+      "summary": "Detect a target object class in arbitrary images by scoring every position and scale in a HOG feature pyramid with a mixture of star-structured part-based templates — a coarse root filter and $n=6$ finer-resolution part filters with quadratic deformation costs — trained as a latent SVM with hard-negative mining.",
+      "path": "/atlas/felzenszwalb-deformable-parts",
+      "draft": false
+    },
+    "epnp": {
+      "slug": "epnp",
+      "type": "algorithm",
+      "title": "EPnP: O(n) Perspective-n-Point",
+      "summary": "Non-iterative O(n) solver for the calibrated Perspective-n-Point problem: express the n reference points as weighted sums of four virtual control points, recover their camera-frame coordinates from the null space of a 12×12 matrix, and extract pose by absolute orientation.",
+      "path": "/atlas/epnp",
+      "draft": false
+    },
     "fast-corner-detector": {
       "slug": "fast-corner-detector",
       "type": "algorithm",
@@ -103,6 +143,14 @@ export const contentGraph: ContentGraph = {
       "title": "Fast Radial Symmetry Transform",
       "summary": "Gradient-vote operator that highlights pixels of high local radial symmetry — bright/dark blobs and approximately circular features. Each pixel votes along its gradient direction at one or more radii into orientation and magnitude projection maps; the per-radius contribution is the magnitude projection weighted by a power of the orientation count and Gaussian-smoothed; the cumulative response across radii localises feature centres at $O(K \\cdot |N|)$ cost.",
       "path": "/atlas/loy-fast-radial-symmetry",
+      "draft": false
+    },
+    "felzenszwalb-graph-segmentation": {
+      "slug": "felzenszwalb-graph-segmentation",
+      "type": "algorithm",
+      "title": "Felzenszwalb–Huttenlocher Graph-Based Image Segmentation",
+      "summary": "Partition an image into perceptually coherent regions by a Kruskal-style greedy merge over a pixel graph, accepting an inter-component edge as a non-boundary when its weight does not exceed the components' internal variation plus a size-adaptive threshold $\\tau(C) = k/|C|$; runs in $O(m \\log m)$ time and produces partitions that are simultaneously not too fine and not too coarse.",
+      "path": "/atlas/felzenszwalb-graph-segmentation",
       "draft": false
     },
     "fischler-bolles-ransac": {
@@ -145,13 +193,21 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/gp-checkerboard-enhancement",
       "draft": false
     },
-    "gp-checkerboard-enhancement": {
-      "slug": "gp-checkerboard-enhancement",
+    "grabcut-iterative-segmentation": {
+      "slug": "grabcut-iterative-segmentation",
       "type": "algorithm",
-      "title": "GP Checkerboard Enhancement",
-      "summary": "Wrap a checkerboard corner detector with a Gaussian process that learns the smooth map from local board coordinates to image pixel coordinates, then use the predictive mean to recover occluded corners, claim corners the upstream structure recovery missed, extend the board beyond the image, and smooth the detected positions.",
-      "path": "/algorithms/gp-checkerboard-enhancement",
-      "draft": true
+      "title": "GrabCut Iterative Segmentation",
+      "summary": "Extract a foreground from a colour image using a single bounding rectangle as the only required input by alternating Gaussian mixture component assignment, GMM parameter re-estimation, and global s-t min-cut on a contrast-weighted MRF — the iteration decreases a Gibbs energy $E(\\alpha, k, \\theta, z) = U + V$ monotonically — then refine the contour with a regularised 1-D $\\alpha$-profile in a $\\pm 6$-pixel border ribbon.",
+      "path": "/atlas/grabcut-iterative-segmentation",
+      "draft": false
+    },
+    "graph-cut-segmentation": {
+      "slug": "graph-cut-segmentation",
+      "type": "algorithm",
+      "title": "Graph-Cut Interactive Segmentation",
+      "summary": "Compute the global minimum of a binary region-and-boundary MRF energy as a single s-t min-cut on a pixel graph; user-marked seeds enter as hard constraints, the output is a binary labelling $A : P \\to \\{\\text{obj}, \\text{bkg}\\}$ with topology-free segments.",
+      "path": "/atlas/graph-cut-segmentation",
+      "draft": false
     },
     "harris-corner-detector": {
       "slug": "harris-corner-detector",
@@ -159,6 +215,22 @@ export const contentGraph: ContentGraph = {
       "title": "Harris Corner Detector",
       "summary": "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum.",
       "path": "/atlas/harris-corner-detector",
+      "draft": false
+    },
+    "hog-descriptor": {
+      "slug": "hog-descriptor",
+      "type": "algorithm",
+      "title": "HOG: Histograms of Oriented Gradients",
+      "summary": "Compute a fixed-length descriptor for an image window by binning pixel gradients into 8×8 cells of 9 unsigned-orientation histograms, normalising overlapping 2×2-cell blocks with L2-Hys, and concatenating the 3780 block values into a single vector fed to a linear SVM — the canonical pre-CNN pedestrian detector.",
+      "path": "/atlas/hog-descriptor",
+      "draft": false
+    },
+    "horn-schunck": {
+      "slug": "horn-schunck",
+      "type": "algorithm",
+      "title": "Horn-Schunck Optical Flow",
+      "summary": "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation.",
+      "path": "/atlas/horn-schunck",
       "draft": false
     },
     "kumar-generalized-rac": {
@@ -185,6 +257,22 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/duda-radon-corners",
       "draft": false
     },
+    "longuet-higgins-eight-point": {
+      "slug": "longuet-higgins-eight-point",
+      "type": "algorithm",
+      "title": "Longuet-Higgins Linear Eight-Point Algorithm",
+      "summary": "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm.",
+      "path": "/atlas/longuet-higgins-eight-point",
+      "draft": false
+    },
+    "lucas-kanade": {
+      "slug": "lucas-kanade",
+      "type": "algorithm",
+      "title": "Lucas-Kanade Image Registration",
+      "summary": "Iterative Newton-Raphson method that estimates the parametric warp between two images by linearising the residual and solving the resulting weighted normal equation per iteration.",
+      "path": "/atlas/lucas-kanade",
+      "draft": false
+    },
     "barath-magsac": {
       "slug": "barath-magsac",
       "type": "algorithm",
@@ -207,6 +295,14 @@ export const contentGraph: ContentGraph = {
       "title": "OCPAD: Occluded Checkerboard Pattern Detection",
       "summary": "Recover the largest visible checkerboard subgraph from a partially occluded pattern by running VF2 subgraph isomorphism against a model graph under a binary-search driver over vertex counts, then closing gaps by breadth-first region growing from a quad-density anchor.",
       "path": "/atlas/ocpad",
+      "draft": false
+    },
+    "orb": {
+      "slug": "orb",
+      "type": "algorithm",
+      "title": "ORB: Oriented FAST and Rotated BRIEF",
+      "summary": "Detects rotation-invariant oriented keypoints by running FAST-9 on a √2 image pyramid, ranking by Harris cornerness, and assigning orientation from the intensity centroid; describes each keypoint with a 256-bit rBRIEF binary string formed by greedy selection of low-correlation, high-variance pairwise pixel-intensity tests on a smoothed 31×31 patch.",
+      "path": "/atlas/orb",
       "draft": false
     },
     "puzzleboard": {
@@ -233,6 +329,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/rochade",
       "draft": false
     },
+    "scaramuzza-omni-calibration": {
+      "slug": "scaramuzza-omni-calibration",
+      "type": "algorithm",
+      "title": "Scaramuzza Omnidirectional Camera Calibration",
+      "summary": "Calibrate any central catadioptric or fisheye camera from a few planar checkerboard views by fitting a radially-symmetric Taylor-polynomial imaging function with a linear estimate followed by maximum-likelihood refinement.",
+      "path": "/atlas/scaramuzza-omni-calibration",
+      "draft": false
+    },
     "shi-tomasi-corner-detector": {
       "slug": "shi-tomasi-corner-detector",
       "type": "algorithm",
@@ -241,12 +345,28 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/shi-tomasi-corner-detector",
       "draft": false
     },
+    "sift": {
+      "slug": "sift",
+      "type": "algorithm",
+      "title": "SIFT: Scale-Invariant Feature Transform",
+      "summary": "Detects keypoints as scale-space extrema in a Difference-of-Gaussian image pyramid, refines location and scale by 3D quadratic interpolation, assigns canonical orientation from local gradient histograms, and emits a 128-D descriptor invariant to scale, rotation, and moderate affine and illumination change.",
+      "path": "/atlas/sift",
+      "draft": false
+    },
     "sturm-plane-based-calibration": {
       "slug": "sturm-plane-based-calibration",
       "type": "algorithm",
       "title": "Sturm-Maybank Plane-Based Calibration",
       "summary": "Recover camera intrinsics from one or more views of one or more planar targets via the same two IAC-on-homography constraints as Zhang's method, with an exhaustive singularity catalogue and a generalisation to variable intrinsics (zooming cameras) — the concurrent CVPR 1999 derivation of plane-based calibration.",
       "path": "/atlas/sturm-plane-based-calibration",
+      "draft": false
+    },
+    "surf": {
+      "slug": "surf",
+      "type": "algorithm",
+      "title": "SURF: Speeded Up Robust Features",
+      "summary": "Detects scale- and rotation-invariant blob keypoints as scale-space maxima of the Hessian determinant, approximated with box filters on an integral image, and emits a 64-D Haar-wavelet response descriptor matched by Euclidean distance with a Laplacian-sign pre-filter.",
+      "path": "/atlas/surf",
       "draft": false
     },
     "shu-topological-grid": {
@@ -281,12 +401,36 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/raguram-usac",
       "draft": false
     },
+    "viola-jones-detector": {
+      "slug": "viola-jones-detector",
+      "type": "algorithm",
+      "title": "Viola–Jones Object Detector",
+      "summary": "Real-time frontal-face detection by sliding a fixed 24×24 sub-window across a grayscale image at multiple scales, scoring each position with an AdaBoost-selected ensemble of integral-image rectangle features arranged in a 38-stage attentional cascade that rejects most background regions after evaluating ~10 features per sub-window.",
+      "path": "/atlas/viola-jones-detector",
+      "draft": false
+    },
+    "yang-sub-pixel-corner-fit": {
+      "slug": "yang-sub-pixel-corner-fit",
+      "type": "algorithm",
+      "title": "Yang Parametric-Model Sub-Pixel Corner Fit",
+      "summary": "Refine pixel-level chessboard corner positions to sub-pixel accuracy by nonlinear least-squares fitting a seven-parameter ideal blurred-corner model directly to the raw image patch, then reject unreliable corners via a boxplot-based fit-quality self-check before passing to PnP.",
+      "path": "/atlas/yang-sub-pixel-corner-fit",
+      "draft": false
+    },
     "zhang-planar-calibration": {
       "slug": "zhang-planar-calibration",
       "type": "algorithm",
       "title": "Zhang's Planar Camera Calibration",
       "summary": "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations.",
       "path": "/atlas/zhang-planar-calibration",
+      "draft": false
+    },
+    "alexnet": {
+      "slug": "alexnet",
+      "type": "model",
+      "title": "AlexNet",
+      "summary": "Eight-layer convolutional neural network for 1000-class image classification on ImageNet, trained end-to-end on two GPUs with ReLU activations, local response normalisation, overlapping max-pooling, and dropout; the first deep CNN to win ILSVRC by a large margin.",
+      "path": "/atlas/alexnet",
       "draft": false
     },
     "ccdn-checkerboard-detector": {
@@ -305,12 +449,84 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/ccs-camera-calibration",
       "draft": false
     },
+    "deeplab-semantic-segmentation": {
+      "slug": "deeplab-semantic-segmentation",
+      "type": "model",
+      "title": "DeepLab",
+      "summary": "Dense semantic segmentation by repurposing an ImageNet classifier with atrous (dilated) convolution to preserve spatial resolution, an Atrous Spatial Pyramid Pooling head for multi-scale context, and a fully-connected CRF post-processor for boundary refinement — multi-year state of the art on PASCAL VOC 2012.",
+      "path": "/atlas/deeplab-semantic-segmentation",
+      "draft": false
+    },
+    "faster-rcnn": {
+      "slug": "faster-rcnn",
+      "type": "model",
+      "title": "Faster R-CNN",
+      "summary": "Two-stage CNN object detector that replaces external Selective Search / EdgeBoxes proposals with a learned Region Proposal Network sharing conv features with the Fast R-CNN head — yielding near-real-time multi-class detection on GPU (5 fps with VGG-16) and ImageNet-pretrained backbones swapped freely from ZF through ResNet-101.",
+      "path": "/atlas/faster-rcnn",
+      "draft": false
+    },
+    "fcn-semantic-segmentation": {
+      "slug": "fcn-semantic-segmentation",
+      "type": "model",
+      "title": "FCN: Fully Convolutional Networks",
+      "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
+      "path": "/atlas/fcn-semantic-segmentation",
+      "draft": false
+    },
+    "googlenet": {
+      "slug": "googlenet",
+      "type": "model",
+      "title": "GoogLeNet",
+      "summary": "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet).",
+      "path": "/atlas/googlenet",
+      "draft": false
+    },
+    "lightglue": {
+      "slug": "lightglue",
+      "type": "model",
+      "title": "LightGlue",
+      "summary": "Adaptive-depth Transformer matcher for sparse local features: stacks 9 self+cross-attention layers with rotary positional encoding and a per-token confidence head, exits early on easy image pairs, and replaces SuperGlue's Sinkhorn solver with a dual-softmax × matchability assignment head — over 2× faster than SuperGlue at equivalent or better pose-estimation accuracy.",
+      "path": "/atlas/lightglue",
+      "draft": false
+    },
+    "loftr": {
+      "slug": "loftr",
+      "type": "model",
+      "title": "LoFTR",
+      "summary": "Detector-free dense feature matcher: shared CNN backbone produces coarse and fine feature maps, a Linear Transformer with interleaved self- and cross-attention establishes confidence-thresholded mutual nearest-neighbour correspondences, and a fine module refines each match to sub-pixel accuracy.",
+      "path": "/atlas/loftr",
+      "draft": false
+    },
+    "mask-rcnn": {
+      "slug": "mask-rcnn",
+      "type": "model",
+      "title": "Mask R-CNN",
+      "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
+      "path": "/atlas/mask-rcnn",
+      "draft": false
+    },
     "mate-checkerboard-detector": {
       "slug": "mate-checkerboard-detector",
       "type": "model",
       "title": "MATE",
       "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
       "path": "/atlas/mate-checkerboard-detector",
+      "draft": false
+    },
+    "resnet": {
+      "slug": "resnet",
+      "type": "model",
+      "title": "ResNet",
+      "summary": "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation.",
+      "path": "/atlas/resnet",
+      "draft": false
+    },
+    "superglue": {
+      "slug": "superglue",
+      "type": "model",
+      "title": "SuperGlue",
+      "summary": "Graph neural network that matches two sets of sparse local features by jointly finding correspondences and rejecting unmatched keypoints in one differentiable forward pass, trained end-to-end with a Sinkhorn optimal-transport assignment over augmented dustbin scores.",
+      "path": "/atlas/superglue",
       "draft": false
     },
     "superpoint": {
@@ -321,12 +537,36 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/superpoint",
       "draft": false
     },
+    "unet-segmentation": {
+      "slug": "unet-segmentation",
+      "type": "model",
+      "title": "U-Net",
+      "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
+      "path": "/atlas/unet-segmentation",
+      "draft": false
+    },
+    "vgg": {
+      "slug": "vgg",
+      "type": "model",
+      "title": "VGG",
+      "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
+      "path": "/atlas/vgg",
+      "draft": false
+    },
     "xfeat": {
       "slug": "xfeat",
       "type": "model",
       "title": "XFeat",
       "summary": "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices.",
       "path": "/atlas/xfeat",
+      "draft": false
+    },
+    "yolo-v1": {
+      "slug": "yolo-v1",
+      "type": "model",
+      "title": "YOLOv1",
+      "summary": "Single-stage CNN object detector that frames detection as one regression problem from full-image pixels to a 7×7×30 tensor of grid-cell box offsets, objectness, and 20-class probabilities — trained end-to-end and inferring 98 boxes per image at 45 fps on a Titan X.",
+      "path": "/atlas/yolo-v1",
       "draft": false
     },
     "camera-distortion-models": {
@@ -436,6 +676,62 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": []
     },
+    "black-anandan-robust-flow": {
+      "prerequisites": [
+        "image-gradient",
+        "scale-space"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "brief": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "rBRIEF steers BRIEF via a 30-bin orientation LUT and replaces the random offset table with 256 learned, low-correlation tests."
+        },
+        {
+          "type": "compared_with",
+          "target": "sift",
+          "confidence": "medium",
+          "caution": "BRIEF is descriptor-only; SIFT/SURF bundle a detector."
+        },
+        {
+          "type": "compared_with",
+          "target": "surf",
+          "confidence": "medium",
+          "caution": "BRIEF is descriptor-only; SIFT/SURF bundle a detector."
+        },
+        {
+          "type": "feeds_into",
+          "target": "gao-dual-homography-stitching",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "lin-sva-stitching",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "apap-image-stitching",
+          "confidence": "medium"
+        }
+      ]
+    },
+    "canny-edge-detector": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
     "chess-corners": {
       "prerequisites": [
         "image-gradient"
@@ -515,7 +811,7 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
-    "fast-corner-detector": {
+    "felzenszwalb-deformable-parts": {
       "prerequisites": [
         "image-gradient"
       ],
@@ -523,8 +819,53 @@ export const contentGraph: ContentGraph = {
       "relations": [
         {
           "type": "compared_with",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Different operational regimes — VJ is real-time cascade for rigid faces; DPM is offline part-based for general deformable objects."
+        }
+      ]
+    },
+    "epnp": {
+      "prerequisites": [
+        "dlt-normalisation",
+        "ransac"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "fast-corner-detector": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "brief",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "orb",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
           "target": "harris-corner-detector",
           "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "sift",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "surf",
+          "confidence": "medium",
+          "caution": "FAST is detector-only; SURF bundles a descriptor.",
           "mirrored": true
         }
       ]
@@ -541,6 +882,11 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         }
       ]
+    },
+    "felzenszwalb-graph-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
     },
     "fischler-bolles-ransac": {
       "prerequisites": [
@@ -606,6 +952,12 @@ export const contentGraph: ContentGraph = {
           "confidence": "medium",
           "caution": "Different abstraction layer — topological grid recovery from a candidate corner set vs single-shot detection that integrates corner finding and grid linking. Not superseded by Geiger; both remain in practitioner use.",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
+          "confidence": "high",
+          "mirrored": true
         }
       ]
     },
@@ -634,6 +986,22 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "grabcut-iterative-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
+    "graph-cut-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "high"
+        }
+      ]
+    },
     "harris-corner-detector": {
       "prerequisites": [
         "image-gradient",
@@ -655,6 +1023,64 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "chess-corners",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "orb",
+          "confidence": "medium",
+          "caution": "Used only as a corner-strength filter to rank FAST keypoints, not as a detector."
+        },
+        {
+          "type": "compared_with",
+          "target": "sift",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "surf",
+          "confidence": "medium",
+          "mirrored": true
+        }
+      ]
+    },
+    "hog-descriptor": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Both classical sliding-window detectors. Viola-Jones: Haar + AdaBoost cascade on faces. HOG: gradient histograms + linear SVM on pedestrians."
+        },
+        {
+          "type": "feeds_into",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high",
+          "caution": "DPM uses HOG cells (k=8 px, α=0.2) with an analytic 31-dim projection of the 36-dim HOG vector as its base feature pyramid."
+        }
+      ]
+    },
+    "horn-schunck": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "lucas-kanade",
+          "confidence": "high",
+          "caution": "Dense variational vs sparse local LSQ — co-founded optical flow in 1981; pick by problem (dense flow field vs sparse displacement of features)."
+        },
+        {
+          "type": "extended_by",
+          "target": "black-anandan-robust-flow",
+          "confidence": "high",
+          "caution": "Robust M-estimator extension of the quadratic data and smoothness terms; non-convex but more tolerant of outliers and motion discontinuities."
         }
       ]
     },
@@ -695,6 +1121,53 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "chess-corners",
           "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "mirrored": true
+        }
+      ]
+    },
+    "longuet-higgins-eight-point": {
+      "prerequisites": [
+        "epipolar-geometry"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "fundamental-matrix-eight-point",
+          "confidence": "high"
+        }
+      ]
+    },
+    "lucas-kanade": {
+      "prerequisites": [
+        "image-gradient",
+        "structure-tensor"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high",
+          "caution": "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
+        },
+        {
+          "type": "extended_by",
+          "target": "black-anandan-robust-flow",
+          "confidence": "high",
+          "caution": "Robust M-estimator version of the parametric variant; same machinery as Black-Anandan's piecewise-smooth flow."
+        },
+        {
+          "type": "parallel_foundation_with",
+          "target": "horn-schunck",
+          "confidence": "high",
+          "caution": "Dense variational vs sparse local LSQ — co-founded optical flow in 1981; pick by problem (dense flow field vs sparse displacement of features).",
           "mirrored": true
         }
       ]
@@ -738,6 +1211,27 @@ export const contentGraph: ContentGraph = {
         {
           "type": "compared_with",
           "target": "gp-checkerboard-enhancement",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
+    "orb": {
+      "prerequisites": [
+        "image-gradient",
+        "scale-space"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "sift",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "surf",
           "confidence": "high",
           "mirrored": true
         }
@@ -793,6 +1287,13 @@ export const contentGraph: ContentGraph = {
           "target": "rochade",
           "confidence": "high",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "caution": "Pyramidal builds on ROCHADE; yang2018 fits a parametric saddle model — different mechanism",
+          "mirrored": true
         }
       ]
     },
@@ -818,8 +1319,21 @@ export const contentGraph: ContentGraph = {
           "target": "chess-corners",
           "confidence": "high",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "yang-sub-pixel-corner-fit",
+          "confidence": "high",
+          "mirrored": true
         }
       ]
+    },
+    "scaramuzza-omni-calibration": {
+      "prerequisites": [
+        "camera-distortion-models"
+      ],
+      "failureModes": [],
+      "relations": []
     },
     "shi-tomasi-corner-detector": {
       "prerequisites": [
@@ -831,6 +1345,76 @@ export const contentGraph: ContentGraph = {
         {
           "type": "compared_with",
           "target": "harris-corner-detector",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "sift",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "surf",
+          "confidence": "medium",
+          "mirrored": true
+        }
+      ]
+    },
+    "sift": {
+      "prerequisites": [
+        "scale-space",
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "harris-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "orb",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "gao-dual-homography-stitching",
+          "confidence": "high",
+          "caution": "SIFT correspondences are the standard input to dual-homography stitching"
+        },
+        {
+          "type": "feeds_into",
+          "target": "lin-sva-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "apap-image-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "brief",
+          "confidence": "medium",
+          "caution": "BRIEF is descriptor-only; SIFT/SURF bundle a detector.",
+          "mirrored": true
+        },
+        {
+          "type": "alternative_formulation_of",
+          "target": "surf",
           "confidence": "high",
           "mirrored": true
         }
@@ -847,6 +1431,63 @@ export const contentGraph: ContentGraph = {
           "target": "zhang-planar-calibration",
           "confidence": "high",
           "caution": "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis.",
+          "mirrored": true
+        }
+      ]
+    },
+    "surf": {
+      "prerequisites": [
+        "scale-space",
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "alternative_formulation_of",
+          "target": "sift",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-corner-detector",
+          "confidence": "medium",
+          "caution": "FAST is detector-only; SURF bundles a descriptor."
+        },
+        {
+          "type": "compared_with",
+          "target": "harris-corner-detector",
+          "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "shi-tomasi-corner-detector",
+          "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "orb",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "gao-dual-homography-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "lin-sva-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "apap-image-stitching",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "brief",
+          "confidence": "medium",
+          "caution": "BRIEF is descriptor-only; SIFT/SURF bundle a detector.",
           "mirrored": true
         }
       ]
@@ -920,6 +1561,67 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "viola-jones-detector": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "medium",
+          "caution": "Different operational regimes — VJ is real-time cascade for rigid faces; DPM is offline part-based for general deformable objects.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "hog-descriptor",
+          "confidence": "medium",
+          "caution": "Both classical sliding-window detectors. Viola-Jones: Haar + AdaBoost cascade on faces. HOG: gradient histograms + linear SVM on pedestrians.",
+          "mirrored": true
+        }
+      ]
+    },
+    "yang-sub-pixel-corner-fit": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "rochade",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "geiger-chessboard-detector",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "pyramidal-blur-aware-xcorner",
+          "confidence": "medium",
+          "caution": "Pyramidal builds on ROCHADE; yang2018 fits a parametric saddle model — different mechanism"
+        },
+        {
+          "type": "compared_with",
+          "target": "duda-radon-corners",
+          "confidence": "medium"
+        },
+        {
+          "type": "feeds_into",
+          "target": "zhang-planar-calibration",
+          "confidence": "medium",
+          "caution": "Yang2018 explicitly targets Zhang-style planar calibration as the downstream consumer"
+        },
+        {
+          "type": "feeds_into",
+          "target": "epnp",
+          "confidence": "medium",
+          "caution": "Self-check is motivated by EPnP downstream use"
+        }
+      ]
+    },
     "zhang-planar-calibration": {
       "prerequisites": [
         "homography",
@@ -933,6 +1635,25 @@ export const contentGraph: ContentGraph = {
           "target": "sturm-plane-based-calibration",
           "confidence": "high",
           "caution": "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis."
+        }
+      ]
+    },
+    "alexnet": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "vgg",
+          "confidence": "high",
+          "caution": "VGG extends AlexNet's CNN classifier paradigm from 8 to 16/19 weight layers via stacked 3×3 conv blocks; same task, deeper architecture, same training framework."
+        },
+        {
+          "type": "compared_with",
+          "target": "googlenet",
+          "confidence": "high",
+          "caution": "22 layers vs AlexNet's 8; 7M vs 60M parameters; 56.5% relative reduction in top-5 error vs AlexNet (16.4% → 6.67%) over two ILSVRC years.",
+          "mirrored": true
         }
       ]
     },
@@ -1000,6 +1721,149 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "deeplab-semantic-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "unet-segmentation",
+          "confidence": "high",
+          "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation."
+        }
+      ]
+    },
+    "faster-rcnn": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "viola-jones-detector",
+          "confidence": "medium",
+          "caution": "Viola-Jones targets real-time face detection on CPUs; Faster R-CNN is general multi-class detection on GPUs — replacement is paradigm-level, not drop-in."
+        },
+        {
+          "type": "extended_by",
+          "target": "mask-rcnn",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "yolo-v1",
+          "confidence": "high",
+          "caution": "YOLO trades localization accuracy and small-object recall for ~3× throughput; same era, different design point.",
+          "mirrored": true
+        }
+      ]
+    },
+    "fcn-semantic-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "unet-segmentation",
+          "confidence": "high",
+          "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+        },
+        {
+          "type": "extended_by",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
+        },
+        {
+          "type": "extended_by",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        }
+      ]
+    },
+    "googlenet": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "vgg",
+          "confidence": "high",
+          "caution": "Both ILSVRC-2014 entries — GoogLeNet won classification (6.67% top-5), VGG won localisation. Different design philosophies: Inception modules vs homogeneous 3×3 depth scaling."
+        },
+        {
+          "type": "compared_with",
+          "target": "alexnet",
+          "confidence": "high",
+          "caution": "22 layers vs AlexNet's 8; 7M vs 60M parameters; 56.5% relative reduction in top-5 error vs AlexNet (16.4% → 6.67%) over two ILSVRC years."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
+        },
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "Both push depth beyond VGG: GoogLeNet 22 layers via Inception modules, ResNet up to 152 via residual blocks. ResNet-152 single model 4.49% top-5 val vs GoogLeNet ensemble 6.66% top-5 test (Tables 4/5).",
+          "mirrored": true
+        }
+      ]
+    },
+    "lightglue": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "high",
+          "caution": "Different paradigm — LoFTR is detector-free dense, LightGlue is detector-based sparse. LoFTR wins in textureless regions; LightGlue wins on speed."
+        }
+      ]
+    },
+    "loftr": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "superglue",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm."
+        },
+        {
+          "type": "compared_with",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1)."
+        }
+      ]
+    },
+    "mask-rcnn": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "medium",
+          "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        }
+      ]
+    },
     "mate-checkerboard-detector": {
       "prerequisites": [
         "image-gradient"
@@ -1029,6 +1893,59 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "resnet": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "googlenet",
+          "confidence": "high",
+          "caution": "Both push depth beyond VGG: GoogLeNet 22 layers via Inception modules, ResNet up to 152 via residual blocks. ResNet-152 single model 4.49% top-5 val vs GoogLeNet ensemble 6.66% top-5 test (Tables 4/5)."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN's headline backbones are ResNet-50/101 and ResNeXt-101 paired with FPN."
+        },
+        {
+          "type": "feeds_into",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab v2 onward uses ResNet-101 as the dense-prediction backbone; v1 used VGG-16."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "The torchvision FCN-ResNet50/101 port swaps the paper's VGG-16 backbone for ResNet; not the design Long et al. published."
+        },
+        {
+          "type": "feeds_into",
+          "target": "loftr",
+          "confidence": "medium",
+          "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+        }
+      ]
+    },
+    "superglue": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "high"
+        },
+        {
+          "type": "extended_by",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "LightGlue retains SuperGlue's graph-attention matcher framework; adds adaptive depth + token pruning + dual-softmax head for >2× speedup at comparable or better accuracy. SuperGlue remains the reference baseline."
+        }
+      ]
+    },
     "superpoint": {
       "prerequisites": [
         "image-gradient"
@@ -1041,6 +1958,18 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
+          "type": "feeds_into",
+          "target": "superglue",
+          "confidence": "high",
+          "caution": "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
+        },
+        {
+          "type": "feeds_into",
+          "target": "lightglue",
+          "confidence": "high",
+          "caution": "LightGlue ships SuperPoint-paired pretrained weights as the default configuration; recommended over SuperGlue for new pipelines (faster, Apache-2.0)."
+        },
+        {
           "type": "learned_alternative_of",
           "target": "harris-corner-detector",
           "confidence": "high",
@@ -1050,6 +1979,74 @@ export const contentGraph: ContentGraph = {
           "type": "learned_alternative_of",
           "target": "shi-tomasi-corner-detector",
           "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "sift",
+          "confidence": "high",
+          "caution": "SuperPoint replaces SIFT's hand-crafted DoG + 128-D descriptor with a single learned encoder + dual decoder heads."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "surf",
+          "confidence": "high",
+          "caution": "SuperPoint replaces SURF's box-filter Hessian detector + 64-D Haar-wavelet descriptor with a learned VGG encoder + dual decoder heads."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "brief",
+          "confidence": "high",
+          "caution": "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
+        }
+      ]
+    },
+    "unet-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation.",
+          "mirrored": true
+        }
+      ]
+    },
+    "vgg": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "VGG-16 is FCN's canonical backbone per FCN Table 1; FCN-VGG16 mean IU 56.0 vs FCN-AlexNet 39.8."
+        },
+        {
+          "type": "feeds_into",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
+        },
+        {
+          "type": "extended_by",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "ResNet reformulates VGG-style plain depth scaling: identity shortcuts let 152-layer nets train where 19-layer plain nets already plateau (ResNet §1, Fig. 1)."
+        },
+        {
+          "type": "parallel_foundation_with",
+          "target": "googlenet",
+          "confidence": "high",
+          "caution": "Both ILSVRC-2014 entries — GoogLeNet won classification (6.67% top-5), VGG won localisation. Different design philosophies: Inception modules vs homogeneous 3×3 depth scaling.",
+          "mirrored": true
         }
       ]
     },
@@ -1060,10 +2057,65 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": [
         {
+          "type": "learned_alternative_of",
+          "target": "sift",
+          "confidence": "high",
+          "caution": "XFeat targets CPU-grade compute and replaces SIFT's classical hand-crafted pipeline with a featherweight learned model."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "surf",
+          "confidence": "high",
+          "caution": "XFeat replaces SURF's integral-image Hessian detector + Haar-wavelet descriptor with a featherweight learned model targeting CPU inference."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "brief",
+          "confidence": "high",
+          "caution": "XFeat replaces the FAST+BRIEF binary-descriptor pipeline with a featherweight learned model targeting CPU inference."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "orb",
+          "confidence": "high",
+          "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
+        },
+        {
+          "type": "feeds_into",
+          "target": "lightglue",
+          "confidence": "medium",
+          "caution": "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
+        },
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "high",
+          "caution": "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm.",
+          "mirrored": true
+        },
+        {
           "type": "compared_with",
           "target": "superpoint",
           "confidence": "high",
           "mirrored": true
+        }
+      ]
+    },
+    "yolo-v1": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "faster-rcnn",
+          "confidence": "high",
+          "caution": "YOLO trades localization accuracy and small-object recall for ~3× throughput; same era, different design point."
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-deformable-parts",
+          "confidence": "high",
+          "caution": "Replaces sliding-window deformable templates with single-pass CNN regression; reframes detection as regression rather than classification of proposals."
         }
       ]
     },
@@ -1160,6 +2212,70 @@ export const contentGraph: ContentGraph = {
         }
       ],
       "extending": [],
+      "fedBy": [
+        {
+          "slug": "brief",
+          "confidence": "medium"
+        },
+        {
+          "slug": "sift",
+          "confidence": "high"
+        },
+        {
+          "slug": "surf",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "black-anandan-robust-flow": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "horn-schunck",
+          "confidence": "high",
+          "caution": "Robust M-estimator extension of the quadratic data and smoothness terms; non-convex but more tolerant of outliers and motion discontinuities."
+        },
+        {
+          "slug": "lucas-kanade",
+          "confidence": "high",
+          "caution": "Robust M-estimator version of the parametric variant; same machinery as Black-Anandan's piecewise-smooth flow."
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "brief": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "fast-corner-detector",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "SuperPoint replaces the FAST+BRIEF / SIFT / ORB classical pipeline with a single learned encoder + decoder heads."
+        },
+        {
+          "slug": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat replaces the FAST+BRIEF binary-descriptor pipeline with a featherweight learned model targeting CPU inference."
+        }
+      ]
+    },
+    "canny-edge-detector": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -1200,6 +2316,49 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "felzenszwalb-deformable-parts": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "hog-descriptor",
+          "confidence": "high",
+          "caution": "DPM uses HOG cells (k=8 px, α=0.2) with an analytic 31-dim projection of the 36-dim HOG vector as its base feature pyramid."
+        }
+      ],
+      "hasLearnedAlternative": [
+        {
+          "slug": "faster-rcnn",
+          "confidence": "high"
+        },
+        {
+          "slug": "mask-rcnn",
+          "confidence": "medium",
+          "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        },
+        {
+          "slug": "yolo-v1",
+          "confidence": "high",
+          "caution": "Replaces sliding-window deformable templates with single-pass CNN regression; reframes detection as regression rather than classification of proposals."
+        }
+      ]
+    },
+    "epnp": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "caution": "Self-check is motivated by EPnP downstream use"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "fast-corner-detector": {
       "usedBy": [],
       "affects": [],
@@ -1209,6 +2368,14 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "loy-fast-radial-symmetry": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "felzenszwalb-graph-segmentation": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -1229,7 +2396,21 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "brief",
+          "confidence": "medium"
+        },
+        {
+          "slug": "sift",
+          "confidence": "high",
+          "caution": "SIFT correspondences are the standard input to dual-homography stitching"
+        },
+        {
+          "slug": "surf",
+          "confidence": "high"
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "geiger-chessboard-detector": {
@@ -1261,6 +2442,27 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "grabcut-iterative-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "graph-cut-segmentation",
+          "confidence": "high"
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "graph-cut-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "harris-corner-detector": {
       "usedBy": [],
       "affects": [],
@@ -1275,6 +2477,22 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "hog-descriptor": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "horn-schunck": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "kumar-generalized-rac": {
       "usedBy": [],
       "affects": [],
@@ -1288,10 +2506,39 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "brief",
+          "confidence": "medium"
+        },
+        {
+          "slug": "sift",
+          "confidence": "high"
+        },
+        {
+          "slug": "surf",
+          "confidence": "high"
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "duda-radon-corners": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "longuet-higgins-eight-point": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "lucas-kanade": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -1316,7 +2563,12 @@ export const contentGraph: ContentGraph = {
     "fundamental-matrix-eight-point": {
       "usedBy": [],
       "affects": [],
-      "generalises": [],
+      "generalises": [
+        {
+          "slug": "longuet-higgins-eight-point",
+          "confidence": "high"
+        }
+      ],
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
@@ -1328,6 +2580,41 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
+    },
+    "orb": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "brief",
+          "confidence": "high",
+          "caution": "rBRIEF steers BRIEF via a 30-bin orientation LUT and replaces the random offset table with 256 learned, low-correlation tests."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "fast-corner-detector",
+          "confidence": "high"
+        },
+        {
+          "slug": "harris-corner-detector",
+          "confidence": "medium",
+          "caution": "Used only as a corner-strength filter to rank FAST keypoints, not as a detector."
+        }
+      ],
+      "hasLearnedAlternative": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
+        },
+        {
+          "slug": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
+        }
+      ]
     },
     "puzzleboard": {
       "usedBy": [],
@@ -1353,7 +2640,34 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "scaramuzza-omni-calibration": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "shi-tomasi-corner-detector": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "lucas-kanade",
+          "confidence": "high",
+          "caution": "Shi-Tomasi derives the feature-selection threshold from the conditioning of the LK normal-equation matrix and adds a 6-DOF affine variant with dissimilarity monitoring."
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": [
+        {
+          "slug": "superpoint",
+          "confidence": "high"
+        }
+      ]
+    },
+    "sift": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -1362,7 +2676,13 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": [
         {
           "slug": "superpoint",
-          "confidence": "high"
+          "confidence": "high",
+          "caution": "SuperPoint replaces SIFT's hand-crafted DoG + 128-D descriptor with a single learned encoder + dual decoder heads."
+        },
+        {
+          "slug": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat targets CPU-grade compute and replaces SIFT's classical hand-crafted pipeline with a featherweight learned model."
         }
       ]
     },
@@ -1373,6 +2693,25 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
+    },
+    "surf": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "SuperPoint replaces SURF's box-filter Hessian detector + 64-D Haar-wavelet descriptor with a learned VGG encoder + dual decoder heads."
+        },
+        {
+          "slug": "xfeat",
+          "confidence": "high",
+          "caution": "XFeat replaces SURF's integral-image Hessian detector + Haar-wavelet descriptor with a featherweight learned model targeting CPU inference."
+        }
+      ]
     },
     "shu-topological-grid": {
       "usedBy": [],
@@ -1415,6 +2754,28 @@ export const contentGraph: ContentGraph = {
           "caution": "USAC is a unifying engineering framework, not a single new technique"
         }
       ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "viola-jones-detector": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": [
+        {
+          "slug": "faster-rcnn",
+          "confidence": "medium",
+          "caution": "Viola-Jones targets real-time face detection on CPUs; Faster R-CNN is general multi-class detection on GPUs — replacement is paradigm-level, not drop-in."
+        }
+      ]
+    },
+    "yang-sub-pixel-corner-fit": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -1480,8 +2841,21 @@ export const contentGraph: ContentGraph = {
         {
           "slug": "shu-topological-grid",
           "confidence": "high"
+        },
+        {
+          "slug": "yang-sub-pixel-corner-fit",
+          "confidence": "medium",
+          "caution": "Yang2018 explicitly targets Zhang-style planar calibration as the downstream consumer"
         }
       ],
+      "hasLearnedAlternative": []
+    },
+    "alexnet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
       "hasLearnedAlternative": []
     },
     "ccdn-checkerboard-detector": {
@@ -1500,6 +2874,134 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "deeplab-semantic-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "high",
+          "caution": "DeepLab v2 onward uses ResNet-101 as the dense-prediction backbone; v1 used VGG-16."
+        },
+        {
+          "slug": "vgg",
+          "confidence": "high",
+          "caution": "DeepLab v1 uses VGG-16 backbone; later versions switched to ResNet/Xception."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "faster-rcnn": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "fcn-semantic-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "googlenet",
+          "confidence": "medium",
+          "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
+        },
+        {
+          "slug": "resnet",
+          "confidence": "medium",
+          "caution": "The torchvision FCN-ResNet50/101 port swaps the paper's VGG-16 backbone for ResNet; not the design Long et al. published."
+        },
+        {
+          "slug": "vgg",
+          "confidence": "high",
+          "caution": "VGG-16 is FCN's canonical backbone per FCN Table 1; FCN-VGG16 mean IU 56.0 vs FCN-AlexNet 39.8."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "googlenet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "lightglue": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "superglue",
+          "confidence": "high",
+          "caution": "LightGlue retains SuperGlue's graph-attention matcher framework; adds adaptive depth + token pruning + dual-softmax head for >2× speedup at comparable or better accuracy. SuperGlue remains the reference baseline."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "LightGlue ships SuperPoint-paired pretrained weights as the default configuration; recommended over SuperGlue for new pipelines (faster, Apache-2.0)."
+        },
+        {
+          "slug": "xfeat",
+          "confidence": "medium",
+          "caution": "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "loftr": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "medium",
+          "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "mask-rcnn": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "faster-rcnn",
+          "confidence": "high"
+        },
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "high",
+          "caution": "Mask R-CNN's headline backbones are ResNet-50/101 and ResNeXt-101 paired with FPN."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "mate-checkerboard-detector": {
       "usedBy": [],
       "affects": [],
@@ -1508,11 +3010,67 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "resnet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "vgg",
+          "confidence": "high",
+          "caution": "ResNet reformulates VGG-style plain depth scaling: identity shortcuts let 152-layer nets train where 19-layer plain nets already plateau (ResNet §1, Fig. 1)."
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "superglue": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "superpoint",
+          "confidence": "high",
+          "caution": "SuperGlue is the canonical learned matcher paired with SuperPoint; SuperPoint keypoints + descriptors are SuperGlue's typical front-end."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "superpoint": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "unet-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "high",
+          "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "vgg": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "alexnet",
+          "confidence": "high",
+          "caution": "VGG extends AlexNet's CNN classifier paradigm from 8 to 16/19 weight layers via stacked 3×3 conv blocks; same task, deeper architecture, same training framework."
+        }
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -1524,10 +3082,19 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "yolo-v1": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "camera-distortion-models": {
       "usedBy": [
         "ccs-camera-calibration",
         "kumar-generalized-rac",
+        "scaramuzza-omni-calibration",
         "tsai-versatile-calibration",
         "zhang-planar-calibration"
       ],
@@ -1550,6 +3117,7 @@ export const contentGraph: ContentGraph = {
     "dlt-normalisation": {
       "usedBy": [
         "apap-image-stitching",
+        "epnp",
         "fundamental-matrix-eight-point"
       ],
       "affects": [],
@@ -1560,7 +3128,8 @@ export const contentGraph: ContentGraph = {
     },
     "epipolar-geometry": {
       "usedBy": [
-        "fundamental-matrix-eight-point"
+        "fundamental-matrix-eight-point",
+        "longuet-higgins-eight-point"
       ],
       "affects": [],
       "generalises": [],
@@ -1598,28 +3167,39 @@ export const contentGraph: ContentGraph = {
     },
     "image-gradient": {
       "usedBy": [
+        "black-anandan-robust-flow",
+        "brief",
+        "canny-edge-detector",
         "ccdn-checkerboard-detector",
         "chess-corners",
         "chessboard-x-corner-detection",
         "duda-radon-corners",
         "fast-corner-detector",
+        "felzenszwalb-deformable-parts",
         "geiger-chessboard-detector",
         "gp-checkerboard-enhancement",
         "harris-corner-detector",
         "hessian-saddle-response",
+        "hog-descriptor",
+        "horn-schunck",
         "laureano-topological-chessboard",
         "loy-fast-radial-symmetry",
+        "lucas-kanade",
         "mate-checkerboard-detector",
         "ni-generalized-fast-radial-symmetry",
         "ocpad",
+        "orb",
         "puzzleboard",
         "pyramidal-blur-aware-xcorner",
         "rochade",
         "shi-tomasi-corner-detector",
         "shu-topological-grid",
+        "sift",
         "structure-tensor",
         "superpoint",
-        "xfeat"
+        "surf",
+        "xfeat",
+        "yang-sub-pixel-corner-fit"
       ],
       "affects": [],
       "generalises": [],
@@ -1634,6 +3214,7 @@ export const contentGraph: ContentGraph = {
         "ccs-camera-calibration",
         "dlt-normalisation",
         "epipolar-geometry",
+        "epnp",
         "fischler-bolles-ransac",
         "fundamental-matrix-eight-point",
         "gao-dual-homography-stitching",
@@ -1651,7 +3232,11 @@ export const contentGraph: ContentGraph = {
     },
     "scale-space": {
       "usedBy": [
-        "pyramidal-blur-aware-xcorner"
+        "black-anandan-robust-flow",
+        "orb",
+        "pyramidal-blur-aware-xcorner",
+        "sift",
+        "surf"
       ],
       "affects": [],
       "generalises": [],
@@ -1670,6 +3255,7 @@ export const contentGraph: ContentGraph = {
     "structure-tensor": {
       "usedBy": [
         "harris-corner-detector",
+        "lucas-kanade",
         "shi-tomasi-corner-detector"
       ],
       "affects": [],

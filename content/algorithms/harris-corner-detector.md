@@ -19,6 +19,10 @@ relations:
   - type: compared_with
     target: chess-corners
     confidence: high
+  - type: feeds_into
+    target: orb
+    confidence: medium
+    caution: "Used only as a corner-strength filter to rank FAST keypoints, not as a detector."
 sources:
   primary: harris1988-corner
   references: [shi-tomasi1994-features]
@@ -115,6 +119,7 @@ fn harris_response(img: &[f32], w: usize, h: usize, sigma: f32, k: f32) -> Vec<f
 - The detector is not scale-invariant. Response peaks at the scale of the integration window $\sigma$. Multi-scale detection requires running the detector on a Gaussian image pyramid.
 - The detector responds to general 2D intensity variation; it does not encode X-junction geometry. For chessboard calibration targets, a domain-specific detector yields higher selectivity.
 - Scope: this page covers the corner-detection path only. The original paper additionally defines edge pixels as $R < 0$ local minima in the dominant gradient direction, producing a combined edge-vertex map; that path is omitted here.
+- ORB uses the Harris response to rank FAST keypoints rather than as a stand-alone detector: at each pyramid level, FAST-9 generates candidates, then $R$ orders them and the top-$N$ per level survive. The two-stage arrangement avoids the per-pixel cost of a full Harris pass while keeping the edge-rejection property — Harris's $\det(M)$ term penalises the edge-aligned eigenvalue ratio that FAST is known to produce on linear features.
 
 ## When to choose Harris over Shi-Tomasi
 
@@ -160,6 +165,22 @@ Choose FAST when sub-millisecond per-pixel detection is the bottleneck and downs
 | Contrast sensitivity | $R$ scales as $\rho^4$ | adaptive threshold via mean-of-ring (more contrast-portable) |
 
 Choose Harris when the input is not a chessboard — Harris is the right tool for SfM front-ends, image matching, and tracking where any salient interest point is useful. Choose ChESS when the input is a chessboard calibration target and you need to suppress every false candidate (edge crossings, board borders, background texture) — Harris on a chessboard typically requires a downstream topology filter (Shu, Laureano) to remove the non-X-corner candidates that ChESS rejects at source.
+
+## When to choose Harris over SIFT
+
+[SIFT](/atlas/sift) is a four-stage cascade — DoG scale-space extrema, sub-pixel refinement, canonical orientation, 128-D descriptor — engineered for scale-invariant matching across images. Harris is a single-scale corner-response operator. The two solve different problems and overlap only at "where to detect" in a fixed-scale image.
+
+| | Harris | SIFT |
+|---|---|---|
+| Scale handling | single scale of integration window $\sigma$; multi-scale by external pyramid | scale-invariant by construction (DoG pyramid, automatic scale selection) |
+| Output | corner-response score per pixel | keypoint $(x, y, \sigma, \theta)$ + 128-D descriptor |
+| Per-detection cost | gradient + 3 convolutions + arithmetic | full pyramid, refinement, orientation histogram, descriptor — orders of magnitude more |
+| Descriptor | none — pair with external descriptor | bundled 128-D L2-normalised vector |
+| Repeatability under viewpoint change | falls off with any zoom or scale change | tolerates wide-baseline scale and rotation |
+
+Choose Harris when (1) input scale is controlled — calibration-target detection, real-time tracking with bounded zoom, video stabilisation; (2) you need a per-pixel response surface for downstream filtering or saddle refinement, not a sparse keypoint set; (3) per-frame compute budget is sub-millisecond and the downstream stage does not need a descriptor.
+
+Choose SIFT when (1) the matching task spans different image resolutions, distances, or focal lengths and the detector must repeat across scale; (2) a self-contained detect-and-describe pipeline is required (matching, recognition, panorama assembly, structure-from-motion); (3) wide-baseline accuracy on textured rigid scenes is the success criterion and Harris+ad-hoc descriptor pairings have proven inadequate.
 
 # References
 

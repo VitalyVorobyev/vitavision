@@ -21,7 +21,7 @@ export function PapersProvider({ initial, children }: PapersProviderProps) {
         if (Object.keys(papers).length > 0) return;
         if (typeof window === "undefined") return;
         let cancelled = false;
-        fetch(PAPERS_INDEX_URL, { cache: "force-cache" })
+        fetch(PAPERS_INDEX_URL)
             .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
             .then((data: PapersById) => {
                 if (!cancelled) setPapers(data);

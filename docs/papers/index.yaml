@@ -41,10 +41,6 @@
   arxiv: "1301.5491"
   pdf: bennett2013-chess.pdf
   cites: [rosten2006-fast]
-  notes: |
-    Equations (1)-(4) define SR, DR, MR, R. Section §4 details the
-    detection algorithm; §4.1 the DFT interpretation; §4.2 the orientation
-    binning over the signed measure M_n.
 
 - id: rosten2006-fast
   title: "Machine Learning for High-Speed Corner Detection"
@@ -54,11 +50,6 @@
   url: https://www.edwardrosten.com/work/rosten_2006_machine.pdf
   pdf: rosten2006-fast.pdf
   cites: []
-  notes: |
-    Origin of the FAST-N corner detector and the 16-pixel ring sampling
-    pattern that ChESS reuses (RING5 = the FAST-16 pattern scaled to r=5).
-    Defines the segment-test criterion, the high-speed cardinal-point
-    rejection, and the decision-tree learner.
 
 - id: harris1988-corner
   title: "A Combined Corner and Edge Detector"
@@ -69,9 +60,6 @@
   doi: "10.5244/c.2.23"
   pdf: harris1988-corner.pdf
   cites: []
-  notes: |
-    Defines the structure-tensor M from Ix, Iy gradients summed over
-    a window, and the response R = det(M) - k*tr(M)^2 with k ≈ 0.04–0.06.
 
 - id: shi-tomasi1994-features
   title: "Good Features to Track"
@@ -82,11 +70,6 @@
   doi: "10.1109/cvpr.1994.323794"
   pdf: shi-tomasi1994-features.pdf
   cites: []
-  notes: |
-    Reuses Harris's structure tensor but replaces the Harris response
-    with R = min(λ₁, λ₂), the smaller eigenvalue. Corners are points
-    where R exceeds a threshold τ; the criterion is derived from a
-    feature-tracking quality argument, not corner-strength heuristics.
 
 - id: shu2009-topological
   title: "A topological approach to finding grids in calibration patterns"
@@ -97,17 +80,6 @@
   doi: "10.1007/s00138-009-0202-2"
   pdf: shu2009-topological.pdf
   cites: [harris1988-corner]
-  notes: |
-    Pipeline: (1) Harris corners with subpixel refinement (§2); (2) Delaunay
-    triangulation of the corner set, Watson's O(n log n) implementation
-    (§2.1); (3) merge each triangle with its single same-colour edge
-    neighbour into a quadrilateral (§3); (4) topological filtering — drop
-    quads with two nodes of edge-degree > 4 (§4); (5) geometric filtering —
-    drop quads whose longer/shorter opposite-edge ratio > 10 (§4); (6)
-    flood-fill labelling of integer grid coordinates from an arbitrary seed
-    quad (§5). Complexity O(n) in the number of corners; each quad is
-    visited once in the flood fill. Three marker circles fix the grid
-    origin and x-axis.
 
 - id: stelldinger2024-puzzleboard
   title: "PuzzleBoard: A New Camera Calibration Pattern with Position Encoding"
@@ -119,18 +91,6 @@
   doi: "10.48550/arxiv.2409.20127"
   pdf: stelldinger2024-puzzleboard.pdf
   cites: [harris1988-corner]
-  notes: |
-    Calibration pattern: checkerboard overlaid with circular bits encoding a
-    sub-perfect map of type (501, 501; 3, 3)_4 — every 3×3 window is unique
-    (with triple repetition for error correction). Pipeline: (1) saddle
-    detection via Hessian-based response s = f_xy² − f_xx·f_yy − k·(f_xx +
-    f_yy)² with default k = 1 (§4.1); (2) subpixel refinement by grayscale
-    centroid in a 3×3 neighborhood; (3) grid reconstruction via minimum
-    spanning forest on the 9-nearest-neighbour graph using Kruskal's
-    algorithm (§4.2); (4) bit read at the middle third of each edge; (5)
-    cross-correlation decoding against the two factor maps A, B and their
-    180° rotations, yielding position via modulo arithmetic (§4.3). Error
-    tolerance: up to 40 % bit errors after majority voting.
 
 - id: laureano2013-topological
   title: "Topological Detection of Chessboard Pattern for Camera Calibration"
@@ -140,26 +100,6 @@
   url: https://worldcomp-proceedings.com/proc/p2013/IPC3656.pdf
   pdf: laureano2013-topological.pdf
   cites: [shu2009-topological, rosten2006-fast, bennett2013-chess, harris1988-corner, shi-tomasi1994-features]
-  notes: |
-    Pipeline: (1) x-corner detector — on a Bresenham circle around each
-    pixel p_c with neighbourhood V = {p_1,…,p_n}, count sign alternations
-    N_alt of I(p_i) against Tl = m − gate, Th = m + gate, m = mean over V,
-    gate = 10; classify p_c as x-corner iff N_alt = 4 and Tl < I(p_c) < Th
-    (§2, Eq. 1). (2) NMS by cost max(Σ_dark |I(p_i)−m|, Σ_light |I(p_i)−m|)
-    (Eq. 2). (3) Adaptive binarization via Bradley & Roth integral-image
-    thresholding. (4) Delaunay triangulation of the x-corner set. (5)
-    Topological filter — keep triangles (a) uniform inside after
-    binarization, (b) with at least one same-colour edge-neighbour, (c)
-    with at most two same-colour neighbours; iterate until fixed point and
-    drop orphan vertices (§3). (6) Coordinate propagation — seed (T1, T2)
-    of same colour define origin and x/y directions; propagate via
-    reflection rule v_v = [v_t^(x), 2·v_t^(y) − v_y^(y)] across shared
-    edge (§4). (7) Subpixel refinement via Chen-Zhang Hessian response
-    S = I_xx·I_yy − I_xy² applied only at valid vertices; offsets from
-    quadratic critical point. Positioned as a specification of Rosten-
-    Drummond FAST. Experimental accuracy 85.4 % on the Bouguet database
-    (20 images, 156 x-corners each); 90.9 % excluding two grazing-angle
-    images.
 
 - id: fuersattel2016-ocpad
   title: "OCPAD — Occluded Checkerboard Pattern Detector"
@@ -170,23 +110,6 @@
   doi: "10.1109/WACV.2016.7477565"
   pdf: fuersattel2016-ocpad.pdf
   cites: [placht2014-rochade, cordella2004-vf2, bennett2013-chess]
-  notes: |
-    Plugs behind the graph-construction stage of ROCHADE (after Fig. 1e):
-    consumes a candidate graph G_d of checkerboard saddle points and
-    edges, emits a matching M : G_d → G_m to the model graph. Pipeline
-    (§4): (1) reject candidates with fewer than 50 % of model-graph
-    nodes; (2) spatial consistency — minimum inter-node distance equal
-    to the ROCHADE subpixel window size, plus a stdev-vs-mean edge-
-    length check; (3) quad filter — remove every vertex that is not a
-    corner of some 4-cycle (drops triangles and orphan lines); (4) keep
-    only the largest connected component; (5) VF2 subgraph isomorphism
-    (Cordella 2004) driven by a binary search over N_i vertices ordered
-    by BFS distance to an anchor — anchor is the vertex with maximum
-    quad-density within BFS depth 3 (§4.1); (6) if binary search
-    converges below full N, grow the match vertex-by-vertex in BFS
-    order. Algorithm 1 gives the binary-search loop: N_i = round(N_{i-1}
-    ± 2^{−i} N) with sign flipping on validMapping success/failure;
-    terminates when N_i stops moving.
 
 - id: placht2014-rochade
   title: "ROCHADE: Robust Checkerboard Advanced Detection for Camera Calibration"
@@ -197,15 +120,6 @@
   doi: "10.1007/978-3-319-10593-2_50"
   pdf: placht2014-rochade.pdf
   cites: [lucchese2003-saddle, chen2005-xcorner, rufli2008-blurred, niblack1992-skeleton]
-  notes: |
-    Two-stage checkerboard detector that supplies OCPAD with its input
-    graph. Stage 1 (§3.1 of the OCPAD paper, summarising Placht 2014):
-    Scharr-kernel gradient → magnitude thresholding → centreline thinning
-    (Niblack) → saddle-point detection → graph assembly. Stage 2 (§3.2):
-    subpixel corner refinement by fitting a polynomial to a lowpass-
-    filtered window around each corner, picking the saddle point of the
-    polynomial. ROCHADE requires the full pattern to be present;
-    OCPAD relaxes that by replacing its matching stage.
 
 - id: cordella2004-vf2
   title: "A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs"
@@ -248,11 +162,6 @@
   url: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.87.5833&rep=rep1&type=pdf
   pdf: chen2005-xcorner.pdf
   cites: []
-  notes: |
-    Alternative subpixel X-corner detector — predates ROCHADE and
-    competes with Lucchese's saddle-point fit. ROCHADE §4.2 cites it
-    as one of the reference refinement schemes it is benchmarked
-    against.
 
 - id: rufli2008-blurred
   title: "Automatic detection of checkerboards on blurred and distorted images"
@@ -263,14 +172,6 @@
   doi: "10.1109/iros.2008.4650703"
   pdf: rufli2008-blurred.pdf
   cites: []
-  notes: |
-    Addresses the same problem as ROCHADE — detecting checkerboards
-    in images that defeat OpenCV's detector because of blur, lens
-    distortion, or extreme pose. Pipeline: adaptive thresholding +
-    quadrilateral extraction + clique-based grid recovery. ROCHADE
-    replaces the quadrilateral extraction with saddle-point detection
-    on a thinned gradient centreline and the clique search with a
-    graph walk.
 
 - id: niblack1992-skeleton
   title: "Generating skeletons and centerlines from the distance transform"
@@ -281,13 +182,6 @@
   doi: "10.1016/1049-9652(92)90026-t"
   pdf: niblack1992-skeleton.pdf
   cites: []
-  notes: |
-    Two-pass skeletonization that operates on the distance transform
-    of a binary mask: classify each pixel as ridge/plateau/slope by
-    comparing its distance to its 3×3 neighbours, then thin plateaux
-    with a sequential connectivity-preserving pass. ROCHADE uses this
-    to reduce thick gradient-magnitude ridges into one-pixel-wide
-    centrelines before saddle detection.
 
 - id: abeles2021-pyramidal
   title: "Pyramidal Blur Aware X-Corner Chessboard Detector"
@@ -323,15 +217,6 @@
   - rufli2008-blurred
   - harris1988-corner
   - rosten2006-fast
-  notes: |
-    Section §2.1 details the 6-layer FCN architecture (eqs. 1-3) with stride-1
-    conv + stride-1 max-pool (no spatial downsampling). Eq. (4) is the weighted
-    cross-entropy + L2 loss; eq. (5) the clipping of the output. Eq. (6) the
-    exponential staircase LR schedule. Parameter count 16,301 (§2.1). Post-
-    processing pipeline §2.2: adaptive threshold at 0.5·max response, NMS with
-    4×4 boxes, k-means++ clustering k=10 dropping clusters with N_i<2. Training
-    set: 8900 images @ 640×480 (§3); Table 1 (uEye) and Table 2 (GoPro) carry
-    the headline benchmark numbers against MATE, ChESS, ROCHADE, OCamCalib.
 
 - id: donne2016-mate
   title: "MATE: Machine Learning for Adaptive Calibration Template Detection"
@@ -347,11 +232,6 @@
   - lucchese2003-saddle
   - bennett2013-chess
   - rufli2008-blurred
-  notes: |
-    Direct antecedent to CCDN: three-convolutional-layer CNN for checkerboard
-    corner detection with mean-squared-error loss and fixed 0.5 threshold,
-    2939 parameters. CCDN extends MATE to six layers, swaps MSE for weighted
-    cross-entropy, and adds threshold/NMS/clustering post-processing.
 
 - id: potje2024-xfeat
   title: "XFeat: Accelerated Features for Lightweight Image Matching"
@@ -369,22 +249,6 @@
   pdf: potje2024-xfeat.pdf
   cites:
   - detone2018-superpoint
-  notes: |
-    §3.1 featherweight backbone — triple-rate channel progression
-    {4,8,24,64,64,128} across six basic blocks, halving spatial resolution
-    per block (stride-2 first basic layer). §3.2 parallel keypoint head on
-    8×8 image cells with 64-way + dustbin classification (K ∈ R^(H/8 × W/8 × 65)),
-    descriptor head F ∈ R^(H/8 × W/8 × 64) merging scales {1/8, 1/16, 1/32},
-    reliability head R ∈ R^(H/8 × W/8). §3.2 match refinement MLP predicts
-    an 8×8 offset distribution from concatenated coarse descriptor pairs
-    (Eq. 2). §3.3 training: dual-softmax descriptor NLL (Eq. 3) + L1 on
-    reliability (Eq. 4) + NLL on fine offsets (Eq. 5) + NLL on keypoint
-    cell logits with ALIKE-tiny distillation (Eq. 6); total loss Eq. 7.
-    Adam, lr 3e-4, exponential decay 0.5 every 30k updates, 160k iterations
-    on MegaDepth + synthetic COCO (6:4). Headline metrics: Table 1
-    Megadepth-1500 pose AUC@5° 42.6 / @10° 56.4 (XFeat sparse) and
-    50.2 / 65.4 (XFeat* semi-dense) at 27.1 / 19.2 FPS on i5-1135G7 CPU
-    vs SuperPoint 37.3 / 50.1 @ 3.0 FPS, DISK 53.8 / 65.9 @ 1.2 FPS.
 
 - id: detone2018-superpoint
   title: "SuperPoint: Self-Supervised Interest Point Detection and Description"
@@ -397,14 +261,6 @@
   pdf: detone2018-superpoint.pdf
   cites:
   - rosten2006-fast
-  notes: |
-    Antecedent to XFeat. Shared VGG-like encoder with a keypoint decoder
-    head (1/8 resolution output, 8×8 cell classifier with a dustbin class)
-    and a dense descriptor decoder. Self-supervised training via
-    homographic adaptation from MagicPoint on synthetic data then
-    on MS-COCO. XFeat reuses the 8×8-cell + dustbin output shape but
-    splits detection into a parallel branch operating on 8×8 raw-pixel
-    tensor blocks rather than sharing the encoder.
 
 - id: zhang2000-flexible
   title: "A Flexible New Technique for Camera Calibration"
@@ -418,22 +274,6 @@
   - tsai1987-versatile
   - weng1992-camera
   - sturm2003-plane-based
-  notes: |
-    §2 notation: homography H = [h1 h2 h3] = λK[r1 r2 t]; B = K^{-T}K^{-1}
-    (image of the absolute conic, symmetric 3×3). §3.1 the two constraints
-    per homography: h1^T B h2 = 0 and h1^T B h1 = h2^T B h2; stack into
-    V b = 0 where b = (B11,B12,B22,B13,B23,B33)^T and each row is v_{ij}
-    built from columns of H (Eq. 8). §3.2 closed-form K from b: five
-    scalar formulas for (v0, λ, α, β, γ, u0) via Cholesky of B (App. B).
-    §3.3 extrinsics per view: λ = 1/||K^{-1}h1||, r1 = λK^{-1}h1,
-    r2 = λK^{-1}h2, r3 = r1 × r2, t = λK^{-1}h3; R refined to nearest
-    rotation by SVD. §3.4 maximum-likelihood refinement — LM minimization
-    of Σ_{i,j} ||m_{ij} - m̂(K, k1, k2, R_i, t_i, M_j)||^2 (Eq. 10).
-    §3.5 radial distortion: u_d = u + (u-u0)(k1 r^2 + k2 r^4) (Eq. 11,12);
-    closed-form linear estimate from residuals of the distortion-free
-    model then joint LM refinement. §3.6 degenerate configurations:
-    parallel planes give rank-deficient V. Minimum two views if one
-    intrinsic (e.g. skew = 0) is fixed; three views for full K.
 
 - id: tsai1987-versatile
   title: "A versatile camera calibration technique for high-accuracy 3D machine vision metrology using off-the-shelf TV cameras and lenses"
@@ -444,13 +284,6 @@
   doi: "10.1109/jra.1987.1087109"
   pdf: tsai1987-versatile.pdf
   cites: []
-  notes: |
-    Two-stage calibration: (1) closed-form radial-alignment constraint on
-    monocoplanar points to get R and t_x, t_y up to scale; (2) nonlinear
-    refinement of the remaining intrinsics (f, κ1, t_z). Requires a
-    coplanar target with known 3D metric layout and a separate non-coplanar
-    calibration object (or mechanically controlled translation) to break
-    the focal-length / z-translation ambiguity. Pre-Zhang baseline.
 
 - id: weng1992-camera
   title: "Camera calibration with distortion models and accuracy evaluation"
@@ -461,13 +294,6 @@
   doi: "10.1109/34.159901"
   pdf: weng1992-camera.pdf
   cites: []
-  notes: |
-    Distortion model: radial + decentering (tangential) + thin-prism,
-    parameterised by (k1, k2) radial, (p1, p2) decentering, (s1, s2)
-    prism. Closed-form initial estimate from a distortion-free linear
-    model, followed by nonlinear refinement of all parameters jointly.
-    Cited by Zhang for the two-term radial distortion formulation
-    reused in §3.5.
 
 - id: sturm2003-plane-based
   title: "On plane-based camera calibration: A general algorithm, singularities, applications"
@@ -478,14 +304,6 @@
   doi: "10.1109/cvpr.1999.786974"
   pdf: sturm2003-plane-based.pdf
   cites: []
-  notes: |
-    Concurrent with Zhang's tech report. Same two linear constraints per
-    plane homography on the dual image of the absolute conic (ω*), stacked
-    across views and solved by SVD. Adds a full catalogue of degenerate
-    plane configurations: parallel planes (all views of the same plane up
-    to translation along its normal), planes whose vanishing lines are
-    parallel in the image, and orbit-like motions where the plane's
-    circular points project to the same image points in every view.
 
 - id: tsai1989-handeye
   title: "A new technique for fully autonomous and efficient 3D robotics hand/eye calibration"
@@ -498,29 +316,6 @@
   cites:
   - tsai1987-versatile
   - shiu1989-calibration
-  notes: |
-    Solves AX=XB for the unknown gripper-to-camera transform X = H_cg
-    given pairs of robot motions A_ij = H_g_ij (gripper-to-gripper) and
-    camera motions B_ij = H_c_ij (camera-to-camera) recovered from
-    extrinsic calibration of N≥3 stations imaging a fixed calibration
-    target. §II.B parametrises rotations by the modified Rodrigues vector
-    Pr = 2 sin(θ/2) [n1 n2 n3]^T (Eq. 9, range 0≤θ≤π); the rotation matrix
-    is R = (1 - |Pr|^2/2) I + (1/2)(Pr Pr^T + α Skew(Pr)) with
-    α = sqrt(4 - |Pr|^2) (Eq. 10). Two-stage solver: (a) rotation —
-    Lemma VI gives Skew(Pg_ij + Pc_ij) Pcg' = Pc_ij - Pg_ij (Eq. 12),
-    where Pcg' is an unscaled axis; stack ≥2 station pairs and solve
-    by linear least squares; recover the true Rodrigues vector via
-    Pcg = 2 Pcg' / sqrt(1 + |Pcg'|^2) (Eq. 14) and θ_Rcg = 2 arctan|Pcg'|
-    (Eq. 13). (b) translation — Lemma VIII: (R_g_ij - I) T_cg =
-    R_cg T_c_ij - T_g_ij (Eq. 15); stack ≥2 pairs and solve by linear
-    least squares for T_cg. Uniqueness holds when interstation rotation
-    axes are non-collinear across pairs (necessary because Skew(P) and
-    R - I are each rank-2). Special case: when Pg_ij + Pc_ij is
-    collinear across pairs the rotation angle is exactly π and the axis
-    is taken parallel to the sum directly. Total cost ~100 + 60N scalar
-    operations after extrinsic calibration. Eleven lemmas (I–XI) carry
-    the proofs; Lemma I R_g_ij = R_cg R_c_ij R_cg^T is the underlying
-    AX=XB structure on the rotation block.
 
 - id: shiu1989-calibration
   title: "Calibration of wrist-mounted robotic sensors by solving homogeneous transform equations of the form AX=XB"
@@ -555,35 +350,6 @@
   cites:
   - shiu1989-calibration
   - tsai1989-handeye
-  notes: |
-    Solves AX=XB jointly for rotation and translation by parametrising
-    rigid motions as unit dual quaternions and extracting the unknown
-    hand-eye dual quaternion from the right null space of a single
-    linear system. §3 reviews dual quaternions: a rigid motion is a
-    unit dual quaternion q̂ = q + εq′ with q ∈ ℝ⁴ a unit quaternion
-    encoding rotation (θ, n) as q = (cos θ/2, sin(θ/2) n), and
-    q′ = (1/2) t ⊗ q where t = (0, t_vec) is the translation as a pure
-    quaternion; equivalently the screw form q̂ = cos(θ̂/2) + sin(θ̂/2) l̂
-    with dual angle θ̂ = θ + εd and dual axis l̂ = l + εm (§3.2).
-    Screw congruence (§4.2): hand and eye motions share the same screw
-    angle θ and pitch d, so the scalar parts of â and b̂ coincide and
-    the problem reduces to the imaginary parts. §5 derives the linear
-    constraint
-        | a − b   [a+b]_×    0_{3}   0_{3×3} |  | q_0  |
-        | a′ − b′ [a′+b′]_×  a − b   [a+b]_× |  | q    | = 0
-                                               | q′_0 |
-                                               | q′   |
-    per motion pair (Eq. 31), where (a_0, a) and (a′_0, a′) are the
-    real and dual imaginary parts of â (and similarly b̂). Stacking
-    ≥2 pairs yields a 6N×8 matrix T; SVD gives a two-dimensional
-    right null space span{v_7, v_8}. §6 picks the physically valid
-    combination x̂ = λ_1 v_7 + λ_2 v_8 by enforcing |q|² = 1 and
-    q·q′ = 0: the second constraint is quadratic in s = λ_1/λ_2 and
-    has two roots; the root that makes the first constraint positive
-    determines λ_2. Rigid transform recovered by R(q) and t = 2 q′ q*
-    (real part discarded). Joint rotation+translation solution avoids
-    the error propagation of Tsai-Lenz's two-stage decoupling and uses
-    one SVD instead of two least-squares solves.
 
 - id: kumar2014-grac
   title: "Generalized Radial Alignment Constraint for Camera Calibration"
@@ -596,31 +362,6 @@
   cites:
   - tsai1987-versatile
   - weng1992-camera
-  notes: |
-    Extends Tsai's Radial Alignment Constraint (RAC) to a sensor that is
-    not orthogonal to the optic axis. Adds a 2-DoF rotation R(ρ, σ)
-    between lens and sensor coordinate systems (z-rotation is redundant
-    because the lens is rotationally symmetric about its optic axis).
-    §IV derives the gRAC: project the observed non-frontal image point
-    P_nf onto a hypothesized frontal sensor P_f = (x_df, y_df) along the
-    ray through the lens centre (Eq. 4), then apply Tsai's RAC to P_f
-    and the world point's lens-frame projection — x_df · y_l = y_df · x_l
-    (Eq. 5). §IV shows this reduces to a linear equation A q = b in
-    seven unknown combinations q_1 … q_7 of extrinsic rotation S, tilt
-    R, and translation (t_x, t_y) (Eqs. 7–15); ≥4 world-image
-    correspondences solve it in least squares. §V-A decomposes q into
-    sign-ambiguous estimates of S, R, (t_x, t_y): |t_x| from Eq. 17 via
-    row-orthonormality; s_1j from Eqs. 18; s_2j from Eqs. 23–25; s_3j
-    via cross product; (ρ, σ) from Eqs. 29–30 with relative sign from
-    sign(L) (Eq. 27). §V-B resolves the four-way ambiguity by recovering
-    λ and t_z from Eq. 35 ([−x_l v] [λ; t_z]^T = −u x_l − v w) under a
-    no-distortion assumption; rejects λ < 0 hypotheses; picks between
-    the remaining two by which one admits a better symmetric
-    radial-distortion fit. §V-C iteratively refines the CoD (I_0, J_0)
-    by sampling image locations, solving gRAC at each, and minimising
-    the residual RAC error on the frontal-projected points; this
-    extends Lenz-Tsai's quadratic-residual CoD estimator (which assumed
-    frontal sensor) to the non-frontal case.
 
 - id: duda2018-accurate
   title: "Accurate Detection and Localization of Checkerboard Corners for Calibration"
@@ -631,29 +372,6 @@
   doi: "openalex:W2894330449"
   pdf: duda2018-accurate.pdf
   cites: [harris1988-corner, rufli2008-blurred, zhang2000-flexible, sinzinger2007-model-based]
-  notes: |
-    Checkerboard corner detector built on a localized Radon transform
-    approximated by two 1-D box filters on rotated copies of the image.
-    §3 defines the core: R_f^local[x,y,α] = Σ_{k=-m..m} f(x+k·cos α,
-    y+k·sin α) is a directional line integral through (x,y); the detector
-    response f_c[x,y] = [max_α R - min_α R]² is maximised where a true
-    X-junction's point symmetry makes the bright centreline integral
-    much larger than the dark one (Eq. 2). §3 restricts α to
-    {0, π/4, π/2, 3π/4} using the sine-like periodicity of R over α at
-    an X-junction (Fig. 3a). §3.1 the implementation: the image is
-    rotated by α ∈ {0, π/4} and convolved with an n×m box filter plus
-    an m×n box filter; rotated back; the four directional blurs are
-    joined via f_c = [max − min]² (Eq. 3); box smooth of the response
-    accounts for discretisation; local maxima over a threshold + NMS
-    give integer corners. Subpixel refinement: Gaussian peak fit on the
-    response map, with 2× supersampling before rotation recommended for
-    antialiasing. Default parameters: blur kernel size 1×9 pixels, 9×9
-    baseline window for Förstner comparison, 1000-run evaluation over
-    uniform-random subpixel positions. §4 reports ≈ 1/100-pixel
-    accuracy on crisp synthetic corners (Fig. 4b), parity with Förstner
-    under strong Gaussian blur, and superiority under Gaussian image
-    noise (Figs. 5-6) and on real outdoor data (Fig. 9, Tables 1-2).
-    Processing time linear in pixel count (§4.1, Fig. 7b).
 
 - id: sinzinger2007-model-based
   title: "A model-based approach to junction detection using radial energy"
@@ -684,28 +402,6 @@
   doi: "10.1109/cvpr.2013.303"
   pdf: zaragoza2013-apap.pdf
   cites: [hartley1997-eight-point, schaefer2006-mls, gao2011-dual-homography, lin2011-svastitching, igarashi2005-arap]
-  notes: |
-    §3.1 reviews the global DLT homography. Each correspondence
-    (x_i, x'_i) yields two rows a_{i,1}, a_{i,2} of a 2N×9 matrix A
-    so that A·h = 0; the homography vector h = vec(H) is the
-    right singular vector of A with smallest singular value (Eq. 3-4).
-    §4 introduces Moving DLT: at every target pixel x_*, solve the
-    weighted system W_* A·h = 0 where the diagonal weight for
-    correspondence i is w_*^i = max(exp(-‖x_* - x_i‖² / σ²), γ).
-    σ controls locality; γ ∈ [0,1] is an offset that bounds the
-    weight away from zero so distant cells still receive a stable
-    homography (Eq. 6). The per-cell H_* is again the smallest right
-    singular vector, of W_* A. §4.2 the partition: the target image
-    is overlaid with a uniform C₁ × C₂ grid (paper uses 100×100);
-    one MDLT homography per cell. §4.3 the offline speedup: A is
-    normalised once via Hartley's data-conditioning matrices T, T'
-    (Eq. 8); each W_* A SVD reuses the conditioned A and only varies
-    weights. Defaults from §6: σ = 8.5, γ = 0.01 / 0.025 (range
-    explored γ ∈ [0, 0.05]); SIFT correspondences filtered by
-    multi-GS RANSAC; bundle adjustment refines a global similarity
-    after MDLT for cells with no correspondences. §6 reports lower
-    RMSE alignment error than DLT, dual-homography, and SVA on six
-    datasets (Tables 2-3).
 
 - id: hartley1997-eight-point
   title: "In Defense of the Eight-Point Algorithm"
@@ -716,15 +412,6 @@
   doi: "10.1109/34.601246"
   pdf: hartley1997-eight-point.pdf
   cites: []
-  notes: |
-    Source of the data-conditioning step that precedes DLT: translate
-    each point set so its centroid is at the origin and isotropically
-    scale so the mean distance from the origin is √2. The resulting
-    similarities T (source) and T' (target) condition the design
-    matrix A to a moderate condition number; the recovered homography
-    is then de-normalised as H = T'⁻¹ Ĥ T. APAP (§4.3) reuses this
-    pre-conditioning before the Moving-DLT weights are applied so
-    every per-cell SVD operates on a numerically well-scaled A.
 
 - id: schaefer2006-mls
   title: "Image Deformation Using Moving Least Squares"
@@ -735,15 +422,6 @@
   doi: "10.1145/1141911.1141920"
   pdf: schaefer2006-mls.pdf
   cites: []
-  notes: |
-    Defines the moving-least-squares image warp: at every output pixel
-    v, solve a weighted least-squares fit l_v(x) = M_v·x + T_v over
-    user-supplied control points {p_i, q_i}, with Gaussian weights
-    w_i(v) = 1 / ‖p_i - v‖^{2α}. The deformation v ↦ l_v(v) is smooth
-    in v and interpolates the controls. APAP transplants the moving-
-    weights idea from MLS (Euclidean / similarity / affine) to the
-    projective setting: per-pixel weighted DLT instead of per-pixel
-    weighted least squares.
 
 - id: gao2011-dual-homography
   title: "Constructing Image Panoramas Using Dual-Homography Warping"
@@ -754,12 +432,6 @@
   doi: "10.1109/cvpr.2011.5995433"
   pdf: gao2011-dual-homography.pdf
   cites: []
-  notes: |
-    Two-plane scene model: fit two homographies H_distant, H_ground
-    by clustering matched features, then blend them per pixel by a
-    weight derived from feature-cluster proximity. APAP generalises
-    this two-homography blend to a continuous spatially-varying
-    field of homographies driven by per-pixel weighted DLT.
 
 - id: lin2011-svastitching
   title: "Smoothly Varying Affine Stitching"
@@ -770,15 +442,6 @@
   doi: "10.1109/cvpr.2011.5995314"
   pdf: lin2011-svastitching.pdf
   cites: []
-  notes: |
-    Replaces the global homography with a smoothly-varying affine
-    field obtained by alternately fitting per-feature affines and
-    smoothing them across the image. APAP (§2) names SVA as its
-    closest precedent in the spatially-varying-warp family, but
-    notes SVA only models affine deformations and cannot represent
-    perspective parallax. APAP keeps the spatially-varying idea but
-    upgrades the local model to a full projective transformation
-    via per-cell weighted DLT.
 
 - id: igarashi2005-arap
   title: "As-Rigid-As-Possible Shape Manipulation"
@@ -789,14 +452,6 @@
   doi: "10.1145/1186822.1073323"
   pdf: igarashi2005-arap.pdf
   cites: []
-  notes: |
-    Origin of the "as-X-as-possible" naming pattern. Computes a 2-D
-    triangle-mesh deformation that interpolates user handles and is
-    as close to a global rigid transform as possible, by minimising
-    a quadratic that penalises non-rigid local Jacobians. APAP
-    inherits the naming convention and the philosophy: choose a
-    nominal global model, allow per-element deviation only as needed
-    to satisfy correspondences.
 
 - id: geiger2012-automatic
   title: "Automatic camera and range sensor calibration using a single shot"
@@ -811,17 +466,6 @@
     - harris1988-corner
     - rufli2008-blurred
     - shi-tomasi1994-features
-  notes: |
-    Single-shot calibration of a camera + LiDAR rig from one capture
-    of multiple checkerboards arranged in the scene. The chessboard
-    detector itself (independent of the LiDAR fusion) is the
-    open-source `libcbdetect` and is the workhorse for many subsequent
-    calibration pipelines (Hillen 2023 Gaussian-process enhancement,
-    OCPAD partial-pattern recovery, Pyramidal blur-aware comparison).
-    Detector pipeline: 4-quadrant likelihood + multi-scale (3 fixed
-    scales) + gradient-orientation verification; structure recovery
-    allocates corners to a free grid without requiring known board
-    dimensions.
 
 - id: rasmussen2006-gpml
   title: "Gaussian Processes for Machine Learning"
@@ -831,15 +475,6 @@
   url: https://gaussianprocess.org/gpml/
   pdf: rasmussen2006-gpml.pdf
   cites: []
-  notes: |
-    Canonical textbook on Gaussian processes (ISBN 0-262-18253-X; freely
-    available at gaussianprocess.org/gpml). Chapter 2 introduces the GP
-    regression posterior in closed form (Eqs. 2.23–2.24): predictive mean
-    f̄_* = k_*ᵀ(K + σ_n²I)⁻¹y and covariance, with the squared-exponential
-    kernel as the running example. Chapter 5 derives the log marginal
-    likelihood used for hyperparameter selection (the alternative to
-    cross-validation that Hillen 2023 inherits). The GP framework cited
-    by `hillen2023-enhanced` for chessboard refinement.
 
 - id: hillen2023-enhanced
   title: "Enhanced Checkerboard Detection Using Gaussian Processes"
@@ -856,20 +491,6 @@
     - duda2018-accurate
     - fuersattel2016-ocpad
     - placht2014-rochade
-  notes: |
-    Post-detection enhancement layer (PyCBD library) that wraps any
-    upstream chessboard detector — evaluated on top of Geiger 2012
-    libcbdetect — and uses two Gaussian processes (one for U, one for V)
-    over (boardXY → boardUV) pairs to (1) allocate unallocated detected
-    corners to grid positions, (2) predict UV for occluded or
-    out-of-frame grid positions, (3) globally smooth all allocated UV
-    coordinates. Squared-exponential kernel; hyperparameters fit by
-    L-BFGS on the log marginal likelihood (Rasmussen 2006 Ch. 5).
-    Strongest gains on low-resolution endoscopic, multispectral, and
-    thermal IR captures where conventional detectors miss many corners.
-    Complementary to OCPAD subgraph-isomorphism recovery: OCPAD is
-    combinatorial / training-free; Hillen GP is regression / requires
-    a partial board fragment but extrapolates beyond the image border.
 
 - id: zhang2022-learning-based
   title: "Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration"
@@ -889,18 +510,6 @@
     - zhang2000-flexible
     - donne2016-mate
     - chen2023-ccdn
-  notes: |
-    Three-stage end-to-end checkerboard calibration pipeline. (1)
-    Learning-based radial distortion correction using a CNN trained on
-    synthesized distorted images; (2) accurate sub-pixel corner
-    detection combining a learned coarse detector with a classical
-    refinement step and post-processing; (3) image-level RANSAC over
-    candidate boards to discard outlier views before bundle adjustment.
-    Targets the three canonical failure modes of Zhang 2000 calibration:
-    inexact corner detection, uncorrected radial distortion, and
-    unstable parameter estimation under bad lighting / noise. Compared
-    against MATE (donne2016-mate), Geiger 2012 libcbdetect, and CCDN
-    (chen2023-ccdn) on synthetic + real datasets.
 
 - id: wu2021-highly
   title: "A highly accurate and robust deep checkerboard corner detector"
@@ -917,15 +526,6 @@
     - zhang2000-flexible
     - donne2016-mate
     - chen2023-ccdn
-  notes: |
-    Deep checkerboard corner detector for camera calibration. Two
-    contributions: (1) a synthetic training-data generator that
-    simulates the real imaging process and yields ground-truth sub-pixel
-    corner positions for free; (2) a relatively simple deep network
-    trained on that synthetic data. Because exact sub-pixel positions
-    are available, enables objective comparison via mean Euclidean
-    location error against MATLAB camera calibration toolbox, OpenCV
-    detectors, and prior deep-learning baselines (e.g. donne2016-mate).
 
 - id: loy2003-frst
   title: "Fast radial symmetry for detecting points of interest"
@@ -936,24 +536,6 @@
   doi: "10.1109/TPAMI.2003.1217601"
   pdf: loy2003-frst.pdf
   cites: []
-  notes: |
-    Fast Radial Symmetry Transform (FRST). Gradient-based voting
-    operator that highlights points of high local radial symmetry —
-    small bright/dark blobs and approximately circular features. Each
-    image pixel casts a vote along its gradient orientation at one or
-    more candidate radii; the positively- and negatively-affected vote
-    maps are combined and Gaussian-smoothed to yield a per-radius
-    symmetry contribution. Features are local maxima of the cumulative
-    response summed across radii. Cost is O(K·N) for K radii and N
-    pixels, enabling real-time use (>60 fps on 2003 hardware) while
-    matching or exceeding earlier symmetry/interest-point detectors
-    such as Reisfeld's generalized symmetry transform. Journal version
-    of the ECCV 2002 conference paper; algorithmic content is identical
-    with extended experiments and analysis. Underpins the editor's
-    `radsym` algorithm and serves as the baseline for the RSD
-    fused-radii variant exposed alongside it. Note: TPAMI PDF is
-    paywalled at IEEE Xplore; the cached `.pdf` is the freely-available
-    ECCV 2002 conference version (same algorithm).
 
 - id: ni2012-gfrs
   title: "Fast radial symmetry detection under affine transformations"
@@ -968,22 +550,6 @@
   pdf: ni2012-gfrs.pdf
   cites:
     - loy2003-frst
-  notes: |
-    Generalized Fast Radial Symmetry (GFRS) transform — direct
-    extension of the Loy & Zelinsky FRS to detect radial symmetries
-    that have undergone bounded affine / perspective projection (so
-    circles appear as ellipses). The original FRS uses 1-D voting along
-    the gradient direction at each pixel for a chosen radius `n`; GFRS
-    re-parametrises voting against an underlying affine model so that
-    elliptical symmetries vote into a common centre, retaining FRS's
-    O(N) per-radius cost. Demonstrated on natural images with strongly
-    elliptical radial patterns and applied to the histopathology task
-    of cell-nucleus detection, where it outperforms an FRS baseline
-    and other state-of-the-art nuclei detectors on ROC. PDF placed in
-    cache by the user from the published CVPR 2012 proceedings; IEEE
-    Xplore is paywalled but the cached PDF (8 pages, dated April 2012,
-    from `dvips + GPL Ghostscript`) matches the title/authors recorded
-    on Crossref/OpenAlex for the DOI.
 
 - id: fischler1981-ransac
   title: "Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography"
@@ -994,7 +560,6 @@
   doi: "10.1145/358669.358692"
   pdf: fischler1981-ransac.pdf
   cites: []
-  notes: # TODO: add notes
 
 - id: raguram2013-usac
   title: "USAC: A Universal Framework for Random Sample Consensus"
@@ -1006,7 +571,6 @@
   pdf: raguram2013-usac.pdf
   cites:
     - fischler1981-ransac
-  notes: # TODO: add notes
 
 - id: barath2019-magsac
   title: "MAGSAC: marginalizing sample consensus"
@@ -1019,4 +583,390 @@
   cites:
     - fischler1981-ransac
     - raguram2013-usac
-  notes: # TODO: add notes
+
+- id: lepetit2009-epnp
+  title: "EPnP: An Accurate O(n) Solution to the PnP Problem"
+  authors: ["V. Lepetit", "F. Moreno-Noguer", "P. Fua"]
+  year: 2009
+  venue: International Journal of Computer Vision
+  url: http://hdl.handle.net/2117/10327
+  doi: "10.1007/s11263-008-0152-6"
+  pdf: lepetit2009-epnp.pdf
+  cites:
+    - fischler1981-ransac
+
+- id: scaramuzza2006-omni
+  title: "A Toolbox for Easily Calibrating Omnidirectional Cameras"
+  authors: ["D. Scaramuzza", "A. Martinelli", "R. Siegwart"]
+  year: 2006
+  venue: IEEE/RSJ IROS
+  url: https://rpg.ifi.uzh.ch/docs/IROS06_scaramuzza.pdf
+  doi: "10.1109/iros.2006.282372"
+  pdf: scaramuzza2006-omni.pdf
+  cites: []
+
+- id: lowe2004-sift
+  title: "Distinctive Image Features from Scale-Invariant Keypoints"
+  authors: ["D. G. Lowe"]
+  year: 2004
+  venue: International Journal of Computer Vision
+  url: https://www.cs.ubc.ca/~lowe/papers/ijcv04.pdf
+  doi: "10.1023/B:VISI.0000029664.99615.94"
+  pdf: lowe2004-sift.pdf
+  cites: [harris1988-corner]
+
+- id: canny1986-edge
+  title: "A Computational Approach to Edge Detection"
+  authors: ["J. Canny"]
+  year: 1986
+  venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
+  url: https://perso.limsi.fr/vezien/PAPIERS_ACS/canny1986.pdf
+  doi: "10.1109/TPAMI.1986.4767851"
+  pdf: canny1986-edge.pdf
+  cites: []
+
+- id: bay2006-surf
+  title: "SURF: Speeded Up Robust Features"
+  authors: ["H. Bay", "T. Tuytelaars", "L. V. Gool"]
+  year: 2006
+  venue: Lecture notes in computer science
+  url: https://link.springer.com/content/pdf/10.1007/11744023_32.pdf
+  doi: "10.1007/11744023_32"
+  pdf: bay2006-surf.pdf
+  cites: [harris1988-corner, lowe2004-sift]
+
+- id: calonder2010-brief
+  title: "BRIEF: Binary Robust Independent Elementary Features"
+  authors: ["M. Calonder", "V. Lepetit", "C. Strecha", "P. Fua"]
+  year: 2010
+  venue: Lecture notes in computer science
+  url: https://link.springer.com/content/pdf/10.1007/978-3-642-15561-1_56.pdf
+  doi: "10.1007/978-3-642-15561-1_56"
+  pdf: calonder2010-brief.pdf
+  cites: [rosten2006-fast, bay2006-surf, lowe2004-sift]
+
+- id: rublee2011-orb
+  title: "ORB: An efficient alternative to SIFT or SURF"
+  authors: ["E. Rublee", "V. Rabaud", "K. Konolige", "G. Bradski"]
+  year: 2011
+  venue: ICCV
+  url: https://doi.org/10.1109/ICCV.2011.6126544
+  doi: "10.1109/ICCV.2011.6126544"
+  pdf: rublee2011-orb.pdf
+  cites: [calonder2010-brief, rosten2006-fast, bay2006-surf, harris1988-corner, lowe2004-sift, lepetit2009-epnp]
+
+- id: sarlin2020-superglue
+  title: "SuperGlue: Learning Feature Matching with Graph Neural Networks"
+  authors: ["P. Sarlin", "D. DeTone", "T. Malisiewicz", "A. Rabinovich"]
+  year: 2020
+  venue: CVPR
+  url: https://arxiv.org/pdf/1911.11763
+  arxiv: "1911.11763"
+  doi: "10.1109/cvpr42600.2020.00499"
+  pdf: sarlin2020-superglue.pdf
+  cites: [detone2018-superpoint, lowe2004-sift, rublee2011-orb, fischler1981-ransac]
+
+- id: sun2021-loftr
+  title: "LoFTR: Detector-Free Local Feature Matching with Transformers"
+  authors: ["J. Sun", "Z. Shen", "Y. Wang", "H. Bao", "X. Zhou"]
+  year: 2021
+  venue: CVPR
+  url: https://arxiv.org/pdf/2104.00680
+  arxiv: "2104.00680"
+  doi: "10.1109/cvpr46437.2021.00881"
+  pdf: sun2021-loftr.pdf
+  cites: [detone2018-superpoint, sarlin2020-superglue, lowe2004-sift, rublee2011-orb]
+
+- id: lindenberger2023-lightglue
+  title: "LightGlue: Local Feature Matching at Light Speed"
+  authors: ["P. Lindenberger", "P. Sarlin", "M. Pollefeys"]
+  year: 2023
+  venue: ICCV
+  url: https://arxiv.org/pdf/2306.13643
+  arxiv: "2306.13643"
+  doi: "10.48550/arxiv.2306.13643"
+  pdf: lindenberger2023-lightglue.pdf
+  cites: [sarlin2020-superglue, detone2018-superpoint, sun2021-loftr, lowe2004-sift]
+
+- id: felzenszwalb2004-graph-segm
+  title: "Efficient Graph-Based Image Segmentation"
+  authors: ["P. F. Felzenszwalb", "D. P. Huttenlocher"]
+  year: 2004
+  venue: International Journal of Computer Vision
+  url: https://cs.brown.edu/people/pfelzens/papers/seg-ijcv.pdf
+  doi: "10.1023/b:visi.0000022288.19776.77"
+  pdf: felzenszwalb2004-graph-segm.pdf
+  cites: []
+
+- id: boykov2001-graph-cut-segmentation
+  title: "Interactive Graph Cuts for Optimal Boundary & Region Segmentation of Objects in N-D Images"
+  authors: ["Y. Boykov", "M.-P. Jolly"]
+  year: 2001
+  venue: ICCV
+  url: https://www.csd.uwo.ca/~yboykov/Papers/iccv01.pdf
+  doi: "10.1109/iccv.2001.937505"
+  pdf: boykov2001-graph-cut-segmentation.pdf
+  cites: []
+
+- id: yang2018-sub-pixel
+  title: "Sub-Pixel Chessboard Corner Localization for Camera Calibration and Pose Estimation"
+  authors: ["T. Yang", "Q. Zhao", "W. Xian", "Q. Zhou"]
+  year: 2018
+  venue: Applied Sciences
+  url: https://www.mdpi.com/2076-3417/8/11/2118/pdf
+  doi: "10.3390/app8112118"
+  pdf: yang2018-sub-pixel.pdf
+  cites:
+  - placht2014-rochade
+  - chen2005-xcorner
+  - lucchese2003-saddle
+  - lepetit2009-epnp
+  - zhang2000-flexible
+
+- id: longuet-higgins1981-eight-point
+  title: "A computer algorithm for reconstructing a scene from two projections"
+  authors: ["H. C. Longuet-Higgins"]
+  year: 1981
+  venue: Nature
+  url: https://doi.org/10.1038/293133a0
+  doi: "10.1038/293133a0"
+  pdf: longuet-higgins1981-eight-point.pdf
+  cites: []
+
+- id: rother2004-grabcut
+  title: "GrabCut: Interactive Foreground Extraction using Iterated Graph Cuts"
+  authors: ["C. Rother", "V. Kolmogorov", "A. Blake"]
+  year: 2004
+  venue: ACM Transactions on Graphics (SIGGRAPH)
+  url: https://doi.org/10.1145/1015706.1015720
+  doi: "10.1145/1015706.1015720"
+  pdf: rother2004-grabcut.pdf
+  cites:
+  - boykov2001-graph-cut-segmentation
+
+- id: long2015-fcn
+  title: "Fully Convolutional Networks for Semantic Segmentation"
+  authors: ["J. Long", "E. Shelhamer", "T. Darrell"]
+  year: 2015
+  venue: CVPR
+  url: https://arxiv.org/abs/1411.4038
+  doi: "10.1109/cvpr.2015.7298965"
+  pdf: long2015-fcn.pdf
+  cites: []
+
+- id: ronneberger2015-unet
+  title: "U-Net: Convolutional Networks for Biomedical Image Segmentation"
+  authors: ["O. Ronneberger", "P. Fischer", "T. Brox"]
+  year: 2015
+  venue: MICCAI (Lecture Notes in Computer Science)
+  url: https://arxiv.org/abs/1505.04597
+  doi: "10.1007/978-3-319-24574-4_28"
+  pdf: ronneberger2015-unet.pdf
+  cites:
+  - long2015-fcn
+
+- id: chen2018-deeplab
+  title: "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs"
+  authors: ["L. Chen", "G. Papandreou", "I. Kokkinos", "K. Murphy", "A. Yuille"]
+  year: 2018
+  venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
+  url: https://arxiv.org/abs/1606.00915
+  doi: "10.1109/tpami.2017.2699184"
+  pdf: chen2018-deeplab.pdf
+  cites:
+  - long2015-fcn
+  - ronneberger2015-unet
+
+- id: he2017-maskrcnn
+  title: "Mask R-CNN"
+  authors: ["K. He", "G. Gkioxari", "P. Dollár", "R. Girshick"]
+  year: 2017
+  venue: ICCV
+  url: https://arxiv.org/abs/1703.06870
+  doi: "10.1109/iccv.2017.322"
+  pdf: he2017-maskrcnn.pdf
+  cites:
+  - long2015-fcn
+
+- id: kirillov2023-sam
+  title: "Segment Anything"
+  authors: ["A. Kirillov", "E. Mintun", "N. Ravi", "H. Mao", "C. Rolland", "L. Gustafson", "T. Xiao", "S. Whitehead", "A. C. Berg", "W. Lo", "P. Dollár", "R. Girshick"]
+  year: 2023
+  venue: ICCV
+  url: https://arxiv.org/abs/2304.02643
+  doi: "10.1109/iccv51070.2023.00371"
+  pdf: kirillov2023-sam.pdf
+  cites:
+  - felzenszwalb2004-graph-segm
+  - long2015-fcn
+  - ronneberger2015-unet
+  - he2017-maskrcnn
+  - chen2018-deeplab
+
+- id: viola2001-detector
+  title: "Rapid object detection using a boosted cascade of simple features"
+  authors: ["P. Viola", "M. Jones"]
+  year: 2001
+  venue: CVPR
+  url: https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/viola-cvpr-01.pdf
+  doi: "10.1109/CVPR.2001.990517"
+  pdf: viola2001-detector.pdf
+
+- id: dalal2005-hog
+  title: "Histograms of Oriented Gradients for Human Detection"
+  authors: ["N. Dalal", "B. Triggs"]
+  year: 2005
+  venue: CVPR
+  url: https://inria.hal.science/inria-00548512
+  doi: "10.1109/CVPR.2005.177"
+  pdf: dalal2005-hog.pdf
+  cites:
+  - lowe2004-sift
+
+- id: felzenszwalb2010-detection
+  title: "Object Detection with Discriminatively Trained Part-Based Models"
+  authors: ["P. F. Felzenszwalb", "R. B. Girshick", "D. McAllester", "D. Ramanan"]
+  year: 2010
+  venue: IEEE TPAMI
+  url: https://cs.brown.edu/people/pfelzens/papers/lsvm-pami.pdf
+  doi: "10.1109/TPAMI.2009.167"
+  pdf: felzenszwalb2010-detection.pdf
+  cites:
+  - lowe2004-sift
+  - dalal2005-hog
+  - viola2001-detector
+
+- id: krizhevsky2012-alexnet
+  title: "ImageNet Classification with Deep Convolutional Neural Networks"
+  authors: ["A. Krizhevsky", "I. Sutskever", "G. E. Hinton"]
+  year: 2012
+  venue: NeurIPS
+  url: https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
+  doi: "10.1145/3065386"
+  pdf: krizhevsky2012-alexnet.pdf
+
+- id: simonyan2014-vgg
+  title: "Very Deep Convolutional Networks for Large-Scale Image Recognition"
+  authors: ["K. Simonyan", "A. Zisserman"]
+  year: 2014
+  venue: ICLR 2015 / arXiv
+  url: https://arxiv.org/pdf/1409.1556
+  arxiv: "1409.1556"
+  doi: "10.48550/arxiv.1409.1556"
+  pdf: simonyan2014-vgg.pdf
+  cites:
+  - krizhevsky2012-alexnet
+  - long2015-fcn
+
+- id: szegedy2015-inception
+  title: "Going deeper with convolutions"
+  authors: ["C. Szegedy", "W. Liu", "Y. Jia", "P. Sermanet", "S. Reed", "D. Anguelov", "D. Erhan", "V. Vanhoucke", "A. Rabinovich"]
+  year: 2015
+  venue: CVPR 2015
+  url: https://arxiv.org/pdf/1409.4842
+  arxiv: "1409.4842"
+  doi: "10.1109/CVPR.2015.7298594"
+  pdf: szegedy2015-inception.pdf
+  cites:
+  - krizhevsky2012-alexnet
+
+- id: he2016-resnet
+  title: "Deep Residual Learning for Image Recognition"
+  authors: ["K. He", "X. Zhang", "S. Ren", "J. Sun"]
+  year: 2016
+  venue: CVPR 2016
+  url: https://arxiv.org/pdf/1512.03385
+  arxiv: "1512.03385"
+  doi: "10.1109/CVPR.2016.90"
+  pdf: he2016-resnet.pdf
+  cites:
+  - krizhevsky2012-alexnet
+  - simonyan2014-vgg
+  - szegedy2015-inception
+  - long2015-fcn
+
+- id: ren2015-faster
+  title: "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks"
+  authors: ["S. Ren", "K. He", "R. Girshick", "J. Sun"]
+  year: 2015
+  venue: NeurIPS 2015
+  url: https://arxiv.org/pdf/1506.01497
+  arxiv: "1506.01497"
+  doi: "10.48550/arxiv.1506.01497"
+  pdf: ren2015-faster.pdf
+  cites:
+  - long2015-fcn
+  - krizhevsky2012-alexnet
+
+- id: redmon2016-yolo
+  title: "You Only Look Once: Unified, Real-Time Object Detection"
+  authors: ["J. Redmon", "S. Divvala", "R. Girshick", "A. Farhadi"]
+  year: 2016
+  venue: CVPR 2016
+  url: https://arxiv.org/pdf/1506.02640
+  arxiv: "1506.02640"
+  doi: "10.1109/CVPR.2016.91"
+  pdf: redmon2016-yolo.pdf
+  cites:
+  - dalal2005-hog
+  - felzenszwalb2010-detection
+  - szegedy2015-inception
+  - ren2015-faster
+  - simonyan2014-vgg
+
+- id: lin2017-retinanet
+  title: "Focal Loss for Dense Object Detection"
+  authors: ["T. Lin", "P. Goyal", "R. Girshick", "K. He", "P. Dollár"]
+  year: 2017
+  venue: ICCV 2017
+  url: https://arxiv.org/pdf/1708.02002
+  arxiv: "1708.02002"
+  doi: "10.1109/ICCV.2017.324"
+  pdf: lin2017-retinanet.pdf
+  cites:
+  - dalal2005-hog
+  - viola2001-detector
+  - krizhevsky2012-alexnet
+  - he2016-resnet
+  - long2015-fcn
+  - ren2015-faster
+  - he2017-maskrcnn
+  - felzenszwalb2010-detection
+
+- id: lucas1981-lucas-kanade
+  title: "An Iterative Image Registration Technique with an Application to Stereo Vision"
+  authors: ["B. D. Lucas", "T. Kanade"]
+  year: 1981
+  venue: IJCAI 1981
+  url: https://www.ri.cmu.edu/pub_files/pub3/lucas_bruce_d_1981_2/lucas_bruce_d_1981_2.pdf
+  pdf: lucas1981-lucas-kanade.pdf
+
+- id: tomasi1991-detection-tracking
+  title: "Detection and Tracking of Point Features"
+  authors: ["C. Tomasi", "T. Kanade"]
+  year: 1991
+  venue: Carnegie Mellon University Technical Report CMU-CS-91-132
+  url: https://kilthub.cmu.edu/articles/journal_contribution/Detection_and_tracking_of_point_features/6603148
+  pdf: tomasi1991.pdf
+
+- id: horn1981-horn-schunck
+  title: "Determining optical flow"
+  authors: ["B. K. P. Horn", "B. G. Schunck"]
+  year: 1981
+  venue: Artificial Intelligence
+  url: http://hdl.handle.net/1721.1/6337
+  doi: "10.1016/0004-3702(81)90024-2"
+  pdf: horn1981-horn-schunck.pdf
+
+- id: black1996-robust
+  title: "The Robust Estimation of Multiple Motions: Parametric and Piecewise-Smooth Flow Fields"
+  authors: ["M. J. Black", "P. Anandan"]
+  year: 1996
+  venue: Computer Vision and Image Understanding
+  url: https://doi.org/10.1006/cviu.1996.0006
+  doi: "10.1006/cviu.1996.0006"
+  pdf: black1996-robust.pdf
+  cites:
+    - lucas1981-lucas-kanade
+    - horn1981-horn-schunck
+

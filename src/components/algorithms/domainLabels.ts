@@ -9,6 +9,7 @@ export const domainLabels: Record<Domain, string> = {
     "stitching": "Stitching",
     "depth": "Depth",
     "detection": "Detection",
+    "segmentation": "Segmentation",
 };
 
 export const domainOrder: Domain[] = [
@@ -20,4 +21,5 @@ export const domainOrder: Domain[] = [
     "stitching",
     "depth",
     "detection",
+    "segmentation",
 ];

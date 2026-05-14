@@ -11,6 +11,27 @@ arch_family: cnn
 flops: "64-D descriptors at H/8 × W/8 resolution"
 prerequisites: [image-gradient]
 failureModes: []
+relations:
+  - type: learned_alternative_of
+    target: sift
+    confidence: high
+    caution: "XFeat targets CPU-grade compute and replaces SIFT's classical hand-crafted pipeline with a featherweight learned model."
+  - type: learned_alternative_of
+    target: surf
+    confidence: high
+    caution: "XFeat replaces SURF's integral-image Hessian detector + Haar-wavelet descriptor with a featherweight learned model targeting CPU inference."
+  - type: learned_alternative_of
+    target: brief
+    confidence: high
+    caution: "XFeat replaces the FAST+BRIEF binary-descriptor pipeline with a featherweight learned model targeting CPU inference."
+  - type: learned_alternative_of
+    target: orb
+    confidence: high
+    caution: "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
+  - type: feeds_into
+    target: lightglue
+    confidence: medium
+    caution: "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
 sources:
   primary: potje2024-xfeat
   references:

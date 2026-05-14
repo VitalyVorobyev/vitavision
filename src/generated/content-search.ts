@@ -39,6 +39,75 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE CVPR"
   },
   {
+    "slug": "black-anandan-robust-flow",
+    "path": "/atlas/black-anandan-robust-flow",
+    "type": "algorithm",
+    "title": "Black-Anandan Robust Optical Flow",
+    "summary": "Optical flow that replaces the quadratic data and smoothness penalties of variational flow with redescending M-estimators, solved by SOR within a graduated non-convexity continuation; recovers piecewise-smooth flow without explicit line processes and a robust affine variant for multiple parametric motions.",
+    "tags": [
+      "motion",
+      "optical-flow",
+      "robust-statistics",
+      "variational"
+    ],
+    "domain": "features",
+    "headings": [
+      "Piecewise-smooth (dense) variant",
+      "Parametric (affine) variant"
+    ],
+    "authors": [
+      "M. J. Black",
+      "P. Anandan"
+    ],
+    "venue": "Computer Vision and Image Understanding"
+  },
+  {
+    "slug": "brief",
+    "path": "/atlas/brief",
+    "type": "algorithm",
+    "title": "BRIEF: Binary Robust Independent Elementary Features",
+    "summary": "Encodes a Gaussian-smoothed image patch around a detected keypoint as a 128/256/512-bit binary string by running a fixed table of pairwise pixel-intensity tests; matched between images by Hamming distance via bitwise XOR + popcount.",
+    "tags": [
+      "local-descriptors",
+      "binary-descriptor",
+      "matching",
+      "feature-matching"
+    ],
+    "domain": "features",
+    "headings": [
+      "Sampling distributions"
+    ],
+    "authors": [
+      "M. Calonder",
+      "V. Lepetit",
+      "C. Strecha",
+      "P. Fua"
+    ],
+    "venue": "Lecture notes in computer science"
+  },
+  {
+    "slug": "canny-edge-detector",
+    "path": "/atlas/canny-edge-detector",
+    "type": "algorithm",
+    "title": "Canny Edge Detector",
+    "summary": "Detect thin step edges in greyscale images by smoothing with a Gaussian, computing gradient magnitude and direction, suppressing non-maxima along the gradient direction, then linking surviving pixels via hysteresis double-thresholding; the filter shape is derived as the variational optimum of three criteria — detection SNR, localisation, and single-response spacing — under an additive-white-Gaussian-noise step-edge model.",
+    "tags": [
+      "edge-detection",
+      "non-maximum-suppression",
+      "hysteresis",
+      "gradient"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure",
+      "Multi-scale and directional extensions"
+    ],
+    "authors": [
+      "J. Canny"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "chess-corners",
     "path": "/atlas/chess-corners",
     "type": "algorithm",
@@ -104,6 +173,60 @@ export const searchRecords: SearchRecord[] = [
     "venue": "The International Journal of Robotics Research"
   },
   {
+    "slug": "felzenszwalb-deformable-parts",
+    "path": "/atlas/felzenszwalb-deformable-parts",
+    "type": "algorithm",
+    "title": "Deformable Part Models",
+    "summary": "Detect a target object class in arbitrary images by scoring every position and scale in a HOG feature pyramid with a mixture of star-structured part-based templates — a coarse root filter and $n=6$ finer-resolution part filters with quadratic deformation costs — trained as a latent SVM with hard-negative mining.",
+    "tags": [
+      "object-detection",
+      "deformable-parts-model",
+      "latent-svm",
+      "hog",
+      "part-based",
+      "structured-prediction"
+    ],
+    "domain": "detection",
+    "headings": [
+      "Feature pyramid",
+      "Hypothesis score",
+      "Efficient inference via distance transform",
+      "Mixture model",
+      "Latent SVM training",
+      "Procedure"
+    ],
+    "authors": [
+      "P. F. Felzenszwalb",
+      "R. B. Girshick",
+      "D. McAllester",
+      "D. Ramanan"
+    ],
+    "venue": "IEEE TPAMI"
+  },
+  {
+    "slug": "epnp",
+    "path": "/atlas/epnp",
+    "type": "algorithm",
+    "title": "EPnP: O(n) Perspective-n-Point",
+    "summary": "Non-iterative O(n) solver for the calibrated Perspective-n-Point problem: express the n reference points as weighted sums of four virtual control points, recover their camera-frame coordinates from the null space of a 12×12 matrix, and extract pose by absolute orientation.",
+    "tags": [
+      "pose-estimation",
+      "perspective-n-point",
+      "geometry"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "β recovery",
+      "Procedure"
+    ],
+    "authors": [
+      "V. Lepetit",
+      "F. Moreno-Noguer",
+      "P. Fua"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
     "slug": "fast-corner-detector",
     "path": "/atlas/fast-corner-detector",
     "type": "algorithm",
@@ -143,6 +266,29 @@ export const searchRecords: SearchRecord[] = [
       "Alexander Zelinsky"
     ],
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "felzenszwalb-graph-segmentation",
+    "path": "/atlas/felzenszwalb-graph-segmentation",
+    "type": "algorithm",
+    "title": "Felzenszwalb–Huttenlocher Graph-Based Image Segmentation",
+    "summary": "Partition an image into perceptually coherent regions by a Kruskal-style greedy merge over a pixel graph, accepting an inter-component edge as a non-boundary when its weight does not exceed the components' internal variation plus a size-adaptive threshold $\\tau(C) = k/|C|$; runs in $O(m \\log m)$ time and produces partitions that are simultaneously not too fine and not too coarse.",
+    "tags": [
+      "image-segmentation",
+      "graph-algorithms",
+      "minimum-spanning-tree",
+      "union-find"
+    ],
+    "domain": "segmentation",
+    "headings": [
+      "Graph constructions",
+      "Procedure"
+    ],
+    "authors": [
+      "P. F. Felzenszwalb",
+      "D. P. Huttenlocher"
+    ],
+    "venue": "International Journal of Computer Vision"
   },
   {
     "slug": "fischler-bolles-ransac",
@@ -267,20 +413,52 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Mathematics (MDPI)"
   },
   {
-    "slug": "gp-checkerboard-enhancement",
-    "path": "/algorithms/gp-checkerboard-enhancement",
+    "slug": "grabcut-iterative-segmentation",
+    "path": "/atlas/grabcut-iterative-segmentation",
     "type": "algorithm",
-    "title": "GP Checkerboard Enhancement",
-    "summary": "Wrap a checkerboard corner detector with a Gaussian process that learns the smooth map from local board coordinates to image pixel coordinates, then use the predictive mean to recover occluded corners, claim corners the upstream structure recovery missed, extend the board beyond the image, and smooth the detected positions.",
+    "title": "GrabCut Iterative Segmentation",
+    "summary": "Extract a foreground from a colour image using a single bounding rectangle as the only required input by alternating Gaussian mixture component assignment, GMM parameter re-estimation, and global s-t min-cut on a contrast-weighted MRF — the iteration decreases a Gibbs energy $E(\\alpha, k, \\theta, z) = U + V$ monotonically — then refine the contour with a regularised 1-D $\\alpha$-profile in a $\\pm 6$-pixel border ribbon.",
     "tags": [
-      "calibration",
-      "chessboard",
-      "gaussian-processes"
+      "image-segmentation",
+      "graph-cut",
+      "min-cut-max-flow",
+      "gaussian-mixture-model",
+      "interactive-segmentation",
+      "border-matting"
     ],
-    "category": "calibration-targets",
+    "domain": "segmentation",
     "headings": [
       "Procedure"
-    ]
+    ],
+    "authors": [
+      "C. Rother",
+      "V. Kolmogorov",
+      "A. Blake"
+    ],
+    "venue": "ACM Transactions on Graphics (SIGGRAPH)"
+  },
+  {
+    "slug": "graph-cut-segmentation",
+    "path": "/atlas/graph-cut-segmentation",
+    "type": "algorithm",
+    "title": "Graph-Cut Interactive Segmentation",
+    "summary": "Compute the global minimum of a binary region-and-boundary MRF energy as a single s-t min-cut on a pixel graph; user-marked seeds enter as hard constraints, the output is a binary labelling $A : P \\to \\{\\text{obj}, \\text{bkg}\\}$ with topology-free segments.",
+    "tags": [
+      "image-segmentation",
+      "graph-cut",
+      "min-cut-max-flow",
+      "markov-random-field",
+      "interactive-segmentation"
+    ],
+    "domain": "segmentation",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "Y. Boykov",
+      "M.-P. Jolly"
+    ],
+    "venue": "ICCV"
   },
   {
     "slug": "harris-corner-detector",
@@ -297,13 +475,56 @@ export const searchRecords: SearchRecord[] = [
       "Procedure",
       "When to choose Harris over Shi-Tomasi",
       "When to choose Harris over FAST",
-      "When to choose Harris over ChESS"
+      "When to choose Harris over ChESS",
+      "When to choose Harris over SIFT"
     ],
     "authors": [
       "C. Harris",
       "M. J. Stephens"
     ],
     "venue": "Alvey Vision Conference"
+  },
+  {
+    "slug": "hog-descriptor",
+    "path": "/atlas/hog-descriptor",
+    "type": "algorithm",
+    "title": "HOG: Histograms of Oriented Gradients",
+    "summary": "Compute a fixed-length descriptor for an image window by binning pixel gradients into 8×8 cells of 9 unsigned-orientation histograms, normalising overlapping 2×2-cell blocks with L2-Hys, and concatenating the 3780 block values into a single vector fed to a linear SVM — the canonical pre-CNN pedestrian detector.",
+    "tags": [
+      "object-detection",
+      "pedestrian-detection",
+      "gradient-histograms",
+      "feature-descriptor",
+      "linear-svm"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "N. Dalal",
+      "B. Triggs"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "horn-schunck",
+    "path": "/atlas/horn-schunck",
+    "type": "algorithm",
+    "title": "Horn-Schunck Optical Flow",
+    "summary": "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation.",
+    "tags": [
+      "motion",
+      "optical-flow",
+      "variational"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "B. K. P. Horn",
+      "B. G. Schunck"
+    ],
+    "venue": "Artificial Intelligence"
   },
   {
     "slug": "kumar-generalized-rac",
@@ -368,6 +589,46 @@ export const searchRecords: SearchRecord[] = [
       "U. Frese"
     ],
     "venue": "British Machine Vision Conference (BMVC)"
+  },
+  {
+    "slug": "longuet-higgins-eight-point",
+    "path": "/atlas/longuet-higgins-eight-point",
+    "type": "algorithm",
+    "title": "Longuet-Higgins Linear Eight-Point Algorithm",
+    "summary": "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm.",
+    "tags": [
+      "geometry",
+      "two-view-geometry",
+      "essential-matrix"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "H. C. Longuet-Higgins"
+    ],
+    "venue": "Nature"
+  },
+  {
+    "slug": "lucas-kanade",
+    "path": "/atlas/lucas-kanade",
+    "type": "algorithm",
+    "title": "Lucas-Kanade Image Registration",
+    "summary": "Iterative Newton-Raphson method that estimates the parametric warp between two images by linearising the residual and solving the resulting weighted normal equation per iteration.",
+    "tags": [
+      "motion",
+      "optical-flow",
+      "image-registration"
+    ],
+    "domain": "features",
+    "headings": [
+      "Coarse-to-fine extension",
+      "Affine and photometric generalisations"
+    ],
+    "authors": [
+      "B. D. Lucas",
+      "T. Kanade"
+    ],
+    "venue": "IJCAI 1981"
   },
   {
     "slug": "barath-magsac",
@@ -435,6 +696,32 @@ export const searchRecords: SearchRecord[] = [
       "C. Riess"
     ],
     "venue": "IEEE WACV"
+  },
+  {
+    "slug": "orb",
+    "path": "/atlas/orb",
+    "type": "algorithm",
+    "title": "ORB: Oriented FAST and Rotated BRIEF",
+    "summary": "Detects rotation-invariant oriented keypoints by running FAST-9 on a √2 image pyramid, ranking by Harris cornerness, and assigning orientation from the intensity centroid; describes each keypoint with a 256-bit rBRIEF binary string formed by greedy selection of low-correlation, high-variance pairwise pixel-intensity tests on a smoothed 31×31 patch.",
+    "tags": [
+      "feature-detection",
+      "local-descriptors",
+      "binary-descriptor",
+      "matching"
+    ],
+    "domain": "features",
+    "headings": [
+      "oFAST: oriented FAST",
+      "rBRIEF: rotated BRIEF",
+      "Greedy uncorrelated-test selection"
+    ],
+    "authors": [
+      "E. Rublee",
+      "V. Rabaud",
+      "K. Konolige",
+      "G. Bradski"
+    ],
+    "venue": "ICCV"
   },
   {
     "slug": "puzzleboard",
@@ -505,6 +792,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "ECCV"
   },
   {
+    "slug": "scaramuzza-omni-calibration",
+    "path": "/atlas/scaramuzza-omni-calibration",
+    "type": "algorithm",
+    "title": "Scaramuzza Omnidirectional Camera Calibration",
+    "summary": "Calibrate any central catadioptric or fisheye camera from a few planar checkerboard views by fitting a radially-symmetric Taylor-polynomial imaging function with a linear estimate followed by maximum-likelihood refinement.",
+    "tags": [
+      "calibration",
+      "omnidirectional",
+      "fisheye",
+      "catadioptric"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "D. Scaramuzza",
+      "A. Martinelli",
+      "R. Siegwart"
+    ],
+    "venue": "IEEE/RSJ IROS"
+  },
+  {
     "slug": "shi-tomasi-corner-detector",
     "path": "/atlas/shi-tomasi-corner-detector",
     "type": "algorithm",
@@ -516,13 +826,37 @@ export const searchRecords: SearchRecord[] = [
     ],
     "domain": "features",
     "headings": [
-      "Procedure"
+      "Procedure",
+      "When to choose Shi-Tomasi over SIFT"
     ],
     "authors": [
       "J. Shi",
       "C. Tomasi"
     ],
     "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "sift",
+    "path": "/atlas/sift",
+    "type": "algorithm",
+    "title": "SIFT: Scale-Invariant Feature Transform",
+    "summary": "Detects keypoints as scale-space extrema in a Difference-of-Gaussian image pyramid, refines location and scale by 3D quadratic interpolation, assigns canonical orientation from local gradient histograms, and emits a 128-D descriptor invariant to scale, rotation, and moderate affine and illumination change.",
+    "tags": [
+      "feature-detection",
+      "local-descriptors",
+      "scale-invariant",
+      "matching"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure",
+      "When to choose SIFT over FAST",
+      "When to choose SIFT over ORB"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
   },
   {
     "slug": "sturm-plane-based-calibration",
@@ -544,6 +878,30 @@ export const searchRecords: SearchRecord[] = [
       "S. J. Maybank"
     ],
     "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "surf",
+    "path": "/atlas/surf",
+    "type": "algorithm",
+    "title": "SURF: Speeded Up Robust Features",
+    "summary": "Detects scale- and rotation-invariant blob keypoints as scale-space maxima of the Hessian determinant, approximated with box filters on an integral image, and emits a 64-D Haar-wavelet response descriptor matched by Euclidean distance with a Laplacian-sign pre-filter.",
+    "tags": [
+      "feature-detection",
+      "local-descriptors",
+      "scale-invariant",
+      "blob-detection",
+      "matching"
+    ],
+    "domain": "features",
+    "headings": [
+      "When to choose SURF over ORB"
+    ],
+    "authors": [
+      "H. Bay",
+      "T. Tuytelaars",
+      "L. V. Gool"
+    ],
+    "venue": "Lecture notes in computer science"
   },
   {
     "slug": "shu-topological-grid",
@@ -635,6 +993,58 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "viola-jones-detector",
+    "path": "/atlas/viola-jones-detector",
+    "type": "algorithm",
+    "title": "Viola–Jones Object Detector",
+    "summary": "Real-time frontal-face detection by sliding a fixed 24×24 sub-window across a grayscale image at multiple scales, scoring each position with an AdaBoost-selected ensemble of integral-image rectangle features arranged in a 38-stage attentional cascade that rejects most background regions after evaluating ~10 features per sub-window.",
+    "tags": [
+      "object-detection",
+      "face-detection",
+      "boosting",
+      "adaboost",
+      "integral-image",
+      "haar-features",
+      "cascade-classifier"
+    ],
+    "domain": "detection",
+    "headings": [
+      "Integral image",
+      "Rectangle features",
+      "AdaBoost feature selection",
+      "Attentional cascade",
+      "Procedure"
+    ],
+    "authors": [
+      "P. Viola",
+      "M. Jones"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "yang-sub-pixel-corner-fit",
+    "path": "/atlas/yang-sub-pixel-corner-fit",
+    "type": "algorithm",
+    "title": "Yang Parametric-Model Sub-Pixel Corner Fit",
+    "summary": "Refine pixel-level chessboard corner positions to sub-pixel accuracy by nonlinear least-squares fitting a seven-parameter ideal blurred-corner model directly to the raw image patch, then reject unreliable corners via a boxplot-based fit-quality self-check before passing to PnP.",
+    "tags": [
+      "subpixel-refinement",
+      "calibration",
+      "chessboard"
+    ],
+    "domain": "features",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "T. Yang",
+      "Q. Zhao",
+      "W. Xian",
+      "Q. Zhou"
+    ],
+    "venue": "Applied Sciences"
+  },
+  {
     "slug": "zhang-planar-calibration",
     "path": "/atlas/zhang-planar-calibration",
     "type": "algorithm",
@@ -653,6 +1063,27 @@ export const searchRecords: SearchRecord[] = [
       "Z. Zhang"
     ],
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "alexnet",
+    "path": "/atlas/alexnet",
+    "type": "model",
+    "title": "AlexNet",
+    "summary": "Eight-layer convolutional neural network for 1000-class image classification on ImageNet, trained end-to-end on two GPUs with ReLU activations, local response normalisation, overlapping max-pooling, and dropout; the first deep CNN to win ILSVRC by a large margin.",
+    "tags": [
+      "computer-vision",
+      "image-classification",
+      "cnn",
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "A. Krizhevsky",
+      "I. Sutskever",
+      "G. E. Hinton"
+    ],
+    "venue": "NeurIPS"
   },
   {
     "slug": "ccdn-checkerboard-detector",
@@ -698,6 +1129,173 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Robotics and Automation Letters"
   },
   {
+    "slug": "deeplab-semantic-segmentation",
+    "path": "/atlas/deeplab-semantic-segmentation",
+    "type": "model",
+    "title": "DeepLab",
+    "summary": "Dense semantic segmentation by repurposing an ImageNet classifier with atrous (dilated) convolution to preserve spatial resolution, an Atrous Spatial Pyramid Pooling head for multi-scale context, and a fully-connected CRF post-processor for boundary refinement — multi-year state of the art on PASCAL VOC 2012.",
+    "tags": [
+      "computer-vision",
+      "semantic-segmentation",
+      "dense-prediction",
+      "dilated-convolution"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "L. Chen",
+      "G. Papandreou",
+      "I. Kokkinos",
+      "K. Murphy",
+      "A. Yuille"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "faster-rcnn",
+    "path": "/atlas/faster-rcnn",
+    "type": "model",
+    "title": "Faster R-CNN",
+    "summary": "Two-stage CNN object detector that replaces external Selective Search / EdgeBoxes proposals with a learned Region Proposal Network sharing conv features with the Fast R-CNN head — yielding near-real-time multi-class detection on GPU (5 fps with VGG-16) and ImageNet-pretrained backbones swapped freely from ZF through ResNet-101.",
+    "tags": [
+      "computer-vision",
+      "object-detection",
+      "two-stage-detector",
+      "region-proposal-network",
+      "cnn",
+      "anchor-based"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "S. Ren",
+      "K. He",
+      "R. Girshick",
+      "J. Sun"
+    ],
+    "venue": "NeurIPS 2015"
+  },
+  {
+    "slug": "fcn-semantic-segmentation",
+    "path": "/atlas/fcn-semantic-segmentation",
+    "type": "model",
+    "title": "FCN: Fully Convolutional Networks",
+    "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
+    "tags": [
+      "computer-vision",
+      "semantic-segmentation",
+      "dense-prediction",
+      "encoder-decoder",
+      "transfer-learning"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "J. Long",
+      "E. Shelhamer",
+      "T. Darrell"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "googlenet",
+    "path": "/atlas/googlenet",
+    "type": "model",
+    "title": "GoogLeNet",
+    "summary": "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet).",
+    "tags": [
+      "computer-vision",
+      "image-classification",
+      "cnn",
+      "deep-learning",
+      "inception"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "C. Szegedy",
+      "W. Liu",
+      "Y. Jia",
+      "P. Sermanet",
+      "S. Reed",
+      "D. Anguelov",
+      "D. Erhan",
+      "V. Vanhoucke",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR 2015"
+  },
+  {
+    "slug": "lightglue",
+    "path": "/atlas/lightglue",
+    "type": "model",
+    "title": "LightGlue",
+    "summary": "Adaptive-depth Transformer matcher for sparse local features: stacks 9 self+cross-attention layers with rotary positional encoding and a per-token confidence head, exits early on easy image pairs, and replaces SuperGlue's Sinkhorn solver with a dual-softmax × matchability assignment head — over 2× faster than SuperGlue at equivalent or better pose-estimation accuracy.",
+    "tags": [
+      "computer-vision",
+      "image-matching",
+      "local-features",
+      "transformer",
+      "attention"
+    ],
+    "domain": "features",
+    "headings": [
+      "When to choose LightGlue over SuperGlue"
+    ],
+    "authors": [
+      "P. Lindenberger",
+      "P. Sarlin",
+      "M. Pollefeys"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "loftr",
+    "path": "/atlas/loftr",
+    "type": "model",
+    "title": "LoFTR",
+    "summary": "Detector-free dense feature matcher: shared CNN backbone produces coarse and fine feature maps, a Linear Transformer with interleaved self- and cross-attention establishes confidence-thresholded mutual nearest-neighbour correspondences, and a fine module refines each match to sub-pixel accuracy.",
+    "tags": [
+      "computer-vision",
+      "image-matching",
+      "transformer",
+      "detector-free",
+      "dense-matching"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "J. Sun",
+      "Z. Shen",
+      "Y. Wang",
+      "H. Bao",
+      "X. Zhou"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "mask-rcnn",
+    "path": "/atlas/mask-rcnn",
+    "type": "model",
+    "title": "Mask R-CNN",
+    "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
+    "tags": [
+      "computer-vision",
+      "instance-segmentation",
+      "object-detection",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "K. He",
+      "G. Gkioxari",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "ICCV"
+  },
+  {
     "slug": "mate-checkerboard-detector",
     "path": "/atlas/mate-checkerboard-detector",
     "type": "model",
@@ -724,6 +1322,55 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Sensors"
   },
   {
+    "slug": "resnet",
+    "path": "/atlas/resnet",
+    "type": "model",
+    "title": "ResNet",
+    "summary": "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation.",
+    "tags": [
+      "computer-vision",
+      "image-classification",
+      "cnn",
+      "deep-learning",
+      "backbone",
+      "residual"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "K. He",
+      "X. Zhang",
+      "S. Ren",
+      "J. Sun"
+    ],
+    "venue": "CVPR 2016"
+  },
+  {
+    "slug": "superglue",
+    "path": "/atlas/superglue",
+    "type": "model",
+    "title": "SuperGlue",
+    "summary": "Graph neural network that matches two sets of sparse local features by jointly finding correspondences and rejecting unmatched keypoints in one differentiable forward pass, trained end-to-end with a Sinkhorn optimal-transport assignment over augmented dustbin scores.",
+    "tags": [
+      "computer-vision",
+      "image-matching",
+      "local-features",
+      "graph-neural-network",
+      "attention"
+    ],
+    "domain": "features",
+    "headings": [
+      "When to choose SuperGlue over LoFTR"
+    ],
+    "authors": [
+      "P. Sarlin",
+      "D. DeTone",
+      "T. Malisiewicz",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR"
+  },
+  {
     "slug": "superpoint",
     "path": "/atlas/superpoint",
     "type": "model",
@@ -748,6 +1395,49 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR Workshop (Deep Learning for Visual SLAM)"
   },
   {
+    "slug": "unet-segmentation",
+    "path": "/atlas/unet-segmentation",
+    "type": "model",
+    "title": "U-Net",
+    "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
+    "tags": [
+      "computer-vision",
+      "semantic-segmentation",
+      "biomedical-imaging",
+      "encoder-decoder",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "O. Ronneberger",
+      "P. Fischer",
+      "T. Brox"
+    ],
+    "venue": "MICCAI (Lecture Notes in Computer Science)"
+  },
+  {
+    "slug": "vgg",
+    "path": "/atlas/vgg",
+    "type": "model",
+    "title": "VGG",
+    "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
+    "tags": [
+      "computer-vision",
+      "image-classification",
+      "cnn",
+      "deep-learning",
+      "backbone"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "K. Simonyan",
+      "A. Zisserman"
+    ],
+    "venue": "ICLR 2015 / arXiv"
+  },
+  {
     "slug": "xfeat",
     "path": "/atlas/xfeat",
     "type": "model",
@@ -769,6 +1459,29 @@ export const searchRecords: SearchRecord[] = [
       "E. R. Nascimento"
     ],
     "venue": "CVPR"
+  },
+  {
+    "slug": "yolo-v1",
+    "path": "/atlas/yolo-v1",
+    "type": "model",
+    "title": "YOLOv1",
+    "summary": "Single-stage CNN object detector that frames detection as one regression problem from full-image pixels to a 7×7×30 tensor of grid-cell box offsets, objectness, and 20-class probabilities — trained end-to-end and inferring 98 boxes per image at 45 fps on a Titan X.",
+    "tags": [
+      "computer-vision",
+      "object-detection",
+      "single-stage-detector",
+      "real-time",
+      "cnn"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "J. Redmon",
+      "S. Divvala",
+      "R. Girshick",
+      "A. Farhadi"
+    ],
+    "venue": "CVPR 2016"
   },
   {
     "slug": "camera-distortion-models",

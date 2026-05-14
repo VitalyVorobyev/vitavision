@@ -52,6 +52,23 @@ tasks:
       camera mounted on it (or between a stationary camera and a robot base)
       from synchronised motion sequences.
 
+  - slug: image-classification
+    description: |
+      Assign a single class label (or class-probability vector) to an entire
+      image, given a closed set of categories. Output is one prediction per
+      image, not per pixel or per object. Foundational task for transfer
+      learning: classifier backbones supply feature stacks reused by
+      detection, segmentation, and retrieval downstream.
+
+  - slug: image-segmentation
+    description: |
+      Partition an image into perceptually coherent regions without prior
+      knowledge of scene content or a fixed number of regions. Output is a
+      label map or set of pixel-component assignments suitable as input to
+      object proposals, superpixel preprocessing, or region-based downstream
+      tasks. Distinct from semantic segmentation models that predict a class
+      per pixel — this task covers unsupervised partitioning by appearance.
+
   - slug: image-stitching
     description: |
       Compose two or more overlapping images into a single panorama by

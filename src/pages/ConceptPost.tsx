@@ -113,7 +113,7 @@ export default function ConceptPost() {
                     backTo="/atlas"
                     backLabel="Back to atlas"
                     frontmatter={frontmatter}
-                    badges={<QualityBadge quality={frontmatter.quality} />}
+                    badges={frontmatter.quality ? <QualityBadge quality={frontmatter.quality} /> : undefined}
                     kind="concept"
                 />
 
@@ -131,6 +131,8 @@ export default function ConceptPost() {
                     <ErrorBoundary>
                         <article
                             ref={articleRef}
+                            data-atlas-slug={resolvedSlug}
+                            data-atlas-kind="concept"
                             className={proseClasses}
                             dangerouslySetInnerHTML={{ __html: html }}
                         />

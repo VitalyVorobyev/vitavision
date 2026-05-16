@@ -6,7 +6,7 @@ tags: ["boosting"]
 domain: detection
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: []
+prerequisites: [integral-image]
 failureModes: []
 sources:
   primary: viola2001-detector

@@ -1337,6 +1337,31 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR 2016"
   },
   {
+    "slug": "attention-mechanism",
+    "path": "/atlas/attention-mechanism",
+    "type": "concept",
+    "title": "Attention Mechanism",
+    "summary": "Computes each output element as a learned, input-dependent weighted average of value vectors, letting every element aggregate information from any other regardless of distance.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [
+      "Scaled dot-product attention",
+      "Multi-head attention",
+      "Self-attention and cross-attention",
+      "Positional encoding",
+      "Quadratic cost and the linear approximation"
+    ],
+    "authors": [
+      "P. Sarlin",
+      "D. DeTone",
+      "T. Malisiewicz",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR"
+  },
+  {
     "slug": "camera-distortion-models",
     "path": "/atlas/camera-distortion-models",
     "type": "concept",
@@ -1413,6 +1438,28 @@ export const searchRecords: SearchRecord[] = [
       "Isotropic vs anisotropic normalisation",
       "Reuse in Moving-DLT (APAP)"
     ]
+  },
+  {
+    "slug": "energy-minimization",
+    "path": "/atlas/energy-minimization",
+    "type": "concept",
+    "title": "Energy Minimization",
+    "summary": "The framework that poses image labelling and segmentation as minimising an objective combining a per-pixel data term and a pairwise smoothness term over a graph of pixels.",
+    "tags": [
+      "graph-based"
+    ],
+    "domain": "segmentation",
+    "headings": [
+      "Data and smoothness decomposition",
+      "Graph-cut solution for binary labels",
+      "GrabCut iterative formulation",
+      "Greedy region merging as a contrast"
+    ],
+    "authors": [
+      "Y. Boykov",
+      "M.-P. Jolly"
+    ],
+    "venue": "ICCV"
   },
   {
     "slug": "epipolar-geometry",
@@ -1527,6 +1574,28 @@ export const searchRecords: SearchRecord[] = [
       "Gradient magnitude and direction",
       "Separability and the structure tensor"
     ]
+  },
+  {
+    "slug": "integral-image",
+    "path": "/atlas/integral-image",
+    "type": "concept",
+    "title": "Integral Image",
+    "summary": "A precomputed prefix-sum array that returns the sum of pixel values over any axis-aligned rectangle in constant time with four array reads.",
+    "tags": [
+      "classical"
+    ],
+    "domain": "features",
+    "headings": [
+      "Construction by two-pass recurrence",
+      "Constant-time rectangle sum",
+      "Rotated integral images",
+      "Higher-order tables"
+    ],
+    "authors": [
+      "P. Viola",
+      "M. Jones"
+    ],
+    "venue": "CVPR"
   },
   {
     "slug": "non-maximum-suppression",

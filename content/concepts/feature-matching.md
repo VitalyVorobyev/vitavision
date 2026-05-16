@@ -8,6 +8,7 @@ domain: features
 difficulty: intermediate
 prerequisites:
   - feature-descriptors
+  - attention-mechanism
 sources:
   primary: lowe2004-sift
   references:

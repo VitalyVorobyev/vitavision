@@ -2,16 +2,19 @@
 export interface GeneratedHtmlModule { html: string; }
 
 export const conceptHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
+  "attention-mechanism": () => import("./content/concepts/attention-mechanism.ts"),
   "camera-distortion-models": () => import("./content/concepts/camera-distortion-models.ts"),
   "chessboard-x-corner-detection": () => import("./content/concepts/chessboard-x-corner-detection.ts"),
   "convolutional-neural-network": () => import("./content/concepts/convolutional-neural-network.ts"),
   "dlt-normalisation": () => import("./content/concepts/dlt-normalisation.ts"),
+  "energy-minimization": () => import("./content/concepts/energy-minimization.ts"),
   "epipolar-geometry": () => import("./content/concepts/epipolar-geometry.ts"),
   "feature-descriptors": () => import("./content/concepts/feature-descriptors.ts"),
   "feature-matching": () => import("./content/concepts/feature-matching.ts"),
   "hessian-saddle-response": () => import("./content/concepts/hessian-saddle-response.ts"),
   "homography": () => import("./content/concepts/homography.ts"),
   "image-gradient": () => import("./content/concepts/image-gradient.ts"),
+  "integral-image": () => import("./content/concepts/integral-image.ts"),
   "non-maximum-suppression": () => import("./content/concepts/non-maximum-suppression.ts"),
   "optical-flow": () => import("./content/concepts/optical-flow.ts"),
   "pinhole-camera-model": () => import("./content/concepts/pinhole-camera-model.ts"),

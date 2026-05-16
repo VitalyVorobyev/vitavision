@@ -145,7 +145,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "feature-descriptors"
+        "feature-descriptors",
+        "integral-image"
       ],
       "failureModes": [],
       "relations": [
@@ -531,7 +532,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "energy-minimization"
+      ],
       "failureModes": [],
       "tags": [
         "graph-based"
@@ -765,7 +768,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "energy-minimization"
+      ],
       "failureModes": [],
       "tags": [
         "graph-based",
@@ -795,7 +800,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 4,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "energy-minimization"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -1267,7 +1274,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "image-gradient",
         "scale-space",
-        "feature-descriptors"
+        "feature-descriptors",
+        "integral-image"
       ],
       "failureModes": [],
       "tags": [
@@ -1603,7 +1611,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "scale-space",
-        "image-gradient"
+        "image-gradient",
+        "integral-image"
       ],
       "failureModes": [],
       "relations": [
@@ -1844,7 +1853,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 9,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "integral-image"
+      ],
       "failureModes": [],
       "tags": [
         "boosting"
@@ -2488,7 +2499,8 @@ export const modelPages: ModelIndexEntry[] = [
       "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
-        "feature-matching"
+        "feature-matching",
+        "attention-mechanism"
       ],
       "failureModes": [],
       "relations": [
@@ -2542,7 +2554,8 @@ export const modelPages: ModelIndexEntry[] = [
       "readingTimeMinutes": 8,
       "access": "public",
       "prerequisites": [
-        "feature-matching"
+        "feature-matching",
+        "attention-mechanism"
       ],
       "failureModes": [],
       "relations": [
@@ -2813,7 +2826,8 @@ export const modelPages: ModelIndexEntry[] = [
       "readingTimeMinutes": 8,
       "access": "public",
       "prerequisites": [
-        "feature-matching"
+        "feature-matching",
+        "attention-mechanism"
       ],
       "failureModes": [],
       "relations": [
@@ -3234,6 +3248,30 @@ export const modelPages: ModelIndexEntry[] = [
 
 export const conceptPages: ConceptIndexEntry[] = [
   {
+    "slug": "attention-mechanism",
+    "frontmatter": {
+      "title": "Attention Mechanism",
+      "summary": "Computes each output element as a learned, input-dependent weighted average of value vectors, letting every element aggregate information from any other regardless of distance.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "sarlin2020-superglue",
+        "references": [
+          "lindenberger2023-lightglue",
+          "sun2021-loftr"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
     "slug": "camera-distortion-models",
     "frontmatter": {
       "title": "Camera Distortion Models",
@@ -3351,6 +3389,30 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "energy-minimization",
+    "frontmatter": {
+      "title": "Energy Minimization",
+      "summary": "The framework that poses image labelling and segmentation as minimising an objective combining a per-pixel data term and a pairwise smoothness term over a graph of pixels.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "graph-based"
+      ],
+      "domain": "segmentation",
+      "sources": {
+        "primary": "boykov2001-graph-cut-segmentation",
+        "references": [
+          "rother2004-grabcut",
+          "felzenszwalb2004-graph-segm"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
     "slug": "epipolar-geometry",
     "frontmatter": {
       "title": "Epipolar Geometry",
@@ -3413,7 +3475,8 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 8,
       "access": "public",
       "prerequisites": [
-        "feature-descriptors"
+        "feature-descriptors",
+        "attention-mechanism"
       ],
       "tags": [
         "local-descriptors"
@@ -3500,6 +3563,31 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "domain": "features",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "integral-image",
+    "frontmatter": {
+      "title": "Integral Image",
+      "summary": "A precomputed prefix-sum array that returns the sum of pixel values over any axis-aligned rectangle in constant time with four array reads.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "beginner",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "classical"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "viola2001-detector",
+        "references": [
+          "bay2006-surf",
+          "calonder2010-brief",
+          "rublee2011-orb"
+        ]
+      },
+      "date": "2026-05-16"
     }
   },
   {

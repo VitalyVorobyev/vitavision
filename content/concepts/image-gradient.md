@@ -6,7 +6,7 @@ tags: ["keypoint-detection"]
 author: "Vitaly Vorobyev"
 domain: features
 difficulty: intermediate
-prerequisites: []
+prerequisites: [convolution]
 ---
 
 # Definition

@@ -6,7 +6,7 @@ tags: ["optical-flow", "robust-estimation", "variational"]
 domain: features
 author: "Vitaly Vorobyev"
 difficulty: advanced
-prerequisites: [image-gradient, scale-space]
+prerequisites: [image-gradient, scale-space, optical-flow]
 failureModes: []
 sources:
   primary: black1996-robust

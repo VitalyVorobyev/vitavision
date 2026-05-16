@@ -6,7 +6,7 @@ tags: ["local-descriptors", "classical"]
 domain: detection
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: [image-gradient]
+prerequisites: [image-gradient, feature-descriptors]
 failureModes: []
 relations:
   - type: compared_with

@@ -6,7 +6,7 @@ tags: ["two-view-geometry"]
 author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: intermediate
-prerequisites: [ransac]
+prerequisites: [ransac, svd-null-space]
 sources:
   references:
     - hartley1997-eight-point

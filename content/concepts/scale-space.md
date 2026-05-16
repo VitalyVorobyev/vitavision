@@ -6,7 +6,7 @@ tags: ["multi-scale"]
 author: "Vitaly Vorobyev"
 domain: image-formation
 difficulty: intermediate
-prerequisites: []
+prerequisites: [convolution]
 ---
 
 # Definition

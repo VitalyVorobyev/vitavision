@@ -7,7 +7,7 @@ domain: geometry
 tasks: [fundamental-matrix-estimation]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: [epipolar-geometry, homography, dlt-normalisation, ransac]
+prerequisites: [epipolar-geometry, homography, dlt-normalisation, ransac, svd-null-space]
 failureModes: []
 sources:
   primary: hartley1997-eight-point

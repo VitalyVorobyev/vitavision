@@ -7,7 +7,7 @@ domain: features
 tasks: [corner-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: [image-gradient, structure-tensor]
+prerequisites: [image-gradient, structure-tensor, non-maximum-suppression]
 failureModes: []
 relations:
   - type: compared_with

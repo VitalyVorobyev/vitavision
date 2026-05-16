@@ -113,7 +113,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "scale-space"
+        "scale-space",
+        "optical-flow"
       ],
       "failureModes": [],
       "tags": [
@@ -143,7 +144,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "feature-descriptors",
+        "integral-image"
       ],
       "failureModes": [],
       "relations": [
@@ -212,7 +215,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "non-maximum-suppression",
+        "convolution"
       ],
       "failureModes": [],
       "tags": [
@@ -424,6 +429,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
+        "pinhole-camera-model",
+        "pose-estimation",
         "dlt-normalisation",
         "ransac"
       ],
@@ -452,7 +459,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "non-maximum-suppression"
       ],
       "failureModes": [],
       "relations": [
@@ -526,7 +534,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "energy-minimization"
+      ],
       "failureModes": [],
       "tags": [
         "graph-based"
@@ -591,7 +601,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "homography",
-        "ransac"
+        "ransac",
+        "svd-null-space"
       ],
       "failureModes": [],
       "quality": "historical",
@@ -759,7 +770,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "energy-minimization"
+      ],
       "failureModes": [],
       "tags": [
         "graph-based",
@@ -789,7 +802,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 4,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "energy-minimization"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -825,7 +840,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "structure-tensor"
+        "structure-tensor",
+        "non-maximum-suppression"
       ],
       "failureModes": [],
       "relations": [
@@ -878,7 +894,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 5,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "feature-descriptors"
       ],
       "failureModes": [],
       "relations": [
@@ -920,7 +937,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 4,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "optical-flow"
       ],
       "failureModes": [],
       "relations": [
@@ -1074,7 +1092,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 4,
       "access": "public",
       "prerequisites": [
-        "epipolar-geometry"
+        "epipolar-geometry",
+        "svd-null-space",
+        "pose-estimation"
       ],
       "failureModes": [],
       "quality": "historical",
@@ -1113,7 +1133,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "structure-tensor"
+        "structure-tensor",
+        "optical-flow"
       ],
       "failureModes": [],
       "relations": [
@@ -1182,7 +1203,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "epipolar-geometry",
         "homography",
         "dlt-normalisation",
-        "ransac"
+        "ransac",
+        "svd-null-space"
       ],
       "failureModes": [],
       "tags": [
@@ -1254,7 +1276,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "scale-space"
+        "scale-space",
+        "feature-descriptors",
+        "integral-image",
+        "image-pyramid"
       ],
       "failureModes": [],
       "tags": [
@@ -1334,7 +1359,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "scale-space"
+        "scale-space",
+        "image-pyramid"
       ],
       "failureModes": [],
       "relations": [
@@ -1422,7 +1448,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
-        "camera-distortion-models"
+        "pinhole-camera-model",
+        "camera-distortion-models",
+        "bundle-adjustment"
       ],
       "failureModes": [],
       "tags": [
@@ -1454,7 +1482,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "structure-tensor"
+        "structure-tensor",
+        "non-maximum-suppression"
       ],
       "failureModes": [],
       "tags": [
@@ -1485,7 +1514,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "scale-space",
-        "image-gradient"
+        "image-gradient",
+        "image-pyramid",
+        "feature-descriptors",
+        "feature-matching"
       ],
       "failureModes": [],
       "relations": [
@@ -1555,6 +1587,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
+        "pinhole-camera-model",
         "homography"
       ],
       "failureModes": [],
@@ -1586,7 +1619,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "scale-space",
-        "image-gradient"
+        "image-gradient",
+        "integral-image",
+        "image-pyramid"
       ],
       "failureModes": [],
       "relations": [
@@ -1750,7 +1785,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 4,
       "access": "public",
       "prerequisites": [
-        "camera-distortion-models"
+        "pinhole-camera-model",
+        "camera-distortion-models",
+        "bundle-adjustment"
       ],
       "failureModes": [],
       "quality": "historical",
@@ -1826,7 +1863,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 9,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "integral-image"
+      ],
       "failureModes": [],
       "tags": [
         "boosting"
@@ -1920,9 +1959,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
+        "pinhole-camera-model",
         "homography",
         "camera-distortion-models",
-        "ransac"
+        "ransac",
+        "bundle-adjustment"
       ],
       "failureModes": [],
       "relations": [
@@ -2010,7 +2051,9 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 5,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2392,7 +2435,9 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2464,7 +2509,10 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 10,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "feature-matching",
+        "attention-mechanism"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2516,7 +2564,10 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "feature-matching",
+        "attention-mechanism"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2699,7 +2750,9 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2783,7 +2836,10 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "feature-matching",
+        "attention-mechanism"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2992,7 +3048,9 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -3201,6 +3259,56 @@ export const modelPages: ModelIndexEntry[] = [
 
 export const conceptPages: ConceptIndexEntry[] = [
   {
+    "slug": "attention-mechanism",
+    "frontmatter": {
+      "title": "Attention Mechanism",
+      "summary": "Computes each output element as a learned, input-dependent weighted average of value vectors, letting every element aggregate information from any other regardless of distance.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "sarlin2020-superglue",
+        "references": [
+          "lindenberger2023-lightglue",
+          "sun2021-loftr"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
+    "slug": "bundle-adjustment",
+    "frontmatter": {
+      "title": "Bundle Adjustment",
+      "summary": "Joint nonlinear least-squares refinement of all camera parameters — and, in structure-from-motion, all 3-D points — that minimises the total reprojection error.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "pinhole-camera-model"
+      ],
+      "tags": [
+        "optimization"
+      ],
+      "domain": "calibration",
+      "sources": {
+        "primary": "zhang2000-flexible",
+        "references": [
+          "tsai1987-versatile",
+          "weng1992-camera"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
     "slug": "camera-distortion-models",
     "frontmatter": {
       "title": "Camera Distortion Models",
@@ -3265,6 +3373,57 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "convolution",
+    "frontmatter": {
+      "title": "Convolution",
+      "summary": "The linear, shift-invariant operation that produces each output pixel as a kernel-weighted sum of input pixels in a local neighbourhood.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "beginner",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "classical"
+      ],
+      "domain": "image-formation",
+      "sources": {
+        "primary": "canny1986-edge",
+        "references": [
+          "krizhevsky2012-alexnet",
+          "simonyan2014-vgg"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
+    "slug": "convolutional-neural-network",
+    "frontmatter": {
+      "title": "Convolutional Neural Network",
+      "summary": "A feed-forward network that builds a spatial hierarchy of learned features by alternating weight-shared convolution layers, pointwise nonlinearities, and spatial downsampling, trained end-to-end by backpropagation.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "convolution"
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "krizhevsky2012-alexnet",
+        "references": [
+          "simonyan2014-vgg",
+          "he2016-resnet",
+          "szegedy2015-inception"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
     "slug": "dlt-normalisation",
     "frontmatter": {
       "title": "DLT Normalisation",
@@ -3274,7 +3433,11 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
-        "ransac"
+        "ransac",
+        "svd-null-space"
+      ],
+      "tags": [
+        "linear-algebra"
       ],
       "tags": [
         "linear-algebra"
@@ -3287,6 +3450,30 @@ export const conceptPages: ConceptIndexEntry[] = [
         ]
       },
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "energy-minimization",
+    "frontmatter": {
+      "title": "Energy Minimization",
+      "summary": "The framework that poses image labelling and segmentation as minimising an objective combining a per-pixel data term and a pairwise smoothness term over a graph of pixels.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "graph-based"
+      ],
+      "domain": "segmentation",
+      "sources": {
+        "primary": "boykov2001-graph-cut-segmentation",
+        "references": [
+          "rother2004-grabcut",
+          "felzenszwalb2004-graph-segm"
+        ]
+      },
+      "date": "2026-05-16"
     }
   },
   {
@@ -3312,6 +3499,63 @@ export const conceptPages: ConceptIndexEntry[] = [
         ]
       },
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "feature-descriptors",
+    "frontmatter": {
+      "title": "Feature Descriptors",
+      "summary": "Fixed-length vectors encoding the local image appearance around a keypoint, built so the same physical point yields similar descriptors across views — the basis for descriptor matching.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "tags": [
+        "local-descriptors",
+        "binary-descriptor"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "lowe2004-sift",
+        "references": [
+          "dalal2005-hog",
+          "calonder2010-brief",
+          "rublee2011-orb"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
+    "slug": "feature-matching",
+    "frontmatter": {
+      "title": "Feature Matching",
+      "summary": "Establishing keypoint correspondences between two images by comparing descriptors and resolving them into a consistent partial assignment — from the ratio test to learned optimal-transport matchers.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "feature-descriptors",
+        "attention-mechanism"
+      ],
+      "tags": [
+        "local-descriptors"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "lowe2004-sift",
+        "references": [
+          "sarlin2020-superglue",
+          "lindenberger2023-lightglue",
+          "sun2021-loftr",
+          "detone2018-superpoint"
+        ]
+      },
+      "date": "2026-05-16"
     }
   },
   {
@@ -3352,7 +3596,11 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [
-        "ransac"
+        "ransac",
+        "svd-null-space"
+      ],
+      "tags": [
+        "two-view-geometry"
       ],
       "tags": [
         "two-view-geometry"
@@ -3472,6 +3720,31 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "domain": "features",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "svd-null-space",
+    "frontmatter": {
+      "title": "SVD Null-Space Estimation",
+      "summary": "Estimating a geometric entity defined only up to scale by stacking constraints into a homogeneous linear system and taking the smallest right-singular vector of the design matrix.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "linear-algebra"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "primary": "longuet-higgins1981-eight-point",
+        "references": [
+          "hartley1997-eight-point",
+          "gao2011-dual-homography",
+          "zhang2000-flexible"
+        ]
+      },
+      "date": "2026-05-16"
     }
   },
   {

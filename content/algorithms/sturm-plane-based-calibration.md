@@ -7,7 +7,7 @@ domain: calibration
 tasks: [camera-calibration]
 author: "Vitaly Vorobyev"
 difficulty: advanced
-prerequisites: [homography]
+prerequisites: [pinhole-camera-model, homography]
 failureModes: []
 sources:
   primary: sturm2003-plane-based

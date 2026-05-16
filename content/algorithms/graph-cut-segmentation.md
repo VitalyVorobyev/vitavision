@@ -7,7 +7,7 @@ domain: segmentation
 tasks: ["image-segmentation"]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: []
+prerequisites: [energy-minimization]
 failureModes: []
 relations:
   - type: extended_by

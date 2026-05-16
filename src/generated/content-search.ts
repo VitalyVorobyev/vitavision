@@ -1337,6 +1337,52 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR 2016"
   },
   {
+    "slug": "attention-mechanism",
+    "path": "/atlas/attention-mechanism",
+    "type": "concept",
+    "title": "Attention Mechanism",
+    "summary": "Computes each output element as a learned, input-dependent weighted average of value vectors, letting every element aggregate information from any other regardless of distance.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [
+      "Scaled dot-product attention",
+      "Multi-head attention",
+      "Self-attention and cross-attention",
+      "Positional encoding",
+      "Quadratic cost and the linear approximation"
+    ],
+    "authors": [
+      "P. Sarlin",
+      "D. DeTone",
+      "T. Malisiewicz",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "bundle-adjustment",
+    "path": "/atlas/bundle-adjustment",
+    "type": "concept",
+    "title": "Bundle Adjustment",
+    "summary": "Joint nonlinear least-squares refinement of all camera parameters — and, in structure-from-motion, all 3-D points — that minimises the total reprojection error.",
+    "tags": [
+      "optimization"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "Reprojection-error objective",
+      "Levenberg-Marquardt solver",
+      "Sparse block structure",
+      "Initialisation from linear estimates"
+    ],
+    "authors": [
+      "Z. Zhang"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "camera-distortion-models",
     "path": "/atlas/camera-distortion-models",
     "type": "concept",
@@ -1373,6 +1419,54 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "convolution",
+    "path": "/atlas/convolution",
+    "type": "concept",
+    "title": "Convolution",
+    "summary": "The linear, shift-invariant operation that produces each output pixel as a kernel-weighted sum of input pixels in a local neighbourhood.",
+    "tags": [
+      "classical"
+    ],
+    "domain": "image-formation",
+    "headings": [
+      "Linearity and shift-invariance",
+      "Separability",
+      "Gaussian and derivative-of-Gaussian kernels",
+      "Boundary handling",
+      "Convolution theorem and FFT evaluation",
+      "Learned convolution in CNNs"
+    ],
+    "authors": [
+      "J. Canny"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "convolutional-neural-network",
+    "path": "/atlas/convolutional-neural-network",
+    "type": "concept",
+    "title": "Convolutional Neural Network",
+    "summary": "A feed-forward network that builds a spatial hierarchy of learned features by alternating weight-shared convolution layers, pointwise nonlinearities, and spatial downsampling, trained end-to-end by backpropagation.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [
+      "Convolution layer",
+      "Nonlinearity",
+      "Spatial reduction",
+      "Depth and the receptive field",
+      "The degradation problem and residual connections",
+      "Multi-branch and 1×1 bottleneck blocks"
+    ],
+    "authors": [
+      "A. Krizhevsky",
+      "I. Sutskever",
+      "G. E. Hinton"
+    ],
+    "venue": "NeurIPS"
+  },
+  {
     "slug": "dlt-normalisation",
     "path": "/atlas/dlt-normalisation",
     "type": "concept",
@@ -1390,6 +1484,28 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "energy-minimization",
+    "path": "/atlas/energy-minimization",
+    "type": "concept",
+    "title": "Energy Minimization",
+    "summary": "The framework that poses image labelling and segmentation as minimising an objective combining a per-pixel data term and a pairwise smoothness term over a graph of pixels.",
+    "tags": [
+      "graph-based"
+    ],
+    "domain": "segmentation",
+    "headings": [
+      "Data and smoothness decomposition",
+      "Graph-cut solution for binary labels",
+      "GrabCut iterative formulation",
+      "Greedy region merging as a contrast"
+    ],
+    "authors": [
+      "Y. Boykov",
+      "M.-P. Jolly"
+    ],
+    "venue": "ICCV"
+  },
+  {
     "slug": "epipolar-geometry",
     "path": "/atlas/epipolar-geometry",
     "type": "concept",
@@ -1405,6 +1521,50 @@ export const searchRecords: SearchRecord[] = [
       "Essential matrix",
       "Estimation"
     ]
+  },
+  {
+    "slug": "feature-descriptors",
+    "path": "/atlas/feature-descriptors",
+    "type": "concept",
+    "title": "Feature Descriptors",
+    "summary": "Fixed-length vectors encoding the local image appearance around a keypoint, built so the same physical point yields similar descriptors across views — the basis for descriptor matching.",
+    "tags": [
+      "local-descriptors",
+      "binary-descriptor"
+    ],
+    "domain": "features",
+    "headings": [
+      "Gradient-orientation-histogram descriptors",
+      "SIFT descriptor",
+      "HOG descriptor",
+      "Binary descriptors",
+      "BRIEF",
+      "ORB: steered BRIEF with learned uncorrelated tests"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "feature-matching",
+    "path": "/atlas/feature-matching",
+    "type": "concept",
+    "title": "Feature Matching",
+    "summary": "Establishing keypoint correspondences between two images by comparing descriptors and resolving them into a consistent partial assignment — from the ratio test to learned optimal-transport matchers.",
+    "tags": [
+      "local-descriptors"
+    ],
+    "domain": "features",
+    "headings": [
+      "Nearest-neighbour matching and the ratio test",
+      "Assignment as an optimal-transport problem",
+      "Detector-free dense matching"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
   },
   {
     "slug": "hessian-saddle-response",
@@ -1458,6 +1618,137 @@ export const searchRecords: SearchRecord[] = [
       "Gradient magnitude and direction",
       "Separability and the structure tensor"
     ]
+  },
+  {
+    "slug": "image-pyramid",
+    "path": "/atlas/image-pyramid",
+    "type": "concept",
+    "title": "Image Pyramid",
+    "summary": "A discrete multi-resolution representation — a sequence of images at progressively coarser resolution, each smoothed and downsampled from its predecessor.",
+    "tags": [
+      "multi-scale"
+    ],
+    "domain": "image-formation",
+    "headings": [
+      "Gaussian pyramid",
+      "Difference-of-Gaussian pyramid",
+      "Fixed-image, growing-filter alternative"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "integral-image",
+    "path": "/atlas/integral-image",
+    "type": "concept",
+    "title": "Integral Image",
+    "summary": "A precomputed prefix-sum array that returns the sum of pixel values over any axis-aligned rectangle in constant time with four array reads.",
+    "tags": [
+      "classical"
+    ],
+    "domain": "features",
+    "headings": [
+      "Construction by two-pass recurrence",
+      "Constant-time rectangle sum",
+      "Rotated integral images",
+      "Higher-order tables"
+    ],
+    "authors": [
+      "P. Viola",
+      "M. Jones"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "non-maximum-suppression",
+    "path": "/atlas/non-maximum-suppression",
+    "type": "concept",
+    "title": "Non-Maximum Suppression",
+    "summary": "Reducing a dense response map or a set of overlapping detections to a sparse set of local maxima by discarding every element that is not strongest in its neighbourhood.",
+    "tags": [
+      "keypoint-detection"
+    ],
+    "domain": "features",
+    "headings": [
+      "Grid / window suppression on a response map",
+      "Gradient-direction (1-D) suppression on an edge map",
+      "Greedy overlap-based suppression on detections"
+    ],
+    "authors": [
+      "J. Canny"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "optical-flow",
+    "path": "/atlas/optical-flow",
+    "type": "concept",
+    "title": "Optical Flow",
+    "summary": "The apparent 2-D velocity field of image brightness between consecutive frames, recovered from the spatio-temporal gradient under the brightness-constancy assumption.",
+    "tags": [
+      "optical-flow",
+      "variational"
+    ],
+    "domain": "features",
+    "headings": [
+      "Derivation of the brightness-constancy constraint",
+      "The aperture problem",
+      "Global / variational approach",
+      "Local / windowed approach",
+      "Robust approach"
+    ],
+    "authors": [
+      "B. K. P. Horn",
+      "B. G. Schunck"
+    ],
+    "venue": "Artificial Intelligence"
+  },
+  {
+    "slug": "pinhole-camera-model",
+    "path": "/atlas/pinhole-camera-model",
+    "type": "concept",
+    "title": "Pinhole Camera Model",
+    "summary": "The projective map from 3-D scene points to 2-D image pixels through a single centre of projection, parameterised by an intrinsic matrix and an extrinsic pose.",
+    "tags": [
+      "camera-model"
+    ],
+    "domain": "image-formation",
+    "headings": [
+      "Intrinsic matrix",
+      "Extrinsic transform",
+      "Projection matrix and normalised coordinates",
+      "Calibration homography and planar targets",
+      "Departure from the ideal model"
+    ],
+    "authors": [
+      "Z. Zhang"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "pose-estimation",
+    "path": "/atlas/pose-estimation",
+    "type": "concept",
+    "title": "Pose Estimation",
+    "summary": "Recovery of the 6-DOF rigid transformation — rotation and translation — relating a camera to a scene, an object, or a second camera.",
+    "tags": [
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Absolute pose: Perspective-n-Point",
+      "Relative pose: the essential matrix",
+      "Pose from a calibration target",
+      "Nonlinear refinement"
+    ],
+    "authors": [
+      "V. Lepetit",
+      "F. Moreno-Noguer",
+      "P. Fua"
+    ],
+    "venue": "International Journal of Computer Vision"
   },
   {
     "slug": "ransac",
@@ -1529,6 +1820,26 @@ export const searchRecords: SearchRecord[] = [
       "Two-scale construction",
       "Relation to the autocorrelation surface"
     ]
+  },
+  {
+    "slug": "svd-null-space",
+    "path": "/atlas/svd-null-space",
+    "type": "concept",
+    "title": "SVD Null-Space Estimation",
+    "summary": "Estimating a geometric entity defined only up to scale by stacking constraints into a homogeneous linear system and taking the smallest right-singular vector of the design matrix.",
+    "tags": [
+      "linear-algebra"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "The homogeneous system and its least-squares solution",
+      "Rank deficiency and the residual interpretation",
+      "Rank enforcement by truncating the spectrum"
+    ],
+    "authors": [
+      "H. C. Longuet-Higgins"
+    ],
+    "venue": "Nature"
   },
   {
     "slug": "topological-grid-recovery",

@@ -10,7 +10,7 @@ difficulty: intermediate
 arch_family: cnn
 params: "138M (VGG-16); 144M (VGG-19) (Table 2)"
 flops: "~15.5 GMAC @ 224×224 (VGG-16, torchvision)"
-prerequisites: []
+prerequisites: [convolutional-neural-network]
 failureModes: []
 relations:
   - type: feeds_into

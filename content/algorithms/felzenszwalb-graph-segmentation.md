@@ -7,7 +7,7 @@ domain: segmentation
 tasks: ["image-segmentation"]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: []
+prerequisites: [energy-minimization]
 failureModes: []
 sources:
   primary: felzenszwalb2004-graph-segm

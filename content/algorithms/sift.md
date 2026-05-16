@@ -7,7 +7,7 @@ domain: features
 tasks: [feature-detection, local-feature-matching]
 author: "Vitaly Vorobyev"
 difficulty: advanced
-prerequisites: [scale-space, image-gradient]
+prerequisites: [scale-space, image-gradient, image-pyramid, feature-descriptors, feature-matching]
 failureModes: []
 relations:
   - type: compared_with

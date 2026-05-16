@@ -9,7 +9,7 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: hybrid
 params: "~12M"
-prerequisites: []
+prerequisites: [feature-matching, attention-mechanism]
 failureModes: []
 relations:
   - type: compared_with

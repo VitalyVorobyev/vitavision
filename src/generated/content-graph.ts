@@ -603,6 +603,22 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/epipolar-geometry",
       "draft": false
     },
+    "feature-descriptors": {
+      "slug": "feature-descriptors",
+      "type": "concept",
+      "title": "Feature Descriptors",
+      "summary": "Fixed-length vectors encoding the local image appearance around a keypoint, built so the same physical point yields similar descriptors across views — the basis for descriptor matching.",
+      "path": "/atlas/feature-descriptors",
+      "draft": false
+    },
+    "feature-matching": {
+      "slug": "feature-matching",
+      "type": "concept",
+      "title": "Feature Matching",
+      "summary": "Establishing keypoint correspondences between two images by comparing descriptors and resolving them into a consistent partial assignment — from the ratio test to learned optimal-transport matchers.",
+      "path": "/atlas/feature-matching",
+      "draft": false
+    },
     "hessian-saddle-response": {
       "slug": "hessian-saddle-response",
       "type": "concept",
@@ -625,6 +641,14 @@ export const contentGraph: ContentGraph = {
       "title": "Image Gradient",
       "summary": "The 2-vector of partial derivatives of image intensity with respect to spatial coordinates, measuring the rate and direction of brightness change at each pixel.",
       "path": "/atlas/image-gradient",
+      "draft": false
+    },
+    "non-maximum-suppression": {
+      "slug": "non-maximum-suppression",
+      "type": "concept",
+      "title": "Non-Maximum Suppression",
+      "summary": "Reducing a dense response map or a set of overlapping detections to a sparse set of local maxima by discarding every element that is not strongest in its neighbourhood.",
+      "path": "/atlas/non-maximum-suppression",
       "draft": false
     },
     "optical-flow": {
@@ -697,7 +721,8 @@ export const contentGraph: ContentGraph = {
     },
     "brief": {
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "feature-descriptors"
       ],
       "failureModes": [],
       "relations": [
@@ -738,7 +763,8 @@ export const contentGraph: ContentGraph = {
     },
     "canny-edge-detector": {
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "non-maximum-suppression"
       ],
       "failureModes": [],
       "relations": []
@@ -846,7 +872,8 @@ export const contentGraph: ContentGraph = {
     },
     "fast-corner-detector": {
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "non-maximum-suppression"
       ],
       "failureModes": [],
       "relations": [
@@ -1016,7 +1043,8 @@ export const contentGraph: ContentGraph = {
     "harris-corner-detector": {
       "prerequisites": [
         "image-gradient",
-        "structure-tensor"
+        "structure-tensor",
+        "non-maximum-suppression"
       ],
       "failureModes": [],
       "relations": [
@@ -1057,7 +1085,8 @@ export const contentGraph: ContentGraph = {
     },
     "hog-descriptor": {
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "feature-descriptors"
       ],
       "failureModes": [],
       "relations": [
@@ -1232,7 +1261,8 @@ export const contentGraph: ContentGraph = {
     "orb": {
       "prerequisites": [
         "image-gradient",
-        "scale-space"
+        "scale-space",
+        "feature-descriptors"
       ],
       "failureModes": [],
       "relations": [
@@ -1351,7 +1381,8 @@ export const contentGraph: ContentGraph = {
     "shi-tomasi-corner-detector": {
       "prerequisites": [
         "image-gradient",
-        "structure-tensor"
+        "structure-tensor",
+        "non-maximum-suppression"
       ],
       "failureModes": [],
       "relations": [
@@ -1378,7 +1409,9 @@ export const contentGraph: ContentGraph = {
     "sift": {
       "prerequisites": [
         "scale-space",
-        "image-gradient"
+        "image-gradient",
+        "feature-descriptors",
+        "feature-matching"
       ],
       "failureModes": [],
       "relations": [
@@ -1831,7 +1864,9 @@ export const contentGraph: ContentGraph = {
       ]
     },
     "lightglue": {
-      "prerequisites": [],
+      "prerequisites": [
+        "feature-matching"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -1843,7 +1878,9 @@ export const contentGraph: ContentGraph = {
       ]
     },
     "loftr": {
-      "prerequisites": [],
+      "prerequisites": [
+        "feature-matching"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -1943,7 +1980,9 @@ export const contentGraph: ContentGraph = {
       ]
     },
     "superglue": {
-      "prerequisites": [],
+      "prerequisites": [
+        "feature-matching"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2158,6 +2197,20 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": []
     },
+    "feature-descriptors": {
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "feature-matching": {
+      "prerequisites": [
+        "feature-descriptors"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
     "hessian-saddle-response": {
       "prerequisites": [
         "image-gradient"
@@ -2173,6 +2226,11 @@ export const contentGraph: ContentGraph = {
       "relations": []
     },
     "image-gradient": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
+    "non-maximum-suppression": {
       "prerequisites": [],
       "failureModes": [],
       "relations": []
@@ -3158,6 +3216,33 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "feature-descriptors": {
+      "usedBy": [
+        "brief",
+        "feature-matching",
+        "hog-descriptor",
+        "orb",
+        "sift"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "feature-matching": {
+      "usedBy": [
+        "lightglue",
+        "loftr",
+        "sift",
+        "superglue"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "hessian-saddle-response": {
       "usedBy": [
         "laureano-topological-chessboard",
@@ -3196,6 +3281,7 @@ export const contentGraph: ContentGraph = {
         "chessboard-x-corner-detection",
         "duda-radon-corners",
         "fast-corner-detector",
+        "feature-descriptors",
         "felzenszwalb-deformable-parts",
         "geiger-chessboard-detector",
         "gp-checkerboard-enhancement",
@@ -3222,6 +3308,19 @@ export const contentGraph: ContentGraph = {
         "surf",
         "xfeat",
         "yang-sub-pixel-corner-fit"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "non-maximum-suppression": {
+      "usedBy": [
+        "canny-edge-detector",
+        "fast-corner-detector",
+        "harris-corner-detector",
+        "shi-tomasi-corner-detector"
       ],
       "affects": [],
       "generalises": [],
@@ -3323,7 +3422,9 @@ export const contentGraph: ContentGraph = {
     "structure-tensor": 1,
     "optical-flow": 2,
     "black-anandan-robust-flow": 3,
-    "brief": 1,
+    "feature-descriptors": 1,
+    "brief": 2,
+    "non-maximum-suppression": 0,
     "canny-edge-detector": 1,
     "chess-corners": 1,
     "hessian-saddle-response": 1,
@@ -3343,7 +3444,7 @@ export const contentGraph: ContentGraph = {
     "grabcut-iterative-segmentation": 0,
     "graph-cut-segmentation": 0,
     "harris-corner-detector": 2,
-    "hog-descriptor": 1,
+    "hog-descriptor": 2,
     "horn-schunck": 3,
     "camera-distortion-models": 0,
     "kumar-generalized-rac": 1,
@@ -3355,13 +3456,14 @@ export const contentGraph: ContentGraph = {
     "barath-magsac": 1,
     "fundamental-matrix-eight-point": 2,
     "ocpad": 1,
-    "orb": 1,
+    "orb": 2,
     "puzzleboard": 2,
     "pyramidal-blur-aware-xcorner": 1,
     "rochade": 2,
     "scaramuzza-omni-calibration": 1,
     "shi-tomasi-corner-detector": 2,
-    "sift": 1,
+    "feature-matching": 2,
+    "sift": 3,
     "sturm-plane-based-calibration": 2,
     "surf": 1,
     "shu-topological-grid": 1,
@@ -3379,12 +3481,12 @@ export const contentGraph: ContentGraph = {
     "faster-rcnn": 0,
     "fcn-semantic-segmentation": 0,
     "googlenet": 0,
-    "lightglue": 0,
-    "loftr": 0,
+    "lightglue": 3,
+    "loftr": 3,
     "mask-rcnn": 0,
     "mate-checkerboard-detector": 1,
     "resnet": 0,
-    "superglue": 0,
+    "superglue": 3,
     "superpoint": 1,
     "unet-segmentation": 0,
     "vgg": 0,

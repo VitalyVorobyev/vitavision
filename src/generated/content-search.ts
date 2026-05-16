@@ -1407,6 +1407,50 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "feature-descriptors",
+    "path": "/atlas/feature-descriptors",
+    "type": "concept",
+    "title": "Feature Descriptors",
+    "summary": "Fixed-length vectors encoding the local image appearance around a keypoint, built so the same physical point yields similar descriptors across views — the basis for descriptor matching.",
+    "tags": [
+      "local-descriptors",
+      "binary-descriptor"
+    ],
+    "domain": "features",
+    "headings": [
+      "Gradient-orientation-histogram descriptors",
+      "SIFT descriptor",
+      "HOG descriptor",
+      "Binary descriptors",
+      "BRIEF",
+      "ORB: steered BRIEF with learned uncorrelated tests"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "feature-matching",
+    "path": "/atlas/feature-matching",
+    "type": "concept",
+    "title": "Feature Matching",
+    "summary": "Establishing keypoint correspondences between two images by comparing descriptors and resolving them into a consistent partial assignment — from the ratio test to learned optimal-transport matchers.",
+    "tags": [
+      "local-descriptors"
+    ],
+    "domain": "features",
+    "headings": [
+      "Nearest-neighbour matching and the ratio test",
+      "Assignment as an optimal-transport problem",
+      "Detector-free dense matching"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
     "slug": "hessian-saddle-response",
     "path": "/atlas/hessian-saddle-response",
     "type": "concept",
@@ -1458,6 +1502,26 @@ export const searchRecords: SearchRecord[] = [
       "Gradient magnitude and direction",
       "Separability and the structure tensor"
     ]
+  },
+  {
+    "slug": "non-maximum-suppression",
+    "path": "/atlas/non-maximum-suppression",
+    "type": "concept",
+    "title": "Non-Maximum Suppression",
+    "summary": "Reducing a dense response map or a set of overlapping detections to a sparse set of local maxima by discarding every element that is not strongest in its neighbourhood.",
+    "tags": [
+      "keypoint-detection"
+    ],
+    "domain": "features",
+    "headings": [
+      "Grid / window suppression on a response map",
+      "Gradient-direction (1-D) suppression on an edge map",
+      "Greedy overlap-based suppression on detections"
+    ],
+    "authors": [
+      "J. Canny"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
     "slug": "optical-flow",

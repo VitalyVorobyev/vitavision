@@ -144,7 +144,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "feature-descriptors"
       ],
       "failureModes": [],
       "relations": [
@@ -213,7 +214,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "non-maximum-suppression"
       ],
       "failureModes": [],
       "tags": [
@@ -453,7 +455,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "non-maximum-suppression"
       ],
       "failureModes": [],
       "relations": [
@@ -826,7 +829,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "structure-tensor"
+        "structure-tensor",
+        "non-maximum-suppression"
       ],
       "failureModes": [],
       "relations": [
@@ -879,7 +883,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 5,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "feature-descriptors"
       ],
       "failureModes": [],
       "relations": [
@@ -1257,7 +1262,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "scale-space"
+        "scale-space",
+        "feature-descriptors"
       ],
       "failureModes": [],
       "tags": [
@@ -1457,7 +1463,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "structure-tensor"
+        "structure-tensor",
+        "non-maximum-suppression"
       ],
       "failureModes": [],
       "tags": [
@@ -1488,7 +1495,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "scale-space",
-        "image-gradient"
+        "image-gradient",
+        "feature-descriptors",
+        "feature-matching"
       ],
       "failureModes": [],
       "relations": [
@@ -2467,7 +2476,9 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 10,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "feature-matching"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2519,7 +2530,9 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "feature-matching"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2786,7 +2799,9 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "feature-matching"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -3318,6 +3333,62 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "feature-descriptors",
+    "frontmatter": {
+      "title": "Feature Descriptors",
+      "summary": "Fixed-length vectors encoding the local image appearance around a keypoint, built so the same physical point yields similar descriptors across views — the basis for descriptor matching.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient"
+      ],
+      "tags": [
+        "local-descriptors",
+        "binary-descriptor"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "lowe2004-sift",
+        "references": [
+          "dalal2005-hog",
+          "calonder2010-brief",
+          "rublee2011-orb"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
+    "slug": "feature-matching",
+    "frontmatter": {
+      "title": "Feature Matching",
+      "summary": "Establishing keypoint correspondences between two images by comparing descriptors and resolving them into a consistent partial assignment — from the ratio test to learned optimal-transport matchers.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "feature-descriptors"
+      ],
+      "tags": [
+        "local-descriptors"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "lowe2004-sift",
+        "references": [
+          "sarlin2020-superglue",
+          "lindenberger2023-lightglue",
+          "sun2021-loftr",
+          "detone2018-superpoint"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
     "slug": "hessian-saddle-response",
     "frontmatter": {
       "title": "Hessian Saddle Response",
@@ -3385,6 +3456,32 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "domain": "features",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "non-maximum-suppression",
+    "frontmatter": {
+      "title": "Non-Maximum Suppression",
+      "summary": "Reducing a dense response map or a set of overlapping detections to a sparse set of local maxima by discarding every element that is not strongest in its neighbourhood.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "keypoint-detection"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "canny1986-edge",
+        "references": [
+          "harris1988-corner",
+          "rosten2006-fast",
+          "redmon2016-yolo",
+          "shi-tomasi1994-features"
+        ]
+      },
+      "date": "2026-05-16"
     }
   },
   {

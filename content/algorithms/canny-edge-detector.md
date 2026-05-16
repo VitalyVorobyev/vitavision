@@ -6,7 +6,7 @@ tags: ["keypoint-detection"]
 domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: [image-gradient]
+prerequisites: [image-gradient, non-maximum-suppression]
 failureModes: []
 sources:
   primary: canny1986-edge

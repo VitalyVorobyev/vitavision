@@ -8,7 +8,7 @@ tasks: [local-feature-matching]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: hybrid
-prerequisites: []
+prerequisites: [feature-matching]
 failureModes: []
 relations:
   - type: compared_with

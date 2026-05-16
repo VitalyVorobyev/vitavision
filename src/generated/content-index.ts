@@ -427,6 +427,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
+        "pinhole-camera-model",
         "dlt-normalisation",
         "ransac"
       ],
@@ -595,7 +596,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "homography",
-        "ransac"
+        "ransac",
+        "svd-null-space"
       ],
       "failureModes": [],
       "quality": "historical",
@@ -1081,7 +1083,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 4,
       "access": "public",
       "prerequisites": [
-        "epipolar-geometry"
+        "epipolar-geometry",
+        "svd-null-space"
       ],
       "failureModes": [],
       "quality": "historical",
@@ -1190,7 +1193,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "epipolar-geometry",
         "homography",
         "dlt-normalisation",
-        "ransac"
+        "ransac",
+        "svd-null-space"
       ],
       "failureModes": [],
       "tags": [
@@ -1567,6 +1571,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
+        "pinhole-camera-model",
         "homography"
       ],
       "failureModes": [],
@@ -1762,6 +1767,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 4,
       "access": "public",
       "prerequisites": [
+        "pinhole-camera-model",
         "camera-distortion-models"
       ],
       "failureModes": [],
@@ -1932,6 +1938,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
+        "pinhole-camera-model",
         "homography",
         "camera-distortion-models",
         "ransac"
@@ -2022,7 +2029,9 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 5,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2404,7 +2413,9 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2715,7 +2726,9 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -3010,7 +3023,9 @@ export const modelPages: ModelIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -3227,7 +3242,9 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 11,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "pinhole-camera-model"
+      ],
       "tags": [
         "camera-model"
       ],
@@ -3283,6 +3300,31 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "convolutional-neural-network",
+    "frontmatter": {
+      "title": "Convolutional Neural Network",
+      "summary": "A feed-forward network that builds a spatial hierarchy of learned features by alternating weight-shared convolution layers, pointwise nonlinearities, and spatial downsampling, trained end-to-end by backpropagation.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "krizhevsky2012-alexnet",
+        "references": [
+          "simonyan2014-vgg",
+          "he2016-resnet",
+          "szegedy2015-inception"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
     "slug": "dlt-normalisation",
     "frontmatter": {
       "title": "DLT Normalisation",
@@ -3292,7 +3334,8 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
-        "ransac"
+        "ransac",
+        "svd-null-space"
       ],
       "tags": [
         "linear-algebra"
@@ -3426,7 +3469,8 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [
-        "ransac"
+        "ransac",
+        "svd-null-space"
       ],
       "tags": [
         "two-view-geometry"
@@ -3508,6 +3552,31 @@ export const conceptPages: ConceptIndexEntry[] = [
           "lucas1981-lucas-kanade",
           "black1996-robust",
           "tomasi1991-detection-tracking"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
+    "slug": "pinhole-camera-model",
+    "frontmatter": {
+      "title": "Pinhole Camera Model",
+      "summary": "The projective map from 3-D scene points to 2-D image pixels through a single centre of projection, parameterised by an intrinsic matrix and an extrinsic pose.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "camera-model"
+      ],
+      "domain": "image-formation",
+      "sources": {
+        "primary": "zhang2000-flexible",
+        "references": [
+          "tsai1987-versatile",
+          "sturm2003-plane-based",
+          "weng1992-camera"
         ]
       },
       "date": "2026-05-16"
@@ -3601,6 +3670,31 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "domain": "features",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "svd-null-space",
+    "frontmatter": {
+      "title": "SVD Null-Space Estimation",
+      "summary": "Estimating a geometric entity defined only up to scale by stacking constraints into a homogeneous linear system and taking the smallest right-singular vector of the design matrix.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "linear-algebra"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "primary": "longuet-higgins1981-eight-point",
+        "references": [
+          "hartley1997-eight-point",
+          "gao2011-dual-homography",
+          "zhang2000-flexible"
+        ]
+      },
+      "date": "2026-05-16"
     }
   },
   {

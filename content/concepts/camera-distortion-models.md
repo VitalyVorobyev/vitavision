@@ -6,7 +6,7 @@ tags: ["camera-model"]
 author: "Vitaly Vorobyev"
 domain: image-formation
 difficulty: intermediate
-prerequisites: []
+prerequisites: [pinhole-camera-model]
 sources:
   references:
     - tsai1987-versatile

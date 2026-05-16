@@ -8,7 +8,7 @@ tasks: [image-stitching]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 quality: historical
-prerequisites: [homography, ransac]
+prerequisites: [homography, ransac, svd-null-space]
 failureModes: []
 relations:
   - type: generalized_by

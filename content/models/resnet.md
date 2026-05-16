@@ -10,7 +10,7 @@ difficulty: intermediate
 arch_family: cnn
 params: "11.7M (ResNet-18), 25.6M (ResNet-50), 44.5M (ResNet-101), 60.2M (ResNet-152) — torchvision"
 flops: "1.8 GMAC (18), 3.8 GMAC (50), 7.6 GMAC (101), 11.3 GMAC (152) @ 224×224 (Table 1)"
-prerequisites: []
+prerequisites: [convolutional-neural-network]
 failureModes: []
 relations:
   - type: compared_with

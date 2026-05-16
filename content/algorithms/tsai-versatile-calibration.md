@@ -16,7 +16,7 @@ relations:
     target: tsai-lenz-handeye
     confidence: high
     caution: "Tsai 1987's per-station extrinsics are the canonical input format for the Tsai-Lenz hand-eye AX = XB solver."
-prerequisites: [camera-distortion-models]
+prerequisites: [pinhole-camera-model, camera-distortion-models]
 failureModes: []
 sources:
   primary: tsai1987-versatile

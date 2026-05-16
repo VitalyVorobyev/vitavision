@@ -10,7 +10,7 @@ difficulty: intermediate
 arch_family: cnn
 params: "7M (paper §1; 12× fewer than AlexNet)"
 flops: "~1.5 billion multiply-adds @ 224×224 (paper §1 target budget)"
-prerequisites: []
+prerequisites: [convolutional-neural-network]
 failureModes: []
 relations:
   - type: parallel_foundation_with

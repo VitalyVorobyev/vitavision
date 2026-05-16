@@ -587,6 +587,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/chessboard-x-corner-detection",
       "draft": false
     },
+    "convolutional-neural-network": {
+      "slug": "convolutional-neural-network",
+      "type": "concept",
+      "title": "Convolutional Neural Network",
+      "summary": "A feed-forward network that builds a spatial hierarchy of learned features by alternating weight-shared convolution layers, pointwise nonlinearities, and spatial downsampling, trained end-to-end by backpropagation.",
+      "path": "/atlas/convolutional-neural-network",
+      "draft": false
+    },
     "dlt-normalisation": {
       "slug": "dlt-normalisation",
       "type": "concept",
@@ -659,6 +667,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/optical-flow",
       "draft": false
     },
+    "pinhole-camera-model": {
+      "slug": "pinhole-camera-model",
+      "type": "concept",
+      "title": "Pinhole Camera Model",
+      "summary": "The projective map from 3-D scene points to 2-D image pixels through a single centre of projection, parameterised by an intrinsic matrix and an extrinsic pose.",
+      "path": "/atlas/pinhole-camera-model",
+      "draft": false
+    },
     "ransac": {
       "slug": "ransac",
       "type": "concept",
@@ -689,6 +705,14 @@ export const contentGraph: ContentGraph = {
       "title": "Structure Tensor",
       "summary": "A symmetric 2×2 matrix formed by summing the outer products of the image gradient over a local window, encoding the dominant orientation and anisotropy of local image structure.",
       "path": "/atlas/structure-tensor",
+      "draft": false
+    },
+    "svd-null-space": {
+      "slug": "svd-null-space",
+      "type": "concept",
+      "title": "SVD Null-Space Estimation",
+      "summary": "Estimating a geometric entity defined only up to scale by stacking constraints into a homogeneous linear system and taking the smallest right-singular vector of the design matrix.",
+      "path": "/atlas/svd-null-space",
       "draft": false
     },
     "topological-grid-recovery": {
@@ -864,6 +888,7 @@ export const contentGraph: ContentGraph = {
     },
     "epnp": {
       "prerequisites": [
+        "pinhole-camera-model",
         "dlt-normalisation",
         "ransac"
       ],
@@ -949,7 +974,8 @@ export const contentGraph: ContentGraph = {
     "gao-dual-homography-stitching": {
       "prerequisites": [
         "homography",
-        "ransac"
+        "ransac",
+        "svd-null-space"
       ],
       "failureModes": [],
       "relations": [
@@ -1174,7 +1200,8 @@ export const contentGraph: ContentGraph = {
     },
     "longuet-higgins-eight-point": {
       "prerequisites": [
-        "epipolar-geometry"
+        "epipolar-geometry",
+        "svd-null-space"
       ],
       "failureModes": [],
       "relations": [
@@ -1233,7 +1260,8 @@ export const contentGraph: ContentGraph = {
         "epipolar-geometry",
         "homography",
         "dlt-normalisation",
-        "ransac"
+        "ransac",
+        "svd-null-space"
       ],
       "failureModes": [],
       "relations": []
@@ -1468,6 +1496,7 @@ export const contentGraph: ContentGraph = {
     },
     "sturm-plane-based-calibration": {
       "prerequisites": [
+        "pinhole-camera-model",
         "homography"
       ],
       "failureModes": [],
@@ -1577,6 +1606,7 @@ export const contentGraph: ContentGraph = {
     },
     "tsai-versatile-calibration": {
       "prerequisites": [
+        "pinhole-camera-model",
         "camera-distortion-models"
       ],
       "failureModes": [],
@@ -1670,6 +1700,7 @@ export const contentGraph: ContentGraph = {
     },
     "zhang-planar-calibration": {
       "prerequisites": [
+        "pinhole-camera-model",
         "homography",
         "camera-distortion-models",
         "ransac"
@@ -1685,7 +1716,9 @@ export const contentGraph: ContentGraph = {
       ]
     },
     "alexnet": {
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -1833,7 +1866,9 @@ export const contentGraph: ContentGraph = {
       ]
     },
     "googlenet": {
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -1944,7 +1979,9 @@ export const contentGraph: ContentGraph = {
       ]
     },
     "resnet": {
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2072,7 +2109,9 @@ export const contentGraph: ContentGraph = {
       ]
     },
     "vgg": {
-      "prerequisites": [],
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": [
         {
@@ -2172,7 +2211,9 @@ export const contentGraph: ContentGraph = {
       ]
     },
     "camera-distortion-models": {
-      "prerequisites": [],
+      "prerequisites": [
+        "pinhole-camera-model"
+      ],
       "failureModes": [],
       "relations": []
     },
@@ -2183,9 +2224,15 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": []
     },
+    "convolutional-neural-network": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
     "dlt-normalisation": {
       "prerequisites": [
-        "ransac"
+        "ransac",
+        "svd-null-space"
       ],
       "failureModes": [],
       "relations": []
@@ -2220,7 +2267,8 @@ export const contentGraph: ContentGraph = {
     },
     "homography": {
       "prerequisites": [
-        "ransac"
+        "ransac",
+        "svd-null-space"
       ],
       "failureModes": [],
       "relations": []
@@ -2240,6 +2288,11 @@ export const contentGraph: ContentGraph = {
         "image-gradient",
         "structure-tensor"
       ],
+      "failureModes": [],
+      "relations": []
+    },
+    "pinhole-camera-model": {
+      "prerequisites": [],
       "failureModes": [],
       "relations": []
     },
@@ -2265,6 +2318,11 @@ export const contentGraph: ContentGraph = {
       "prerequisites": [
         "image-gradient"
       ],
+      "failureModes": [],
+      "relations": []
+    },
+    "svd-null-space": {
+      "prerequisites": [],
       "failureModes": [],
       "relations": []
     },
@@ -3193,6 +3251,19 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "convolutional-neural-network": {
+      "usedBy": [
+        "alexnet",
+        "googlenet",
+        "resnet",
+        "vgg"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "dlt-normalisation": {
       "usedBy": [
         "apap-image-stitching",
@@ -3340,6 +3411,20 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "pinhole-camera-model": {
+      "usedBy": [
+        "camera-distortion-models",
+        "epnp",
+        "sturm-plane-based-calibration",
+        "tsai-versatile-calibration",
+        "zhang-planar-calibration"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "ransac": {
       "usedBy": [
         "apap-image-stitching",
@@ -3398,6 +3483,20 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "svd-null-space": {
+      "usedBy": [
+        "dlt-normalisation",
+        "fundamental-matrix-eight-point",
+        "gao-dual-homography-stitching",
+        "homography",
+        "longuet-higgins-eight-point"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "topological-grid-recovery": {
       "usedBy": [
         "laureano-topological-chessboard",
@@ -3414,6 +3513,7 @@ export const contentGraph: ContentGraph = {
   },
   "depth": {
     "ransac": 0,
+    "svd-null-space": 0,
     "homography": 1,
     "dlt-normalisation": 1,
     "apap-image-stitching": 2,
@@ -3432,6 +3532,7 @@ export const contentGraph: ContentGraph = {
     "laureano-topological-chessboard": 2,
     "daniilidis-dual-quaternion-handeye": 0,
     "felzenszwalb-deformable-parts": 1,
+    "pinhole-camera-model": 0,
     "epnp": 2,
     "fast-corner-detector": 1,
     "loy-fast-radial-symmetry": 1,
@@ -3446,8 +3547,8 @@ export const contentGraph: ContentGraph = {
     "harris-corner-detector": 2,
     "hog-descriptor": 2,
     "horn-schunck": 3,
-    "camera-distortion-models": 0,
-    "kumar-generalized-rac": 1,
+    "camera-distortion-models": 1,
+    "kumar-generalized-rac": 2,
     "lin-sva-stitching": 2,
     "duda-radon-corners": 1,
     "epipolar-geometry": 1,
@@ -3460,7 +3561,7 @@ export const contentGraph: ContentGraph = {
     "puzzleboard": 2,
     "pyramidal-blur-aware-xcorner": 1,
     "rochade": 2,
-    "scaramuzza-omni-calibration": 1,
+    "scaramuzza-omni-calibration": 2,
     "shi-tomasi-corner-detector": 2,
     "feature-matching": 2,
     "sift": 3,
@@ -3468,28 +3569,29 @@ export const contentGraph: ContentGraph = {
     "surf": 1,
     "shu-topological-grid": 1,
     "tsai-lenz-handeye": 0,
-    "tsai-versatile-calibration": 1,
+    "tsai-versatile-calibration": 2,
     "raguram-usac": 1,
     "viola-jones-detector": 0,
     "yang-sub-pixel-corner-fit": 1,
     "zhang-planar-calibration": 2,
-    "alexnet": 0,
+    "convolutional-neural-network": 0,
+    "alexnet": 1,
     "ccdn-checkerboard-detector": 1,
     "chessboard-x-corner-detection": 1,
     "ccs-camera-calibration": 2,
     "deeplab-semantic-segmentation": 0,
     "faster-rcnn": 0,
     "fcn-semantic-segmentation": 0,
-    "googlenet": 0,
+    "googlenet": 1,
     "lightglue": 3,
     "loftr": 3,
     "mask-rcnn": 0,
     "mate-checkerboard-detector": 1,
-    "resnet": 0,
+    "resnet": 1,
     "superglue": 3,
     "superpoint": 1,
     "unet-segmentation": 0,
-    "vgg": 0,
+    "vgg": 1,
     "xfeat": 1,
     "yolo-v1": 0,
     "spatially-varying-image-stitching": 2

@@ -4,6 +4,7 @@ export interface GeneratedHtmlModule { html: string; }
 export const conceptHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
   "camera-distortion-models": () => import("./content/concepts/camera-distortion-models.ts"),
   "chessboard-x-corner-detection": () => import("./content/concepts/chessboard-x-corner-detection.ts"),
+  "convolutional-neural-network": () => import("./content/concepts/convolutional-neural-network.ts"),
   "dlt-normalisation": () => import("./content/concepts/dlt-normalisation.ts"),
   "epipolar-geometry": () => import("./content/concepts/epipolar-geometry.ts"),
   "feature-descriptors": () => import("./content/concepts/feature-descriptors.ts"),
@@ -13,9 +14,11 @@ export const conceptHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModul
   "image-gradient": () => import("./content/concepts/image-gradient.ts"),
   "non-maximum-suppression": () => import("./content/concepts/non-maximum-suppression.ts"),
   "optical-flow": () => import("./content/concepts/optical-flow.ts"),
+  "pinhole-camera-model": () => import("./content/concepts/pinhole-camera-model.ts"),
   "ransac": () => import("./content/concepts/ransac.ts"),
   "scale-space": () => import("./content/concepts/scale-space.ts"),
   "spatially-varying-image-stitching": () => import("./content/concepts/spatially-varying-image-stitching.ts"),
   "structure-tensor": () => import("./content/concepts/structure-tensor.ts"),
+  "svd-null-space": () => import("./content/concepts/svd-null-space.ts"),
   "topological-grid-recovery": () => import("./content/concepts/topological-grid-recovery.ts"),
 };

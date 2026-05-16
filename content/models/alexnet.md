@@ -10,7 +10,7 @@ difficulty: intermediate
 arch_family: cnn
 params: "60M (paper §3.5); 61.1M (torchvision impl)"
 flops: "~720 MMAC @ 224×224 (torchvision impl)"
-prerequisites: []
+prerequisites: [convolutional-neural-network]
 failureModes: []
 relations:
   - type: extended_by

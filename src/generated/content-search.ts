@@ -1373,6 +1373,31 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "convolutional-neural-network",
+    "path": "/atlas/convolutional-neural-network",
+    "type": "concept",
+    "title": "Convolutional Neural Network",
+    "summary": "A feed-forward network that builds a spatial hierarchy of learned features by alternating weight-shared convolution layers, pointwise nonlinearities, and spatial downsampling, trained end-to-end by backpropagation.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [
+      "Convolution layer",
+      "Nonlinearity",
+      "Spatial reduction",
+      "Depth and the receptive field",
+      "The degradation problem and residual connections",
+      "Multi-branch and 1×1 bottleneck blocks"
+    ],
+    "authors": [
+      "A. Krizhevsky",
+      "I. Sutskever",
+      "G. E. Hinton"
+    ],
+    "venue": "NeurIPS"
+  },
+  {
     "slug": "dlt-normalisation",
     "path": "/atlas/dlt-normalisation",
     "type": "concept",
@@ -1548,6 +1573,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Artificial Intelligence"
   },
   {
+    "slug": "pinhole-camera-model",
+    "path": "/atlas/pinhole-camera-model",
+    "type": "concept",
+    "title": "Pinhole Camera Model",
+    "summary": "The projective map from 3-D scene points to 2-D image pixels through a single centre of projection, parameterised by an intrinsic matrix and an extrinsic pose.",
+    "tags": [
+      "camera-model"
+    ],
+    "domain": "image-formation",
+    "headings": [
+      "Intrinsic matrix",
+      "Extrinsic transform",
+      "Projection matrix and normalised coordinates",
+      "Calibration homography and planar targets",
+      "Departure from the ideal model"
+    ],
+    "authors": [
+      "Z. Zhang"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "ransac",
     "path": "/atlas/ransac",
     "type": "concept",
@@ -1617,6 +1664,26 @@ export const searchRecords: SearchRecord[] = [
       "Two-scale construction",
       "Relation to the autocorrelation surface"
     ]
+  },
+  {
+    "slug": "svd-null-space",
+    "path": "/atlas/svd-null-space",
+    "type": "concept",
+    "title": "SVD Null-Space Estimation",
+    "summary": "Estimating a geometric entity defined only up to scale by stacking constraints into a homogeneous linear system and taking the smallest right-singular vector of the design matrix.",
+    "tags": [
+      "linear-algebra"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "The homogeneous system and its least-squares solution",
+      "Rank deficiency and the residual interpretation",
+      "Rank enforcement by truncating the spectrum"
+    ],
+    "authors": [
+      "H. C. Longuet-Higgins"
+    ],
+    "venue": "Nature"
   },
   {
     "slug": "topological-grid-recovery",

@@ -2,7 +2,7 @@
 title: "FCN: Fully Convolutional Networks"
 date: 2026-05-10
 summary: "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages."
-tags: ["computer-vision", "semantic-segmentation", "dense-prediction", "encoder-decoder", "transfer-learning"]
+tags: ["dense-prediction", "deep-learning"]
 domain: segmentation
 tasks: [image-segmentation]
 author: "Vitaly Vorobyev"

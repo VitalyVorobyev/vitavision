@@ -2,7 +2,7 @@
 title: "Gao Dual-Homography Stitching"
 date: 2026-05-02
 summary: "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group, and blending per pixel by inverse-distance weights. Superseded for practical use by APAP's continuous per-cell grid."
-tags: ["image-stitching", "homography", "panorama", "multi-plane"]
+tags: ["two-view-geometry"]
 domain: stitching
 tasks: [image-stitching]
 author: "Vitaly Vorobyev"

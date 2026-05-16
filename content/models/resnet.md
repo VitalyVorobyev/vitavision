@@ -2,7 +2,7 @@
 title: "ResNet"
 date: 2026-05-13
 summary: "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation."
-tags: ["computer-vision", "image-classification", "cnn", "deep-learning", "backbone", "residual"]
+tags: ["deep-learning"]
 domain: features
 tasks: [image-classification]
 author: "Vitaly Vorobyev"

@@ -2,7 +2,7 @@
 title: "Scale Space"
 date: 2026-04-30
 summary: "A one-parameter family of images obtained by progressively blurring an input image with Gaussians of increasing standard deviation, providing a principled multi-scale representation for detecting and describing image features."
-tags: ["image-formation", "multi-scale", "gaussian-filtering"]
+tags: ["multi-scale"]
 author: "Vitaly Vorobyev"
 domain: image-formation
 difficulty: intermediate

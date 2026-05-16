@@ -1,0 +1,159 @@
+# Closed vocabulary of cross-cutting facet tags for atlas page tagging.
+#
+# Tags are the FACET axis that `domain` (problem area) and `tasks` (concrete
+# user-facing task) do not capture: the method's paradigm, its algorithmic
+# approach, the representation it works with, and notable properties. A tag
+# must NOT duplicate a domain (e.g. "calibration", "geometry") or a task
+# (e.g. "corner-detection", "image-stitching") — that axis already exists.
+#
+# Every algorithm, model, and concept page carries at least one tag.
+#
+# Source of truth: this file (documentation + descriptions).
+# Validation enforcer: `tagValues` constant in src/lib/content/schema.ts.
+# Keep the two in sync; a unit test checks they match.
+#
+# Adding a new tag: append the slug + description here, mirror it in
+# src/lib/content/schema.ts → tagValues, then run validate-content. Keep the
+# vocabulary small — a new tag must earn its place as a genuine cross-cutting
+# facet, not a near-synonym of an existing one.
+
+tags:
+  # ── Paradigm ──────────────────────────────────────────────────────────────
+  - slug: classical
+    description: |
+      Hand-designed (non-learned) method — closed-form, geometric, or
+      hand-tuned. The counterpart to `deep-learning`.
+
+  - slug: deep-learning
+    description: |
+      Built on trained neural networks (CNNs, transformers, graph networks).
+      Behaviour is learned from data rather than hand-specified.
+
+  # ── Algorithmic approach ──────────────────────────────────────────────────
+  - slug: robust-estimation
+    description: |
+      Tolerates outliers and gross errors by design — RANSAC-family consensus
+      sampling, M-estimators, IRLS, or evidence voting.
+
+  - slug: optimization
+    description: |
+      Solves an explicit objective by iterative refinement: least-squares,
+      gradient descent, IRLS, bundle adjustment, Levenberg-Marquardt.
+
+  - slug: linear-algebra
+    description: |
+      Core step is a linear-algebraic construction — SVD or eigendecomposition,
+      homogeneous linear systems, null-space extraction.
+
+  - slug: probabilistic
+    description: |
+      Models the problem with explicit probability distributions: Markov
+      random fields, Gaussian mixtures, Gaussian processes, Bayesian inference.
+
+  - slug: graph-based
+    description: |
+      Formulated on a graph — min-cut / max-flow, spanning trees, union-find,
+      message passing over nodes and edges.
+
+  - slug: variational
+    description: |
+      Minimises a continuous energy functional, typically a data term plus a
+      smoothness / regularisation term.
+
+  - slug: multi-scale
+    description: |
+      Operates across multiple image scales — pyramids, scale-space,
+      coarse-to-fine processing.
+
+  - slug: voting
+    description: |
+      Accumulates evidence in a parameter or accumulator space (Hough-style
+      voting, radial-symmetry accumulation).
+
+  - slug: boosting
+    description: |
+      Builds a strong classifier from weak learners, typically in a rejection
+      cascade (AdaBoost, Haar cascades).
+
+  # ── Representation ────────────────────────────────────────────────────────
+  - slug: local-descriptors
+    description: |
+      Produces or consumes local feature descriptors — patch histograms,
+      gradient descriptors, learned descriptors.
+
+  - slug: binary-descriptor
+    description: |
+      Local descriptor encoded as a binary string and compared by Hamming
+      distance (BRIEF, ORB, BRISK-style).
+
+  - slug: keypoint-detection
+    description: |
+      Localises sparse interest points — corners, junctions, saddle points.
+
+  - slug: blob-detection
+    description: |
+      Localises blob-like or region structures via scale-normalised responses
+      (Hessian, Laplacian-of-Gaussian style).
+
+  - slug: dense-prediction
+    description: |
+      Produces a per-pixel output map — segmentation labels, flow fields,
+      depth, or other dense fields.
+
+  - slug: region-based
+    description: |
+      Operates on region proposals or image segments rather than raw pixels or
+      sparse points.
+
+  # ── Geometry ──────────────────────────────────────────────────────────────
+  - slug: two-view-geometry
+    description: |
+      Concerns the geometric relation between two views — homography,
+      fundamental / essential matrix, epipolar geometry, projective warps.
+
+  - slug: camera-model
+    description: |
+      Concerns the camera's projection or distortion model — intrinsics, lens
+      distortion, fisheye / omnidirectional / catadioptric models.
+
+  - slug: pose-estimation
+    description: |
+      Recovers camera or object pose (rotation and translation), e.g.
+      perspective-n-point.
+
+  # ── Targets, motion, properties ───────────────────────────────────────────
+  - slug: chessboard
+    description: |
+      Designed around the chessboard / checkerboard calibration pattern.
+
+  - slug: fiducial-markers
+    description: |
+      Designed around fiducial or self-identifying markers — ArUco-style
+      tags, marker boards.
+
+  - slug: radial-pattern
+    description: |
+      Designed around radially symmetric targets or radial-symmetry cues —
+      ring grids, radial features.
+
+  - slug: optical-flow
+    description: |
+      Estimates apparent motion between frames from brightness change.
+
+  - slug: stereo
+    description: |
+      Uses a stereo pair or disparity for geometric estimation.
+
+  - slug: real-time
+    description: |
+      Designed for real-time / low-latency operation; computational efficiency
+      is a primary design objective.
+
+  - slug: subpixel
+    description: |
+      Refines a measurement to sub-pixel precision.
+
+  - slug: survey
+    description: |
+      A page that surveys and compares three or more methods rather than
+      presenting a single one.

@@ -6,7 +6,6 @@ import AlgorithmCard from "../components/blog/AlgorithmCard.tsx";
 import ModelCard from "../components/blog/ModelCard.tsx";
 import ConceptCard from "../components/blog/ConceptCard.tsx";
 import AlgorithmsSidebar from "../components/algorithms/AlgorithmsSidebar.tsx";
-import AlgorithmsTagPicker from "../components/algorithms/AlgorithmsTagPicker.tsx";
 import AlgorithmsFilterSheet from "../components/algorithms/AlgorithmsFilterSheet.tsx";
 import AlgorithmsViewToggle from "../components/algorithms/AlgorithmsViewToggle.tsx";
 import AtlasMapView from "../components/atlas/AtlasMapView.tsx";
@@ -26,56 +25,130 @@ import {
     type ConceptIndexEntry,
 } from "../lib/content/schema.ts";
 import { domainLabels, domainOrder } from "../components/algorithms/domainLabels.ts";
+import { contentGraph } from "../generated/content-graph.ts";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 import { searchSlugs } from "../lib/atlas/searchClient.ts";
+import useScrollSpy from "../hooks/useScrollSpy.ts";
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Discriminated entry type ───────────────────────────────────────────────────
 
-type DomainGroup<T> = { domain: string; entries: T[] };
+type UnifiedEntry =
+    | { kind: "algorithm"; slug: string; frontmatter: AlgorithmIndexEntry["frontmatter"] }
+    | { kind: "model";     slug: string; frontmatter: ModelIndexEntry["frontmatter"] }
+    | { kind: "concept";   slug: string; frontmatter: ConceptIndexEntry["frontmatter"] };
 
-function computeGroupedAlgorithms(filtered: AlgorithmIndexEntry[]): DomainGroup<AlgorithmIndexEntry>[] {
-    const byDomain = new Map<string, AlgorithmIndexEntry[]>();
-    for (const entry of filtered) {
-        const dom = entry.frontmatter.domain ?? "unknown";
-        const bucket = byDomain.get(dom) ?? [];
-        bucket.push(entry);
-        byDomain.set(dom, bucket);
+// ── Depth-based comparator ────────────────────────────────────────────────────
+
+function byDepthThenDate(depth: Record<string, number>) {
+    return (a: UnifiedEntry, b: UnifiedEntry): number => {
+        const da = depth[a.slug] ?? Number.MAX_SAFE_INTEGER;
+        const db = depth[b.slug] ?? Number.MAX_SAFE_INTEGER;
+        if (da !== db) return da - db;
+        // tie-break: date descending then title ascending
+        const ta = new Date(a.frontmatter.date).getTime();
+        const tb = new Date(b.frontmatter.date).getTime();
+        if (tb !== ta) return tb - ta;
+        return a.frontmatter.title.localeCompare(b.frontmatter.title, undefined, { sensitivity: "base" });
+    };
+}
+
+// ── Unified domain grouping ───────────────────────────────────────────────────
+
+type DomainGroup = { domain: string; entries: UnifiedEntry[] };
+
+function computeUnifiedGroups(
+    filteredAlgorithms: AlgorithmIndexEntry[],
+    filteredModels: ModelIndexEntry[],
+    filteredConcepts: ConceptIndexEntry[],
+    kind: AlgorithmsKind,
+    filters: AlgorithmsFilters,
+): DomainGroup[] {
+    const depth = contentGraph.depth;
+    const comparator = byDepthThenDate(depth);
+
+    // When a specific domain is filtered, build one group for that domain only.
+    if (filters.categoryId !== "all") {
+        const entries: UnifiedEntry[] = [];
+        if (kind === "algorithm" || kind === "all") {
+            for (const e of filteredAlgorithms) entries.push({ kind: "algorithm", slug: e.slug, frontmatter: e.frontmatter });
+        }
+        if (kind === "model" || kind === "all") {
+            for (const e of filteredModels) entries.push({ kind: "model", slug: e.slug, frontmatter: e.frontmatter });
+        }
+        if (kind === "concept" || kind === "all") {
+            for (const e of filteredConcepts) entries.push({ kind: "concept", slug: e.slug, frontmatter: e.frontmatter });
+        }
+        entries.sort(comparator);
+        if (entries.length === 0) return [];
+        return [{ domain: filters.categoryId, entries }];
     }
+
+    // Group by domain in domainOrder; each group sorted by depth then date.
+    const byDomain = new Map<string, UnifiedEntry[]>();
+    const addToGroup = (slug: string, frontmatter: UnifiedEntry["frontmatter"], entryKind: UnifiedEntry["kind"]) => {
+        const dom = frontmatter.domain ?? "unknown";
+        const bucket = byDomain.get(dom) ?? [];
+        bucket.push({ kind: entryKind, slug, frontmatter } as UnifiedEntry);
+        byDomain.set(dom, bucket);
+    };
+
+    if (kind === "algorithm" || kind === "all") {
+        for (const e of filteredAlgorithms) addToGroup(e.slug, e.frontmatter, "algorithm");
+    }
+    if (kind === "model" || kind === "all") {
+        for (const e of filteredModels) addToGroup(e.slug, e.frontmatter, "model");
+    }
+    if (kind === "concept" || kind === "all") {
+        for (const e of filteredConcepts) addToGroup(e.slug, e.frontmatter, "concept");
+    }
+
     return domainOrder
-        .map((dom) => ({ domain: dom, entries: byDomain.get(dom) ?? [] }))
+        .map((dom) => {
+            const entries = (byDomain.get(dom) ?? []).sort(comparator);
+            return { domain: dom, entries };
+        })
         .filter((g) => g.entries.length > 0);
 }
 
-function computeGroupedModels(filtered: ModelIndexEntry[]): DomainGroup<ModelIndexEntry>[] {
-    const byDomain = new Map<string, ModelIndexEntry[]>();
-    for (const entry of filtered) {
-        const dom = entry.frontmatter.domain ?? "unknown";
-        const bucket = byDomain.get(dom) ?? [];
-        bucket.push(entry);
-        byDomain.set(dom, bucket);
+// ── Card renderer (picks the right component by kind) ────────────────────────
+
+function EntryCard({ entry, layout }: { entry: UnifiedEntry; layout: "grid" | "list" }) {
+    const variant = layout === "list" ? "horizontal" : "compact";
+    if (entry.kind === "algorithm") {
+        const full = algorithmPages.find((p) => p.slug === entry.slug);
+        if (!full) return null;
+        return <AlgorithmCard entry={full} variant={variant} />;
     }
-    return domainOrder
-        .map((dom) => ({ domain: dom, entries: byDomain.get(dom) ?? [] }))
-        .filter((g) => g.entries.length > 0);
+    if (entry.kind === "model") {
+        const full = modelPages.find((p) => p.slug === entry.slug);
+        if (!full) return null;
+        return <ModelCard entry={full} variant={variant} />;
+    }
+    const full = conceptPages.find((p) => p.slug === entry.slug);
+    if (!full) return null;
+    return <ConceptCard entry={full} variant={variant} />;
 }
 
-function computeGroupedConcepts(filtered: ConceptIndexEntry[]): DomainGroup<ConceptIndexEntry>[] {
-    const byDomain = new Map<string, ConceptIndexEntry[]>();
-    for (const entry of filtered) {
-        const dom = entry.frontmatter.domain ?? "unknown";
-        const bucket = byDomain.get(dom) ?? [];
-        bucket.push(entry);
-        byDomain.set(dom, bucket);
-    }
-    return domainOrder
-        .map((dom) => ({ domain: dom, entries: byDomain.get(dom) ?? [] }))
-        .filter((g) => g.entries.length > 0);
-}
-
-// ── Section header (shared across desktop + mobile) ───────────────────────────
+// ── Section header — sticky, spans full main column ──────────────────────────
+// The nav bar is sticky top-0 h-16 (64px). Domain headers stick just below it.
 
 function SectionHeader({ label, count }: { label: string; count: number }) {
+    return (
+        <div className="-mx-10 px-10 sticky top-16 z-10 bg-[hsl(var(--background))]">
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground flex items-baseline gap-2.5 pt-5 pb-3 border-b border-[hsl(var(--border)/0.25)]">
+                <span>{label}</span>
+                <span className="font-normal text-[hsl(var(--muted-foreground)/0.7)]">
+                    {count}
+                </span>
+            </h2>
+        </div>
+    );
+}
+
+// ── Mobile section header (no negative-margin trick needed — no px-10 on mobile) ─
+
+function MobileSectionHeader({ label, count }: { label: string; count: number }) {
     return (
         <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground flex items-baseline gap-2.5 mt-5 mb-3">
             <span>{label}</span>
@@ -86,267 +159,21 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
     );
 }
 
-// ── Card grid / list ──────────────────────────────────────────────────────────
+// ── Unified domain-grouped results ────────────────────────────────────────────
 
-interface CardGroupProps {
-    kind: AlgorithmsKind;
-    filteredAlgorithms: AlgorithmIndexEntry[];
-    filteredModels: ModelIndexEntry[];
-    filteredConcepts: ConceptIndexEntry[];
-    filters: AlgorithmsFilters;
-    groupedAlgorithms: DomainGroup<AlgorithmIndexEntry>[];
-    groupedModels: DomainGroup<ModelIndexEntry>[];
-    groupedConcepts: DomainGroup<ConceptIndexEntry>[];
+interface UnifiedResultsProps {
+    groups: DomainGroup[];
     layout: "grid" | "list";
+    isMobile?: boolean;
 }
 
-function AlgorithmsGroup({
-    filteredAlgorithms,
-    filters,
-    groupedAlgorithms,
-    layout,
-}: {
-    filteredAlgorithms: AlgorithmIndexEntry[];
-    filters: AlgorithmsFilters;
-    groupedAlgorithms: DomainGroup<AlgorithmIndexEntry>[];
-    layout: "grid" | "list";
-}) {
+function UnifiedResults({ groups, layout, isMobile = false }: UnifiedResultsProps) {
     const gridClass =
         layout === "grid"
             ? "grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
             : "flex flex-col gap-2.5";
 
-    if (filteredAlgorithms.length === 0) {
-        return (
-            <p className="text-[13px] text-muted-foreground py-6">
-                No algorithms match the current filters.
-            </p>
-        );
-    }
-    if (filters.categoryId !== "all") {
-        return (
-            <div>
-                <SectionHeader
-                    label={domainLabels[filters.categoryId as keyof typeof domainLabels] ?? filters.categoryId}
-                    count={filteredAlgorithms.length}
-                />
-                <div className={gridClass}>
-                    {filteredAlgorithms.map((entry) => (
-                        <AlgorithmCard
-                            key={entry.slug}
-                            entry={entry}
-                            variant={layout === "list" ? "horizontal" : "compact"}
-                        />
-                    ))}
-                </div>
-            </div>
-        );
-    }
-    return (
-        <>
-            {groupedAlgorithms.map(({ domain, entries }) => (
-                <div key={domain}>
-                    <SectionHeader
-                        label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
-                        count={entries.length}
-                    />
-                    <div className={gridClass}>
-                        {entries.map((entry) => (
-                            <AlgorithmCard
-                                key={entry.slug}
-                                entry={entry}
-                                variant={layout === "list" ? "horizontal" : "compact"}
-                            />
-                        ))}
-                    </div>
-                </div>
-            ))}
-        </>
-    );
-}
-
-function ModelsGroup({
-    filteredModels,
-    filters,
-    groupedModels,
-    layout,
-}: {
-    filteredModels: ModelIndexEntry[];
-    filters: AlgorithmsFilters;
-    groupedModels: DomainGroup<ModelIndexEntry>[];
-    layout: "grid" | "list";
-}) {
-    const gridClass =
-        layout === "grid"
-            ? "grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            : "flex flex-col gap-2.5";
-
-    if (filteredModels.length === 0) {
-        return (
-            <p className="text-[13px] text-muted-foreground py-6">
-                No models match the current filters.
-            </p>
-        );
-    }
-    if (filters.categoryId !== "all") {
-        return (
-            <div>
-                <SectionHeader
-                    label={domainLabels[filters.categoryId as keyof typeof domainLabels] ?? filters.categoryId}
-                    count={filteredModels.length}
-                />
-                <div className={gridClass}>
-                    {filteredModels.map((entry) => (
-                        <ModelCard
-                            key={entry.slug}
-                            entry={entry}
-                            variant={layout === "list" ? "horizontal" : "compact"}
-                        />
-                    ))}
-                </div>
-            </div>
-        );
-    }
-    return (
-        <>
-            {groupedModels.map(({ domain, entries }) => (
-                <div key={domain}>
-                    <SectionHeader
-                        label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
-                        count={entries.length}
-                    />
-                    <div className={gridClass}>
-                        {entries.map((entry) => (
-                            <ModelCard
-                                key={entry.slug}
-                                entry={entry}
-                                variant={layout === "list" ? "horizontal" : "compact"}
-                            />
-                        ))}
-                    </div>
-                </div>
-            ))}
-        </>
-    );
-}
-
-function ConceptsGroup({
-    filteredConcepts,
-    filters,
-    groupedConcepts,
-    layout,
-}: {
-    filteredConcepts: ConceptIndexEntry[];
-    filters: AlgorithmsFilters;
-    groupedConcepts: DomainGroup<ConceptIndexEntry>[];
-    layout: "grid" | "list";
-}) {
-    const gridClass =
-        layout === "grid"
-            ? "grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            : "flex flex-col gap-2.5";
-
-    if (filteredConcepts.length === 0) {
-        return (
-            <p className="text-[13px] text-muted-foreground py-6">
-                No concepts match the current filters.
-            </p>
-        );
-    }
-    if (filters.categoryId !== "all") {
-        return (
-            <div>
-                <SectionHeader
-                    label={domainLabels[filters.categoryId as keyof typeof domainLabels] ?? filters.categoryId}
-                    count={filteredConcepts.length}
-                />
-                <div className={gridClass}>
-                    {filteredConcepts.map((entry) => (
-                        <ConceptCard
-                            key={entry.slug}
-                            entry={entry}
-                            variant={layout === "list" ? "horizontal" : "compact"}
-                        />
-                    ))}
-                </div>
-            </div>
-        );
-    }
-    return (
-        <>
-            {groupedConcepts.map(({ domain, entries }) => (
-                <div key={domain}>
-                    <SectionHeader
-                        label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
-                        count={entries.length}
-                    />
-                    <div className={gridClass}>
-                        {entries.map((entry) => (
-                            <ConceptCard
-                                key={entry.slug}
-                                entry={entry}
-                                variant={layout === "list" ? "horizontal" : "compact"}
-                            />
-                        ))}
-                    </div>
-                </div>
-            ))}
-        </>
-    );
-}
-
-function CardGroup({
-    kind,
-    filteredAlgorithms,
-    filteredModels,
-    filteredConcepts,
-    filters,
-    groupedAlgorithms,
-    groupedModels,
-    groupedConcepts,
-    layout,
-}: CardGroupProps) {
-    const gridClass =
-        layout === "grid"
-            ? "grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            : "flex flex-col gap-2.5";
-
-    if (kind === "algorithm") {
-        return (
-            <AlgorithmsGroup
-                filteredAlgorithms={filteredAlgorithms}
-                filters={filters}
-                groupedAlgorithms={groupedAlgorithms}
-                layout={layout}
-            />
-        );
-    }
-
-    if (kind === "model") {
-        return (
-            <ModelsGroup
-                filteredModels={filteredModels}
-                filters={filters}
-                groupedModels={groupedModels}
-                layout={layout}
-            />
-        );
-    }
-
-    if (kind === "concept") {
-        return (
-            <ConceptsGroup
-                filteredConcepts={filteredConcepts}
-                filters={filters}
-                groupedConcepts={groupedConcepts}
-                layout={layout}
-            />
-        );
-    }
-
-    // kind === "all" — render all three groups stacked
-    const totalCount = filteredAlgorithms.length + filteredModels.length + filteredConcepts.length;
-    if (totalCount === 0) {
+    if (groups.length === 0) {
         return (
             <p className="text-[13px] text-muted-foreground py-6">
                 No entries match the current filters.
@@ -356,48 +183,30 @@ function CardGroup({
 
     return (
         <>
-            {filteredAlgorithms.length > 0 && (
-                <div>
-                    <SectionHeader label="Algorithms" count={filteredAlgorithms.length} />
-                    <div className={gridClass}>
-                        {filteredAlgorithms.map((entry) => (
-                            <AlgorithmCard
-                                key={entry.slug}
-                                entry={entry}
-                                variant={layout === "list" ? "horizontal" : "compact"}
-                            />
+            {groups.map(({ domain, entries }) => (
+                <div
+                    key={domain}
+                    id={`domain-${domain}`}
+                    className="scroll-mt-[calc(4rem+1px)]"
+                >
+                    {isMobile ? (
+                        <MobileSectionHeader
+                            label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
+                            count={entries.length}
+                        />
+                    ) : (
+                        <SectionHeader
+                            label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
+                            count={entries.length}
+                        />
+                    )}
+                    <div className={`${gridClass} mt-3`}>
+                        {entries.map((entry) => (
+                            <EntryCard key={entry.slug} entry={entry} layout={layout} />
                         ))}
                     </div>
                 </div>
-            )}
-            {filteredModels.length > 0 && (
-                <div>
-                    <SectionHeader label="Models" count={filteredModels.length} />
-                    <div className={gridClass}>
-                        {filteredModels.map((entry) => (
-                            <ModelCard
-                                key={entry.slug}
-                                entry={entry}
-                                variant={layout === "list" ? "horizontal" : "compact"}
-                            />
-                        ))}
-                    </div>
-                </div>
-            )}
-            {filteredConcepts.length > 0 && (
-                <div>
-                    <SectionHeader label="Concepts" count={filteredConcepts.length} />
-                    <div className={gridClass}>
-                        {filteredConcepts.map((entry) => (
-                            <ConceptCard
-                                key={entry.slug}
-                                entry={entry}
-                                variant={layout === "list" ? "horizontal" : "compact"}
-                            />
-                        ))}
-                    </div>
-                </div>
-            )}
+            ))}
         </>
     );
 }
@@ -419,12 +228,9 @@ export default function AlgorithmIndex() {
             ? "grid"
             : filters.view;
 
-    const [tagPickerOpen, setTagPickerOpen] = useState(false);
     const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
     // ── MiniSearch: derive slug set from query (client-side only) ───────────
-    // Using useMemo so the index is built lazily on first non-empty query.
-    // searchSlugs() guards against SSR via the `typeof window` check inside.
     const searchMatchedSlugs = useMemo<Set<string> | null>(
         () => searchSlugs(filters.query),
         [filters.query],
@@ -462,22 +268,6 @@ export default function AlgorithmIndex() {
         return [...set].sort();
     }, [filters.kind, visibleAlgorithms, visibleModels, visibleConcepts]);
 
-    const popularTags = useMemo(() => {
-        const sources =
-            filters.kind === "algorithm" ? [visibleAlgorithms] :
-            filters.kind === "model"     ? [visibleModels] :
-            filters.kind === "concept"   ? [visibleConcepts] :
-            [visibleAlgorithms, visibleModels, visibleConcepts];
-        const freq = new Map<string, number>();
-        for (const src of sources)
-            for (const e of src)
-                for (const t of e.frontmatter.tags) freq.set(t, (freq.get(t) ?? 0) + 1);
-        return [...freq.entries()]
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 6)
-            .map(([t]) => t);
-    }, [filters.kind, visibleAlgorithms, visibleModels, visibleConcepts]);
-
     const filteredAlgorithms = useMemo(
         () => filterAlgorithms(visibleAlgorithms, filters, searchMatchedSlugs),
         [visibleAlgorithms, filters, searchMatchedSlugs],
@@ -491,28 +281,30 @@ export default function AlgorithmIndex() {
         [visibleConcepts, filters, searchMatchedSlugs],
     );
 
-    const groupedAlgorithms = useMemo(
-        () => computeGroupedAlgorithms(filteredAlgorithms),
-        [filteredAlgorithms],
-    );
-    const groupedModels = useMemo(
-        () => computeGroupedModels(filteredModels),
-        [filteredModels],
-    );
-    const groupedConcepts = useMemo(
-        () => computeGroupedConcepts(filteredConcepts),
-        [filteredConcepts],
+    // ── Unified domain-grouped results ───────────────────────────────────────
+    const unifiedGroups = useMemo(
+        () => computeUnifiedGroups(filteredAlgorithms, filteredModels, filteredConcepts, filters.kind, filters),
+        [filteredAlgorithms, filteredModels, filteredConcepts, filters],
     );
 
-    // Domain values + label — shared across all kinds.
-    // When kind === "all", the domain sidebar is hidden (categoryValues = []).
-    const currentCategoryValues: readonly string[] =
-        filters.kind !== "all" ? domainOrder : [];
+    // ── Visible domain ids for scroll-spy and jump-rail ──────────────────────
+    const visibleDomainIds = useMemo(
+        () => unifiedGroups.map((g) => `domain-${g.domain}`),
+        [unifiedGroups],
+    );
+    const activeScrollId = useScrollSpy(visibleDomainIds, { bandFraction: 0.25 });
+    const activeDomain = activeScrollId ? activeScrollId.replace(/^domain-/, "") : null;
 
-    const currentCategoryLabel = (id: string): string =>
-        domainLabels[id as keyof typeof domainLabels] ?? id;
+    const handleJumpToDomain = (domainId: string | null) => {
+        if (!domainId) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+        const el = document.getElementById(`domain-${domainId}`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
 
-    // Mobile active filter badge count
+    // Mobile active filter badge count (tags + domain filter only; not for "all" domains)
     const activeCount =
         filters.tags.length + (filters.categoryId !== "all" ? 1 : 0);
 
@@ -531,14 +323,13 @@ export default function AlgorithmIndex() {
                     <AlgorithmsSidebar
                         filters={filters}
                         facets={facets}
-                        categoryValues={currentCategoryValues}
-                        categoryLabel={currentCategoryLabel}
-                        popularTags={popularTags}
                         tagSet={allTags}
                         onKindChange={setKind}
                         onCategoryChange={setCategoryId}
                         onTagToggle={toggleTag}
-                        onOpenTagPicker={() => setTagPickerOpen(true)}
+                        activeDomain={activeDomain}
+                        visibleDomains={unifiedGroups.map((g) => g.domain)}
+                        onJumpToDomain={handleJumpToDomain}
                     />
 
                     {/* Main column */}
@@ -597,30 +388,13 @@ export default function AlgorithmIndex() {
                                 searchMatchedSlugs={searchMatchedSlugs}
                             />
                         ) : (
-                            <CardGroup
-                                kind={filters.kind}
-                                filteredAlgorithms={filteredAlgorithms}
-                                filteredModels={filteredModels}
-                                filteredConcepts={filteredConcepts}
-                                filters={filters}
-                                groupedAlgorithms={groupedAlgorithms}
-                                groupedModels={groupedModels}
-                                groupedConcepts={groupedConcepts}
+                            <UnifiedResults
+                                groups={unifiedGroups}
                                 layout={effectiveView === "list" ? "list" : "grid"}
                             />
                         )}
                     </main>
                 </div>
-
-                {/* Tag picker modal (desktop) */}
-                <AlgorithmsTagPicker
-                    open={tagPickerOpen}
-                    onClose={() => setTagPickerOpen(false)}
-                    allTags={allTags}
-                    popularTags={popularTags}
-                    selectedTags={filters.tags}
-                    onToggle={toggleTag}
-                />
             </div>
         );
     }
@@ -695,16 +469,10 @@ export default function AlgorithmIndex() {
             </button>
 
             {/* Card sections */}
-            <CardGroup
-                kind={filters.kind}
-                filteredAlgorithms={filteredAlgorithms}
-                filteredModels={filteredModels}
-                filteredConcepts={filteredConcepts}
-                filters={filters}
-                groupedAlgorithms={groupedAlgorithms}
-                groupedModels={groupedModels}
-                groupedConcepts={groupedConcepts}
+            <UnifiedResults
+                groups={unifiedGroups}
                 layout="list"
+                isMobile={true}
             />
 
             {/* Filter sheet (mobile) */}
@@ -713,25 +481,14 @@ export default function AlgorithmIndex() {
                 onClose={() => setFilterSheetOpen(false)}
                 filters={filters}
                 facets={facets}
-                categoryValues={currentCategoryValues}
-                categoryLabel={currentCategoryLabel}
-                popularTags={popularTags}
+                categoryValues={domainOrder}
+                categoryLabel={(id) => domainLabels[id as keyof typeof domainLabels] ?? id}
                 allTags={allTags}
                 totalResults={facets.total}
                 onKindChange={setKind}
                 onCategoryChange={setCategoryId}
                 onTagToggle={toggleTag}
                 onReset={reset}
-            />
-
-            {/* Tag picker — shared across desktop/mobile, mounted once */}
-            <AlgorithmsTagPicker
-                open={tagPickerOpen}
-                onClose={() => setTagPickerOpen(false)}
-                allTags={allTags}
-                popularTags={popularTags}
-                selectedTags={filters.tags}
-                onToggle={toggleTag}
             />
         </div>
     );

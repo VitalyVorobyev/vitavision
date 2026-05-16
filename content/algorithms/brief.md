@@ -2,7 +2,7 @@
 title: "BRIEF: Binary Robust Independent Elementary Features"
 date: 2026-05-09
 summary: "Encodes a Gaussian-smoothed image patch around a detected keypoint as a 128/256/512-bit binary string by running a fixed table of pairwise pixel-intensity tests; matched between images by Hamming distance via bitwise XOR + popcount."
-tags: ["local-descriptors", "binary-descriptor", "matching", "feature-matching"]
+tags: ["local-descriptors", "binary-descriptor"]
 domain: features
 tasks: [local-feature-matching]
 author: "Vitaly Vorobyev"

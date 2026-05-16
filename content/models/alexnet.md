@@ -2,7 +2,7 @@
 title: "AlexNet"
 date: 2026-05-12
 summary: "Eight-layer convolutional neural network for 1000-class image classification on ImageNet, trained end-to-end on two GPUs with ReLU activations, local response normalisation, overlapping max-pooling, and dropout; the first deep CNN to win ILSVRC by a large margin."
-tags: ["computer-vision", "image-classification", "cnn", "deep-learning"]
+tags: ["deep-learning"]
 domain: features
 tasks: [image-classification]
 author: "Vitaly Vorobyev"

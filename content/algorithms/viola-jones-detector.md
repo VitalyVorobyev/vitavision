@@ -2,7 +2,7 @@
 title: "Viola–Jones Object Detector"
 date: 2026-05-12
 summary: "Real-time frontal-face detection by sliding a fixed 24×24 sub-window across a grayscale image at multiple scales, scoring each position with an AdaBoost-selected ensemble of integral-image rectangle features arranged in a 38-stage attentional cascade that rejects most background regions after evaluating ~10 features per sub-window."
-tags: ["object-detection", "face-detection", "boosting", "adaboost", "integral-image", "haar-features", "cascade-classifier"]
+tags: ["boosting"]
 domain: detection
 author: "Vitaly Vorobyev"
 difficulty: intermediate

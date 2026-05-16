@@ -2,7 +2,7 @@
 title: "XFeat"
 date: 2026-04-18
 summary: "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices."
-tags: ["image-matching", "keypoint-detection", "local-descriptors", "cnn"]
+tags: ["keypoint-detection", "local-descriptors", "deep-learning"]
 domain: features
 tasks: [feature-detection, local-feature-matching]
 author: "Vitaly Vorobyev"

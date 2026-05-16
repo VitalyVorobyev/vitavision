@@ -2,7 +2,7 @@
 title: "Faster R-CNN"
 date: 2026-05-13
 summary: "Two-stage CNN object detector that replaces external Selective Search / EdgeBoxes proposals with a learned Region Proposal Network sharing conv features with the Fast R-CNN head — yielding near-real-time multi-class detection on GPU (5 fps with VGG-16) and ImageNet-pretrained backbones swapped freely from ZF through ResNet-101."
-tags: ["computer-vision", "object-detection", "two-stage-detector", "region-proposal-network", "cnn", "anchor-based"]
+tags: ["region-based", "deep-learning"]
 domain: detection
 author: "Vitaly Vorobyev"
 difficulty: intermediate

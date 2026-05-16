@@ -2,7 +2,7 @@
 title: "EPnP: O(n) Perspective-n-Point"
 date: 2026-05-04
 summary: "Non-iterative O(n) solver for the calibrated Perspective-n-Point problem: express the n reference points as weighted sums of four virtual control points, recover their camera-frame coordinates from the null space of a 12×12 matrix, and extract pose by absolute orientation."
-tags: ["pose-estimation", "perspective-n-point", "geometry"]
+tags: ["pose-estimation"]
 domain: geometry
 author: "Vitaly Vorobyev"
 difficulty: advanced

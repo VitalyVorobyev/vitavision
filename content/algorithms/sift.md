@@ -2,7 +2,7 @@
 title: "SIFT: Scale-Invariant Feature Transform"
 date: 2026-05-05
 summary: "Detects keypoints as scale-space extrema in a Difference-of-Gaussian image pyramid, refines location and scale by 3D quadratic interpolation, assigns canonical orientation from local gradient histograms, and emits a 128-D descriptor invariant to scale, rotation, and moderate affine and illumination change."
-tags: ["feature-detection", "local-descriptors", "scale-invariant", "matching"]
+tags: ["local-descriptors", "multi-scale"]
 domain: features
 tasks: [feature-detection, local-feature-matching]
 author: "Vitaly Vorobyev"

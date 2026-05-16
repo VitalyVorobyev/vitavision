@@ -2,7 +2,7 @@
 title: "U-Net"
 date: 2026-05-11
 summary: "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders."
-tags: ["computer-vision", "semantic-segmentation", "biomedical-imaging", "encoder-decoder", "dense-prediction"]
+tags: ["dense-prediction", "deep-learning"]
 domain: segmentation
 tasks: [image-segmentation]
 author: "Vitaly Vorobyev"

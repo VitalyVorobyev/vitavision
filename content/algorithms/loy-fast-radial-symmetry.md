@@ -2,7 +2,7 @@
 title: "Fast Radial Symmetry Transform"
 date: 2026-05-03
 summary: "Gradient-vote operator that highlights pixels of high local radial symmetry — bright/dark blobs and approximately circular features. Each pixel votes along its gradient direction at one or more radii into orientation and magnitude projection maps; the per-radius contribution is the magnitude projection weighted by a power of the orientation count and Gaussian-smoothed; the cumulative response across radii localises feature centres at $O(K \\cdot |N|)$ cost."
-tags: ["feature-detection", "blob-detection", "radial-symmetry"]
+tags: ["blob-detection", "radial-pattern"]
 domain: features
 tasks: [feature-detection]
 author: "Vitaly Vorobyev"

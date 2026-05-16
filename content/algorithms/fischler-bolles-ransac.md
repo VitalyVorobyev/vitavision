@@ -2,7 +2,7 @@
 title: "Fischler–Bolles RANSAC"
 date: 2026-05-03
 summary: "Founding random-sample-consensus paradigm: fit a parametric model to data containing an unknown fraction of gross outliers by drawing minimal random subsets, instantiating candidate models, counting consensus inliers, and retaining the largest consensus set."
-tags: ["geometry", "robust-estimation", "outlier-rejection", "ransac"]
+tags: ["robust-estimation"]
 domain: geometry
 author: "Vitaly Vorobyev"
 difficulty: intermediate

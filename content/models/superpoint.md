@@ -2,7 +2,7 @@
 title: "SuperPoint"
 date: 2026-05-02
 summary: "Fully-convolutional CNN that jointly detects interest points and computes 256-D descriptors in a single forward pass, trained without human annotations via Homographic Adaptation on synthetic shapes and MS-COCO images."
-tags: ["computer-vision", "keypoint-detection", "local-descriptors", "image-matching", "self-supervised"]
+tags: ["keypoint-detection", "local-descriptors", "deep-learning"]
 domain: features
 tasks: [feature-detection, local-feature-matching]
 author: "Vitaly Vorobyev"

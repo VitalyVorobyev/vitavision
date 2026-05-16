@@ -2,7 +2,7 @@
 title: "USAC: Universal RANSAC Framework"
 date: 2026-05-03
 summary: "Engineering decomposition of practical RANSAC into four pluggable stages — sampling (PROSAC), model verification (SPRT), local optimisation (LO-RANSAC), and degeneracy handling (DEGENSAC) — with a single reference C++ implementation (USAC-1.0) and an SPRT-corrected stopping criterion."
-tags: ["geometry", "robust-estimation", "outlier-rejection", "ransac", "sprt"]
+tags: ["robust-estimation"]
 domain: geometry
 author: "Vitaly Vorobyev"
 difficulty: intermediate

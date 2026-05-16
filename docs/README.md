@@ -23,7 +23,7 @@ Public site lives at:
 |---|---|---|---|
 | **Algorithm page** | `content/algorithms/*.md` | **1:1** with primary paper. Other papers go in `sources.references`. | One canonical paper introduces a closed-form method. |
 | **Model page** | `content/models/*.md` | 1:1 with primary paper for single-paper models; or 1:family for ResNet/YOLO-style families. | Deep-learning models. Don't chase minor versions — update the family page. |
-| **Concept page** | `content/concepts/*.md` | Many-to-many. Cites multiple papers and textbooks. | A reusable mathematical/geometric object referenced by **3+ existing or planned pages** AND supports **≥500 words** of substantive standalone content. |
+| **Concept page** | `content/concepts/*.md` | Many-to-many. Cites multiple papers and textbooks. | A genuinely fundamental, cross-cutting mathematical/geometric object that supports **≥500 words** of substantive standalone content. Referencing-page count is **not** a gate; source-diversity (≥3 sources) still is. |
 | **Blog post** | `content/blog/*.md` | Free-form. | Long-form notes, write-ups, exploratory work. Not part of the atlas. |
 | **Research note** | `docs/research/notes/<paper-id>.md` | 1:1 with paper. | Always created during paper ingestion. Committed to GitHub but not deployed. |
 
@@ -84,7 +84,7 @@ For surveys: at least 3 of the surveyed methods' primary papers must have resear
 | `paper-ingest` | Convert a paper (arxiv ID, DOI, URL, or local PDF) into a private research note. Maps to existing atlas pages, writes an "Atlas update plan" as bullets. | `docs/research/notes/<paper-id>.md`, `docs/papers/index.yaml`. **Never** `content/**`. |
 | `algo-page` | Author or update an algorithm page. Reads research notes for the page's primary paper if present. | `content/algorithms/<slug>.md`, `docs/papers/index.yaml`. |
 | `deep-model-page` | Author or update a deep-learning model page. Family pages vs single-paper pages. | `content/models/<slug>.md`, `docs/papers/index.yaml`. |
-| `concept-page` | Author or update a concept page. Enforces the 3+ refs / 500+ words criterion. Reads multiple research notes when synthesizing. | `content/concepts/<slug>.md`. |
+| `concept-page` | Author or update a concept page. Enforces the ≥500-words substance + ≥3-source-diversity criterion. Reads multiple research notes when synthesizing. | `content/concepts/<slug>.md`. |
 
 The four skills cover every authoring path. There is **no separate `atlas-update` skill** — page skills handle both create-from-scratch and apply-update-plan.
 
@@ -120,9 +120,9 @@ Concepts span many sources. Don't go through `paper-ingest` first; start at the 
 ```text
 You: Use concept-page to evaluate whether "epipolar geometry" meets the
      page-creation criterion given current atlas pages.
-→ skill checks 3+ refs / 500+ words criterion. If it passes, drafts
-  content/concepts/epipolar-geometry.md citing multiple papers from
-  docs/papers/index.yaml.
+→ skill checks the ≥500-words substance + ≥3-source-diversity criterion.
+  If it passes, drafts content/concepts/epipolar-geometry.md citing
+  multiple papers from docs/papers/index.yaml.
 ```
 
 ### Path C — blog post

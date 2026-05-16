@@ -2,7 +2,7 @@
 title: "Chessboard Detection via X-Corners and Topology"
 date: 2026-04-16
 summary: "Detect every corner of a chessboard calibration pattern and assign it an integer grid coordinate by counting ring-alternations to locate X-junctions, Delaunay-triangulating the corner set, and keeping only triangles that respect the two-colour neighbourhood regularity of the pattern."
-tags: ["calibration", "chessboard", "corner-detection"]
+tags: ["chessboard"]
 domain: targets
 tasks: [chessboard-detection]
 author: "Vitaly Vorobyev"

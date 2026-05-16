@@ -2,7 +2,7 @@
 title: "Homography"
 date: 2026-04-30
 summary: "An invertible projective transformation of the plane, represented by a 3×3 matrix defined up to a non-zero scalar, mapping points between two images of a planar surface or capturing a pure camera rotation."
-tags: ["geometry", "projective-geometry", "calibration"]
+tags: ["two-view-geometry"]
 author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: intermediate

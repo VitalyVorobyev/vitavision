@@ -627,6 +627,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/image-gradient",
       "draft": false
     },
+    "optical-flow": {
+      "slug": "optical-flow",
+      "type": "concept",
+      "title": "Optical Flow",
+      "summary": "The apparent 2-D velocity field of image brightness between consecutive frames, recovered from the spatio-temporal gradient under the brightness-constancy assumption.",
+      "path": "/atlas/optical-flow",
+      "draft": false
+    },
     "ransac": {
       "slug": "ransac",
       "type": "concept",
@@ -681,7 +689,8 @@ export const contentGraph: ContentGraph = {
     "black-anandan-robust-flow": {
       "prerequisites": [
         "image-gradient",
-        "scale-space"
+        "scale-space",
+        "optical-flow"
       ],
       "failureModes": [],
       "relations": []
@@ -1068,7 +1077,8 @@ export const contentGraph: ContentGraph = {
     },
     "horn-schunck": {
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "optical-flow"
       ],
       "failureModes": [],
       "relations": [
@@ -1149,7 +1159,8 @@ export const contentGraph: ContentGraph = {
     "lucas-kanade": {
       "prerequisites": [
         "image-gradient",
-        "structure-tensor"
+        "structure-tensor",
+        "optical-flow"
       ],
       "failureModes": [],
       "relations": [
@@ -2163,6 +2174,14 @@ export const contentGraph: ContentGraph = {
     },
     "image-gradient": {
       "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
+    "optical-flow": {
+      "prerequisites": [
+        "image-gradient",
+        "structure-tensor"
+      ],
       "failureModes": [],
       "relations": []
     },
@@ -3190,6 +3209,7 @@ export const contentGraph: ContentGraph = {
         "mate-checkerboard-detector",
         "ni-generalized-fast-radial-symmetry",
         "ocpad",
+        "optical-flow",
         "orb",
         "puzzleboard",
         "pyramidal-blur-aware-xcorner",
@@ -3202,6 +3222,18 @@ export const contentGraph: ContentGraph = {
         "surf",
         "xfeat",
         "yang-sub-pixel-corner-fit"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "optical-flow": {
+      "usedBy": [
+        "black-anandan-robust-flow",
+        "horn-schunck",
+        "lucas-kanade"
       ],
       "affects": [],
       "generalises": [],
@@ -3258,6 +3290,7 @@ export const contentGraph: ContentGraph = {
       "usedBy": [
         "harris-corner-detector",
         "lucas-kanade",
+        "optical-flow",
         "shi-tomasi-corner-detector"
       ],
       "affects": [],
@@ -3287,7 +3320,9 @@ export const contentGraph: ContentGraph = {
     "apap-image-stitching": 2,
     "image-gradient": 0,
     "scale-space": 0,
-    "black-anandan-robust-flow": 1,
+    "structure-tensor": 1,
+    "optical-flow": 2,
+    "black-anandan-robust-flow": 3,
     "brief": 1,
     "canny-edge-detector": 1,
     "chess-corners": 1,
@@ -3307,17 +3342,16 @@ export const contentGraph: ContentGraph = {
     "gp-checkerboard-enhancement": 1,
     "grabcut-iterative-segmentation": 0,
     "graph-cut-segmentation": 0,
-    "structure-tensor": 1,
     "harris-corner-detector": 2,
     "hog-descriptor": 1,
-    "horn-schunck": 1,
+    "horn-schunck": 3,
     "camera-distortion-models": 0,
     "kumar-generalized-rac": 1,
     "lin-sva-stitching": 2,
     "duda-radon-corners": 1,
     "epipolar-geometry": 1,
     "longuet-higgins-eight-point": 2,
-    "lucas-kanade": 2,
+    "lucas-kanade": 3,
     "barath-magsac": 1,
     "fundamental-matrix-eight-point": 2,
     "ocpad": 1,

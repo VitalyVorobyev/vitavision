@@ -113,7 +113,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "scale-space"
+        "scale-space",
+        "optical-flow"
       ],
       "failureModes": [],
       "tags": [
@@ -920,7 +921,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 4,
       "access": "public",
       "prerequisites": [
-        "image-gradient"
+        "image-gradient",
+        "optical-flow"
       ],
       "failureModes": [],
       "relations": [
@@ -1113,7 +1115,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "structure-tensor"
+        "structure-tensor",
+        "optical-flow"
       ],
       "failureModes": [],
       "relations": [
@@ -3382,6 +3385,35 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "domain": "features",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "optical-flow",
+    "frontmatter": {
+      "title": "Optical Flow",
+      "summary": "The apparent 2-D velocity field of image brightness between consecutive frames, recovered from the spatio-temporal gradient under the brightness-constancy assumption.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient",
+        "structure-tensor"
+      ],
+      "tags": [
+        "optical-flow",
+        "variational"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "horn1981-horn-schunck",
+        "references": [
+          "lucas1981-lucas-kanade",
+          "black1996-robust",
+          "tomasi1991-detection-tracking"
+        ]
+      },
+      "date": "2026-05-16"
     }
   },
   {

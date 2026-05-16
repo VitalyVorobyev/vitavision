@@ -6,7 +6,7 @@ tags: ["optical-flow", "variational"]
 domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: [image-gradient]
+prerequisites: [image-gradient, optical-flow]
 failureModes: []
 sources:
   primary: horn1981-horn-schunck

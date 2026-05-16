@@ -1460,6 +1460,30 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "optical-flow",
+    "path": "/atlas/optical-flow",
+    "type": "concept",
+    "title": "Optical Flow",
+    "summary": "The apparent 2-D velocity field of image brightness between consecutive frames, recovered from the spatio-temporal gradient under the brightness-constancy assumption.",
+    "tags": [
+      "optical-flow",
+      "variational"
+    ],
+    "domain": "features",
+    "headings": [
+      "Derivation of the brightness-constancy constraint",
+      "The aperture problem",
+      "Global / variational approach",
+      "Local / windowed approach",
+      "Robust approach"
+    ],
+    "authors": [
+      "B. K. P. Horn",
+      "B. G. Schunck"
+    ],
+    "venue": "Artificial Intelligence"
+  },
+  {
     "slug": "ransac",
     "path": "/atlas/ransac",
     "type": "concept",

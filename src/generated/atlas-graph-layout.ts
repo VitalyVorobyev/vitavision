@@ -181,78 +181,83 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 325.007904,
     "cluster": "detectors"
   },
+  "optical-flow": {
+    "x": 611.65131675,
+    "y": 318.736128,
+    "cluster": "detectors"
+  },
   "orb": {
-    "x": 608.95224975,
+    "x": 654.10224975,
     "y": 335.4528,
     "cluster": "detectors"
   },
   "pyramidal-blur-aware-xcorner": {
-    "x": 654.9350415000001,
+    "x": 700.0850415000001,
     "y": 326.91504000000003,
     "cluster": "detectors"
   },
   "resnet": {
-    "x": 691.6702102500001,
-    "y": 325.780032,
+    "x": 511.07021025000006,
+    "y": 383.38003199999997,
     "cluster": "detectors"
   },
   "shi-tomasi-corner-detector": {
-    "x": 518.11812525,
+    "x": 563.26812525,
     "y": 392.37139199999996,
     "cluster": "detectors"
   },
   "sift": {
-    "x": 563.2064955000001,
+    "x": 608.3564955,
     "y": 382.692576,
     "cluster": "detectors"
   },
   "structure-tensor": {
-    "x": 614.58742125,
+    "x": 659.7374212500001,
     "y": 380.08185599999996,
     "cluster": "detectors"
   },
   "superglue": {
-    "x": 656.6385510000001,
+    "x": 701.7885510000001,
     "y": 386.688288,
     "cluster": "detectors"
   },
   "superpoint": {
-    "x": 694.68848775,
-    "y": 387.230592,
+    "x": 514.08848775,
+    "y": 444.830592,
     "cluster": "detectors"
   },
   "surf": {
-    "x": 510.40492500000005,
+    "x": 555.554925,
     "y": 450.691104,
     "cluster": "detectors"
   },
   "topological-grid-recovery": {
-    "x": 559.644612,
+    "x": 604.794612,
     "y": 435.748512,
     "cluster": "detectors"
   },
   "vgg": {
-    "x": 614.3424825,
+    "x": 659.4924825,
     "y": 447.929184,
     "cluster": "detectors"
   },
   "viola-jones-detector": {
-    "x": 654.8117820000001,
+    "x": 699.9617820000001,
     "y": 441.957792,
     "cluster": "detectors"
   },
   "xfeat": {
-    "x": 705.2240145000001,
-    "y": 448.671072,
+    "x": 524.6240145,
+    "y": 506.271072,
     "cluster": "detectors"
   },
   "yang-sub-pixel-corner-fit": {
-    "x": 512.79268275,
+    "x": 557.94268275,
     "y": 500.77747200000005,
     "cluster": "detectors"
   },
   "yolo-v1": {
-    "x": 569.0929267500001,
+    "x": 614.24292675,
     "y": 494.842368,
     "cluster": "detectors"
   },

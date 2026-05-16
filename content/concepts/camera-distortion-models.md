@@ -2,7 +2,7 @@
 title: "Camera Distortion Models"
 date: 2026-05-02
 summary: "Mathematical models for departures from the ideal pinhole projection — radial barrel/pincushion, tangential decentering, thin-prism — and the historical lineage from Brown's photogrammetric polynomial through Tsai's one-term radial, Weng's full Brown-Conrady, and Zhang's two-term planar formulation."
-tags: ["calibration", "lens-distortion", "intrinsics", "camera-model"]
+tags: ["camera-model"]
 author: "Vitaly Vorobyev"
 domain: image-formation
 difficulty: intermediate

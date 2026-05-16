@@ -2,7 +2,7 @@
 title: "RANSAC"
 date: 2026-05-03
 summary: "Random sample consensus — a paradigm for fitting a parametric model to data containing an unknown fraction of gross outliers, by drawing minimal random subsets, instantiating candidate models, and selecting the one with the largest globally consistent inlier set."
-tags: ["geometry", "robust-estimation", "outlier-rejection", "model-fitting"]
+tags: ["robust-estimation"]
 author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: intermediate

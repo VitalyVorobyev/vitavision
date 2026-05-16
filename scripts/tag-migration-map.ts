@@ -1,0 +1,176 @@
+/**
+ * Old → new tag migration map for the closed-vocabulary tag refactor.
+ *
+ * Maps every free-form tag currently used on an atlas page (algorithm, model,
+ * concept) to either a slug from the curated `tagValues` vocabulary
+ * (see `content/tags.yaml`) or the literal `"DROP"` — used for tags that
+ * merely duplicate a `domain` or `tasks` value, or are pure noise.
+ *
+ * Consumed by `scripts/migrate-tags.ts` (dry run) and
+ * `scripts/apply-tag-migration.ts` (apply). A tag found on a page but absent
+ * from this map is reported as NEEDS_HUMAN_REVIEW by the dry run.
+ *
+ * After mapping + dedupe, a page with zero remaining tags is reported as
+ * TAGLESS — those pages need a facet tag assigned by hand (the schema
+ * requires ≥1 tag per atlas page).
+ */
+
+export const DROP = "DROP" as const;
+
+export const tagMigrationMap: Record<string, string> = {
+    // ── duplicates a domain / task, or noise → DROP ──────────────────────────
+    calibration: DROP,
+    "computer-vision": DROP,
+    geometry: DROP,
+    "feature-detection": DROP,
+    "corner-detection": DROP,
+    "object-detection": DROP,
+    "image-matching": DROP,
+    matching: DROP,
+    "image-stitching": DROP,
+    "image-classification": DROP,
+    "image-segmentation": DROP,
+    "camera-calibration": DROP,
+    "feature-matching": DROP,
+    "image-registration": DROP,
+    "image-formation": DROP,
+    "non-rigid-registration": DROP,
+    "edge-detection": DROP,
+    "face-detection": DROP,
+    "pedestrian-detection": DROP,
+    panorama: DROP,
+    robotics: DROP,
+    "hand-eye": DROP,
+    "singularity-analysis": DROP,
+    "integral-image": DROP,
+    gradient: DROP,
+    derivatives: DROP,
+    filtering: DROP,
+    hysteresis: DROP,
+    topology: DROP,
+    "biomedical-imaging": DROP,
+    meta: DROP,
+    authoring: DROP,
+    demo: DROP,
+    "border-matting": DROP,
+
+    // ── paradigm ─────────────────────────────────────────────────────────────
+    cnn: "deep-learning",
+    "deep-learning": "deep-learning",
+    transformer: "deep-learning",
+    attention: "deep-learning",
+    backbone: "deep-learning",
+    "encoder-decoder": "deep-learning",
+    inception: "deep-learning",
+    residual: "deep-learning",
+    "transfer-learning": "deep-learning",
+    "self-supervised": "deep-learning",
+    "graph-neural-network": "deep-learning",
+    "dilated-convolution": "deep-learning",
+    "detector-free": "deep-learning",
+    "anchor-based": "deep-learning",
+    "single-stage-detector": "deep-learning",
+    "linear-svm": "classical",
+    "latent-svm": "classical",
+    "deformable-parts-model": "classical",
+
+    // ── algorithmic approach ─────────────────────────────────────────────────
+    "robust-estimation": "robust-estimation",
+    "outlier-rejection": "robust-estimation",
+    ransac: "robust-estimation",
+    "robust-statistics": "robust-estimation",
+    "model-fitting": "robust-estimation",
+    sprt: "robust-estimation",
+    optimization: "optimization",
+    irls: "optimization",
+    "linear-algebra": "linear-algebra",
+    dlt: "linear-algebra",
+    "numerical-conditioning": "linear-algebra",
+    "markov-random-field": "probabilistic",
+    "gaussian-processes": "probabilistic",
+    "gaussian-mixture-model": "probabilistic",
+    "graph-cut": "graph-based",
+    "min-cut-max-flow": "graph-based",
+    "graph-algorithms": "graph-based",
+    "minimum-spanning-tree": "graph-based",
+    "union-find": "graph-based",
+    variational: "variational",
+    "multi-scale": "multi-scale",
+    "scale-invariant": "multi-scale",
+    "affine-invariant": "multi-scale",
+    "gaussian-filtering": "multi-scale",
+    voting: "voting",
+    boosting: "boosting",
+    adaboost: "boosting",
+    "haar-features": "boosting",
+    "cascade-classifier": "boosting",
+
+    // ── representation ───────────────────────────────────────────────────────
+    "local-descriptors": "local-descriptors",
+    "local-features": "local-descriptors",
+    "feature-descriptor": "local-descriptors",
+    "gradient-histograms": "local-descriptors",
+    hog: "local-descriptors",
+    "binary-descriptor": "binary-descriptor",
+    "keypoint-detection": "keypoint-detection",
+    corner: "keypoint-detection",
+    "feature-theory": "keypoint-detection",
+    "non-maximum-suppression": "keypoint-detection",
+    "blob-detection": "blob-detection",
+    hessian: "blob-detection",
+    "dense-prediction": "dense-prediction",
+    "semantic-segmentation": "dense-prediction",
+    "instance-segmentation": "dense-prediction",
+    "structured-prediction": "dense-prediction",
+    "dense-matching": "dense-prediction",
+    "region-based": "region-based",
+    "region-proposal-network": "region-based",
+    "two-stage-detector": "region-based",
+    "interactive-segmentation": "region-based",
+    "part-based": "region-based",
+
+    // ── geometry ─────────────────────────────────────────────────────────────
+    "two-view-geometry": "two-view-geometry",
+    homography: "two-view-geometry",
+    "fundamental-matrix": "two-view-geometry",
+    "essential-matrix": "two-view-geometry",
+    "projective-geometry": "two-view-geometry",
+    "projective-warp": "two-view-geometry",
+    "spatially-varying-warp": "two-view-geometry",
+    "multi-plane": "two-view-geometry",
+    affine: "two-view-geometry",
+    "camera-model": "camera-model",
+    intrinsics: "camera-model",
+    "variable-intrinsics": "camera-model",
+    "distortion-correction": "camera-model",
+    extrinsics: "camera-model",
+    "radial-distortion": "camera-model",
+    "lens-distortion": "camera-model",
+    "lens-sensor-tilt": "camera-model",
+    omnidirectional: "camera-model",
+    catadioptric: "camera-model",
+    fisheye: "camera-model",
+    iac: "camera-model",
+    "pose-estimation": "pose-estimation",
+    "perspective-n-point": "pose-estimation",
+
+    // ── targets, motion, properties ──────────────────────────────────────────
+    chessboard: "chessboard",
+    "self-identifying-pattern": "fiducial-markers",
+    "radial-symmetry": "radial-pattern",
+    "optical-flow": "optical-flow",
+    motion: "optical-flow",
+    stereo: "stereo",
+    "real-time": "real-time",
+    "subpixel-refinement": "subpixel",
+    survey: "survey",
+
+    // ── identity passthrough for vocabulary tags not otherwise a map key ──────
+    // (pages may already carry a valid vocab tag, or one was seeded by hand).
+    classical: "classical",
+    probabilistic: "probabilistic",
+    "graph-based": "graph-based",
+    "fiducial-markers": "fiducial-markers",
+    "radial-pattern": "radial-pattern",
+    subpixel: "subpixel",
+};

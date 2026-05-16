@@ -91,6 +91,8 @@ export interface ContentGraph {
     nodes: Record<string, GraphNode>;
     forward: Record<string, ForwardEdges>;
     reverse: Record<string, ReverseEdges>;
+    /** Longest-path depth in the prerequisites DAG. depth=0 means no prerequisites. */
+    depth: Record<string, number>;
 }
 
 /** Entry shape consumed by buildContentGraph. */
@@ -143,6 +145,39 @@ function dedupeRelations(rels: TypedRelation[]): TypedRelation[] {
         out.push(r);
     }
     return out;
+}
+
+/**
+ * Compute the longest-path depth of every slug in the prerequisites DAG.
+ * depth = 0 if the node has no prerequisites, else 1 + max(depth(prereq)).
+ * A visited-set guard prevents infinite recursion if a cycle somehow reaches this function
+ * (cycles are caught by validation, but this keeps the function total in all cases).
+ * Missing prerequisite slugs are treated as depth 0 and skipped gracefully.
+ */
+export function computePrerequisiteDepth(graph: ContentGraph): Record<string, number> {
+    const memo: Record<string, number> = {};
+
+    function dfs(slug: string, visiting: Set<string>): number {
+        if (slug in memo) return memo[slug];
+        if (visiting.has(slug)) return 0; // cycle guard — treat as leaf
+        visiting.add(slug);
+        const prereqs = graph.forward[slug]?.prerequisites ?? [];
+        let max = -1;
+        for (const p of prereqs) {
+            if (!(p in graph.nodes)) continue; // missing slug — skip gracefully
+            const d = dfs(p, visiting);
+            if (d > max) max = d;
+        }
+        visiting.delete(slug);
+        const depth = max < 0 ? 0 : max + 1;
+        memo[slug] = depth;
+        return depth;
+    }
+
+    for (const slug of Object.keys(graph.nodes)) {
+        dfs(slug, new Set());
+    }
+    return memo;
 }
 
 /**
@@ -249,7 +284,9 @@ export function buildContentGraph(entries: ContentEntry[]): ContentGraph {
         rev.hasLearnedAlternative.sort(bySlug);
     }
 
-    return { nodes, forward, reverse };
+    const graph: ContentGraph = { nodes, forward, reverse, depth: {} };
+    graph.depth = computePrerequisiteDepth(graph);
+    return graph;
 }
 
 /**
@@ -367,6 +404,8 @@ export function emitContentGraph(graph: ContentGraph, outDir: string): void {
         "    nodes: Record<string, GraphNode>;",
         "    forward: Record<string, ForwardEdges>;",
         "    reverse: Record<string, ReverseEdges>;",
+        "    /** Longest-path depth in the prerequisites DAG. depth=0 means no prerequisites. */",
+        "    depth: Record<string, number>;",
         "}",
         "",
         `export const contentGraph: ContentGraph = ${JSON.stringify(graph, null, 2)};`,

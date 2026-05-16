@@ -2,7 +2,7 @@
 title: "YOLOv1"
 date: 2026-05-13
 summary: "Single-stage CNN object detector that frames detection as one regression problem from full-image pixels to a 7×7×30 tensor of grid-cell box offsets, objectness, and 20-class probabilities — trained end-to-end and inferring 98 boxes per image at 45 fps on a Titan X."
-tags: ["computer-vision", "object-detection", "single-stage-detector", "real-time", "cnn"]
+tags: ["deep-learning", "real-time"]
 domain: detection
 author: "Vitaly Vorobyev"
 difficulty: intermediate

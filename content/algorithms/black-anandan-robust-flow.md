@@ -2,7 +2,7 @@
 title: "Black-Anandan Robust Optical Flow"
 date: 2026-05-13
 summary: "Optical flow that replaces the quadratic data and smoothness penalties of variational flow with redescending M-estimators, solved by SOR within a graduated non-convexity continuation; recovers piecewise-smooth flow without explicit line processes and a robust affine variant for multiple parametric motions."
-tags: ["motion", "optical-flow", "robust-statistics", "variational"]
+tags: ["optical-flow", "robust-estimation", "variational"]
 domain: features
 author: "Vitaly Vorobyev"
 difficulty: advanced

@@ -2,7 +2,7 @@
 title: "Horn-Schunck Optical Flow"
 date: 2026-05-13
 summary: "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation."
-tags: ["motion", "optical-flow", "variational"]
+tags: ["optical-flow", "variational"]
 domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate

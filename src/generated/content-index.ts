@@ -7,12 +7,6 @@ export const blogPosts: BlogIndexEntry[] = [
     "frontmatter": {
       "title": "ChESS Corners Detector",
       "summary": "A chessboard-specific detector, from sampling geometry to a practical multiscale implementation.",
-      "tags": [
-        "computer-vision",
-        "rust",
-        "calibration",
-        "feature-detection"
-      ],
       "author": "Vitaly Vorobyev",
       "repoLinks": [
         "https://github.com/VitalyVorobyev/chess-corners-rs"
@@ -20,6 +14,12 @@ export const blogPosts: BlogIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 12,
       "access": "public",
+      "tags": [
+        "computer-vision",
+        "rust",
+        "calibration",
+        "feature-detection"
+      ],
       "relatedAlgorithms": [
         "chess-corners",
         "harris-corner-detector",
@@ -37,13 +37,13 @@ export const blogPosts: BlogIndexEntry[] = [
     "frontmatter": {
       "title": "Introducing Vitavision",
       "summary": "Vitavision is a place for practical computer vision: a combination of technical writing, interactive demos, and production-grade implementations",
+      "author": "Vitaly Vorobyev",
+      "readingTimeMinutes": 2,
+      "access": "public",
       "tags": [
         "meta",
         "computer-vision"
       ],
-      "author": "Vitaly Vorobyev",
-      "readingTimeMinutes": 2,
-      "access": "public",
       "date": "2026-03-22"
     }
   },
@@ -52,14 +52,14 @@ export const blogPosts: BlogIndexEntry[] = [
     "frontmatter": {
       "title": "Rich Content Demo: Semantic Blocks, Math, and Code",
       "summary": "A demonstration of all supported content features including semantic blocks, math rendering, syntax highlighting, and typography.",
-      "tags": [
-        "meta",
-        "demo"
-      ],
       "author": "Vitaly Vorobyev",
       "draft": true,
       "readingTimeMinutes": 5,
       "access": "public",
+      "tags": [
+        "meta",
+        "demo"
+      ],
       "date": "2026-03-22"
     }
   }
@@ -71,12 +71,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "As-Projective-As-Possible Image Stitching",
       "summary": "Replace a global homography with a spatially varying field of homographies, each fit by a per-cell weighted DLT (Moving DLT) on the same point correspondences, so the warp stays globally projective but adapts locally where the projective model is inadequate.",
-      "tags": [
-        "image-stitching",
-        "homography",
-        "projective-warp",
-        "dlt"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 8,
@@ -87,6 +81,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "ransac"
       ],
       "failureModes": [],
+      "tags": [
+        "two-view-geometry",
+        "linear-algebra"
+      ],
       "domain": "stitching",
       "tasks": [
         "image-stitching"
@@ -109,12 +107,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Black-Anandan Robust Optical Flow",
       "summary": "Optical flow that replaces the quadratic data and smoothness penalties of variational flow with redescending M-estimators, solved by SOR within a graduated non-convexity continuation; recovers piecewise-smooth flow without explicit line processes and a robust affine variant for multiple parametric motions.",
-      "tags": [
-        "motion",
-        "optical-flow",
-        "robust-statistics",
-        "variational"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 11,
@@ -124,6 +116,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "scale-space"
       ],
       "failureModes": [],
+      "tags": [
+        "optical-flow",
+        "robust-estimation",
+        "variational"
+      ],
       "domain": "features",
       "sources": {
         "primary": "black1996-robust",
@@ -141,12 +138,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "BRIEF: Binary Robust Independent Elementary Features",
       "summary": "Encodes a Gaussian-smoothed image patch around a detected keypoint as a 128/256/512-bit binary string by running a fixed table of pairwise pixel-intensity tests; matched between images by Hamming distance via bitwise XOR + popcount.",
-      "tags": [
-        "local-descriptors",
-        "binary-descriptor",
-        "matching",
-        "feature-matching"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
@@ -190,6 +181,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "medium"
         }
       ],
+      "tags": [
+        "local-descriptors",
+        "binary-descriptor"
+      ],
       "domain": "features",
       "tasks": [
         "local-feature-matching"
@@ -212,12 +207,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Canny Edge Detector",
       "summary": "Detect thin step edges in greyscale images by smoothing with a Gaussian, computing gradient magnitude and direction, suppressing non-maxima along the gradient direction, then linking surviving pixels via hysteresis double-thresholding; the filter shape is derived as the variational optimum of three criteria — detection SNR, localisation, and single-response spacing — under an additive-white-Gaussian-noise step-edge model.",
-      "tags": [
-        "edge-detection",
-        "non-maximum-suppression",
-        "hysteresis",
-        "gradient"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
@@ -226,6 +215,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient"
       ],
       "failureModes": [],
+      "tags": [
+        "keypoint-detection"
+      ],
       "domain": "features",
       "sources": {
         "primary": "canny1986-edge",
@@ -239,11 +231,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "ChESS Corners",
       "summary": "A chessboard-specific corner detector: scores each pixel by how well its local neighborhood matches an alternating bright-dark X-junction pattern, using 16 fixed integer offsets on a radius-5 ring.",
-      "tags": [
-        "feature-detection",
-        "calibration",
-        "chessboard"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 9,
@@ -278,6 +265,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "duda-radon-corners",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "chessboard"
       ],
       "domain": "features",
       "tasks": [
@@ -314,11 +304,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Chessboard Detection via X-Corners and Topology",
       "summary": "Detect every corner of a chessboard calibration pattern and assign it an integer grid coordinate by counting ring-alternations to locate X-junctions, Delaunay-triangulating the corner set, and keeping only triangles that respect the two-colour neighbourhood regularity of the pattern.",
-      "tags": [
-        "calibration",
-        "chessboard",
-        "corner-detection"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
@@ -342,6 +327,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "high"
         }
       ],
+      "tags": [
+        "chessboard"
+      ],
       "domain": "targets",
       "tasks": [
         "chessboard-detection"
@@ -363,17 +351,15 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Daniilidis Dual-Quaternion Hand-Eye Calibration",
       "summary": "Solve the hand-eye equation AX=XB jointly for rotation and translation by parametrising rigid motions as unit dual quaternions and extracting X from the right null space of a single linear system.",
-      "tags": [
-        "calibration",
-        "hand-eye",
-        "robotics"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
       "failureModes": [],
+      "tags": [
+        "linear-algebra"
+      ],
       "domain": "calibration",
       "tasks": [
         "hand-eye-calibration"
@@ -394,14 +380,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Deformable Part Models",
       "summary": "Detect a target object class in arbitrary images by scoring every position and scale in a HOG feature pyramid with a mixture of star-structured part-based templates — a coarse root filter and $n=6$ finer-resolution part filters with quadratic deformation costs — trained as a latent SVM with hard-negative mining.",
-      "tags": [
-        "object-detection",
-        "deformable-parts-model",
-        "latent-svm",
-        "hog",
-        "part-based",
-        "structured-prediction"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 8,
@@ -417,6 +395,12 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "medium",
           "caution": "Different operational regimes — VJ is real-time cascade for rigid faces; DPM is offline part-based for general deformable objects."
         }
+      ],
+      "tags": [
+        "classical",
+        "local-descriptors",
+        "region-based",
+        "dense-prediction"
       ],
       "domain": "detection",
       "sources": {
@@ -435,11 +419,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "EPnP: O(n) Perspective-n-Point",
       "summary": "Non-iterative O(n) solver for the calibrated Perspective-n-Point problem: express the n reference points as weighted sums of four virtual control points, recover their camera-frame coordinates from the null space of a 12×12 matrix, and extract pose by absolute orientation.",
-      "tags": [
-        "pose-estimation",
-        "perspective-n-point",
-        "geometry"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 10,
@@ -449,6 +428,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "ransac"
       ],
       "failureModes": [],
+      "tags": [
+        "pose-estimation"
+      ],
       "domain": "geometry",
       "sources": {
         "primary": "lepetit2009-epnp",
@@ -465,10 +447,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "FAST Corner Detector",
       "summary": "Segment-test corner detector on a 16-pixel Bresenham ring of radius 3 around each candidate; classifies a point as a corner when N contiguous ring pixels are all brighter (or all darker) than the centre by a margin t.",
-      "tags": [
-        "feature-detection",
-        "corner"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
@@ -489,6 +467,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "high"
         }
       ],
+      "tags": [
+        "keypoint-detection"
+      ],
       "domain": "features",
       "tasks": [
         "corner-detection"
@@ -505,11 +486,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Fast Radial Symmetry Transform",
       "summary": "Gradient-vote operator that highlights pixels of high local radial symmetry — bright/dark blobs and approximately circular features. Each pixel votes along its gradient direction at one or more radii into orientation and magnitude projection maps; the per-radius contribution is the magnitude projection weighted by a power of the orientation count and Gaussian-smoothed; the cumulative response across radii localises feature centres at $O(K \\cdot |N|)$ cost.",
-      "tags": [
-        "feature-detection",
-        "blob-detection",
-        "radial-symmetry"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
@@ -524,6 +500,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "ni-generalized-fast-radial-symmetry",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "blob-detection",
+        "radial-pattern"
       ],
       "domain": "features",
       "tasks": [
@@ -542,18 +522,15 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Felzenszwalb–Huttenlocher Graph-Based Image Segmentation",
       "summary": "Partition an image into perceptually coherent regions by a Kruskal-style greedy merge over a pixel graph, accepting an inter-component edge as a non-boundary when its weight does not exceed the components' internal variation plus a size-adaptive threshold $\\tau(C) = k/|C|$; runs in $O(m \\log m)$ time and produces partitions that are simultaneously not too fine and not too coarse.",
-      "tags": [
-        "image-segmentation",
-        "graph-algorithms",
-        "minimum-spanning-tree",
-        "union-find"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
       "prerequisites": [],
       "failureModes": [],
+      "tags": [
+        "graph-based"
+      ],
       "domain": "segmentation",
       "tasks": [
         "image-segmentation"
@@ -570,12 +547,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Fischler–Bolles RANSAC",
       "summary": "Founding random-sample-consensus paradigm: fit a parametric model to data containing an unknown fraction of gross outliers by drawing minimal random subsets, instantiating candidate models, counting consensus inliers, and retaining the largest consensus set.",
-      "tags": [
-        "geometry",
-        "robust-estimation",
-        "outlier-rejection",
-        "ransac"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 5,
@@ -598,6 +569,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "caution": "MAGSAC marginalises the inlier threshold rather than fixing it — orthogonal axis to USAC's framework refactor"
         }
       ],
+      "tags": [
+        "robust-estimation"
+      ],
       "domain": "geometry",
       "sources": {
         "primary": "fischler1981-ransac",
@@ -611,12 +585,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Gao Dual-Homography Stitching",
       "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group, and blending per pixel by inverse-distance weights. Superseded for practical use by APAP's continuous per-cell grid.",
-      "tags": [
-        "image-stitching",
-        "homography",
-        "panorama",
-        "multi-plane"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 3,
@@ -634,6 +602,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "high",
           "caution": "APAP's continuous grid of per-cell homographies subsumes the two-plane parametrisation; the two methods are not peer practitioner choices."
         }
+      ],
+      "tags": [
+        "two-view-geometry"
       ],
       "domain": "stitching",
       "tasks": [
@@ -656,11 +627,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Geiger Chessboard Corner Detector",
       "summary": "Detect checkerboard X-corners by computing a four-quadrant corner likelihood at each pixel using axis-aligned and 45°-rotated prototype filters at three fixed scales, verifying candidates by gradient-orientation statistics, and refining to subpixel accuracy via gradient-orthogonality weighted least squares — the libcbdetect detector that anchors many subsequent calibration pipelines.",
-      "tags": [
-        "calibration",
-        "chessboard",
-        "corner-detection"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 10,
@@ -680,6 +646,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "zhang-planar-calibration",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "chessboard"
       ],
       "domain": "features",
       "tasks": [
@@ -705,12 +674,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Generalised Fast Radial Symmetry",
       "summary": "Affine extension of FRST: each pixel votes along a corrected direction $\\hat V = G M G^{-1} M^{-1} \\nabla I$ at radius $n$, where $G = R D \\in A(2)$ is a rotation–anisotropic-scale pair from a sampled grid, so circles seen as ellipses under bounded perspective converge into a single peak in the per-pixel-max response stack while keeping FRS's $O(K)$ per-radius cost per $G_i$.",
-      "tags": [
-        "feature-detection",
-        "blob-detection",
-        "radial-symmetry",
-        "affine-invariant"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 10,
@@ -719,6 +682,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient"
       ],
       "failureModes": [],
+      "tags": [
+        "blob-detection",
+        "radial-pattern",
+        "multi-scale"
+      ],
       "domain": "features",
       "tasks": [
         "feature-detection"
@@ -738,11 +706,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "GP Checkerboard Enhancement (PyCBD)",
       "summary": "Post-process a partially detected checkerboard by training two Gaussian processes (one per pixel coordinate) on the allocated (boardXY, boardUV) pairs to allocate unassigned detections to grid positions, predict UV for occluded or out-of-frame corners, and apply a global-consistency refinement to every allocated corner.",
-      "tags": [
-        "calibration",
-        "chessboard",
-        "gaussian-processes"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
@@ -762,6 +725,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "zhang-planar-calibration",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "chessboard",
+        "probabilistic"
       ],
       "domain": "calibration",
       "tasks": [
@@ -788,20 +755,17 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "GrabCut Iterative Segmentation",
       "summary": "Extract a foreground from a colour image using a single bounding rectangle as the only required input by alternating Gaussian mixture component assignment, GMM parameter re-estimation, and global s-t min-cut on a contrast-weighted MRF — the iteration decreases a Gibbs energy $E(\\alpha, k, \\theta, z) = U + V$ monotonically — then refine the contour with a regularised 1-D $\\alpha$-profile in a $\\pm 6$-pixel border ribbon.",
-      "tags": [
-        "image-segmentation",
-        "graph-cut",
-        "min-cut-max-flow",
-        "gaussian-mixture-model",
-        "interactive-segmentation",
-        "border-matting"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [],
       "failureModes": [],
+      "tags": [
+        "graph-based",
+        "probabilistic",
+        "region-based"
+      ],
       "domain": "segmentation",
       "tasks": [
         "image-segmentation"
@@ -821,13 +785,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Graph-Cut Interactive Segmentation",
       "summary": "Compute the global minimum of a binary region-and-boundary MRF energy as a single s-t min-cut on a pixel graph; user-marked seeds enter as hard constraints, the output is a binary labelling $A : P \\to \\{\\text{obj}, \\text{bkg}\\}$ with topology-free segments.",
-      "tags": [
-        "image-segmentation",
-        "graph-cut",
-        "min-cut-max-flow",
-        "markov-random-field",
-        "interactive-segmentation"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 4,
@@ -840,6 +797,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "grabcut-iterative-segmentation",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "graph-based",
+        "probabilistic",
+        "region-based"
       ],
       "domain": "segmentation",
       "tasks": [
@@ -857,10 +819,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Harris Corner Detector",
       "summary": "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum.",
-      "tags": [
-        "feature-detection",
-        "corner"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 11,
@@ -893,6 +851,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "caution": "Used only as a corner-strength filter to rank FAST keypoints, not as a detector."
         }
       ],
+      "tags": [
+        "keypoint-detection"
+      ],
       "domain": "features",
       "tasks": [
         "corner-detection"
@@ -912,13 +873,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "HOG: Histograms of Oriented Gradients",
       "summary": "Compute a fixed-length descriptor for an image window by binning pixel gradients into 8×8 cells of 9 unsigned-orientation histograms, normalising overlapping 2×2-cell blocks with L2-Hys, and concatenating the 3780 block values into a single vector fed to a linear SVM — the canonical pre-CNN pedestrian detector.",
-      "tags": [
-        "object-detection",
-        "pedestrian-detection",
-        "gradient-histograms",
-        "feature-descriptor",
-        "linear-svm"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 5,
@@ -941,6 +895,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "caution": "DPM uses HOG cells (k=8 px, α=0.2) with an analytic 31-dim projection of the 36-dim HOG vector as its base feature pyramid."
         }
       ],
+      "tags": [
+        "local-descriptors",
+        "classical"
+      ],
       "domain": "detection",
       "sources": {
         "primary": "dalal2005-hog",
@@ -957,11 +915,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Horn-Schunck Optical Flow",
       "summary": "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation.",
-      "tags": [
-        "motion",
-        "optical-flow",
-        "variational"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 4,
@@ -984,6 +937,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "caution": "Robust M-estimator extension of the quadratic data and smoothness terms; non-convex but more tolerant of outliers and motion discontinuities."
         }
       ],
+      "tags": [
+        "optical-flow",
+        "variational"
+      ],
       "domain": "features",
       "sources": {
         "primary": "horn1981-horn-schunck",
@@ -1000,10 +957,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Kumar-Ahuja Generalized Radial Alignment Constraint",
       "summary": "Extend Tsai's radial alignment constraint to a non-frontal sensor by modelling lens–sensor tilt as a 2-DoF rotation, projecting observations onto a hypothesized frontal sensor, and solving a seven-parameter linear system for the extrinsic rotation and tilt.",
-      "tags": [
-        "camera-calibration",
-        "lens-sensor-tilt"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 10,
@@ -1012,6 +965,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "camera-distortion-models"
       ],
       "failureModes": [],
+      "tags": [
+        "camera-model"
+      ],
       "domain": "calibration",
       "tasks": [
         "camera-calibration"
@@ -1032,12 +988,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Lin Smoothly Varying Affine Stitching",
       "summary": "Stitch two images under moderate parallax by replacing the global affine with a per-feature deviation field, regularised to be smooth via a Gaussian-kernel CPD-style EM that jointly estimates correspondence and warp — the contemporary affine-model competitor to APAP's per-cell projective grid.",
-      "tags": [
-        "image-stitching",
-        "spatially-varying-warp",
-        "affine",
-        "non-rigid-registration"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 7,
@@ -1054,6 +1004,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "medium",
           "caution": "Affine deviation field remains a useful baseline; APAP's projective per-cell grid is more general but not strictly necessary for moderate-parallax planar-scene panoramas."
         }
+      ],
+      "tags": [
+        "two-view-geometry"
       ],
       "domain": "stitching",
       "tasks": [
@@ -1076,11 +1029,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Localized Radon Checkerboard Corners",
       "summary": "Detect checkerboard X-junctions by approximating a localized Radon transform with 1-D box filters on rotated copies of the image; the per-pixel response is the squared difference between the maximum and minimum directional line integrals over four discrete angles.",
-      "tags": [
-        "feature-detection",
-        "calibration",
-        "chessboard"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
@@ -1095,6 +1043,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "zhang-planar-calibration",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "chessboard"
       ],
       "domain": "features",
       "tasks": [
@@ -1118,11 +1069,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Longuet-Higgins Linear Eight-Point Algorithm",
       "summary": "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm.",
-      "tags": [
-        "geometry",
-        "two-view-geometry",
-        "essential-matrix"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 4,
@@ -1138,6 +1084,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "fundamental-matrix-eight-point",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "two-view-geometry"
       ],
       "domain": "geometry",
       "tasks": [
@@ -1158,11 +1107,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Lucas-Kanade Image Registration",
       "summary": "Iterative Newton-Raphson method that estimates the parametric warp between two images by linearising the residual and solving the resulting weighted normal equation per iteration.",
-      "tags": [
-        "motion",
-        "optical-flow",
-        "image-registration"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
@@ -1186,6 +1130,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "caution": "Robust M-estimator version of the parametric variant; same machinery as Black-Anandan's piecewise-smooth flow."
         }
       ],
+      "tags": [
+        "optical-flow"
+      ],
       "domain": "features",
       "sources": {
         "primary": "lucas1981-lucas-kanade",
@@ -1202,13 +1149,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "MAGSAC: Marginalising Sample Consensus",
       "summary": "Robust estimator that eliminates the user-tuned inlier threshold by treating the noise scale σ as a random variable on [0, σ_max] and marginalising the RANSAC quality function over σ; the final model is a weighted least-squares fit using marginal-likelihood weights via iteratively reweighted least squares (σ-consensus).",
-      "tags": [
-        "geometry",
-        "robust-estimation",
-        "outlier-rejection",
-        "ransac",
-        "irls"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
@@ -1217,6 +1157,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "ransac"
       ],
       "failureModes": [],
+      "tags": [
+        "robust-estimation",
+        "optimization"
+      ],
       "domain": "geometry",
       "sources": {
         "primary": "barath2019-magsac",
@@ -1230,12 +1174,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Normalised Eight-Point Algorithm",
       "summary": "Compute the fundamental matrix from n ≥ 8 point correspondences by conditioning the linear DLT system via a similarity normalisation, recovering accuracy comparable to iterative methods at a fraction of the cost.",
-      "tags": [
-        "geometry",
-        "stereo",
-        "two-view-geometry",
-        "fundamental-matrix"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
@@ -1247,6 +1185,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "ransac"
       ],
       "failureModes": [],
+      "tags": [
+        "stereo",
+        "two-view-geometry"
+      ],
       "domain": "geometry",
       "tasks": [
         "fundamental-matrix-estimation"
@@ -1266,10 +1208,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "OCPAD: Occluded Checkerboard Pattern Detection",
       "summary": "Recover the largest visible checkerboard subgraph from a partially occluded pattern by running VF2 subgraph isomorphism against a model graph under a binary-search driver over vertex counts, then closing gaps by breadth-first region growing from a quad-density anchor.",
-      "tags": [
-        "calibration",
-        "chessboard"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
@@ -1285,6 +1223,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "zhang-planar-calibration",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "chessboard"
       ],
       "domain": "targets",
       "tasks": [
@@ -1307,12 +1248,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "ORB: Oriented FAST and Rotated BRIEF",
       "summary": "Detects rotation-invariant oriented keypoints by running FAST-9 on a √2 image pyramid, ranking by Harris cornerness, and assigning orientation from the intensity centroid; describes each keypoint with a 256-bit rBRIEF binary string formed by greedy selection of low-correlation, high-variance pairwise pixel-intensity tests on a smoothed 31×31 patch.",
-      "tags": [
-        "feature-detection",
-        "local-descriptors",
-        "binary-descriptor",
-        "matching"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
@@ -1322,6 +1257,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "scale-space"
       ],
       "failureModes": [],
+      "tags": [
+        "local-descriptors",
+        "binary-descriptor"
+      ],
       "domain": "features",
       "tasks": [
         "feature-detection",
@@ -1347,11 +1286,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "PuzzleBoard",
       "summary": "Detect and decode a self-identifying checkerboard calibration pattern: saddle-point corners from a Hessian response, grid reconstruction via Kruskal minimum spanning forest on the 9-nearest-neighbour graph, absolute corner position on a $501 \\times 501$ grid from cross-correlation against two binary de Bruijn factor maps.",
-      "tags": [
-        "calibration",
-        "chessboard",
-        "self-identifying-pattern"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 7,
@@ -1368,6 +1302,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "zhang-planar-calibration",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "chessboard",
+        "fiducial-markers"
       ],
       "domain": "targets",
       "tasks": [
@@ -1390,11 +1328,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Pyramidal Blur-Aware X-Corner Chessboard Detector",
       "summary": "Detect chessboard X-junctions in heavily blurred or high-resolution images by computing a 16-sample circular x-corner intensity at every level of an image pyramid, selecting per corner the level that maximises intensity per resolution, then assembling a chessboard graph with blur-aware edge validation.",
-      "tags": [
-        "calibration",
-        "chessboard",
-        "corner-detection"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
@@ -1410,6 +1343,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "zhang-planar-calibration",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "chessboard"
       ],
       "domain": "features",
       "tasks": [
@@ -1434,10 +1370,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "ROCHADE: Robust Checkerboard Advanced Detection",
       "summary": "Detect a full planar checkerboard in an image by reducing the gradient-magnitude edge set to a single-pixel centreline graph, extracting inner corners as graph saddle points, then refining each corner to subpixel accuracy by fitting a bivariate quadratic to a cone-filtered neighbourhood and solving for its stationary point.",
-      "tags": [
-        "calibration",
-        "chessboard"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 9,
@@ -1458,6 +1390,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "zhang-planar-calibration",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "chessboard"
       ],
       "domain": "targets",
       "tasks": [
@@ -1482,12 +1417,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Scaramuzza Omnidirectional Camera Calibration",
       "summary": "Calibrate any central catadioptric or fisheye camera from a few planar checkerboard views by fitting a radially-symmetric Taylor-polynomial imaging function with a linear estimate followed by maximum-likelihood refinement.",
-      "tags": [
-        "calibration",
-        "omnidirectional",
-        "fisheye",
-        "catadioptric"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 6,
@@ -1496,6 +1425,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "camera-distortion-models"
       ],
       "failureModes": [],
+      "tags": [
+        "camera-model"
+      ],
       "domain": "calibration",
       "tasks": [
         "camera-calibration"
@@ -1516,10 +1448,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Shi-Tomasi Corner Detector",
       "summary": "Scores each pixel by the smaller eigenvalue of the gradient structure tensor M; returns integer pixel locations where that eigenvalue exceeds a threshold, derived from a feature-tracking quality criterion.",
-      "tags": [
-        "feature-detection",
-        "corner"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 6,
@@ -1529,6 +1457,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "structure-tensor"
       ],
       "failureModes": [],
+      "tags": [
+        "keypoint-detection"
+      ],
       "domain": "features",
       "tasks": [
         "corner-detection"
@@ -1548,12 +1479,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "SIFT: Scale-Invariant Feature Transform",
       "summary": "Detects keypoints as scale-space extrema in a Difference-of-Gaussian image pyramid, refines location and scale by 3D quadratic interpolation, assigns canonical orientation from local gradient histograms, and emits a 128-D descriptor invariant to scale, rotation, and moderate affine and illumination change.",
-      "tags": [
-        "feature-detection",
-        "local-descriptors",
-        "scale-invariant",
-        "matching"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 9,
@@ -1601,6 +1526,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "high"
         }
       ],
+      "tags": [
+        "local-descriptors",
+        "multi-scale"
+      ],
       "domain": "features",
       "tasks": [
         "feature-detection",
@@ -1621,13 +1550,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Sturm-Maybank Plane-Based Calibration",
       "summary": "Recover camera intrinsics from one or more views of one or more planar targets via the same two IAC-on-homography constraints as Zhang's method, with an exhaustive singularity catalogue and a generalisation to variable intrinsics (zooming cameras) — the concurrent CVPR 1999 derivation of plane-based calibration.",
-      "tags": [
-        "calibration",
-        "intrinsics",
-        "iac",
-        "singularity-analysis",
-        "variable-intrinsics"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 6,
@@ -1636,6 +1558,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "homography"
       ],
       "failureModes": [],
+      "tags": [
+        "camera-model"
+      ],
       "domain": "calibration",
       "tasks": [
         "camera-calibration"
@@ -1655,13 +1580,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "SURF: Speeded Up Robust Features",
       "summary": "Detects scale- and rotation-invariant blob keypoints as scale-space maxima of the Hessian determinant, approximated with box filters on an integral image, and emits a 64-D Haar-wavelet response descriptor matched by Euclidean distance with a Laplacian-sign pre-filter.",
-      "tags": [
-        "feature-detection",
-        "local-descriptors",
-        "scale-invariant",
-        "blob-detection",
-        "matching"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 7,
@@ -1714,6 +1632,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "high"
         }
       ],
+      "tags": [
+        "local-descriptors",
+        "multi-scale",
+        "blob-detection"
+      ],
       "domain": "features",
       "tasks": [
         "feature-detection",
@@ -1736,10 +1659,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Topological Grid Finding",
       "summary": "Recover the integer $(i, j)$ grid coordinate of every corner in a checkerboard calibration image by Delaunay-triangulating the corners, merging same-colour triangle pairs into quads, topologically and geometrically filtering illegal quads, and flood-filling coordinates through the resulting mesh.",
-      "tags": [
-        "calibration",
-        "chessboard"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
@@ -1767,6 +1686,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "high"
         }
       ],
+      "tags": [
+        "chessboard"
+      ],
       "domain": "targets",
       "tasks": [
         "chessboard-detection"
@@ -1786,11 +1708,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Tsai-Lenz Hand-Eye Calibration",
       "summary": "Recover the constant rigid transform from a robot gripper to a rigidly mounted camera by solving the AX=XB equation in two stages — modified Rodrigues rotation, then translation.",
-      "tags": [
-        "calibration",
-        "hand-eye",
-        "robotics"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 9,
@@ -1804,6 +1721,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "high",
           "caution": "Daniilidis's dual-quaternion solver couples rotation and translation simultaneously; both methods remain in practitioner use."
         }
+      ],
+      "tags": [
+        "linear-algebra"
       ],
       "domain": "calibration",
       "tasks": [
@@ -1825,12 +1745,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Tsai's Versatile Camera Calibration",
       "summary": "Two-stage 1987 camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a precision 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns. Superseded for practical use by Zhang's planar method.",
-      "tags": [
-        "calibration",
-        "intrinsics",
-        "extrinsics",
-        "radial-distortion"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 4,
@@ -1853,6 +1767,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "caution": "Tsai 1987's per-station extrinsics are the canonical input format for the Tsai-Lenz hand-eye AX = XB solver."
         }
       ],
+      "tags": [
+        "camera-model"
+      ],
       "domain": "calibration",
       "tasks": [
         "camera-calibration"
@@ -1874,13 +1791,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "USAC: Universal RANSAC Framework",
       "summary": "Engineering decomposition of practical RANSAC into four pluggable stages — sampling (PROSAC), model verification (SPRT), local optimisation (LO-RANSAC), and degeneracy handling (DEGENSAC) — with a single reference C++ implementation (USAC-1.0) and an SPRT-corrected stopping criterion.",
-      "tags": [
-        "geometry",
-        "robust-estimation",
-        "outlier-rejection",
-        "ransac",
-        "sprt"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
@@ -1896,6 +1806,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "high"
         }
       ],
+      "tags": [
+        "robust-estimation"
+      ],
       "domain": "geometry",
       "sources": {
         "primary": "raguram2013-usac",
@@ -1909,21 +1822,15 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Viola–Jones Object Detector",
       "summary": "Real-time frontal-face detection by sliding a fixed 24×24 sub-window across a grayscale image at multiple scales, scoring each position with an AdaBoost-selected ensemble of integral-image rectangle features arranged in a 38-stage attentional cascade that rejects most background regions after evaluating ~10 features per sub-window.",
-      "tags": [
-        "object-detection",
-        "face-detection",
-        "boosting",
-        "adaboost",
-        "integral-image",
-        "haar-features",
-        "cascade-classifier"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
       "failureModes": [],
+      "tags": [
+        "boosting"
+      ],
       "domain": "detection",
       "sources": {
         "primary": "viola2001-detector",
@@ -1937,11 +1844,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Yang Parametric-Model Sub-Pixel Corner Fit",
       "summary": "Refine pixel-level chessboard corner positions to sub-pixel accuracy by nonlinear least-squares fitting a seven-parameter ideal blurred-corner model directly to the raw image patch, then reject unreliable corners via a boxplot-based fit-quality self-check before passing to PnP.",
-      "tags": [
-        "subpixel-refinement",
-        "calibration",
-        "chessboard"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 8,
@@ -1985,6 +1887,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "caution": "Self-check is motivated by EPnP downstream use"
         }
       ],
+      "tags": [
+        "subpixel",
+        "chessboard"
+      ],
       "domain": "features",
       "tasks": [
         "corner-detection",
@@ -2009,11 +1915,6 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     "frontmatter": {
       "title": "Zhang's Planar Camera Calibration",
       "summary": "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations.",
-      "tags": [
-        "calibration",
-        "intrinsics",
-        "homography"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 10,
@@ -2031,6 +1932,10 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "confidence": "high",
           "caution": "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis."
         }
+      ],
+      "tags": [
+        "camera-model",
+        "two-view-geometry"
       ],
       "domain": "calibration",
       "tasks": [
@@ -2057,12 +1962,12 @@ export const demoPages: DemoIndexEntry[] = [
     "frontmatter": {
       "title": "ChESS detector response",
       "summary": "Interactive exploration of the ChESS corner detector response. Adjust rotation, blur, and contrast to see how SR, DR, and MR terms shape the score.",
-      "tags": [
-        "feature-detection"
-      ],
       "author": "Vitaly Vorobyev",
       "readingTimeMinutes": 1,
       "access": "public",
+      "tags": [
+        "feature-detection"
+      ],
       "componentId": "chess-response",
       "category": "interactive-figure",
       "relatedAlgorithms": [
@@ -2079,13 +1984,13 @@ export const demoPages: DemoIndexEntry[] = [
     "frontmatter": {
       "title": "Delaunay Triangulation",
       "summary": "Interactive construction of Delaunay triangulations and dual Voronoi diagrams, with a draggable projective grid to explore how calibration patterns deform under perspective.",
+      "author": "Vitaly Vorobyev",
+      "readingTimeMinutes": 1,
+      "access": "public",
       "tags": [
         "geometry",
         "graph"
       ],
-      "author": "Vitaly Vorobyev",
-      "readingTimeMinutes": 1,
-      "access": "public",
       "componentId": "delaunay-voronoi",
       "category": "interactive-figure",
       "relatedAlgorithms": [],
@@ -2101,12 +2006,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "AlexNet",
       "summary": "Eight-layer convolutional neural network for 1000-class image classification on ImageNet, trained end-to-end on two GPUs with ReLU activations, local response normalisation, overlapping max-pooling, and dropout; the first deep CNN to win ILSVRC by a large margin.",
-      "tags": [
-        "computer-vision",
-        "image-classification",
-        "cnn",
-        "deep-learning"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 5,
@@ -2120,6 +2019,9 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "high",
           "caution": "VGG extends AlexNet's CNN classifier paradigm from 8 to 16/19 weight layers via stacked 3×3 conv blocks; same task, deeper architecture, same training framework."
         }
+      ],
+      "tags": [
+        "deep-learning"
       ],
       "domain": "features",
       "tasks": [
@@ -2163,11 +2065,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "CCDN",
       "summary": "Fully convolutional network that regresses a per-pixel checkerboard-corner response map; trained with weighted cross-entropy and paired with threshold + NMS + k-means post-processing.",
-      "tags": [
-        "calibration",
-        "corner-detection",
-        "cnn"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
@@ -2187,6 +2084,9 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "zhang-planar-calibration",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "deep-learning"
       ],
       "domain": "calibration",
       "tasks": [
@@ -2223,12 +2123,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "CCS",
       "summary": "Three-stage learning-based camera calibration pipeline: a CNN regresses radial-distortion-correction parameters, a UNet predicts per-corner Gaussian heatmaps refined by surface-fit subpixel localisation, and an image-level RANSAC accepts inlier views before Zhang-style intrinsic estimation.",
-      "tags": [
-        "calibration",
-        "corner-detection",
-        "distortion-correction",
-        "cnn"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 11,
@@ -2256,6 +2150,10 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "zhang-planar-calibration",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "camera-model",
+        "deep-learning"
       ],
       "domain": "calibration",
       "tasks": [
@@ -2291,12 +2189,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "DeepLab",
       "summary": "Dense semantic segmentation by repurposing an ImageNet classifier with atrous (dilated) convolution to preserve spatial resolution, an Atrous Spatial Pyramid Pooling head for multi-scale context, and a fully-connected CRF post-processor for boundary refinement — multi-year state of the art on PASCAL VOC 2012.",
-      "tags": [
-        "computer-vision",
-        "semantic-segmentation",
-        "dense-prediction",
-        "dilated-convolution"
-      ],
       "author": "Vitaly Vorobyev",
       "draft": false,
       "difficulty": "intermediate",
@@ -2311,6 +2203,10 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "high",
           "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation."
         }
+      ],
+      "tags": [
+        "dense-prediction",
+        "deep-learning"
       ],
       "domain": "segmentation",
       "tasks": [
@@ -2350,14 +2246,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "Faster R-CNN",
       "summary": "Two-stage CNN object detector that replaces external Selective Search / EdgeBoxes proposals with a learned Region Proposal Network sharing conv features with the Fast R-CNN head — yielding near-real-time multi-class detection on GPU (5 fps with VGG-16) and ImageNet-pretrained backbones swapped freely from ZF through ResNet-101.",
-      "tags": [
-        "computer-vision",
-        "object-detection",
-        "two-stage-detector",
-        "region-proposal-network",
-        "cnn",
-        "anchor-based"
-      ],
       "author": "Vitaly Vorobyev",
       "draft": false,
       "difficulty": "intermediate",
@@ -2382,6 +2270,10 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "mask-rcnn",
           "confidence": "high"
         }
+      ],
+      "tags": [
+        "region-based",
+        "deep-learning"
       ],
       "domain": "detection",
       "arch_family": "cnn",
@@ -2427,13 +2319,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "FCN: Fully Convolutional Networks",
       "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
-      "tags": [
-        "computer-vision",
-        "semantic-segmentation",
-        "dense-prediction",
-        "encoder-decoder",
-        "transfer-learning"
-      ],
       "author": "Vitaly Vorobyev",
       "draft": false,
       "difficulty": "intermediate",
@@ -2460,6 +2345,10 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "high",
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
         }
+      ],
+      "tags": [
+        "dense-prediction",
+        "deep-learning"
       ],
       "domain": "segmentation",
       "tasks": [
@@ -2498,13 +2387,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "GoogLeNet",
       "summary": "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet).",
-      "tags": [
-        "computer-vision",
-        "image-classification",
-        "cnn",
-        "deep-learning",
-        "inception"
-      ],
       "author": "Vitaly Vorobyev",
       "draft": false,
       "difficulty": "intermediate",
@@ -2531,6 +2413,9 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "medium",
           "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
         }
+      ],
+      "tags": [
+        "deep-learning"
       ],
       "domain": "features",
       "tasks": [
@@ -2575,13 +2460,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "LightGlue",
       "summary": "Adaptive-depth Transformer matcher for sparse local features: stacks 9 self+cross-attention layers with rotary positional encoding and a per-token confidence head, exits early on easy image pairs, and replaces SuperGlue's Sinkhorn solver with a dual-softmax × matchability assignment head — over 2× faster than SuperGlue at equivalent or better pose-estimation accuracy.",
-      "tags": [
-        "computer-vision",
-        "image-matching",
-        "local-features",
-        "transformer",
-        "attention"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 10,
@@ -2595,6 +2473,10 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "high",
           "caution": "Different paradigm — LoFTR is detector-free dense, LightGlue is detector-based sparse. LoFTR wins in textureless regions; LightGlue wins on speed."
         }
+      ],
+      "tags": [
+        "local-descriptors",
+        "deep-learning"
       ],
       "domain": "features",
       "tasks": [
@@ -2630,13 +2512,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "LoFTR",
       "summary": "Detector-free dense feature matcher: shared CNN backbone produces coarse and fine feature maps, a Linear Transformer with interleaved self- and cross-attention establishes confidence-thresholded mutual nearest-neighbour correspondences, and a fine module refines each match to sub-pixel accuracy.",
-      "tags": [
-        "computer-vision",
-        "image-matching",
-        "transformer",
-        "detector-free",
-        "dense-matching"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
@@ -2661,6 +2536,10 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "high",
           "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1)."
         }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
       ],
       "domain": "features",
       "tasks": [
@@ -2697,12 +2576,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "Mask R-CNN",
       "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
-      "tags": [
-        "computer-vision",
-        "instance-segmentation",
-        "object-detection",
-        "dense-prediction"
-      ],
       "author": "Vitaly Vorobyev",
       "draft": false,
       "difficulty": "intermediate",
@@ -2717,6 +2590,9 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "medium",
           "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
         }
+      ],
+      "tags": [
+        "dense-prediction"
       ],
       "domain": "segmentation",
       "tasks": [
@@ -2756,11 +2632,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "MATE",
       "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
-      "tags": [
-        "calibration",
-        "corner-detection",
-        "cnn"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
@@ -2793,6 +2664,9 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "high"
         }
       ],
+      "tags": [
+        "deep-learning"
+      ],
       "domain": "calibration",
       "tasks": [
         "corner-detection",
@@ -2820,14 +2694,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "ResNet",
       "summary": "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation.",
-      "tags": [
-        "computer-vision",
-        "image-classification",
-        "cnn",
-        "deep-learning",
-        "backbone",
-        "residual"
-      ],
       "author": "Vitaly Vorobyev",
       "draft": false,
       "difficulty": "intermediate",
@@ -2866,6 +2732,9 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "medium",
           "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
         }
+      ],
+      "tags": [
+        "deep-learning"
       ],
       "domain": "features",
       "tasks": [
@@ -2910,13 +2779,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "SuperGlue",
       "summary": "Graph neural network that matches two sets of sparse local features by jointly finding correspondences and rejecting unmatched keypoints in one differentiable forward pass, trained end-to-end with a Sinkhorn optimal-transport assignment over augmented dustbin scores.",
-      "tags": [
-        "computer-vision",
-        "image-matching",
-        "local-features",
-        "graph-neural-network",
-        "attention"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
@@ -2935,6 +2797,10 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "high",
           "caution": "LightGlue retains SuperGlue's graph-attention matcher framework; adds adaptive depth + token pruning + dual-softmax head for >2× speedup at comparable or better accuracy. SuperGlue remains the reference baseline."
         }
+      ],
+      "tags": [
+        "local-descriptors",
+        "deep-learning"
       ],
       "domain": "features",
       "tasks": [
@@ -2970,13 +2836,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "SuperPoint",
       "summary": "Fully-convolutional CNN that jointly detects interest points and computes 256-D descriptors in a single forward pass, trained without human annotations via Homographic Adaptation on synthetic shapes and MS-COCO images.",
-      "tags": [
-        "computer-vision",
-        "keypoint-detection",
-        "local-descriptors",
-        "image-matching",
-        "self-supervised"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
@@ -3039,6 +2898,11 @@ export const modelPages: ModelIndexEntry[] = [
           "caution": "SuperPoint replaces ORB's oFAST + rBRIEF detector-descriptor bundle with a single learned encoder + dual decoder heads; descriptor matching is float-valued L2 instead of Hamming."
         }
       ],
+      "tags": [
+        "keypoint-detection",
+        "local-descriptors",
+        "deep-learning"
+      ],
       "domain": "features",
       "tasks": [
         "feature-detection",
@@ -3074,13 +2938,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "U-Net",
       "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
-      "tags": [
-        "computer-vision",
-        "semantic-segmentation",
-        "biomedical-imaging",
-        "encoder-decoder",
-        "dense-prediction"
-      ],
       "author": "Vitaly Vorobyev",
       "draft": false,
       "difficulty": "intermediate",
@@ -3088,6 +2945,10 @@ export const modelPages: ModelIndexEntry[] = [
       "access": "public",
       "prerequisites": [],
       "failureModes": [],
+      "tags": [
+        "dense-prediction",
+        "deep-learning"
+      ],
       "domain": "segmentation",
       "tasks": [
         "image-segmentation"
@@ -3127,13 +2988,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "VGG",
       "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
-      "tags": [
-        "computer-vision",
-        "image-classification",
-        "cnn",
-        "deep-learning",
-        "backbone"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
@@ -3159,6 +3013,9 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "high",
           "caution": "ResNet reformulates VGG-style plain depth scaling: identity shortcuts let 152-layer nets train where 19-layer plain nets already plateau (ResNet §1, Fig. 1)."
         }
+      ],
+      "tags": [
+        "deep-learning"
       ],
       "domain": "features",
       "tasks": [
@@ -3203,12 +3060,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "XFeat",
       "summary": "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices.",
-      "tags": [
-        "image-matching",
-        "keypoint-detection",
-        "local-descriptors",
-        "cnn"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
@@ -3249,6 +3100,11 @@ export const modelPages: ModelIndexEntry[] = [
           "caution": "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
         }
       ],
+      "tags": [
+        "keypoint-detection",
+        "local-descriptors",
+        "deep-learning"
+      ],
       "domain": "features",
       "tasks": [
         "feature-detection",
@@ -3282,13 +3138,6 @@ export const modelPages: ModelIndexEntry[] = [
     "frontmatter": {
       "title": "YOLOv1",
       "summary": "Single-stage CNN object detector that frames detection as one regression problem from full-image pixels to a 7×7×30 tensor of grid-cell box offsets, objectness, and 20-class probabilities — trained end-to-end and inferring 98 boxes per image at 45 fps on a Titan X.",
-      "tags": [
-        "computer-vision",
-        "object-detection",
-        "single-stage-detector",
-        "real-time",
-        "cnn"
-      ],
       "author": "Vitaly Vorobyev",
       "draft": false,
       "difficulty": "intermediate",
@@ -3309,6 +3158,10 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "high",
           "caution": "Replaces sliding-window deformable templates with single-pass CNN regression; reframes detection as regression rather than classification of proposals."
         }
+      ],
+      "tags": [
+        "deep-learning",
+        "real-time"
       ],
       "domain": "detection",
       "arch_family": "cnn",
@@ -3352,17 +3205,14 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "Camera Distortion Models",
       "summary": "Mathematical models for departures from the ideal pinhole projection — radial barrel/pincushion, tangential decentering, thin-prism — and the historical lineage from Brown's photogrammetric polynomial through Tsai's one-term radial, Weng's full Brown-Conrady, and Zhang's two-term planar formulation.",
-      "tags": [
-        "calibration",
-        "lens-distortion",
-        "intrinsics",
-        "camera-model"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [],
+      "tags": [
+        "camera-model"
+      ],
       "domain": "image-formation",
       "sources": {
         "references": [
@@ -3381,18 +3231,16 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "Chessboard X-Corner Detection",
       "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN) and learned heatmap pipelines (CCS), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
-      "tags": [
-        "calibration",
-        "chessboard",
-        "corner-detection",
-        "survey"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [
         "image-gradient"
+      ],
+      "tags": [
+        "chessboard",
+        "survey"
       ],
       "domain": "features",
       "sources": {
@@ -3421,18 +3269,15 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "DLT Normalisation",
       "summary": "A two-line similarity transform — translate the point centroid to the origin, isotropically scale so the average distance is √2 — that conditions the design matrix of any DLT-based estimator (homography, fundamental matrix, projective camera, Moving DLT) by ~10⁸, and is the difference between unusable and reliable linear solutions.",
-      "tags": [
-        "geometry",
-        "linear-algebra",
-        "numerical-conditioning",
-        "dlt"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
         "ransac"
+      ],
+      "tags": [
+        "linear-algebra"
       ],
       "domain": "geometry",
       "sources": {
@@ -3449,17 +3294,16 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "Epipolar Geometry",
       "summary": "The intrinsic projective geometry of two views of a scene, encoding the constraint that a point visible in one image must lie on a specific line in the other image determined entirely by the camera positions.",
-      "tags": [
-        "geometry",
-        "stereo",
-        "two-view-geometry"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [
         "ransac"
+      ],
+      "tags": [
+        "stereo",
+        "two-view-geometry"
       ],
       "domain": "geometry",
       "sources": {
@@ -3475,18 +3319,16 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "Hessian Saddle Response",
       "summary": "A scalar response computed from the determinant of the image Hessian, negative at saddle points (X-corners) and zero at flat regions, edges, and blobs — the discriminator at the heart of every modern checkerboard X-corner detector.",
-      "tags": [
-        "feature-theory",
-        "corner-detection",
-        "calibration",
-        "hessian"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
       "prerequisites": [
         "image-gradient"
+      ],
+      "tags": [
+        "keypoint-detection",
+        "blob-detection"
       ],
       "domain": "features",
       "sources": {
@@ -3505,17 +3347,15 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "Homography",
       "summary": "An invertible projective transformation of the plane, represented by a 3×3 matrix defined up to a non-zero scalar, mapping points between two images of a planar surface or capturing a pure camera rotation.",
-      "tags": [
-        "geometry",
-        "projective-geometry",
-        "calibration"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [
         "ransac"
+      ],
+      "tags": [
+        "two-view-geometry"
       ],
       "domain": "geometry",
       "sources": {
@@ -3532,16 +3372,14 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "Image Gradient",
       "summary": "The 2-vector of partial derivatives of image intensity with respect to spatial coordinates, measuring the rate and direction of brightness change at each pixel.",
-      "tags": [
-        "feature-theory",
-        "derivatives",
-        "filtering"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [],
+      "tags": [
+        "keypoint-detection"
+      ],
       "domain": "features",
       "date": "2026-04-30"
     }
@@ -3551,17 +3389,14 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "RANSAC",
       "summary": "Random sample consensus — a paradigm for fitting a parametric model to data containing an unknown fraction of gross outliers, by drawing minimal random subsets, instantiating candidate models, and selecting the one with the largest globally consistent inlier set.",
-      "tags": [
-        "geometry",
-        "robust-estimation",
-        "outlier-rejection",
-        "model-fitting"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 13,
       "access": "public",
       "prerequisites": [],
+      "tags": [
+        "robust-estimation"
+      ],
       "domain": "geometry",
       "sources": {
         "references": [
@@ -3578,16 +3413,14 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "Scale Space",
       "summary": "A one-parameter family of images obtained by progressively blurring an input image with Gaussians of increasing standard deviation, providing a principled multi-scale representation for detecting and describing image features.",
-      "tags": [
-        "image-formation",
-        "multi-scale",
-        "gaussian-filtering"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [],
+      "tags": [
+        "multi-scale"
+      ],
       "domain": "image-formation",
       "date": "2026-04-30"
     }
@@ -3597,13 +3430,6 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "Spatially Varying Image Stitching",
       "summary": "A 2011–2013 lineage of stitching methods that replace the single global homography with a spatially varying warp field — fitted as either two homographies + spatial blend (Gao 2011), a smooth affine deviation field (Lin 2011), or a per-cell weighted-DLT projective grid (Zaragoza 2013, APAP) — to absorb parallax and non-rotational camera motion that no single homography can represent.",
-      "tags": [
-        "image-stitching",
-        "homography",
-        "panorama",
-        "spatially-varying-warp",
-        "survey"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 10,
@@ -3611,6 +3437,10 @@ export const conceptPages: ConceptIndexEntry[] = [
       "prerequisites": [
         "homography",
         "ransac"
+      ],
+      "tags": [
+        "two-view-geometry",
+        "survey"
       ],
       "domain": "geometry",
       "sources": {
@@ -3629,17 +3459,16 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "Structure Tensor",
       "summary": "A symmetric 2×2 matrix formed by summing the outer products of the image gradient over a local window, encoding the dominant orientation and anisotropy of local image structure.",
-      "tags": [
-        "feature-theory",
-        "corner-detection",
-        "linear-algebra"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
       "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
         "image-gradient"
+      ],
+      "tags": [
+        "keypoint-detection",
+        "linear-algebra"
       ],
       "domain": "features",
       "date": "2026-04-30"
@@ -3650,17 +3479,15 @@ export const conceptPages: ConceptIndexEntry[] = [
     "frontmatter": {
       "title": "Topological Grid Recovery",
       "summary": "Verify candidate calibration-pattern corners by constructing a graph over them (Delaunay triangulation, k-nearest-neighbours, or proximity) and accepting only configurations that match the expected chessboard topology — false positives are eliminated by structural rules rather than per-pixel response thresholds.",
-      "tags": [
-        "calibration",
-        "chessboard",
-        "topology",
-        "graph-algorithms"
-      ],
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
       "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [],
+      "tags": [
+        "chessboard",
+        "graph-based"
+      ],
       "domain": "features",
       "sources": {
         "references": [

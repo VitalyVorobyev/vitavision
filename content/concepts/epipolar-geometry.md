@@ -2,7 +2,7 @@
 title: "Epipolar Geometry"
 date: 2026-04-30
 summary: "The intrinsic projective geometry of two views of a scene, encoding the constraint that a point visible in one image must lie on a specific line in the other image determined entirely by the camera positions."
-tags: ["geometry", "stereo", "two-view-geometry"]
+tags: ["stereo", "two-view-geometry"]
 author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: advanced

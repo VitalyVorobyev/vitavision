@@ -2,7 +2,7 @@
 title: "Felzenszwalb–Huttenlocher Graph-Based Image Segmentation"
 date: 2026-05-10
 summary: "Partition an image into perceptually coherent regions by a Kruskal-style greedy merge over a pixel graph, accepting an inter-component edge as a non-boundary when its weight does not exceed the components' internal variation plus a size-adaptive threshold $\\tau(C) = k/|C|$; runs in $O(m \\log m)$ time and produces partitions that are simultaneously not too fine and not too coarse."
-tags: ["image-segmentation", "graph-algorithms", "minimum-spanning-tree", "union-find"]
+tags: ["graph-based"]
 domain: segmentation
 tasks: ["image-segmentation"]
 author: "Vitaly Vorobyev"

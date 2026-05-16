@@ -237,8 +237,15 @@ export function computeFacets(
     const categories: Record<string, number> = {};
 
     if (kind === "all") {
-        // Domain sidebar is hidden in "all" mode — just expose the total.
+        // Populate per-domain counts summed across all three kinds (respecting tags+query).
         categories["all"] = kindsAll;
+        for (const dom of domainOrder) {
+            const count =
+                countAlgorithmsWith(algorithms, { categoryId: dom, ...sqParams }) +
+                countModelsWith(models, { categoryId: dom, ...sqParams }) +
+                countConceptsWith(concepts, { categoryId: dom, ...sqParams });
+            if (count > 0) categories[dom] = count;
+        }
     } else if (kind === "algorithm") {
         categories["all"] = countAlgorithmsWith(algorithms, sqParams);
         // Use domainOrder for stable presentation; only include domains present in data.

@@ -2,7 +2,7 @@
 title: "Scaramuzza Omnidirectional Camera Calibration"
 date: 2026-05-05
 summary: "Calibrate any central catadioptric or fisheye camera from a few planar checkerboard views by fitting a radially-symmetric Taylor-polynomial imaging function with a linear estimate followed by maximum-likelihood refinement."
-tags: ["calibration", "omnidirectional", "fisheye", "catadioptric"]
+tags: ["camera-model"]
 domain: calibration
 tasks: [camera-calibration]
 author: "Vitaly Vorobyev"

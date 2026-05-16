@@ -2,7 +2,7 @@
 title: "Deformable Part Models"
 date: 2026-05-12
 summary: "Detect a target object class in arbitrary images by scoring every position and scale in a HOG feature pyramid with a mixture of star-structured part-based templates — a coarse root filter and $n=6$ finer-resolution part filters with quadratic deformation costs — trained as a latent SVM with hard-negative mining."
-tags: ["object-detection", "deformable-parts-model", "latent-svm", "hog", "part-based", "structured-prediction"]
+tags: ["classical", "local-descriptors", "region-based", "dense-prediction"]
 domain: detection
 author: "Vitaly Vorobyev"
 difficulty: advanced

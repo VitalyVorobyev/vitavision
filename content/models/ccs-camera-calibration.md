@@ -2,7 +2,7 @@
 title: "CCS"
 date: 2026-05-03
 summary: "Three-stage learning-based camera calibration pipeline: a CNN regresses radial-distortion-correction parameters, a UNet predicts per-corner Gaussian heatmaps refined by surface-fit subpixel localisation, and an image-level RANSAC accepts inlier views before Zhang-style intrinsic estimation."
-tags: ["calibration", "corner-detection", "distortion-correction", "cnn"]
+tags: ["camera-model", "deep-learning"]
 domain: calibration
 tasks: [camera-calibration, chessboard-detection]
 author: "Vitaly Vorobyev"

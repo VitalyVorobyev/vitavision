@@ -2,7 +2,7 @@
 title: "SURF: Speeded Up Robust Features"
 date: 2026-05-09
 summary: "Detects scale- and rotation-invariant blob keypoints as scale-space maxima of the Hessian determinant, approximated with box filters on an integral image, and emits a 64-D Haar-wavelet response descriptor matched by Euclidean distance with a Laplacian-sign pre-filter."
-tags: ["feature-detection", "local-descriptors", "scale-invariant", "blob-detection", "matching"]
+tags: ["local-descriptors", "multi-scale", "blob-detection"]
 domain: features
 tasks: [feature-detection, local-feature-matching]
 author: "Vitaly Vorobyev"

@@ -2,7 +2,7 @@
 title: "Graph-Cut Interactive Segmentation"
 date: 2026-05-10
 summary: "Compute the global minimum of a binary region-and-boundary MRF energy as a single s-t min-cut on a pixel graph; user-marked seeds enter as hard constraints, the output is a binary labelling $A : P \\to \\{\\text{obj}, \\text{bkg}\\}$ with topology-free segments."
-tags: ["image-segmentation", "graph-cut", "min-cut-max-flow", "markov-random-field", "interactive-segmentation"]
+tags: ["graph-based", "probabilistic", "region-based"]
 domain: segmentation
 tasks: ["image-segmentation"]
 author: "Vitaly Vorobyev"

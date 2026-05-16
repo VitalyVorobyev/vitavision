@@ -2,7 +2,7 @@
 title: "As-Projective-As-Possible Image Stitching"
 date: 2026-04-26
 summary: "Replace a global homography with a spatially varying field of homographies, each fit by a per-cell weighted DLT (Moving DLT) on the same point correspondences, so the warp stays globally projective but adapts locally where the projective model is inadequate."
-tags: ["image-stitching", "homography", "projective-warp", "dlt"]
+tags: ["two-view-geometry", "linear-algebra"]
 domain: stitching
 tasks: [image-stitching]
 author: "Vitaly Vorobyev"

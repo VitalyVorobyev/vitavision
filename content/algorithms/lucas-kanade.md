@@ -2,7 +2,7 @@
 title: "Lucas-Kanade Image Registration"
 date: 2026-05-13
 summary: "Iterative Newton-Raphson method that estimates the parametric warp between two images by linearising the residual and solving the resulting weighted normal equation per iteration."
-tags: ["motion", "optical-flow", "image-registration"]
+tags: ["optical-flow"]
 domain: features
 author: "Vitaly Vorobyev"
 difficulty: intermediate

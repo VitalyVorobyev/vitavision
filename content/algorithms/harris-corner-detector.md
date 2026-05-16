@@ -2,7 +2,7 @@
 title: "Harris Corner Detector"
 date: 2026-04-15
 summary: "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum."
-tags: ["feature-detection", "corner"]
+tags: ["keypoint-detection"]
 domain: features
 tasks: [corner-detection]
 author: "Vitaly Vorobyev"

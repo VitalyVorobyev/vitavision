@@ -2,7 +2,7 @@
 title: "GoogLeNet"
 date: 2026-05-12
 summary: "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet)."
-tags: ["computer-vision", "image-classification", "cnn", "deep-learning", "inception"]
+tags: ["deep-learning"]
 domain: features
 tasks: [image-classification]
 author: "Vitaly Vorobyev"

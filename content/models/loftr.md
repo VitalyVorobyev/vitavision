@@ -2,7 +2,7 @@
 title: "LoFTR"
 date: 2026-05-10
 summary: "Detector-free dense feature matcher: shared CNN backbone produces coarse and fine feature maps, a Linear Transformer with interleaved self- and cross-attention establishes confidence-thresholded mutual nearest-neighbour correspondences, and a fine module refines each match to sub-pixel accuracy."
-tags: ["computer-vision", "image-matching", "transformer", "detector-free", "dense-matching"]
+tags: ["deep-learning", "dense-prediction"]
 domain: features
 tasks: [local-feature-matching]
 author: "Vitaly Vorobyev"

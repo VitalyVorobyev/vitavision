@@ -2,7 +2,7 @@
 title: "Mask R-CNN"
 date: 2026-05-11
 summary: "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment."
-tags: ["computer-vision", "instance-segmentation", "object-detection", "dense-prediction"]
+tags: ["dense-prediction"]
 domain: segmentation
 tasks: [image-segmentation]
 author: "Vitaly Vorobyev"

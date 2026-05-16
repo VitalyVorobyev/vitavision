@@ -3317,9 +3317,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 11,
       "access": "public",
-      "prerequisites": [
-        "pinhole-camera-model"
-      ],
+      "prerequisites": [],
       "tags": [
         "camera-model"
       ],
@@ -3437,6 +3435,9 @@ export const conceptPages: ConceptIndexEntry[] = [
       "prerequisites": [
         "ransac",
         "svd-null-space"
+      ],
+      "tags": [
+        "linear-algebra"
       ],
       "tags": [
         "linear-algebra"
@@ -3601,6 +3602,9 @@ export const conceptPages: ConceptIndexEntry[] = [
       "tags": [
         "two-view-geometry"
       ],
+      "tags": [
+        "two-view-geometry"
+      ],
       "domain": "geometry",
       "sources": {
         "references": [
@@ -3620,169 +3624,12 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 9,
       "access": "public",
-      "prerequisites": [
-        "convolution"
-      ],
+      "prerequisites": [],
       "tags": [
         "keypoint-detection"
       ],
       "domain": "features",
       "date": "2026-04-30"
-    }
-  },
-  {
-    "slug": "image-pyramid",
-    "frontmatter": {
-      "title": "Image Pyramid",
-      "summary": "A discrete multi-resolution representation — a sequence of images at progressively coarser resolution, each smoothed and downsampled from its predecessor.",
-      "author": "Vitaly Vorobyev",
-      "difficulty": "intermediate",
-      "readingTimeMinutes": 6,
-      "access": "public",
-      "prerequisites": [],
-      "tags": [
-        "multi-scale"
-      ],
-      "domain": "image-formation",
-      "sources": {
-        "primary": "lowe2004-sift",
-        "references": [
-          "abeles2021-pyramidal",
-          "bay2006-surf"
-        ]
-      },
-      "date": "2026-05-16"
-    }
-  },
-  {
-    "slug": "integral-image",
-    "frontmatter": {
-      "title": "Integral Image",
-      "summary": "A precomputed prefix-sum array that returns the sum of pixel values over any axis-aligned rectangle in constant time with four array reads.",
-      "author": "Vitaly Vorobyev",
-      "difficulty": "beginner",
-      "readingTimeMinutes": 7,
-      "access": "public",
-      "prerequisites": [],
-      "tags": [
-        "classical"
-      ],
-      "domain": "features",
-      "sources": {
-        "primary": "viola2001-detector",
-        "references": [
-          "bay2006-surf",
-          "calonder2010-brief",
-          "rublee2011-orb"
-        ]
-      },
-      "date": "2026-05-16"
-    }
-  },
-  {
-    "slug": "non-maximum-suppression",
-    "frontmatter": {
-      "title": "Non-Maximum Suppression",
-      "summary": "Reducing a dense response map or a set of overlapping detections to a sparse set of local maxima by discarding every element that is not strongest in its neighbourhood.",
-      "author": "Vitaly Vorobyev",
-      "difficulty": "intermediate",
-      "readingTimeMinutes": 7,
-      "access": "public",
-      "prerequisites": [],
-      "tags": [
-        "keypoint-detection"
-      ],
-      "domain": "features",
-      "sources": {
-        "primary": "canny1986-edge",
-        "references": [
-          "harris1988-corner",
-          "rosten2006-fast",
-          "redmon2016-yolo",
-          "shi-tomasi1994-features"
-        ]
-      },
-      "date": "2026-05-16"
-    }
-  },
-  {
-    "slug": "optical-flow",
-    "frontmatter": {
-      "title": "Optical Flow",
-      "summary": "The apparent 2-D velocity field of image brightness between consecutive frames, recovered from the spatio-temporal gradient under the brightness-constancy assumption.",
-      "author": "Vitaly Vorobyev",
-      "difficulty": "intermediate",
-      "readingTimeMinutes": 10,
-      "access": "public",
-      "prerequisites": [
-        "image-gradient",
-        "structure-tensor"
-      ],
-      "tags": [
-        "optical-flow",
-        "variational"
-      ],
-      "domain": "features",
-      "sources": {
-        "primary": "horn1981-horn-schunck",
-        "references": [
-          "lucas1981-lucas-kanade",
-          "black1996-robust",
-          "tomasi1991-detection-tracking"
-        ]
-      },
-      "date": "2026-05-16"
-    }
-  },
-  {
-    "slug": "pinhole-camera-model",
-    "frontmatter": {
-      "title": "Pinhole Camera Model",
-      "summary": "The projective map from 3-D scene points to 2-D image pixels through a single centre of projection, parameterised by an intrinsic matrix and an extrinsic pose.",
-      "author": "Vitaly Vorobyev",
-      "difficulty": "intermediate",
-      "readingTimeMinutes": 9,
-      "access": "public",
-      "prerequisites": [],
-      "tags": [
-        "camera-model"
-      ],
-      "domain": "image-formation",
-      "sources": {
-        "primary": "zhang2000-flexible",
-        "references": [
-          "tsai1987-versatile",
-          "sturm2003-plane-based",
-          "weng1992-camera"
-        ]
-      },
-      "date": "2026-05-16"
-    }
-  },
-  {
-    "slug": "pose-estimation",
-    "frontmatter": {
-      "title": "Pose Estimation",
-      "summary": "Recovery of the 6-DOF rigid transformation — rotation and translation — relating a camera to a scene, an object, or a second camera.",
-      "author": "Vitaly Vorobyev",
-      "difficulty": "intermediate",
-      "readingTimeMinutes": 7,
-      "access": "public",
-      "prerequisites": [
-        "pinhole-camera-model"
-      ],
-      "tags": [
-        "pose-estimation"
-      ],
-      "domain": "geometry",
-      "sources": {
-        "primary": "lepetit2009-epnp",
-        "references": [
-          "longuet-higgins1981-eight-point",
-          "zhang2000-flexible"
-        ]
-      },
-      "date": "2026-05-16"
     }
   },
   {
@@ -3818,9 +3665,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 10,
       "access": "public",
-      "prerequisites": [
-        "convolution"
-      ],
+      "prerequisites": [],
       "tags": [
         "multi-scale"
       ],

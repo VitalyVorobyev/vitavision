@@ -6,82 +6,83 @@ tags: ["feature-detection", "calibration-targets"]
 author: "Vitaly Vorobyev"
 repoLinks: ["https://github.com/VitalyVorobyev/calib-targets-rs"]
 relatedAlgorithms: []
-draft: true
 relatedDemos: ["delaunay-voronoi"]
 difficulty: intermediate
 ---
 
-# Introduction
+# 1. Introduction
 
-Regular grid detection is a backbone of many computer vision tasks: camera calibration, pose estimation, metrology, industrial inspection, and more. This is a large topic, so this post starts with one specific problem.
+The [previous post](blog/01-chesscorners) showed how to detect chessboard corners with [ChESS response](atlas/chess-corners). That gives a sparse set of X-junctions, each with two local grid axes. Some may be missing and some may be false positives. This post covers what comes next: connecting neighboring corners, rejecting inconsistent detections, and assigning integer grid coordinates to the connected points.
 
-Assume that chessboard corners are already detected in the image. Some of them may be missing, and some detections may be false positives. The task is to recover the grid structure: connect neighboring corners, reject inconsistent detections, and assign integer grid coordinates to the connected points.
+The setups I care about are partially visible or occluded boards under strong lens distortion. This rules out detectors that require the full requested pattern to be visible, including OpenCV's `findChessboardCornersSB`. It also makes global lines or a homography model not applicable.
 
-This post discusses a topological approach to this problem, inspired by [Shu, Brunton, and Fiala’s paper](https://doi.org/10.1007/s00138-009-0202-2). It is also the idea behind the topological grid finder in the [projective-grid](https://crates.io/crates/projective-grid) crate.
+The approach is topological, inspired by [Topological Grid Finding](atlas/shu-topological-grid). It is also the idea behind the topological grid finder in the [projective-grid](https://crates.io/crates/projective-grid) crate.
 
-The important point is that the grid should be recovered before we make strong global assumptions about its geometry. Under occlusion, oblique views, and visible lens distortion, the image can be locally regular but globally difficult to describe with one clean model.
+> maybe delete this paragraph?
+The method starts locally. It first connects nearby corners into plausible cells, then uses the grid topology to remove inconsistent detections and assign integer coordinates. Geometric models such as homographies or grid lines can still be used later, after the structure is known.
 
-# Why the ordering matters
+We will use this image to illustrate all the steps.
 
-A detected grid is useful only after its points are ordered. For calibration or pose estimation, we need correspondences between image points and known points on the physical target.
+![](../images/02-topo-grid/GeminiChess1/00-input.png)
 
-For a planar target, these correspondences are especially powerful. If lens distortion is ignored, points on the target plane and points in the image are related by a [homography](/concepts/homography). [Zhang’s calibration method](/algorithms/zhang-planar-calibration) uses homographies from several target views to initialize camera intrinsics. If the camera is already calibrated, the same correspondences can be used to estimate the target pose.
+# 2. Grid as a graph
 
-But homography is the result of grid detection, not the starting point. With occlusion, false corner detections, and visible lens distortion, fitting one global model too early can be fragile. The topological approach first tries to recover local grid connectivity, and only then uses geometry to validate the result.
+We start from a set of candidate X-junctions like the ones shown below (I use [my implementation](https://github.com/VitalyVorobyev/chess-corners-rs) of X-junction detector that provides local grid orientations, also indicated in the overlay).
 
-# Grid as a graph
-
-Assume we already have a set of candidate X-junctions, for example from the ChESS detector discussed in the [previous post](/blog/01-chesscorners). Some candidates may be missing, and some may be false positives.
+![](../images/02-topo-grid/GeminiChess1/01-corners-axes.png)
 
 Now the problem becomes combinatorial. We need to decide which corners are neighbors, which groups of four corners form grid cells, and how to assign consistent integer coordinates to all connected corners.
 
 This is naturally a graph problem:
 
 - detected corners are nodes,
-- neighboring chessboard corners are edges,
+- possible neighbor relations are edges,
 - grid cells are quadrilaterals,
-- a recovered board is a connected component with regular grid topology.
+- the recovered board is a connected component with regular grid topology.
 
-Different detectors make different first assumptions. Classical OpenCV-style detectors first segment black squares and recover the board from connected regions. Duda-Frese and OpenCV `findChessboardCornersSB` use a checkerboard-specific local corner response, but still work as whole-board detectors. ROCHADE is a stronger checkerboard-specific pipeline with robust board recovery. Shu, Brunton, and Fiala take the topological route discussed here: connect corner candidates with Delaunay triangulation and recover the grid as a filtered quad mesh.
+The topological approach starts by building a candidate graph from the detected points. This graph does not need to be perfect. It only needs to contain enough correct local connections so that invalid edges and false detections can be removed later.
 
-# Delaunay triangulation as a candidate graph
+## Delaunay triangulation as a candidate graph
 
-[Shu, Brunton, and Fiala](https://doi.org/10.1007/s00138-009-0202-2) suggest starting with Delaunay triangulation of the detected corners.
+[Shu, Brunton, and Fiala](atlas/shu-topological-grid) suggest starting with Delaunay triangulation of the detected corners.
 
 :::definition[Delaunay triangulation]
 Delaunay triangulation connects a set of points into triangles such that no point lies inside the circumcircle of any triangle.
 :::
 
-This is useful because Delaunay triangulation tends to connect nearby points. For a regular grid, this usually gives a graph that contains the correct neighbor connections, plus one diagonal inside each grid cell.
+This is useful because Delaunay triangulation tends to connect nearby points. For a regular grid, it usually contains the true neighbor connections, plus one diagonal inside each grid cell. On the test image, this gives:
 
-The method is not based on line fitting. This matters for distorted images: the edges of the projected board may be curved, but the local neighborhood structure between nearby corners is still often preserved.
+![](../images/02-topo-grid/GeminiChess1/03-delaunay-edge-kinds.png)
 
-There is one important limitation. Delaunay triangulation is not projective invariant. At very oblique viewing angles, it can create triangles that do not correspond to real grid cells. In practice, these cases are rare, and such images are often not useful for calibration anyway.
+The method does not fit lines through the corner cloud - it only uses local connections between nearby points. This is what makes it usable when grid rows do not project to straight image lines.
 
 :::illustration[delaunay-voronoi]{preset="compact"}
 :::
 
-# From triangles to cells
+# 3. From triangles to cells
 
 Delaunay triangulation gives triangles, but a chessboard grid is made of quadrilateral cells. For each real board square, the triangulation usually creates two triangles separated by one diagonal. The next step is to merge the right pairs of neighboring triangles back into quadrilaterals.
 
 Shu, Brunton, and Fiala use image intensity for this step. Two neighboring triangles are merged if they have similar average color, because both triangles should belong to the same black or white square.
 
-My implementation does not use image pixels at this stage. Each ChESS corner already stores two local grid directions. I check whether the triangle edges follow these directions. If two neighboring triangles pass this check and share the right diagonal, they can be merged into a quadrilateral cell.
+My implementation does not use image pixels. Each ChESS corner already stores two local grid directions. I check whether the triangle edges follow these directions. If two neighboring triangles pass this check and share the right diagonal, they can be merged into a quadrilateral cell.
 
-> Needs an illustration plot
-> Show:
-> * four corners of one cell,
-> * Delaunay diagonal,
-> * local orientation axes at each corner,
-> * accepted triangle pair,
-> * rejected wrong pair.
+:::algorithm[Triangle merging]
+::input[]
+::output[]
+1.
+:::
 
-# Filtering the quad mesh
+The next overlay show all mergable triangle pairs. For the test image it gives the complete correct set of quadrilaterals.
 
-After triangle merging, we have a set of quadrilateral cell candidates. In a clean image, this may already be enough. In harder images, false corner detections, background texture, noise, or missing corners can create wrong cells.
+![](../images/02-topo-grid/GeminiChess1/04-mergeable-triangles.png)
 
-The Shu, Brunton, and Fiala method first filters these candidates using topology, before applying geometric checks.
+
+# 4. Filtering the quad mesh
+
+After triangle merging, we have a set of quadrilateral cell candidates. In a clean image, this usually enough (as it is for our test image). In harder images, false corner detections, background texture, noise, or missing corners can create wrong cells.
+
+The Shu, Brunton, and Fiala filter these candidates using topology before applying geometric checks.
 
 ## Topological filtering
 
@@ -103,8 +104,6 @@ Here “remove” means removing the quadrilateral candidate, not deleting its c
 
 This is a good first filter because it uses only mesh topology. It does not care whether the image edges are straight, whether the board is viewed at an angle, or whether the cell looks like a perfect square.
 
-> Best visual: a small synthetic grid with one false point inside a cell, showing two fake quads before filtering and their removal after the degree test.
-
 ## Geometry filters
 
 After the topological filter, geometric checks can be applied.
@@ -115,7 +114,9 @@ This does not require a cell to look like a square. The threshold is intentional
 
 In `projective-grid`, I use local consistency checks between neighboring cells instead: adjacent cells should agree on their shared edge and should predict similar local grid directions.
 
-# Ordering the grid
+![](../images/02-topo-grid/GeminiChess1/05-raw-quads.png)
+
+# 5. Ordering the grid
 
 After filtering, we have a mesh of quadrilateral cells. This is still not enough for calibration. We need to assign each detected corner a position in the board coordinate system: `(0, 0)`, `(1, 0)`, `(2, 0)`, and so on.
 
@@ -125,35 +126,37 @@ The important point is that this step uses mesh connectivity, not straight image
 
 This gives us the final output of the detector: image points with consistent integer grid coordinates.
 
-> Best visual: one highlighted starting quad with coordinates assigned, arrows showing propagation to neighboring quads, and the resulting integer coordinate labels.
+![](../images/02-topo-grid/GeminiChess1/09-final-recovered-grid.png)
 
-# Delaunay triangulation as a candidate graph
-# From triangles to cells
-# Filtering the quad mesh
-# Ordering the grid
-
-# Examples
-
-Show three images:
-1. clean or moderate chessboard,
-2. occluded / partial board,
-3. lens-distorted or difficult view.
-
-For each example, show:
-- detected corners,
-- Delaunay triangulation,
-- accepted quads / ordered grid.
-
-# Using the library
+# 6. Using the library
 
 Rust example first, because the crate is Rust-native.
 Python example second, if bindings are available.
 
-# Performance
+## Performance
 
 Give image size, hardware, crate version/commit, feature flags, and timing stages if possible.
 
-# Practical notes
+# 7. More examples
+
+Consider two more examples.
+
+The first one is partially occluded chessboard:
+
+![](../images/02-topo-grid/GeminiChess2/03-delaunay-edge-kinds.png)
+![](../images/02-topo-grid/GeminiChess2/09-final-recovered-grid.png)
+
+One detail here is that there are two connected components of quadrilaterals are initially detected. The algorithm has tools to merge different components. This goes beyond scope of this blog.
+
+The second example is an image of [PuzzleBoard](atlas/puzzleboard).
+
+![](../images/02-topo-grid/example2/03-delaunay-edge-kinds.png)
+![](../images/02-topo-grid/example2/09-final-recovered-grid.png)
+
+Note that in the bottom left corner the distortion are so strong that Delaunay triangulation doesn't reflect the board structure and some corners are lost.
+
+
+# 8. Practical notes
 
 This approach works best when false detections are sparse or unstructured. That is usually the case for plain chessboards and puzzleboard-like calibration targets: wrong corners may appear, but they rarely form a consistent grid.
 

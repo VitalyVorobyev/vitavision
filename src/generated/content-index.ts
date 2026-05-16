@@ -5,19 +5,18 @@ export const blogPosts: BlogIndexEntry[] = [
   {
     "slug": "02-grid-deteciont-part1",
     "frontmatter": {
-      "title": "Grid detection I",
-      "summary": "A chessboard-specific detector, from sampling geometry to a practical multiscale implementation.",
+      "title": "Grid detection I: topology",
+      "summary": "How Delaunay triangulation and mesh filtering can turn detected chessboard corners into an ordered grid.",
       "tags": [
         "feature-detection",
         "calibration-targets"
       ],
       "author": "Vitaly Vorobyev",
-      "draft": true,
       "repoLinks": [
         "https://github.com/VitalyVorobyev/calib-targets-rs"
       ],
       "difficulty": "intermediate",
-      "readingTimeMinutes": 5,
+      "readingTimeMinutes": 9,
       "access": "public",
       "relatedAlgorithms": [],
       "relatedDemos": [

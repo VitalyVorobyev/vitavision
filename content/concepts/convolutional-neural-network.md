@@ -6,7 +6,7 @@ tags: ["deep-learning"]
 author: "Vitaly Vorobyev"
 domain: features
 difficulty: intermediate
-prerequisites: []
+prerequisites: [convolution]
 sources:
   primary: krizhevsky2012-alexnet
   references:

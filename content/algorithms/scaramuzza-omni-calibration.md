@@ -7,7 +7,7 @@ domain: calibration
 tasks: [camera-calibration]
 author: "Vitaly Vorobyev"
 difficulty: advanced
-prerequisites: [camera-distortion-models]
+prerequisites: [pinhole-camera-model, camera-distortion-models, bundle-adjustment]
 failureModes: []
 sources:
   primary: scaramuzza2006-omni

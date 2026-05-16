@@ -7,7 +7,7 @@ domain: calibration
 tasks: [camera-calibration]
 author: "Vitaly Vorobyev"
 difficulty: advanced
-prerequisites: [pinhole-camera-model, homography, camera-distortion-models, ransac]
+prerequisites: [pinhole-camera-model, homography, camera-distortion-models, ransac, bundle-adjustment]
 failureModes: []
 relations:
   - type: parallel_foundation_with

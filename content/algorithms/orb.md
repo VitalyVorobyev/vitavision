@@ -7,7 +7,7 @@ domain: features
 tasks: [feature-detection, local-feature-matching]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: [image-gradient, scale-space, feature-descriptors, integral-image]
+prerequisites: [image-gradient, scale-space, feature-descriptors, integral-image, image-pyramid]
 failureModes: []
 sources:
   primary: rublee2011-orb

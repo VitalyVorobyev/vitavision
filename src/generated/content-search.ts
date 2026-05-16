@@ -1362,6 +1362,27 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR"
   },
   {
+    "slug": "bundle-adjustment",
+    "path": "/atlas/bundle-adjustment",
+    "type": "concept",
+    "title": "Bundle Adjustment",
+    "summary": "Joint nonlinear least-squares refinement of all camera parameters — and, in structure-from-motion, all 3-D points — that minimises the total reprojection error.",
+    "tags": [
+      "optimization"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "Reprojection-error objective",
+      "Levenberg-Marquardt solver",
+      "Sparse block structure",
+      "Initialisation from linear estimates"
+    ],
+    "authors": [
+      "Z. Zhang"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "camera-distortion-models",
     "path": "/atlas/camera-distortion-models",
     "type": "concept",
@@ -1396,6 +1417,29 @@ export const searchRecords: SearchRecord[] = [
     "headings": [
       "The four design axes"
     ]
+  },
+  {
+    "slug": "convolution",
+    "path": "/atlas/convolution",
+    "type": "concept",
+    "title": "Convolution",
+    "summary": "The linear, shift-invariant operation that produces each output pixel as a kernel-weighted sum of input pixels in a local neighbourhood.",
+    "tags": [
+      "classical"
+    ],
+    "domain": "image-formation",
+    "headings": [
+      "Linearity and shift-invariance",
+      "Separability",
+      "Gaussian and derivative-of-Gaussian kernels",
+      "Boundary handling",
+      "Convolution theorem and FFT evaluation",
+      "Learned convolution in CNNs"
+    ],
+    "authors": [
+      "J. Canny"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
     "slug": "convolutional-neural-network",
@@ -1576,6 +1620,26 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "image-pyramid",
+    "path": "/atlas/image-pyramid",
+    "type": "concept",
+    "title": "Image Pyramid",
+    "summary": "A discrete multi-resolution representation — a sequence of images at progressively coarser resolution, each smoothed and downsampled from its predecessor.",
+    "tags": [
+      "multi-scale"
+    ],
+    "domain": "image-formation",
+    "headings": [
+      "Gaussian pyramid",
+      "Difference-of-Gaussian pyramid",
+      "Fixed-image, growing-filter alternative"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
     "slug": "integral-image",
     "path": "/atlas/integral-image",
     "type": "concept",
@@ -1662,6 +1726,29 @@ export const searchRecords: SearchRecord[] = [
       "Z. Zhang"
     ],
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "pose-estimation",
+    "path": "/atlas/pose-estimation",
+    "type": "concept",
+    "title": "Pose Estimation",
+    "summary": "Recovery of the 6-DOF rigid transformation — rotation and translation — relating a camera to a scene, an object, or a second camera.",
+    "tags": [
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Absolute pose: Perspective-n-Point",
+      "Relative pose: the essential matrix",
+      "Pose from a calibration target",
+      "Nonlinear refinement"
+    ],
+    "authors": [
+      "V. Lepetit",
+      "F. Moreno-Noguer",
+      "P. Fua"
+    ],
+    "venue": "International Journal of Computer Vision"
   },
   {
     "slug": "ransac",

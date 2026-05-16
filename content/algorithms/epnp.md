@@ -6,7 +6,7 @@ tags: ["pose-estimation"]
 domain: geometry
 author: "Vitaly Vorobyev"
 difficulty: advanced
-prerequisites: [pinhole-camera-model, dlt-normalisation, ransac]
+prerequisites: [pinhole-camera-model, pose-estimation, dlt-normalisation, ransac]
 failureModes: []
 sources:
   primary: lepetit2009-epnp

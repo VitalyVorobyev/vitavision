@@ -7,7 +7,7 @@ domain: features
 tasks: [corner-detection, chessboard-detection]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: [image-gradient, scale-space]
+prerequisites: [image-gradient, scale-space, image-pyramid]
 failureModes: []
 relations:
   - type: feeds_into

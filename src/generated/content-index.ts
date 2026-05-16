@@ -216,7 +216,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "non-maximum-suppression"
+        "non-maximum-suppression",
+        "convolution"
       ],
       "failureModes": [],
       "tags": [
@@ -429,6 +430,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "pinhole-camera-model",
+        "pose-estimation",
         "dlt-normalisation",
         "ransac"
       ],
@@ -1091,7 +1093,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "epipolar-geometry",
-        "svd-null-space"
+        "svd-null-space",
+        "pose-estimation"
       ],
       "failureModes": [],
       "quality": "historical",
@@ -1275,7 +1278,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "image-gradient",
         "scale-space",
         "feature-descriptors",
-        "integral-image"
+        "integral-image",
+        "image-pyramid"
       ],
       "failureModes": [],
       "tags": [
@@ -1355,7 +1359,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "image-gradient",
-        "scale-space"
+        "scale-space",
+        "image-pyramid"
       ],
       "failureModes": [],
       "relations": [
@@ -1443,7 +1448,9 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
-        "camera-distortion-models"
+        "pinhole-camera-model",
+        "camera-distortion-models",
+        "bundle-adjustment"
       ],
       "failureModes": [],
       "tags": [
@@ -1508,6 +1515,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "scale-space",
         "image-gradient",
+        "image-pyramid",
         "feature-descriptors",
         "feature-matching"
       ],
@@ -1612,7 +1620,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "scale-space",
         "image-gradient",
-        "integral-image"
+        "integral-image",
+        "image-pyramid"
       ],
       "failureModes": [],
       "relations": [
@@ -1777,7 +1786,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "pinhole-camera-model",
-        "camera-distortion-models"
+        "camera-distortion-models",
+        "bundle-adjustment"
       ],
       "failureModes": [],
       "quality": "historical",
@@ -1952,7 +1962,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "pinhole-camera-model",
         "homography",
         "camera-distortion-models",
-        "ransac"
+        "ransac",
+        "bundle-adjustment"
       ],
       "failureModes": [],
       "relations": [
@@ -3272,6 +3283,32 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "bundle-adjustment",
+    "frontmatter": {
+      "title": "Bundle Adjustment",
+      "summary": "Joint nonlinear least-squares refinement of all camera parameters — and, in structure-from-motion, all 3-D points — that minimises the total reprojection error.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "pinhole-camera-model"
+      ],
+      "tags": [
+        "optimization"
+      ],
+      "domain": "calibration",
+      "sources": {
+        "primary": "zhang2000-flexible",
+        "references": [
+          "tsai1987-versatile",
+          "weng1992-camera"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
     "slug": "camera-distortion-models",
     "frontmatter": {
       "title": "Camera Distortion Models",
@@ -3338,6 +3375,30 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "convolution",
+    "frontmatter": {
+      "title": "Convolution",
+      "summary": "The linear, shift-invariant operation that produces each output pixel as a kernel-weighted sum of input pixels in a local neighbourhood.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "beginner",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "classical"
+      ],
+      "domain": "image-formation",
+      "sources": {
+        "primary": "canny1986-edge",
+        "references": [
+          "krizhevsky2012-alexnet",
+          "simonyan2014-vgg"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
     "slug": "convolutional-neural-network",
     "frontmatter": {
       "title": "Convolutional Neural Network",
@@ -3346,7 +3407,9 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 8,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolution"
+      ],
       "tags": [
         "deep-learning"
       ],
@@ -3557,12 +3620,38 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 9,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolution"
+      ],
       "tags": [
         "keypoint-detection"
       ],
       "domain": "features",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "image-pyramid",
+    "frontmatter": {
+      "title": "Image Pyramid",
+      "summary": "A discrete multi-resolution representation — a sequence of images at progressively coarser resolution, each smoothed and downsampled from its predecessor.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "multi-scale"
+      ],
+      "domain": "image-formation",
+      "sources": {
+        "primary": "lowe2004-sift",
+        "references": [
+          "abeles2021-pyramidal",
+          "bay2006-surf"
+        ]
+      },
+      "date": "2026-05-16"
     }
   },
   {
@@ -3671,6 +3760,32 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "pose-estimation",
+    "frontmatter": {
+      "title": "Pose Estimation",
+      "summary": "Recovery of the 6-DOF rigid transformation — rotation and translation — relating a camera to a scene, an object, or a second camera.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "pinhole-camera-model"
+      ],
+      "tags": [
+        "pose-estimation"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "primary": "lepetit2009-epnp",
+        "references": [
+          "longuet-higgins1981-eight-point",
+          "zhang2000-flexible"
+        ]
+      },
+      "date": "2026-05-16"
+    }
+  },
+  {
     "slug": "ransac",
     "frontmatter": {
       "title": "RANSAC",
@@ -3703,7 +3818,9 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 10,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolution"
+      ],
       "tags": [
         "multi-scale"
       ],

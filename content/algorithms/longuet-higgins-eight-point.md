@@ -12,7 +12,7 @@ relations:
   - type: generalized_by
     target: fundamental-matrix-eight-point
     confidence: high
-prerequisites: [epipolar-geometry, svd-null-space]
+prerequisites: [epipolar-geometry, svd-null-space, pose-estimation]
 failureModes: []
 sources:
   primary: longuet-higgins1981-eight-point

@@ -3,8 +3,10 @@ export interface GeneratedHtmlModule { html: string; }
 
 export const conceptHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
   "attention-mechanism": () => import("./content/concepts/attention-mechanism.ts"),
+  "bundle-adjustment": () => import("./content/concepts/bundle-adjustment.ts"),
   "camera-distortion-models": () => import("./content/concepts/camera-distortion-models.ts"),
   "chessboard-x-corner-detection": () => import("./content/concepts/chessboard-x-corner-detection.ts"),
+  "convolution": () => import("./content/concepts/convolution.ts"),
   "convolutional-neural-network": () => import("./content/concepts/convolutional-neural-network.ts"),
   "dlt-normalisation": () => import("./content/concepts/dlt-normalisation.ts"),
   "energy-minimization": () => import("./content/concepts/energy-minimization.ts"),
@@ -14,10 +16,12 @@ export const conceptHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModul
   "hessian-saddle-response": () => import("./content/concepts/hessian-saddle-response.ts"),
   "homography": () => import("./content/concepts/homography.ts"),
   "image-gradient": () => import("./content/concepts/image-gradient.ts"),
+  "image-pyramid": () => import("./content/concepts/image-pyramid.ts"),
   "integral-image": () => import("./content/concepts/integral-image.ts"),
   "non-maximum-suppression": () => import("./content/concepts/non-maximum-suppression.ts"),
   "optical-flow": () => import("./content/concepts/optical-flow.ts"),
   "pinhole-camera-model": () => import("./content/concepts/pinhole-camera-model.ts"),
+  "pose-estimation": () => import("./content/concepts/pose-estimation.ts"),
   "ransac": () => import("./content/concepts/ransac.ts"),
   "scale-space": () => import("./content/concepts/scale-space.ts"),
   "spatially-varying-image-stitching": () => import("./content/concepts/spatially-varying-image-stitching.ts"),

@@ -33,7 +33,7 @@ function CompactCard({ entry }: { entry: ConceptIndexEntry }) {
                     >
                         {fm.title}
                     </Link>
-                    <CardMeta label={metaLabel(fm)} year={fm.year} />
+                    <CardMeta kind="concept" label={metaLabel(fm)} year={fm.year} />
                 </div>
                 <GraphChip slug={slug} />
             </div>
@@ -69,7 +69,7 @@ function HorizontalCard({ entry }: { entry: ConceptIndexEntry }) {
                     </div>
                     <GraphChip slug={slug} />
                 </div>
-                <CardMeta label={metaLabel(fm)} year={fm.year} />
+                <CardMeta kind="concept" label={metaLabel(fm)} year={fm.year} />
                 {cardBody(fm.tagline, fm.summary) && (
                     <p className="text-xs text-muted-foreground leading-[1.4] line-clamp-2 mt-[3px]">
                         {cardBody(fm.tagline, fm.summary)}

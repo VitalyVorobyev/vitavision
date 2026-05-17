@@ -7,6 +7,7 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { Maximize2 } from "lucide-react";
 import useMediaQuery from "../../hooks/useMediaQuery.ts";
 import { contentGraph } from "../../generated/content-graph.ts";
 import { algorithmPages, modelPages, conceptPages } from "../../generated/content-index.ts";
@@ -14,14 +15,16 @@ import { getNeighbors, shortTitle } from "../../lib/atlas/graphNeighbors.ts";
 import { usePaperById } from "../../lib/atlas/usePaperById.ts";
 import { taskLabel } from "../../lib/content/taskLabels.ts";
 import { EntryIcon } from "./EntryIcon.tsx";
+import { getFocusEntry } from "../../lib/atlas/focusEntry.ts";
+import { FocusedEntryPanel } from "./FocusedEntryPanel.tsx";
 
 // ── Constants (ported verbatim from direction-2-graph.jsx) ─────────────────────
 
 const GG = {
     canvasMinW: 1020,
     canvasMinH: 580,
-    centerW:    360,
-    centerH:    208,
+    centerW:    220,
+    centerH:     96,
     nodeW:      184,
     nodeH:       68,
     pad:         24,
@@ -41,12 +44,15 @@ interface RelationMeta {
 }
 
 const RELATION_V3: Record<string, RelationMeta> = {
-    prerequisites: { label: "builds on",      short: "prereq",   color: "hsl(215 25% 45%)",  arrow: "in"  },
-    extended_from: { label: "extended from",  short: "ext from", color: "hsl(215 19% 32%)",  arrow: "in"  },
-    compared_with: { label: "compared with",  short: "vs",       color: "hsl(215 16% 55%)",  arrow: "none", dashed: true },
-    extended_by:   { label: "extended by",    short: "ext by",   color: "hsl(215 19% 32%)",  arrow: "out" },
-    feeds_into:    { label: "feeds into",     short: "feeds",    color: "hsl(215 25% 45%)",  arrow: "out" },
-    learned_by:    { label: "learned alt of", short: "learn",    color: "hsl(191 55% 32%)",  arrow: "out" },
+    prerequisites:          { label: "builds on",              short: "prereq",   color: "hsl(var(--graph-rel-prereq))",   arrow: "in"  },
+    extended_from:          { label: "extended from",          short: "ext from", color: "hsl(var(--graph-rel-extend))",   arrow: "in"  },
+    compared_with:          { label: "compared with",          short: "vs",       color: "hsl(var(--graph-rel-compare))",  arrow: "none", dashed: true },
+    extended_by:            { label: "extended by",            short: "ext by",   color: "hsl(var(--graph-rel-extend))",   arrow: "out" },
+    feeds_into:             { label: "feeds into",             short: "feeds",    color: "hsl(var(--graph-rel-flow))",     arrow: "out" },
+    learned_by:             { label: "learned alt of",         short: "learn",    color: "hsl(var(--graph-rel-learn))",    arrow: "out" },
+    used_by:                { label: "used by",                short: "used by",  color: "hsl(var(--graph-rel-flow))",     arrow: "out" },
+    fed_by:                 { label: "fed by",                 short: "fed by",   color: "hsl(var(--graph-rel-flow))",     arrow: "in"  },
+    learned_alternative_of: { label: "learned alternative of", short: "learns",   color: "hsl(var(--graph-rel-learn))",    arrow: "out" },
 };
 
 const LANES_V3 = [
@@ -56,6 +62,9 @@ const LANES_V3 = [
     "extended_by",
     "feeds_into",
     "learned_by",
+    "used_by",
+    "fed_by",
+    "learned_alternative_of",
 ] as const;
 
 type RelKey = typeof LANES_V3[number];
@@ -78,12 +87,15 @@ interface Layout {
 }
 
 interface ByRel {
-    prerequisites: string[];
-    extended_from: string[];
-    compared_with: string[];
-    extended_by:   string[];
-    feeds_into:    string[];
-    learned_by:    string[];
+    prerequisites:          string[];
+    extended_from:          string[];
+    compared_with:          string[];
+    extended_by:            string[];
+    feeds_into:             string[];
+    learned_by:             string[];
+    used_by:                string[];
+    fed_by:                 string[];
+    learned_alternative_of: string[];
 }
 
 // ── categorize_v3 ──────────────────────────────────────────────────────────────
@@ -111,13 +123,18 @@ function computeLayout(byRel: ByRel): Layout {
     const wList: Array<{ slug: string; rel: RelKey }> = [
         ...byRel.prerequisites.map((s) => ({ slug: s, rel: "prerequisites" as RelKey })),
         ...byRel.extended_from.map((s) => ({ slug: s, rel: "extended_from" as RelKey })),
+        ...byRel.fed_by.map((s) => ({ slug: s, rel: "fed_by" as RelKey })),
     ];
     const eList: Array<{ slug: string; rel: RelKey }> = [
         ...byRel.extended_by.map((s) => ({ slug: s, rel: "extended_by" as RelKey })),
         ...byRel.feeds_into.map((s) => ({ slug: s, rel: "feeds_into" as RelKey })),
+        ...byRel.used_by.map((s) => ({ slug: s, rel: "used_by" as RelKey })),
     ];
     const nList: Array<{ slug: string; rel: RelKey }> = byRel.compared_with.map((s) => ({ slug: s, rel: "compared_with" }));
-    const sList: Array<{ slug: string; rel: RelKey }> = byRel.learned_by.map((s) => ({ slug: s, rel: "learned_by" }));
+    const sList: Array<{ slug: string; rel: RelKey }> = [
+        ...byRel.learned_by.map((s) => ({ slug: s, rel: "learned_by" as RelKey })),
+        ...byRel.learned_alternative_of.map((s) => ({ slug: s, rel: "learned_alternative_of" as RelKey })),
+    ];
 
     const wrapAt = 5;
     const nRowsReal = nList.length ? Math.ceil(nList.length / wrapAt) : 0;
@@ -261,12 +278,15 @@ const KIND_LABEL: Record<string, string> = {
 // ── Mobile relation metadata ───────────────────────────────────────────────────
 
 const REL_M: Record<RelKey, { label: string; color: string }> = {
-    prerequisites: { label: "Builds on",            color: "hsl(215 25% 45%)" },
-    extended_from: { label: "Extended from",        color: "hsl(215 19% 32%)" },
-    compared_with: { label: "Compared with",        color: "hsl(215 16% 55%)" },
-    extended_by:   { label: "Extended by",          color: "hsl(215 19% 32%)" },
-    feeds_into:    { label: "Feeds into",           color: "hsl(215 25% 45%)" },
-    learned_by:    { label: "Learned alternatives", color: "hsl(191 55% 32%)" },
+    prerequisites:          { label: "Builds on",               color: "hsl(var(--graph-rel-prereq))"  },
+    extended_from:          { label: "Extended from",           color: "hsl(var(--graph-rel-extend))"  },
+    compared_with:          { label: "Compared with",           color: "hsl(var(--graph-rel-compare))" },
+    extended_by:            { label: "Extended by",             color: "hsl(var(--graph-rel-extend))"  },
+    feeds_into:             { label: "Feeds into",              color: "hsl(var(--graph-rel-flow))"    },
+    learned_by:             { label: "Learned alternatives",    color: "hsl(var(--graph-rel-learn))"   },
+    used_by:                { label: "Used by",                 color: "hsl(var(--graph-rel-flow))"    },
+    fed_by:                 { label: "Fed by",                  color: "hsl(var(--graph-rel-flow))"    },
+    learned_alternative_of: { label: "Learned alternative of",  color: "hsl(var(--graph-rel-learn))"   },
 };
 
 // ── categorize_mobile — same dedup priority as desktop ────────────────────────
@@ -317,22 +337,22 @@ function MobileNeighborRow({ slug, onClick }: MobileNeighborRowProps) {
         <button
             type="button"
             onClick={() => onClick(slug)}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-white border border-[hsl(214_32%_91%)] rounded-lg text-left active:bg-[hsl(214_32%_96%)]"
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-surface border border-border rounded-lg text-left active:bg-muted"
             style={{ touchAction: "none" }}
         >
             <EntryIcon slug={slug} kind={kind} size={32} />
             <div className="min-w-0 flex-1">
-                <div className="text-[13.5px] font-semibold text-[hsl(215_25%_22%)] leading-tight truncate -tracking-[0.1px]">
+                <div className="text-[13.5px] font-semibold text-foreground leading-tight truncate -tracking-[0.1px]">
                     {shortTitle(node.title)}
                 </div>
-                <div className="text-[10.5px] text-[hsl(215_16%_55%)] uppercase tracking-[0.06em] truncate mt-0.5">
+                <div className="text-[10.5px] text-muted-foreground uppercase tracking-[0.06em] truncate mt-0.5">
                     {KIND_LABEL[kind]}
                     {year != null && (
                         <> · <span className="font-mono normal-case tracking-normal">{year}</span></>
                     )}
                 </div>
             </div>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[hsl(215_16%_55%)] shrink-0">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground shrink-0">
                 <polyline points="9 18 15 12 9 6" />
             </svg>
         </button>
@@ -407,61 +427,61 @@ function MobileGraphView({ history, current, onBack, onNavigate }: MobileGraphVi
         <div className="flex flex-col min-h-0">
             {/* Trail breadcrumb */}
             {history.length > 0 && (
-                <div className="flex items-center gap-1.5 px-4 py-2 text-[11px] text-[hsl(215_16%_55%)] overflow-x-auto shrink-0 bg-[hsl(210_40%_97%)] border border-[hsl(214_32%_94%)] rounded-lg mb-3">
+                <div className="flex items-center gap-1.5 px-4 py-2 text-[11px] text-muted-foreground overflow-x-auto shrink-0 bg-bg-soft border border-border rounded-lg mb-3">
                     <button
                         type="button"
                         onClick={onBack}
                         disabled={history.length === 0}
                         className={`w-7 h-7 grid place-items-center rounded shrink-0 ${
                             history.length > 0
-                                ? "text-[hsl(215_25%_22%)] active:bg-[hsl(214_32%_94%)]"
-                                : "text-[hsl(215_16%_70%)]"
+                                ? "text-foreground active:bg-muted"
+                                : "text-muted-foreground/60"
                         }`}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="15 18 9 12 15 6" />
                         </svg>
                     </button>
-                    <span className="font-mono uppercase tracking-wider text-[9px] text-[hsl(215_16%_60%)] mr-1 shrink-0">Trail</span>
+                    <span className="font-mono uppercase tracking-wider text-[9px] text-muted-foreground/60 mr-1 shrink-0">Trail</span>
                     {hidden > 0 && (
                         <>
-                            <span className="text-[10px] font-mono text-[hsl(215_16%_60%)] whitespace-nowrap">+{hidden} earlier</span>
-                            <span className="text-[hsl(215_16%_72%)]">·</span>
+                            <span className="text-[10px] font-mono text-muted-foreground/60 whitespace-nowrap">+{hidden} earlier</span>
+                            <span className="text-muted-foreground/60">·</span>
                         </>
                     )}
                     {visible.map((s, i) => (
                         <span key={`m-${s}-${i}`} className="contents">
-                            <span className="text-[hsl(215_25%_30%)] whitespace-nowrap">{nodeTitle(s)}</span>
-                            <span className="text-[hsl(215_16%_72%)]">›</span>
+                            <span className="text-foreground whitespace-nowrap">{nodeTitle(s)}</span>
+                            <span className="text-muted-foreground/60">›</span>
                         </span>
                     ))}
-                    <span className="text-[hsl(215_30%_15%)] font-semibold whitespace-nowrap">{nodeTitle(current)}</span>
+                    <span className="text-foreground font-semibold whitespace-nowrap">{nodeTitle(current)}</span>
                 </div>
             )}
 
             {/* Focused entry hero card */}
-            <div className="rounded-xl border-2 border-[hsl(215_19%_35%)] bg-white p-4 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.18)]">
+            <div className="rounded-xl border-2 border-border-strong bg-surface p-4 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.18)]">
                 <div className="flex items-start gap-3">
                     <EntryIcon slug={current} kind={kind} size={44} />
                     <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 text-[9.5px] uppercase tracking-[0.12em] text-[hsl(215_16%_55%)]">
-                            <span className="text-[hsl(191_55%_28%)] font-semibold">Focused</span>
-                            <span className="text-[hsl(215_16%_72%)]">·</span>
+                        <div className="flex items-center gap-1.5 text-[9.5px] uppercase tracking-[0.12em] text-muted-foreground">
+                            <span className="text-brand font-semibold">Focused</span>
+                            <span className="text-muted-foreground/60">·</span>
                             <span>{KIND_LABEL[kind]}</span>
                             {year != null && (
-                                <><span className="text-[hsl(215_16%_72%)]">·</span><span className="font-mono normal-case tracking-normal">{year}</span></>
+                                <><span className="text-muted-foreground/60">·</span><span className="font-mono normal-case tracking-normal">{year}</span></>
                             )}
                         </div>
-                        <div className="text-[16px] font-semibold leading-tight text-[hsl(215_30%_15%)] -tracking-[0.2px] mt-0.5">
+                        <div className="text-[16px] font-semibold leading-tight text-foreground -tracking-[0.2px] mt-0.5">
                             {node.title}
                         </div>
                     </div>
                 </div>
-                <p className="text-[12.5px] text-[hsl(215_25%_30%)] leading-[1.5] mt-3">
+                <p className="text-[12.5px] text-foreground leading-[1.5] mt-3">
                     {bodyText}
                 </p>
                 {citationText && (
-                    <div className="flex items-center gap-1.5 mt-2 text-[10.5px] text-[hsl(215_16%_55%)]">
+                    <div className="flex items-center gap-1.5 mt-2 text-[10.5px] text-muted-foreground">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                             <path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z" />
                             <path d="M4 12h12" />
@@ -472,7 +492,7 @@ function MobileGraphView({ history, current, onBack, onNavigate }: MobileGraphVi
                 {tasks.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-3">
                         {tasks.slice(0, 3).map((t) => (
-                            <span key={t} className="inline-flex items-center h-[20px] px-2 rounded-[3px] border border-[hsl(191_50%_75%)] bg-[hsl(191_70%_97%)] text-[10.5px] text-[hsl(191_55%_28%)]">
+                            <span key={t} className="inline-flex items-center h-[20px] px-2 rounded-[3px] border border-brand/40 bg-brand/10 text-[10.5px] text-brand">
                                 {taskLabel(t)}
                             </span>
                         ))}
@@ -480,7 +500,7 @@ function MobileGraphView({ history, current, onBack, onNavigate }: MobileGraphVi
                 )}
                 <Link
                     to={node.path}
-                    className="mt-4 flex items-center justify-center h-10 rounded-md bg-[hsl(215_30%_22%)] text-white text-[13px] font-medium hover:bg-[hsl(215_30%_16%)] active:bg-[hsl(215_30%_16%)]"
+                    className="mt-4 flex items-center justify-center h-10 rounded-md bg-primary text-primary-foreground text-[13px] font-medium hover:opacity-90 active:opacity-90"
                 >
                     Open page →
                 </Link>
@@ -488,10 +508,10 @@ function MobileGraphView({ history, current, onBack, onNavigate }: MobileGraphVi
 
             {/* Neighbor sections */}
             <div className="mt-5 flex items-baseline justify-between">
-                <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[hsl(215_16%_45%)]">
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     Related · {totalNeighbors}
                 </h2>
-                <span className="text-[10.5px] text-[hsl(215_16%_55%)]">tap to navigate</span>
+                <span className="text-[10.5px] text-muted-foreground">tap to navigate</span>
             </div>
 
             {LANES_V3.map((rel) => {
@@ -505,7 +525,7 @@ function MobileGraphView({ history, current, onBack, onNavigate }: MobileGraphVi
                             <span className="text-[11px] font-semibold" style={{ color: meta.color }}>
                                 {meta.label}
                             </span>
-                            <span className="text-[10.5px] text-[hsl(215_16%_60%)] tabular-nums ml-auto">{list.length}</span>
+                            <span className="text-[10.5px] text-muted-foreground/60 tabular-nums ml-auto">{list.length}</span>
                         </div>
                         <div className="flex flex-col gap-1.5">
                             {list.map((s) => (
@@ -516,7 +536,7 @@ function MobileGraphView({ history, current, onBack, onNavigate }: MobileGraphVi
                 );
             })}
 
-            <p className="mt-6 mb-2 px-1 text-[10.5px] text-[hsl(215_16%_55%)] leading-snug">
+            <p className="mt-6 mb-2 px-1 text-[10.5px] text-muted-foreground leading-snug">
                 The visual graph from desktop is reshaped into a list here. Same data, same
                 navigation — tap any entry to recenter, back arrow in the trail to backtrack.
             </p>
@@ -574,10 +594,10 @@ function NeighborCardV3({ pos, isHovered, isDimmed, onClick, onHover }: Neighbor
             onMouseEnter={() => onHover(pos.slug)}
             onMouseLeave={() => onHover(null)}
             onPointerDown={handlePointerDown}
-            className={`absolute group rounded-md border bg-white px-2.5 py-1.5 flex flex-col text-left transition-all ${
+            className={`absolute group rounded-md border bg-surface px-2.5 py-1.5 flex flex-col text-left transition-all ${
                 isHovered
-                    ? "border-[hsl(215_19%_40%)] shadow-[0_6px_18px_-8px_rgba(15,23,42,0.22)]"
-                    : "border-[hsl(214_32%_88%)]"
+                    ? "border-border-strong shadow-[0_6px_18px_-8px_rgba(15,23,42,0.22)]"
+                    : "border-border"
             }`}
             style={{
                 left:    pos.x,
@@ -590,15 +610,15 @@ function NeighborCardV3({ pos, isHovered, isDimmed, onClick, onHover }: Neighbor
         >
             <div className="flex items-center gap-1.5">
                 <EntryIcon slug={pos.slug} kind={kind} size={18} />
-                <span className="text-[11.5px] font-semibold text-[hsl(215_25%_22%)] truncate -tracking-[0.1px] flex-1 min-w-0">
+                <span className="text-[11.5px] font-semibold text-foreground truncate -tracking-[0.1px] flex-1 min-w-0">
                     {shortTitle(node.title)}
                 </span>
-                <span className="font-mono text-[9.5px] text-[hsl(215_16%_55%)] tabular-nums shrink-0">
+                <span className="font-mono text-[9.5px] text-muted-foreground tabular-nums shrink-0">
                     {year ?? ""}
                 </span>
             </div>
             <div className="flex items-center gap-1.5 mt-1 min-w-0">
-                <span className="text-[9.5px] text-[hsl(215_16%_55%)] uppercase tracking-[0.06em] truncate">
+                <span className="text-[9.5px] text-muted-foreground uppercase tracking-[0.06em] truncate">
                     {KIND_LABEL[kind]}
                 </span>
                 <span className="ml-auto inline-flex items-center gap-1 shrink-0">
@@ -612,7 +632,7 @@ function NeighborCardV3({ pos, isHovered, isDimmed, onClick, onHover }: Neighbor
     );
 }
 
-// ── CenterCardV3 ───────────────────────────────────────────────────────────────
+// ── CenterCardV3 — compact node (details now in FocusedEntryPanel) ─────────────
 
 interface CenterCardProps {
     slug:   string;
@@ -620,49 +640,15 @@ interface CenterCardProps {
 }
 
 function CenterCardV3({ slug, layout }: CenterCardProps) {
-    const node = contentGraph.nodes[slug];
+    const entry = getFocusEntry(slug);
+    if (!entry) return null;
 
-    const kind: "algorithm" | "model" | "concept" =
-        algorithmPages.some((p) => p.slug === slug) ? "algorithm" :
-        modelPages.some((p) => p.slug === slug)     ? "model"     :
-        "concept";
-
-    const fm = (() => {
-        const a = algorithmPages.find((p) => p.slug === slug);
-        if (a) return a.frontmatter;
-        const m = modelPages.find((p) => p.slug === slug);
-        if (m) return m.frontmatter;
-        const c = conceptPages.find((p) => p.slug === slug);
-        if (c) return c.frontmatter;
-        return undefined;
-    })();
-
-    // Primary source — resolved by hook at top of component, not inside loop.
-    const primarySourceId = fm?.sources?.primary;
-    const paper = usePaperById(primarySourceId);
-
-    if (!node || !fm) return null;
-
-    const tagline = (fm as { tagline?: string }).tagline;
-    const bodyText = tagline ?? node.summary.slice(0, 160);
-    const tasks = (fm as { tasks?: string[] }).tasks ?? [];
-
-    // Compact citation: "First-surname · Venue Year"
-    let citationText: string | null = null;
-    if (paper) {
-        const firstAuthor = paper.authors?.[0] ?? "";
-        const surname = firstAuthor.includes(",")
-            ? firstAuthor.split(",")[0].trim()
-            : firstAuthor.split(" ").at(-1) ?? firstAuthor;
-        const parts = [surname, paper.venue, paper.year].filter(Boolean).join(" · ");
-        citationText = parts || null;
-    } else if (primarySourceId && !primarySourceId.startsWith("repo:") && !primarySourceId.startsWith("doc:")) {
-        citationText = primarySourceId;
-    }
+    const { node, kind, fm } = entry;
+    const year = (fm as { year?: number }).year;
 
     return (
         <div
-            className="absolute rounded-xl border-2 border-[hsl(215_19%_35%)] bg-white shadow-[0_12px_32px_-12px_rgba(15,23,42,0.22),0_0_0_8px_rgba(255,255,255,0.6)] px-5 py-4 flex flex-col"
+            className="absolute rounded-xl border-2 border-border-strong bg-surface shadow-[0_12px_32px_-12px_rgba(15,23,42,0.22)] flex items-center gap-2.5 px-3"
             style={{
                 left:   layout.cx - GG.centerW / 2,
                 top:    layout.cy - GG.centerH / 2,
@@ -670,52 +656,17 @@ function CenterCardV3({ slug, layout }: CenterCardProps) {
                 height: GG.centerH,
             }}
         >
-            <div className="flex items-start gap-3">
-                <EntryIcon slug={slug} kind={kind} size={40} />
-                <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 text-[9.5px] uppercase tracking-[0.12em] text-[hsl(215_16%_55%)] mb-1">
-                        <span className="text-[hsl(191_55%_28%)] font-semibold">Focused</span>
-                        <span className="text-[hsl(215_16%_72%)]">·</span>
-                        <span>{KIND_LABEL[kind]}</span>
-                    </div>
-                    <div className="text-[15px] font-semibold leading-tight text-[hsl(215_30%_15%)] -tracking-[0.2px]">
-                        {node.title}
-                    </div>
+            <EntryIcon slug={slug} kind={kind} size={28} />
+            <div className="min-w-0 flex-1">
+                <div className="text-[9px] uppercase tracking-[0.1em] text-muted-foreground leading-none mb-0.5">
+                    {KIND_LABEL[kind]}
+                    {year != null && (
+                        <> · <span className="font-mono normal-case tracking-normal">{year}</span></>
+                    )}
                 </div>
-            </div>
-
-            <p className="text-[12.5px] text-[hsl(215_25%_30%)] leading-[1.5] mt-2.5 line-clamp-2 flex-1">
-                {bodyText}
-            </p>
-
-            {citationText && (
-                <div className="flex items-center gap-1.5 mt-1.5 text-[10.5px] text-[hsl(215_16%_55%)]">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                        <path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z" />
-                        <path d="M4 12h12" />
-                    </svg>
-                    <span className="font-mono truncate">{citationText}</span>
+                <div className="text-[13px] font-semibold text-foreground leading-tight">
+                    {shortTitle(node.title)}
                 </div>
-            )}
-
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-[hsl(214_32%_94%)]">
-                <div className="flex flex-wrap gap-1 min-w-0">
-                    {tasks.slice(0, 2).map((t) => (
-                        <span
-                            key={t}
-                            className="inline-flex items-center h-[18px] px-1.5 rounded-[3px] border border-[hsl(191_50%_75%)] bg-[hsl(191_70%_97%)] text-[10px] text-[hsl(191_55%_28%)] whitespace-nowrap"
-                        >
-                            {taskLabel(t)}
-                        </span>
-                    ))}
-                </div>
-                <Link
-                    to={node.path}
-                    className="text-[11px] font-medium text-[hsl(215_19%_35%)] hover:text-[hsl(215_30%_15%)] hover:underline whitespace-nowrap shrink-0"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    Open page →
-                </Link>
             </div>
         </div>
     );
@@ -796,7 +747,7 @@ function EdgesLayerV3({ positions, layout, hoverSlug }: EdgesLayerProps) {
                     >
                         <rect
                             x={-w / 2} y={-7} width={w} height={14} rx={3}
-                            fill="white"
+                            fill="hsl(var(--graph-pill-bg))"
                             stroke={meta.color}
                             strokeOpacity="0.7"
                             strokeWidth="0.8"
@@ -829,8 +780,8 @@ interface LaneLabelProps {
 
 function LaneLabel({ side, top, left }: LaneLabelProps) {
     const text = {
-        W: "builds on   ·   extended from",
-        E: "extended by   ·   feeds into",
+        W: "builds on · extended from · fed by",
+        E: "extended by · feeds into · used by",
         N: "compared with",
         S: "learned alternative of",
     }[side];
@@ -844,7 +795,7 @@ function LaneLabel({ side, top, left }: LaneLabelProps) {
                 font:          "500 9.5px ui-monospace, Geist Mono, monospace",
                 letterSpacing: "0.18em",
                 textTransform: "uppercase" as const,
-                color:         "hsl(215 16% 60%)",
+                color:         "hsl(var(--muted-foreground))",
                 whiteSpace:    "nowrap",
                 pointerEvents: "none",
                 transform:     side === "W" ? "rotate(-90deg)" : side === "E" ? "rotate(90deg)" : undefined,
@@ -881,15 +832,15 @@ function TrailStripV3({ history, current, future, onBack, onForward, onJump }: T
     };
 
     return (
-        <div className="flex items-center gap-2 h-10 px-4 border-y border-[hsl(214_32%_91%)] bg-white shrink-0">
+        <div className="flex items-center gap-2 h-10 px-4 border-y border-border bg-surface shrink-0">
             {/* Back button */}
             <button
                 onClick={onBack}
                 disabled={history.length === 0}
                 className={`w-7 h-7 grid place-items-center rounded ${
                     history.length > 0
-                        ? "text-[hsl(215_25%_22%)] hover:bg-[hsl(214_32%_92%)]"
-                        : "text-[hsl(215_16%_70%)] cursor-default"
+                        ? "text-foreground hover:bg-muted"
+                        : "text-muted-foreground/60 cursor-default"
                 }`}
                 title="Back (⌘[)"
             >
@@ -904,8 +855,8 @@ function TrailStripV3({ history, current, future, onBack, onForward, onJump }: T
                 disabled={future.length === 0}
                 className={`w-7 h-7 grid place-items-center rounded ${
                     future.length > 0
-                        ? "text-[hsl(215_25%_22%)] hover:bg-[hsl(214_32%_92%)]"
-                        : "text-[hsl(215_16%_70%)] cursor-default"
+                        ? "text-foreground hover:bg-muted"
+                        : "text-muted-foreground/60 cursor-default"
                 }`}
                 title="Forward (⌘])"
             >
@@ -914,53 +865,53 @@ function TrailStripV3({ history, current, future, onBack, onForward, onJump }: T
                 </svg>
             </button>
 
-            <span className="w-px h-4 bg-[hsl(214_32%_88%)] mx-1.5" />
+            <span className="w-px h-4 bg-border mx-1.5" />
 
-            <div className="text-[10px] uppercase tracking-[0.14em] text-[hsl(215_16%_55%)] mr-2">Trail</div>
+            <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground mr-2">Trail</div>
 
             {/* Trail entries */}
             <div className="flex items-center gap-1.5 text-[12px] overflow-x-auto min-w-0">
                 {histHidden > 0 && (
                     <>
-                        <span className="text-[10.5px] font-mono text-[hsl(215_16%_60%)] whitespace-nowrap" title={`${histHidden} earlier`}>
+                        <span className="text-[10.5px] font-mono text-muted-foreground/60 whitespace-nowrap" title={`${histHidden} earlier`}>
                             +{histHidden} earlier
                         </span>
-                        <span className="text-[hsl(215_16%_72%)]">·</span>
+                        <span className="text-muted-foreground/60">·</span>
                     </>
                 )}
                 {histVisible.map((s, i) => (
                     <span key={`h-${s}-${histStart + i}`} className="contents">
                         <button
                             onClick={() => onJump(histStart + i)}
-                            className="text-[hsl(215_25%_30%)] hover:underline truncate text-[11.5px]"
+                            className="text-foreground hover:underline truncate text-[11.5px]"
                         >
                             {nodeTitle(s)}
                         </button>
-                        <span className="text-[hsl(215_16%_72%)]">›</span>
+                        <span className="text-muted-foreground/60">›</span>
                     </span>
                 ))}
-                <span className="text-[hsl(215_30%_15%)] font-semibold whitespace-nowrap text-[11.5px]">
+                <span className="text-foreground font-semibold whitespace-nowrap text-[11.5px]">
                     {nodeTitle(current)}
                 </span>
                 {futVisible.map((s, i) => (
                     <span key={`f-${s}-${i}`} className="contents">
-                        <span className="text-[hsl(215_16%_72%)]">›</span>
-                        <span className="text-[hsl(215_16%_60%)] whitespace-nowrap text-[11.5px]">{nodeTitle(s)}</span>
+                        <span className="text-muted-foreground/60">›</span>
+                        <span className="text-muted-foreground/60 whitespace-nowrap text-[11.5px]">{nodeTitle(s)}</span>
                     </span>
                 ))}
                 {futHidden > 0 && (
                     <>
-                        <span className="text-[hsl(215_16%_72%)]">·</span>
-                        <span className="text-[10.5px] font-mono text-[hsl(215_16%_60%)] whitespace-nowrap">+{futHidden} later</span>
+                        <span className="text-muted-foreground/60">·</span>
+                        <span className="text-[10.5px] font-mono text-muted-foreground/60 whitespace-nowrap">+{futHidden} later</span>
                     </>
                 )}
             </div>
 
             {/* Keyboard shortcut hint */}
-            <div className="ml-auto flex items-center gap-1.5 text-[10.5px] text-[hsl(215_16%_55%)] shrink-0">
-                <kbd className="font-mono px-1 py-0.5 rounded bg-white border border-[hsl(214_32%_85%)]">⌘[</kbd>
+            <div className="ml-auto flex items-center gap-1.5 text-[10.5px] text-muted-foreground shrink-0">
+                <kbd className="font-mono px-1 py-0.5 rounded bg-surface border border-border-strong">⌘[</kbd>
                 <span className="-ml-0.5">back</span>
-                <kbd className="font-mono px-1 py-0.5 rounded bg-white border border-[hsl(214_32%_85%)] ml-1.5">⌘]</kbd>
+                <kbd className="font-mono px-1 py-0.5 rounded bg-surface border border-border-strong ml-1.5">⌘]</kbd>
                 <span className="-ml-0.5">forward</span>
             </div>
         </div>
@@ -969,18 +920,53 @@ function TrailStripV3({ history, current, future, onBack, onForward, onJump }: T
 
 // ── RelationLegendV3 ───────────────────────────────────────────────────────────
 
-function RelationLegendV3() {
+interface RelationLegendV3Props {
+    activeRels: Set<string>;
+}
+
+function RelationLegendV3({ activeRels }: RelationLegendV3Props) {
+    const active = LANES_V3.filter((rel) => activeRels.has(rel));
+    if (active.length === 0) return null;
     return (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-3 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur border border-[hsl(214_32%_88%)] shadow-sm">
-            {LANES_V3.map((rel) => {
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-x-3 gap-y-1.5 px-3 py-1.5 rounded-2xl max-w-[680px] bg-surface/90 backdrop-blur border border-border shadow-sm">
+            {active.map((rel) => {
                 const m = RELATION_V3[rel];
                 return (
                     <span key={rel} className="inline-flex items-center gap-1.5 text-[10px]">
                         <span className="w-2 h-2 rounded-full" style={{ background: m.color }} />
-                        <span className="text-[hsl(215_25%_30%)]">{m.label}</span>
+                        <span className="text-foreground">{m.label}</span>
                     </span>
                 );
             })}
+        </div>
+    );
+}
+
+// ── ZoomControls ───────────────────────────────────────────────────────────────
+
+interface ZoomControlsProps {
+    onZoomIn:  () => void;
+    onZoomOut: () => void;
+    onFit:     () => void;
+}
+
+function ZoomControls({ onZoomIn, onZoomOut, onFit }: ZoomControlsProps) {
+    const btnCls = "w-7 h-7 grid place-items-center rounded-md border border-border bg-surface text-muted-foreground hover:text-foreground hover:bg-muted shadow-sm transition-colors";
+    return (
+        <div className="absolute bottom-3 right-3 flex flex-col gap-1">
+            <button type="button" onClick={onZoomIn}  className={btnCls} title="Zoom in">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+            </button>
+            <button type="button" onClick={onZoomOut} className={btnCls} title="Zoom out">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+            </button>
+            <button type="button" onClick={onFit}     className={btnCls} title="Fit to view">
+                <Maximize2 size={13} />
+            </button>
         </div>
     );
 }
@@ -998,6 +984,12 @@ function resolveInitialSlug(focusSlug: string | undefined): string | null {
         }
     }
     return null;
+}
+
+// ── clamp helper ───────────────────────────────────────────────────────────────
+
+function clamp(v: number, lo: number, hi: number): number {
+    return Math.max(lo, Math.min(hi, v));
 }
 
 // ── GraphExplorer (main export) ────────────────────────────────────────────────
@@ -1082,20 +1074,165 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
         return () => window.removeEventListener("keydown", onKey);
     }, []);
 
-    // ── Touch: tap outside a card clears the pinned hover ─────────────────────
-
-    const canvasRef = useRef<HTMLDivElement>(null);
-
-    const handleCanvasPointerDown = useCallback((e: React.PointerEvent) => {
-        if ((e.pointerType === "touch" || e.pointerType === "pen") && e.target === canvasRef.current) {
-            setHover(null);
-        }
-    }, []);
-
     // ── Graph data ─────────────────────────────────────────────────────────────
 
     const cat    = useMemo(() => (current ? categorize_v3(current) : null), [current]);
     const layout = useMemo(() => (cat ? computeLayout(cat.byRel) : null),   [cat]);
+
+    // ── Active rels (for legend filtering) ────────────────────────────────────
+
+    const activeRels = useMemo<Set<string>>(() => {
+        if (!cat) return new Set();
+        const s = new Set<string>();
+        for (const rel of LANES_V3) {
+            if (cat.byRel[rel].length > 0) s.add(rel);
+        }
+        return s;
+    }, [cat]);
+
+    // ── Whiteboard pan/zoom state ──────────────────────────────────────────────
+
+    const viewportRef = useRef<HTMLDivElement>(null);
+    const planeRef    = useRef<HTMLDivElement>(null);
+
+    const [view,    setView]    = useState<{ x: number; y: number; scale: number }>({ x: 0, y: 0, scale: 1 });
+    const [animate, setAnimate] = useState(false);
+    const [vp,      setVp]      = useState<{ w: number; h: number }>({ w: 0, h: 0 });
+
+    // Track viewport size via ResizeObserver
+    useEffect(() => {
+        const el = viewportRef.current;
+        if (!el) return;
+        const ro = new ResizeObserver((entries) => {
+            const e = entries[0];
+            if (e) setVp({ w: e.contentRect.width, h: e.contentRect.height });
+        });
+        ro.observe(el);
+        // Read initial size synchronously
+        setVp({ w: el.clientWidth, h: el.clientHeight });
+        return () => ro.disconnect();
+    }, []);
+
+    // ── fitView ────────────────────────────────────────────────────────────────
+
+    const fitView = useCallback((animated: boolean) => {
+        if (!layout || vp.w === 0 || vp.h === 0) return;
+
+        // Bounding box of all nodes
+        let minX = layout.cx - GG.centerW / 2;
+        let minY = layout.cy - GG.centerH / 2;
+        let maxX = layout.cx + GG.centerW / 2;
+        let maxY = layout.cy + GG.centerH / 2;
+
+        for (const pos of layout.positions) {
+            minX = Math.min(minX, pos.x);
+            minY = Math.min(minY, pos.y);
+            maxX = Math.max(maxX, pos.x + GG.nodeW);
+            maxY = Math.max(maxY, pos.y + GG.nodeH);
+        }
+
+        const pad = 64;
+        minX -= pad; minY -= pad; maxX += pad; maxY += pad;
+        const bboxW = maxX - minX;
+        const bboxH = maxY - minY;
+
+        const scale = clamp(Math.min(vp.w / bboxW, vp.h / bboxH), 0.3, 1.6);
+        const x = (vp.w - bboxW * scale) / 2 - minX * scale;
+        const y = (vp.h - bboxH * scale) / 2 - minY * scale;
+
+        setAnimate(animated);
+        setView({ x, y, scale });
+    }, [layout, vp]);
+
+    // Auto-fit on refocus / layout change / viewport resize
+    const prevCurrentRef = useRef<string>(current);
+    useEffect(() => {
+        if (vp.w === 0) return;
+        const didNavigate = prevCurrentRef.current !== current;
+        prevCurrentRef.current = current;
+        fitView(didNavigate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [current, layout, vp.w, vp.h]);
+
+    // ── Non-passive wheel listener for zoom-to-cursor ─────────────────────────
+
+    const viewRef = useRef(view);
+    useEffect(() => { viewRef.current = view; }, [view]);
+
+    useEffect(() => {
+        const el = viewportRef.current;
+        if (!el) return;
+        const onWheel = (e: WheelEvent) => {
+            e.preventDefault();
+            const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
+            const v = viewRef.current;
+            const newScale = clamp(v.scale * factor, 0.3, 2);
+            const rect = el.getBoundingClientRect();
+            const cx = e.clientX - rect.left;
+            const cy = e.clientY - rect.top;
+            const gx = (cx - v.x) / v.scale;
+            const gy = (cy - v.y) / v.scale;
+            const nx = cx - gx * newScale;
+            const ny = cy - gy * newScale;
+            setAnimate(false);
+            setView({ x: nx, y: ny, scale: newScale });
+        };
+        el.addEventListener("wheel", onWheel, { passive: false });
+        return () => el.removeEventListener("wheel", onWheel);
+    }, []);
+
+    // ── Pan (pointer drag on background) ─────────────────────────────────────
+
+    const panState = useRef<{ startX: number; startY: number; startVx: number; startVy: number } | null>(null);
+
+    const handleViewportPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+        // Only pan when clicking on the viewport background or the plane itself (not cards)
+        const t = e.target as HTMLElement;
+        const isBackground = t === viewportRef.current || t === planeRef.current;
+        if (!isBackground) return;
+
+        // Clear pinned hover on background tap
+        setHover(null);
+
+        e.currentTarget.setPointerCapture(e.pointerId);
+        setAnimate(false);
+        panState.current = {
+            startX:  e.clientX,
+            startY:  e.clientY,
+            startVx: viewRef.current.x,
+            startVy: viewRef.current.y,
+        };
+    }, []);
+
+    const handleViewportPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+        if (!panState.current) return;
+        const dx = e.clientX - panState.current.startX;
+        const dy = e.clientY - panState.current.startY;
+        setView((v) => ({
+            ...v,
+            x: panState.current!.startVx + dx,
+            y: panState.current!.startVy + dy,
+        }));
+    }, []);
+
+    const handleViewportPointerUp = useCallback(() => {
+        panState.current = null;
+    }, []);
+
+    // ── Zoom controls helpers ──────────────────────────────────────────────────
+
+    const zoomAroundCenter = useCallback((factor: number) => {
+        const el = viewportRef.current;
+        if (!el) return;
+        const v = viewRef.current;
+        const cx = el.clientWidth  / 2;
+        const cy = el.clientHeight / 2;
+        const newScale = clamp(v.scale * factor, 0.3, 2);
+        const gx = (cx - v.x) / v.scale;
+        const gy = (cy - v.y) / v.scale;
+        setAnimate(true);
+        setView({ x: cx - gx * newScale, y: cy - gy * newScale, scale: newScale });
+    }, []);
 
     // ── Empty state ────────────────────────────────────────────────────────────
 
@@ -1131,8 +1268,8 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
     }
 
     return (
-        <div className="flex flex-col min-h-0">
-            {/* Trail strip */}
+        <div className="flex flex-col h-[calc(100vh-11rem)] min-h-[460px]">
+            {/* Trail strip — full width */}
             <TrailStripV3
                 history={history}
                 current={current}
@@ -1142,41 +1279,67 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
                 onJump={jumpToHistory}
             />
 
-            {/* Canvas region */}
-            <div className="flex-1 px-7 py-5 overflow-auto min-h-0 flex items-start justify-center">
+            {/* Two-column row: viewport + right rail */}
+            <div className="flex-1 flex min-h-0">
+                {/* Whiteboard viewport */}
                 <div
-                    ref={canvasRef}
-                    className="relative rounded-lg border border-[hsl(214_32%_91%)] overflow-hidden"
+                    ref={viewportRef}
+                    className="relative flex-1 min-w-0 overflow-hidden"
                     style={{
-                        width:      layout.canvasW,
-                        height:     layout.canvasH,
-                        background: "radial-gradient(ellipse at center, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 70%, hsl(214 32% 95%) 100%)",
+                        background:  "radial-gradient(ellipse at center, hsl(var(--graph-canvas-from)) 0%, hsl(var(--graph-canvas-mid)) 70%, hsl(var(--graph-canvas-to)) 100%)",
                         touchAction: "none",
                     }}
-                    onPointerDown={handleCanvasPointerDown}
+                    onPointerDown={handleViewportPointerDown}
+                    onPointerMove={handleViewportPointerMove}
+                    onPointerUp={handleViewportPointerUp}
+                    onPointerCancel={handleViewportPointerUp}
                 >
-                    {/* Lane labels */}
-                    <LaneLabel side="W" top={layout.cy + 70}              left={-30} />
-                    <LaneLabel side="E" top={layout.cy - 70}              left={layout.canvasW - 30} />
-                    <LaneLabel side="N" top={GG.pad + GG.nodeH + 12}     left={layout.cx - 50} />
-                    <LaneLabel side="S" top={layout.canvasH - GG.pad - GG.nodeH - 22} left={layout.cx - 70} />
+                    {/* Plane — the transformed coordinate space */}
+                    <div
+                        ref={planeRef}
+                        className="absolute top-0 left-0"
+                        style={{
+                            width:           layout.canvasW,
+                            height:          layout.canvasH,
+                            transform:       `translate(${view.x}px, ${view.y}px) scale(${view.scale})`,
+                            transformOrigin: "0 0",
+                            transition:      animate ? "transform 280ms ease" : "none",
+                        }}
+                    >
+                        {/* Lane labels */}
+                        <LaneLabel side="W" top={layout.cy + 70}              left={-30} />
+                        <LaneLabel side="E" top={layout.cy - 70}              left={layout.canvasW - 30} />
+                        <LaneLabel side="N" top={GG.pad + GG.nodeH + 12}     left={layout.cx - 50} />
+                        <LaneLabel side="S" top={layout.canvasH - GG.pad - GG.nodeH - 22} left={layout.cx - 70} />
 
-                    <EdgesLayerV3 positions={layout.positions} layout={layout} hoverSlug={hover} />
-                    <CenterCardV3 slug={current} layout={layout} />
+                        <EdgesLayerV3 positions={layout.positions} layout={layout} hoverSlug={hover} />
+                        <CenterCardV3 slug={current} layout={layout} />
 
-                    {layout.positions.map((pos) => (
-                        <NeighborCardV3
-                            key={`n-${pos.slug}-${pos.rel}`}
-                            pos={pos}
-                            isHovered={hover === pos.slug}
-                            isDimmed={hover !== null && hover !== pos.slug}
-                            onClick={navigate}
-                            onHover={setHover}
-                        />
-                    ))}
+                        {layout.positions.map((pos) => (
+                            <NeighborCardV3
+                                key={`n-${pos.slug}-${pos.rel}`}
+                                pos={pos}
+                                isHovered={hover === pos.slug}
+                                isDimmed={hover !== null && hover !== pos.slug}
+                                onClick={navigate}
+                                onHover={setHover}
+                            />
+                        ))}
+                    </div>
 
-                    <RelationLegendV3 />
+                    {/* Viewport overlays — not scaled/translated */}
+                    <RelationLegendV3 activeRels={activeRels} />
+                    <ZoomControls
+                        onZoomIn={() => zoomAroundCenter(1.25)}
+                        onZoomOut={() => zoomAroundCenter(1 / 1.25)}
+                        onFit={() => fitView(true)}
+                    />
                 </div>
+
+                {/* Right rail — focused entry details */}
+                <aside className="w-[300px] shrink-0 border-l border-border overflow-y-auto p-5 bg-surface">
+                    <FocusedEntryPanel slug={current} />
+                </aside>
             </div>
         </div>
     );

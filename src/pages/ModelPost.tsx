@@ -150,6 +150,7 @@ export default function ModelPost() {
                     frontmatter={frontmatter}
                     badges={modelBadges}
                     kind="model"
+                    slug={resolvedSlug}
                 />
 
                 {frontmatter.implementations && frontmatter.implementations.length >= 1 && (

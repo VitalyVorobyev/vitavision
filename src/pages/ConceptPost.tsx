@@ -115,6 +115,7 @@ export default function ConceptPost() {
                     frontmatter={frontmatter}
                     badges={frontmatter.quality ? <QualityBadge quality={frontmatter.quality} /> : undefined}
                     kind="concept"
+                    slug={resolvedSlug}
                 />
 
                 {html === null ? (

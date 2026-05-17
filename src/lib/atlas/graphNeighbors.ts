@@ -7,12 +7,15 @@ export type AtlasIndexEntry = AlgorithmIndexEntry | ModelIndexEntry | ConceptInd
 export interface Neighbors {
     focus: AtlasIndexEntry;
     kind: "algorithm" | "model" | "concept";
-    prerequisites: string[];
-    extended_from: string[];
-    compared_with: string[];
-    extended_by:   string[];
-    feeds_into:    string[];
-    learned_by:    string[];
+    prerequisites:          string[];
+    extended_from:          string[];
+    compared_with:          string[];
+    extended_by:            string[];
+    feeds_into:             string[];
+    learned_by:             string[];
+    used_by:                string[];
+    fed_by:                 string[];
+    learned_alternative_of: string[];
 }
 
 /**
@@ -43,17 +46,24 @@ export function shortTitle(title: string): string {
  * is not a published node in the content graph.
  *
  * Bucket mapping:
- *   prerequisites  — forward[slug].prerequisites
- *   extended_from  — reverse[slug].extending ∪ reverse[slug].generalises (by .slug)
- *   extended_by    — forward[slug].relations where type ∈ {extended_by, generalized_by}
- *   compared_with  — forward[slug].relations where type ∈ {compared_with,
- *                    alternative_formulation_of, parallel_foundation_with}
- *   feeds_into     — forward[slug].relations where type = feeds_into
- *   learned_by     — reverse[slug].hasLearnedAlternative (by .slug)
+ *   prerequisites          — forward[slug].prerequisites
+ *   extended_from          — reverse[slug].extending ∪ reverse[slug].generalises (by .slug)
+ *   extended_by            — forward[slug].relations where type ∈ {extended_by, generalized_by}
+ *   compared_with          — forward[slug].relations where type ∈ {compared_with,
+ *                            alternative_formulation_of, parallel_foundation_with}
+ *   feeds_into             — forward[slug].relations where type = feeds_into
+ *   learned_by             — reverse[slug].hasLearnedAlternative (by .slug)
+ *   used_by                — reverse[slug].usedBy (plain string[])
+ *   fed_by                 — reverse[slug].fedBy (by .slug)
+ *   learned_alternative_of — forward[slug].relations where type = learned_alternative_of
+ *
+ * Note: reverse[slug].affects and forward[slug].failureModes are intentionally
+ * NOT surfaced — failure-mode pages are deferred per project policy.
  *
  * All buckets are filtered to known nodes then deduplicated across buckets
- * with priority: learned_by > extended_by > extended_from > prerequisites >
- *                feeds_into > compared_with.
+ * with priority (highest first):
+ *   learned_by > learned_alternative_of > extended_by > extended_from >
+ *   prerequisites > used_by > feeds_into > fed_by > compared_with.
  */
 export function getNeighbors(slug: string): Neighbors | null {
     if (!(slug in contentGraph.nodes)) {
@@ -115,19 +125,30 @@ function _buildNeighbors(
 
     const rawLearnedBy = reverse.hasLearnedAlternative.map((r) => r.slug);
 
+    const rawUsedBy = reverse.usedBy; // already string[]
+
+    const rawFedBy = reverse.fedBy.map((r) => r.slug);
+
+    const rawLearnedAlternativeOf = forward.relations
+        .filter((r) => r.type === "learned_alternative_of")
+        .map((r) => r.target);
+
     // --- filter to known nodes ---
     const known = (slugs: string[]) => slugs.filter((s) => s in contentGraph.nodes);
 
-    const filteredLearnedBy    = known(rawLearnedBy);
-    const filteredExtendedBy   = known(rawExtendedBy);
-    const filteredExtendedFrom = known(rawExtendedFrom);
-    const filteredPrereqs      = known(rawPrerequisites);
-    const filteredFeedsInto    = known(rawFeedsInto);
-    const filteredComparedWith = known(rawComparedWith);
+    const filteredLearnedBy             = known(rawLearnedBy);
+    const filteredLearnedAlternativeOf  = known(rawLearnedAlternativeOf);
+    const filteredExtendedBy            = known(rawExtendedBy);
+    const filteredExtendedFrom          = known(rawExtendedFrom);
+    const filteredPrereqs               = known(rawPrerequisites);
+    const filteredUsedBy                = known(rawUsedBy);
+    const filteredFeedsInto             = known(rawFeedsInto);
+    const filteredFedBy                 = known(rawFedBy);
+    const filteredComparedWith          = known(rawComparedWith);
 
     // --- cross-bucket deduplication ---
-    // Priority (highest first): learned_by > extended_by > extended_from >
-    //                           prerequisites > feeds_into > compared_with
+    // Priority (highest first): learned_by > learned_alternative_of > extended_by >
+    //   extended_from > prerequisites > used_by > feeds_into > fed_by > compared_with
     const seen = new Set<string>();
     const dedup = (slugs: string[]): string[] => {
         const result: string[] = [];
@@ -140,12 +161,15 @@ function _buildNeighbors(
         return result;
     };
 
-    const learned_by    = dedup(filteredLearnedBy);
-    const extended_by   = dedup(filteredExtendedBy);
-    const extended_from = dedup(filteredExtendedFrom);
-    const prerequisites = dedup(filteredPrereqs);
-    const feeds_into    = dedup(filteredFeedsInto);
-    const compared_with = dedup(filteredComparedWith);
+    const learned_by             = dedup(filteredLearnedBy);
+    const learned_alternative_of = dedup(filteredLearnedAlternativeOf);
+    const extended_by            = dedup(filteredExtendedBy);
+    const extended_from          = dedup(filteredExtendedFrom);
+    const prerequisites          = dedup(filteredPrereqs);
+    const used_by                = dedup(filteredUsedBy);
+    const feeds_into             = dedup(filteredFeedsInto);
+    const fed_by                 = dedup(filteredFedBy);
+    const compared_with          = dedup(filteredComparedWith);
 
     return {
         focus,
@@ -156,5 +180,8 @@ function _buildNeighbors(
         extended_by,
         feeds_into,
         learned_by,
+        used_by,
+        fed_by,
+        learned_alternative_of,
     };
 }

@@ -26,6 +26,8 @@ interface AtlasPageHeaderProps {
     badges?: ReactNode;
     /** Page kind shown as a badge to the left of the title. */
     kind?: PageKind;
+    /** When provided, renders a "View in graph" link at the end of the meta row. */
+    slug?: string;
 }
 
 const KIND_CLASSES: Record<PageKind, string> = {
@@ -46,7 +48,7 @@ const DIFFICULTY_LABEL: Record<Difficulty, string> = {
     beginner:     "Beginner",
 };
 
-export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges, kind }: AtlasPageHeaderProps) {
+export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges, kind, slug }: AtlasPageHeaderProps) {
     return (
         <header className="space-y-4 mb-8">
             <Link
@@ -103,6 +105,28 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                     <>
                         <span aria-hidden="true">·</span>
                         <span className="inline-flex items-center gap-2">{badges}</span>
+                    </>
+                )}
+                {slug && (
+                    <>
+                        <span aria-hidden="true">·</span>
+                        <Link
+                            to={`/atlas?view=graph&focus=${slug}`}
+                            className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="3" />
+                                <circle cx="5"  cy="5"  r="1.6" />
+                                <circle cx="19" cy="5"  r="1.6" />
+                                <circle cx="5"  cy="19" r="1.6" />
+                                <circle cx="19" cy="19" r="1.6" />
+                                <line x1="7" y1="6.5" x2="10" y2="10" />
+                                <line x1="17" y1="6.5" x2="14" y2="10" />
+                                <line x1="7" y1="17.5" x2="10" y2="14" />
+                                <line x1="17" y1="17.5" x2="14" y2="14" />
+                            </svg>
+                            View in graph
+                        </Link>
                     </>
                 )}
             </div>

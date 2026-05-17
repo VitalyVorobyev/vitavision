@@ -77,6 +77,26 @@
     --article-body:      215 25% 22%;
     --article-heading:   215 30% 12%;
     --article-link:      215 70% 38%;
+
+    /* Atlas graph view */
+    --graph-canvas-from:           0 0% 100%;
+    --graph-canvas-mid:            210 40% 98%;
+    --graph-canvas-to:             214 32% 95%;
+    --graph-pill-bg:               0 0% 100%;
+    --graph-rel-prereq:            215 25% 45%;
+    --graph-rel-extend:            215 19% 32%;
+    --graph-rel-compare:           215 16% 55%;
+    --graph-rel-flow:              215 25% 45%;
+    --graph-rel-learn:             191 55% 32%;
+    --graph-icon-tint-algorithm:   215 30% 28%;
+    --graph-icon-tint-model:       191 60% 30%;
+    --graph-icon-tint-concept:     215 16% 50%;
+    --graph-icon-bg-algorithm:     214 32% 96%;
+    --graph-icon-bg-model:         191 60% 96%;
+    --graph-icon-bg-concept:       210 40% 98%;
+    --graph-icon-border-algorithm: 214 32% 88%;
+    --graph-icon-border-model:     191 50% 82%;
+    --graph-icon-border-concept:   214 32% 88%;
   }
 
   .dark {
@@ -112,6 +132,26 @@
     --article-body:      210 30% 83%;
     --article-heading:   210 20% 95%;
     --article-link:      205 70% 68%;
+
+    /* Atlas graph view */
+    --graph-canvas-from:           222 47% 13%;
+    --graph-canvas-mid:            222 40% 11%;
+    --graph-canvas-to:             222 30% 9%;
+    --graph-pill-bg:               217 33% 17%;
+    --graph-rel-prereq:            215 30% 72%;
+    --graph-rel-extend:            215 25% 70%;
+    --graph-rel-compare:           215 18% 62%;
+    --graph-rel-flow:              215 30% 72%;
+    --graph-rel-learn:             191 60% 62%;
+    --graph-icon-tint-algorithm:   215 30% 75%;
+    --graph-icon-tint-model:       191 60% 68%;
+    --graph-icon-tint-concept:     215 18% 65%;
+    --graph-icon-bg-algorithm:     217 33% 22%;
+    --graph-icon-bg-model:         191 40% 20%;
+    --graph-icon-bg-concept:       222 40% 16%;
+    --graph-icon-border-algorithm: 215 25% 32%;
+    --graph-icon-border-model:     191 35% 34%;
+    --graph-icon-border-concept:   215 25% 32%;
   }
 
   html, body {

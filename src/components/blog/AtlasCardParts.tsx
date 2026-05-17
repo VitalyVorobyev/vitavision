@@ -5,6 +5,7 @@
 import { Link } from "react-router-dom";
 import { getNeighbors, shortTitle } from "../../lib/atlas/graphNeighbors.ts";
 import { contentGraph } from "../../generated/content-graph.ts";
+import { KIND_TEXT_CLASSES, KIND_LABEL } from "./cardText.ts";
 
 /** Reader-visible warning that a page is an unpublished draft. */
 export function DraftBadge() {
@@ -45,13 +46,17 @@ export function GraphChip({ slug }: { slug: string }) {
 }
 
 /**
- * `PROBLEM · YEAR` (or `DOMAIN · YEAR`) meta row. Renders the `·` separator only
- * when both halves are present; renders nothing when both are absent.
+ * `KIND · PROBLEM · YEAR` meta row. Renders the `·` separator only between
+ * present items; renders nothing when all three are absent.
  */
-export function CardMeta({ label, year }: { label?: string; year?: number }) {
-    if (!label && year === undefined) return null;
+export function CardMeta({ kind, label, year }: { kind?: "algorithm" | "model" | "concept"; label?: string; year?: number }) {
+    if (!kind && !label && year === undefined) return null;
     return (
         <div className="flex items-center gap-1.5 mt-1 text-[10.5px] text-muted-foreground uppercase tracking-[0.06em]">
+            {kind && (
+                <span className={KIND_TEXT_CLASSES[kind]}>{KIND_LABEL[kind]}</span>
+            )}
+            {kind && (label || year !== undefined) && <span className="text-muted-foreground/60">·</span>}
             {label && <span className="truncate">{label}</span>}
             {label && year !== undefined && <span className="text-muted-foreground/60">·</span>}
             {year !== undefined && (
@@ -92,7 +97,7 @@ export function RelationLine({ slug }: { slug: string }) {
                     return (
                         <span key={targetSlug} className="flex items-center gap-1">
                             <Link
-                                to={`/atlas/${targetSlug}`}
+                                to={`/atlas?view=graph&focus=${targetSlug}`}
                                 className="relative z-[1] text-foreground font-medium truncate hover:underline"
                                 onClick={(e) => e.stopPropagation()}
                             >

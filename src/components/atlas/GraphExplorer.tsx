@@ -7,7 +7,7 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { Maximize2, Search } from "lucide-react";
+import { ArrowUpRight, Maximize2, Search } from "lucide-react";
 import { searchSlugs } from "../../lib/atlas/searchClient.ts";
 import useMediaQuery from "../../hooks/useMediaQuery.ts";
 import { contentGraph } from "../../generated/content-graph.ts";
@@ -276,6 +276,12 @@ const KIND_LABEL: Record<string, string> = {
     concept:   "Concept",
 };
 
+const KIND_ACCENT: Record<string, string> = {
+    algorithm: "hsl(var(--graph-kind-accent-algorithm))",
+    model:     "hsl(var(--graph-kind-accent-model))",
+    concept:   "hsl(var(--graph-kind-accent-concept))",
+};
+
 // ── Mobile relation metadata ───────────────────────────────────────────────────
 
 const REL_M: Record<RelKey, { label: string; color: string }> = {
@@ -338,9 +344,10 @@ function MobileNeighborRow({ slug, onClick }: MobileNeighborRowProps) {
         <button
             type="button"
             onClick={() => onClick(slug)}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-surface border border-border rounded-lg text-left active:bg-muted"
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-surface border border-border rounded-lg text-left active:bg-muted relative overflow-hidden"
             style={{ touchAction: "none" }}
         >
+            <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ background: KIND_ACCENT[kind] }} />
             <EntryIcon slug={slug} kind={kind} size={32} />
             <div className="min-w-0 flex-1">
                 <div className="text-[13.5px] font-semibold text-foreground leading-tight truncate -tracking-[0.1px]">
@@ -461,7 +468,8 @@ function MobileGraphView({ history, current, onBack, onNavigate }: MobileGraphVi
             )}
 
             {/* Focused entry hero card */}
-            <div className="rounded-xl border-2 border-border-strong bg-surface p-4 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.18)]">
+            <div className="rounded-xl border-2 border-border-strong bg-surface p-4 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.18)] relative overflow-hidden">
+                <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ background: KIND_ACCENT[kind] }} />
                 <div className="flex items-start gap-3">
                     <EntryIcon slug={current} kind={kind} size={44} />
                     <div className="min-w-0 flex-1">
@@ -595,7 +603,7 @@ function NeighborCardV3({ pos, isHovered, isDimmed, onClick, onHover }: Neighbor
             onMouseEnter={() => onHover(pos.slug)}
             onMouseLeave={() => onHover(null)}
             onPointerDown={handlePointerDown}
-            className={`absolute group rounded-md border bg-surface px-2.5 py-1.5 flex flex-col text-left transition-all ${
+            className={`absolute group rounded-md border bg-surface px-2.5 py-1.5 flex flex-col text-left transition-all overflow-hidden ${
                 isHovered
                     ? "border-border-strong shadow-[0_6px_18px_-8px_rgba(15,23,42,0.22)]"
                     : "border-border"
@@ -609,6 +617,7 @@ function NeighborCardV3({ pos, isHovered, isDimmed, onClick, onHover }: Neighbor
                 touchAction: "none",
             }}
         >
+            <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ background: KIND_ACCENT[kind] }} />
             <div className="flex items-center gap-1.5">
                 <EntryIcon slug={pos.slug} kind={kind} size={18} />
                 <span className="text-[11.5px] font-semibold text-foreground truncate -tracking-[0.1px] flex-1 min-w-0">
@@ -648,8 +657,10 @@ function CenterCardV3({ slug, layout }: CenterCardProps) {
     const year = (fm as { year?: number }).year;
 
     return (
-        <div
-            className="absolute rounded-xl border-2 border-border-strong bg-surface shadow-[0_12px_32px_-12px_rgba(15,23,42,0.22)] flex items-center gap-2.5 px-3"
+        <Link
+            to={node.path}
+            aria-label={`Open ${node.title}`}
+            className="absolute group cursor-pointer rounded-xl border-2 border-border-strong bg-surface shadow-[0_12px_32px_-12px_rgba(15,23,42,0.22)] flex items-center gap-2.5 px-3 transition-colors hover:border-brand overflow-hidden"
             style={{
                 left:   layout.cx - GG.centerW / 2,
                 top:    layout.cy - GG.centerH / 2,
@@ -657,6 +668,11 @@ function CenterCardV3({ slug, layout }: CenterCardProps) {
                 height: GG.centerH,
             }}
         >
+            <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ background: KIND_ACCENT[kind] }} />
+            <ArrowUpRight
+                size={14}
+                className="absolute top-2 right-2 text-muted-foreground group-hover:text-foreground transition-colors"
+            />
             <EntryIcon slug={slug} kind={kind} size={28} />
             <div className="min-w-0 flex-1">
                 <div className="text-[9px] uppercase tracking-[0.1em] text-muted-foreground leading-none mb-0.5">
@@ -669,7 +685,7 @@ function CenterCardV3({ slug, layout }: CenterCardProps) {
                     {shortTitle(node.title)}
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }
 

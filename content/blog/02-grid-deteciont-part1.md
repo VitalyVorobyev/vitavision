@@ -19,6 +19,7 @@ The setups I care about are partially visible or occluded boards under strong le
 The approach is topological, inspired by [Topological Grid Finding](atlas/shu-topological-grid). It is also the idea behind the topological grid finder in the [projective-grid](https://crates.io/crates/projective-grid) crate.
 
 > maybe delete this paragraph?
+
 The method starts locally. It first connects nearby corners into plausible cells, then uses the grid topology to remove inconsistent detections and assign integer coordinates. Geometric models such as homographies or grid lines can still be used later, after the structure is known.
 
 We will use this image to illustrate all the steps.
@@ -30,6 +31,8 @@ We will use this image to illustrate all the steps.
 We start from a set of candidate X-junctions like the ones shown below (I use [my implementation](https://github.com/VitalyVorobyev/chess-corners-rs) of X-junction detector that provides local grid orientations, also indicated in the overlay).
 
 ![](../images/02-topo-grid/GeminiChess1/01-corners-axes.png)
+
+> I don't think "combinatorial" adds any value or clarity
 
 Now the problem becomes combinatorial. We need to decide which corners are neighbors, which groups of four corners form grid cells, and how to assign consistent integer coordinates to all connected corners.
 
@@ -61,22 +64,21 @@ The method does not fit lines through the corner cloud - it only uses local conn
 
 # 3. From triangles to cells
 
-Delaunay triangulation gives triangles, but a chessboard grid is made of quadrilateral cells. For each real board square, the triangulation usually creates two triangles separated by one diagonal. The next step is to merge the right pairs of neighboring triangles back into quadrilaterals.
+Delaunay triangulation gives triangles, but a chessboard grid is made of quadrilateral cells. For each real board square, the triangulation usually creates two triangles separated by one diagonal.
 
-Shu, Brunton, and Fiala use image intensity for this step. Two neighboring triangles are merged if they have similar average color, because both triangles should belong to the same black or white square.
+First step after triangulation is classification of edges in three categories: *grid*, `diagonal`, and `spurious`.
 
-My implementation does not use image pixels. Each ChESS corner already stores two local grid directions. I check whether the triangle edges follow these directions. If two neighboring triangles pass this check and share the right diagonal, they can be merged into a quadrilateral cell.
+An edge is promoted to `grid` if it is aligned with both its endpoints withing tollerance $\sigma$. Default value is $15^{\circ}$.
 
-:::algorithm[Triangle merging]
-::input[]
-::output[]
-1.
-:::
+After the first pass, diagonals are inferred per triangle. If triangle has exactly two `grid` edges, then the remaining edge is promoted to `diagonal`.
+
+Edges not classified as `grid`or `diagonal` are assigned as `spurious`.
+
+Only `mergable` triangles containing two `grid` and one `diagonal` edges take part in the grid formation. Two `mergable` triangles that share the same diagonal are merged into quadrilateral by removing the diagonal and enumerating the four vertices clockwise around their centroid, so that the top-left corner has index `0`.
 
 The next overlay show all mergable triangle pairs. For the test image it gives the complete correct set of quadrilaterals.
 
 ![](../images/02-topo-grid/GeminiChess1/04-mergeable-triangles.png)
-
 
 # 4. Filtering the quad mesh
 
@@ -108,11 +110,28 @@ This is a good first filter because it uses only mesh topology. It does not care
 
 After the topological filter, geometric checks can be applied.
 
-Shu, Brunton, and Fiala use a very loose shape test. They compare the lengths of opposite sides of a quadrilateral. If one side is more than 10 times longer than the opposite side, the quadrilateral is rejected.
+**Opposing-edge ratio filter**. For each quad, compute lengths of its edges $l_{01}$, $l_{12}$, $l_{23}$, $l_{30}$ and compute
 
-This does not require a cell to look like a square. The threshold is intentionally weak and only removes candidates with clearly unreasonable shape.
+$$
+r_1 = \max(l_{01}, l_{23}) / \min(l_{01}, l_{23}),
+r_1 = \max(l_{12}, l_{30}) / \min(l_{12}, l_{30}),
+r_{max} = \max(r_1, r_2).
+$$
 
-In `projective-grid`, I use local consistency checks between neighboring cells instead: adjacent cells should agree on their shared edge and should predict similar local grid directions.
+If $r_{max}$ is larger than a threshold $r^*$ (default value is $10$), then the quadrilateral is rejected. This does not require a cell to look like a square. The threshold is intentionally weak and only removes candidates with clearly unreasonable shape.
+
+*Per-component cell-size filter*. At this point I build connected components from the remaining quadrilaterals. For each component median edge length and reject quads whose shortest or longest edge falls outside
+
+$$
+[quad_edge_min_rel, quad_edge_max_rel] * component_median
+$$
+
+with default values $quad_edge_min_rel = 0.0$ and $quad_edge_max_rel = 1.8$. This filter removes cells accidentally formed across missing corners.
+
+It all looks (and is) a bit *ad hoc* and not systematic, but my experiments proved that it gives good results for practical detection. In summary:
+
+* Edge degree filter rejects impossible grid connectivity;
+* Edge-ratio and medial-size filters catch not plausible and skipped-cell quads.
 
 ![](../images/02-topo-grid/GeminiChess1/05-raw-quads.png)
 
@@ -130,16 +149,44 @@ This gives us the final output of the detector: image points with consistent int
 
 # 6. Using the library
 
-Rust example first, because the crate is Rust-native.
-Python example second, if bindings are available.
+Below are minimal examples that can be used to reproduce discussed here results
+
+```rust
+use calib_targets::chessboard::{DetectorParams, GraphBuildAlgorithm};
+use calib_targets::detect;
+use image::ImageReader;
+
+let img = ImageReader::open("image.png")?.decode()?.to_luma8();
+let mut params = DetectorParams::default();
+params.graph_build_algorithm = GraphBuildAlgorithm::Topological;
+
+let detection = detect::detect_chessboard(&img, &params)
+    .ok_or("no chessboard detected")?;
+```
+
+See [Detection](https://vitalyvorobyev.github.io/calib-targets-rs/api/calib_targets_chessboard/detector/struct.Detection.html) for 
+
+Besides the discussed in ths post logic, the `detect_chessboard` function also merges nearby components, appends corners that are not part of quadrilateral, but are aligned with the grid, and applied additional validations. I omit these details to focus on the main idea of topological grid detection.
+
+The python code is
+
+```python
+import numpy as np
+from PIL import Image
+import calib_targets as ct
+
+image = np.asarray(Image.open(path).convert("L"), dtype=np.uint8)
+params = ct.ChessboardParams.for_topological()
+result = ct.detect_chessboard(image, params=params)
+```
 
 ## Performance
 
-Give image size, hardware, crate version/commit, feature flags, and timing stages if possible.
+The test image is `800x436` pixels. Detection on my M4 MacBook Pro takes `1.27ms`, where `1.14ms` takes X-junction detection and all following grid-related logic taked `0.13ms`. This can me speed-up by using image pyramid in X-junction detection.
 
 # 7. More examples
 
-Consider two more examples.
+Before concluding this post, I want to show a couple more examples
 
 The first one is partially occluded chessboard:
 
@@ -155,19 +202,10 @@ The second example is an image of [PuzzleBoard](atlas/puzzleboard).
 
 Note that in the bottom left corner the distortion are so strong that Delaunay triangulation doesn't reflect the board structure and some corners are lost.
 
-
-# 8. Practical notes
-
-This approach works best when false detections are sparse or unstructured. That is usually the case for plain chessboards and puzzleboard-like calibration targets: wrong corners may appear, but they rarely form a consistent grid.
-
-The harder case is structured clutter inside the target itself. ChArUco markers are a good example. Marker interiors contain many extra corners, and some of them can form locally plausible cells. For these targets, I use a different graph-growth algorithm with local homography checks, which I will discuss in the next post.
-
-Delaunay triangulation also has a geometric limit: it is not projective invariant. At very oblique viewing angles, it can connect points that are not real grid neighbors. In practice, these views are rare and usually not the best views for calibration.
-
 # Summary
 
-The main idea is simple: start from detected corners, build a local candidate graph with Delaunay triangulation, merge triangles into cell candidates, and then use topology and local geometry to recover an ordered grid.
+Simplisity and minimal geometry assumptions of the topological grid detector make it a very good practical tool. Its performance is suitable for online detection. It works in the condition of significant optical distortions.
 
-The strength of this approach is that it does not start from a single global homography or a straight-line model. It first recovers local grid structure, which makes it useful for partially visible targets and images with visible lens distortion.
+This approach has clear limitations. It cannot be used for ChArUco targets. Marker interiors contain many extra corners, and some of them can form locally plausible cells.
 
-In the practical implementation, this gives a fast and robust grid finder for chessboards and similar calibration targets. The next post will cover the second strategy used in [projective-grid](https://crates.io/crates/projective-grid): graph growth with local homography consistency checks, which is better suited for targets with many structured false positives.
+Delaunay triangulation also has a geometric limit: it is not projective invariant. At very oblique viewing angles, it can connect points that are not real grid neighbors. In practice, these views are rare and usually not the best views for calibration.

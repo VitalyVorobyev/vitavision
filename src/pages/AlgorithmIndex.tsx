@@ -271,6 +271,26 @@ export default function AlgorithmIndex() {
     // ── Desktop layout ──────────────────────────────────────────────────────
 
     if (isDesktop) {
+        // ── Graph branch — full-width, no sidebar ──────────────────────────────
+        if (effectiveView === "graph") {
+            return (
+                <div className="flex flex-1 flex-col">
+                    <SeoHead
+                        title="Atlas"
+                        description="Practical computer vision atlas — algorithms, models, and concepts."
+                    />
+                    <main className="flex flex-1 flex-col min-w-0 px-6 py-5">
+                        <div className="flex items-baseline justify-between mb-3">
+                            <h1 className="text-[22px] font-bold -tracking-[0.4px]">Atlas</h1>
+                            <AlgorithmsViewToggle view={effectiveView} onChange={setView} />
+                        </div>
+                        <GraphExplorer focusSlug={focusParam} />
+                    </main>
+                </div>
+            );
+        }
+
+        // ── Catalog branch — 2-column grid + sidebar ──────────────────────────
         return (
             <div className="flex flex-1 flex-col">
                 <SeoHead
@@ -325,14 +345,10 @@ export default function AlgorithmIndex() {
                         </p>
 
                         {/* Results */}
-                        {effectiveView === "graph" ? (
-                            <GraphExplorer focusSlug={focusParam} />
-                        ) : (
-                            <UnifiedResults
-                                groups={unifiedGroups}
-                                layout={effectiveView === "list" ? "list" : "grid"}
-                            />
-                        )}
+                        <UnifiedResults
+                            groups={unifiedGroups}
+                            layout={effectiveView === "list" ? "list" : "grid"}
+                        />
                     </main>
                 </div>
             </div>

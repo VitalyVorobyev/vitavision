@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { algorithmPages, modelPages, conceptPages } from "../generated/content-index.ts";
 import SeoHead from "../components/seo/SeoHead.tsx";
@@ -8,8 +9,7 @@ import ConceptCard from "../components/blog/ConceptCard.tsx";
 import AlgorithmsSidebar from "../components/algorithms/AlgorithmsSidebar.tsx";
 import AlgorithmsFilterSheet from "../components/algorithms/AlgorithmsFilterSheet.tsx";
 import AlgorithmsViewToggle from "../components/algorithms/AlgorithmsViewToggle.tsx";
-import AtlasMapView from "../components/atlas/AtlasMapView.tsx";
-import AtlasConstellationView from "../components/atlas/AtlasConstellationView.tsx";
+import GraphExplorer from "../components/atlas/GraphExplorer.tsx";
 import useAlgorithmsFilters, {
     filterAlgorithms,
     filterModels,
@@ -214,19 +214,16 @@ function UnifiedResults({ groups, layout, isMobile = false }: UnifiedResultsProp
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function AlgorithmIndex() {
-    const { filters, setKind, setCategoryId, toggleTag, setQuery, setView, reset } =
+    const { filters, setKind, setCategoryId, toggleTag, setQuery, setView, setProblem, reset } =
         useAlgorithmsFilters();
+    const [searchParams] = useSearchParams();
+    const focusParam = searchParams.get("focus") ?? undefined;
+
     // Per handoff: `lg` and up (≥1024px) = sidebar layout; below = sheet layout.
     const isDesktop = useMediaQuery("(min-width: 1024px)", true);
     const isAdmin = useIsAdmin();
 
-    // Map/Constellation views are admin-only experimental modes. Coerce
-    // non-admins viewing one (e.g. via a stale /atlas?view=map link) back to
-    // a public-safe view without writing the change to localStorage.
-    const effectiveView: AlgorithmsView =
-        !isAdmin && (filters.view === "map" || filters.view === "constellation")
-            ? "grid"
-            : filters.view;
+    const effectiveView: AlgorithmsView = filters.view;
 
     const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
@@ -304,9 +301,11 @@ export default function AlgorithmIndex() {
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     };
 
-    // Mobile active filter badge count (tags + domain filter only; not for "all" domains)
+    // Mobile active filter badge count (tags + domain + problem filters)
     const activeCount =
-        filters.tags.length + (filters.categoryId !== "all" ? 1 : 0);
+        filters.tags.length +
+        (filters.categoryId !== "all" ? 1 : 0) +
+        (filters.problem !== "all" ? 1 : 0);
 
     // ── Desktop layout ──────────────────────────────────────────────────────
 
@@ -327,6 +326,7 @@ export default function AlgorithmIndex() {
                         onKindChange={setKind}
                         onCategoryChange={setCategoryId}
                         onTagToggle={toggleTag}
+                        onProblemChange={setProblem}
                         activeDomain={activeDomain}
                         visibleDomains={unifiedGroups.map((g) => g.domain)}
                         onJumpToDomain={handleJumpToDomain}
@@ -360,7 +360,6 @@ export default function AlgorithmIndex() {
                                 <AlgorithmsViewToggle
                                     view={effectiveView}
                                     onChange={setView}
-                                    showExperimental={isAdmin}
                                 />
                             </div>
                         </div>
@@ -371,22 +370,8 @@ export default function AlgorithmIndex() {
                         </p>
 
                         {/* Results */}
-                        {effectiveView === "map" ? (
-                            <AtlasMapView
-                                algorithms={visibleAlgorithms}
-                                models={visibleModels}
-                                concepts={visibleConcepts}
-                                filters={filters}
-                                searchMatchedSlugs={searchMatchedSlugs}
-                            />
-                        ) : effectiveView === "constellation" ? (
-                            <AtlasConstellationView
-                                algorithms={visibleAlgorithms}
-                                models={visibleModels}
-                                concepts={visibleConcepts}
-                                filters={filters}
-                                searchMatchedSlugs={searchMatchedSlugs}
-                            />
+                        {effectiveView === "graph" ? (
+                            <GraphExplorer focusSlug={focusParam} />
                         ) : (
                             <UnifiedResults
                                 groups={unifiedGroups}
@@ -400,6 +385,26 @@ export default function AlgorithmIndex() {
     }
 
     // ── Mobile layout ───────────────────────────────────────────────────────
+
+    // Mobile graph view — render focused entry + neighbor lists, skip catalog
+    if (effectiveView === "graph") {
+        return (
+            <div className="w-full min-w-0 max-w-[640px] mx-auto px-4 py-5">
+                <SeoHead
+                    title="Atlas"
+                    description="Practical computer vision atlas — algorithms, models, and concepts."
+                />
+
+                {/* Title row */}
+                <div className="flex items-baseline justify-between mb-4">
+                    <h1 className="text-[22px] font-bold -tracking-[0.5px]">Atlas</h1>
+                    <span className="text-xs text-muted-foreground">Graph view</span>
+                </div>
+
+                <GraphExplorer focusSlug={focusParam} />
+            </div>
+        );
+    }
 
     return (
         <div className="w-full min-w-0 max-w-[640px] mx-auto px-4 py-5 space-y-4">
@@ -488,6 +493,7 @@ export default function AlgorithmIndex() {
                 onKindChange={setKind}
                 onCategoryChange={setCategoryId}
                 onTagToggle={toggleTag}
+                onProblemChange={setProblem}
                 onReset={reset}
             />
         </div>

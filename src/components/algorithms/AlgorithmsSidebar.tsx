@@ -1,6 +1,7 @@
 import AlgorithmTagChip from "./AlgorithmTagChip.tsx";
 import type { AlgorithmsFilters, AlgorithmsKind, FacetCounts } from "../../hooks/useAlgorithmsFilters.ts";
 import { domainLabels, domainOrder } from "./domainLabels.ts";
+import { taskOrder, taskLabel } from "../../lib/content/taskLabels.ts";
 
 interface Props {
     filters: AlgorithmsFilters;
@@ -9,6 +10,7 @@ interface Props {
     onKindChange: (k: AlgorithmsKind) => void;
     onCategoryChange: (id: string) => void;
     onTagToggle: (tag: string) => void;
+    onProblemChange: (id: string) => void;
     /** Currently scroll-spied domain id (without the "domain-" prefix). */
     activeDomain: string | null;
     /** Ordered list of domain ids that have visible entries (without "domain-" prefix). */
@@ -75,6 +77,7 @@ export default function AlgorithmsSidebar({
     onKindChange,
     onCategoryChange,
     onTagToggle,
+    onProblemChange,
     activeDomain,
     visibleDomains,
     onJumpToDomain,
@@ -108,6 +111,54 @@ export default function AlgorithmsSidebar({
                             </span>
                         </button>
                     ))}
+                </div>
+            </div>
+
+            {/* Problem section — between Type and Domains */}
+            <div className="mb-[22px]">
+                <SectionLabel label="Problem" />
+                <div role="radiogroup" aria-label="Problem" className="flex flex-col gap-0.5">
+                    {/* All problems row */}
+                    <button
+                        type="button"
+                        role="radio"
+                        aria-checked={filters.problem === "all"}
+                        onClick={() => onProblemChange("all")}
+                        className={`flex justify-between items-center px-2 py-[5px] rounded-[5px] w-full text-left text-[13px] transition-colors ${
+                            filters.problem === "all"
+                                ? "bg-[hsl(var(--surface-hi))] text-foreground font-semibold"
+                                : "text-[hsl(var(--foreground)/0.8)] hover:bg-[hsl(var(--surface-hi)/0.5)]"
+                        }`}
+                    >
+                        <span>All problems</span>
+                        <span className="text-[11px] text-muted-foreground font-normal">
+                            {facets.kinds[filters.kind]}
+                        </span>
+                    </button>
+                    {taskOrder
+                        .filter((task) => (facets.problems[task] ?? 0) > 0)
+                        .map((task) => {
+                            const active = filters.problem === task;
+                            return (
+                                <button
+                                    key={task}
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={active}
+                                    onClick={() => onProblemChange(task)}
+                                    className={`flex justify-between items-center px-2 py-[5px] rounded-[5px] w-full text-left text-[12.5px] transition-colors ${
+                                        active
+                                            ? "bg-[hsl(191_70%_94%)] text-[hsl(191_55%_22%)] font-medium"
+                                            : "text-[hsl(var(--foreground)/0.8)] hover:bg-[hsl(var(--surface-hi)/0.5)]"
+                                    }`}
+                                >
+                                    <span className="truncate">{taskLabel(task)}</span>
+                                    <span className={`text-[11px] font-normal ml-2 shrink-0 ${active ? "text-[hsl(191_55%_22%)]" : "text-muted-foreground"}`}>
+                                        {facets.problems[task]}
+                                    </span>
+                                </button>
+                            );
+                        })}
                 </div>
             </div>
 

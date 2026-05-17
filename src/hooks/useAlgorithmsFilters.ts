@@ -6,17 +6,18 @@ import type {
     ConceptIndexEntry,
 } from "../lib/content/schema.ts";
 import { domainOrder } from "../components/algorithms/domainLabels.ts";
+import { taskOrder } from "../lib/content/taskLabels.ts";
 
 // ── Public types ────────────────────────────────────────────────────────────
 
 export type AlgorithmsKind = "all" | "algorithm" | "model" | "concept";
-export type AlgorithmsView = "grid" | "list" | "map" | "constellation";
+export type AlgorithmsView = "grid" | "list" | "graph";
 export type AlgorithmsSort = "az" | "recent";
 
 /** localStorage key the view selection is persisted to. */
 export const ATLAS_VIEW_STORAGE_KEY = "atlas:view";
 
-const VIEW_VALUES: readonly AlgorithmsView[] = ["grid", "list", "map", "constellation"];
+const VIEW_VALUES: readonly AlgorithmsView[] = ["grid", "list", "graph"];
 
 function isAlgorithmsView(value: string | null): value is AlgorithmsView {
     return value !== null && (VIEW_VALUES as readonly string[]).includes(value);
@@ -29,12 +30,14 @@ export interface AlgorithmsFilters {
     query: string;
     view: AlgorithmsView;
     sort: AlgorithmsSort;
+    problem: string;      // "all" | Task slug
 }
 
 export interface FacetCounts {
     kinds:      Record<AlgorithmsKind, number>;
     categories: Record<string, number>;   // "all" + each domain id
     tags:       Record<string, number>;   // per-tag faceted count
+    problems:   Record<string, number>;   // per-task faceted count
     total:      number;                   // count after ALL filters
 }
 
@@ -47,6 +50,7 @@ const DEFAULTS: AlgorithmsFilters = {
     query:      "",
     view:       "grid",
     sort:       "recent",
+    problem:    "all",
 };
 
 // ── Pure filter helpers ──────────────────────────────────────────────────────
@@ -73,6 +77,11 @@ function matchesTags(itemTags: readonly string[], required: string[]): boolean {
 
 function matchesDomain(domain: string | undefined, categoryId: string): boolean {
     return categoryId === "all" || domain === categoryId;
+}
+
+function matchesProblem(tasks: readonly string[] | undefined, problem: string): boolean {
+    if (problem === "all") return true;
+    return tasks?.includes(problem) ?? false;
 }
 
 /** Sort a mutable copy of an array. */
@@ -104,13 +113,14 @@ export function filterAlgorithms(
     filters: AlgorithmsFilters,
     searchMatchedSlugs: Set<string> | null = null,
 ): AlgorithmIndexEntry[] {
-    const { categoryId, tags, query, sort } = filters;
+    const { categoryId, tags, query, sort, problem } = filters;
     const result = items.filter((entry) => {
         const fm = entry.frontmatter;
         return (
             matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
-            matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs)
+            matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs) &&
+            matchesProblem(fm.tasks, problem)
         );
     });
     return applySort(result, sort);
@@ -125,13 +135,14 @@ export function filterModels(
     filters: AlgorithmsFilters,
     searchMatchedSlugs: Set<string> | null = null,
 ): ModelIndexEntry[] {
-    const { categoryId, tags, query, sort } = filters;
+    const { categoryId, tags, query, sort, problem } = filters;
     const result = items.filter((entry) => {
         const fm = entry.frontmatter;
         return (
             matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
-            matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs)
+            matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs) &&
+            matchesProblem(fm.tasks, problem)
         );
     });
     return applySort(result, sort);
@@ -146,7 +157,9 @@ export function filterConcepts(
     filters: AlgorithmsFilters,
     searchMatchedSlugs: Set<string> | null = null,
 ): ConceptIndexEntry[] {
-    const { categoryId, tags, query, sort } = filters;
+    const { categoryId, tags, query, sort, problem } = filters;
+    // Concepts have no `tasks` field; a specific problem filter excludes all concepts.
+    if (problem !== "all") return [];
     const result = items.filter((entry) => {
         const fm = entry.frontmatter;
         return (
@@ -268,6 +281,44 @@ export function computeFacets(
         }
     }
 
+    // ── Problem counts ───────────────────────────────────────────────────────
+    // Counts reflect kind/domain/tag/search filters but ignore the active problem.
+    const problemCounts: Record<string, number> = {};
+
+    function addAlgorithmProblemCounts() {
+        const candidateItems = algorithms.filter((e) => {
+            const fm = e.frontmatter;
+            return (
+                matchesDomain(fm.domain, categoryId) &&
+                matchesTags(fm.tags, tags) &&
+                matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
+            );
+        });
+        for (const task of taskOrder) {
+            const n = candidateItems.filter((e) => e.frontmatter.tasks?.includes(task)).length;
+            if (n > 0) problemCounts[task] = (problemCounts[task] ?? 0) + n;
+        }
+    }
+
+    function addModelProblemCounts() {
+        const candidateItems = models.filter((e) => {
+            const fm = e.frontmatter;
+            return (
+                matchesDomain(fm.domain, categoryId) &&
+                matchesTags(fm.tags, tags) &&
+                matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
+            );
+        });
+        for (const task of taskOrder) {
+            const n = candidateItems.filter((e) => e.frontmatter.tasks?.includes(task)).length;
+            if (n > 0) problemCounts[task] = (problemCounts[task] ?? 0) + n;
+        }
+    }
+
+    if (kind === "algorithm" || kind === "all") addAlgorithmProblemCounts();
+    if (kind === "model" || kind === "all") addModelProblemCounts();
+    // Concepts have no tasks, so they contribute nothing to problem counts.
+
     // ── Tag counts ──────────────────────────────────────────────────────────
     const tagCounts: Record<string, number> = {};
 
@@ -336,6 +387,7 @@ export function computeFacets(
         kinds: { all: kindsAll, algorithm: kindsAlgorithm, model: kindsModel, concept: kindsConcept },
         categories,
         tags: tagCounts,
+        problems: problemCounts,
         total,
     };
 }
@@ -354,13 +406,14 @@ function parseFiltersFromParams(params: URLSearchParams): AlgorithmsFilters {
     const tagsRaw = params.get("tags");
     const tags = tagsRaw ? tagsRaw.split(",").filter(Boolean) : [];
     const query = params.get("q") ?? "";
-    // URL takes precedence over storage so /atlas?view=map works as a deep link.
+    // URL takes precedence over storage so /atlas?view=graph works as a deep link.
     const rawView = params.get("view");
     const urlView = isAlgorithmsView(rawView) ? rawView : null;
     const storedView = readStoredView();
     const view: AlgorithmsView = urlView ?? storedView ?? DEFAULTS.view;
     const sort: AlgorithmsSort = params.get("sort") === "az" ? "az" : "recent";
-    return { kind, categoryId, tags, query, view, sort };
+    const problem = params.get("problem") ?? "all";
+    return { kind, categoryId, tags, query, view, sort, problem };
 }
 
 function readStoredView(): AlgorithmsView | null {
@@ -390,6 +443,7 @@ function buildParams(filters: AlgorithmsFilters): URLSearchParams {
     if (filters.query   !== DEFAULTS.query)      p.set("q",    filters.query);
     if (filters.view    !== DEFAULTS.view)        p.set("view", filters.view);
     if (filters.sort    !== DEFAULTS.sort)        p.set("sort", filters.sort);
+    if (filters.problem !== DEFAULTS.problem)    p.set("problem", filters.problem);
     return p;
 }
 
@@ -404,7 +458,8 @@ export interface UseAlgorithmsFiltersReturn {
     setQuery:      (q: string) => void;
     setView:       (view: AlgorithmsView) => void;
     setSort:       (sort: AlgorithmsSort) => void;
-    /** Resets categoryId, tags, query, sort — keeps kind and view. */
+    setProblem:    (problem: string) => void;
+    /** Resets categoryId, tags, query, sort, problem — keeps kind and view. */
     reset:         () => void;
 }
 
@@ -422,8 +477,8 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
 
     const setKind = useCallback(
         (kind: AlgorithmsKind) => {
-            // When kind flips, reset categoryId (it's kind-scoped).
-            update({ ...filters, kind, categoryId: "all" });
+            // When kind flips, reset categoryId and problem (both are kind-scoped).
+            update({ ...filters, kind, categoryId: "all", problem: "all" });
         },
         [filters, update],
     );
@@ -466,6 +521,11 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
         [filters, update],
     );
 
+    const setProblem = useCallback(
+        (problem: string) => update({ ...filters, problem }),
+        [filters, update],
+    );
+
     const reset = useCallback(
         () =>
             update({
@@ -485,6 +545,7 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
         setQuery,
         setView,
         setSort,
+        setProblem,
         reset,
     };
 }

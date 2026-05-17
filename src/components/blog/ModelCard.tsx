@@ -1,140 +1,87 @@
 import { Link } from "react-router-dom";
 import type { ModelIndexEntry } from "../../lib/content/schema.ts";
+import { EntryIcon } from "../atlas/EntryIcon.tsx";
+import { taskLabel } from "../../lib/content/taskLabels.ts";
+import { domainLabels } from "../algorithms/domainLabels.ts";
+import { DraftBadge, GraphChip, CardMeta, RelationLine } from "./AtlasCardParts.tsx";
+import { cardBody } from "./cardText.ts";
 
 interface ModelCardProps {
     entry: ModelIndexEntry;
     variant?: "compact" | "horizontal";
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-/** Derive a two-letter monogram from the slug.
- *  E.g. "super-point" → "SP", "dinov2" → "DI".
- */
-function slugMonogram(slug: string): string {
-    const parts = slug.split("-");
-    if (parts.length >= 2) {
-        return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
-    return slug.slice(0, 2).toUpperCase();
-}
-
-// ── Sub-components ────────────────────────────────────────────────────────────
-
-function DraftBadge() {
-    return (
-        <span className="inline-block text-[9px] font-bold tracking-wider uppercase bg-[hsl(var(--border))] text-foreground px-1.5 py-px rounded-[3px] mr-1.5 align-[1px]">
-            DRAFT
-        </span>
-    );
-}
-
-interface MonogramTileProps {
-    slug: string;
-    size: "sm" | "md"; // sm = 30×30, md = 34×34
-}
-
-function MonogramTile({ slug, size }: MonogramTileProps) {
-    const sizeClasses = size === "sm"
-        ? "w-[30px] h-[30px]"
-        : "w-[34px] h-[34px]";
-    const radiusClass = size === "sm" ? "rounded-[4px]" : "rounded-md";
-
-    return (
-        <div
-            className={`${sizeClasses} shrink-0 ${radiusClass} border border-[hsl(var(--border)/0.7)] bg-background grid place-items-center overflow-hidden`}
-        >
-            <span className="font-mono text-[13px] text-muted-foreground">
-                {slugMonogram(slug)}
-            </span>
-        </div>
-    );
-}
-
-interface FooterLabelProps {
-    difficulty?: "beginner" | "intermediate" | "advanced";
-    arch_family?: string;
-}
-
-function footerLabel({ difficulty, arch_family }: FooterLabelProps): string {
-    if (difficulty) {
-        return difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
-    }
-    if (arch_family) {
-        return arch_family.toUpperCase();
-    }
-    return "—";
+/** Meta label: humanised first task, else the domain label. */
+function metaLabel(fm: ModelIndexEntry["frontmatter"]): string | undefined {
+    if (fm.tasks?.[0]) return taskLabel(fm.tasks[0]);
+    if (fm.domain) return domainLabels[fm.domain] ?? fm.domain;
+    return undefined;
 }
 
 // ── Variants ──────────────────────────────────────────────────────────────────
 
 function CompactCard({ entry }: { entry: ModelIndexEntry }) {
     const { slug, frontmatter: fm } = entry;
-    const label = footerLabel({ difficulty: fm.difficulty, arch_family: fm.arch_family });
-
     return (
-        <Link
-            to={`/algorithms/models/${slug}`}
-            className="flex flex-col gap-1.5 min-h-[112px] rounded-lg border border-border bg-surface p-3 hover:border-foreground/20 transition-colors group"
-        >
-            {/* Top row */}
+        <div className="relative flex flex-col gap-2 min-h-[112px] rounded-lg border border-border bg-surface p-3 hover:border-foreground/20 transition-colors group">
             <div className="flex items-start gap-2.5">
-                <MonogramTile slug={slug} size="sm" />
+                <EntryIcon slug={slug} kind="model" size={30} coverImage={fm.coverImage} />
                 <div className="min-w-0 flex-1">
                     {fm.draft && <DraftBadge />}
-                    <span className="inline text-[13px] font-semibold leading-tight text-foreground -tracking-[0.1px] group-hover:underline">
+                    {/* Stretched-link title — ::after covers the whole card */}
+                    <Link
+                        to={`/algorithms/models/${slug}`}
+                        className="inline text-[13px] font-semibold leading-tight text-foreground -tracking-[0.1px] group-hover:underline after:absolute after:inset-0 after:content-['']"
+                    >
                         {fm.title}
-                    </span>
+                    </Link>
+                    <CardMeta label={metaLabel(fm)} year={fm.year} />
                 </div>
+                <GraphChip slug={slug} />
             </div>
 
-            {/* Description */}
-            {fm.summary && (
-                <p className="text-[11.5px] text-muted-foreground leading-[1.4] line-clamp-2">
-                    {fm.summary}
+            {cardBody(fm.tagline, fm.summary) && (
+                <p className="text-[11.5px] text-muted-foreground leading-[1.45] line-clamp-2">
+                    {cardBody(fm.tagline, fm.summary)}
                 </p>
             )}
 
-            {/* Footer */}
-            <div className="mt-auto flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <span className="w-[5px] h-[5px] rounded-full bg-brand shrink-0" />
-                {label}
+            <div className="mt-auto pt-0.5">
+                <RelationLine slug={slug} />
             </div>
-        </Link>
+        </div>
     );
 }
 
 function HorizontalCard({ entry }: { entry: ModelIndexEntry }) {
     const { slug, frontmatter: fm } = entry;
-    const label = footerLabel({ difficulty: fm.difficulty, arch_family: fm.arch_family });
-
     return (
-        <Link
-            to={`/algorithms/models/${slug}`}
-            className="flex items-start gap-3 rounded-[10px] border border-border bg-surface p-3.5 group transition-colors hover:border-foreground/20"
-        >
-            <MonogramTile slug={slug} size="md" />
+        <div className="relative flex items-start gap-3 rounded-[10px] border border-border bg-surface p-3.5 group transition-colors hover:border-foreground/20">
+            <EntryIcon slug={slug} kind="model" size={30} coverImage={fm.coverImage} />
             <div className="min-w-0 flex-1">
-                {/* Title row */}
-                <div className="flex items-center gap-1.5">
-                    {fm.draft && <DraftBadge />}
-                    <span className="text-[14px] font-semibold -tracking-[0.1px] truncate group-hover:underline text-foreground">
-                        {fm.title}
-                    </span>
+                <div className="flex items-start gap-1.5">
+                    <div className="min-w-0 flex-1">
+                        {fm.draft && <DraftBadge />}
+                        <Link
+                            to={`/algorithms/models/${slug}`}
+                            className="text-[14px] font-semibold -tracking-[0.1px] truncate group-hover:underline text-foreground after:absolute after:inset-0 after:content-['']"
+                        >
+                            {fm.title}
+                        </Link>
+                    </div>
+                    <GraphChip slug={slug} />
                 </div>
-                {/* Summary */}
-                {fm.summary && (
+                <CardMeta label={metaLabel(fm)} year={fm.year} />
+                {cardBody(fm.tagline, fm.summary) && (
                     <p className="text-xs text-muted-foreground leading-[1.4] line-clamp-2 mt-[3px]">
-                        {fm.summary}
+                        {cardBody(fm.tagline, fm.summary)}
                     </p>
                 )}
-                {/* Footer */}
-                <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                    <span className="w-[5px] h-[5px] rounded-full bg-brand shrink-0" />
-                    {label}
+                <div className="mt-2 pt-0.5">
+                    <RelationLine slug={slug} />
                 </div>
             </div>
-        </Link>
+        </div>
     );
 }
 

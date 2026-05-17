@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse as parseYaml } from "yaml";
 import { algorithmFrontmatterSchema, blogFrontmatterSchema, modelFrontmatterSchema, tagValues, taskValues } from "./schema.ts";
+import { taskLabels } from "./taskLabels.ts";
 
 describe("blogFrontmatterSchema", () => {
     it("accepts updated metadata", () => {
@@ -214,6 +215,12 @@ describe("tasks vocabulary", () => {
         const yamlSlugs = yaml.tasks.map((t) => t.slug).sort();
         const codeSlugs = [...taskValues].sort();
         expect(yamlSlugs).toEqual(codeSlugs);
+    });
+
+    it("taskLabels has a key for every taskValues entry and no extra keys", () => {
+        const labelKeys = Object.keys(taskLabels).sort();
+        const schemaKeys = [...taskValues].sort();
+        expect(labelKeys).toEqual(schemaKeys);
     });
 });
 

@@ -7,6 +7,7 @@ import type {
     AlgorithmsKind,
     FacetCounts,
 } from "../../hooks/useAlgorithmsFilters.ts";
+import { taskOrder, taskLabel } from "../../lib/content/taskLabels.ts";
 
 interface Props {
     open: boolean;
@@ -20,6 +21,7 @@ interface Props {
     onKindChange: (k: AlgorithmsKind) => void;
     onCategoryChange: (id: string) => void;
     onTagToggle: (tag: string) => void;
+    onProblemChange: (id: string) => void;
     onReset: () => void;
 }
 
@@ -49,6 +51,7 @@ export default function AlgorithmsFilterSheet({
     onKindChange,
     onCategoryChange,
     onTagToggle,
+    onProblemChange,
     onReset,
 }: Props) {
     const reducedMotion = usePrefersReducedMotion();
@@ -253,6 +256,58 @@ export default function AlgorithmsFilterSheet({
                             </div>
                             </>
                             )}
+
+                            {/* Problem section */}
+                            <div className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-muted-foreground mt-5 mb-2">
+                                Problem
+                            </div>
+                            <div
+                                role="radiogroup"
+                                aria-label="Problem"
+                                className="flex flex-col gap-0.5"
+                            >
+                                {/* All problems row */}
+                                <button
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={filters.problem === "all"}
+                                    onClick={() => onProblemChange("all")}
+                                    className={`flex justify-between items-center px-2.5 py-2 rounded-md text-[13.5px] w-full text-left transition-colors ${
+                                        filters.problem === "all"
+                                            ? "bg-[hsl(var(--surface-hi))] text-foreground font-semibold"
+                                            : "text-[hsl(var(--foreground)/0.8)] hover:bg-[hsl(var(--surface-hi)/0.5)]"
+                                    }`}
+                                >
+                                    <span>All problems</span>
+                                    <span className="text-[11px] text-muted-foreground font-normal">
+                                        {facets.kinds[filters.kind]}
+                                    </span>
+                                </button>
+                                {taskOrder
+                                    .filter((task) => (facets.problems[task] ?? 0) > 0)
+                                    .map((task) => {
+                                        const active = filters.problem === task;
+                                        return (
+                                            <button
+                                                key={task}
+                                                type="button"
+                                                role="radio"
+                                                aria-checked={active}
+                                                onClick={() => onProblemChange(task)}
+                                                className={`flex justify-between items-center px-2.5 py-2 rounded-md text-[13px] w-full text-left transition-colors ${
+                                                    active
+                                                        ? "bg-[hsl(191_70%_94%)] text-[hsl(191_55%_22%)] font-medium"
+                                                        : "text-[hsl(var(--foreground)/0.8)] hover:bg-[hsl(var(--surface-hi)/0.5)]"
+                                                }`}
+                                            >
+                                                <span className="truncate">{taskLabel(task)}</span>
+                                                <span className={`text-[11px] font-normal ml-2 shrink-0 ${active ? "text-[hsl(191_55%_22%)]" : "text-muted-foreground"}`}>
+                                                    {facets.problems[task]}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                            </div>
 
                             {/* Tags section — all tags inline */}
                             <div className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-muted-foreground mt-5 mb-2">

@@ -685,6 +685,22 @@ async function main(): Promise<void> {
         (e) => !(e.frontmatter as { dev?: boolean }).dev,
     );
 
+    // Load papers once, early, so we can derive `year` before emitting the index.
+    const papers = loadPapersIndex();
+    const papersById = new Map(papers.map((p) => [p.id, p]));
+    const resolvePrimaryYear = (fm: { sources?: { primary?: string } }): number | undefined => {
+        const raw = fm.sources?.primary;
+        if (!raw) return undefined;
+        const id = raw.startsWith("paper:") ? raw.slice("paper:".length) : raw;
+        if (id.startsWith("repo:") || id.startsWith("doc:")) return undefined;
+        const y = papersById.get(id)?.year;
+        return typeof y === "number" && y > 0 ? y : undefined;
+    };
+    for (const e of [...algorithmPages, ...modelPages, ...conceptPages]) {
+        const y = resolvePrimaryYear(e.frontmatter as { sources?: { primary?: string } });
+        if (y !== undefined) (e.frontmatter as { year?: number }).year = y;
+    }
+
     generateOutput(blogPosts, algorithmPages, demoPages, modelPages, conceptPages, algorithmPublished, modelPublished, conceptPublished);
 
     // Emit a typed lookup for paper IDs referenced by `sources.primary`.
@@ -702,10 +718,7 @@ async function main(): Promise<void> {
     for (const e of algorithmPublished) collectPrimary(e.frontmatter);
     for (const e of modelPublished) collectPrimary(e.frontmatter);
     for (const e of conceptPublished) collectPrimary(e.frontmatter);
-    const papers = loadPapersIndex();
     emitPapersIndex(papers, usedPrimaryIds);
-
-    const papersById = new Map(papers.map((p) => [p.id, p]));
     const resolvePrimary = (
         fm: { sources?: { primary?: string } },
     ): { authors?: string[]; venue?: string } | undefined => {

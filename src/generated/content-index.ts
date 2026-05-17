@@ -99,7 +99,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "§2.1 reviews DLT homography (Eq. 1-4): the design matrix A ∈ R^{2N×9}\nis built from cross-product linearisation 0 = x̃' × H x̃; ĥ is the\nsmallest right singular vector of A. §2.2 introduces Moving DLT\n(Eq. 6-11): per-query weights w_*^i = max(exp(-‖x_* - x_i‖² / σ²), γ)\nform a diagonal W_* (Eq. 10, each weight repeated twice for the two\nrows of a_i), and h_* is the smallest right singular vector of\nW_* A (Eq. 9). γ is a weight floor that bounds the warp away from\ndegeneracy in data-poor regions and forces graceful reduction to\nthe global homography as γ → 1. §3 partitions the source image into\nC₁ × C₂ cells (default 100×100 for 1500×2000 images), one MDLT per\ncell. Hartley pre-conditioning (Eq. T, T') is applied once before\nthe per-cell SVDs. §6 defaults: σ ∈ [8, 12], γ ∈ [0.0025, 0.025],\ngrid 50–100 cells per axis.\n"
       },
-      "date": "2026-04-26"
+      "date": "2026-04-26",
+      "year": 2013
     }
   },
   {
@@ -131,7 +132,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Robust data + regularization energy (§4, eq. 12–14):\n$E(u,v) = \\sum_s \\rho_D(I_x u_s + I_y v_s + I_t, \\sigma_D)\n        + \\lambda \\sum_{s,n \\in N(s)} \\rho_S(u_s - u_n, \\sigma_S) + \\rho_S(v_s - v_n, \\sigma_S)$.\nLorentzian: $\\rho(x,\\sigma) = \\log(1 + \\tfrac{1}{2}(x/\\sigma)^2)$,\n$\\psi(x,\\sigma) = 2x/(2\\sigma^2 + x^2)$ (Fig. 8).\nGeman-McClure: $\\rho(x,\\sigma) = x^2/(\\sigma + x^2)$,\n$\\psi(x,\\sigma) = 2x\\sigma/(\\sigma+x^2)^2$.\nSOR update (§4.1.1, eq. 15-16): $u_s^{n+1} = u_s^n - (\\omega/T(u_s)) \\partial E/\\partial u_s$\nwith $\\omega \\in (0,2)$; convex initial scale $\\sigma_{\\text{init}} = r_{\\max}/\\sqrt{2}$\nfor Lorentzian. Outlier threshold: $\\tau = \\sqrt{2}\\,\\sigma$ (Lorentzian),\n$\\sigma/\\sqrt{3}$ (Geman-McClure). Coarse-to-fine pyramid with backward-warp\nimage warping (§4.2, Appendix B eq. 29-34) handles displacements > 1 px.\n"
       },
-      "date": "2026-05-13"
+      "date": "2026-05-13",
+      "year": 1996
     }
   },
   {
@@ -202,7 +204,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Method (§3, Calonder et al. 2010). Pixel-pair test (Eq. 1):\nτ(p; x, y) = 1 if p(x) < p(y) else 0, where p is the Gaussian-smoothed\npatch (σ = 2, 9×9 discrete kernel — §3.1). Descriptor packing (Eq. 2):\nf_{n_d}(p) = Σ_{1≤i≤n_d} 2^{i-1} τ(p; x_i, y_i) with n_d ∈ {128, 256, 512}\nbits → BRIEF-16, BRIEF-32, BRIEF-64 (trailing number is bytes).\nPatch size S = 48 px (paper convention; the txt cache asserts\nS × S without an explicit numerical value, so this is the standard\ninterpretation).\nFive spatial sampling distributions for (x_i, y_i) evaluated in §3.2:\nG I uniform; G II i.i.d. Gaussian(0, S²/25) — best, used in all further\nexperiments; G III two-step Gaussian with σ² = S²/100 on the second\nsample; G IV coarse polar grid; G V x_i = (0,0) with y_i scanning a\npolar grid (consistently worst). Matching: Hamming distance (XOR +\npopcount). Speed (§4 Table, 512 keypoints, 2.66 GHz x86-64): BRIEF-32\ndescription 8.87 ms vs SURF-64 335 ms (35–41×); BRIEF-32 matching 4.35\nms vs 28.3 ms (4–13×). Storage 16/32/64 bytes vs 256 bytes for SURF-64.\nRotation sensitivity (§4 Fig. 9-right): little degradation up to\n10–15°, precipitous drop beyond. Recognition rate matches or exceeds\nSURF/U-SURF on Wall, Fountain, Trees, Jpg, Light; underperforms on\nGraffiti (rotation + monochromatic regions).\n"
       },
-      "date": "2026-05-09"
+      "date": "2026-05-09",
+      "year": 2010
     }
   },
   {
@@ -228,7 +231,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "canny1986-edge",
         "notes": "Variational derivation over three criteria: detection SNR Σ (Eq. 3),\nlocalisation Λ (Eq. 9), and single-response spacing x_max = kW (Eq. 13).\nComposite criterion ΣΛ is scale-invariant (Eq. 21), giving a unique\noperator shape up to spatial scaling. The first derivative of a Gaussian\nG'(x) = -(x/σ²) exp(-x²/(2σ²)) (Eq. 42) is ~20% below optimal in ΣΛ and\n~10% below in r, but is preferred in 2D because of Gaussian separability.\nPerformance terms (Eq. 43): ∫f²= 1/(√2 σ), ∫f'²= 1/(4σ³), ∫f''²= 1/(8σ⁵).\nFDoG values: ΣΛ = 0.92/(3σ) (Eq. 44), r ≈ 0.51 (Eq. 45). Optimal\nconstrained filter (filter 6, Fig. 4): r ≈ 0.576. Pipeline: smooth →\ngradient (Eq. 46) → NMS as zero-crossing of directional second derivative\n(Eq. 47) → hysteresis with T_h/T_l ∈ [2, 3] (§VI). Directional operators\nuse 6 orientations with d/σ ≈ 1.4 and 5 samples per mask (§IX).\n"
       },
-      "date": "2026-05-05"
+      "date": "2026-05-05",
+      "year": 1986
     }
   },
   {
@@ -301,7 +305,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         },
         "notes": "RING5 = FAST-16 sampling pattern scaled to r=5 (integer offsets only).\nLocal mean = 5-pixel cross at the candidate. Neighbour mean = 16 ring samples.\nEquations (1)–(4) of Bennett & Lasenby 2013 define SR, DR, MR, R.\n"
       },
-      "date": "2026-04-15"
+      "date": "2026-04-15",
+      "year": 2013
     }
   },
   {
@@ -348,7 +353,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Pipeline: (1) per-pixel x-corner detector — count sign alternations\nN_alt of I against Tl = m − gate, Th = m + gate on a 16-pixel\nBresenham ring (§2, Eq. 1); classify iff N_alt = 4 ∧ Tl < I(p_c) < Th\nwith gate = 10 empirical. (2) NMS under cost max(Σ_dark|I-m|,\nΣ_light|I-m|) (Eq. 2). (3) Adaptive integral-image binarization\n(Bradley-Roth, §3). (4) Delaunay triangulation of the corner set\n(§3). (5) Topological filter — triangles are legal iff uniform\ninterior ∧ ≥1 same-colour neighbour ∧ ≤2 same-colour neighbours;\niterate to fixed point, drop orphan vertices (§3). (6) Coordinate\npropagation from a seed same-colour triangle pair, reflection rule\nacross shared edges (§4, O(n)). (7) Chen-Zhang Hessian subpixel\nrefinement S = Ixx·Iyy − Ixy² at surviving vertices only (§5, Eq. 4).\nPositioned by the authors as a specification of FAST.\n"
       },
-      "date": "2026-04-16"
+      "date": "2026-04-16",
+      "year": 2013
     }
   },
   {
@@ -377,7 +383,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Page tracks Daniilidis 1999 §3–§6. Rigid motion encoded as unit dual\nquaternion q̂ = q + εq′ with q = (cos θ/2, sin(θ/2) n) and\nq′ = (1/2) t ⊗ q (screw form q̂ = cos(θ̂/2) + sin(θ̂/2) l̂ with\nθ̂ = θ + εd, l̂ = l + εm). Screw congruence: corresponding hand and\neye motions share (θ, d); the scalar parts of â and b̂ coincide and\ncancel from the constraint â x̂ = x̂ b̂. Remaining imaginary-part\nequations stack into the 6×8 system (Eq. 31)\n    | a − b   [a+b]_×    0   0_{3×3} |\n    | a′ − b′ [a′+b′]_×  a−b [a+b]_× |\nper motion pair. SVD of the stacked ≥6M×8 matrix T yields a\ntwo-dim null space span{v₇, v₈}; the physical x̂ = λ₁ v₇ + λ₂ v₈\nis fixed by |q|² = 1 and q·q′ = 0 (a quadratic in s = λ₁/λ₂).\nRecover R from q and t = 2 q′ q*.\n"
       },
-      "date": "2026-04-20"
+      "date": "2026-04-20",
+      "year": 1999
     }
   },
   {
@@ -416,7 +423,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Star model $(F_0, P_1, \\ldots, P_n, b)$ with $n = 6$ parts at twice the spatial resolution of the root ($l_i = l_0 - \\lambda$ in a HOG feature pyramid with $\\lambda = 10$ levels per octave at test time, $\\lambda = 5$ at training time). Score (Eq. 2): $\\operatorname{score}(z) = \\sum_{i=0}^{n} F_i' \\cdot \\phi(H, p_i) - \\sum_{i=1}^{n} d_i \\cdot \\phi_d(dx_i, dy_i) + b$, with deformation feature $\\phi_d(dx, dy) = (dx, dy, dx^2, dy^2)$ (Eq. 4) and displacement $(dx_i, dy_i) = (x_i, y_i) - (2(x_0, y_0) + v_i)$ (Eq. 3). Inference via distance transforms (Eq. 8): $D_{i,l}(x,y) = \\max_{dx,dy}[R_{i,l}(x+dx,y+dy) - d_i \\cdot \\phi_d(dx,dy)]$, total cost $O(nk)$ once filter responses are computed. Mixture of $m = 2$ components per category for PASCAL. Latent SVM (Eq. 14): $L_D(\\beta) = \\tfrac{1}{2}\\|\\beta\\|^2 + C\\sum_i \\max(0, 1 - y_i f_\\beta(x_i))$ with $f_\\beta(x) = \\max_{z \\in Z(x)} \\beta \\cdot \\Phi(x, z)$ (Eq. 13); semi-convex (convex for $y_i = -1$). Training: coordinate descent (relabel positives → SGD on $\\beta$) plus hard-negative mining (Theorem 1). HOG feature parameters: cell size $k = 8$, truncation $\\alpha = 0.2$, $p = 9$ contrast-insensitive orientations; analytic 31-dimensional projection (9 contrast-insensitive + 18 contrast-sensitive + 4 energy channels) replacing the 36-dimensional HOG vector (Section 6.2). Part initialisation $d_i = (0, 0, 0.1, 0.1)$ with quadratic floor $\\geq 0.01$. PASCAL VOC IoU threshold $0.5$; bounding-box prediction by least-squares regression on a $2n+3$-dimensional configuration vector (Section 7.1). Runtime ~2 s/image on an 8-core desktop.\n"
       },
-      "date": "2026-05-12"
+      "date": "2026-05-12",
+      "year": 2010
     }
   },
   {
@@ -446,7 +454,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "EPnP — Lepetit, Moreno-Noguer, Fua, IJCV 2009 (received April 2008).\nReduces calibrated PnP to recovering the camera-frame coordinates of\nfour virtual control points whose barycentric weights describe the n\nreference points (Eqs. 1–2). Stacks two equations per correspondence\ninto Mx = 0 where x is the 12-vector of control-point camera\ncoordinates (Eqs. 5–7); solves in the null space of MᵀM (12×12)\nexpressed as a linear combination of N null eigenvectors v_i (Eq. 8).\nEffective null-space dimension N varies from 1 to 4 with focal length\nand noise; the method computes solutions for all four N and keeps the\none with smallest reprojection error (Eq. 9). β coefficients are\nrecovered from inter-control-point distance constraints — closed form\nfor N=1 (Eq. 11), pseudoinverse / inverse on Lβ = ρ for N=2,3\n(Eq. 13), relinearisation (Kipnis–Shamir 1999, Eq. 14) for N=4.\nOptional Gauss-Newton refinement minimises pairwise distance residuals\nover only four scalar β's (Eqs. 15–16) — constant time, fewer than\n10 iterations. Planar fallback uses three control points and a 2n×9\nsystem. Linear-time scaling is dominated by the MᵀM product (O(n)),\nwhich kicks in around n ≈ 15.\n"
       },
-      "date": "2026-05-04"
+      "date": "2026-05-04",
+      "year": 2009
     }
   },
   {
@@ -486,7 +495,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "rosten2006-fast",
         "notes": "16-pixel Bresenham ring at radius 3. Segment-test parameter N\ntypically 9 or 12. The high-speed early-rejection test on the four\ncardinal points (indices 1, 5, 9, 13) is what makes the detector\nfast in practice; the full segment test runs only on candidates\nthat pass it. The decision-tree variant trained via ID3 on labeled\ncorners is described in §3 of the paper but is out of scope here\n(the page covers the segment test as the primitive).\n"
       },
-      "date": "2026-04-15"
+      "date": "2026-04-15",
+      "year": 2006
     }
   },
   {
@@ -522,7 +532,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "loy2003-frst",
         "notes": "Multi-radius gradient-vote operator. At each radius $n$, the\norientation projection $O_n$ (signed unit votes) and magnitude\nprojection $M_n$ (signed gradient-magnitude votes) are\naccumulated at the positively- and negatively-affected pixels\n$p^{\\pm} = p \\pm \\mathrm{round}(\\hat{\\mathbf{g}}(p)\\cdot n)$.\nThe per-radius contribution is $S_n = F_n \\ast A_n$ with\n$F_n = |\\tilde O_n|^{\\alpha}\\, \\tilde M_n$, $\\tilde O_n$ and\n$\\tilde M_n$ being max-normalised projections, and $A_n$ a\n2-D Gaussian of size $n \\times n$ and $\\sigma = 0.5n$\n(operative value from Table 1 of the conference version;\nFigure 3 caption gives 0.25n — discrepancy noted in the\nresearch note). Cumulative $S = \\sum_n S_n$; positive\nmaxima localise bright radially-symmetric features, negative\nminima localise dark ones. Recommended parameters from the\npaper: $\\alpha = 2$ (eliminates line responses), $\\beta\n\\approx 20\\%$ of $\\max\\|\\mathbf{g}\\|$. Sparse-radius\napproximation $\\{1,3,5\\}$ replaces the full $\\{1,\\ldots,5\\}$\nset with negligible loss.\n"
       },
-      "date": "2026-05-03"
+      "date": "2026-05-03",
+      "year": 2003
     }
   },
   {
@@ -549,7 +560,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "felzenszwalb2004-graph-segm",
         "notes": "Three named quantities: Int(C) = max edge in MST(C) (Eq. 1); Dif(C₁,C₂) =\nmin cross-boundary edge weight (Eq. 2); MInt = min(Int(Cᵢ) + τ(Cᵢ)) with\nτ(C) = k/|C| (Eqs. 4–5). Boundary predicate D = [Dif > MInt] (Eq. 3).\nAlgorithm: sort all edges by weight (non-decreasing), then for each edge\nin order union-find-merge if w ≤ MInt at that moment (Algorithm 1).\nBecause edges are visited in sorted order, the merge edge is always the\nminimum-weight edge between the two components — identical to Kruskal's\nMST criterion — so Int updates in O(1) per merge (Section 4.1).\nTwo graph constructions: 8-connected grid (m = O(n), runtime\nO(n log n)) and feature-space NN graph on (x, y, r, g, b) with 10\nnearest neighbours (Section 6). Pre-process: Gaussian smoothing with\nσ = 0.8. Recommended k: 150 for 128×128 images, 300 for 320×240+.\nColor: run three independent monochrome segmentations and intersect.\nTheorems: (1) not too fine — every adjacent component pair has a boundary\nedge satisfying D; (2) not too coarse — no proper refinement preserves\n(1); (3) order-independent on equal-weight ties. Theorem 4: replacing\nmin in Dif with any K-th quantile makes optimal segmentation NP-hard.\n"
       },
-      "date": "2026-05-10"
+      "date": "2026-05-10",
+      "year": 2004
     }
   },
   {
@@ -587,7 +599,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "fischler1981-ransac",
         "notes": "Founding RANSAC paper (Communications of the ACM, June 1981). Inverts the\nclassical regression paradigm: instead of fitting all data and pruning\nresiduals iteratively (smoothing), draw a minimal sample $s$ at random,\ninstantiate a candidate model, count globally consistent inliers within\nthreshold $\\varepsilon$, and retain the best (consensus). Iteration count\n$k = \\log(1 - p) / \\log(1 - w^s)$ derived from the geometric-series\nidentity ($\\S$II.B). Founding application: the Location Determination\nProblem — recovering camera pose from aerial-image landmark\ncorrespondences ($\\S$IV).\n"
       },
-      "date": "2026-05-03"
+      "date": "2026-05-03",
+      "year": 1981
     }
   },
   {
@@ -630,7 +643,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "§3.1 Eq. 1: blended dual-homography H_ij = ω_ij H_g + (1-ω_ij) H_d.\n§3.1 Eq. 2: K-means seeds at (x̄, 0) and (x̄, h) — top-vs-bottom spatial\nbias to separate distant from ground features. §3.1 Eq. 3: per-pixel\nweight ω_ij = d_g / (d_g + d_d) using reciprocal-Euclidean distances\nto nearest inlier in each cluster. §3.1 RANSAC: 95% consensus per group.\n§3.2 Eq. 4: multi-image concatenation by boundary-point inverse-distance\nweighting in non-overlapping regions. §4.1 MRF seam cut: gradient-magnitude\ndata cost, smoothness λ=2, graph cuts. §4.2 content-aware straightening\nfixes bow-effect from quadratic warp; vertical-edge bending energy\n(Eq. 8-12). §5 explicit failure: a mid-ground structure violates the\ntwo-plane assumption (Figure 7).\n"
       },
-      "date": "2026-05-02"
+      "date": "2026-05-02",
+      "year": 2011
     }
   },
   {
@@ -677,7 +691,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Single-shot multi-sensor calibration paper (camera + lidar/RGB-D),\nbut the chessboard detector is self-contained and the workhorse of\nthe open-source libcbdetect. Detector pipeline (§III): (a) four-quadrant\ncorner likelihood (Eq. 1) using axis-aligned + 45°-rotated prototypes,\neach composed of {A, B, C, D} quadrant kernels; min-of-bright + min-of-\ndark suppresses non-checkerboard corners. (b) Conservative NMS. (c)\nGradient-orientation verification via 32-bin Sobel histogram + mean\nshift + expected-template product. (d) Three-scale max at 4×4, 8×8,\n12×12 windows. (e) Subpixel refinement (§III-B, Eq. 3): gradient-\northogonality weighted LS over an 11×11 neighbourhood, closed form.\n(f) Structure recovery (§III-C, Eq. 6-7): energy minimisation\nE_corners + E_struct, greedy expansion from seed corners — recovers\nmultiple unknown checkerboards in one pass without prior on (r, c).\nReported F1 = 0.92 in the abeles2021 benchmark (second-best after\npyramidal at 0.97). Mean reprojection error 0.18 px across 10\ncalibration settings (Table I). Open source: libcbdetect (cvlibs.net).\n"
       },
-      "date": "2026-05-02"
+      "date": "2026-05-02",
+      "year": 2012
     }
   },
   {
@@ -709,7 +724,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Each pixel's FRS vote at radius $n$ is warped from\n$g(p) = \\nabla I(p)$ to\n$\\hat V_{q(\\phi)} = G M G^{-1} M^{-1}\\, g(p)$ (Eq. 9), where\n$G = R D \\in A(2)$ encodes rotation $\\theta$ and anisotropic\nscale $D = \\mathrm{diag}(a, b)$, and\n$M = \\begin{pmatrix}0 & 1\\\\ -1 & 0\\end{pmatrix}$ is the 90°\nrotation between tangent and normal. A discrete grid of $G_i$\nsamples $(\\theta, a, b)$ from the constrained affine group;\neach sample drives a full FRS accumulation; per-pixel max\nover the stack yields the GFRS map. Histopathology nuclei\ndetector grid: $a \\in \\{6, 8, 10, 12, 14, 16\\}$ px,\n$b \\in \\{4, 6, 8\\}$ px, $\\theta = i\\pi/8,\\, i = 0,\\ldots,7$ —\nup to $144$ hypotheses. Smoothing kernel becomes anisotropic\nand matched to the current $G_i$; normalising factor $k_n$ is\nrecomputed per $(a, b)$ pair to compensate for varying ellipse\nperimeter length. Anisotropic scale matrix is denoted $D$ in\nthe body to avoid collision with the FRS response symbol $S$\n(the original paper uses $S$ for both). The build emits the\nreverse edge `extending: [loy-fast-radial-symmetry]` from\nFRST's `extended_by` entry — no manual `relations[]` here.\n"
       },
-      "date": "2026-05-03"
+      "date": "2026-05-03",
+      "year": 2012
     }
   },
   {
@@ -758,7 +774,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Algorithm page authored from the Hillen 2023 research note (private\nreasoning substrate, not bundled). PyCBD library wraps\nany upstream checkerboard detector (paper benchmarks Geiger 2012);\ntwo GPs predict U and V from `boardXY` via SE kernel (Hillen Eq. 6);\nhyperparameters fit by L-BFGS on log marginal likelihood (Hillen\nEq. 7, Rasmussen 2006 Ch. 5). Iterative outward expansion\n(Algorithm 1, `maxNrOfIterations` default 10) allocates unassigned\ndetections; retrained GPs fill in occluded grid positions and\nsmooth all allocated corners via posterior mean. Cost dominated\nby O(n^3) Cholesky factorisation; sparse-GP extension (Rasmussen\nCh. 8) not implemented in PyCBD. Library:\n`pip install pycbd` / github.com/InViLabUAntwerp/PyCBD.\nComplementary to OCPAD (subgraph isomorphism) — covered in the\nRemarks comparison.\n"
       },
-      "date": "2026-05-02"
+      "date": "2026-05-02",
+      "year": 2023
     }
   },
   {
@@ -790,7 +807,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Extends Boykov–Jolly 2001 graph cut along three coupled axes: full-covariance\nK-component RGB GMMs (paper uses K = 5) replace grey-level histograms; an\niterative coordinate-descent loop (assign → learn → min-cut) replaces the\none-shot cut and is monotone in E; the user input collapses from a full\ninner+outer trimap to a single bounding rectangle (incomplete trimap, T_F = ∅).\nEnergy E(α, k, θ, z) = U(α, k, θ, z) + V(α, z) (Eq. 7); data term D = -log π +\n½ log det Σ + ½ (z - μ)^T Σ^-1 (z - μ) (Eqs. 8–9); smoothness V = γ Σ\n[α_n ≠ α_m] exp(-β |z_m - z_n|^2) with β = (2⟨(z_m - z_n)^2⟩)^-1 (Eqs. 5, 11).\nConstants: γ = 50 (15-image training set, §2.2), K = 5 components per side,\n8-connected pixel graph. Convergence: each step minimises E in one variable\ngroup, so E decreases monotonically; ~12 iterations on the llama example\n(§3.2, Fig. 4a). Border matting (§4): regularised 1-D α-profile g(r_n; Δ_t,\nσ_t) along contour C in a ±w = 6-pixel ribbon, fitted by DP with\nλ_1 = 50, λ_2 = 10^3, Δ_t at 30 levels, σ_t at 10, neighbourhood patch\nL = 41 (§4.1). Foreground colour estimation by pixel stealing from T_F (§4.2).\n"
       },
-      "date": "2026-05-10"
+      "date": "2026-05-10",
+      "year": 2004
     }
   },
   {
@@ -826,7 +844,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "boykov2001-graph-cut-segmentation",
         "notes": "Energy E(A) = λR(A) + B(A) (Eq. 1). Region term R(A) = Σ_p Rp(Ap) with\nRp(\"obj\") = −ln Pr(Ip|O) and Rp(\"bkg\") = −ln Pr(Ip|B) learnt from seed\nintensity histograms (§4 preamble). Boundary term B(A) = Σ B_{p,q}·δ\nwith B_{p,q} ∝ exp(−(Ip−Iq)²/2σ²)/dist(p,q) (§4 preamble), σ estimated\nas camera noise. Graph (§3): node per pixel plus source S and sink T;\nn-links carry B_{p,q}; t-links carry λRp(·) for unlabelled pixels and\nK for seeds, with K = 1 + max_p Σ_q B_{p,q} so seeds are never severed\nby the minimum cut. Min-cut on this graph equals the global minimum of\nE(A) under the hard seed constraints (Theorem 1, §3). Neighbourhood is\n8-connected in 2D, 26-connected in 3D. On a new seed only the affected\npixel's t-links change, so the existing flow can be re-augmented.\n"
       },
-      "date": "2026-05-10"
+      "date": "2026-05-10",
+      "year": 2001
     }
   },
   {
@@ -881,7 +900,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Structure tensor M = sum_w [Ix^2, IxIy; IxIy, Iy^2] over a Gaussian-weighted\nwindow w. Response R = det(M) - k * tr(M)^2 with empirical k ~ 0.04-0.06.\n"
       },
-      "date": "2026-04-15"
+      "date": "2026-04-15",
+      "year": 1988
     }
   },
   {
@@ -924,7 +944,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "HOG descriptor for a 64×128 detection window: gradient via centred $[-1, 0, 1]$ (no smoothing, $\\sigma = 0$); 8×8-pixel cells; 9 unsigned (0°–180°) orientation bins with bilinear interpolation in orientation and position; 2×2-cell (16×16-pixel) blocks at 8-pixel stride (50% overlap); Gaussian spatial window $\\sigma = 0.5 \\times$ block width $= 8$ px; L2-Hys normalisation (L2-norm, clip to 0.2, renormalise — from Lowe SIFT); descriptor dimension $7 \\times 15 \\times 4 \\times 9 = 3780$; soft linear SVM at $C = 0.01$ with hard-example mining (§4, §6, Fig. 4–5). Empirical breakers: any prior Gaussian smoothing ($\\sigma = 2$ drops recall 89%→80% at $10^{-4}$ FPPW); omitting block normalisation (−27%); fewer than 9 orientation bins; signed gradients for pedestrians; non-overlapping blocks (−4%); shrinking the 16-px window border to 8 px (−6%).\n"
       },
-      "date": "2026-05-12"
+      "date": "2026-05-12",
+      "year": 2005
     }
   },
   {
@@ -967,7 +988,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Brightness-constancy equation (§4): $E_x u + E_y v + E_t = 0$.\nVariational energy (§9): $\\mathcal{E}^2 = \\iint (\\alpha^2 \\mathcal{E}_b^2 + \\mathcal{E}_s^2)\\,dx\\,dy$\nwith $\\mathcal{E}_b = E_x u + E_y v + E_t$ and $\\mathcal{E}_s = \\|\\nabla u\\|^2 + \\|\\nabla v\\|^2$.\nIterative update (§12) substitutes the discrete Laplacian\n$\\nabla^2 u \\approx K(\\bar{u} - u)$ with $K = 3$ for the weighted 3x3 stencil\n(§8). Gradients $E_x, E_y, E_t$ are the average of four first-differences\nover a 2x2x2 spatiotemporal cube (§7). Boundary: zero normal derivative,\nedge pixels copy from interior (§12). Convergence: 32 iterations to ~10%\nerror at 32x32, 1% noise (§17).\n"
       },
-      "date": "2026-05-13"
+      "date": "2026-05-13",
+      "year": 1981
     }
   },
   {
@@ -998,7 +1020,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Page tracks Kumar & Ahuja 2014 §II–§V. Lens–sensor tilt parametrised\nby R(ρ, σ, 0) with Euler angles (ρ, σ) about the lens x and y axes\n(Eq. 1); z-rotation is redundant because the lens is rotationally\nsymmetric about the optic axis. gRAC (Eq. 5) applies Tsai's RAC to\nthe frontal-projected point P_f = (x_df, y_df) obtained by casting\nP_nf through the lens centre (Eq. 4). Linear form A q = b (Eq. 7)\nwith q = (q_1,…,q_7) encoding (R, S, t_x, t_y) via Eqs. 9–15.\nDecomposition (§V-A): |t_x| from row orthonormality of S (Eq. 17);\nfirst row s_{1j} = −q_{4+j} t_x (Eq. 18); L = t_x² M, P = √(N t_x² −\nM² t_x⁴) via Eqs. 19–22; second row from Eqs. 23–25; third row by\nright-hand cross product; (ρ, σ) from Eqs. 29–30 with relative sign\nfrom sign(L); t_y from Eq. 26. Sign disambiguation (§V-B): assume no\ndistortion, solve Eq. 35 for (λ, t_z), reject λ < 0, pick between\nremaining two by symmetric radial-distortion fit error. CoD estimate\n(§V-C) by iterative image-plane sampling minimising residual RAC on\nfrontal-projected coordinates — extends Lenz-Tsai's CoD search to\nthe non-frontal case.\n"
       },
-      "date": "2026-04-23"
+      "date": "2026-04-23",
+      "year": 2014
     }
   },
   {
@@ -1039,7 +1062,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "SVA replaces the global affine with a per-feature deviation field\na_i = a_global + Δa_i, smoothness-regularised via a Gaussian Fourier\nweight (Eq. 4-5), giving Ψ(A) = tr(ΔAᵀ G⁻¹ ΔA) (Appendix A).\nJoint estimation: Coherent Point Drift (Myronenko 2007) likelihood\n-Σⱼ log Σᵢ g(t'ⱼ - bᵢ, σ_t) + λΨ(A) (Eq. 6). EM-style outer loop\nanneals σ_t from 1.0 to 0.1 by factor 0.97 (~75 outer iterations);\nM-step (Eq. 8) closed-form Δa^{k+1} = -CG/(2λ). Stitching field at\nquery point: v(z) = Σᵢ wᵢ g(z - b⁰ᵢ, γ), W = G⁺ ΔA (Eq. 9). §3\ndefaults: λ=10, γ=1, κ=0.5, normalised coords. ~8 min for 1200\nSIFT features in MATLAB; APAP reports ~15 min on temple pair.\nStated limitation (§6): \"violation of affine coherence at depth\nboundaries.\"\n"
       },
-      "date": "2026-05-02"
+      "date": "2026-05-02",
+      "year": 2011
     }
   },
   {
@@ -1079,7 +1103,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "§3 defines the per-angle line integral R_f^local[x,y,α] = Σ_{k=-m..m}\nf(x+k·cos α, y+k·sin α) and the detector response f_c = (max_α R −\nmin_α R)². §3 restricts α to {0, π/4, π/2, 3π/4}. §3.1 approximates\neach line integral by rotating the image by −α, applying a 1-D box\nblur of half-width m along the x-axis, and rotating back; with the\nfour-angle approximation this reduces to two image rotations\n({0, π/4}) and two blur orientations per rotation (horizontal and\nvertical), yielding four directional integrals. Post-processing:\nbox smoothing of the response, thresholding + NMS, Gaussian peak\nfit for subpixel localisation. §4 uses 1×9 box filter (m=4) and\n2× supersampling before rotation for antialiasing; baseline\ncomparison is Förstner's subpixel operator (Eq. 1) with a 9×9\nwindow and ≥20 iterations. Performance: ≈1/100-pixel accuracy on\ncrisp synthetic corners (§4.1, Fig. 4b); superior to Förstner under\nGaussian image noise (Fig. 5b, 7a).\n"
       },
-      "date": "2026-04-23"
+      "date": "2026-04-23",
+      "year": 2018
     }
   },
   {
@@ -1119,7 +1144,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Linear 8-point method for the essential matrix Q = R·S, where S is the\nskew-symmetric matrix of the unit-norm translation T. Eq. 12 of the paper\ngives the bilinear constraint x'^T Q x = 0; Eq. 13 supplies one linear\nequation per correspondence; eight correspondences determine the ratios\nof Q's nine entries. Translation magnitude is fixed by tr(Q^T Q) = 2\n(Eq. 16). Rotation is recovered from W_α = Q_α × T via R_α = W_α + W_β × W_γ\n(Eq. 27). Six-step algorithm given at the end of the paper. Inputs are\ncalibrated projective coordinates x = X_1/X_3 (Eq. 1), so the conditioning\nproblem that Hartley 1997 addresses for raw pixel coordinates does not\narise within the original setting.\n"
       },
-      "date": "2026-05-10"
+      "date": "2026-05-10",
+      "year": 1981
     }
   },
   {
@@ -1162,7 +1188,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "The 1D scalar update is eq (9) of the paper: $h \\approx \\sum F'(G-F) / \\sum F'^2$.\nThe N-D update (§4.5) replaces $F'$ with the gradient column and the denominator\nwith the gradient outer-product sum — the same matrix later called the structure\ntensor. Affine extension (§4.6, eq 11) and joint photometric ($\\alpha, \\beta$)\nestimation are sketched in the paper; convergence basin proved for $F=\\sin x$\nis $|h_0| < \\pi$ (§4.3).\n"
       },
-      "date": "2026-05-13"
+      "date": "2026-05-13",
+      "year": 1981
     }
   },
   {
@@ -1187,7 +1214,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "barath2019-magsac",
         "notes": "σ-consensus replaces the user-tuned inlier threshold ε with a noise-scale\nupper bound σ_max (10 px in all experiments) and a uniform prior on σ.\nMarginalised quality $Q^*(\\theta, P) = (1/\\sigma_\\mathrm{max}) \\int_0^{\\sigma_\\mathrm{max}} Q(\\theta, \\sigma, P)\\,d\\sigma$\n(Eq. 2) is approximated on a grid of $d = 10$ uniform partitions. For\n$\\chi^2(4)$ residuals (2D point correspondences), the per-σ inlier\nthreshold is $\\tau(\\sigma) = 3.64\\,\\sigma$ (0.95 quantile). Final model\nis weighted least-squares via IRLS on the per-point marginal-likelihood\nweights (Alg. 1, line 14). SPRT pre-screen with $\\tau_\\mathrm{ref} = 1$ px\nis reused from USAC for cheap rejection.\n"
       },
-      "date": "2026-05-03"
+      "date": "2026-05-03",
+      "year": 2019
     }
   },
   {
@@ -1222,7 +1250,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Two-line fix to the Longuet-Higgins (1981) linear DLT for the\nfundamental matrix: translate each image's points to zero centroid,\nisotropically scale so the average distance to origin is √2, then\nrun the standard DLT, enforce rank 2 by SVD truncation, and\ndenormalise. Without normalisation, the design matrix A^T A has\ncondition number κ ~ 10^11–10^13 on typical 200×200 images;\nnormalisation drops κ to ~10^3–10^5 (Graph 1 of paper). Empirical\nfinding: the normalised linear method is \"almost indistinguishable\"\nfrom the optimal iterative gold-standard estimator at n ≥ 10\ncorrespondences, while running ~20× faster (§7.3, §8). The same\nnormalisation argument applies to the homography DLT.\n"
       },
-      "date": "2026-05-02"
+      "date": "2026-05-02",
+      "year": 1997
     }
   },
   {
@@ -1262,7 +1291,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Input is a candidate graph G_d produced by an upstream corner-graph\nbuilder (Placht 2014 ROCHADE: Scharr gradient → magnitude threshold\n→ centreline thinning → saddle points → graph). Output is a partial\nmapping M : V_d → V_m onto the checkerboard model graph. Pipeline\n(§4): (1) reject if |V_d| < 0.5 |V_m|; (2) spatial consistency —\nmin inter-node distance ≥ subpixel-window size, and stdev of edge\nlength < mean edge length; (3) quad filter — keep vertices that lie\non some 4-cycle; (4) keep only the largest connected component;\n(5) VF2 (Cordella 2004) driven by binary search N_i = round(N_{i-1}\n± 2^{−i} N) over the N_i nearest-to-anchor vertices in BFS order,\nwhere the anchor is the vertex of maximum quad-density within\nBFS-depth 3; (6) breadth-first region growing vertex-by-vertex\naround the binary-search result. Algorithm 1 gives the driver.\n"
       },
-      "date": "2026-04-17"
+      "date": "2026-04-17",
+      "year": 2016
     }
   },
   {
@@ -1303,7 +1333,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Method (Rublee et al. 2011, ICCV). Two-stage pipeline:\noFAST (detector) + rBRIEF (descriptor).\n\noFAST (§3): FAST-9 candidates at each level of a 5-level\nimage pyramid (scale factor √2, area-based interpolation).\nAdaptive intensity threshold yields ≥ N candidates; Harris\ncornerness response orders them and the top-N per level\nsurvive. Orientation θ = atan2(m_{01}, m_{10}) (Eq. 3) from\nthe first-order moments of a circular patch of radius r equal\nto the patch half-width (Eq. 1: m_{pq} = Σ x^p y^q I(x,y);\nEq. 2: C = (m_{10}/m_{00}, m_{01}/m_{00})).\n\nrBRIEF (§4): binary tests on the smoothed 31×31 patch via an\nintegral image; each test compares the mean intensity of two\n5×5 sub-windows (so the candidate-pair pool size is\nM = (wp − wt)² choose-2 with overlap eliminated → 205,590).\nThe test set S = [(x_i, y_i)] (2×n matrix) is steered to S_θ\n= R_θ S using θ from oFAST, discretised to 2π/30 (12°)\nincrements via a precomputed lookup table — 30 LUT entries.\nGreedy learning (§4.3) selects 256 tests on ~300k PASCAL 2006\nkeypoints by ranking |mean − 0.5| and rejecting any candidate\nwhose absolute pairwise correlation with the running set\nexceeds a threshold (raised if fewer than 256 survive).\nEq. 4–6 define τ, f_n, g_n.\n\nMatching: Hamming distance via XOR + popcount (SSE 4.2 in\nthe paper). Large-scale retrieval: multi-probe LSH with a\nsub-signature-of-bits hash, 16-bit sub-signature, 4–20 hash\ntables.\n\nBenchmarks (§6.1, 640×480, Intel i7 2.8 GHz, single thread):\nPyramid 4.43 ms, oFAST 8.68 ms, rBRIEF 2.12 ms, total ≈\n15.3 ms; SURF 217.3 ms, SIFT 5228.7 ms on the same data.\nCellphone (1 GHz ARM, ~400 points): ORB 66.6 ms, matching\n72.8 ms, H-fit 20.9 ms — ~7 Hz at 640×480 (§6.3).\n\nInlier rates (§4.4): outdoor \"Boat\" — ORB 45.8%, SURF 28.6%,\nSIFT 30.2%; indoor \"Magazines\" — ORB 36.2%, SURF 38.3%, SIFT\n34.0%. Rotation robustness (Fig. 7) > 70% inliers across all\nangles under Gaussian noise σ = 10; BRIEF (without steering)\ndrops sharply beyond ~10°.\n\nScope: ORB targets in-plane rotation and modest scale; per-\nkeypoint scale is a discrete pyramid level, not a continuous\nestimate. BSD-licensed reference implementation in OpenCV\n2.3+.\n"
       },
-      "date": "2026-05-09"
+      "date": "2026-05-09",
+      "year": 2011
     }
   },
   {
@@ -1345,7 +1376,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Pattern: checkerboard overlaid with binary circles at every edge midpoint.\nThe circles encode a sub-perfect map of type (501, 501; 3, 3)_4 — every\n3×3 window of 2-bit codes is unique. The map is the superposition of two\nbinary (3, 3; 3, 3)_2 de Bruijn rings A (shape 3×167) and B (shape 167×3).\nDetection pipeline (§4): Hessian-based saddle response s = f_xy² − f_xx·f_yy\n− k(f_xx + f_yy)² with default k = 1 (§4.1); subpixel refinement by\ngrayscale centroid in 3×3 (§4.1); 9-nearest-neighbour graph with direct\nvs diagonal disambiguation via Hessian eigenvector directions (§4.2);\nminimum spanning forest by Kruskal with union-find (§4.2); bit read at\nthe middle third of each edge (§3 motivates the 1/3 circle diameter);\ncross-correlation decoding against A, A', B, B' at sizes 167×333 and\n333×167; absolute position (x_A + 167·[(x_A − x_B) mod 3], y_B + 167·[(y_B\n− y_A) mod 3]) on {0,…,500}^2 (§4.3). Bit repetition every three rows and\ncolumns gives majority-voting error correction tolerating up to 40 %\ncorrupted bits (§4.3).\n"
       },
-      "date": "2026-04-16"
+      "date": "2026-04-16",
+      "year": 2024
     }
   },
   {
@@ -1388,7 +1420,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Algorithm 1 (Pyramidal X-Corner) and Algorithm 2 (Chessboard Graph\nFormation) define the two passes. Eq. (1) is the x-corner intensity from\ntwo 4-group templates offset by 45°. Eq. (2) is the per-corner level\nselection ℓ* = argmax_ℓ I(c,ℓ)/(ℓ+1). Eq. (3) is the edge intensity\nscore with level-dependent sample spacing. Cascade filters in §III-A\nend with a Shi-Tomasi eigenvalue test. Subpixel refinement is mean-shift\nin the intensity image; orientation comes from 32 spokes with a 90° pair\ndifference. Grid graph properties from §III-D: every corner has 2, 3,\nor 4 neighbours; two adjacent neighbours share exactly one common corner.\n"
       },
-      "date": "2026-04-18"
+      "date": "2026-04-18",
+      "year": 2021
     }
   },
   {
@@ -1435,7 +1468,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Two-stage detector. Stage 1 (§2.1, steps 0–7): optional downsampling;\nScharr 3×3 gradient magnitude; local thresholding in (2τ+1)×(2τ+1)\nwindows with τ = 4 and a 60% upper-intensity rule; conditional\ndilation requiring ≥ 6 of 8 \"true\" neighbours; centreline extraction\nby Niblack 1992 distance-transform thinning; graph interpretation\nG = (V, E) with 8-connectivity (dist ≤ √2); saddle set S = {v : deg(v) ≥ 3};\nacyclic-path pruning + rethinning; clustering of nearby saddles with\ncombination distance α starting at 2 and growing to ≤ 5; grid\nverification by counting cluster-adjacent saddles in G. Stage 2\n(§2.2): cone-filter preprocessing with kernel c_{i,j} = max(0, γ + 1 −\n√((γ−i)² + (γ−j)²)); fit bivariate quadratic p(x,y) = a₁x² + a₂xy +\na₃y² + a₄x + a₅y + a₆ over a (2κ+1)×(2κ+1) window; refined corner is\nthe stationary point (∂p/∂x = ∂p/∂y = 0). The saddle condition is\n4a₁a₃ − a₂² < 0.\n"
       },
-      "date": "2026-04-17"
+      "date": "2026-04-17",
+      "year": 2014
     }
   },
   {
@@ -1468,7 +1502,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Page follows the IROS 2006 paper §III–V: §III defines the imaging\nfunction as the Taylor polynomial f(ρ) = a₀ + a₂ρ² + … + a_N ρ^N\nwith the closure a₁ = 0; §IV factors the calibration into a linear\nleast-squares stage that recovers per-view extrinsics together with\nthe Taylor coefficients followed by Levenberg–Marquardt refinement\nof the maximum-likelihood reprojection cost; §V adds an iterative\ncoarse-to-fine search for the image center O_c that minimises the\nsum of squared reprojection errors.\n"
       },
-      "date": "2026-05-05"
+      "date": "2026-05-05",
+      "year": 2006
     }
   },
   {
@@ -1500,7 +1535,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Uses the same structure tensor M as Harris, but replaces the Harris\nresponse with R = min(λ₁, λ₂) — the smaller eigenvalue of M. The\nthreshold then encodes a feature-tracking quality criterion derived\nin §3 of the paper.\n"
       },
-      "date": "2026-04-15"
+      "date": "2026-04-15",
+      "year": 1994
     }
   },
   {
@@ -1574,7 +1610,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Four-stage cascade. Stage 1 (§3): Gaussian pyramid with s=3 intervals/octave\n(k=2^(1/3)), σ=1.6 initial blur, optional 2× upsampling for fine-scale\nrecovery; DoG D(x,y,σ) = L(x,y,kσ) − L(x,y,σ) (Eq. 1) approximates\nσ²∇²G; 26-neighbor extrema in (x,y,σ). Stage 2 (§4): Taylor expansion to\nsecond order (Eq. 2); sub-pixel offset x̂ = −H⁻¹·∂D/∂x (Eq. 3); reject\n|D(x̂)| < 0.03 (low-contrast); reject Tr(H_2D)²/Det(H_2D) ≥ (r+1)²/r with\nr=10 → threshold 12.1 (edge response, Eq. 4). Stage 3 (§5): 36-bin\ngradient-orientation histogram in Gaussian window σ_w = 1.5×σ_keypoint;\nsecondary peaks within 80% of dominant peak emit additional keypoints\n(~15% multi-orientation rate). Stage 4 (§6.1): 16×16 sample grid rotated\nto keypoint frame; 4×4 array of 8-bin orientation histograms with\ntrilinear interpolation; Gaussian weighting σ = half-window; L2-normalize,\nclamp to 0.2 (illumination robustness), renormalize → 128-D vector.\nMatching (§7.1): nearest/second-nearest ratio < 0.8 discards ~90% false\nmatches with <5% correct-match loss.\n"
       },
-      "date": "2026-05-05"
+      "date": "2026-05-05",
+      "year": 2004
     }
   },
   {
@@ -1605,7 +1642,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Concurrent with Zhang 1999 (ICCV; published as TPAMI 2000). Same two\nIAC linear constraints per homography (Eq. 4 in Sturm-Maybank, Eqs. 3-4\nin Zhang). Primary distinguishing contributions: (a) exhaustive\nsingularity catalogue for one- and two-plane setups (Tables 1 and 2);\n(b) variable-intrinsics extension for zooming cameras (§4.2 — additional\ncolumns in the design matrix per zoom position); (c) prior-knowledge\nincorporation as linear constraints (§4.1). Numerical: column rescaling\nof A \"proved to be crucial\" for reliable IAC recovery; row rescaling\nexplicitly avoided (§4.3) because near-zero rows magnify noise. Note\npaper_id \"2003\" is an index artefact — paper is CVPR 1999.\n"
       },
-      "date": "2026-05-02"
+      "date": "2026-05-02",
+      "year": 1999
     }
   },
   {
@@ -1686,7 +1724,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Three pillars (Bay et al. 2006). Pillar 1 — Fast-Hessian detector (§3):\nintegral image $I_\\Sigma(x,y) = \\sum_{i \\le x, j \\le y} I(i, j)$ enables\nconstant-time rectangular sums; box filters $D_{xx}, D_{yy}, D_{xy}$\napproximate Gaussian second derivatives with empirical balancing\n$\\det(\\mathcal{H}_\\text{approx}) = D_{xx} D_{yy} - (0.9\\, D_{xy})^2$\n(Eq. 2). The factor 0.9 ≈ ratio of Frobenius norms of the lobes;\nsquared as 0.81 in the cross-term. Scale-space upscales filters\ninstead of downsampling: octave 1 uses 9×9, 15×15, 21×21, 27×27\n(σ = 1.2 at 9×9, σ = 3.6 at 27×27); octave step doubles per octave\n(6, 12, 24). NMS in 3×3×3 (image+scale); sub-pixel/sub-scale via\nquadratic fit (Brown). Pillar 2 — Orientation (§4.1): Haar-wavelet\nresponses $d_x, d_y$ at sample step $s$ in a $6s$-radius circular\nneighbourhood (wavelet side $4s$), Gaussian-weighted with σ = 2.5s,\nsliding 60° (π/3) angular window picks the longest summed vector.\nU-SURF skips this step (~28% speed gain). Pillar 3 — Descriptor\n(§4.2): aligned 20s × 20s window, 4×4 sub-region grid, 5×5 sample\npoints per sub-region, Haar size 2s, Gaussian σ = 3.3s; per\nsub-region $v = (\\sum d_x, \\sum |d_x|, \\sum d_y, \\sum |d_y|)$ ⇒ 64-D\nvector; L2-normalized to unit length. Laplacian-sign of the keypoint\nindexes matching for early reject. SURF-128 splits sums by sign of\nthe orthogonal axis. Matching: nearest-neighbour-ratio at 0.7.\n"
       },
-      "date": "2026-05-09"
+      "date": "2026-05-09",
+      "year": 2006
     }
   },
   {
@@ -1735,7 +1774,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Pipeline: (1) Harris corners with subpixel refinement (§2); (2) Delaunay\ntriangulation of the corner set, Watson's O(n log n) implementation (§2.1);\n(3) merge each triangle with its unique same-colour edge neighbour into a\nquadrilateral (§3); (4) topological filtering — drop quads with two nodes\nof edge-degree > 4 (§4); (5) geometric filtering — drop quads whose\nopposite-edge length ratio > 10 (§4); (6) flood-fill integer grid\ncoordinates from an arbitrary seed (§5). Complexity O(n) in the number of\ncorners. Pattern uses three marker circles to fix origin and x-axis.\n"
       },
-      "date": "2026-04-16"
+      "date": "2026-04-16",
+      "year": 2009
     }
   },
   {
@@ -1772,7 +1812,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Page tracks Tsai & Lenz 1989 §II.B–II.C. Rotation parametrised by the\nmodified Rodrigues vector P_r = 2 sin(θ/2) n (Eq. 9), with recovery\nR = (1 - |P_r|²/2) I + ½(P_r P_r^T + α [P_r]_×), α = √(4 - |P_r|²)\n(Eq. 10). Two-stage solver: (a) rotation — Lemma VI gives\n[P_g_ij + P_c_ij]_× P_cg' = P_c_ij - P_g_ij (Eq. 12); recover\nP_cg = 2 P_cg' / √(1 + |P_cg'|²) (Eq. 14). (b) translation —\nLemma VIII gives (R_g_ij - I) T_cg = R_cg T_c_ij - T_g_ij (Eq. 15).\nUniqueness: rotation axes of station pairs must be non-collinear\n(Lemmas X, XI). Special case: when P_g_ij + P_c_ij is collinear\nacross pairs, θ_Rcg = π and the axis is taken as P_g_ij + P_c_ij.\n"
       },
-      "date": "2026-04-20"
+      "date": "2026-04-20",
+      "year": 1989
     }
   },
   {
@@ -1820,7 +1861,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Two-stage technique on a precision 3D target. Stage 1 — the radial\nalignment constraint (RAC) eliminates $f$, $\\kappa_1$, $\\kappa_2$, $T_z$\nfrom the projection equation, yielding a linear system in five\n(coplanar) or seven (non-coplanar) unknowns encoding $(R, T_x, T_y)$\nplus the image-scale factor $s_x$. Stage 2 — fixes Stage 1 outputs and\nrecovers $(f, T_z, \\kappa_1)$ by a short nonlinear solve seeded by an\nignoring-distortion linear approximation. One-term radial distortion\nonly; tangential excluded \"to avoid numerical instability\". The\ncoplanar variant requires $s_x$ known a priori (Lenz–Tsai 1987); the\nnon-coplanar variant recovers $s_x$ as part of the calibration.\n"
       },
-      "date": "2026-05-02"
+      "date": "2026-05-02",
+      "year": 1987
     }
   },
   {
@@ -1851,7 +1893,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "raguram2013-usac",
         "notes": "Unifying engineering framework over the RANSAC family. Decomposes\npractical RANSAC into four independently swappable stages:\n(1) sampling (PROSAC quality-ordered draws expanding to full set\nafter $T_N$); (2) verification (SPRT — Sequential Probability\nRatio Test, $\\Lambda_j = \\prod p(x_r|H_b)/p(x_r|H_g)$, Eq. 9 —\nrejects bad models early when $\\Lambda_j > A$); (3) degeneracy\nhandling (DEGENSAC — for fundamental matrix, detects ≥ 5 of 7\nminimal-sample correspondences related by a homography and runs\na model-completion step); (4) local optimisation (LO-RANSAC\ninner-loop with iteratively reweighted least-squares refit).\nSPRT-corrected stopping criterion (Eq. 13) at confidence $\\eta_0$\nand nonrandomness significance $\\gamma = 0.05$ (Eq. 12). Tested\ninlier-ratio range 10–92% across homography, fundamental, and\nessential matrix benchmarks. Reference open-source implementation\nis USAC-1.0.\n"
       },
-      "date": "2026-05-03"
+      "date": "2026-05-03",
+      "year": 2013
     }
   },
   {
@@ -1875,7 +1918,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         "primary": "viola2001-detector",
         "notes": "Three orthogonal contributions: (1) integral image $ii(x,y) = \\sum_{x' \\le x, y' \\le y} i(x',y')$ allowing any axis-aligned rectangular sum in four array reads (Section 2.1, Eq. 1–2); (2) AdaBoost weak classifier $h_j(x) = [\\![ p_j f_j(x) < p_j \\theta_j ]\\!]$ over ~180,000 rectangle features on a 24×24 sub-window (Section 3, Table 1); (3) attentional cascade with per-stage detection rate $d_i$ and false-positive rate $f_i$ giving $D = \\prod_i d_i$ and $F = \\prod_i f_i$ (Section 4). Final cascade: 38 layers, 6,061 features, layer 1–5 sizes 1, 10, 25, 25, 50. Average ~10 feature evaluations per sub-window. Frame rate 15 fps on 700 MHz Pentium III, 384×288 images. Trained on 4,916 hand-labelled faces; non-face training via bootstrapping on 9,544 images (~350 million sub-windows). Sub-windows variance-normalised by $\\sigma = \\sqrt{\\mu_2 - \\mu^2}$ computed from two integral images (one over pixels, one over squared pixels).\n"
       },
-      "date": "2026-05-12"
+      "date": "2026-05-12",
+      "year": 2001
     }
   },
   {
@@ -1946,7 +1990,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Seven-parameter ideal continuous chessboard corner model\nC_s(u,v; μ, υ, α, β, λ, κ, σ) = λ·G_σ ⊛ [E(α)·E(β)] + κ\nfit by Gauss–Newton over a (2r+1)² ROI, r ≈ 14–15 px (§3.1–3.2,\nEq. 3–7). Gaussian erf inside the convolution is replaced by\ntanh(ρx) with ρ ≈ 1.1 (§3.2, Fig. 3); residual Δ(u,v) from the\nintegration-by-parts surrogate is compensated explicitly (Eq. 8–9).\nSub-pixel output c_s = c_p − [μ, υ]ᵀ (Eq. 10). Self-check (§3.3,\nEq. 11–12): per-corner RMSE Ẽ_{m,n} compared against the modified\nboxplot interval [2.5Q₁ − 1.5Q₃, 2.5Q₃ − 1.5Q₁]; failing corners\nreceive PnP weight w_{m,n} = 0 (Eq. 15, Rodrigues recommended).\n"
       },
-      "date": "2026-05-10"
+      "date": "2026-05-10",
+      "year": 2018
     }
   },
   {
@@ -1992,7 +2037,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
         ],
         "notes": "Page follows the MSR-TR-98-71 (Zhang, updated 2008) presentation:\n§2 basic equations; §3.1 closed-form linear initialization from\nhomographies; Appendix B closed-form K from the IAC vector b;\n§3.2 ML refinement (Eq. 10); §3.3 radial distortion (Eq. 11-12, 14);\n§4 parallel-plane degeneracy.\n"
       },
-      "date": "2026-04-20"
+      "date": "2026-04-20",
+      "year": 2000
     }
   }
 ];
@@ -2100,7 +2146,8 @@ export const modelPages: ModelIndexEntry[] = [
           "weights_license": "unrestricted"
         }
       ],
-      "date": "2026-05-12"
+      "date": "2026-05-12",
+      "year": 2012
     }
   },
   {
@@ -2158,7 +2205,8 @@ export const modelPages: ModelIndexEntry[] = [
           "license": "unlicensed"
         }
       ],
-      "date": "2026-04-18"
+      "date": "2026-04-18",
+      "year": 2023
     }
   },
   {
@@ -2224,7 +2272,8 @@ export const modelPages: ModelIndexEntry[] = [
           "license": "MIT"
         }
       ],
-      "date": "2026-05-03"
+      "date": "2026-05-03",
+      "year": 2022
     }
   },
   {
@@ -2281,7 +2330,8 @@ export const modelPages: ModelIndexEntry[] = [
           "license": "MIT"
         }
       ],
-      "date": "2026-05-11"
+      "date": "2026-05-11",
+      "year": 2018
     }
   },
   {
@@ -2354,7 +2404,8 @@ export const modelPages: ModelIndexEntry[] = [
           "license": "Apache-2.0"
         }
       ],
-      "date": "2026-05-13"
+      "date": "2026-05-13",
+      "year": 2015
     }
   },
   {
@@ -2422,7 +2473,8 @@ export const modelPages: ModelIndexEntry[] = [
           "license": "BSD-3-Clause"
         }
       ],
-      "date": "2026-05-10"
+      "date": "2026-05-10",
+      "year": 2015
     }
   },
   {
@@ -2497,7 +2549,8 @@ export const modelPages: ModelIndexEntry[] = [
           "weights_license": "unrestricted"
         }
       ],
-      "date": "2026-05-12"
+      "date": "2026-05-12",
+      "year": 2015
     }
   },
   {
@@ -2552,7 +2605,8 @@ export const modelPages: ModelIndexEntry[] = [
           "weights_license": "Apache-2.0"
         }
       ],
-      "date": "2026-05-10"
+      "date": "2026-05-10",
+      "year": 2023
     }
   },
   {
@@ -2619,7 +2673,8 @@ export const modelPages: ModelIndexEntry[] = [
           "weights_license": "Apache-2.0"
         }
       ],
-      "date": "2026-05-10"
+      "date": "2026-05-10",
+      "year": 2021
     }
   },
   {
@@ -2675,7 +2730,8 @@ export const modelPages: ModelIndexEntry[] = [
           "license": "MIT"
         }
       ],
-      "date": "2026-05-11"
+      "date": "2026-05-11",
+      "year": 2017
     }
   },
   {
@@ -2737,7 +2793,8 @@ export const modelPages: ModelIndexEntry[] = [
         ],
         "notes": "Stub page authored from secondary sources only — the MDPI PDF for\nDonné et al. 2016 (doi:10.3390/s16111858) returned HTTP 403 to\nautomated fetchers and could not be cached. All claims are derived\nfrom the chen2023-ccdn research note, the existing CCDN page\n(`content/models/ccdn-checkerboard-detector.md`), and the\nindex.yaml `donne2016-mate` notes. Architecture: 3 conv\nlayers + ReLU; per-pixel response map; max-pool with stride > 1\n(output spatially coarser than input). Loss: MSE between predicted\nresponse and binary corner mask (no positive/negative balancing).\nPost-processing: fixed 0.5 threshold; no NMS, no clustering.\nBenchmarks (via CCDN Tables 1–2): uEye 1.009 px / 3.065 % missed /\n0.809 % doubles / 492 FP; GoPro 0.835 px / 4.566 % / 4.556 % / 389 FP.\nPromote past stub when the paper PDF becomes accessible and the\narchitectural specifics (kernel sizes, channel counts, max-pool\nstrides, training hyperparameters) can be verified against the\nprimary text.\n"
       },
-      "date": "2026-05-02"
+      "date": "2026-05-02",
+      "year": 2016
     }
   },
   {
@@ -2824,7 +2881,8 @@ export const modelPages: ModelIndexEntry[] = [
           "weights_license": "BSD-3-Clause"
         }
       ],
-      "date": "2026-05-13"
+      "date": "2026-05-13",
+      "year": 2016
     }
   },
   {
@@ -2884,7 +2942,8 @@ export const modelPages: ModelIndexEntry[] = [
           "weights_license": "noncommercial-research-only"
         }
       ],
-      "date": "2026-05-10"
+      "date": "2026-05-10",
+      "year": 2020
     }
   },
   {
@@ -2986,7 +3045,8 @@ export const modelPages: ModelIndexEntry[] = [
           "weights_license": "noncommercial-research-only"
         }
       ],
-      "date": "2026-05-02"
+      "date": "2026-05-02",
+      "year": 2018
     }
   },
   {
@@ -3036,7 +3096,8 @@ export const modelPages: ModelIndexEntry[] = [
           "weights_license": "GPL-3.0"
         }
       ],
-      "date": "2026-05-11"
+      "date": "2026-05-11",
+      "year": 2015
     }
   },
   {
@@ -3110,7 +3171,8 @@ export const modelPages: ModelIndexEntry[] = [
           "weights_license": "Apache-2.0"
         }
       ],
-      "date": "2026-05-12"
+      "date": "2026-05-12",
+      "year": 2014
     }
   },
   {
@@ -3188,7 +3250,8 @@ export const modelPages: ModelIndexEntry[] = [
           "weights_license": "Apache-2.0"
         }
       ],
-      "date": "2026-04-18"
+      "date": "2026-04-18",
+      "year": 2024
     }
   },
   {
@@ -3252,7 +3315,8 @@ export const modelPages: ModelIndexEntry[] = [
           "license": "MIT"
         }
       ],
-      "date": "2026-05-13"
+      "date": "2026-05-13",
+      "year": 2016
     }
   }
 ];
@@ -3279,7 +3343,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "sun2021-loftr"
         ]
       },
-      "date": "2026-05-16"
+      "date": "2026-05-16",
+      "year": 2020
     }
   },
   {
@@ -3305,7 +3370,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "weng1992-camera"
         ]
       },
-      "date": "2026-05-16"
+      "date": "2026-05-16",
+      "year": 2000
     }
   },
   {
@@ -3317,7 +3383,9 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 11,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "pinhole-camera-model"
+      ],
       "tags": [
         "camera-model"
       ],
@@ -3393,7 +3461,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "simonyan2014-vgg"
         ]
       },
-      "date": "2026-05-16"
+      "date": "2026-05-16",
+      "year": 1986
     }
   },
   {
@@ -3420,7 +3489,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "szegedy2015-inception"
         ]
       },
-      "date": "2026-05-16"
+      "date": "2026-05-16",
+      "year": 2012
     }
   },
   {
@@ -3435,9 +3505,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "prerequisites": [
         "ransac",
         "svd-null-space"
-      ],
-      "tags": [
-        "linear-algebra"
       ],
       "tags": [
         "linear-algebra"
@@ -3473,7 +3540,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "felzenszwalb2004-graph-segm"
         ]
       },
-      "date": "2026-05-16"
+      "date": "2026-05-16",
+      "year": 2001
     }
   },
   {
@@ -3526,7 +3594,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "rublee2011-orb"
         ]
       },
-      "date": "2026-05-16"
+      "date": "2026-05-16",
+      "year": 2004
     }
   },
   {
@@ -3555,7 +3624,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "detone2018-superpoint"
         ]
       },
-      "date": "2026-05-16"
+      "date": "2026-05-16",
+      "year": 2004
     }
   },
   {
@@ -3602,9 +3672,6 @@ export const conceptPages: ConceptIndexEntry[] = [
       "tags": [
         "two-view-geometry"
       ],
-      "tags": [
-        "two-view-geometry"
-      ],
       "domain": "geometry",
       "sources": {
         "references": [
@@ -3624,12 +3691,175 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 9,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolution"
+      ],
       "tags": [
         "keypoint-detection"
       ],
       "domain": "features",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "image-pyramid",
+    "frontmatter": {
+      "title": "Image Pyramid",
+      "summary": "A discrete multi-resolution representation — a sequence of images at progressively coarser resolution, each smoothed and downsampled from its predecessor.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "multi-scale"
+      ],
+      "domain": "image-formation",
+      "sources": {
+        "primary": "lowe2004-sift",
+        "references": [
+          "abeles2021-pyramidal",
+          "bay2006-surf"
+        ]
+      },
+      "date": "2026-05-16",
+      "year": 2004
+    }
+  },
+  {
+    "slug": "integral-image",
+    "frontmatter": {
+      "title": "Integral Image",
+      "summary": "A precomputed prefix-sum array that returns the sum of pixel values over any axis-aligned rectangle in constant time with four array reads.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "beginner",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "classical"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "viola2001-detector",
+        "references": [
+          "bay2006-surf",
+          "calonder2010-brief",
+          "rublee2011-orb"
+        ]
+      },
+      "date": "2026-05-16",
+      "year": 2001
+    }
+  },
+  {
+    "slug": "non-maximum-suppression",
+    "frontmatter": {
+      "title": "Non-Maximum Suppression",
+      "summary": "Reducing a dense response map or a set of overlapping detections to a sparse set of local maxima by discarding every element that is not strongest in its neighbourhood.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "keypoint-detection"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "canny1986-edge",
+        "references": [
+          "harris1988-corner",
+          "rosten2006-fast",
+          "redmon2016-yolo",
+          "shi-tomasi1994-features"
+        ]
+      },
+      "date": "2026-05-16",
+      "year": 1986
+    }
+  },
+  {
+    "slug": "optical-flow",
+    "frontmatter": {
+      "title": "Optical Flow",
+      "summary": "The apparent 2-D velocity field of image brightness between consecutive frames, recovered from the spatio-temporal gradient under the brightness-constancy assumption.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "image-gradient",
+        "structure-tensor"
+      ],
+      "tags": [
+        "optical-flow",
+        "variational"
+      ],
+      "domain": "features",
+      "sources": {
+        "primary": "horn1981-horn-schunck",
+        "references": [
+          "lucas1981-lucas-kanade",
+          "black1996-robust",
+          "tomasi1991-detection-tracking"
+        ]
+      },
+      "date": "2026-05-16",
+      "year": 1981
+    }
+  },
+  {
+    "slug": "pinhole-camera-model",
+    "frontmatter": {
+      "title": "Pinhole Camera Model",
+      "summary": "The projective map from 3-D scene points to 2-D image pixels through a single centre of projection, parameterised by an intrinsic matrix and an extrinsic pose.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "camera-model"
+      ],
+      "domain": "image-formation",
+      "sources": {
+        "primary": "zhang2000-flexible",
+        "references": [
+          "tsai1987-versatile",
+          "sturm2003-plane-based",
+          "weng1992-camera"
+        ]
+      },
+      "date": "2026-05-16",
+      "year": 2000
+    }
+  },
+  {
+    "slug": "pose-estimation",
+    "frontmatter": {
+      "title": "Pose Estimation",
+      "summary": "Recovery of the 6-DOF rigid transformation — rotation and translation — relating a camera to a scene, an object, or a second camera.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "pinhole-camera-model"
+      ],
+      "tags": [
+        "pose-estimation"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "primary": "lepetit2009-epnp",
+        "references": [
+          "longuet-higgins1981-eight-point",
+          "zhang2000-flexible"
+        ]
+      },
+      "date": "2026-05-16",
+      "year": 2009
     }
   },
   {
@@ -3665,7 +3895,9 @@ export const conceptPages: ConceptIndexEntry[] = [
       "difficulty": "intermediate",
       "readingTimeMinutes": 10,
       "access": "public",
-      "prerequisites": [],
+      "prerequisites": [
+        "convolution"
+      ],
       "tags": [
         "multi-scale"
       ],
@@ -3744,7 +3976,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "zhang2000-flexible"
         ]
       },
-      "date": "2026-05-16"
+      "date": "2026-05-16",
+      "year": 1981
     }
   },
   {

@@ -15,7 +15,6 @@ import useAlgorithmsFilters, {
     filterModels,
     filterConcepts,
     computeFacets,
-    type AlgorithmsFilters,
     type AlgorithmsKind,
     type AlgorithmsView,
 } from "../hooks/useAlgorithmsFilters.ts";
@@ -29,7 +28,6 @@ import { contentGraph } from "../generated/content-graph.ts";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 import { searchSlugs } from "../lib/atlas/searchClient.ts";
-import useScrollSpy from "../hooks/useScrollSpy.ts";
 
 // ── Discriminated entry type ───────────────────────────────────────────────────
 
@@ -53,60 +51,66 @@ function byDepthThenDate(depth: Record<string, number>) {
     };
 }
 
-// ── Unified domain grouping ───────────────────────────────────────────────────
+// ── Unified catalog grouping ──────────────────────────────────────────────────
 
-type DomainGroup = { domain: string; entries: UnifiedEntry[] };
+type CatalogGroup = { id: string; label: string; entries: UnifiedEntry[] };
 
 function computeUnifiedGroups(
     filteredAlgorithms: AlgorithmIndexEntry[],
     filteredModels: ModelIndexEntry[],
     filteredConcepts: ConceptIndexEntry[],
     kind: AlgorithmsKind,
-    filters: AlgorithmsFilters,
-): DomainGroup[] {
+): CatalogGroup[] {
     const depth = contentGraph.depth;
     const comparator = byDepthThenDate(depth);
 
-    // When a specific domain is filtered, build one group for that domain only.
-    if (filters.categoryId !== "all") {
-        const entries: UnifiedEntry[] = [];
-        if (kind === "algorithm" || kind === "all") {
-            for (const e of filteredAlgorithms) entries.push({ kind: "algorithm", slug: e.slug, frontmatter: e.frontmatter });
-        }
-        if (kind === "model" || kind === "all") {
-            for (const e of filteredModels) entries.push({ kind: "model", slug: e.slug, frontmatter: e.frontmatter });
-        }
-        if (kind === "concept" || kind === "all") {
-            for (const e of filteredConcepts) entries.push({ kind: "concept", slug: e.slug, frontmatter: e.frontmatter });
-        }
-        entries.sort(comparator);
-        if (entries.length === 0) return [];
-        return [{ domain: filters.categoryId, entries }];
+    // When kind === "all": three top-level groups by type.
+    if (kind === "all") {
+        const groups: CatalogGroup[] = [];
+
+        const algoEntries: UnifiedEntry[] = filteredAlgorithms.map((e) => ({
+            kind: "algorithm", slug: e.slug, frontmatter: e.frontmatter,
+        }));
+        algoEntries.sort(comparator);
+        if (algoEntries.length > 0) groups.push({ id: "algorithm", label: "Algorithms", entries: algoEntries });
+
+        const modelEntries: UnifiedEntry[] = filteredModels.map((e) => ({
+            kind: "model", slug: e.slug, frontmatter: e.frontmatter,
+        }));
+        modelEntries.sort(comparator);
+        if (modelEntries.length > 0) groups.push({ id: "model", label: "Models", entries: modelEntries });
+
+        const conceptEntries: UnifiedEntry[] = filteredConcepts.map((e) => ({
+            kind: "concept", slug: e.slug, frontmatter: e.frontmatter,
+        }));
+        conceptEntries.sort(comparator);
+        if (conceptEntries.length > 0) groups.push({ id: "concept", label: "Concepts", entries: conceptEntries });
+
+        return groups;
     }
 
-    // Group by domain in domainOrder; each group sorted by depth then date.
+    // When a specific kind is selected: group by domain over domainOrder.
+    const sourceItems: UnifiedEntry[] = [];
+    if (kind === "algorithm") {
+        for (const e of filteredAlgorithms) sourceItems.push({ kind: "algorithm", slug: e.slug, frontmatter: e.frontmatter });
+    } else if (kind === "model") {
+        for (const e of filteredModels) sourceItems.push({ kind: "model", slug: e.slug, frontmatter: e.frontmatter });
+    } else {
+        for (const e of filteredConcepts) sourceItems.push({ kind: "concept", slug: e.slug, frontmatter: e.frontmatter });
+    }
+
     const byDomain = new Map<string, UnifiedEntry[]>();
-    const addToGroup = (slug: string, frontmatter: UnifiedEntry["frontmatter"], entryKind: UnifiedEntry["kind"]) => {
-        const dom = frontmatter.domain ?? "unknown";
+    for (const entry of sourceItems) {
+        const dom = entry.frontmatter.domain ?? "unknown";
         const bucket = byDomain.get(dom) ?? [];
-        bucket.push({ kind: entryKind, slug, frontmatter } as UnifiedEntry);
+        bucket.push(entry);
         byDomain.set(dom, bucket);
-    };
-
-    if (kind === "algorithm" || kind === "all") {
-        for (const e of filteredAlgorithms) addToGroup(e.slug, e.frontmatter, "algorithm");
-    }
-    if (kind === "model" || kind === "all") {
-        for (const e of filteredModels) addToGroup(e.slug, e.frontmatter, "model");
-    }
-    if (kind === "concept" || kind === "all") {
-        for (const e of filteredConcepts) addToGroup(e.slug, e.frontmatter, "concept");
     }
 
     return domainOrder
         .map((dom) => {
             const entries = (byDomain.get(dom) ?? []).sort(comparator);
-            return { domain: dom, entries };
+            return { id: dom, label: domainLabels[dom as keyof typeof domainLabels] ?? dom, entries };
         })
         .filter((g) => g.entries.length > 0);
 }
@@ -131,7 +135,7 @@ function EntryCard({ entry, layout }: { entry: UnifiedEntry; layout: "grid" | "l
 }
 
 // ── Section header — sticky, spans full main column ──────────────────────────
-// The nav bar is sticky top-0 h-16 (64px). Domain headers stick just below it.
+// The nav bar is sticky top-0 h-16 (64px). Section headers stick just below it.
 
 function SectionHeader({ label, count }: { label: string; count: number }) {
     return (
@@ -146,7 +150,7 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
     );
 }
 
-// ── Mobile section header (no negative-margin trick needed — no px-10 on mobile) ─
+// ── Mobile section header ─────────────────────────────────────────────────────
 
 function MobileSectionHeader({ label, count }: { label: string; count: number }) {
     return (
@@ -159,10 +163,10 @@ function MobileSectionHeader({ label, count }: { label: string; count: number })
     );
 }
 
-// ── Unified domain-grouped results ────────────────────────────────────────────
+// ── Unified grouped results ───────────────────────────────────────────────────
 
 interface UnifiedResultsProps {
-    groups: DomainGroup[];
+    groups: CatalogGroup[];
     layout: "grid" | "list";
     isMobile?: boolean;
 }
@@ -183,22 +187,12 @@ function UnifiedResults({ groups, layout, isMobile = false }: UnifiedResultsProp
 
     return (
         <>
-            {groups.map(({ domain, entries }) => (
-                <div
-                    key={domain}
-                    id={`domain-${domain}`}
-                    className="scroll-mt-[calc(4rem+1px)]"
-                >
+            {groups.map(({ id, label, entries }) => (
+                <div key={id}>
                     {isMobile ? (
-                        <MobileSectionHeader
-                            label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
-                            count={entries.length}
-                        />
+                        <MobileSectionHeader label={label} count={entries.length} />
                     ) : (
-                        <SectionHeader
-                            label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
-                            count={entries.length}
-                        />
+                        <SectionHeader label={label} count={entries.length} />
                     )}
                     <div className={`${gridClass} mt-3`}>
                         {entries.map((entry) => (
@@ -214,7 +208,7 @@ function UnifiedResults({ groups, layout, isMobile = false }: UnifiedResultsProp
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function AlgorithmIndex() {
-    const { filters, setKind, setCategoryId, toggleTag, setQuery, setView, setProblem, reset } =
+    const { filters, setKind, setQuery, setView, setProblem, reset } =
         useAlgorithmsFilters();
     const [searchParams] = useSearchParams();
     const focusParam = searchParams.get("focus") ?? undefined;
@@ -252,19 +246,6 @@ export default function AlgorithmIndex() {
         [visibleAlgorithms, visibleModels, visibleConcepts, filters, searchMatchedSlugs],
     );
 
-    const allTags = useMemo(() => {
-        const sources =
-            filters.kind === "algorithm" ? [visibleAlgorithms] :
-            filters.kind === "model"     ? [visibleModels] :
-            filters.kind === "concept"   ? [visibleConcepts] :
-            [visibleAlgorithms, visibleModels, visibleConcepts];
-        const set = new Set<string>();
-        for (const src of sources)
-            for (const e of src)
-                for (const t of e.frontmatter.tags) set.add(t);
-        return [...set].sort();
-    }, [filters.kind, visibleAlgorithms, visibleModels, visibleConcepts]);
-
     const filteredAlgorithms = useMemo(
         () => filterAlgorithms(visibleAlgorithms, filters, searchMatchedSlugs),
         [visibleAlgorithms, filters, searchMatchedSlugs],
@@ -278,34 +259,14 @@ export default function AlgorithmIndex() {
         [visibleConcepts, filters, searchMatchedSlugs],
     );
 
-    // ── Unified domain-grouped results ───────────────────────────────────────
+    // ── Unified grouped results ──────────────────────────────────────────────
     const unifiedGroups = useMemo(
-        () => computeUnifiedGroups(filteredAlgorithms, filteredModels, filteredConcepts, filters.kind, filters),
-        [filteredAlgorithms, filteredModels, filteredConcepts, filters],
+        () => computeUnifiedGroups(filteredAlgorithms, filteredModels, filteredConcepts, filters.kind),
+        [filteredAlgorithms, filteredModels, filteredConcepts, filters.kind],
     );
 
-    // ── Visible domain ids for scroll-spy and jump-rail ──────────────────────
-    const visibleDomainIds = useMemo(
-        () => unifiedGroups.map((g) => `domain-${g.domain}`),
-        [unifiedGroups],
-    );
-    const activeScrollId = useScrollSpy(visibleDomainIds, { bandFraction: 0.25 });
-    const activeDomain = activeScrollId ? activeScrollId.replace(/^domain-/, "") : null;
-
-    const handleJumpToDomain = (domainId: string | null) => {
-        if (!domainId) {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            return;
-        }
-        const el = document.getElementById(`domain-${domainId}`);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
-
-    // Mobile active filter badge count (tags + domain + problem filters)
-    const activeCount =
-        filters.tags.length +
-        (filters.categoryId !== "all" ? 1 : 0) +
-        (filters.problem !== "all" ? 1 : 0);
+    // Mobile active filter badge count (problem filter only)
+    const activeCount = filters.problem !== "all" ? 1 : 0;
 
     // ── Desktop layout ──────────────────────────────────────────────────────
 
@@ -322,14 +283,8 @@ export default function AlgorithmIndex() {
                     <AlgorithmsSidebar
                         filters={filters}
                         facets={facets}
-                        tagSet={allTags}
                         onKindChange={setKind}
-                        onCategoryChange={setCategoryId}
-                        onTagToggle={toggleTag}
                         onProblemChange={setProblem}
-                        activeDomain={activeDomain}
-                        visibleDomains={unifiedGroups.map((g) => g.domain)}
-                        onJumpToDomain={handleJumpToDomain}
                     />
 
                     {/* Main column */}
@@ -486,13 +441,8 @@ export default function AlgorithmIndex() {
                 onClose={() => setFilterSheetOpen(false)}
                 filters={filters}
                 facets={facets}
-                categoryValues={domainOrder}
-                categoryLabel={(id) => domainLabels[id as keyof typeof domainLabels] ?? id}
-                allTags={allTags}
                 totalResults={facets.total}
                 onKindChange={setKind}
-                onCategoryChange={setCategoryId}
-                onTagToggle={toggleTag}
                 onProblemChange={setProblem}
                 onReset={reset}
             />

@@ -18,6 +18,8 @@ import { taskLabel } from "../../lib/content/taskLabels.ts";
 import { EntryIcon } from "./EntryIcon.tsx";
 import { getFocusEntry } from "../../lib/atlas/focusEntry.ts";
 import { FocusedEntryPanel } from "./FocusedEntryPanel.tsx";
+import { domainLabels } from "../algorithms/domainLabels.ts";
+import TagBadge from "../blog/TagBadge.tsx";
 
 // ── Constants (ported verbatim from direction-2-graph.jsx) ─────────────────────
 
@@ -340,6 +342,9 @@ function MobileNeighborRow({ slug, onClick }: MobileNeighborRowProps) {
         return undefined;
     })();
 
+    const rowDomain = getFocusEntry(slug)?.fm?.domain as string | undefined;
+    const rowDomainLabel = rowDomain ? (domainLabels[rowDomain as keyof typeof domainLabels] ?? undefined) : undefined;
+
     return (
         <button
             type="button"
@@ -354,7 +359,7 @@ function MobileNeighborRow({ slug, onClick }: MobileNeighborRowProps) {
                     {shortTitle(node.title)}
                 </div>
                 <div className="text-[10.5px] text-muted-foreground uppercase tracking-[0.06em] truncate mt-0.5">
-                    {KIND_LABEL[kind]}
+                    {rowDomainLabel ?? KIND_LABEL[kind]}
                     {year != null && (
                         <> · <span className="font-mono normal-case tracking-normal">{year}</span></>
                     )}
@@ -406,6 +411,9 @@ function MobileGraphView({ history, current, onBack, onNavigate }: MobileGraphVi
     const bodyText = tagline ?? node.summary.slice(0, 200);
     const tasks = (fm as { tasks?: string[] }).tasks ?? [];
     const year = (fm as { year?: number }).year;
+    const heroDomain = fm.domain as string | undefined;
+    const heroDomainLabel = heroDomain ? (domainLabels[heroDomain as keyof typeof domainLabels] ?? undefined) : undefined;
+    const heroTags = (fm.tags as string[] | undefined) ?? [];
 
     let citationText: string | null = null;
     if (paper) {
@@ -498,13 +506,38 @@ function MobileGraphView({ history, current, onBack, onNavigate }: MobileGraphVi
                         <span className="font-mono truncate">{citationText}</span>
                     </div>
                 )}
+                {heroDomainLabel && (
+                    <div className="mt-3">
+                        <div className="text-[9.5px] uppercase tracking-[0.12em] text-muted-foreground mb-1">Domain</div>
+                        <span className="inline-flex items-center rounded px-2 py-0.5 text-[11px] bg-muted text-muted-foreground">
+                            {heroDomainLabel}
+                        </span>
+                    </div>
+                )}
                 {tasks.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                        {tasks.slice(0, 3).map((t) => (
-                            <span key={t} className="inline-flex items-center h-[20px] px-2 rounded-[3px] border border-brand/40 bg-brand/10 text-[10.5px] text-brand">
-                                {taskLabel(t)}
-                            </span>
-                        ))}
+                    <div className="mt-3">
+                        <div className="text-[9.5px] uppercase tracking-[0.12em] text-muted-foreground mb-1">Problems</div>
+                        <div className="flex flex-wrap gap-1.5">
+                            {tasks.slice(0, 3).map((t) => (
+                                <span key={t} className="inline-flex items-center h-[20px] px-2 rounded-[3px] border border-brand/40 bg-brand/10 text-[10.5px] text-brand">
+                                    {taskLabel(t)}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {heroTags.length > 0 && (
+                    <div className="mt-3">
+                        <div className="text-[9.5px] uppercase tracking-[0.12em] text-muted-foreground mb-1">Tags</div>
+                        <div className="flex flex-wrap gap-1.5">
+                            {heroTags.map((t) => (
+                                <TagBadge
+                                    key={t}
+                                    tag={t}
+                                    to={`/atlas?tags=${encodeURIComponent(t)}`}
+                                />
+                            ))}
+                        </div>
                     </div>
                 )}
                 <Link
@@ -628,9 +661,16 @@ function NeighborCardV3({ pos, isHovered, isDimmed, onClick, onHover }: Neighbor
                 </span>
             </div>
             <div className="flex items-center gap-1.5 mt-1 min-w-0">
-                <span className="text-[9.5px] text-muted-foreground uppercase tracking-[0.06em] truncate">
-                    {KIND_LABEL[kind]}
-                </span>
+                {(() => {
+                    const nfm = getFocusEntry(pos.slug)?.fm;
+                    const nDomain = nfm?.domain as string | undefined;
+                    const nDomainLabel = nDomain ? domainLabels[nDomain as keyof typeof domainLabels] : undefined;
+                    return nDomainLabel ? (
+                        <span className="text-[9.5px] text-muted-foreground truncate">
+                            {nDomainLabel}
+                        </span>
+                    ) : null;
+                })()}
                 <span className="ml-auto inline-flex items-center gap-1 shrink-0">
                     <span className="w-1.5 h-1.5 rounded-full" style={{ background: meta.color }} />
                     <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: meta.color }}>
@@ -1474,9 +1514,12 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
                     />
                 </div>
 
-                {/* Right rail — focused entry details */}
+                {/* Right rail — focused entry details; previews hovered neighbour */}
                 <aside className="w-[300px] shrink-0 border-l border-border overflow-y-auto p-5 bg-surface">
-                    <FocusedEntryPanel slug={current} />
+                    <FocusedEntryPanel
+                        slug={hover ?? current}
+                        isPreview={hover != null && hover !== current}
+                    />
                 </aside>
             </div>
         </div>

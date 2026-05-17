@@ -1650,16 +1650,16 @@ export const searchRecords: SearchRecord[] = [
     ],
     "domain": "features",
     "headings": [
+      "Origin and naming",
       "Construction by two-pass recurrence",
       "Constant-time rectangle sum",
       "Rotated integral images",
       "Higher-order tables"
     ],
     "authors": [
-      "P. Viola",
-      "M. Jones"
+      "F. C. Crow"
     ],
-    "venue": "CVPR"
+    "venue": "ACM SIGGRAPH Computer Graphics"
   },
   {
     "slug": "non-maximum-suppression",

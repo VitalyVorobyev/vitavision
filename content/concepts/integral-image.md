@@ -8,8 +8,9 @@ domain: features
 difficulty: beginner
 prerequisites: []
 sources:
-  primary: viola2001-detector
+  primary: crow1984-summed-area
   references:
+    - viola2001-detector
     - bay2006-surf
     - calonder2010-brief
     - rublee2011-orb
@@ -30,6 +31,10 @@ $$S = II(D) - II(B) - II(C) + II(A).$$
 
 The evaluation cost is $O(1)$ regardless of rectangle dimensions.
 :::
+
+## Origin and naming
+
+The data structure originates not in computer vision but in computer graphics. Frank Crow introduced it in 1984 as the *summed-area table*, a texture-map antialiasing technique: it let a renderer average a texture over an arbitrary axis-aligned rectangle in constant time, lifting the square-only restriction of mip-mapping so the filter footprint could match a perspective-projected pixel. Viola and Jones reintroduced the identical construction to computer vision in 2001 under the name *integral image*, using it to evaluate Haar-like features for face detection at every scale and position in four reads. Every later computer-vision use — SURF's box filters, BRIEF's patch smoothing, sliding-window detectors — descends from that 2001 reintroduction, but the table itself, and the four-corner sum, are Crow's.
 
 # Mathematical Description
 

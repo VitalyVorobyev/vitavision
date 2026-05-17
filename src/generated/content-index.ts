@@ -3741,15 +3741,16 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "domain": "features",
       "sources": {
-        "primary": "viola2001-detector",
+        "primary": "crow1984-summed-area",
         "references": [
+          "viola2001-detector",
           "bay2006-surf",
           "calonder2010-brief",
           "rublee2011-orb"
         ]
       },
       "date": "2026-05-16",
-      "year": 2001
+      "year": 1984
     }
   },
   {

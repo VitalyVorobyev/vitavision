@@ -4,11 +4,11 @@ const publicationFrontmatterBaseObjectSchema = z.object({
     title: z.string().min(1),
     date: z.coerce.date(),
     summary: z.string().min(1),
-    tags: z.array(z.string().min(1)).min(1),
     author: z.string().min(1).optional(),
     draft: z.boolean().optional(),
     updated: z.coerce.date().optional(),
     coverImage: z.string().optional(),
+    tagline: z.string().max(120).optional(),
     repoLinks: z.array(z.string().url()).optional(),
     demoLinks: z.array(z.string().url()).optional(),
     difficulty: z.enum(["beginner", "intermediate", "advanced"]).optional(),
@@ -79,6 +79,7 @@ const relationshipFieldsSchema = z.object({
 
 /** Zod schema for blog post frontmatter. */
 export const blogFrontmatterSchema = publicationFrontmatterBaseObjectSchema.extend({
+    tags: z.array(z.string().min(1)).min(1),
     /** Atlas slugs (algorithm/model/concept) referenced by this post. Untyped — blog posts mention atlas pages, they don't author atlas relations. */
     relatedAlgorithms: z.array(z.string().min(1)).optional(),
     relatedDemos: z.array(z.string().min(1)).optional(),
@@ -124,10 +125,51 @@ export const taskValues = [
 ] as const;
 export type Task = (typeof taskValues)[number];
 
+/**
+ * Closed vocabulary of cross-cutting facet tags for atlas page tagging.
+ * Every algorithm, model, and concept page carries at least one tag.
+ * Blog and demo pages keep free-form tags; only atlas pages validate here.
+ *
+ * Source of truth: `content/tags.yaml` (documentation + descriptions).
+ * The list below is the validation enforcer; keep the two in sync.
+ */
+export const tagValues = [
+    "classical",
+    "deep-learning",
+    "robust-estimation",
+    "optimization",
+    "linear-algebra",
+    "probabilistic",
+    "graph-based",
+    "variational",
+    "multi-scale",
+    "voting",
+    "boosting",
+    "local-descriptors",
+    "binary-descriptor",
+    "keypoint-detection",
+    "blob-detection",
+    "dense-prediction",
+    "region-based",
+    "two-view-geometry",
+    "camera-model",
+    "pose-estimation",
+    "chessboard",
+    "fiducial-markers",
+    "radial-pattern",
+    "optical-flow",
+    "stereo",
+    "real-time",
+    "subpixel",
+    "survey",
+] as const;
+export type Tag = (typeof tagValues)[number];
+
 /** Zod schema for algorithm page frontmatter. */
 export const algorithmFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
+        tags: z.array(z.enum(tagValues)).min(1),
         dev: z.boolean().optional(),
         domain: z.enum(domainValues).optional(),
         tasks: z.array(z.enum(taskValues)).optional(),
@@ -166,7 +208,7 @@ type SerializedFrontmatter<T extends { date: Date; updated?: Date }> =
 
 /** Serialized blog frontmatter (dates as ISO strings). */
 export type BlogFrontmatterSerialized = SerializedFrontmatter<BlogFrontmatter>;
-export type AlgorithmFrontmatterSerialized = SerializedFrontmatter<AlgorithmFrontmatter>;
+export type AlgorithmFrontmatterSerialized = SerializedFrontmatter<AlgorithmFrontmatter> & { year?: number };
 
 /** Index entry for a blog post (no html). Used by listing pages. */
 export interface BlogIndexEntry {
@@ -192,6 +234,7 @@ export interface AlgorithmEntry extends AlgorithmIndexEntry {
 
 /** Zod schema for demo page frontmatter. */
 export const demoFrontmatterSchema = publicationFrontmatterBaseObjectSchema.extend({
+    tags: z.array(z.string().min(1)).min(1),
     componentId: z.string().min(1).optional(),
     category: z.enum(["interactive-figure", "tool", "playground"]).default("interactive-figure"),
     relatedAlgorithms: z.array(z.string().min(1)).optional(),
@@ -217,6 +260,7 @@ export interface DemoEntry extends DemoIndexEntry {
 export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
+        tags: z.array(z.enum(tagValues)).min(1),
         dev: z.boolean().optional(),
         domain: z.enum(domainValues).optional(),
         tasks: z.array(z.enum(taskValues)).optional(),
@@ -243,7 +287,7 @@ export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     });
 
 export type ModelFrontmatter = z.infer<typeof modelFrontmatterSchema>;
-export type ModelFrontmatterSerialized = SerializedFrontmatter<ModelFrontmatter>;
+export type ModelFrontmatterSerialized = SerializedFrontmatter<ModelFrontmatter> & { year?: number };
 
 /** Index entry for a model page (no html). Used by listing pages. */
 export interface ModelIndexEntry {
@@ -260,6 +304,7 @@ export interface ModelEntry extends ModelIndexEntry {
 export const conceptFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)
     .extend({
+        tags: z.array(z.enum(tagValues)).min(1),
         dev: z.boolean().optional(),
         domain: z.enum(domainValues).optional(),
         sources: z.object({
@@ -270,7 +315,7 @@ export const conceptFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     });
 
 export type ConceptFrontmatter = z.infer<typeof conceptFrontmatterSchema>;
-export type ConceptFrontmatterSerialized = SerializedFrontmatter<ConceptFrontmatter>;
+export type ConceptFrontmatterSerialized = SerializedFrontmatter<ConceptFrontmatter> & { year?: number };
 
 /** Index entry for a concept page (no html). Used by listing pages. */
 export interface ConceptIndexEntry {

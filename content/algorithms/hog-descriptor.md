@@ -2,11 +2,11 @@
 title: "HOG: Histograms of Oriented Gradients"
 date: 2026-05-12
 summary: "Compute a fixed-length descriptor for an image window by binning pixel gradients into 8×8 cells of 9 unsigned-orientation histograms, normalising overlapping 2×2-cell blocks with L2-Hys, and concatenating the 3780 block values into a single vector fed to a linear SVM — the canonical pre-CNN pedestrian detector."
-tags: ["object-detection", "pedestrian-detection", "gradient-histograms", "feature-descriptor", "linear-svm"]
+tags: ["local-descriptors", "classical"]
 domain: detection
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: [image-gradient]
+prerequisites: [image-gradient, feature-descriptors]
 failureModes: []
 relations:
   - type: compared_with

@@ -77,6 +77,29 @@
     --article-body:      215 25% 22%;
     --article-heading:   215 30% 12%;
     --article-link:      215 70% 38%;
+
+    /* Atlas graph view */
+    --graph-canvas-from:           0 0% 100%;
+    --graph-canvas-mid:            210 40% 98%;
+    --graph-canvas-to:             214 32% 95%;
+    --graph-pill-bg:               0 0% 100%;
+    --graph-rel-prereq:            215 25% 45%;
+    --graph-rel-extend:            215 19% 32%;
+    --graph-rel-compare:           215 16% 55%;
+    --graph-rel-flow:              215 25% 45%;
+    --graph-rel-learn:             191 55% 32%;
+    --graph-icon-tint-algorithm:   191 55% 32%;
+    --graph-icon-tint-model:       263 42% 48%;
+    --graph-icon-tint-concept:     32 60% 38%;
+    --graph-icon-bg-algorithm:     191 50% 95%;
+    --graph-icon-bg-model:         263 55% 96%;
+    --graph-icon-bg-concept:       40 80% 94%;
+    --graph-icon-border-algorithm: 191 40% 84%;
+    --graph-icon-border-model:     263 40% 88%;
+    --graph-icon-border-concept:   38 60% 82%;
+    --graph-kind-accent-algorithm: 191 70% 44%;
+    --graph-kind-accent-model:     263 60% 60%;
+    --graph-kind-accent-concept:   36 78% 48%;
   }
 
   .dark {
@@ -112,6 +135,29 @@
     --article-body:      210 30% 83%;
     --article-heading:   210 20% 95%;
     --article-link:      205 70% 68%;
+
+    /* Atlas graph view */
+    --graph-canvas-from:           222 47% 13%;
+    --graph-canvas-mid:            222 40% 11%;
+    --graph-canvas-to:             222 30% 9%;
+    --graph-pill-bg:               217 33% 17%;
+    --graph-rel-prereq:            215 30% 72%;
+    --graph-rel-extend:            215 25% 70%;
+    --graph-rel-compare:           215 18% 62%;
+    --graph-rel-flow:              215 30% 72%;
+    --graph-rel-learn:             191 60% 62%;
+    --graph-icon-tint-algorithm:   191 55% 68%;
+    --graph-icon-tint-model:       263 60% 76%;
+    --graph-icon-tint-concept:     38 70% 62%;
+    --graph-icon-bg-algorithm:     191 38% 20%;
+    --graph-icon-bg-model:         263 32% 24%;
+    --graph-icon-bg-concept:       34 32% 21%;
+    --graph-icon-border-algorithm: 191 32% 34%;
+    --graph-icon-border-model:     263 28% 38%;
+    --graph-icon-border-concept:   36 30% 36%;
+    --graph-kind-accent-algorithm: 191 65% 52%;
+    --graph-kind-accent-model:     263 65% 70%;
+    --graph-kind-accent-concept:   38 78% 56%;
   }
 
   html, body {

@@ -2,12 +2,12 @@
 title: "ORB: Oriented FAST and Rotated BRIEF"
 date: 2026-05-09
 summary: "Detects rotation-invariant oriented keypoints by running FAST-9 on a √2 image pyramid, ranking by Harris cornerness, and assigning orientation from the intensity centroid; describes each keypoint with a 256-bit rBRIEF binary string formed by greedy selection of low-correlation, high-variance pairwise pixel-intensity tests on a smoothed 31×31 patch."
-tags: ["feature-detection", "local-descriptors", "binary-descriptor", "matching"]
+tags: ["local-descriptors", "binary-descriptor"]
 domain: features
 tasks: [feature-detection, local-feature-matching]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: [image-gradient, scale-space]
+prerequisites: [image-gradient, scale-space, feature-descriptors, integral-image, image-pyramid]
 failureModes: []
 sources:
   primary: rublee2011-orb

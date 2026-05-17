@@ -124,6 +124,7 @@ export default function AlgorithmPost() {
                     frontmatter={frontmatter}
                     badges={frontmatter.quality ? <QualityBadge quality={frontmatter.quality} /> : undefined}
                     kind="algorithm"
+                    slug={resolvedSlug}
                 />
 
                 {html === null ? (

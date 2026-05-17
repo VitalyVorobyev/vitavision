@@ -2,12 +2,12 @@
 title: "GrabCut Iterative Segmentation"
 date: 2026-05-10
 summary: "Extract a foreground from a colour image using a single bounding rectangle as the only required input by alternating Gaussian mixture component assignment, GMM parameter re-estimation, and global s-t min-cut on a contrast-weighted MRF — the iteration decreases a Gibbs energy $E(\\alpha, k, \\theta, z) = U + V$ monotonically — then refine the contour with a regularised 1-D $\\alpha$-profile in a $\\pm 6$-pixel border ribbon."
-tags: ["image-segmentation", "graph-cut", "min-cut-max-flow", "gaussian-mixture-model", "interactive-segmentation", "border-matting"]
+tags: ["graph-based", "probabilistic", "region-based"]
 domain: segmentation
 tasks: ["image-segmentation"]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: []
+prerequisites: [energy-minimization]
 failureModes: []
 sources:
   primary: rother2004-grabcut

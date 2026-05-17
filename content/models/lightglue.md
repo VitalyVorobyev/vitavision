@@ -2,13 +2,13 @@
 title: "LightGlue"
 date: 2026-05-10
 summary: "Adaptive-depth Transformer matcher for sparse local features: stacks 9 self+cross-attention layers with rotary positional encoding and a per-token confidence head, exits early on easy image pairs, and replaces SuperGlue's Sinkhorn solver with a dual-softmax × matchability assignment head — over 2× faster than SuperGlue at equivalent or better pose-estimation accuracy."
-tags: ["computer-vision", "image-matching", "local-features", "transformer", "attention"]
+tags: ["local-descriptors", "deep-learning"]
 domain: features
 tasks: [local-feature-matching]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: hybrid
-prerequisites: []
+prerequisites: [feature-matching, attention-mechanism]
 failureModes: []
 relations:
   - type: compared_with

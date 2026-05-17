@@ -2,7 +2,7 @@
 title: "DeepLab"
 date: 2026-05-11
 summary: "Dense semantic segmentation by repurposing an ImageNet classifier with atrous (dilated) convolution to preserve spatial resolution, an Atrous Spatial Pyramid Pooling head for multi-scale context, and a fully-connected CRF post-processor for boundary refinement — multi-year state of the art on PASCAL VOC 2012."
-tags: ["computer-vision", "semantic-segmentation", "dense-prediction", "dilated-convolution"]
+tags: ["dense-prediction", "deep-learning"]
 domain: segmentation
 tasks: [image-segmentation]
 author: "Vitaly Vorobyev"

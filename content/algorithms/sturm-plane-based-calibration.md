@@ -2,12 +2,12 @@
 title: "Sturm-Maybank Plane-Based Calibration"
 date: 2026-05-02
 summary: "Recover camera intrinsics from one or more views of one or more planar targets via the same two IAC-on-homography constraints as Zhang's method, with an exhaustive singularity catalogue and a generalisation to variable intrinsics (zooming cameras) — the concurrent CVPR 1999 derivation of plane-based calibration."
-tags: ["calibration", "intrinsics", "iac", "singularity-analysis", "variable-intrinsics"]
+tags: ["camera-model"]
 domain: calibration
 tasks: [camera-calibration]
 author: "Vitaly Vorobyev"
 difficulty: advanced
-prerequisites: [homography]
+prerequisites: [pinhole-camera-model, homography]
 failureModes: []
 sources:
   primary: sturm2003-plane-based

@@ -2,11 +2,11 @@
 title: "Image Gradient"
 date: 2026-04-30
 summary: "The 2-vector of partial derivatives of image intensity with respect to spatial coordinates, measuring the rate and direction of brightness change at each pixel."
-tags: ["feature-theory", "derivatives", "filtering"]
+tags: ["keypoint-detection"]
 author: "Vitaly Vorobyev"
 domain: features
 difficulty: intermediate
-prerequisites: []
+prerequisites: [convolution]
 ---
 
 # Definition

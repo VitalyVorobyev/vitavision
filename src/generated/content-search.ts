@@ -21,10 +21,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "As-Projective-As-Possible Image Stitching",
     "summary": "Replace a global homography with a spatially varying field of homographies, each fit by a per-cell weighted DLT (Moving DLT) on the same point correspondences, so the warp stays globally projective but adapts locally where the projective model is inadequate.",
     "tags": [
-      "image-stitching",
-      "homography",
-      "projective-warp",
-      "dlt"
+      "two-view-geometry",
+      "linear-algebra"
     ],
     "domain": "stitching",
     "headings": [
@@ -45,9 +43,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "Black-Anandan Robust Optical Flow",
     "summary": "Optical flow that replaces the quadratic data and smoothness penalties of variational flow with redescending M-estimators, solved by SOR within a graduated non-convexity continuation; recovers piecewise-smooth flow without explicit line processes and a robust affine variant for multiple parametric motions.",
     "tags": [
-      "motion",
       "optical-flow",
-      "robust-statistics",
+      "robust-estimation",
       "variational"
     ],
     "domain": "features",
@@ -69,9 +66,7 @@ export const searchRecords: SearchRecord[] = [
     "summary": "Encodes a Gaussian-smoothed image patch around a detected keypoint as a 128/256/512-bit binary string by running a fixed table of pairwise pixel-intensity tests; matched between images by Hamming distance via bitwise XOR + popcount.",
     "tags": [
       "local-descriptors",
-      "binary-descriptor",
-      "matching",
-      "feature-matching"
+      "binary-descriptor"
     ],
     "domain": "features",
     "headings": [
@@ -92,10 +87,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Canny Edge Detector",
     "summary": "Detect thin step edges in greyscale images by smoothing with a Gaussian, computing gradient magnitude and direction, suppressing non-maxima along the gradient direction, then linking surviving pixels via hysteresis double-thresholding; the filter shape is derived as the variational optimum of three criteria — detection SNR, localisation, and single-response spacing — under an additive-white-Gaussian-noise step-edge model.",
     "tags": [
-      "edge-detection",
-      "non-maximum-suppression",
-      "hysteresis",
-      "gradient"
+      "keypoint-detection"
     ],
     "domain": "features",
     "headings": [
@@ -114,8 +106,6 @@ export const searchRecords: SearchRecord[] = [
     "title": "ChESS Corners",
     "summary": "A chessboard-specific corner detector: scores each pixel by how well its local neighborhood matches an alternating bright-dark X-junction pattern, using 16 fixed integer offsets on a radius-5 ring.",
     "tags": [
-      "feature-detection",
-      "calibration",
       "chessboard"
     ],
     "domain": "features",
@@ -139,9 +129,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Chessboard Detection via X-Corners and Topology",
     "summary": "Detect every corner of a chessboard calibration pattern and assign it an integer grid coordinate by counting ring-alternations to locate X-junctions, Delaunay-triangulating the corner set, and keeping only triangles that respect the two-colour neighbourhood regularity of the pattern.",
     "tags": [
-      "calibration",
-      "chessboard",
-      "corner-detection"
+      "chessboard"
     ],
     "domain": "targets",
     "headings": [
@@ -161,9 +149,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Daniilidis Dual-Quaternion Hand-Eye Calibration",
     "summary": "Solve the hand-eye equation AX=XB jointly for rotation and translation by parametrising rigid motions as unit dual quaternions and extracting X from the right null space of a single linear system.",
     "tags": [
-      "calibration",
-      "hand-eye",
-      "robotics"
+      "linear-algebra"
     ],
     "domain": "calibration",
     "headings": [],
@@ -179,12 +165,10 @@ export const searchRecords: SearchRecord[] = [
     "title": "Deformable Part Models",
     "summary": "Detect a target object class in arbitrary images by scoring every position and scale in a HOG feature pyramid with a mixture of star-structured part-based templates — a coarse root filter and $n=6$ finer-resolution part filters with quadratic deformation costs — trained as a latent SVM with hard-negative mining.",
     "tags": [
-      "object-detection",
-      "deformable-parts-model",
-      "latent-svm",
-      "hog",
-      "part-based",
-      "structured-prediction"
+      "classical",
+      "local-descriptors",
+      "region-based",
+      "dense-prediction"
     ],
     "domain": "detection",
     "headings": [
@@ -210,9 +194,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "EPnP: O(n) Perspective-n-Point",
     "summary": "Non-iterative O(n) solver for the calibrated Perspective-n-Point problem: express the n reference points as weighted sums of four virtual control points, recover their camera-frame coordinates from the null space of a 12×12 matrix, and extract pose by absolute orientation.",
     "tags": [
-      "pose-estimation",
-      "perspective-n-point",
-      "geometry"
+      "pose-estimation"
     ],
     "domain": "geometry",
     "headings": [
@@ -233,8 +215,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "FAST Corner Detector",
     "summary": "Segment-test corner detector on a 16-pixel Bresenham ring of radius 3 around each candidate; classifies a point as a corner when N contiguous ring pixels are all brighter (or all darker) than the centre by a margin t.",
     "tags": [
-      "feature-detection",
-      "corner"
+      "keypoint-detection"
     ],
     "domain": "features",
     "headings": [
@@ -253,9 +234,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "Fast Radial Symmetry Transform",
     "summary": "Gradient-vote operator that highlights pixels of high local radial symmetry — bright/dark blobs and approximately circular features. Each pixel votes along its gradient direction at one or more radii into orientation and magnitude projection maps; the per-radius contribution is the magnitude projection weighted by a power of the orientation count and Gaussian-smoothed; the cumulative response across radii localises feature centres at $O(K \\cdot |N|)$ cost.",
     "tags": [
-      "feature-detection",
       "blob-detection",
-      "radial-symmetry"
+      "radial-pattern"
     ],
     "domain": "features",
     "headings": [
@@ -274,10 +254,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Felzenszwalb–Huttenlocher Graph-Based Image Segmentation",
     "summary": "Partition an image into perceptually coherent regions by a Kruskal-style greedy merge over a pixel graph, accepting an inter-component edge as a non-boundary when its weight does not exceed the components' internal variation plus a size-adaptive threshold $\\tau(C) = k/|C|$; runs in $O(m \\log m)$ time and produces partitions that are simultaneously not too fine and not too coarse.",
     "tags": [
-      "image-segmentation",
-      "graph-algorithms",
-      "minimum-spanning-tree",
-      "union-find"
+      "graph-based"
     ],
     "domain": "segmentation",
     "headings": [
@@ -297,10 +274,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Fischler–Bolles RANSAC",
     "summary": "Founding random-sample-consensus paradigm: fit a parametric model to data containing an unknown fraction of gross outliers by drawing minimal random subsets, instantiating candidate models, counting consensus inliers, and retaining the largest consensus set.",
     "tags": [
-      "geometry",
-      "robust-estimation",
-      "outlier-rejection",
-      "ransac"
+      "robust-estimation"
     ],
     "domain": "geometry",
     "headings": [
@@ -319,10 +293,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Gao Dual-Homography Stitching",
     "summary": "Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group, and blending per pixel by inverse-distance weights. Superseded for practical use by APAP's continuous per-cell grid.",
     "tags": [
-      "image-stitching",
-      "homography",
-      "panorama",
-      "multi-plane"
+      "two-view-geometry"
     ],
     "domain": "stitching",
     "headings": [],
@@ -340,9 +311,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Geiger Chessboard Corner Detector",
     "summary": "Detect checkerboard X-corners by computing a four-quadrant corner likelihood at each pixel using axis-aligned and 45°-rotated prototype filters at three fixed scales, verifying candidates by gradient-orientation statistics, and refining to subpixel accuracy via gradient-orthogonality weighted least squares — the libcbdetect detector that anchors many subsequent calibration pipelines.",
     "tags": [
-      "calibration",
-      "chessboard",
-      "corner-detection"
+      "chessboard"
     ],
     "domain": "features",
     "headings": [
@@ -366,10 +335,9 @@ export const searchRecords: SearchRecord[] = [
     "title": "Generalised Fast Radial Symmetry",
     "summary": "Affine extension of FRST: each pixel votes along a corrected direction $\\hat V = G M G^{-1} M^{-1} \\nabla I$ at radius $n$, where $G = R D \\in A(2)$ is a rotation–anisotropic-scale pair from a sampled grid, so circles seen as ellipses under bounded perspective converge into a single peak in the per-pixel-max response stack while keeping FRS's $O(K)$ per-radius cost per $G_i$.",
     "tags": [
-      "feature-detection",
       "blob-detection",
-      "radial-symmetry",
-      "affine-invariant"
+      "radial-pattern",
+      "multi-scale"
     ],
     "domain": "features",
     "headings": [
@@ -383,15 +351,36 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)"
   },
   {
+    "slug": "geometric-bev",
+    "path": "/atlas/geometric-bev",
+    "type": "algorithm",
+    "title": "Geometric Bird's-Eye-View Rectification",
+    "summary": "Rectifies a monocular image to a metric overhead (bird's-eye) view by constructing the rectifying homography in closed form from two CNN-regressed projective entities — the vertical vanishing point and the ground-plane horizon line.",
+    "tags": [
+      "camera-model",
+      "deep-learning",
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure",
+      "CNN regression target"
+    ],
+    "authors": [
+      "S. A. Abbas",
+      "A. Zisserman"
+    ],
+    "venue": "ICCVW 2019"
+  },
+  {
     "slug": "gp-checkerboard-enhancement",
     "path": "/atlas/gp-checkerboard-enhancement",
     "type": "algorithm",
     "title": "GP Checkerboard Enhancement (PyCBD)",
     "summary": "Post-process a partially detected checkerboard by training two Gaussian processes (one per pixel coordinate) on the allocated (boardXY, boardUV) pairs to allocate unassigned detections to grid positions, predict UV for occluded or out-of-frame corners, and apply a global-consistency refinement to every allocated corner.",
     "tags": [
-      "calibration",
       "chessboard",
-      "gaussian-processes"
+      "probabilistic"
     ],
     "domain": "calibration",
     "headings": [
@@ -419,12 +408,9 @@ export const searchRecords: SearchRecord[] = [
     "title": "GrabCut Iterative Segmentation",
     "summary": "Extract a foreground from a colour image using a single bounding rectangle as the only required input by alternating Gaussian mixture component assignment, GMM parameter re-estimation, and global s-t min-cut on a contrast-weighted MRF — the iteration decreases a Gibbs energy $E(\\alpha, k, \\theta, z) = U + V$ monotonically — then refine the contour with a regularised 1-D $\\alpha$-profile in a $\\pm 6$-pixel border ribbon.",
     "tags": [
-      "image-segmentation",
-      "graph-cut",
-      "min-cut-max-flow",
-      "gaussian-mixture-model",
-      "interactive-segmentation",
-      "border-matting"
+      "graph-based",
+      "probabilistic",
+      "region-based"
     ],
     "domain": "segmentation",
     "headings": [
@@ -444,11 +430,9 @@ export const searchRecords: SearchRecord[] = [
     "title": "Graph-Cut Interactive Segmentation",
     "summary": "Compute the global minimum of a binary region-and-boundary MRF energy as a single s-t min-cut on a pixel graph; user-marked seeds enter as hard constraints, the output is a binary labelling $A : P \\to \\{\\text{obj}, \\text{bkg}\\}$ with topology-free segments.",
     "tags": [
-      "image-segmentation",
-      "graph-cut",
-      "min-cut-max-flow",
-      "markov-random-field",
-      "interactive-segmentation"
+      "graph-based",
+      "probabilistic",
+      "region-based"
     ],
     "domain": "segmentation",
     "headings": [
@@ -467,8 +451,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Harris Corner Detector",
     "summary": "Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is the gradient covariance matrix summed over a Gaussian window; returns integer pixel locations where R exceeds a threshold and is a local maximum.",
     "tags": [
-      "feature-detection",
-      "corner"
+      "keypoint-detection"
     ],
     "domain": "features",
     "headings": [
@@ -491,11 +474,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "HOG: Histograms of Oriented Gradients",
     "summary": "Compute a fixed-length descriptor for an image window by binning pixel gradients into 8×8 cells of 9 unsigned-orientation histograms, normalising overlapping 2×2-cell blocks with L2-Hys, and concatenating the 3780 block values into a single vector fed to a linear SVM — the canonical pre-CNN pedestrian detector.",
     "tags": [
-      "object-detection",
-      "pedestrian-detection",
-      "gradient-histograms",
-      "feature-descriptor",
-      "linear-svm"
+      "local-descriptors",
+      "classical"
     ],
     "domain": "detection",
     "headings": [],
@@ -512,7 +492,6 @@ export const searchRecords: SearchRecord[] = [
     "title": "Horn-Schunck Optical Flow",
     "summary": "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation.",
     "tags": [
-      "motion",
       "optical-flow",
       "variational"
     ],
@@ -533,8 +512,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Kumar-Ahuja Generalized Radial Alignment Constraint",
     "summary": "Extend Tsai's radial alignment constraint to a non-frontal sensor by modelling lens–sensor tilt as a 2-DoF rotation, projecting observations onto a hypothesized frontal sensor, and solving a seven-parameter linear system for the extrinsic rotation and tilt.",
     "tags": [
-      "camera-calibration",
-      "lens-sensor-tilt"
+      "camera-model"
     ],
     "domain": "calibration",
     "headings": [],
@@ -551,10 +529,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Lin Smoothly Varying Affine Stitching",
     "summary": "Stitch two images under moderate parallax by replacing the global affine with a per-feature deviation field, regularised to be smooth via a Gaussian-kernel CPD-style EM that jointly estimates correspondence and warp — the contemporary affine-model competitor to APAP's per-cell projective grid.",
     "tags": [
-      "image-stitching",
-      "spatially-varying-warp",
-      "affine",
-      "non-rigid-registration"
+      "two-view-geometry"
     ],
     "domain": "stitching",
     "headings": [
@@ -576,8 +551,6 @@ export const searchRecords: SearchRecord[] = [
     "title": "Localized Radon Checkerboard Corners",
     "summary": "Detect checkerboard X-junctions by approximating a localized Radon transform with 1-D box filters on rotated copies of the image; the per-pixel response is the squared difference between the maximum and minimum directional line integrals over four discrete angles.",
     "tags": [
-      "feature-detection",
-      "calibration",
       "chessboard"
     ],
     "domain": "features",
@@ -597,9 +570,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Longuet-Higgins Linear Eight-Point Algorithm",
     "summary": "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm.",
     "tags": [
-      "geometry",
-      "two-view-geometry",
-      "essential-matrix"
+      "two-view-geometry"
     ],
     "domain": "geometry",
     "headings": [],
@@ -615,9 +586,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Lucas-Kanade Image Registration",
     "summary": "Iterative Newton-Raphson method that estimates the parametric warp between two images by linearising the residual and solving the resulting weighted normal equation per iteration.",
     "tags": [
-      "motion",
-      "optical-flow",
-      "image-registration"
+      "optical-flow"
     ],
     "domain": "features",
     "headings": [
@@ -637,11 +606,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "MAGSAC: Marginalising Sample Consensus",
     "summary": "Robust estimator that eliminates the user-tuned inlier threshold by treating the noise scale σ as a random variable on [0, σ_max] and marginalising the RANSAC quality function over σ; the final model is a weighted least-squares fit using marginal-likelihood weights via iteratively reweighted least squares (σ-consensus).",
     "tags": [
-      "geometry",
       "robust-estimation",
-      "outlier-rejection",
-      "ransac",
-      "irls"
+      "optimization"
     ],
     "domain": "geometry",
     "headings": [
@@ -661,10 +627,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "Normalised Eight-Point Algorithm",
     "summary": "Compute the fundamental matrix from n ≥ 8 point correspondences by conditioning the linear DLT system via a similarity normalisation, recovering accuracy comparable to iterative methods at a fraction of the cost.",
     "tags": [
-      "geometry",
       "stereo",
-      "two-view-geometry",
-      "fundamental-matrix"
+      "two-view-geometry"
     ],
     "domain": "geometry",
     "headings": [],
@@ -680,7 +644,6 @@ export const searchRecords: SearchRecord[] = [
     "title": "OCPAD: Occluded Checkerboard Pattern Detection",
     "summary": "Recover the largest visible checkerboard subgraph from a partially occluded pattern by running VF2 subgraph isomorphism against a model graph under a binary-search driver over vertex counts, then closing gaps by breadth-first region growing from a quad-density anchor.",
     "tags": [
-      "calibration",
       "chessboard"
     ],
     "domain": "targets",
@@ -704,10 +667,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "ORB: Oriented FAST and Rotated BRIEF",
     "summary": "Detects rotation-invariant oriented keypoints by running FAST-9 on a √2 image pyramid, ranking by Harris cornerness, and assigning orientation from the intensity centroid; describes each keypoint with a 256-bit rBRIEF binary string formed by greedy selection of low-correlation, high-variance pairwise pixel-intensity tests on a smoothed 31×31 patch.",
     "tags": [
-      "feature-detection",
       "local-descriptors",
-      "binary-descriptor",
-      "matching"
+      "binary-descriptor"
     ],
     "domain": "features",
     "headings": [
@@ -730,9 +691,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "PuzzleBoard",
     "summary": "Detect and decode a self-identifying checkerboard calibration pattern: saddle-point corners from a Hessian response, grid reconstruction via Kruskal minimum spanning forest on the 9-nearest-neighbour graph, absolute corner position on a $501 \\times 501$ grid from cross-correlation against two binary de Bruijn factor maps.",
     "tags": [
-      "calibration",
       "chessboard",
-      "self-identifying-pattern"
+      "fiducial-markers"
     ],
     "domain": "targets",
     "headings": [
@@ -752,9 +712,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Pyramidal Blur-Aware X-Corner Chessboard Detector",
     "summary": "Detect chessboard X-junctions in heavily blurred or high-resolution images by computing a 16-sample circular x-corner intensity at every level of an image pyramid, selecting per corner the level that maximises intensity per resolution, then assembling a chessboard graph with blur-aware edge validation.",
     "tags": [
-      "calibration",
-      "chessboard",
-      "corner-detection"
+      "chessboard"
     ],
     "domain": "features",
     "headings": [
@@ -772,7 +730,6 @@ export const searchRecords: SearchRecord[] = [
     "title": "ROCHADE: Robust Checkerboard Advanced Detection",
     "summary": "Detect a full planar checkerboard in an image by reducing the gradient-magnitude edge set to a single-pixel centreline graph, extracting inner corners as graph saddle points, then refining each corner to subpixel accuracy by fitting a bivariate quadratic to a cone-filtered neighbourhood and solving for its stationary point.",
     "tags": [
-      "calibration",
       "chessboard"
     ],
     "domain": "targets",
@@ -798,10 +755,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Scaramuzza Omnidirectional Camera Calibration",
     "summary": "Calibrate any central catadioptric or fisheye camera from a few planar checkerboard views by fitting a radially-symmetric Taylor-polynomial imaging function with a linear estimate followed by maximum-likelihood refinement.",
     "tags": [
-      "calibration",
-      "omnidirectional",
-      "fisheye",
-      "catadioptric"
+      "camera-model"
     ],
     "domain": "calibration",
     "headings": [
@@ -821,8 +775,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Shi-Tomasi Corner Detector",
     "summary": "Scores each pixel by the smaller eigenvalue of the gradient structure tensor M; returns integer pixel locations where that eigenvalue exceeds a threshold, derived from a feature-tracking quality criterion.",
     "tags": [
-      "feature-detection",
-      "corner"
+      "keypoint-detection"
     ],
     "domain": "features",
     "headings": [
@@ -842,10 +795,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "SIFT: Scale-Invariant Feature Transform",
     "summary": "Detects keypoints as scale-space extrema in a Difference-of-Gaussian image pyramid, refines location and scale by 3D quadratic interpolation, assigns canonical orientation from local gradient histograms, and emits a 128-D descriptor invariant to scale, rotation, and moderate affine and illumination change.",
     "tags": [
-      "feature-detection",
       "local-descriptors",
-      "scale-invariant",
-      "matching"
+      "multi-scale"
     ],
     "domain": "features",
     "headings": [
@@ -865,11 +816,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Sturm-Maybank Plane-Based Calibration",
     "summary": "Recover camera intrinsics from one or more views of one or more planar targets via the same two IAC-on-homography constraints as Zhang's method, with an exhaustive singularity catalogue and a generalisation to variable intrinsics (zooming cameras) — the concurrent CVPR 1999 derivation of plane-based calibration.",
     "tags": [
-      "calibration",
-      "intrinsics",
-      "iac",
-      "singularity-analysis",
-      "variable-intrinsics"
+      "camera-model"
     ],
     "domain": "calibration",
     "headings": [],
@@ -886,11 +833,9 @@ export const searchRecords: SearchRecord[] = [
     "title": "SURF: Speeded Up Robust Features",
     "summary": "Detects scale- and rotation-invariant blob keypoints as scale-space maxima of the Hessian determinant, approximated with box filters on an integral image, and emits a 64-D Haar-wavelet response descriptor matched by Euclidean distance with a Laplacian-sign pre-filter.",
     "tags": [
-      "feature-detection",
       "local-descriptors",
-      "scale-invariant",
-      "blob-detection",
-      "matching"
+      "multi-scale",
+      "blob-detection"
     ],
     "domain": "features",
     "headings": [
@@ -910,7 +855,6 @@ export const searchRecords: SearchRecord[] = [
     "title": "Topological Grid Finding",
     "summary": "Recover the integer $(i, j)$ grid coordinate of every corner in a checkerboard calibration image by Delaunay-triangulating the corners, merging same-colour triangle pairs into quads, topologically and geometrically filtering illegal quads, and flood-filling coordinates through the resulting mesh.",
     "tags": [
-      "calibration",
       "chessboard"
     ],
     "domain": "targets",
@@ -932,9 +876,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Tsai-Lenz Hand-Eye Calibration",
     "summary": "Recover the constant rigid transform from a robot gripper to a rigidly mounted camera by solving the AX=XB equation in two stages — modified Rodrigues rotation, then translation.",
     "tags": [
-      "calibration",
-      "hand-eye",
-      "robotics"
+      "linear-algebra"
     ],
     "domain": "calibration",
     "headings": [
@@ -953,10 +895,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Tsai's Versatile Camera Calibration",
     "summary": "Two-stage 1987 camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a precision 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns. Superseded for practical use by Zhang's planar method.",
     "tags": [
-      "calibration",
-      "intrinsics",
-      "extrinsics",
-      "radial-distortion"
+      "camera-model"
     ],
     "domain": "calibration",
     "headings": [],
@@ -972,11 +911,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "USAC: Universal RANSAC Framework",
     "summary": "Engineering decomposition of practical RANSAC into four pluggable stages — sampling (PROSAC), model verification (SPRT), local optimisation (LO-RANSAC), and degeneracy handling (DEGENSAC) — with a single reference C++ implementation (USAC-1.0) and an SPRT-corrected stopping criterion.",
     "tags": [
-      "geometry",
-      "robust-estimation",
-      "outlier-rejection",
-      "ransac",
-      "sprt"
+      "robust-estimation"
     ],
     "domain": "geometry",
     "headings": [
@@ -999,13 +934,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Viola–Jones Object Detector",
     "summary": "Real-time frontal-face detection by sliding a fixed 24×24 sub-window across a grayscale image at multiple scales, scoring each position with an AdaBoost-selected ensemble of integral-image rectangle features arranged in a 38-stage attentional cascade that rejects most background regions after evaluating ~10 features per sub-window.",
     "tags": [
-      "object-detection",
-      "face-detection",
-      "boosting",
-      "adaboost",
-      "integral-image",
-      "haar-features",
-      "cascade-classifier"
+      "boosting"
     ],
     "domain": "detection",
     "headings": [
@@ -1028,8 +957,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Yang Parametric-Model Sub-Pixel Corner Fit",
     "summary": "Refine pixel-level chessboard corner positions to sub-pixel accuracy by nonlinear least-squares fitting a seven-parameter ideal blurred-corner model directly to the raw image patch, then reject unreliable corners via a boxplot-based fit-quality self-check before passing to PnP.",
     "tags": [
-      "subpixel-refinement",
-      "calibration",
+      "subpixel",
       "chessboard"
     ],
     "domain": "features",
@@ -1051,9 +979,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "Zhang's Planar Camera Calibration",
     "summary": "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations.",
     "tags": [
-      "calibration",
-      "intrinsics",
-      "homography"
+      "camera-model",
+      "two-view-geometry"
     ],
     "domain": "calibration",
     "headings": [
@@ -1071,9 +998,6 @@ export const searchRecords: SearchRecord[] = [
     "title": "AlexNet",
     "summary": "Eight-layer convolutional neural network for 1000-class image classification on ImageNet, trained end-to-end on two GPUs with ReLU activations, local response normalisation, overlapping max-pooling, and dropout; the first deep CNN to win ILSVRC by a large margin.",
     "tags": [
-      "computer-vision",
-      "image-classification",
-      "cnn",
       "deep-learning"
     ],
     "domain": "features",
@@ -1092,9 +1016,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "CCDN",
     "summary": "Fully convolutional network that regresses a per-pixel checkerboard-corner response map; trained with weighted cross-entropy and paired with threshold + NMS + k-means post-processing.",
     "tags": [
-      "calibration",
-      "corner-detection",
-      "cnn"
+      "deep-learning"
     ],
     "domain": "calibration",
     "headings": [],
@@ -1112,10 +1034,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "CCS",
     "summary": "Three-stage learning-based camera calibration pipeline: a CNN regresses radial-distortion-correction parameters, a UNet predicts per-corner Gaussian heatmaps refined by surface-fit subpixel localisation, and an image-level RANSAC accepts inlier views before Zhang-style intrinsic estimation.",
     "tags": [
-      "calibration",
-      "corner-detection",
-      "distortion-correction",
-      "cnn"
+      "camera-model",
+      "deep-learning"
     ],
     "domain": "calibration",
     "headings": [
@@ -1135,10 +1055,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "DeepLab",
     "summary": "Dense semantic segmentation by repurposing an ImageNet classifier with atrous (dilated) convolution to preserve spatial resolution, an Atrous Spatial Pyramid Pooling head for multi-scale context, and a fully-connected CRF post-processor for boundary refinement — multi-year state of the art on PASCAL VOC 2012.",
     "tags": [
-      "computer-vision",
-      "semantic-segmentation",
       "dense-prediction",
-      "dilated-convolution"
+      "deep-learning"
     ],
     "domain": "segmentation",
     "headings": [],
@@ -1158,12 +1076,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "Faster R-CNN",
     "summary": "Two-stage CNN object detector that replaces external Selective Search / EdgeBoxes proposals with a learned Region Proposal Network sharing conv features with the Fast R-CNN head — yielding near-real-time multi-class detection on GPU (5 fps with VGG-16) and ImageNet-pretrained backbones swapped freely from ZF through ResNet-101.",
     "tags": [
-      "computer-vision",
-      "object-detection",
-      "two-stage-detector",
-      "region-proposal-network",
-      "cnn",
-      "anchor-based"
+      "region-based",
+      "deep-learning"
     ],
     "domain": "detection",
     "headings": [],
@@ -1182,11 +1096,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "FCN: Fully Convolutional Networks",
     "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
     "tags": [
-      "computer-vision",
-      "semantic-segmentation",
       "dense-prediction",
-      "encoder-decoder",
-      "transfer-learning"
+      "deep-learning"
     ],
     "domain": "segmentation",
     "headings": [],
@@ -1204,11 +1115,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "GoogLeNet",
     "summary": "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet).",
     "tags": [
-      "computer-vision",
-      "image-classification",
-      "cnn",
-      "deep-learning",
-      "inception"
+      "deep-learning"
     ],
     "domain": "features",
     "headings": [],
@@ -1232,11 +1139,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "LightGlue",
     "summary": "Adaptive-depth Transformer matcher for sparse local features: stacks 9 self+cross-attention layers with rotary positional encoding and a per-token confidence head, exits early on easy image pairs, and replaces SuperGlue's Sinkhorn solver with a dual-softmax × matchability assignment head — over 2× faster than SuperGlue at equivalent or better pose-estimation accuracy.",
     "tags": [
-      "computer-vision",
-      "image-matching",
-      "local-features",
-      "transformer",
-      "attention"
+      "local-descriptors",
+      "deep-learning"
     ],
     "domain": "features",
     "headings": [
@@ -1256,11 +1160,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "LoFTR",
     "summary": "Detector-free dense feature matcher: shared CNN backbone produces coarse and fine feature maps, a Linear Transformer with interleaved self- and cross-attention establishes confidence-thresholded mutual nearest-neighbour correspondences, and a fine module refines each match to sub-pixel accuracy.",
     "tags": [
-      "computer-vision",
-      "image-matching",
-      "transformer",
-      "detector-free",
-      "dense-matching"
+      "deep-learning",
+      "dense-prediction"
     ],
     "domain": "features",
     "headings": [],
@@ -1280,9 +1181,6 @@ export const searchRecords: SearchRecord[] = [
     "title": "Mask R-CNN",
     "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
     "tags": [
-      "computer-vision",
-      "instance-segmentation",
-      "object-detection",
       "dense-prediction"
     ],
     "domain": "segmentation",
@@ -1302,9 +1200,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "MATE",
     "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
     "tags": [
-      "calibration",
-      "corner-detection",
-      "cnn"
+      "deep-learning"
     ],
     "domain": "calibration",
     "headings": [
@@ -1328,12 +1224,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "ResNet",
     "summary": "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation.",
     "tags": [
-      "computer-vision",
-      "image-classification",
-      "cnn",
-      "deep-learning",
-      "backbone",
-      "residual"
+      "deep-learning"
     ],
     "domain": "features",
     "headings": [],
@@ -1352,11 +1243,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "SuperGlue",
     "summary": "Graph neural network that matches two sets of sparse local features by jointly finding correspondences and rejecting unmatched keypoints in one differentiable forward pass, trained end-to-end with a Sinkhorn optimal-transport assignment over augmented dustbin scores.",
     "tags": [
-      "computer-vision",
-      "image-matching",
-      "local-features",
-      "graph-neural-network",
-      "attention"
+      "local-descriptors",
+      "deep-learning"
     ],
     "domain": "features",
     "headings": [
@@ -1377,11 +1265,9 @@ export const searchRecords: SearchRecord[] = [
     "title": "SuperPoint",
     "summary": "Fully-convolutional CNN that jointly detects interest points and computes 256-D descriptors in a single forward pass, trained without human annotations via Homographic Adaptation on synthetic shapes and MS-COCO images.",
     "tags": [
-      "computer-vision",
       "keypoint-detection",
       "local-descriptors",
-      "image-matching",
-      "self-supervised"
+      "deep-learning"
     ],
     "domain": "features",
     "headings": [
@@ -1401,11 +1287,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "U-Net",
     "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
     "tags": [
-      "computer-vision",
-      "semantic-segmentation",
-      "biomedical-imaging",
-      "encoder-decoder",
-      "dense-prediction"
+      "dense-prediction",
+      "deep-learning"
     ],
     "domain": "segmentation",
     "headings": [],
@@ -1423,11 +1306,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "VGG",
     "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
     "tags": [
-      "computer-vision",
-      "image-classification",
-      "cnn",
-      "deep-learning",
-      "backbone"
+      "deep-learning"
     ],
     "domain": "features",
     "headings": [],
@@ -1444,10 +1323,9 @@ export const searchRecords: SearchRecord[] = [
     "title": "XFeat",
     "summary": "Lightweight CNN that jointly detects keypoints, extracts 64-D dense descriptors, and refines semi-dense matches from coarse descriptor pairs, targeting CPU-grade inference on hardware-constrained devices.",
     "tags": [
-      "image-matching",
       "keypoint-detection",
       "local-descriptors",
-      "cnn"
+      "deep-learning"
     ],
     "domain": "features",
     "headings": [],
@@ -1467,11 +1345,8 @@ export const searchRecords: SearchRecord[] = [
     "title": "YOLOv1",
     "summary": "Single-stage CNN object detector that frames detection as one regression problem from full-image pixels to a 7×7×30 tensor of grid-cell box offsets, objectness, and 20-class probabilities — trained end-to-end and inferring 98 boxes per image at 45 fps on a Titan X.",
     "tags": [
-      "computer-vision",
-      "object-detection",
-      "single-stage-detector",
-      "real-time",
-      "cnn"
+      "deep-learning",
+      "real-time"
     ],
     "domain": "detection",
     "headings": [],
@@ -1484,15 +1359,58 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR 2016"
   },
   {
+    "slug": "attention-mechanism",
+    "path": "/atlas/attention-mechanism",
+    "type": "concept",
+    "title": "Attention Mechanism",
+    "summary": "Computes each output element as a learned, input-dependent weighted average of value vectors, letting every element aggregate information from any other regardless of distance.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [
+      "Scaled dot-product attention",
+      "Multi-head attention",
+      "Self-attention and cross-attention",
+      "Positional encoding",
+      "Quadratic cost and the linear approximation"
+    ],
+    "authors": [
+      "P. Sarlin",
+      "D. DeTone",
+      "T. Malisiewicz",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "bundle-adjustment",
+    "path": "/atlas/bundle-adjustment",
+    "type": "concept",
+    "title": "Bundle Adjustment",
+    "summary": "Joint nonlinear least-squares refinement of all camera parameters — and, in structure-from-motion, all 3-D points — that minimises the total reprojection error.",
+    "tags": [
+      "optimization"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "Reprojection-error objective",
+      "Levenberg-Marquardt solver",
+      "Sparse block structure",
+      "Initialisation from linear estimates"
+    ],
+    "authors": [
+      "Z. Zhang"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "camera-distortion-models",
     "path": "/atlas/camera-distortion-models",
     "type": "concept",
     "title": "Camera Distortion Models",
     "summary": "Mathematical models for departures from the ideal pinhole projection — radial barrel/pincushion, tangential decentering, thin-prism — and the historical lineage from Brown's photogrammetric polynomial through Tsai's one-term radial, Weng's full Brown-Conrady, and Zhang's two-term planar formulation.",
     "tags": [
-      "calibration",
-      "lens-distortion",
-      "intrinsics",
       "camera-model"
     ],
     "domain": "image-formation",
@@ -1514,9 +1432,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Chessboard X-Corner Detection",
     "summary": "Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN) and learned heatmap pipelines (CCS), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.",
     "tags": [
-      "calibration",
       "chessboard",
-      "corner-detection",
       "survey"
     ],
     "domain": "features",
@@ -1525,16 +1441,61 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "convolution",
+    "path": "/atlas/convolution",
+    "type": "concept",
+    "title": "Convolution",
+    "summary": "The linear, shift-invariant operation that produces each output pixel as a kernel-weighted sum of input pixels in a local neighbourhood.",
+    "tags": [
+      "classical"
+    ],
+    "domain": "image-formation",
+    "headings": [
+      "Linearity and shift-invariance",
+      "Separability",
+      "Gaussian and derivative-of-Gaussian kernels",
+      "Boundary handling",
+      "Convolution theorem and FFT evaluation",
+      "Learned convolution in CNNs"
+    ],
+    "authors": [
+      "J. Canny"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "convolutional-neural-network",
+    "path": "/atlas/convolutional-neural-network",
+    "type": "concept",
+    "title": "Convolutional Neural Network",
+    "summary": "A feed-forward network that builds a spatial hierarchy of learned features by alternating weight-shared convolution layers, pointwise nonlinearities, and spatial downsampling, trained end-to-end by backpropagation.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [
+      "Convolution layer",
+      "Nonlinearity",
+      "Spatial reduction",
+      "Depth and the receptive field",
+      "The degradation problem and residual connections",
+      "Multi-branch and 1×1 bottleneck blocks"
+    ],
+    "authors": [
+      "A. Krizhevsky",
+      "I. Sutskever",
+      "G. E. Hinton"
+    ],
+    "venue": "NeurIPS"
+  },
+  {
     "slug": "dlt-normalisation",
     "path": "/atlas/dlt-normalisation",
     "type": "concept",
     "title": "DLT Normalisation",
     "summary": "A two-line similarity transform — translate the point centroid to the origin, isotropically scale so the average distance is √2 — that conditions the design matrix of any DLT-based estimator (homography, fundamental matrix, projective camera, Moving DLT) by ~10⁸, and is the difference between unusable and reliable linear solutions.",
     "tags": [
-      "geometry",
-      "linear-algebra",
-      "numerical-conditioning",
-      "dlt"
+      "linear-algebra"
     ],
     "domain": "geometry",
     "headings": [
@@ -1545,13 +1506,34 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "energy-minimization",
+    "path": "/atlas/energy-minimization",
+    "type": "concept",
+    "title": "Energy Minimization",
+    "summary": "The framework that poses image labelling and segmentation as minimising an objective combining a per-pixel data term and a pairwise smoothness term over a graph of pixels.",
+    "tags": [
+      "graph-based"
+    ],
+    "domain": "segmentation",
+    "headings": [
+      "Data and smoothness decomposition",
+      "Graph-cut solution for binary labels",
+      "GrabCut iterative formulation",
+      "Greedy region merging as a contrast"
+    ],
+    "authors": [
+      "Y. Boykov",
+      "M.-P. Jolly"
+    ],
+    "venue": "ICCV"
+  },
+  {
     "slug": "epipolar-geometry",
     "path": "/atlas/epipolar-geometry",
     "type": "concept",
     "title": "Epipolar Geometry",
     "summary": "The intrinsic projective geometry of two views of a scene, encoding the constraint that a point visible in one image must lie on a specific line in the other image determined entirely by the camera positions.",
     "tags": [
-      "geometry",
       "stereo",
       "two-view-geometry"
     ],
@@ -1563,16 +1545,58 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "feature-descriptors",
+    "path": "/atlas/feature-descriptors",
+    "type": "concept",
+    "title": "Feature Descriptors",
+    "summary": "Fixed-length vectors encoding the local image appearance around a keypoint, built so the same physical point yields similar descriptors across views — the basis for descriptor matching.",
+    "tags": [
+      "local-descriptors",
+      "binary-descriptor"
+    ],
+    "domain": "features",
+    "headings": [
+      "Gradient-orientation-histogram descriptors",
+      "SIFT descriptor",
+      "HOG descriptor",
+      "Binary descriptors",
+      "BRIEF",
+      "ORB: steered BRIEF with learned uncorrelated tests"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "feature-matching",
+    "path": "/atlas/feature-matching",
+    "type": "concept",
+    "title": "Feature Matching",
+    "summary": "Establishing keypoint correspondences between two images by comparing descriptors and resolving them into a consistent partial assignment — from the ratio test to learned optimal-transport matchers.",
+    "tags": [
+      "local-descriptors"
+    ],
+    "domain": "features",
+    "headings": [
+      "Nearest-neighbour matching and the ratio test",
+      "Assignment as an optimal-transport problem",
+      "Detector-free dense matching"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
     "slug": "hessian-saddle-response",
     "path": "/atlas/hessian-saddle-response",
     "type": "concept",
     "title": "Hessian Saddle Response",
     "summary": "A scalar response computed from the determinant of the image Hessian, negative at saddle points (X-corners) and zero at flat regions, edges, and blobs — the discriminator at the heart of every modern checkerboard X-corner detector.",
     "tags": [
-      "feature-theory",
-      "corner-detection",
-      "calibration",
-      "hessian"
+      "keypoint-detection",
+      "blob-detection"
     ],
     "domain": "features",
     "headings": [
@@ -1589,9 +1613,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Homography",
     "summary": "An invertible projective transformation of the plane, represented by a 3×3 matrix defined up to a non-zero scalar, mapping points between two images of a planar surface or capturing a pure camera rotation.",
     "tags": [
-      "geometry",
-      "projective-geometry",
-      "calibration"
+      "two-view-geometry"
     ],
     "domain": "geometry",
     "headings": [
@@ -1609,9 +1631,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Image Gradient",
     "summary": "The 2-vector of partial derivatives of image intensity with respect to spatial coordinates, measuring the rate and direction of brightness change at each pixel.",
     "tags": [
-      "feature-theory",
-      "derivatives",
-      "filtering"
+      "keypoint-detection"
     ],
     "domain": "features",
     "headings": [
@@ -1622,16 +1642,144 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "image-pyramid",
+    "path": "/atlas/image-pyramid",
+    "type": "concept",
+    "title": "Image Pyramid",
+    "summary": "A discrete multi-resolution representation — a sequence of images at progressively coarser resolution, each smoothed and downsampled from its predecessor.",
+    "tags": [
+      "multi-scale"
+    ],
+    "domain": "image-formation",
+    "headings": [
+      "Gaussian pyramid",
+      "Difference-of-Gaussian pyramid",
+      "Fixed-image, growing-filter alternative"
+    ],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "integral-image",
+    "path": "/atlas/integral-image",
+    "type": "concept",
+    "title": "Integral Image",
+    "summary": "A precomputed prefix-sum array that returns the sum of pixel values over any axis-aligned rectangle in constant time with four array reads.",
+    "tags": [
+      "classical"
+    ],
+    "domain": "features",
+    "headings": [
+      "Origin and naming",
+      "Construction by two-pass recurrence",
+      "Constant-time rectangle sum",
+      "Rotated integral images",
+      "Higher-order tables"
+    ],
+    "authors": [
+      "F. C. Crow"
+    ],
+    "venue": "ACM SIGGRAPH Computer Graphics"
+  },
+  {
+    "slug": "non-maximum-suppression",
+    "path": "/atlas/non-maximum-suppression",
+    "type": "concept",
+    "title": "Non-Maximum Suppression",
+    "summary": "Reducing a dense response map or a set of overlapping detections to a sparse set of local maxima by discarding every element that is not strongest in its neighbourhood.",
+    "tags": [
+      "keypoint-detection"
+    ],
+    "domain": "features",
+    "headings": [
+      "Grid / window suppression on a response map",
+      "Gradient-direction (1-D) suppression on an edge map",
+      "Greedy overlap-based suppression on detections"
+    ],
+    "authors": [
+      "J. Canny"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "optical-flow",
+    "path": "/atlas/optical-flow",
+    "type": "concept",
+    "title": "Optical Flow",
+    "summary": "The apparent 2-D velocity field of image brightness between consecutive frames, recovered from the spatio-temporal gradient under the brightness-constancy assumption.",
+    "tags": [
+      "optical-flow",
+      "variational"
+    ],
+    "domain": "features",
+    "headings": [
+      "Derivation of the brightness-constancy constraint",
+      "The aperture problem",
+      "Global / variational approach",
+      "Local / windowed approach",
+      "Robust approach"
+    ],
+    "authors": [
+      "B. K. P. Horn",
+      "B. G. Schunck"
+    ],
+    "venue": "Artificial Intelligence"
+  },
+  {
+    "slug": "pinhole-camera-model",
+    "path": "/atlas/pinhole-camera-model",
+    "type": "concept",
+    "title": "Pinhole Camera Model",
+    "summary": "The projective map from 3-D scene points to 2-D image pixels through a single centre of projection, parameterised by an intrinsic matrix and an extrinsic pose.",
+    "tags": [
+      "camera-model"
+    ],
+    "domain": "image-formation",
+    "headings": [
+      "Intrinsic matrix",
+      "Extrinsic transform",
+      "Projection matrix and normalised coordinates",
+      "Calibration homography and planar targets",
+      "Departure from the ideal model"
+    ],
+    "authors": [
+      "Z. Zhang"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "pose-estimation",
+    "path": "/atlas/pose-estimation",
+    "type": "concept",
+    "title": "Pose Estimation",
+    "summary": "Recovery of the 6-DOF rigid transformation — rotation and translation — relating a camera to a scene, an object, or a second camera.",
+    "tags": [
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Absolute pose: Perspective-n-Point",
+      "Relative pose: the essential matrix",
+      "Pose from a calibration target",
+      "Nonlinear refinement"
+    ],
+    "authors": [
+      "V. Lepetit",
+      "F. Moreno-Noguer",
+      "P. Fua"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
     "slug": "ransac",
     "path": "/atlas/ransac",
     "type": "concept",
     "title": "RANSAC",
     "summary": "Random sample consensus — a paradigm for fitting a parametric model to data containing an unknown fraction of gross outliers, by drawing minimal random subsets, instantiating candidate models, and selecting the one with the largest globally consistent inlier set.",
     "tags": [
-      "geometry",
-      "robust-estimation",
-      "outlier-rejection",
-      "model-fitting"
+      "robust-estimation"
     ],
     "domain": "geometry",
     "headings": [
@@ -1647,9 +1795,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Scale Space",
     "summary": "A one-parameter family of images obtained by progressively blurring an input image with Gaussians of increasing standard deviation, providing a principled multi-scale representation for detecting and describing image features.",
     "tags": [
-      "image-formation",
-      "multi-scale",
-      "gaussian-filtering"
+      "multi-scale"
     ],
     "domain": "image-formation",
     "headings": [
@@ -1668,10 +1814,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Spatially Varying Image Stitching",
     "summary": "A 2011–2013 lineage of stitching methods that replace the single global homography with a spatially varying warp field — fitted as either two homographies + spatial blend (Gao 2011), a smooth affine deviation field (Lin 2011), or a per-cell weighted-DLT projective grid (Zaragoza 2013, APAP) — to absorb parallax and non-rotational camera motion that no single homography can represent.",
     "tags": [
-      "image-stitching",
-      "homography",
-      "panorama",
-      "spatially-varying-warp",
+      "two-view-geometry",
       "survey"
     ],
     "domain": "geometry",
@@ -1688,8 +1831,7 @@ export const searchRecords: SearchRecord[] = [
     "title": "Structure Tensor",
     "summary": "A symmetric 2×2 matrix formed by summing the outer products of the image gradient over a local window, encoding the dominant orientation and anisotropy of local image structure.",
     "tags": [
-      "feature-theory",
-      "corner-detection",
+      "keypoint-detection",
       "linear-algebra"
     ],
     "domain": "features",
@@ -1702,16 +1844,34 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "svd-null-space",
+    "path": "/atlas/svd-null-space",
+    "type": "concept",
+    "title": "SVD Null-Space Estimation",
+    "summary": "Estimating a geometric entity defined only up to scale by stacking constraints into a homogeneous linear system and taking the smallest right-singular vector of the design matrix.",
+    "tags": [
+      "linear-algebra"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "The homogeneous system and its least-squares solution",
+      "Rank deficiency and the residual interpretation",
+      "Rank enforcement by truncating the spectrum"
+    ],
+    "authors": [
+      "H. C. Longuet-Higgins"
+    ],
+    "venue": "Nature"
+  },
+  {
     "slug": "topological-grid-recovery",
     "path": "/atlas/topological-grid-recovery",
     "type": "concept",
     "title": "Topological Grid Recovery",
     "summary": "Verify candidate calibration-pattern corners by constructing a graph over them (Delaunay triangulation, k-nearest-neighbours, or proximity) and accepting only configurations that match the expected chessboard topology — false positives are eliminated by structural rules rather than per-pixel response thresholds.",
     "tags": [
-      "calibration",
       "chessboard",
-      "topology",
-      "graph-algorithms"
+      "graph-based"
     ],
     "domain": "features",
     "headings": [

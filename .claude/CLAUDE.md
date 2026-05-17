@@ -68,8 +68,8 @@ Authors write only forward edges. The build emits `src/generated/content-graph.t
 For symmetric relation types (`compared_with`, `alternative_formulation_of`, `parallel_foundation_with`), author on one side only. The build mirrors them onto the target's forward edges so both pages render the same relation.
 
 ### When a topic deserves its own page
-- **Concept page**: only when referenced by 3+ algorithm/model pages AND can support ≥500 words of substantive standalone content (definition, math, numerical concerns, implementation implications).
-- **Failure-mode page**: same criterion (3+ references, ≥500 words). Failure-mode authoring is deferred until natural candidates accumulate.
+- **Concept page**: when the topic is a genuinely fundamental, cross-cutting CV concept that can support ≥500 words of substantive standalone content (definition, math, numerical concerns, implementation implications). The number of pages referencing the concept is **not** a gate — fundamental concepts get a page even before their dependents are written. Source-diversity still applies: a concept must synthesise ≥3 distinct sources (see the `concept-page` skill).
+- **Failure-mode page**: only when referenced by 3+ algorithm/model pages AND can support ≥500 words. Failure-mode authoring is deferred until natural candidates accumulate.
 - **Pairwise comparison page**: prohibited. Use `relations[type=compared_with]` + an inline `## When to choose X over Y` section inside the more authoritative page. The non-host page carries a single Remarks bullet linking to the comparison anchor — never duplicate the prose. When the relationship is supersession, alternative formulation, parallel foundation, extension, pipeline, or cross-paradigm rather than peer practitioner-choice, pick the appropriate `type` from the Relations field vocabulary below.
 - **Survey concept page** (3+ methods): a concept page (`content/concepts/<survey-slug>.md`), not an algorithm page. Required: ≥3 surveyed methods, ≥800 words, decision table near the top, every surveyed algorithm page lists the survey concept in its `related`. Author only when ≥3 of the surveyed papers have research notes.
 

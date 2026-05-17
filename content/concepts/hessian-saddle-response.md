@@ -2,7 +2,7 @@
 title: "Hessian Saddle Response"
 date: 2026-05-02
 summary: "A scalar response computed from the determinant of the image Hessian, negative at saddle points (X-corners) and zero at flat regions, edges, and blobs — the discriminator at the heart of every modern checkerboard X-corner detector."
-tags: ["feature-theory", "corner-detection", "calibration", "hessian"]
+tags: ["keypoint-detection", "blob-detection"]
 author: "Vitaly Vorobyev"
 domain: features
 difficulty: intermediate

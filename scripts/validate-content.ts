@@ -19,6 +19,7 @@ import {
     algorithmFrontmatterSchema,
     modelFrontmatterSchema,
     conceptFrontmatterSchema,
+    tagValues,
 } from "../src/lib/content/schema.ts";
 import type { ContentGraph } from "./content-graph.ts";
 import { buildContentGraph, detectPrerequisiteCycles } from "./content-graph.ts";
@@ -578,6 +579,37 @@ export async function validateContent(options?: ValidateContentOptions): Promise
         if (e.isDraft) continue;
         if (!e.frontmatter.domain) {
             errors.push(`[${e.file}] non-draft page must set domain`);
+        }
+    }
+
+    // ── Rule 8: content/tags.yaml ↔ tagValues drift check ─────────────────────
+    // Ensures the closed-vocabulary YAML and the schema constant stay in sync.
+    // The unit test in schema.test.ts also checks this; the validator is the
+    // build gate.
+    {
+        const tagsYamlPath = join(CONTENT_DIR, "tags.yaml");
+        if (existsSync(tagsYamlPath)) {
+            const raw = readFileSync(tagsYamlPath, "utf-8");
+            const parsed = parseYaml(raw) as { tags: Array<{ slug: string }> } | null;
+            if (parsed?.tags) {
+                const yamlSlugs = new Set(parsed.tags.map((t) => t.slug));
+                const codeSlugs = new Set<string>(tagValues);
+
+                for (const slug of yamlSlugs) {
+                    if (!codeSlugs.has(slug)) {
+                        errors.push(
+                            `[content/tags.yaml] slug "${slug}" is in tags.yaml but missing from tagValues in schema.ts`,
+                        );
+                    }
+                }
+                for (const slug of codeSlugs) {
+                    if (!yamlSlugs.has(slug)) {
+                        errors.push(
+                            `[schema.ts] tag "${slug}" is in tagValues but missing from content/tags.yaml`,
+                        );
+                    }
+                }
+            }
         }
     }
 

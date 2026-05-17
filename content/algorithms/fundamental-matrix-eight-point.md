@@ -2,12 +2,12 @@
 title: "Normalised Eight-Point Algorithm"
 date: 2026-05-02
 summary: "Compute the fundamental matrix from n ≥ 8 point correspondences by conditioning the linear DLT system via a similarity normalisation, recovering accuracy comparable to iterative methods at a fraction of the cost."
-tags: ["geometry", "stereo", "two-view-geometry", "fundamental-matrix"]
+tags: ["stereo", "two-view-geometry"]
 domain: geometry
 tasks: [fundamental-matrix-estimation]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
-prerequisites: [epipolar-geometry, homography, dlt-normalisation, ransac]
+prerequisites: [epipolar-geometry, homography, dlt-normalisation, ransac, svd-null-space]
 failureModes: []
 sources:
   primary: hartley1997-eight-point

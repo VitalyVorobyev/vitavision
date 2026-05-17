@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Atlas redesign — vitavision</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=line-clamp"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --background:        210 40% 98%;
+            --surface:           0 0% 100%;
+            --foreground:        215 25% 27%;
+            --muted-foreground:  215 16% 47%;
+            --border:            214 32% 91%;
+            --accent:            215 19% 35%;
+            --brand:             191 75% 55%;
+        }
+        html, body { font-family: 'Inter', system-ui, sans-serif; background: hsl(var(--background)); color: hsl(var(--foreground)); margin: 0; }
+        body { -webkit-font-smoothing: antialiased; }
+        .font-serif { font-family: 'Source Serif 4', Georgia, serif; }
+        .font-mono { font-family: 'Geist Mono', ui-monospace, monospace; font-feature-settings: 'ss01'; }
+        kbd { font-family: 'Geist Mono', ui-monospace, monospace; }
+        /* Smooth out tailwind cdn line-clamp */
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+
+    <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" src="atlas-data.jsx"></script>
+    <script type="text/babel" src="atlas-icons.jsx"></script>
+    <script type="text/babel" src="atlas-shared.jsx"></script>
+    <script type="text/babel" src="direction-1-refined.jsx"></script>
+    <script type="text/babel" src="direction-2-graph.jsx"></script>
+    <script type="text/babel" src="direction-3-mobile.jsx"></script>
+    <script type="text/babel" src="tweaks-panel.jsx"></script>
+    <script type="text/babel" src="design-canvas.jsx"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const TWEAKS = /*EDITMODE-BEGIN*/{
+          "showRelations": true,
+          "cardDensity": "normal",
+          "showCritique": true
+        }/*EDITMODE-END*/;
+
+        // ── Critique artboard ──────────────────────────────────────────────
+        // ── Handoff artboard ───────────────────────────────────────────────
+        // Surfaces the HANDOFF.md contract at a glance — what to implement,
+        // where it goes, what's deferred. Full spec is in HANDOFF.md.
+        function HandoffArtboard() {
+            const Row = ({ label, children }) => (
+                <div className="grid grid-cols-[140px_1fr] gap-4 py-2 border-b border-[hsl(214_32%_94%)]">
+                    <div className="text-[10.5px] uppercase tracking-[0.12em] text-[hsl(215_16%_55%)] pt-0.5 font-mono">{label}</div>
+                    <div className="text-[12.5px] text-[hsl(215_25%_30%)] leading-snug">{children}</div>
+                </div>
+            );
+            return (
+                <div className="bg-white p-10 overflow-y-auto" style={{ width: 1320, height: 820 }}>
+                    <div className="max-w-[1120px]">
+                        <div className="flex items-baseline gap-3 mb-3">
+                            <div className="text-[10.5px] uppercase tracking-[0.16em] text-[hsl(215_16%_55%)]">Handoff</div>
+                            <span className="text-[10.5px] font-mono text-[hsl(215_16%_55%)]">/ HANDOFF.md</span>
+                        </div>
+                        <h1 className="font-serif text-[34px] leading-[1.1] tracking-tight text-[hsl(215_30%_15%)] mb-2 -tracking-[0.4px]">
+                            Spec for Claude Code
+                        </h1>
+                        <p className="font-serif text-[15.5px] leading-[1.5] text-[hsl(215_25%_30%)] max-w-[820px]">
+                            What to change in <span className="font-mono text-[14px]">vitavision</span> to ship this redesign. Everything below
+                            is enumerated in <span className="font-mono text-[14px]">HANDOFF.md</span> at the project root; this card is the index.
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-x-10 gap-y-0 mt-7">
+                            {/* Left column — Data + Catalog ------------------ */}
+                            <div>
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(215_30%_18%)] font-semibold mb-1.5 mt-1">1 · Data model</div>
+                                <Row label="add fields">
+                                    <span className="font-mono text-[12px]">year:&nbsp;number?</span>{" "}— publication year of the method (distinct from <span className="font-mono text-[11.5px]">date</span>).{" "}<br/>
+                                    <span className="font-mono text-[12px]">tagline:&nbsp;string?</span>{" "}— low-jargon one-liner, ~80 chars.
+                                </Row>
+                                <Row label="helper">
+                                    <span className="font-mono text-[12px]">getNeighbors(slug)</span> — returns prerequisites, extended_from (reverse), compared_with, extended_by, feeds_into, learned_by. Dedup by relation specificity.
+                                </Row>
+
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(215_30%_18%)] font-semibold mb-1.5 mt-5">2 · Refined Catalog</div>
+                                <Row label="card layout">
+                                    Icon · title · graph-chip · <span className="font-mono text-[11.5px]">PROBLEM · YEAR</span> meta · tagline body · "→ extended by …" relation line. Drop the difficulty pill.
+                                </Row>
+                                <Row label="sidebar">
+                                    Insert a <strong>Problem</strong> section between Type and Tags. Counts derived from <span className="font-mono text-[11.5px]">tasks[]</span>.
+                                </Row>
+                                <Row label="graph chip">
+                                    Small icon button (top-right of every card). Opens Graph Explorer focused on the entry. Always visible; brand-teal on hover.
+                                </Row>
+                            </div>
+
+                            {/* Right column — Graph + Mobile + Icons -------- */}
+                            <div>
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(215_30%_18%)] font-semibold mb-1.5 mt-1">3 · Graph Explorer</div>
+                                <Row label="lanes">
+                                    W: <span className="font-mono text-[11.5px]">prereq + ext_from</span>. N: <span className="font-mono text-[11.5px]">compared_with</span>. E: <span className="font-mono text-[11.5px]">ext_by + feeds_into</span>. S: <span className="font-mono text-[11.5px]">learned_by</span>.
+                                </Row>
+                                <Row label="visibility">
+                                    No per-relation cap. Canvas auto-grows. Inner scroll if it exceeds container. <em>No pan/zoom in v1.</em>
+                                </Row>
+                                <Row label="edges">
+                                    Cubic-bezier, perpendicular exits, relation-tinted, arrowheads in lineage direction. Symmetric <span className="font-mono text-[11.5px]">compared_with</span> is dashed. Hover dims unrelated edges to 0.18 opacity.
+                                </Row>
+                                <Row label="trail">
+                                    Max 4 visible per side + <span className="font-mono text-[11.5px]">+N earlier / +N later</span>. Full history kept in state.
+                                </Row>
+                                <Row label="smart nav">
+                                    Clicking immediate previous → <strong>back()</strong>, not push. Clicking next redo → <strong>forward()</strong>. Kills <span className="font-mono text-[11.5px]">a→b→a→b</span> zigzags.
+                                </Row>
+                                <Row label="center card">
+                                    Title · tagline · primary source citation · problem chips · Open page link.
+                                </Row>
+
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(215_30%_18%)] font-semibold mb-1.5 mt-5">4 · Mobile + Icons</div>
+                                <Row label="mobile">
+                                    Below lg breakpoint, drop the visual graph. Render focused-entry sheet + grouped neighbor lists. Same nav contract.
+                                </Row>
+                                <Row label="icons">
+                                    Add <span className="font-mono text-[11.5px]">icon</span> to frontmatter; fall back to 12-primitive deterministic placeholder set keyed by <span className="font-mono text-[11.5px]">hash(slug)</span>.
+                                </Row>
+                            </div>
+                        </div>
+
+                        <div className="mt-7 pt-5 border-t border-[hsl(214_32%_91%)] grid grid-cols-3 gap-x-8">
+                            <div>
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(0_45%_45%)] font-semibold mb-2">Deferred (not in v1)</div>
+                                <ul className="space-y-0.5 text-[12px] text-[hsl(215_25%_30%)] leading-snug">
+                                    <li>· Reading paths · status badges</li>
+                                    <li>· Relation-type filter in graph</li>
+                                    <li>· Recenter animation</li>
+                                    <li>· Graph mini-embed on entry pages</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(191_55%_28%)] font-semibold mb-2">Acceptance checklist</div>
+                                <div className="text-[11.5px] text-[hsl(215_25%_30%)] leading-snug">
+                                    11 boxes in <span className="font-mono text-[11px]">HANDOFF.md § 7</span> — covers cards, sidebar, graph behaviour, smart-back, and mobile.
+                                </div>
+                            </div>
+                            <div>
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(215_16%_45%)] font-semibold mb-2">Design assets</div>
+                                <ul className="space-y-0.5 text-[12px] text-[hsl(215_25%_30%)] leading-snug">
+                                    <li>· <span className="font-mono text-[11px]">direction-1-refined.jsx</span> — Catalog</li>
+                                    <li>· <span className="font-mono text-[11px]">direction-2-graph.jsx</span> — Explorer</li>
+                                    <li>· <span className="font-mono text-[11px]">direction-3-mobile.jsx</span> — Mobile</li>
+                                    <li>· <span className="font-mono text-[11px]">atlas-icons.jsx</span> — Placeholder set</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function CritiqueArtboard() {
+            return (
+                <div className="bg-white p-10" style={{ width: 1320, height: 820 }}>
+                    <div className="max-w-[980px]">
+                        <div className="text-[10.5px] uppercase tracking-[0.16em] text-[hsl(215_16%_55%)] mb-3">Designer's note · v3</div>
+                        <h1 className="font-serif text-[40px] leading-[1.1] tracking-tight text-[hsl(215_30%_15%)] mb-2 -tracking-[0.4px]">
+                            A catalog you can browse,<br/>
+                            a graph you can <em>steer</em>.
+                        </h1>
+                        <p className="font-serif text-[17px] leading-[1.5] text-[hsl(215_25%_30%)] mt-4 max-w-[780px]">
+                            Two surfaces of one product. <strong>Refined Catalog</strong> is the default
+                            landing — a denser grid with the relations the schema already encodes. Every
+                            card has a small graph affordance in the corner: one click takes you to{" "}
+                            <strong>Graph Explorer</strong>, centered on that entry. The graph itself fans
+                            <em> all</em> typed neighbors out into four lanes, with curved edges that
+                            exit each card perpendicular to its edge — no truncation, no hidden links.
+                            On mobile the visual graph reshapes into a focused-entry sheet with grouped
+                            neighbor lists; same navigation, different geometry.
+                        </p>
+
+                        <div className="grid grid-cols-3 gap-x-10 gap-y-6 mt-9">
+                            <div>
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(191_55%_28%)] font-semibold mb-2">Catalog · v3</div>
+                                <ul className="space-y-1.5 text-[13px] text-[hsl(215_25%_30%)] leading-snug">
+                                    <li>· Per-entry icon placeholders (12 deterministic glyphs)</li>
+                                    <li>· Inline relation line: "→ extended by SURF, ORB"</li>
+                                    <li>· <span className="font-semibold">New: graph affordance</span> — one-click into Graph Explorer</li>
+                                    <li>· Problem axis added to sidebar</li>
+                                    <li>· Difficulty dropped</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(215_25%_30%)] font-semibold mb-2">Graph Explorer · v3</div>
+                                <ul className="space-y-1.5 text-[13px] text-[hsl(215_25%_30%)] leading-snug">
+                                    <li>· <span className="font-semibold">All neighbors visible</span> — no per-relation cap; canvas grows to fit</li>
+                                    <li>· Curved bezier edges, relation-tinted, with arrowheads</li>
+                                    <li>· Edge labels float on the wire near the neighbor</li>
+                                    <li>· Hover dims unrelated edges so the focus is unambiguous</li>
+                                    <li>· Center card is richer — title, problems, summary, Open page link</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(215_19%_35%)] font-semibold mb-2">Mobile · new</div>
+                                <ul className="space-y-1.5 text-[13px] text-[hsl(215_25%_30%)] leading-snug">
+                                    <li>· <span className="font-semibold">Not blocked.</span> Reshapes into a focused sheet + grouped neighbor lists</li>
+                                    <li>· Tap a neighbor to recenter; back chevron pops the trail</li>
+                                    <li>· The visual graph is desktop-only — honesty over forcing pan/zoom</li>
+                                    <li>· Same `getNeighbors()` data, same navigation contract</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div className="mt-8 pt-6 border-t border-[hsl(214_32%_91%)] grid grid-cols-2 gap-x-12">
+                            <div>
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(215_25%_30%)] font-semibold mb-2">How a user gets from catalog to graph</div>
+                                <ol className="space-y-1 text-[12.5px] text-[hsl(215_25%_30%)] leading-snug list-decimal pl-4 marker:text-[hsl(215_16%_60%)]">
+                                    <li>Browses or searches the catalog</li>
+                                    <li>Clicks the small graph icon in the corner of any card</li>
+                                    <li>Lands in Graph Explorer with that entry already focused</li>
+                                    <li>Navigates neighbors with click; backtracks with ←</li>
+                                    <li>Hits "Open page →" when ready to read</li>
+                                </ol>
+                            </div>
+                            <div>
+                                <div className="text-[11px] uppercase tracking-[0.12em] text-[hsl(215_25%_30%)] font-semibold mb-2">Next, if you want to push further</div>
+                                <ul className="space-y-1 text-[12.5px] text-[hsl(215_25%_30%)] leading-snug">
+                                    <li>· Real per-entry icons (12-primitive set is the calibration scale)</li>
+                                    <li>· Relation-type filter in Graph Explorer (hide/show whole lanes)</li>
+                                    <li>· Recenter animation — soft motion between focuses</li>
+                                    <li>· Graph mini-embed at the top of each entry page</li>
+                                    <li>· Filling in `prerequisites` / `feeds_into` data in frontmatter</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ── App ────────────────────────────────────────────────────────────
+        function App() {
+            const [tweaks, setTweak] = useTweaks(TWEAKS);
+
+            return (
+                <div className="min-h-screen">
+                    <DesignCanvas
+                        title="Atlas redesign"
+                        subtitle="3 directions side-by-side · curious technical reader · keeps Technical Journal palette"
+                    >
+                        {tweaks.showCritique && (
+                            <DCSection id="note" title="Designer's note" subtitle="Critique of current design and ChatGPT's proposal — read first">
+                                <DCArtboard id="note-1" label="Approach" width={1320} height={820}>
+                                    <CritiqueArtboard />
+                                </DCArtboard>
+                            </DCSection>
+                        )}
+
+                        <DCSection id="directions" title="Two surfaces" subtitle="Same chrome (sidebar, header, search) · different content area · same data">
+                            <DCArtboard id="d1" label="① Refined Catalog — per-entry icons, relations on cards, graph affordance, Problem axis" width={1320} height={820}>
+                                <RefinedCatalog />
+                            </DCArtboard>
+                            <DCArtboard id="d2" label="② Graph Explorer — uncapped neighbors, curved typed edges, undo/redo trail" width={1320} height={820}>
+                                <GraphExplorer startSlug="sift" />
+                            </DCArtboard>
+                            <DCArtboard id="d2-rcnn" label="② Graph Explorer · Faster R-CNN (detection world)" width={1320} height={820}>
+                                <GraphExplorer startSlug="faster-rcnn" />
+                            </DCArtboard>
+                            <DCArtboard id="d2-ransac" label="② Graph Explorer · RANSAC (showing many extensions to the right)" width={1320} height={820}>
+                                <GraphExplorer startSlug="ransac" />
+                            </DCArtboard>
+                        </DCSection>
+
+                        <DCSection id="mobile" title="Mobile" subtitle="Graph reshaped as a drawer — same data, same navigation">
+                            <DCArtboard id="m1" label="③ Mobile graph view — focused entry + grouped neighbor list" width={390} height={800}>
+                                <MobileGraph startSlug="sift" />
+                            </DCArtboard>
+                            <DCArtboard id="m2" label="③ Mobile · after tapping SURF (history grew)" width={390} height={800}>
+                                <MobileGraph startSlug="surf" />
+                            </DCArtboard>
+                        </DCSection>
+
+                        <DCSection id="handoff" title="Handoff" subtitle="Implementation spec for Claude Code — full doc in HANDOFF.md">
+                            <DCArtboard id="handoff-1" label="Implementation spec" width={1320} height={820}>
+                                <HandoffArtboard />
+                            </DCArtboard>
+                        </DCSection>
+                    </DesignCanvas>
+
+                    <TweaksPanel title="Tweaks">
+                        <TweakSection title="Layout">
+                            <TweakToggle
+                                label="Show designer's note"
+                                value={tweaks.showCritique}
+                                onChange={(v) => setTweak('showCritique', v)}
+                            />
+                        </TweakSection>
+                        <TweakSection title="Card detail">
+                            <TweakRadio
+                                label="Density"
+                                value={tweaks.cardDensity}
+                                onChange={(v) => setTweak('cardDensity', v)}
+                                options={[
+                                    { value: 'minimal', label: 'Minimal' },
+                                    { value: 'normal',  label: 'Normal'  },
+                                ]}
+                            />
+                            <TweakToggle
+                                label="Show relation line on cards"
+                                value={tweaks.showRelations}
+                                onChange={(v) => setTweak('showRelations', v)}
+                            />
+                        </TweakSection>
+                    </TweaksPanel>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>

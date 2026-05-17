@@ -1,6 +1,6 @@
 ---
 name: concept-page
-description: Author or update a concept page in content/concepts/. Concepts span multiple sources; the skill enforces the page-creation criterion (3+ public-page references AND ≥500 words substantive content) and reads research notes for cited papers. Closed-form algorithms use algo-page; deep-learning models use deep-model-page.
+description: Author or update a concept page in content/concepts/. Concepts span multiple sources; the skill enforces the page-creation criterion (a genuinely fundamental, cross-cutting concept with ≥500 words of substantive content, synthesised from ≥3 sources) and reads research notes for cited papers. Closed-form algorithms use algo-page; deep-learning models use deep-model-page.
 ---
 
 # Vitavision Concept Reference
@@ -13,15 +13,13 @@ Use this skill for cross-cutting mathematical ideas (`homography`, `structure-te
 
 ## Page-creation criterion (FIRST gate — evaluate before any other step)
 
-**Do not create a new concept page unless both conditions are met:**
+**Create a new concept page only when the topic is a genuinely fundamental, cross-cutting computer-vision concept that can support at least 500 words of substantive standalone content across the five required sections.**
 
-1. The concept is referenced as a `prerequisites` entry in 3 or more existing or planned public pages (`content/algorithms/`, `content/models/`, `content/concepts/`).
-2. The concept can support at least 500 words of substantive standalone content across the five required sections.
+The number of pages that currently reference the concept is **not** a gate — a fundamental concept earns a page even before its dependents are written. (A concept that no current or planned algorithm/model/concept page builds on is probably too peripheral to be "fundamental"; prefer to defer it.)
 
-If either condition is not met, **reject the request** and suggest where the topic should live:
+What still gates: the **≥500-words substance** test above, and the **source-diversity** rule — a concept page must synthesise ≥3 distinct sources (see Step 2 and Step 4). A topic backed by a single paper belongs as a section inside that paper's page, not as a standalone concept.
 
-- If only 1–2 pages reference it: suggest adding the concept as a `## <Concept>` subsection inside the most relevant existing algorithm or model page.
-- If the topic is too narrow for 500 words: same — it's a section, not a page.
+If the topic cannot support 500 words of substantive content, **reject the request**: it is too narrow for a page. Suggest adding it as a `## <Concept>` subsection inside the most relevant existing algorithm or model page.
 
 Report clearly: "This concept does not meet the page-creation criterion because [reason]. It belongs as a section in [existing-slug]."
 
@@ -114,7 +112,7 @@ Evaluate the criterion before doing anything else. Count how many existing `cont
 
 ### Step 2 — Confirm required research notes exist
 
-Concept pages cite multiple sources; before drafting, verify `docs/research/notes/<id>.md` exists for every paper that will be cited (from explicit invocation IDs, from `grep -rl "<concept-slug>" docs/research/notes/`, and from any existing `sources.references`). At least 3 distinct notes are required (matches the page-creation criterion in Step 1 — concepts span sources). If any required note is missing, stop and report:
+Concept pages cite multiple sources; before drafting, verify `docs/research/notes/<id>.md` exists for every paper that will be cited (from explicit invocation IDs, from `grep -rl "<concept-slug>" docs/research/notes/`, and from any existing `sources.references`). At least 3 distinct notes are required (the source-diversity gate — concepts span sources; synthesis across ≥3 notes guards single-source bias). If any required note is missing, stop and report:
 
 *"Cannot draft — research note `docs/research/notes/<id>.md` does not exist. Concept pages require at least 3 distinct paper notes. Run `/paper-ingest <id-or-arxiv-ref>` for each missing source first."*
 
@@ -180,7 +178,7 @@ Inherit the full `algo-page` forbidden-patterns list. The following are concept-
 
 Run before handing off a draft.
 
-- [ ] Page-creation criterion met (3+ references, ≥500 words). Documented in working notes.
+- [ ] Page-creation criterion met (fundamental cross-cutting concept, ≥500 words substance, ≥3 sources). Documented in working notes.
 - [ ] Exactly five top-level sections, in order: Definition, Mathematical Description, Numerical Concerns, Where it appears, References. No numbered heading prefixes.
 - [ ] `# Definition` contains the defining formula. No narrative opener.
 - [ ] `# Mathematical Description` develops the formalism with named quantities in `:::definition[...]` blocks.

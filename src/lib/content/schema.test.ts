@@ -2,7 +2,8 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse as parseYaml } from "yaml";
-import { algorithmFrontmatterSchema, blogFrontmatterSchema, modelFrontmatterSchema, taskValues } from "./schema.ts";
+import { algorithmFrontmatterSchema, blogFrontmatterSchema, modelFrontmatterSchema, tagValues, taskValues } from "./schema.ts";
+import { taskLabels } from "./taskLabels.ts";
 
 describe("blogFrontmatterSchema", () => {
     it("accepts updated metadata", () => {
@@ -10,7 +11,7 @@ describe("blogFrontmatterSchema", () => {
             title: "Demo Post",
             date: "2026-03-29",
             summary: "Testing updated metadata.",
-            tags: ["demo"],
+            tags: ["classical"],
             author: "Vitaly Vorobyev",
             updated: "2026-03-30",
         });
@@ -25,7 +26,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Demo Algorithm",
             date: "2026-03-29",
             summary: "Testing legacy demo link normalization.",
-            tags: ["demo"],
+            tags: ["classical"],
             category: "corner-detection",
             author: "Vitaly Vorobyev",
             demoLink: "https://vitavision.dev/editor?algo=demo",
@@ -40,7 +41,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Demo Algorithm",
             date: "2026-03-29",
             summary: "Testing demoLinks precedence.",
-            tags: ["demo"],
+            tags: ["classical"],
             category: "corner-detection",
             author: "Vitaly Vorobyev",
             demoLink: "https://vitavision.dev/editor?algo=legacy",
@@ -55,7 +56,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Demo Algorithm",
             date: "2026-03-29",
             summary: "Testing updated metadata.",
-            tags: ["demo"],
+            tags: ["classical"],
             category: "corner-detection",
             author: "Vitaly Vorobyev",
             updated: "2026-03-30",
@@ -68,7 +69,7 @@ describe("algorithmFrontmatterSchema", () => {
         expect(() => algorithmFrontmatterSchema.parse({
             title: "Incomplete Algorithm",
             summary: "Missing date and author.",
-            tags: ["demo"],
+            tags: ["classical"],
         })).toThrow();
     });
 
@@ -77,7 +78,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Broken Demo Links",
             date: "2026-03-29",
             summary: "Testing invalid demo URLs.",
-            tags: ["demo"],
+            tags: ["classical"],
             author: "Vitaly Vorobyev",
             demoLinks: ["not-a-url"],
         })).toThrow();
@@ -88,7 +89,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Historical Method",
             date: "2026-05-03",
             summary: "Preserved for citation lineage.",
-            tags: ["calibration"],
+            tags: ["classical"],
             author: "Vitaly Vorobyev",
             quality: "historical",
             relations: [
@@ -107,7 +108,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Borderline Method",
             date: "2026-05-03",
             summary: "Testing relation caution.",
-            tags: ["demo"],
+            tags: ["classical"],
             author: "Vitaly Vorobyev",
             relations: [
                 {
@@ -127,7 +128,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Bad Quality",
             date: "2026-05-03",
             summary: "Testing rejection of unknown quality.",
-            tags: ["demo"],
+            tags: ["classical"],
             author: "Vitaly Vorobyev",
             quality: "deprecated",
         })).toThrow();
@@ -138,7 +139,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Bad Relation",
             date: "2026-05-03",
             summary: "Testing rejection of unknown relation types.",
-            tags: ["demo"],
+            tags: ["classical"],
             author: "Vitaly Vorobyev",
             relations: [
                 { type: "supersedes", target: "x", confidence: "high" },
@@ -151,7 +152,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Missing Confidence",
             date: "2026-05-03",
             summary: "Testing required confidence field.",
-            tags: ["demo"],
+            tags: ["classical"],
             author: "Vitaly Vorobyev",
             relations: [
                 { type: "generalized_by", target: "x" },
@@ -164,7 +165,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Living Method",
             date: "2026-05-03",
             summary: "No relations needed.",
-            tags: ["demo"],
+            tags: ["classical"],
             author: "Vitaly Vorobyev",
         });
 
@@ -176,7 +177,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Tagged Algorithm",
             date: "2026-05-03",
             summary: "Tagged with a known task.",
-            tags: ["demo"],
+            tags: ["classical"],
             author: "Vitaly Vorobyev",
             tasks: ["camera-calibration"],
         });
@@ -186,7 +187,7 @@ describe("algorithmFrontmatterSchema", () => {
             title: "Bad Task",
             date: "2026-05-03",
             summary: "Unknown task slug.",
-            tags: ["demo"],
+            tags: ["classical"],
             author: "Vitaly Vorobyev",
             tasks: ["video-segmentation"],
         })).toThrow();
@@ -199,7 +200,7 @@ describe("modelFrontmatterSchema", () => {
             title: "Tagged Model",
             date: "2026-05-03",
             summary: "Model tagged with multi-valued tasks.",
-            tags: ["demo"],
+            tags: ["classical"],
             author: "Vitaly Vorobyev",
             tasks: ["feature-detection", "local-feature-matching"],
         });
@@ -214,5 +215,42 @@ describe("tasks vocabulary", () => {
         const yamlSlugs = yaml.tasks.map((t) => t.slug).sort();
         const codeSlugs = [...taskValues].sort();
         expect(yamlSlugs).toEqual(codeSlugs);
+    });
+
+    it("taskLabels has a key for every taskValues entry and no extra keys", () => {
+        const labelKeys = Object.keys(taskLabels).sort();
+        const schemaKeys = [...taskValues].sort();
+        expect(labelKeys).toEqual(schemaKeys);
+    });
+});
+
+describe("tags vocabulary", () => {
+    it("stays in sync between content/tags.yaml and tagValues", () => {
+        const yamlPath = path.join(process.cwd(), "content/tags.yaml");
+        const yaml = parseYaml(readFileSync(yamlPath, "utf8")) as { tags: { slug: string }[] };
+        const yamlSlugs = yaml.tags.map((t) => t.slug).sort();
+        const codeSlugs = [...tagValues].sort();
+        expect(yamlSlugs).toEqual(codeSlugs);
+    });
+
+    it("rejects an unknown tag on algorithmFrontmatterSchema", () => {
+        expect(() => algorithmFrontmatterSchema.parse({
+            title: "Bad Tags",
+            date: "2026-05-16",
+            summary: "Testing rejection of unknown tags.",
+            tags: ["not-a-real-tag"],
+            author: "Vitaly Vorobyev",
+        })).toThrow();
+    });
+
+    it("accepts a known tag on algorithmFrontmatterSchema", () => {
+        const parsed = algorithmFrontmatterSchema.parse({
+            title: "Good Tags",
+            date: "2026-05-16",
+            summary: "Testing acceptance of known tags.",
+            tags: ["classical"],
+            author: "Vitaly Vorobyev",
+        });
+        expect(parsed.tags).toEqual(["classical"]);
     });
 });

@@ -2,7 +2,7 @@
 title: "Tsai's Versatile Camera Calibration"
 date: 2026-05-02
 summary: "Two-stage 1987 camera calibration that uses the radial alignment constraint to recover extrinsics and image scale linearly from a precision 3D calibration target, then refines focal length, depth translation, and one radial-distortion coefficient by a short nonlinear solve over three unknowns. Superseded for practical use by Zhang's planar method."
-tags: ["calibration", "intrinsics", "extrinsics", "radial-distortion"]
+tags: ["camera-model"]
 domain: calibration
 tasks: [camera-calibration]
 author: "Vitaly Vorobyev"
@@ -16,7 +16,7 @@ relations:
     target: tsai-lenz-handeye
     confidence: high
     caution: "Tsai 1987's per-station extrinsics are the canonical input format for the Tsai-Lenz hand-eye AX = XB solver."
-prerequisites: [camera-distortion-models]
+prerequisites: [pinhole-camera-model, camera-distortion-models, bundle-adjustment]
 failureModes: []
 sources:
   primary: tsai1987-versatile

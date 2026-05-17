@@ -2,7 +2,7 @@
 title: "VGG"
 date: 2026-05-12
 summary: "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up."
-tags: ["computer-vision", "image-classification", "cnn", "deep-learning", "backbone"]
+tags: ["deep-learning"]
 domain: features
 tasks: [image-classification]
 author: "Vitaly Vorobyev"
@@ -10,7 +10,7 @@ difficulty: intermediate
 arch_family: cnn
 params: "138M (VGG-16); 144M (VGG-19) (Table 2)"
 flops: "~15.5 GMAC @ 224×224 (VGG-16, torchvision)"
-prerequisites: []
+prerequisites: [convolutional-neural-network]
 failureModes: []
 relations:
   - type: feeds_into

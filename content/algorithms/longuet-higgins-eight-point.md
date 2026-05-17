@@ -2,7 +2,7 @@
 title: "Longuet-Higgins Linear Eight-Point Algorithm"
 date: 2026-05-10
 summary: "1981 closed-form linear method for relative orientation of two viewpoints from eight calibrated point correspondences, introducing the bilinear epipolar constraint x'^T Q x = 0 and the matrix Q = R·skew(T) later known as the essential matrix. Superseded for practical use by Hartley's 1997 normalised eight-point algorithm."
-tags: ["geometry", "two-view-geometry", "essential-matrix"]
+tags: ["two-view-geometry"]
 domain: geometry
 tasks: [fundamental-matrix-estimation]
 author: "Vitaly Vorobyev"
@@ -12,7 +12,7 @@ relations:
   - type: generalized_by
     target: fundamental-matrix-eight-point
     confidence: high
-prerequisites: [epipolar-geometry]
+prerequisites: [epipolar-geometry, svd-null-space, pose-estimation]
 failureModes: []
 sources:
   primary: longuet-higgins1981-eight-point

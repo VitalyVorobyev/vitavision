@@ -2,7 +2,7 @@
 title: "Daniilidis Dual-Quaternion Hand-Eye Calibration"
 date: 2026-04-20
 summary: "Solve the hand-eye equation AX=XB jointly for rotation and translation by parametrising rigid motions as unit dual quaternions and extracting X from the right null space of a single linear system."
-tags: ["calibration", "hand-eye", "robotics"]
+tags: ["linear-algebra"]
 domain: calibration
 tasks: [hand-eye-calibration]
 author: "Vitaly Vorobyev"

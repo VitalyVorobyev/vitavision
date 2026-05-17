@@ -2,14 +2,14 @@
 title: "SuperGlue"
 date: 2026-05-10
 summary: "Graph neural network that matches two sets of sparse local features by jointly finding correspondences and rejecting unmatched keypoints in one differentiable forward pass, trained end-to-end with a Sinkhorn optimal-transport assignment over augmented dustbin scores."
-tags: ["computer-vision", "image-matching", "local-features", "graph-neural-network", "attention"]
+tags: ["local-descriptors", "deep-learning"]
 domain: features
 tasks: [local-feature-matching]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
 arch_family: hybrid
 params: "~12M"
-prerequisites: []
+prerequisites: [feature-matching, attention-mechanism]
 failureModes: []
 relations:
   - type: compared_with

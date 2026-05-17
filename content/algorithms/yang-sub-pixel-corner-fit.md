@@ -2,7 +2,7 @@
 title: "Yang Parametric-Model Sub-Pixel Corner Fit"
 date: 2026-05-10
 summary: "Refine pixel-level chessboard corner positions to sub-pixel accuracy by nonlinear least-squares fitting a seven-parameter ideal blurred-corner model directly to the raw image patch, then reject unreliable corners via a boxplot-based fit-quality self-check before passing to PnP."
-tags: ["subpixel-refinement", "calibration", "chessboard"]
+tags: ["subpixel", "chessboard"]
 domain: features
 tasks: [corner-detection, chessboard-detection]
 author: "Vitaly Vorobyev"

@@ -134,7 +134,7 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
             {frontmatter.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                     {frontmatter.tags.map((tag) => (
-                        <TagBadge key={tag} tag={tag} />
+                        <TagBadge key={tag} tag={tag} to={`/atlas?tags=${encodeURIComponent(tag)}`} />
                     ))}
                 </div>
             )}

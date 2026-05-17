@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { Search, SlidersHorizontal, ChevronDown, X } from "lucide-react";
 import { algorithmPages, modelPages, conceptPages } from "../generated/content-index.ts";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import AlgorithmCard from "../components/blog/AlgorithmCard.tsx";
@@ -205,10 +205,47 @@ function UnifiedResults({ groups, layout, isMobile = false }: UnifiedResultsProp
     );
 }
 
+// ── Active-tag chip row ───────────────────────────────────────────────────────
+
+interface ActiveTagChipsProps {
+    tags: string[];
+    onRemove: (tag: string) => void;
+    onClearAll: () => void;
+}
+
+function ActiveTagChips({ tags, onRemove, onClearAll }: ActiveTagChipsProps) {
+    if (tags.length === 0) return null;
+    return (
+        <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-[11px] text-muted-foreground mr-0.5">Tagged</span>
+            {tags.map((tag) => (
+                <button
+                    key={tag}
+                    type="button"
+                    onClick={() => onRemove(tag)}
+                    className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/60 px-2 py-0.5 text-xs text-foreground hover:bg-muted transition-colors"
+                >
+                    {tag}
+                    <X size={12} aria-hidden="true" />
+                </button>
+            ))}
+            {tags.length > 1 && (
+                <button
+                    type="button"
+                    onClick={onClearAll}
+                    className="text-[11px] text-muted-foreground hover:text-foreground transition-colors ml-0.5"
+                >
+                    Clear all
+                </button>
+            )}
+        </div>
+    );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function AlgorithmIndex() {
-    const { filters, setKind, setQuery, setView, setProblem, reset } =
+    const { filters, setKind, setQuery, setView, setProblem, toggleTag, setTags, reset } =
         useAlgorithmsFilters();
     const [searchParams] = useSearchParams();
     const focusParam = searchParams.get("focus") ?? undefined;
@@ -340,9 +377,20 @@ export default function AlgorithmIndex() {
                         </div>
 
                         {/* Subtitle */}
-                        <p className="text-[13px] text-muted-foreground mb-5">
+                        <p className="text-[13px] text-muted-foreground mb-3">
                             Practical computer vision atlas — algorithms, models, and concepts.
                         </p>
+
+                        {/* Active tag chips */}
+                        {filters.tags.length > 0 && (
+                            <div className="mb-4">
+                                <ActiveTagChips
+                                    tags={filters.tags}
+                                    onRemove={toggleTag}
+                                    onClearAll={() => setTags([])}
+                                />
+                            </div>
+                        )}
 
                         {/* Results */}
                         <UnifiedResults
@@ -443,6 +491,13 @@ export default function AlgorithmIndex() {
                 </span>
                 <ChevronDown size={13} className="text-muted-foreground" />
             </button>
+
+            {/* Active tag chips */}
+            <ActiveTagChips
+                tags={filters.tags}
+                onRemove={toggleTag}
+                onClearAll={() => setTags([])}
+            />
 
             {/* Card sections */}
             <UnifiedResults

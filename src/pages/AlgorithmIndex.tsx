@@ -321,7 +321,10 @@ export default function AlgorithmIndex() {
                             <h1 className="text-[22px] font-bold -tracking-[0.4px]">Atlas</h1>
                             <AlgorithmsViewToggle view={effectiveView} onChange={setView} />
                         </div>
-                        <GraphExplorer focusSlug={focusParam} />
+                        {/* key remounts on external ?focus= change so the
+                            graph re-centers; internal trail nav never touches
+                            ?focus=, so it does not trigger a remount. */}
+                        <GraphExplorer key={focusParam ?? ""} focusSlug={focusParam} />
                     </main>
                 </div>
             );
@@ -420,7 +423,7 @@ export default function AlgorithmIndex() {
                     <span className="text-xs text-muted-foreground">Graph view</span>
                 </div>
 
-                <GraphExplorer focusSlug={focusParam} />
+                <GraphExplorer key={focusParam ?? ""} focusSlug={focusParam} />
             </div>
         );
     }

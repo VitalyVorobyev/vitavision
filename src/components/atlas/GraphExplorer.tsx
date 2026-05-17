@@ -350,7 +350,6 @@ function MobileNeighborRow({ slug, onClick }: MobileNeighborRowProps) {
             type="button"
             onClick={() => onClick(slug)}
             className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-surface border border-border rounded-lg text-left active:bg-muted relative overflow-hidden"
-            style={{ touchAction: "none" }}
         >
             <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ background: KIND_ACCENT[kind] }} />
             <EntryIcon slug={slug} kind={kind} size={32} />

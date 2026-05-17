@@ -302,7 +302,13 @@ function parseFiltersFromParams(params: URLSearchParams): AlgorithmsFilters {
     const storedView = readStoredView();
     const view: AlgorithmsView = urlView ?? storedView ?? DEFAULTS.view;
     const sort: AlgorithmsSort = params.get("sort") === "az" ? "az" : "recent";
-    const problem = params.get("problem") ?? "all";
+    // Validate `problem` against known task slugs — a stale or mistyped value
+    // would otherwise blank the whole catalog (matchesProblem excludes all).
+    const rawProblem = params.get("problem");
+    const problem =
+        rawProblem !== null && (taskOrder as readonly string[]).includes(rawProblem)
+            ? rawProblem
+            : DEFAULTS.problem;
     return { kind, tags, query, view, sort, problem };
 }
 

@@ -187,6 +187,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/ni-generalized-fast-radial-symmetry",
       "draft": false
     },
+    "geometric-bev": {
+      "slug": "geometric-bev",
+      "type": "algorithm",
+      "title": "Geometric Bird's-Eye-View Rectification",
+      "summary": "Rectifies a monocular image to a metric overhead (bird's-eye) view by constructing the rectifying homography in closed form from two CNN-regressed projective entities — the vertical vanishing point and the ground-plane horizon line.",
+      "path": "/atlas/geometric-bev",
+      "draft": false
+    },
     "gp-checkerboard-enhancement": {
       "slug": "gp-checkerboard-enhancement",
       "type": "algorithm",
@@ -1089,6 +1097,15 @@ export const contentGraph: ContentGraph = {
     "ni-generalized-fast-radial-symmetry": {
       "prerequisites": [
         "image-gradient"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "geometric-bev": {
+      "prerequisites": [
+        "homography",
+        "pinhole-camera-model",
+        "convolutional-neural-network"
       ],
       "failureModes": [],
       "relations": []
@@ -2698,6 +2715,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "geometric-bev": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "gp-checkerboard-enhancement": {
       "usedBy": [],
       "affects": [],
@@ -3419,6 +3444,7 @@ export const contentGraph: ContentGraph = {
     "convolutional-neural-network": {
       "usedBy": [
         "alexnet",
+        "geometric-bev",
         "googlenet",
         "resnet",
         "vgg"
@@ -3508,6 +3534,7 @@ export const contentGraph: ContentGraph = {
         "apap-image-stitching",
         "fundamental-matrix-eight-point",
         "gao-dual-homography-stitching",
+        "geometric-bev",
         "lin-sva-stitching",
         "spatially-varying-image-stitching",
         "sturm-plane-based-calibration",
@@ -3619,6 +3646,7 @@ export const contentGraph: ContentGraph = {
         "bundle-adjustment",
         "camera-distortion-models",
         "epnp",
+        "geometric-bev",
         "pose-estimation",
         "scaramuzza-omni-calibration",
         "sturm-plane-based-calibration",
@@ -3762,6 +3790,8 @@ export const contentGraph: ContentGraph = {
     "gao-dual-homography-stitching": 2,
     "geiger-chessboard-detector": 2,
     "ni-generalized-fast-radial-symmetry": 2,
+    "convolutional-neural-network": 1,
+    "geometric-bev": 2,
     "gp-checkerboard-enhancement": 2,
     "grabcut-iterative-segmentation": 1,
     "graph-cut-segmentation": 1,
@@ -3798,7 +3828,6 @@ export const contentGraph: ContentGraph = {
     "viola-jones-detector": 1,
     "yang-sub-pixel-corner-fit": 2,
     "zhang-planar-calibration": 2,
-    "convolutional-neural-network": 1,
     "alexnet": 2,
     "ccdn-checkerboard-detector": 2,
     "chessboard-x-corner-detection": 2,

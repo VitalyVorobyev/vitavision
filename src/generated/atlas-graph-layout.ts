@@ -61,38 +61,43 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 189.452136,
     "cluster": "geometry"
   },
+  "geometric-bev": {
+    "x": 311.61512949999997,
+    "y": 283.63008,
+    "cluster": "geometry"
+  },
   "homography": {
-    "x": 309.260557,
+    "x": 399.560557,
     "y": 299.481384,
     "cluster": "geometry"
   },
   "longuet-higgins-eight-point": {
-    "x": 388.1669545,
+    "x": 478.46695449999993,
     "y": 303.56328,
     "cluster": "geometry"
   },
   "pose-estimation": {
-    "x": 479.60473449999995,
-    "y": 304.83336,
+    "x": 299.0047345,
+    "y": 405.63336,
     "cluster": "geometry"
   },
   "raguram-usac": {
-    "x": 294.747541,
+    "x": 385.047541,
     "y": 384.08080799999993,
     "cluster": "geometry"
   },
   "ransac": {
-    "x": 380.686051,
+    "x": 470.986051,
     "y": 414.49216799999994,
     "cluster": "geometry"
   },
   "spatially-varying-image-stitching": {
-    "x": 477.142705,
-    "y": 386.08471199999997,
+    "x": 296.542705,
+    "y": 486.88471200000004,
     "cluster": "geometry"
   },
   "svd-null-space": {
-    "x": 297.092632,
+    "x": 387.392632,
     "y": 487.49858400000005,
     "cluster": "geometry"
   },

@@ -351,6 +351,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)"
   },
   {
+    "slug": "geometric-bev",
+    "path": "/atlas/geometric-bev",
+    "type": "algorithm",
+    "title": "Geometric Bird's-Eye-View Rectification",
+    "summary": "Rectifies a monocular image to a metric overhead (bird's-eye) view by constructing the rectifying homography in closed form from two CNN-regressed projective entities — the vertical vanishing point and the ground-plane horizon line.",
+    "tags": [
+      "camera-model",
+      "deep-learning",
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure",
+      "CNN regression target"
+    ],
+    "authors": [
+      "S. A. Abbas",
+      "A. Zisserman"
+    ],
+    "venue": "ICCVW 2019"
+  },
+  {
     "slug": "gp-checkerboard-enhancement",
     "path": "/atlas/gp-checkerboard-enhancement",
     "type": "algorithm",

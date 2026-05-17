@@ -729,6 +729,41 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "geometric-bev",
+    "frontmatter": {
+      "title": "Geometric Bird's-Eye-View Rectification",
+      "summary": "Rectifies a monocular image to a metric overhead (bird's-eye) view by constructing the rectifying homography in closed form from two CNN-regressed projective entities — the vertical vanishing point and the ground-plane horizon line.",
+      "author": "Vitaly Vorobyev",
+      "repoLinks": [
+        "https://github.com/SAmmarAbbas/birds-eye-view"
+      ],
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "homography",
+        "pinhole-camera-model",
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "tags": [
+        "camera-model",
+        "deep-learning",
+        "pose-estimation"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "primary": "abbas2019-bev",
+        "references": [
+          "he2016-resnet"
+        ],
+        "notes": "Closed-form bird's-eye-view homography H = R_align * T_scene * K*R_tilt*K^-1\n* R_roll (eq. 6), built from two CNN-regressed entities: the vertical\nvanishing point v_z and the horizon line h. K recovered from h = omega*v_z,\nomega = (K K^T)^-1 (eq. 4). Roll theta_z = atan2(-a, b) from horizon\na*x + b*y + c = 0; tilt theta_x = pi/2 - atan(v_z/f). CNN\nregression-by-classification: 4 bounded scalars, b = 500 bins, top c = 11\nweighted average. At-infinity-safe regression target via stereographic-sphere\nprojection onto a disc of radius r. No DLT/SVD/RANSAC homography solve.\n"
+      },
+      "date": "2026-05-17",
+      "year": 2019
+    }
+  },
+  {
     "slug": "gp-checkerboard-enhancement",
     "frontmatter": {
       "title": "GP Checkerboard Enhancement (PyCBD)",

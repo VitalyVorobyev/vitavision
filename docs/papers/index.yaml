@@ -979,3 +979,16 @@
   url: https://doi.org/10.1145/964965.808600
   doi: "10.1145/964965.808600"
   pdf: crow1984-summed-area.pdf
+
+- id: abbas2019-bev
+  title: "A Geometric Approach to Obtain a Bird's Eye View From an Image"
+  authors: ["S. A. Abbas", "A. Zisserman"]
+  year: 2019
+  venue: ICCVW 2019
+  url: https://arxiv.org/abs/1905.02231
+  arxiv: "1905.02231"
+  doi: "10.1109/ICCVW.2019.00504"
+  pdf: abbas2019-bev.pdf
+  cites:
+  - he2016-resnet
+  - he2017-maskrcnn

@@ -8,6 +8,7 @@ const publicationFrontmatterBaseObjectSchema = z.object({
     draft: z.boolean().optional(),
     updated: z.coerce.date().optional(),
     coverImage: z.string().optional(),
+    tagline: z.string().max(120).optional(),
     repoLinks: z.array(z.string().url()).optional(),
     demoLinks: z.array(z.string().url()).optional(),
     difficulty: z.enum(["beginner", "intermediate", "advanced"]).optional(),
@@ -207,7 +208,7 @@ type SerializedFrontmatter<T extends { date: Date; updated?: Date }> =
 
 /** Serialized blog frontmatter (dates as ISO strings). */
 export type BlogFrontmatterSerialized = SerializedFrontmatter<BlogFrontmatter>;
-export type AlgorithmFrontmatterSerialized = SerializedFrontmatter<AlgorithmFrontmatter>;
+export type AlgorithmFrontmatterSerialized = SerializedFrontmatter<AlgorithmFrontmatter> & { year?: number };
 
 /** Index entry for a blog post (no html). Used by listing pages. */
 export interface BlogIndexEntry {
@@ -286,7 +287,7 @@ export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     });
 
 export type ModelFrontmatter = z.infer<typeof modelFrontmatterSchema>;
-export type ModelFrontmatterSerialized = SerializedFrontmatter<ModelFrontmatter>;
+export type ModelFrontmatterSerialized = SerializedFrontmatter<ModelFrontmatter> & { year?: number };
 
 /** Index entry for a model page (no html). Used by listing pages. */
 export interface ModelIndexEntry {
@@ -314,7 +315,7 @@ export const conceptFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     });
 
 export type ConceptFrontmatter = z.infer<typeof conceptFrontmatterSchema>;
-export type ConceptFrontmatterSerialized = SerializedFrontmatter<ConceptFrontmatter>;
+export type ConceptFrontmatterSerialized = SerializedFrontmatter<ConceptFrontmatter> & { year?: number };
 
 /** Index entry for a concept page (no html). Used by listing pages. */
 export interface ConceptIndexEntry {

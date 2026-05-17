@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Search, SlidersHorizontal, ChevronDown, X } from "lucide-react";
 import { algorithmPages, modelPages, conceptPages } from "../generated/content-index.ts";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import AlgorithmCard from "../components/blog/AlgorithmCard.tsx";
@@ -8,14 +9,12 @@ import ConceptCard from "../components/blog/ConceptCard.tsx";
 import AlgorithmsSidebar from "../components/algorithms/AlgorithmsSidebar.tsx";
 import AlgorithmsFilterSheet from "../components/algorithms/AlgorithmsFilterSheet.tsx";
 import AlgorithmsViewToggle from "../components/algorithms/AlgorithmsViewToggle.tsx";
-import AtlasMapView from "../components/atlas/AtlasMapView.tsx";
-import AtlasConstellationView from "../components/atlas/AtlasConstellationView.tsx";
+import GraphExplorer from "../components/atlas/GraphExplorer.tsx";
 import useAlgorithmsFilters, {
     filterAlgorithms,
     filterModels,
     filterConcepts,
     computeFacets,
-    type AlgorithmsFilters,
     type AlgorithmsKind,
     type AlgorithmsView,
 } from "../hooks/useAlgorithmsFilters.ts";
@@ -29,7 +28,6 @@ import { contentGraph } from "../generated/content-graph.ts";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 import { searchSlugs } from "../lib/atlas/searchClient.ts";
-import useScrollSpy from "../hooks/useScrollSpy.ts";
 
 // ── Discriminated entry type ───────────────────────────────────────────────────
 
@@ -53,60 +51,66 @@ function byDepthThenDate(depth: Record<string, number>) {
     };
 }
 
-// ── Unified domain grouping ───────────────────────────────────────────────────
+// ── Unified catalog grouping ──────────────────────────────────────────────────
 
-type DomainGroup = { domain: string; entries: UnifiedEntry[] };
+type CatalogGroup = { id: string; label: string; entries: UnifiedEntry[] };
 
 function computeUnifiedGroups(
     filteredAlgorithms: AlgorithmIndexEntry[],
     filteredModels: ModelIndexEntry[],
     filteredConcepts: ConceptIndexEntry[],
     kind: AlgorithmsKind,
-    filters: AlgorithmsFilters,
-): DomainGroup[] {
+): CatalogGroup[] {
     const depth = contentGraph.depth;
     const comparator = byDepthThenDate(depth);
 
-    // When a specific domain is filtered, build one group for that domain only.
-    if (filters.categoryId !== "all") {
-        const entries: UnifiedEntry[] = [];
-        if (kind === "algorithm" || kind === "all") {
-            for (const e of filteredAlgorithms) entries.push({ kind: "algorithm", slug: e.slug, frontmatter: e.frontmatter });
-        }
-        if (kind === "model" || kind === "all") {
-            for (const e of filteredModels) entries.push({ kind: "model", slug: e.slug, frontmatter: e.frontmatter });
-        }
-        if (kind === "concept" || kind === "all") {
-            for (const e of filteredConcepts) entries.push({ kind: "concept", slug: e.slug, frontmatter: e.frontmatter });
-        }
-        entries.sort(comparator);
-        if (entries.length === 0) return [];
-        return [{ domain: filters.categoryId, entries }];
+    // When kind === "all": three top-level groups by type.
+    if (kind === "all") {
+        const groups: CatalogGroup[] = [];
+
+        const algoEntries: UnifiedEntry[] = filteredAlgorithms.map((e) => ({
+            kind: "algorithm", slug: e.slug, frontmatter: e.frontmatter,
+        }));
+        algoEntries.sort(comparator);
+        if (algoEntries.length > 0) groups.push({ id: "algorithm", label: "Algorithms", entries: algoEntries });
+
+        const modelEntries: UnifiedEntry[] = filteredModels.map((e) => ({
+            kind: "model", slug: e.slug, frontmatter: e.frontmatter,
+        }));
+        modelEntries.sort(comparator);
+        if (modelEntries.length > 0) groups.push({ id: "model", label: "Models", entries: modelEntries });
+
+        const conceptEntries: UnifiedEntry[] = filteredConcepts.map((e) => ({
+            kind: "concept", slug: e.slug, frontmatter: e.frontmatter,
+        }));
+        conceptEntries.sort(comparator);
+        if (conceptEntries.length > 0) groups.push({ id: "concept", label: "Concepts", entries: conceptEntries });
+
+        return groups;
     }
 
-    // Group by domain in domainOrder; each group sorted by depth then date.
+    // When a specific kind is selected: group by domain over domainOrder.
+    const sourceItems: UnifiedEntry[] = [];
+    if (kind === "algorithm") {
+        for (const e of filteredAlgorithms) sourceItems.push({ kind: "algorithm", slug: e.slug, frontmatter: e.frontmatter });
+    } else if (kind === "model") {
+        for (const e of filteredModels) sourceItems.push({ kind: "model", slug: e.slug, frontmatter: e.frontmatter });
+    } else {
+        for (const e of filteredConcepts) sourceItems.push({ kind: "concept", slug: e.slug, frontmatter: e.frontmatter });
+    }
+
     const byDomain = new Map<string, UnifiedEntry[]>();
-    const addToGroup = (slug: string, frontmatter: UnifiedEntry["frontmatter"], entryKind: UnifiedEntry["kind"]) => {
-        const dom = frontmatter.domain ?? "unknown";
+    for (const entry of sourceItems) {
+        const dom = entry.frontmatter.domain ?? "unknown";
         const bucket = byDomain.get(dom) ?? [];
-        bucket.push({ kind: entryKind, slug, frontmatter } as UnifiedEntry);
+        bucket.push(entry);
         byDomain.set(dom, bucket);
-    };
-
-    if (kind === "algorithm" || kind === "all") {
-        for (const e of filteredAlgorithms) addToGroup(e.slug, e.frontmatter, "algorithm");
-    }
-    if (kind === "model" || kind === "all") {
-        for (const e of filteredModels) addToGroup(e.slug, e.frontmatter, "model");
-    }
-    if (kind === "concept" || kind === "all") {
-        for (const e of filteredConcepts) addToGroup(e.slug, e.frontmatter, "concept");
     }
 
     return domainOrder
         .map((dom) => {
             const entries = (byDomain.get(dom) ?? []).sort(comparator);
-            return { domain: dom, entries };
+            return { id: dom, label: domainLabels[dom as keyof typeof domainLabels] ?? dom, entries };
         })
         .filter((g) => g.entries.length > 0);
 }
@@ -131,7 +135,7 @@ function EntryCard({ entry, layout }: { entry: UnifiedEntry; layout: "grid" | "l
 }
 
 // ── Section header — sticky, spans full main column ──────────────────────────
-// The nav bar is sticky top-0 h-16 (64px). Domain headers stick just below it.
+// The nav bar is sticky top-0 h-16 (64px). Section headers stick just below it.
 
 function SectionHeader({ label, count }: { label: string; count: number }) {
     return (
@@ -146,7 +150,7 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
     );
 }
 
-// ── Mobile section header (no negative-margin trick needed — no px-10 on mobile) ─
+// ── Mobile section header ─────────────────────────────────────────────────────
 
 function MobileSectionHeader({ label, count }: { label: string; count: number }) {
     return (
@@ -159,10 +163,10 @@ function MobileSectionHeader({ label, count }: { label: string; count: number })
     );
 }
 
-// ── Unified domain-grouped results ────────────────────────────────────────────
+// ── Unified grouped results ───────────────────────────────────────────────────
 
 interface UnifiedResultsProps {
-    groups: DomainGroup[];
+    groups: CatalogGroup[];
     layout: "grid" | "list";
     isMobile?: boolean;
 }
@@ -183,22 +187,12 @@ function UnifiedResults({ groups, layout, isMobile = false }: UnifiedResultsProp
 
     return (
         <>
-            {groups.map(({ domain, entries }) => (
-                <div
-                    key={domain}
-                    id={`domain-${domain}`}
-                    className="scroll-mt-[calc(4rem+1px)]"
-                >
+            {groups.map(({ id, label, entries }) => (
+                <div key={id}>
                     {isMobile ? (
-                        <MobileSectionHeader
-                            label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
-                            count={entries.length}
-                        />
+                        <MobileSectionHeader label={label} count={entries.length} />
                     ) : (
-                        <SectionHeader
-                            label={domainLabels[domain as keyof typeof domainLabels] ?? domain}
-                            count={entries.length}
-                        />
+                        <SectionHeader label={label} count={entries.length} />
                     )}
                     <div className={`${gridClass} mt-3`}>
                         {entries.map((entry) => (
@@ -211,22 +205,56 @@ function UnifiedResults({ groups, layout, isMobile = false }: UnifiedResultsProp
     );
 }
 
+// ── Active-tag chip row ───────────────────────────────────────────────────────
+
+interface ActiveTagChipsProps {
+    tags: string[];
+    onRemove: (tag: string) => void;
+    onClearAll: () => void;
+}
+
+function ActiveTagChips({ tags, onRemove, onClearAll }: ActiveTagChipsProps) {
+    if (tags.length === 0) return null;
+    return (
+        <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-[11px] text-muted-foreground mr-0.5">Tagged</span>
+            {tags.map((tag) => (
+                <button
+                    key={tag}
+                    type="button"
+                    onClick={() => onRemove(tag)}
+                    className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/60 px-2 py-0.5 text-xs text-foreground hover:bg-muted transition-colors"
+                >
+                    {tag}
+                    <X size={12} aria-hidden="true" />
+                </button>
+            ))}
+            {tags.length > 1 && (
+                <button
+                    type="button"
+                    onClick={onClearAll}
+                    className="text-[11px] text-muted-foreground hover:text-foreground transition-colors ml-0.5"
+                >
+                    Clear all
+                </button>
+            )}
+        </div>
+    );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function AlgorithmIndex() {
-    const { filters, setKind, setCategoryId, toggleTag, setQuery, setView, reset } =
+    const { filters, setKind, setQuery, setView, setProblem, toggleTag, setTags, reset } =
         useAlgorithmsFilters();
+    const [searchParams] = useSearchParams();
+    const focusParam = searchParams.get("focus") ?? undefined;
+
     // Per handoff: `lg` and up (≥1024px) = sidebar layout; below = sheet layout.
     const isDesktop = useMediaQuery("(min-width: 1024px)", true);
     const isAdmin = useIsAdmin();
 
-    // Map/Constellation views are admin-only experimental modes. Coerce
-    // non-admins viewing one (e.g. via a stale /atlas?view=map link) back to
-    // a public-safe view without writing the change to localStorage.
-    const effectiveView: AlgorithmsView =
-        !isAdmin && (filters.view === "map" || filters.view === "constellation")
-            ? "grid"
-            : filters.view;
+    const effectiveView: AlgorithmsView = filters.view;
 
     const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
@@ -255,19 +283,6 @@ export default function AlgorithmIndex() {
         [visibleAlgorithms, visibleModels, visibleConcepts, filters, searchMatchedSlugs],
     );
 
-    const allTags = useMemo(() => {
-        const sources =
-            filters.kind === "algorithm" ? [visibleAlgorithms] :
-            filters.kind === "model"     ? [visibleModels] :
-            filters.kind === "concept"   ? [visibleConcepts] :
-            [visibleAlgorithms, visibleModels, visibleConcepts];
-        const set = new Set<string>();
-        for (const src of sources)
-            for (const e of src)
-                for (const t of e.frontmatter.tags) set.add(t);
-        return [...set].sort();
-    }, [filters.kind, visibleAlgorithms, visibleModels, visibleConcepts]);
-
     const filteredAlgorithms = useMemo(
         () => filterAlgorithms(visibleAlgorithms, filters, searchMatchedSlugs),
         [visibleAlgorithms, filters, searchMatchedSlugs],
@@ -281,36 +296,41 @@ export default function AlgorithmIndex() {
         [visibleConcepts, filters, searchMatchedSlugs],
     );
 
-    // ── Unified domain-grouped results ───────────────────────────────────────
+    // ── Unified grouped results ──────────────────────────────────────────────
     const unifiedGroups = useMemo(
-        () => computeUnifiedGroups(filteredAlgorithms, filteredModels, filteredConcepts, filters.kind, filters),
-        [filteredAlgorithms, filteredModels, filteredConcepts, filters],
+        () => computeUnifiedGroups(filteredAlgorithms, filteredModels, filteredConcepts, filters.kind),
+        [filteredAlgorithms, filteredModels, filteredConcepts, filters.kind],
     );
 
-    // ── Visible domain ids for scroll-spy and jump-rail ──────────────────────
-    const visibleDomainIds = useMemo(
-        () => unifiedGroups.map((g) => `domain-${g.domain}`),
-        [unifiedGroups],
-    );
-    const activeScrollId = useScrollSpy(visibleDomainIds, { bandFraction: 0.25 });
-    const activeDomain = activeScrollId ? activeScrollId.replace(/^domain-/, "") : null;
-
-    const handleJumpToDomain = (domainId: string | null) => {
-        if (!domainId) {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            return;
-        }
-        const el = document.getElementById(`domain-${domainId}`);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
-
-    // Mobile active filter badge count (tags + domain filter only; not for "all" domains)
-    const activeCount =
-        filters.tags.length + (filters.categoryId !== "all" ? 1 : 0);
+    // Mobile active filter badge count (problem filter only)
+    const activeCount = filters.problem !== "all" ? 1 : 0;
 
     // ── Desktop layout ──────────────────────────────────────────────────────
 
     if (isDesktop) {
+        // ── Graph branch — full-width, no sidebar ──────────────────────────────
+        if (effectiveView === "graph") {
+            return (
+                <div className="flex flex-1 flex-col">
+                    <SeoHead
+                        title="Atlas"
+                        description="Practical computer vision atlas — algorithms, models, and concepts."
+                    />
+                    <main className="flex flex-1 flex-col min-w-0 px-6 py-5">
+                        <div className="flex items-baseline justify-between mb-3">
+                            <h1 className="text-[22px] font-bold -tracking-[0.4px]">Atlas</h1>
+                            <AlgorithmsViewToggle view={effectiveView} onChange={setView} />
+                        </div>
+                        {/* key remounts on external ?focus= change so the
+                            graph re-centers; internal trail nav never touches
+                            ?focus=, so it does not trigger a remount. */}
+                        <GraphExplorer key={focusParam ?? ""} focusSlug={focusParam} />
+                    </main>
+                </div>
+            );
+        }
+
+        // ── Catalog branch — 2-column grid + sidebar ──────────────────────────
         return (
             <div className="flex flex-1 flex-col">
                 <SeoHead
@@ -323,13 +343,8 @@ export default function AlgorithmIndex() {
                     <AlgorithmsSidebar
                         filters={filters}
                         facets={facets}
-                        tagSet={allTags}
                         onKindChange={setKind}
-                        onCategoryChange={setCategoryId}
-                        onTagToggle={toggleTag}
-                        activeDomain={activeDomain}
-                        visibleDomains={unifiedGroups.map((g) => g.domain)}
-                        onJumpToDomain={handleJumpToDomain}
+                        onProblemChange={setProblem}
                     />
 
                     {/* Main column */}
@@ -360,39 +375,31 @@ export default function AlgorithmIndex() {
                                 <AlgorithmsViewToggle
                                     view={effectiveView}
                                     onChange={setView}
-                                    showExperimental={isAdmin}
                                 />
                             </div>
                         </div>
 
                         {/* Subtitle */}
-                        <p className="text-[13px] text-muted-foreground mb-5">
+                        <p className="text-[13px] text-muted-foreground mb-3">
                             Practical computer vision atlas — algorithms, models, and concepts.
                         </p>
 
-                        {/* Results */}
-                        {effectiveView === "map" ? (
-                            <AtlasMapView
-                                algorithms={visibleAlgorithms}
-                                models={visibleModels}
-                                concepts={visibleConcepts}
-                                filters={filters}
-                                searchMatchedSlugs={searchMatchedSlugs}
-                            />
-                        ) : effectiveView === "constellation" ? (
-                            <AtlasConstellationView
-                                algorithms={visibleAlgorithms}
-                                models={visibleModels}
-                                concepts={visibleConcepts}
-                                filters={filters}
-                                searchMatchedSlugs={searchMatchedSlugs}
-                            />
-                        ) : (
-                            <UnifiedResults
-                                groups={unifiedGroups}
-                                layout={effectiveView === "list" ? "list" : "grid"}
-                            />
+                        {/* Active tag chips */}
+                        {filters.tags.length > 0 && (
+                            <div className="mb-4">
+                                <ActiveTagChips
+                                    tags={filters.tags}
+                                    onRemove={toggleTag}
+                                    onClearAll={() => setTags([])}
+                                />
+                            </div>
                         )}
+
+                        {/* Results */}
+                        <UnifiedResults
+                            groups={unifiedGroups}
+                            layout={effectiveView === "list" ? "list" : "grid"}
+                        />
                     </main>
                 </div>
             </div>
@@ -400,6 +407,26 @@ export default function AlgorithmIndex() {
     }
 
     // ── Mobile layout ───────────────────────────────────────────────────────
+
+    // Mobile graph view — render focused entry + neighbor lists, skip catalog
+    if (effectiveView === "graph") {
+        return (
+            <div className="w-full min-w-0 max-w-[640px] mx-auto px-4 py-5">
+                <SeoHead
+                    title="Atlas"
+                    description="Practical computer vision atlas — algorithms, models, and concepts."
+                />
+
+                {/* Title row */}
+                <div className="flex items-baseline justify-between mb-4">
+                    <h1 className="text-[22px] font-bold -tracking-[0.5px]">Atlas</h1>
+                    <span className="text-xs text-muted-foreground">Graph view</span>
+                </div>
+
+                <GraphExplorer key={focusParam ?? ""} focusSlug={focusParam} />
+            </div>
+        );
+    }
 
     return (
         <div className="w-full min-w-0 max-w-[640px] mx-auto px-4 py-5 space-y-4">
@@ -468,6 +495,13 @@ export default function AlgorithmIndex() {
                 <ChevronDown size={13} className="text-muted-foreground" />
             </button>
 
+            {/* Active tag chips */}
+            <ActiveTagChips
+                tags={filters.tags}
+                onRemove={toggleTag}
+                onClearAll={() => setTags([])}
+            />
+
             {/* Card sections */}
             <UnifiedResults
                 groups={unifiedGroups}
@@ -481,13 +515,9 @@ export default function AlgorithmIndex() {
                 onClose={() => setFilterSheetOpen(false)}
                 filters={filters}
                 facets={facets}
-                categoryValues={domainOrder}
-                categoryLabel={(id) => domainLabels[id as keyof typeof domainLabels] ?? id}
-                allTags={allTags}
                 totalResults={facets.total}
                 onKindChange={setKind}
-                onCategoryChange={setCategoryId}
-                onTagToggle={toggleTag}
+                onProblemChange={setProblem}
                 onReset={reset}
             />
         </div>

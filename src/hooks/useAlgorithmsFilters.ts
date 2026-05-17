@@ -5,18 +5,18 @@ import type {
     ModelIndexEntry,
     ConceptIndexEntry,
 } from "../lib/content/schema.ts";
-import { domainOrder } from "../components/algorithms/domainLabels.ts";
+import { taskOrder } from "../lib/content/taskLabels.ts";
 
 // ── Public types ────────────────────────────────────────────────────────────
 
 export type AlgorithmsKind = "all" | "algorithm" | "model" | "concept";
-export type AlgorithmsView = "grid" | "list" | "map" | "constellation";
+export type AlgorithmsView = "grid" | "list" | "graph";
 export type AlgorithmsSort = "az" | "recent";
 
 /** localStorage key the view selection is persisted to. */
 export const ATLAS_VIEW_STORAGE_KEY = "atlas:view";
 
-const VIEW_VALUES: readonly AlgorithmsView[] = ["grid", "list", "map", "constellation"];
+const VIEW_VALUES: readonly AlgorithmsView[] = ["grid", "list", "graph"];
 
 function isAlgorithmsView(value: string | null): value is AlgorithmsView {
     return value !== null && (VIEW_VALUES as readonly string[]).includes(value);
@@ -24,17 +24,16 @@ function isAlgorithmsView(value: string | null): value is AlgorithmsView {
 
 export interface AlgorithmsFilters {
     kind: AlgorithmsKind;
-    categoryId: string;   // "all" | Domain
     tags: string[];
     query: string;
     view: AlgorithmsView;
     sort: AlgorithmsSort;
+    problem: string;      // "all" | Task slug
 }
 
 export interface FacetCounts {
     kinds:      Record<AlgorithmsKind, number>;
-    categories: Record<string, number>;   // "all" + each domain id
-    tags:       Record<string, number>;   // per-tag faceted count
+    problems:   Record<string, number>;   // per-task faceted count
     total:      number;                   // count after ALL filters
 }
 
@@ -42,11 +41,11 @@ export interface FacetCounts {
 
 const DEFAULTS: AlgorithmsFilters = {
     kind:       "all",
-    categoryId: "all",
     tags:       [],
     query:      "",
     view:       "grid",
     sort:       "recent",
+    problem:    "all",
 };
 
 // ── Pure filter helpers ──────────────────────────────────────────────────────
@@ -71,8 +70,9 @@ function matchesTags(itemTags: readonly string[], required: string[]): boolean {
     return required.every((t) => itemTags.includes(t));
 }
 
-function matchesDomain(domain: string | undefined, categoryId: string): boolean {
-    return categoryId === "all" || domain === categoryId;
+function matchesProblem(tasks: readonly string[] | undefined, problem: string): boolean {
+    if (problem === "all") return true;
+    return tasks?.includes(problem) ?? false;
 }
 
 /** Sort a mutable copy of an array. */
@@ -93,7 +93,7 @@ function applySort<T extends { frontmatter: { title: string; date: string } }>(
 }
 
 /**
- * Filter algorithms by categoryId, tags, and query (no kind — kind is implicit).
+ * Filter algorithms by tags and query (no kind — kind is implicit).
  * Caller must pre-filter out drafts if needed.
  *
  * @param searchMatchedSlugs - Set of slugs matched by MiniSearch, or null if
@@ -104,20 +104,20 @@ export function filterAlgorithms(
     filters: AlgorithmsFilters,
     searchMatchedSlugs: Set<string> | null = null,
 ): AlgorithmIndexEntry[] {
-    const { categoryId, tags, query, sort } = filters;
+    const { tags, query, sort, problem } = filters;
     const result = items.filter((entry) => {
         const fm = entry.frontmatter;
         return (
-            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
-            matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs)
+            matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs) &&
+            matchesProblem(fm.tasks, problem)
         );
     });
     return applySort(result, sort);
 }
 
 /**
- * Filter models by categoryId, tags, and query.
+ * Filter models by tags and query.
  * Caller must pre-filter out drafts if needed.
  */
 export function filterModels(
@@ -125,20 +125,20 @@ export function filterModels(
     filters: AlgorithmsFilters,
     searchMatchedSlugs: Set<string> | null = null,
 ): ModelIndexEntry[] {
-    const { categoryId, tags, query, sort } = filters;
+    const { tags, query, sort, problem } = filters;
     const result = items.filter((entry) => {
         const fm = entry.frontmatter;
         return (
-            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
-            matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs)
+            matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs) &&
+            matchesProblem(fm.tasks, problem)
         );
     });
     return applySort(result, sort);
 }
 
 /**
- * Filter concepts by categoryId, tags, and query.
+ * Filter concepts by tags and query.
  * Caller must pre-filter out drafts if needed.
  */
 export function filterConcepts(
@@ -146,11 +146,12 @@ export function filterConcepts(
     filters: AlgorithmsFilters,
     searchMatchedSlugs: Set<string> | null = null,
 ): ConceptIndexEntry[] {
-    const { categoryId, tags, query, sort } = filters;
+    const { tags, query, sort, problem } = filters;
+    // Concepts have no `tasks` field; a specific problem filter excludes all concepts.
+    if (problem !== "all") return [];
     const result = items.filter((entry) => {
         const fm = entry.frontmatter;
         return (
-            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
             matchesSearch(entry.slug, fm.title, fm.summary, query, searchMatchedSlugs)
         );
@@ -162,13 +163,12 @@ export function filterConcepts(
 
 function countAlgorithmsWith(
     items: AlgorithmIndexEntry[],
-    partial: { categoryId?: string; tags?: string[]; query?: string; searchMatchedSlugs?: Set<string> | null },
+    partial: { tags?: string[]; query?: string; searchMatchedSlugs?: Set<string> | null },
 ): number {
-    const { categoryId = "all", tags = [], query = "", searchMatchedSlugs = null } = partial;
+    const { tags = [], query = "", searchMatchedSlugs = null } = partial;
     return items.filter((e) => {
         const fm = e.frontmatter;
         return (
-            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
             matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
         );
@@ -177,13 +177,12 @@ function countAlgorithmsWith(
 
 function countModelsWith(
     items: ModelIndexEntry[],
-    partial: { categoryId?: string; tags?: string[]; query?: string; searchMatchedSlugs?: Set<string> | null },
+    partial: { tags?: string[]; query?: string; searchMatchedSlugs?: Set<string> | null },
 ): number {
-    const { categoryId = "all", tags = [], query = "", searchMatchedSlugs = null } = partial;
+    const { tags = [], query = "", searchMatchedSlugs = null } = partial;
     return items.filter((e) => {
         const fm = e.frontmatter;
         return (
-            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
             matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
         );
@@ -192,13 +191,12 @@ function countModelsWith(
 
 function countConceptsWith(
     items: ConceptIndexEntry[],
-    partial: { categoryId?: string; tags?: string[]; query?: string; searchMatchedSlugs?: Set<string> | null },
+    partial: { tags?: string[]; query?: string; searchMatchedSlugs?: Set<string> | null },
 ): number {
-    const { categoryId = "all", tags = [], query = "", searchMatchedSlugs = null } = partial;
+    const { tags = [], query = "", searchMatchedSlugs = null } = partial;
     return items.filter((e) => {
         const fm = e.frontmatter;
         return (
-            matchesDomain(fm.domain, categoryId) &&
             matchesTags(fm.tags, tags) &&
             matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
         );
@@ -208,11 +206,8 @@ function countConceptsWith(
 /**
  * Compute true faceted counts for the sidebar / filter sheet.
  *
- * - `kinds`: ignores `categoryId`; applies `tags + query` only.
- * - `categories`: ignores `categoryId`; applies `tags + query` for the current kind.
- *   When `kind === "all"`, categories are hidden (disjoint enums); returns only
- *   an "all" entry with the total count.
- * - `tags[tag]`: count if this tag were toggled on, for the current kind+category.
+ * - `kinds`: applies `tags + query` only.
+ * - `problems`: counts reflect kind/tag/search filters but ignore the active problem.
  * - `total`: all filters applied.
  */
 export function computeFacets(
@@ -222,10 +217,10 @@ export function computeFacets(
     filters: AlgorithmsFilters,
     searchMatchedSlugs: Set<string> | null = null,
 ): FacetCounts {
-    const { kind, categoryId, tags, query } = filters;
+    const { kind, tags, query } = filters;
     const sqParams = { tags, query, searchMatchedSlugs };
 
-    // ── Kind counts (ignore categoryId) ─────────────────────────────────────
+    // ── Kind counts (apply tags + query only) ────────────────────────────────
     const kindsAll       = countAlgorithmsWith(algorithms, sqParams)
                          + countModelsWith(models, sqParams)
                          + countConceptsWith(concepts, sqParams);
@@ -233,109 +228,57 @@ export function computeFacets(
     const kindsModel     = countModelsWith(models, sqParams);
     const kindsConcept   = countConceptsWith(concepts, sqParams);
 
-    // ── Category counts (ignore categoryId, current kind only) ───────────────
-    const categories: Record<string, number> = {};
+    // ── Problem counts ───────────────────────────────────────────────────────
+    // Counts reflect kind/tag/search filters but ignore the active problem.
+    const problemCounts: Record<string, number> = {};
 
-    if (kind === "all") {
-        // Populate per-domain counts summed across all three kinds (respecting tags+query).
-        categories["all"] = kindsAll;
-        for (const dom of domainOrder) {
-            const count =
-                countAlgorithmsWith(algorithms, { categoryId: dom, ...sqParams }) +
-                countModelsWith(models, { categoryId: dom, ...sqParams }) +
-                countConceptsWith(concepts, { categoryId: dom, ...sqParams });
-            if (count > 0) categories[dom] = count;
-        }
-    } else if (kind === "algorithm") {
-        categories["all"] = countAlgorithmsWith(algorithms, sqParams);
-        // Use domainOrder for stable presentation; only include domains present in data.
-        for (const dom of domainOrder) {
-            const count = countAlgorithmsWith(algorithms, { categoryId: dom, ...sqParams });
-            if (count > 0) categories[dom] = count;
-        }
-    } else if (kind === "model") {
-        categories["all"] = countModelsWith(models, sqParams);
-        for (const dom of domainOrder) {
-            const count = countModelsWith(models, { categoryId: dom, ...sqParams });
-            if (count > 0) categories[dom] = count;
-        }
-    } else {
-        // concept
-        categories["all"] = countConceptsWith(concepts, sqParams);
-        for (const dom of domainOrder) {
-            const count = countConceptsWith(concepts, { categoryId: dom, ...sqParams });
-            if (count > 0) categories[dom] = count;
-        }
-    }
-
-    // ── Tag counts ──────────────────────────────────────────────────────────
-    const tagCounts: Record<string, number> = {};
-
-    function addAlgorithmTagCounts() {
+    function addAlgorithmProblemCounts() {
         const candidateItems = algorithms.filter((e) => {
             const fm = e.frontmatter;
             return (
-                matchesDomain(fm.domain, categoryId) &&
+                matchesTags(fm.tags, tags) &&
                 matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
             );
         });
-        const allTagsInScope = new Set(candidateItems.flatMap((e) => e.frontmatter.tags));
-        for (const tag of allTagsInScope) {
-            const effectiveTags = [...tags.filter((t) => t !== tag), tag];
-            tagCounts[tag] = (tagCounts[tag] ?? 0) + countAlgorithmsWith(algorithms, { categoryId, tags: effectiveTags, query, searchMatchedSlugs });
+        for (const task of taskOrder) {
+            const n = candidateItems.filter((e) => e.frontmatter.tasks?.includes(task)).length;
+            if (n > 0) problemCounts[task] = (problemCounts[task] ?? 0) + n;
         }
     }
 
-    function addModelTagCounts() {
+    function addModelProblemCounts() {
         const candidateItems = models.filter((e) => {
             const fm = e.frontmatter;
             return (
-                matchesDomain(fm.domain, categoryId) &&
+                matchesTags(fm.tags, tags) &&
                 matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
             );
         });
-        const allTagsInScope = new Set(candidateItems.flatMap((e) => e.frontmatter.tags));
-        for (const tag of allTagsInScope) {
-            const effectiveTags = [...tags.filter((t) => t !== tag), tag];
-            tagCounts[tag] = (tagCounts[tag] ?? 0) + countModelsWith(models, { categoryId, tags: effectiveTags, query, searchMatchedSlugs });
+        for (const task of taskOrder) {
+            const n = candidateItems.filter((e) => e.frontmatter.tasks?.includes(task)).length;
+            if (n > 0) problemCounts[task] = (problemCounts[task] ?? 0) + n;
         }
     }
 
-    function addConceptTagCounts() {
-        const candidateItems = concepts.filter((e) => {
-            const fm = e.frontmatter;
-            return (
-                matchesDomain(fm.domain, categoryId) &&
-                matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
-            );
-        });
-        const allTagsInScope = new Set(candidateItems.flatMap((e) => e.frontmatter.tags));
-        for (const tag of allTagsInScope) {
-            const effectiveTags = [...tags.filter((t) => t !== tag), tag];
-            tagCounts[tag] = (tagCounts[tag] ?? 0) + countConceptsWith(concepts, { categoryId, tags: effectiveTags, query, searchMatchedSlugs });
-        }
-    }
-
-    if (kind === "algorithm" || kind === "all") addAlgorithmTagCounts();
-    if (kind === "model" || kind === "all") addModelTagCounts();
-    if (kind === "concept" || kind === "all") addConceptTagCounts();
+    if (kind === "algorithm" || kind === "all") addAlgorithmProblemCounts();
+    if (kind === "model" || kind === "all") addModelProblemCounts();
+    // Concepts have no tasks, so they contribute nothing to problem counts.
 
     // ── Total (all filters) ──────────────────────────────────────────────────
     const total =
         kind === "all"
-            ? countAlgorithmsWith(algorithms, { categoryId, ...sqParams })
-              + countModelsWith(models, { categoryId, ...sqParams })
-              + countConceptsWith(concepts, { categoryId, ...sqParams })
+            ? countAlgorithmsWith(algorithms, sqParams)
+              + countModelsWith(models, sqParams)
+              + countConceptsWith(concepts, sqParams)
             : kind === "algorithm"
-                ? countAlgorithmsWith(algorithms, { categoryId, ...sqParams })
+                ? countAlgorithmsWith(algorithms, sqParams)
                 : kind === "model"
-                    ? countModelsWith(models, { categoryId, ...sqParams })
-                    : countConceptsWith(concepts, { categoryId, ...sqParams });
+                    ? countModelsWith(models, sqParams)
+                    : countConceptsWith(concepts, sqParams);
 
     return {
         kinds: { all: kindsAll, algorithm: kindsAlgorithm, model: kindsModel, concept: kindsConcept },
-        categories,
-        tags: tagCounts,
+        problems: problemCounts,
         total,
     };
 }
@@ -350,17 +293,23 @@ function parseFiltersFromParams(params: URLSearchParams): AlgorithmsFilters {
         rawKind === "concept" ? "concept" :
         rawKind === "algorithm" || rawKind === "classical" ? "algorithm" :
         "all";
-    const categoryId = params.get("cat") ?? "all";
     const tagsRaw = params.get("tags");
     const tags = tagsRaw ? tagsRaw.split(",").filter(Boolean) : [];
     const query = params.get("q") ?? "";
-    // URL takes precedence over storage so /atlas?view=map works as a deep link.
+    // URL takes precedence over storage so /atlas?view=graph works as a deep link.
     const rawView = params.get("view");
     const urlView = isAlgorithmsView(rawView) ? rawView : null;
     const storedView = readStoredView();
     const view: AlgorithmsView = urlView ?? storedView ?? DEFAULTS.view;
     const sort: AlgorithmsSort = params.get("sort") === "az" ? "az" : "recent";
-    return { kind, categoryId, tags, query, view, sort };
+    // Validate `problem` against known task slugs — a stale or mistyped value
+    // would otherwise blank the whole catalog (matchesProblem excludes all).
+    const rawProblem = params.get("problem");
+    const problem =
+        rawProblem !== null && (taskOrder as readonly string[]).includes(rawProblem)
+            ? rawProblem
+            : DEFAULTS.problem;
+    return { kind, tags, query, view, sort, problem };
 }
 
 function readStoredView(): AlgorithmsView | null {
@@ -385,11 +334,11 @@ function writeStoredView(view: AlgorithmsView): void {
 function buildParams(filters: AlgorithmsFilters): URLSearchParams {
     const p = new URLSearchParams();
     if (filters.kind    !== DEFAULTS.kind)       p.set("kind",  filters.kind);
-    if (filters.categoryId !== DEFAULTS.categoryId) p.set("cat",  filters.categoryId);
     if (filters.tags.length > 0)                 p.set("tags", filters.tags.join(","));
     if (filters.query   !== DEFAULTS.query)      p.set("q",    filters.query);
     if (filters.view    !== DEFAULTS.view)        p.set("view", filters.view);
     if (filters.sort    !== DEFAULTS.sort)        p.set("sort", filters.sort);
+    if (filters.problem !== DEFAULTS.problem)    p.set("problem", filters.problem);
     return p;
 }
 
@@ -398,13 +347,13 @@ function buildParams(filters: AlgorithmsFilters): URLSearchParams {
 export interface UseAlgorithmsFiltersReturn {
     filters: AlgorithmsFilters;
     setKind:       (kind: AlgorithmsKind) => void;
-    setCategoryId: (id: string) => void;
     toggleTag:     (tag: string) => void;
     setTags:       (tags: string[]) => void;
     setQuery:      (q: string) => void;
     setView:       (view: AlgorithmsView) => void;
     setSort:       (sort: AlgorithmsSort) => void;
-    /** Resets categoryId, tags, query, sort — keeps kind and view. */
+    setProblem:    (problem: string) => void;
+    /** Resets tags, query, sort, problem — keeps kind and view. */
     reset:         () => void;
 }
 
@@ -422,14 +371,9 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
 
     const setKind = useCallback(
         (kind: AlgorithmsKind) => {
-            // When kind flips, reset categoryId (it's kind-scoped).
-            update({ ...filters, kind, categoryId: "all" });
+            // When kind flips, reset problem (problem is kind-scoped).
+            update({ ...filters, kind, problem: "all" });
         },
-        [filters, update],
-    );
-
-    const setCategoryId = useCallback(
-        (id: string) => update({ ...filters, categoryId: id }),
         [filters, update],
     );
 
@@ -466,6 +410,11 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
         [filters, update],
     );
 
+    const setProblem = useCallback(
+        (problem: string) => update({ ...filters, problem }),
+        [filters, update],
+    );
+
     const reset = useCallback(
         () =>
             update({
@@ -479,12 +428,12 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
     return {
         filters,
         setKind,
-        setCategoryId,
         toggleTag,
         setTags,
         setQuery,
         setView,
         setSort,
+        setProblem,
         reset,
     };
 }

@@ -26,10 +26,6 @@ relations:
     confidence: high
     caution: "DeepLab v2 onward uses ResNet-101 as the dense-prediction backbone; v1 used VGG-16."
   - type: feeds_into
-    target: fcn-semantic-segmentation
-    confidence: medium
-    caution: "The torchvision FCN-ResNet50/101 port swaps the paper's VGG-16 backbone for ResNet; not the design Long et al. published."
-  - type: feeds_into
     target: loftr
     confidence: medium
     caution: "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."

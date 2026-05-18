@@ -10,10 +10,6 @@ difficulty: advanced
 editorAlgorithmId: puzzleboard
 prerequisites: [image-gradient, hessian-saddle-response, topological-grid-recovery]
 failureModes: []
-relations:
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: high
 sources:
   primary: stelldinger2024-puzzleboard
   references: [harris1988-corner, chen2005-xcorner]

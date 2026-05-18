@@ -9,10 +9,6 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 prerequisites: [image-gradient, scale-space, image-pyramid]
 failureModes: []
-relations:
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: high
 sources:
   primary: abeles2021-pyramidal
   references: [placht2014-rochade, bennett2013-chess, lucchese2003-saddle, shi-tomasi1994-features]

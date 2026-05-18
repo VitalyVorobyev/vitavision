@@ -26,15 +26,6 @@ relations:
   - type: compared_with
     target: orb
     confidence: high
-  - type: feeds_into
-    target: gao-dual-homography-stitching
-    confidence: high
-  - type: feeds_into
-    target: lin-sva-stitching
-    confidence: high
-  - type: feeds_into
-    target: apap-image-stitching
-    confidence: high
 sources:
   primary: bay2006-surf
   references: [lowe2004-sift, harris1988-corner, viola2001-detector]

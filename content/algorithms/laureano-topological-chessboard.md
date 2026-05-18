@@ -14,9 +14,6 @@ relations:
     target: geiger-chessboard-detector
     confidence: medium
     caution: "Less influential in practice than Geiger but methodologically distinct — the X-corner detector is a ring-alternation count rather than a quadrant template, and the topology filter operates on Delaunay triangles directly."
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: high
 sources:
   primary: laureano2013-topological
   references: [shu2009-topological, rosten2006-fast, chen2005-xcorner]

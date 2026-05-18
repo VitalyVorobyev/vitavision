@@ -18,9 +18,6 @@ relations:
   - type: learned_alternative_of
     target: chess-corners
     confidence: high
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: high
 sources:
   primary: zhang2022-learning-based
   references:

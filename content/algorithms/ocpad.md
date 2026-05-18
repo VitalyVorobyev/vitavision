@@ -9,10 +9,6 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 prerequisites: [image-gradient, topological-grid-recovery]
 failureModes: []
-relations:
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: high
 sources:
   primary: fuersattel2016-ocpad
   references: [placht2014-rochade, cordella2004-vf2]

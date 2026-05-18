@@ -31,11 +31,6 @@ describe("getNeighbors", () => {
         expect(result.learned_by).toContain("ccdn-checkerboard-detector");
     });
 
-    it("chess-corners feeds_into contains zhang-planar-calibration", () => {
-        const result = getNeighbors("chess-corners")!;
-        expect(result.feeds_into).toContain("zhang-planar-calibration");
-    });
-
     it("no slug appears in more than one bucket", () => {
         const result = getNeighbors("chess-corners")!;
         const all = [

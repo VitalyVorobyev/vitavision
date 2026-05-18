@@ -28,10 +28,6 @@ relations:
     target: orb
     confidence: high
     caution: "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
-  - type: feeds_into
-    target: lightglue
-    confidence: medium
-    caution: "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
 sources:
   primary: potje2024-xfeat
   references:

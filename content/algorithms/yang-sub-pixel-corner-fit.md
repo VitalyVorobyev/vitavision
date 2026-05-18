@@ -23,14 +23,6 @@ relations:
   - type: compared_with
     target: duda-radon-corners
     confidence: medium
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: medium
-    caution: "Yang2018 explicitly targets Zhang-style planar calibration as the downstream consumer"
-  - type: feeds_into
-    target: epnp
-    confidence: medium
-    caution: "Self-check is motivated by EPnP downstream use"
 sources:
   primary: yang2018-sub-pixel
   references: [zhang2000-flexible, lepetit2009-epnp, placht2014-rochade, harris1988-corner, chen2005-xcorner]

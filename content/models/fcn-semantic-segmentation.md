@@ -20,7 +20,7 @@ relations:
     target: deeplab-semantic-segmentation
     confidence: high
     caution: "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
-  - type: extended_by
+  - type: feeds_into
     target: mask-rcnn
     confidence: high
     caution: "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."

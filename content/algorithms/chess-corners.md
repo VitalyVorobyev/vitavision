@@ -22,9 +22,6 @@ relations:
   - type: compared_with
     target: puzzleboard
     confidence: high
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: high
   - type: compared_with
     target: duda-radon-corners
     confidence: high

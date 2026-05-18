@@ -11,9 +11,6 @@ prerequisites: [image-gradient, non-maximum-suppression]
 failureModes: []
 relations:
   - type: feeds_into
-    target: brief
-    confidence: high
-  - type: feeds_into
     target: orb
     confidence: high
 sources:

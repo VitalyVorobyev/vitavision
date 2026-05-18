@@ -22,16 +22,6 @@ relations:
   - type: compared_with
     target: orb
     confidence: high
-  - type: feeds_into
-    target: gao-dual-homography-stitching
-    confidence: high
-    caution: "SIFT correspondences are the standard input to dual-homography stitching"
-  - type: feeds_into
-    target: lin-sva-stitching
-    confidence: high
-  - type: feeds_into
-    target: apap-image-stitching
-    confidence: high
 sources:
   primary: lowe2004-sift
   references: [harris1988-corner]

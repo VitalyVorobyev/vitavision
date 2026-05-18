@@ -13,9 +13,6 @@ relations:
   - type: compared_with
     target: pyramidal-blur-aware-xcorner
     confidence: high
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: high
 sources:
   primary: geiger2012-automatic
   references:

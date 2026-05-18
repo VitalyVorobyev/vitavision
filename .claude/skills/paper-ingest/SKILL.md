@@ -97,7 +97,7 @@ Before deciding the paper's role, the orchestrator surfaces the typed-relations 
 >
 > *Practice:*
 > - `compared_with` — peer practitioner choice; reader picks one.
-> - `feeds_into` — output is consumed by target in a typical pipeline.
+> - `feeds_into` — intellectual/compositional lineage: B was conceived building on A, incorporating A as a named component. **Not** runtime data-flow. Must respect chronology: A's paper ≤ B's. Example: VGG → FCN; FAST → ORB.
 >
 > *Cross-paradigm:*
 > - `learned_alternative_of` — this paper's deep-learning model replaces classical target algorithm. (Model→algorithm only.)

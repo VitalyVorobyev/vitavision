@@ -10,11 +10,6 @@ difficulty: intermediate
 arch_family: hybrid
 prerequisites: [feature-matching, attention-mechanism]
 failureModes: []
-relations:
-  - type: compared_with
-    target: loftr
-    confidence: high
-    caution: "Different paradigm — LoFTR is detector-free dense, LightGlue is detector-based sparse. LoFTR wins in textureless regions; LightGlue wins on speed."
 sources:
   primary: lindenberger2023-lightglue
   references:

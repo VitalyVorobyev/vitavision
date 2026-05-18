@@ -18,9 +18,6 @@ relations:
     target: geiger-chessboard-detector
     confidence: medium
     caution: "Different abstraction layer — topological grid recovery from a candidate corner set vs single-shot detection that integrates corner finding and grid linking. Not superseded by Geiger; both remain in practitioner use."
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: high
 sources:
   primary: shu2009-topological
   references: [harris1988-corner]

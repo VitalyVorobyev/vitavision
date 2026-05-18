@@ -7,17 +7,17 @@ export const blogPosts: BlogIndexEntry[] = [
     "frontmatter": {
       "title": "Grid detection I: topology",
       "summary": "How Delaunay triangulation and mesh filtering can turn detected chessboard corners into an ordered grid.",
-      "tags": [
-        "feature-detection",
-        "calibration-targets"
-      ],
       "author": "Vitaly Vorobyev",
       "repoLinks": [
         "https://github.com/VitalyVorobyev/calib-targets-rs"
       ],
       "difficulty": "intermediate",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 10,
       "access": "public",
+      "tags": [
+        "feature-detection",
+        "calibration-targets"
+      ],
       "relatedAlgorithms": [],
       "relatedDemos": [
         "delaunay-voronoi"
@@ -38,9 +38,6 @@ export const blogPosts: BlogIndexEntry[] = [
       "readingTimeMinutes": 11,
       "access": "public",
       "tags": [
-        "computer-vision",
-        "rust",
-        "calibration",
         "feature-detection"
       ],
       "relatedAlgorithms": [

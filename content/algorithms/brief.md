@@ -22,15 +22,6 @@ relations:
     target: surf
     confidence: medium
     caution: "BRIEF is descriptor-only; SIFT/SURF bundle a detector."
-  - type: feeds_into
-    target: gao-dual-homography-stitching
-    confidence: medium
-  - type: feeds_into
-    target: lin-sva-stitching
-    confidence: medium
-  - type: feeds_into
-    target: apap-image-stitching
-    confidence: medium
 sources:
   primary: calonder2010-brief
   references: [rosten2006-fast, bay2006-surf, lowe2004-sift, viola2001-detector]

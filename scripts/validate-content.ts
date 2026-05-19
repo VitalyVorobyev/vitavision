@@ -149,6 +149,30 @@ function parseSourceRef(s: string): { kind: SourceKind; key: string } | null {
     return { kind: "paper", key: `paper:${s}` };
 }
 
+/**
+ * Build a Map<paperId, year> from docs/papers/index.yaml.
+ * Only includes entries whose kind is "paper" (or absent) AND which have a
+ * numeric `year` field.
+ */
+function loadPaperYears(): Map<string, number> {
+    const years = new Map<string, number>();
+    if (!existsSync(PAPERS_INDEX)) return years;
+    const raw = readFileSync(PAPERS_INDEX, "utf-8");
+    const entries = parseYaml(raw) as Array<Record<string, unknown>>;
+    if (!Array.isArray(entries)) return years;
+
+    for (const e of entries) {
+        const id = e.id as string | undefined;
+        if (!id) continue;
+        const kind = (e.kind as string | undefined) ?? "paper";
+        if (kind !== "paper") continue;
+        const year = e.year;
+        if (typeof year !== "number") continue;
+        years.set(id, year);
+    }
+    return years;
+}
+
 // ── Slug helpers ─────────────────────────────────────────────────────────────
 function algoSlug(filename: string): string {
     return filename.replace(/\.md$/, "");
@@ -524,6 +548,71 @@ export async function validateContent(options?: ValidateContentOptions): Promise
                     `[${e.file}] quality: "historical" page contains "${line.trim()}" heading; trim per template`,
                 );
                 break;
+            }
+        }
+    }
+
+    // ── Rule 9: feeds_into / lineage chronology ──────────────────────────────
+    // feeds_into is an intellectual-lineage edge A→B: A's primary-source year
+    // must be ≤ B's year (A must predate or be contemporary with B).
+    // extended_by and generalized_by are also lineage edges; violations there
+    // are warnings rather than hard errors.
+    // learned_alternative_of is intentionally excluded: the host is a model
+    // that is newer than the classical algorithm target, so the host is
+    // correctly newer than the target — checking it would produce false positives.
+    {
+        const paperYears = loadPaperYears();
+
+        // Build slug → year map from all filtered entries.
+        const slugYear = new Map<string, number | undefined>();
+        for (const e of [...algoFiltered, ...modelFiltered, ...conceptFiltered]) {
+            const primaryRef = (e.frontmatter.sources as { primary?: string } | undefined)?.primary;
+            if (!primaryRef) {
+                slugYear.set(e.slug, undefined);
+                continue;
+            }
+            const parsed = parseSourceRef(primaryRef);
+            if (parsed?.kind === "paper") {
+                // Strip "paper:" prefix to get bare id.
+                const bareId = parsed.key.startsWith("paper:") ? parsed.key.slice("paper:".length) : parsed.key;
+                slugYear.set(e.slug, paperYears.get(bareId));
+            } else {
+                // repo or doc — no publication year available.
+                slugYear.set(e.slug, undefined);
+            }
+        }
+
+        type LineageRelation = {
+            type: string;
+            target: string;
+            confidence: string;
+            caution?: string;
+        };
+
+        for (const e of [...algoFiltered, ...modelFiltered, ...conceptFiltered]) {
+            const relations = (e.frontmatter.relations as LineageRelation[] | undefined) ?? [];
+            const hostYear = slugYear.get(e.slug);
+
+            for (const rel of relations) {
+                if (rel.type !== "feeds_into" && rel.type !== "extended_by" && rel.type !== "generalized_by") {
+                    continue;
+                }
+
+                const targetYear = slugYear.get(rel.target);
+
+                // Skip when either year is unknown — concept pages, repo/doc-sourced
+                // pages, or pages whose primary source has no year entry.
+                if (hostYear === undefined || targetYear === undefined) continue;
+
+                if (rel.type === "feeds_into" && targetYear < hostYear) {
+                    errors.push(
+                        `[${e.file}] feeds_into target "${rel.target}" (${targetYear}) predates host (${hostYear}) — feeds_into is an intellectual-lineage edge and must be chronological (see CLAUDE.md → Relations field)`,
+                    );
+                } else if ((rel.type === "extended_by" || rel.type === "generalized_by") && targetYear < hostYear) {
+                    warnings.push(
+                        `[${e.file}] ${rel.type} target "${rel.target}" (${targetYear}) predates host (${hostYear}) — ${rel.type} is a lineage edge and the target is expected to be at least as recent as the host`,
+                    );
+                }
             }
         }
     }

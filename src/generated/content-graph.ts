@@ -832,21 +832,6 @@ export const contentGraph: ContentGraph = {
           "target": "surf",
           "confidence": "medium",
           "caution": "BRIEF is descriptor-only; SIFT/SURF bundle a detector."
-        },
-        {
-          "type": "feeds_into",
-          "target": "gao-dual-homography-stitching",
-          "confidence": "medium"
-        },
-        {
-          "type": "feeds_into",
-          "target": "lin-sva-stitching",
-          "confidence": "medium"
-        },
-        {
-          "type": "feeds_into",
-          "target": "apap-image-stitching",
-          "confidence": "medium"
         }
       ]
     },
@@ -881,11 +866,6 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
-          "confidence": "high"
-        },
-        {
           "type": "compared_with",
           "target": "duda-radon-corners",
           "confidence": "high"
@@ -911,11 +891,6 @@ export const contentGraph: ContentGraph = {
           "target": "geiger-chessboard-detector",
           "confidence": "medium",
           "caution": "Less influential in practice than Geiger but methodologically distinct — the X-corner detector is a ring-alternation count rather than a quadrant template, and the topology filter operates on Delaunay triangles directly."
-        },
-        {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
-          "confidence": "high"
         },
         {
           "type": "compared_with",
@@ -969,11 +944,6 @@ export const contentGraph: ContentGraph = {
       ],
       "failureModes": [],
       "relations": [
-        {
-          "type": "feeds_into",
-          "target": "brief",
-          "confidence": "high"
-        },
         {
           "type": "feeds_into",
           "target": "orb",
@@ -1068,11 +1038,6 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
-          "confidence": "high"
-        },
-        {
           "type": "alternative_formulation_of",
           "target": "laureano-topological-chessboard",
           "confidence": "medium",
@@ -1119,11 +1084,6 @@ export const contentGraph: ContentGraph = {
         {
           "type": "compared_with",
           "target": "ocpad",
-          "confidence": "high"
-        },
-        {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
           "confidence": "high"
         }
       ]
@@ -1262,11 +1222,6 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": [
         {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
-          "confidence": "high"
-        },
-        {
           "type": "compared_with",
           "target": "chess-corners",
           "confidence": "high",
@@ -1357,11 +1312,6 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": [
         {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
-          "confidence": "high"
-        },
-        {
           "type": "compared_with",
           "target": "gp-checkerboard-enhancement",
           "confidence": "high",
@@ -1402,11 +1352,6 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": [
         {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
-          "confidence": "high"
-        },
-        {
           "type": "compared_with",
           "target": "chess-corners",
           "confidence": "high",
@@ -1422,11 +1367,6 @@ export const contentGraph: ContentGraph = {
       ],
       "failureModes": [],
       "relations": [
-        {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
-          "confidence": "high"
-        },
         {
           "type": "compared_with",
           "target": "chess-corners",
@@ -1464,11 +1404,6 @@ export const contentGraph: ContentGraph = {
         {
           "type": "compared_with",
           "target": "pyramidal-blur-aware-xcorner",
-          "confidence": "high"
-        },
-        {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
           "confidence": "high"
         },
         {
@@ -1553,22 +1488,6 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
-          "type": "feeds_into",
-          "target": "gao-dual-homography-stitching",
-          "confidence": "high",
-          "caution": "SIFT correspondences are the standard input to dual-homography stitching"
-        },
-        {
-          "type": "feeds_into",
-          "target": "lin-sva-stitching",
-          "confidence": "high"
-        },
-        {
-          "type": "feeds_into",
-          "target": "apap-image-stitching",
-          "confidence": "high"
-        },
-        {
           "type": "compared_with",
           "target": "brief",
           "confidence": "medium",
@@ -1635,21 +1554,6 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
-          "type": "feeds_into",
-          "target": "gao-dual-homography-stitching",
-          "confidence": "high"
-        },
-        {
-          "type": "feeds_into",
-          "target": "lin-sva-stitching",
-          "confidence": "high"
-        },
-        {
-          "type": "feeds_into",
-          "target": "apap-image-stitching",
-          "confidence": "high"
-        },
-        {
           "type": "compared_with",
           "target": "brief",
           "confidence": "medium",
@@ -1675,11 +1579,6 @@ export const contentGraph: ContentGraph = {
           "target": "geiger-chessboard-detector",
           "confidence": "medium",
           "caution": "Different abstraction layer — topological grid recovery from a candidate corner set vs single-shot detection that integrates corner finding and grid linking. Not superseded by Geiger; both remain in practitioner use."
-        },
-        {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
-          "confidence": "high"
         }
       ]
     },
@@ -1777,18 +1676,6 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "duda-radon-corners",
           "confidence": "medium"
-        },
-        {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
-          "confidence": "medium",
-          "caution": "Yang2018 explicitly targets Zhang-style planar calibration as the downstream consumer"
-        },
-        {
-          "type": "feeds_into",
-          "target": "epnp",
-          "confidence": "medium",
-          "caution": "Self-check is motivated by EPnP downstream use"
         }
       ]
     },
@@ -1843,11 +1730,6 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
-          "confidence": "high"
-        },
-        {
           "type": "compared_with",
           "target": "ccs-camera-calibration",
           "confidence": "high",
@@ -1879,11 +1761,6 @@ export const contentGraph: ContentGraph = {
         {
           "type": "learned_alternative_of",
           "target": "chess-corners",
-          "confidence": "high"
-        },
-        {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
           "confidence": "high"
         },
         {
@@ -1953,7 +1830,7 @@ export const contentGraph: ContentGraph = {
           "caution": "DeepLab adopts FCN's fully-convolutional framing but replaces strided downsampling with atrous (dilated) convolution to preserve resolution, adds an ASPP multi-scale head and a fully-connected CRF post-processor."
         },
         {
-          "type": "extended_by",
+          "type": "feeds_into",
           "target": "mask-rcnn",
           "confidence": "high",
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
@@ -2004,7 +1881,8 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "loftr",
           "confidence": "high",
-          "caution": "Different paradigm — LoFTR is detector-free dense, LightGlue is detector-based sparse. LoFTR wins in textureless regions; LightGlue wins on speed."
+          "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1).",
+          "mirrored": true
         }
       ]
     },
@@ -2017,11 +1895,6 @@ export const contentGraph: ContentGraph = {
       "relations": [
         {
           "type": "compared_with",
-          "target": "superglue",
-          "confidence": "high"
-        },
-        {
-          "type": "compared_with",
           "target": "xfeat",
           "confidence": "high",
           "caution": "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm."
@@ -2031,6 +1904,12 @@ export const contentGraph: ContentGraph = {
           "target": "lightglue",
           "confidence": "high",
           "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1)."
+        },
+        {
+          "type": "compared_with",
+          "target": "superglue",
+          "confidence": "high",
+          "mirrored": true
         }
       ]
     },
@@ -2067,11 +1946,6 @@ export const contentGraph: ContentGraph = {
           "type": "learned_alternative_of",
           "target": "chess-corners",
           "confidence": "high"
-        },
-        {
-          "type": "feeds_into",
-          "target": "zhang-planar-calibration",
-          "confidence": "high"
         }
       ]
     },
@@ -2098,12 +1972,6 @@ export const contentGraph: ContentGraph = {
           "target": "deeplab-semantic-segmentation",
           "confidence": "high",
           "caution": "DeepLab v2 onward uses ResNet-101 as the dense-prediction backbone; v1 used VGG-16."
-        },
-        {
-          "type": "feeds_into",
-          "target": "fcn-semantic-segmentation",
-          "confidence": "medium",
-          "caution": "The torchvision FCN-ResNet50/101 port swaps the paper's VGG-16 backbone for ResNet; not the design Long et al. published."
         },
         {
           "type": "feeds_into",
@@ -2268,12 +2136,6 @@ export const contentGraph: ContentGraph = {
           "target": "orb",
           "confidence": "high",
           "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
-        },
-        {
-          "type": "feeds_into",
-          "target": "lightglue",
-          "confidence": "medium",
-          "caution": "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
         },
         {
           "type": "compared_with",
@@ -2493,20 +2355,7 @@ export const contentGraph: ContentGraph = {
         }
       ],
       "extending": [],
-      "fedBy": [
-        {
-          "slug": "brief",
-          "confidence": "medium"
-        },
-        {
-          "slug": "sift",
-          "confidence": "high"
-        },
-        {
-          "slug": "surf",
-          "confidence": "high"
-        }
-      ],
+      "fedBy": [],
       "hasLearnedAlternative": []
     },
     "black-anandan-robust-flow": {
@@ -2533,12 +2382,7 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [
-        {
-          "slug": "fast-corner-detector",
-          "confidence": "high"
-        }
-      ],
+      "fedBy": [],
       "hasLearnedAlternative": [
         {
           "slug": "superpoint",
@@ -2631,13 +2475,7 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [
-        {
-          "slug": "yang-sub-pixel-corner-fit",
-          "confidence": "medium",
-          "caution": "Self-check is motivated by EPnP downstream use"
-        }
-      ],
+      "fedBy": [],
       "hasLearnedAlternative": []
     },
     "fast-corner-detector": {
@@ -2677,21 +2515,7 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [
-        {
-          "slug": "brief",
-          "confidence": "medium"
-        },
-        {
-          "slug": "sift",
-          "confidence": "high",
-          "caution": "SIFT correspondences are the standard input to dual-homography stitching"
-        },
-        {
-          "slug": "surf",
-          "confidence": "high"
-        }
-      ],
+      "fedBy": [],
       "hasLearnedAlternative": []
     },
     "geiger-chessboard-detector": {
@@ -2795,20 +2619,7 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [
-        {
-          "slug": "brief",
-          "confidence": "medium"
-        },
-        {
-          "slug": "sift",
-          "confidence": "high"
-        },
-        {
-          "slug": "surf",
-          "confidence": "high"
-        }
-      ],
+      "fedBy": [],
       "hasLearnedAlternative": []
     },
     "duda-radon-corners": {
@@ -3078,65 +2889,7 @@ export const contentGraph: ContentGraph = {
         }
       ],
       "extending": [],
-      "fedBy": [
-        {
-          "slug": "ccdn-checkerboard-detector",
-          "confidence": "high"
-        },
-        {
-          "slug": "ccs-camera-calibration",
-          "confidence": "high"
-        },
-        {
-          "slug": "chess-corners",
-          "confidence": "high"
-        },
-        {
-          "slug": "duda-radon-corners",
-          "confidence": "high"
-        },
-        {
-          "slug": "geiger-chessboard-detector",
-          "confidence": "high"
-        },
-        {
-          "slug": "gp-checkerboard-enhancement",
-          "confidence": "high"
-        },
-        {
-          "slug": "laureano-topological-chessboard",
-          "confidence": "high"
-        },
-        {
-          "slug": "mate-checkerboard-detector",
-          "confidence": "high"
-        },
-        {
-          "slug": "ocpad",
-          "confidence": "high"
-        },
-        {
-          "slug": "puzzleboard",
-          "confidence": "high"
-        },
-        {
-          "slug": "pyramidal-blur-aware-xcorner",
-          "confidence": "high"
-        },
-        {
-          "slug": "rochade",
-          "confidence": "high"
-        },
-        {
-          "slug": "shu-topological-grid",
-          "confidence": "high"
-        },
-        {
-          "slug": "yang-sub-pixel-corner-fit",
-          "confidence": "medium",
-          "caution": "Yang2018 explicitly targets Zhang-style planar calibration as the downstream consumer"
-        }
-      ],
+      "fedBy": [],
       "hasLearnedAlternative": []
     },
     "alexnet": {
@@ -3208,11 +2961,6 @@ export const contentGraph: ContentGraph = {
           "caution": "One of three backbones explored in FCN; FCN-GoogLeNet 42.5 mean IU vs FCN-VGG16 56.0 (FCN Table 1) — aggressive early downsampling hurts dense prediction."
         },
         {
-          "slug": "resnet",
-          "confidence": "medium",
-          "caution": "The torchvision FCN-ResNet50/101 port swaps the paper's VGG-16 backbone for ResNet; not the design Long et al. published."
-        },
-        {
           "slug": "vgg",
           "confidence": "high",
           "caution": "VGG-16 is FCN's canonical backbone per FCN Table 1; FCN-VGG16 mean IU 56.0 vs FCN-AlexNet 39.8."
@@ -3244,11 +2992,6 @@ export const contentGraph: ContentGraph = {
           "slug": "superpoint",
           "confidence": "high",
           "caution": "LightGlue ships SuperPoint-paired pretrained weights as the default configuration; recommended over SuperGlue for new pipelines (faster, Apache-2.0)."
-        },
-        {
-          "slug": "xfeat",
-          "confidence": "medium",
-          "caution": "XFeat's headline configuration uses its own coarse-MNN + MLP refinement matcher; pairing XFeat keypoints with LightGlue is supported but not the default and trades XFeat's CPU-grade speed for LightGlue's accuracy."
         }
       ],
       "hasLearnedAlternative": []
@@ -3275,14 +3018,14 @@ export const contentGraph: ContentGraph = {
         {
           "slug": "faster-rcnn",
           "confidence": "high"
-        },
+        }
+      ],
+      "fedBy": [
         {
           "slug": "fcn-semantic-segmentation",
           "confidence": "high",
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
-        }
-      ],
-      "fedBy": [
+        },
         {
           "slug": "resnet",
           "confidence": "high",

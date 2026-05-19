@@ -33,19 +33,20 @@ Each public page declares **forward edges** in frontmatter:
 
 ```yaml
 prerequisites:    [image-gradient, structure-tensor]
-related:          [shi-tomasi-corner-detector]
-comparedWith:     [shi-tomasi-corner-detector, fast-corner-detector]
 failureModes:     []
-relatedAlgorithms: [...]   # legacy alias, normalized into related at build
+relations:
+  - type: compared_with          # one of the fixed vocabulary in CLAUDE.md → "Relations field"
+    target: shi-tomasi-corner-detector
+    confidence: high
 ```
 
-The build emits `src/generated/content-graph.ts` containing nodes + forward edges + **derived reverse edges** (`usedBy`, mirrored `comparedFrom` and `relatedFrom`, `affects`). The relationship panel on detail pages reads both directions; never author reverse edges by hand.
+The build emits `src/generated/content-graph.ts` containing nodes + forward edges + **derived reverse edges** (`usedBy`, typed reverse buckets for asymmetric types, `affects`). The relationship panel on detail pages reads both directions; never author reverse edges by hand. The legacy fields `related`, `relatedAlgorithms`, and `comparedWith` are removed — use `relations[]` with the appropriate `type` instead.
 
 All slugs are validated against a single global namespace covering algorithms + models + concepts + (eventually) failure-modes. Unknown slugs are hard build errors.
 
 ## 4. Comparisons and surveys
 
-`comparedWith:` declares an algorithmic comparison edge. Comparison **content** — actual prose contrasting two methods — lives on exactly one side of the pair, not on both, and not on a separate page.
+`relations[]` with `type: compared_with` declares an algorithmic comparison edge. Comparison **content** — actual prose contrasting two methods — lives on exactly one side of the pair, not on both, and not on a separate page.
 
 ### Two-way: inline on the more-authoritative page
 
@@ -69,13 +70,15 @@ Pairwise pages are prohibited. A survey of ≥3 methods lives as a **concept pag
 - ≥3 surveyed methods.
 - ≥800 words of substantive content.
 - A decision table near the top (rows = methods, columns = "use when / avoid when / typical cost / typical accuracy").
-- Each surveyed algorithm page lists the survey concept in its `related` (so the relationship panel surfaces it from each method's page).
+- Each surveyed algorithm page references the survey concept via a `relations[]` entry (so the relationship panel surfaces it from each method's page).
 
 ### Agentic discipline
 
 Comparison content is written agentically only when the **research notes for both papers exist** under `docs/research/notes/`. If either is missing, the page-authoring skill must refuse and request `paper-ingest` first. This is enforceable: the skill greps for both `<paper-id>.md` files and aborts if either is absent. Without paper grounding, comparison prose is hallucination — exactly what the README's "never publish raw LLM extractions" rule forbids.
 
 For surveys: at least 3 of the surveyed methods' primary papers must have research notes before the concept page can be drafted.
+
+`feeds_into` is an intellectual-lineage edge (B was conceived building on A as a named component), not a runtime data-flow edge. It must respect chronology: A's primary-source year ≤ B's — the build validator enforces this. When the only link is "A's output can be piped to B" with no genuine build-on, omit the edge and let a shared concept page carry the pipeline relationship.
 
 ## 5. The four authoring skills
 
@@ -163,7 +166,7 @@ INCLUDE_DRAFTS=true bun run scripts/validate-content.ts   # public + drafts
 ```
 
 What validation catches:
-- Unknown slugs in `prerequisites` / `related` / `comparedWith` / `failureModes` / `relatedAlgorithms`.
+- Unknown slugs in `prerequisites` / `relations[].target` / `failureModes`.
 - Cycles in the prerequisites graph.
 - Missing source IDs (any `sources.primary` or `sources.references` not in `docs/papers/index.yaml`).
 - `quality: canonical` pages missing the canonical-gate fields.
@@ -187,9 +190,12 @@ difficulty: beginner | intermediate | advanced
 
 # Relationship fields (all optional; all forward edges)
 prerequisites: []
-related: []
-comparedWith: []
 failureModes: []
+relations:                    # typed inter-page links; see CLAUDE.md → "Relations field"
+  - type: <vocabulary type>
+    target: <slug>
+    confidence: high | medium | low
+    caution: <optional one-liner>
 
 # Sources (algorithms/models: required for canonical; concepts: optional)
 sources:
@@ -207,7 +213,7 @@ Type-specific fields (`category` enum, `editorAlgorithmId`, model `implementatio
 
 - Full quotes from papers (use short quotes inline only when paraphrasing would change technical meaning).
 - Raw LLM extractions of paper content. Always synthesize against your own understanding plus the research note's structured fields.
-- Pairwise comparison pages. Use `comparedWith:` plus an inline `## When to choose X over Y` section in the more authoritative page.
+- Pairwise comparison pages. Use `relations[]` with `type: compared_with` plus an inline `## When to choose X over Y` section in the more authoritative page.
 - Any frontmatter field you invented. Schema is checked at build time.
 
 ## 11. Atlas vault — graph view in Obsidian

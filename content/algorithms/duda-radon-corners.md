@@ -9,10 +9,6 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 prerequisites: [image-gradient]
 failureModes: []
-relations:
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: high
 sources:
   primary: duda2018-accurate
   references: [harris1988-corner, rufli2008-blurred, sinzinger2007-model-based]

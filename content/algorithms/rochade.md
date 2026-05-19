@@ -13,9 +13,6 @@ relations:
   - type: compared_with
     target: pyramidal-blur-aware-xcorner
     confidence: high
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: high
 sources:
   primary: placht2014-rochade
   references: [lucchese2003-saddle, niblack1992-skeleton, rufli2008-blurred, chen2005-xcorner]

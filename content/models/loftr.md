@@ -12,9 +12,6 @@ prerequisites: [feature-matching, attention-mechanism]
 failureModes: []
 relations:
   - type: compared_with
-    target: superglue
-    confidence: high
-  - type: compared_with
     target: xfeat
     confidence: high
     caution: "XFeat is later and lighter; LoFTR is the heavyweight reference for the detector-free paradigm."

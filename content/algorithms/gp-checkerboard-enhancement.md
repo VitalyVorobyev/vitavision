@@ -13,9 +13,6 @@ relations:
   - type: compared_with
     target: ocpad
     confidence: high
-  - type: feeds_into
-    target: zhang-planar-calibration
-    confidence: high
 sources:
   primary: hillen2023-enhanced
   references:

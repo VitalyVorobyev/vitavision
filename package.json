@@ -28,7 +28,7 @@
     "@fontsource/geist-mono": "^5.2.8",
     "@fontsource/inter": "^5.2.8",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@vitavision/calib-targets": "^0.7.3",
+    "@vitavision/calib-targets": "^0.8.0",
     "@vitavision/chess-corners": "^0.7.0",
     "@vitavision/radsym": "^0.1.4",
     "@vitavision/ringgrid": "^0.5.6",

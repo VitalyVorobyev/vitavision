@@ -992,3 +992,168 @@
   cites:
   - he2016-resnet
   - he2017-maskrcnn
+
+- id: sofiiuk2021-ritm
+  title: "Reviving Iterative Training with Mask Guidance for Interactive Segmentation"
+  authors: ["K. Sofiiuk", "I. A. Petrov", "A. Konushin"]
+  year: 2021
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2102.06583
+  arxiv: "2102.06583"
+  doi: "10.48550/arxiv.2102.06583"
+  pdf: sofiiuk2021-ritm.pdf
+  cites: []
+
+- id: sun2019-hrnet
+  title: "Deep High-Resolution Representation Learning for Human Pose Estimation"
+  authors: ["K. Sun", "B. Xiao", "D. Liu", "J. Wang"]
+  year: 2019
+  venue: CVPR 2019
+  url: https://arxiv.org/pdf/1902.09212
+  arxiv: "1902.09212"
+  doi: "10.48550/arxiv.1902.09212"
+  pdf: sun2019-hrnet.pdf
+  cites:
+  - he2016-resnet
+  - szegedy2015-inception
+
+- id: sun2019-hrnetv2
+  title: "High-Resolution Representations for Labeling Pixels and Regions"
+  authors: ["K. Sun", "Y. Zhao", "B. Jiang", "T. Cheng", "B. Xiao", "D. Liu", "Y. Mu", "X. Wang", "W. Liu", "J. Wang"]
+  year: 2019
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/1904.04514
+  arxiv: "1904.04514"
+  doi: "10.48550/arxiv.1904.04514"
+  pdf: sun2019-hrnetv2.pdf
+  cites:
+  - sun2019-hrnet
+  - he2016-resnet
+  - he2017-maskrcnn
+
+- id: wang2020-hrnet-journal
+  title: "Deep High-Resolution Representation Learning for Visual Recognition"
+  authors: ["J. Wang", "K. Sun", "T. Cheng", "B. Jiang", "C. Deng", "Y. Zhao", "D. Liu", "Y. Mu", "M. Tan", "X. Wang", "W. Liu", "B. Xiao"]
+  year: 2020
+  venue: TPAMI 2020 (arXiv 2019)
+  url: https://arxiv.org/pdf/1908.07919
+  arxiv: "1908.07919"
+  doi: "10.48550/arxiv.1908.07919"
+  pdf: wang2020-hrnet-journal.pdf
+  cites:
+  - sun2019-hrnet
+  - sun2019-hrnetv2
+  - he2016-resnet
+
+- id: zhang2023-mobilesam
+  title: "Faster Segment Anything: Towards Lightweight SAM for Mobile Applications"
+  authors: ["C. Zhang", "D. Han", "Y. Qiao", "J. U. Kim", "S. Bae", "S. Lee", "C. S. Hong"]
+  year: 2023
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2306.14289
+  arxiv: "2306.14289"
+  doi: "10.48550/arxiv.2306.14289"
+  pdf: zhang2023-mobilesam.pdf
+  cites:
+  - kirillov2023-sam
+
+- id: zhang2023-mobilesamv2
+  title: "MobileSAMv2: Faster Segment Anything to Everything"
+  authors: ["C. Zhang", "D. Han", "S. Zheng", "J. Choi", "T. Kim", "C. S. Hong"]
+  year: 2023
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2312.09579
+  arxiv: "2312.09579"
+  doi: "10.48550/arxiv.2312.09579"
+  pdf: zhang2023-mobilesamv2.pdf
+  cites:
+  - kirillov2023-sam
+  - zhang2023-mobilesam
+
+- id: ravi2024-sam2
+  title: "SAM 2: Segment Anything in Images and Videos"
+  authors: ["N. Ravi", "V. Gabeur", "Y. Hu", "R. Hu", "C. K. Ryali", "T. Ma", "H. Khedr", "R. Rädle", "C. Rolland", "L. Gustafson", "E. Mintun", "J. Pan", "K. V. Alwala", "N. Carion", "C. Wu", "R. Girshick", "P. Dollár", "C. Feichtenhofer"]
+  year: 2024
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2408.00714
+  arxiv: "2408.00714"
+  doi: "10.48550/arxiv.2408.00714"
+  pdf: ravi2024-sam2.pdf
+  cites:
+  - kirillov2023-sam
+
+- id: carion2025-sam3
+  title: "SAM 3: Segment Anything with Concepts"
+  authors: ["N. Carion", "L. Gustafson", "Y. Hu", "S. Debnath", "R. Hu", "D. Suris", "C. K. Ryali", "K. V. Alwala", "H. Khedr", "A. C. Huang", "J. Lei", "T. Ma", "B. Guo", "A. Kalla", "M. D. Marks", "J. Greer", "M. Wang", "P. Sun", "R. Rädle", "T. Afouras", "E. Mavroudi", "K. Xu", "T. Wu", "Y. Zhou", "L. Momeni", "R. Hazra", "S. Ding", "S. Vaze", "F. Porcher", "L. Feng", "S. Li", "A. Kamath", "H. Cheng", "P. Dollár", "N. Ravi", "K. Saenko", "P. Zhang", "C. Feichtenhofer"]
+  year: 2025
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2511.16719
+  arxiv: "2511.16719"
+  doi: "10.48550/arxiv.2511.16719"
+  pdf: carion2025-sam3.pdf
+  cites:
+  - kirillov2023-sam
+  - ravi2024-sam2
+
+- id: dosovitskiy2020-vit
+  title: "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"
+  authors: ["A. Dosovitskiy", "L. Beyer", "A. Kolesnikov", "D. Weissenborn", "X. Zhai", "T. Unterthiner", "M. Dehghani", "M. Minderer", "G. Heigold", "S. Gelly", "J. Uszkoreit", "N. Houlsby"]
+  year: 2020
+  venue: ICLR 2021 (arXiv 2020)
+  url: https://arxiv.org/pdf/2010.11929
+  arxiv: "2010.11929"
+  doi: "10.48550/arxiv.2010.11929"
+  pdf: dosovitskiy2020-vit.pdf
+  cites: []
+
+- id: carion2020-detr
+  title: "End-to-End Object Detection with Transformers"
+  authors: ["N. Carion", "F. Massa", "G. Synnaeve", "N. Usunier", "A. Kirillov", "S. Zagoruyko"]
+  year: 2020
+  venue: ECCV 2020
+  url: https://arxiv.org/pdf/2005.12872
+  arxiv: "2005.12872"
+  doi: "10.1007/978-3-030-58452-8_13"
+  pdf: carion2020-detr.pdf
+  cites:
+  - he2016-resnet
+
+- id: cheng2021-maskformer
+  title: "Per-Pixel Classification is Not All You Need for Semantic Segmentation"
+  authors: ["B. Cheng", "A. G. Schwing", "A. Kirillov"]
+  year: 2021
+  venue: NeurIPS 2021
+  url: https://arxiv.org/pdf/2107.06278
+  arxiv: "2107.06278"
+  doi: "10.48550/arxiv.2107.06278"
+  pdf: cheng2021-maskformer.pdf
+  cites:
+  - he2016-resnet
+  - carion2020-detr
+
+- id: cheng2022-mask2former
+  title: "Masked-attention Mask Transformer for Universal Image Segmentation"
+  authors: ["B. Cheng", "I. Misra", "A. G. Schwing", "A. Kirillov", "R. Girdhar"]
+  year: 2022
+  venue: CVPR 2022 (arXiv 2021)
+  url: https://arxiv.org/pdf/2112.01527
+  arxiv: "2112.01527"
+  doi: "10.48550/arxiv.2112.01527"
+  pdf: cheng2022-mask2former.pdf
+  cites:
+  - cheng2021-maskformer
+  - carion2020-detr
+  - he2016-resnet
+
+- id: he2021-mae
+  title: "Masked Autoencoders Are Scalable Vision Learners"
+  authors: ["K. He", "X. Chen", "S. Xie", "Y. Li", "P. Dollár", "R. Girshick"]
+  year: 2021
+  venue: CVPR 2022 (arXiv 2021)
+  url: https://arxiv.org/pdf/2111.06377
+  arxiv: "2111.06377"
+  doi: "10.48550/arxiv.2111.06377"
+  pdf: he2021-mae.pdf
+  cites:
+  - dosovitskiy2020-vit
+  - he2016-resnet

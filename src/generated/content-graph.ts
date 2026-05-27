@@ -467,6 +467,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/deeplab-semantic-segmentation",
       "draft": false
     },
+    "detr": {
+      "slug": "detr",
+      "type": "model",
+      "title": "DETR",
+      "summary": "End-to-end object detector that recasts detection as direct set prediction — CNN backbone (ResNet-50/101) extracts $H/32 \\times W/32$ feature map; transformer encoder-decoder with 6+6 layers and $N=100$ learned object queries outputs (class, box) pairs; bipartite-matching loss via Hungarian algorithm eliminates anchor boxes, region proposals, and NMS. Comparable COCO AP to Faster R-CNN at simpler pipeline; better large-object AP, worse small-object AP, and ~10× slower convergence (300+ epochs).",
+      "path": "/atlas/detr",
+      "draft": false
+    },
     "faster-rcnn": {
       "slug": "faster-rcnn",
       "type": "model",
@@ -491,6 +499,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/googlenet",
       "draft": false
     },
+    "hrnet": {
+      "slug": "hrnet",
+      "type": "model",
+      "title": "HRNet",
+      "summary": "CNN backbone family for dense prediction that maintains a high-resolution branch throughout the network and runs four parallel multi-resolution streams ($C, 2C, 4C, 8C$ channels) with eight repeated cross-resolution fusions; V1 uses the high-resolution stream only (pose heatmaps), V2 upsamples and concatenates all four streams for per-pixel labelling (semantic segmentation, face landmarks), and V2p adds an FPN-style multi-scale output for object detection and instance segmentation.",
+      "path": "/atlas/hrnet",
+      "draft": false
+    },
     "lightglue": {
       "slug": "lightglue",
       "type": "model",
@@ -507,12 +523,28 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/loftr",
       "draft": false
     },
+    "mae": {
+      "slug": "mae",
+      "type": "model",
+      "title": "MAE",
+      "summary": "Masked Autoencoder — self-supervised pretraining for Vision Transformers: randomly mask 75 % of input patches, feed the visible 25 % through a ViT encoder, then run a lightweight ViT decoder over the full sequence (visible + shared learnable mask tokens) to reconstruct the masked patches' raw pixel values under MSE on per-patch-normalised targets. The asymmetric encoder-decoder design (encoder operates only on visible tokens, decoder is much smaller and discarded after pretraining) gives a 2.8–4.1× pretraining speedup vs full-sequence masked-ViT baselines and reaches 87.8 % ImageNet-1k top-1 with ViT-H fine-tuning.",
+      "path": "/atlas/mae",
+      "draft": false
+    },
     "mask-rcnn": {
       "slug": "mask-rcnn",
       "type": "model",
       "title": "Mask R-CNN",
       "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
       "path": "/atlas/mask-rcnn",
+      "draft": false
+    },
+    "mask2former": {
+      "slug": "mask2former",
+      "type": "model",
+      "title": "Mask2Former",
+      "summary": "Universal image segmentation family — MaskFormer (v1, NeurIPS 2021) reframes semantic segmentation as **mask classification**: predict a set of $N$ binary masks plus per-mask class labels via a DETR-style transformer decoder over pixel-decoder features, supervised by bipartite matching. Mask2Former (v2, CVPR 2022) extends v1 with **masked attention** (cross-attention restricted to each query's predicted mask foreground), multi-scale round-robin features (queries cross-attend to 1/32, 1/16, 1/8 maps across consecutive layers), and point-sampled mask loss for 3× memory reduction. A single architecture, trained per-dataset, beats specialised models on COCO panoptic (PQ 57.8), COCO instance (AP 50.1), and ADE20K semantic (mIoU 57.7) with Swin-L.",
+      "path": "/atlas/mask2former",
       "draft": false
     },
     "mate-checkerboard-detector": {
@@ -523,12 +555,36 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/mate-checkerboard-detector",
       "draft": false
     },
+    "mobilesam": {
+      "slug": "mobilesam",
+      "type": "model",
+      "title": "MobileSAM",
+      "summary": "Lightweight SAM family — replaces SAM's heavy ViT-H image encoder (632M params, ~452 ms on a single GPU) with a distilled TinyViT encoder (5.78M params, ~8 ms), keeping SAM's prompt encoder + mask decoder frozen and unchanged; MobileSAMv2 adds an object-aware prompt sampler (YOLOv8-style detector → bounding-box prompts) that replaces SAM's 32×32 grid-prompt + NMS pipeline for the Segment-Everything task, cutting end-to-end latency from ≈1616 ms to ≈97 ms (>16×) at equivalent mask quality.",
+      "path": "/atlas/mobilesam",
+      "draft": false
+    },
     "resnet": {
       "slug": "resnet",
       "type": "model",
       "title": "ResNet",
       "summary": "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation.",
       "path": "/atlas/resnet",
+      "draft": false
+    },
+    "ritm-interactive-segmentation": {
+      "slug": "ritm-interactive-segmentation",
+      "type": "model",
+      "title": "RITM",
+      "summary": "Feedforward click-based interactive segmentation: HRNet+OCR encoder-decoder taking RGB + positive/negative disk-encoded clicks + previous mask, trained with iterative click simulation and Normalized Focal Loss on COCO+LVIS — sets a new state of the art without inference-time backward passes.",
+      "path": "/atlas/ritm-interactive-segmentation",
+      "draft": false
+    },
+    "sam": {
+      "slug": "sam",
+      "type": "model",
+      "title": "SAM",
+      "summary": "Promptable segmentation foundation model family — SAM (v1, 2023) introduces image-prompt segmentation with a heavy ViT-H encoder and lightweight transformer decoder trained on the 1.1B-mask SA-1B dataset; SAM 2 (2024) extends to video via a streaming memory module on a Hiera hierarchical-ViT encoder; SAM 3 (2025) generalises from single-object prompts to *concept* prompts (free-form noun phrases or visual exemplars) via a presence token, segmenting all matching instances on images and videos.",
+      "path": "/atlas/sam",
       "draft": false
     },
     "superglue": {
@@ -561,6 +617,14 @@ export const contentGraph: ContentGraph = {
       "title": "VGG",
       "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
       "path": "/atlas/vgg",
+      "draft": false
+    },
+    "vit": {
+      "slug": "vit",
+      "type": "model",
+      "title": "ViT",
+      "summary": "Vision Transformer — a pure-transformer image classification backbone that treats an image as a sequence of fixed-size patches: split RGB image into $N = HW/P^2$ patches of $P{\\times}P$ pixels (P=16 for ViT-B/L, P=14 for ViT-H), linearly project to $D$-dim tokens, prepend a learnable [CLS] token, add learned positional embeddings, and feed through a standard transformer encoder; classification head reads the [CLS] token's final-layer output. ViT-B/16 86M params, ViT-L/16 307M, ViT-H/14 632M. With large-scale pretraining (JFT-300M) ViT matches or exceeds ResNet-based BiT-L on ImageNet at lower compute.",
+      "path": "/atlas/vit",
       "draft": false
     },
     "xfeat": {
@@ -1784,6 +1848,27 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "detr": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "faster-rcnn",
+          "confidence": "high",
+          "caution": "DETR vs Faster R-CNN is the headline detection comparison; DETR removes hand-designed RPN + anchor boxes + NMS in favour of bipartite matching + transformer decoder at comparable COCO AP."
+        },
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM's mask decoder two-way cross-attention is inspired by DETR's transformer decoder; SAM 3's concept detector is explicitly DETR-based."
+        }
+      ]
+    },
     "faster-rcnn": {
       "prerequisites": [],
       "failureModes": [],
@@ -1803,6 +1888,13 @@ export const contentGraph: ContentGraph = {
           "type": "extended_by",
           "target": "mask-rcnn",
           "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "detr",
+          "confidence": "high",
+          "caution": "DETR vs Faster R-CNN is the headline detection comparison; DETR removes hand-designed RPN + anchor boxes + NMS in favour of bipartite matching + transformer decoder at comparable COCO AP.",
+          "mirrored": true
         },
         {
           "type": "compared_with",
@@ -1870,6 +1962,25 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "hrnet": {
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "ritm-interactive-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "medium",
+          "caution": "ResNet is the dominant backbone for dense prediction; HRNet trades higher activation memory for better keypoint/segmentation accuracy via parallel high-resolution streams."
+        }
+      ]
+    },
     "lightglue": {
       "prerequisites": [
         "feature-matching",
@@ -1913,6 +2024,21 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "mae": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM v1's ViT-H image encoder is MAE-pretrained; SAM 2's Hiera (hierarchical ViT) is also MAE-pretrained. MAE is the SSL recipe that makes the SAM-family foundation segmenters' large encoders feasible."
+        }
+      ]
+    },
     "mask-rcnn": {
       "prerequisites": [],
       "failureModes": [],
@@ -1922,6 +2048,41 @@ export const contentGraph: ContentGraph = {
           "target": "felzenszwalb-deformable-parts",
           "confidence": "medium",
           "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        },
+        {
+          "type": "compared_with",
+          "target": "mask2former",
+          "confidence": "high",
+          "caution": "Mask R-CNN is the dominant per-RoI proposal-then-segment baseline; Mask2Former reframes the same problem as mask classification + set prediction, achieving unified handling of semantic, instance, and panoptic in one architecture.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "sam",
+          "confidence": "medium",
+          "caution": "Different problem classes — Mask R-CNN is closed-set instance detection with category labels; SAM is class-agnostic promptable segmentation.",
+          "mirrored": true
+        }
+      ]
+    },
+    "mask2former": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM 3's mask head is adapted from MaskFormer/Mask2Former — this family establishes the per-query mask classification + set-prediction paradigm SAM 3 inherits for concept segmentation."
+        },
+        {
+          "type": "compared_with",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN is the dominant per-RoI proposal-then-segment baseline; Mask2Former reframes the same problem as mask classification + set prediction, achieving unified handling of semantic, instance, and panoptic in one architecture."
         }
       ]
     },
@@ -1948,6 +2109,14 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         }
       ]
+    },
+    "mobilesam": {
+      "prerequisites": [
+        "sam",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": []
     },
     "resnet": {
       "prerequisites": [
@@ -1978,6 +2147,86 @@ export const contentGraph: ContentGraph = {
           "target": "loftr",
           "confidence": "medium",
           "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "medium",
+          "caution": "ResNet is the dominant backbone for dense prediction; HRNet trades higher activation memory for better keypoint/segmentation accuracy via parallel high-resolution streams.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "vit",
+          "confidence": "high",
+          "caution": "ViT vs ResNet (BiT) is the headline classification comparison in the paper. Both coexist as production backbones — ResNet's conv inductive bias dominates in small-data regimes; ViT scales better with large pretraining (JFT-300M).",
+          "mirrored": true
+        }
+      ]
+    },
+    "ritm-interactive-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "graph-cut-segmentation",
+          "confidence": "medium",
+          "caution": "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
+        },
+        {
+          "type": "compared_with",
+          "target": "sam",
+          "confidence": "medium",
+          "caution": "Both are click-prompted interactive segmenters; different sub-paradigms — SAM is a foundation model with a prompt-conditioned decoder, RITM is iterative-mask refinement on a per-image encoder.",
+          "mirrored": true
+        }
+      ]
+    },
+    "sam": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "graph-cut-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-graph-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mask-rcnn",
+          "confidence": "medium",
+          "caution": "Different problem classes — Mask R-CNN is closed-set instance detection with category labels; SAM is class-agnostic promptable segmentation."
+        },
+        {
+          "type": "compared_with",
+          "target": "ritm-interactive-segmentation",
+          "confidence": "medium",
+          "caution": "Both are click-prompted interactive segmenters; different sub-paradigms — SAM is a foundation model with a prompt-conditioned decoder, RITM is iterative-mask refinement on a per-image encoder."
+        },
+        {
+          "type": "extended_by",
+          "target": "mobilesam",
+          "confidence": "high",
+          "caution": "MobileSAM is a lightweight derivative — distils SAM v1's ViT-H image encoder into a 5.78M-param TinyViT (~56× faster) while keeping SAM's prompt encoder + decoder frozen; MobileSAMv2 adds an object-aware prompt sampler for Segment-Everything."
         }
       ]
     },
@@ -2104,6 +2353,31 @@ export const contentGraph: ContentGraph = {
           "confidence": "high",
           "caution": "Both ILSVRC-2014 entries — GoogLeNet won classification (6.67% top-5), VGG won localisation. Different design philosophies: Inception modules vs homogeneous 3×3 depth scaling.",
           "mirrored": true
+        }
+      ]
+    },
+    "vit": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "mobilesam",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "ViT vs ResNet (BiT) is the headline classification comparison in the paper. Both coexist as production backbones — ResNet's conv inductive bias dominates in small-data regimes; ViT scales better with large pretraining (JFT-300M)."
         }
       ]
     },
@@ -2500,7 +2774,12 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [],
       "fedBy": [],
-      "hasLearnedAlternative": []
+      "hasLearnedAlternative": [
+        {
+          "slug": "sam",
+          "confidence": "high"
+        }
+      ]
     },
     "fischler-bolles-ransac": {
       "usedBy": [],
@@ -2566,7 +2845,16 @@ export const contentGraph: ContentGraph = {
         }
       ],
       "fedBy": [],
-      "hasLearnedAlternative": []
+      "hasLearnedAlternative": [
+        {
+          "slug": "ritm-interactive-segmentation",
+          "confidence": "high"
+        },
+        {
+          "slug": "sam",
+          "confidence": "high"
+        }
+      ]
     },
     "graph-cut-segmentation": {
       "usedBy": [],
@@ -2574,7 +2862,17 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [],
       "fedBy": [],
-      "hasLearnedAlternative": []
+      "hasLearnedAlternative": [
+        {
+          "slug": "ritm-interactive-segmentation",
+          "confidence": "medium",
+          "caution": "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
+        },
+        {
+          "slug": "sam",
+          "confidence": "high"
+        }
+      ]
     },
     "harris-corner-detector": {
       "usedBy": [],
@@ -2941,6 +3239,14 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "detr": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "faster-rcnn": {
       "usedBy": [],
       "affects": [],
@@ -2969,6 +3275,14 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "googlenet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "hrnet": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -3010,6 +3324,14 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "mae": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "mask-rcnn": {
       "usedBy": [],
       "affects": [],
@@ -3034,12 +3356,39 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "mask2former": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "mate-checkerboard-detector": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
       "extending": [],
       "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "mobilesam": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "sam",
+          "confidence": "high",
+          "caution": "MobileSAM is a lightweight derivative — distils SAM v1's ViT-H image encoder into a 5.78M-param TinyViT (~56× faster) while keeping SAM's prompt encoder + decoder frozen; MobileSAMv2 adds an object-aware prompt sampler for Segment-Everything."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "vit",
+          "confidence": "high"
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "resnet": {
@@ -3054,6 +3403,49 @@ export const contentGraph: ContentGraph = {
         }
       ],
       "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "ritm-interactive-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "hrnet",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "sam": {
+      "usedBy": [
+        "mobilesam"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "detr",
+          "confidence": "high",
+          "caution": "SAM's mask decoder two-way cross-attention is inspired by DETR's transformer decoder; SAM 3's concept detector is explicitly DETR-based."
+        },
+        {
+          "slug": "mae",
+          "confidence": "high",
+          "caution": "SAM v1's ViT-H image encoder is MAE-pretrained; SAM 2's Hiera (hierarchical ViT) is also MAE-pretrained. MAE is the SSL recipe that makes the SAM-family foundation segmenters' large encoders feasible."
+        },
+        {
+          "slug": "mask2former",
+          "confidence": "high",
+          "caution": "SAM 3's mask head is adapted from MaskFormer/Mask2Former — this family establishes the per-query mask classification + set-prediction paradigm SAM 3 inherits for concept segmentation."
+        },
+        {
+          "slug": "vit",
+          "confidence": "high"
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "superglue": {
@@ -3106,6 +3498,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "vit": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "xfeat": {
       "usedBy": [],
       "affects": [],
@@ -3124,10 +3524,16 @@ export const contentGraph: ContentGraph = {
     },
     "attention-mechanism": {
       "usedBy": [
+        "detr",
         "feature-matching",
         "lightglue",
         "loftr",
-        "superglue"
+        "mae",
+        "mask2former",
+        "mobilesam",
+        "sam",
+        "superglue",
+        "vit"
       ],
       "affects": [],
       "generalises": [],
@@ -3187,10 +3593,16 @@ export const contentGraph: ContentGraph = {
     "convolutional-neural-network": {
       "usedBy": [
         "alexnet",
+        "detr",
         "geometric-bev",
         "googlenet",
+        "hrnet",
+        "mae",
+        "mask2former",
         "resnet",
-        "vgg"
+        "sam",
+        "vgg",
+        "vit"
       ],
       "affects": [],
       "generalises": [],
@@ -3576,18 +3988,26 @@ export const contentGraph: ContentGraph = {
     "chessboard-x-corner-detection": 2,
     "ccs-camera-calibration": 3,
     "deeplab-semantic-segmentation": 0,
+    "detr": 2,
     "faster-rcnn": 0,
     "fcn-semantic-segmentation": 0,
     "googlenet": 2,
+    "hrnet": 2,
     "lightglue": 4,
     "loftr": 4,
+    "mae": 2,
     "mask-rcnn": 0,
+    "mask2former": 2,
     "mate-checkerboard-detector": 2,
+    "sam": 2,
+    "mobilesam": 3,
     "resnet": 2,
+    "ritm-interactive-segmentation": 0,
     "superglue": 4,
     "superpoint": 2,
     "unet-segmentation": 0,
     "vgg": 2,
+    "vit": 2,
     "xfeat": 2,
     "yolo-v1": 0,
     "spatially-varying-image-stitching": 2

@@ -2239,6 +2239,62 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "detr",
+    "frontmatter": {
+      "title": "DETR",
+      "summary": "End-to-end object detector that recasts detection as direct set prediction — CNN backbone (ResNet-50/101) extracts $H/32 \\times W/32$ feature map; transformer encoder-decoder with 6+6 layers and $N=100$ learned object queries outputs (class, box) pairs; bipartite-matching loss via Hungarian algorithm eliminates anchor boxes, region proposals, and NMS. Comparable COCO AP to Faster R-CNN at simpler pipeline; better large-object AP, worse small-object AP, and ~10× slower convergence (300+ epochs).",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "faster-rcnn",
+          "confidence": "high",
+          "caution": "DETR vs Faster R-CNN is the headline detection comparison; DETR removes hand-designed RPN + anchor boxes + NMS in favour of bipartite matching + transformer decoder at comparable COCO AP."
+        },
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM's mask decoder two-way cross-attention is inspired by DETR's transformer decoder; SAM 3's concept detector is explicitly DETR-based."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "detection",
+      "arch_family": "hybrid",
+      "params": "41M (DETR R50), 60M (DETR R101)",
+      "flops": "86 GFLOPs (DETR R50), 152 GFLOPs (DETR R101)",
+      "sources": {
+        "primary": "carion2020-detr",
+        "references": [
+          "he2016-resnet"
+        ],
+        "notes": "Architecture (§3.2): CNN backbone (ResNet-50 or -101) extracts feature\nmap $f \\in \\mathbb{R}^{C \\times H/32 \\times W/32}$ with $C=2048$. 1×1\nconv projects to $d=256$ channels; flatten to $HW/32^2$ tokens; add\nfixed 2D sinusoidal positional encoding. Transformer encoder: 6\nlayers of standard multi-head self-attention (8 heads, $d_\\text{ff}=2048$).\nTransformer decoder: 6 layers, takes $N=100$ learnable **object\nqueries** as positional embeddings; cross-attends to encoder\noutput; non-autoregressive (all $N$ queries decoded in parallel).\nTwo prediction heads per query: 3-layer MLP for box (cx, cy, w, h\nrelative to image); single linear for class (over $K+1$ classes\nincluding \"no object\").\n\nSet-prediction loss (Eq. 1-2, §3.1):\n$$\\hat{\\sigma} = \\arg\\min_{\\sigma \\in \\mathfrak{S}_N} \\sum_i \\mathcal{L}_\\text{match}(y_i, \\hat{y}_{\\sigma(i)})$$\nHungarian algorithm solves the assignment in $O(N^3)$. Matching\ncost combines class probability + box L1 + box GIoU. Hungarian\nloss applied per matched pair: $-\\log \\hat{p}_{\\hat{\\sigma}(i)}(c_i)\n+ \\mathbb{1}_{c_i \\neq \\emptyset}[\\lambda_\\text{L1}\\|b_i - \\hat{b}_{\\hat{\\sigma}(i)}\\|_1\n+ \\lambda_\\text{GIoU}\\mathcal{L}_\\text{GIoU}(b_i, \\hat{b}_{\\hat{\\sigma}(i)})]$.\nNo-object class weight ×0.1 for class imbalance.\n\nTraining (§4.1): COCO 2017 detection (118k train, 5k val).\nAdamW, transformer LR $10^{-4}$, backbone LR $10^{-5}$, weight\ndecay $10^{-4}$, batch size 64 across 16 V100s, 300-epoch schedule\n(or 500 for the \"long\" config). LR drops ×0.1 at epoch 200 (300\nschedule) or 400 (500 schedule). Augmentation: random horizontal\nflip, random scale, random crop (shortest side 480-800, longest\n1333). Dropout 0.1 in transformer.\n\nHeadline benchmarks (Table 1, §4.2):\n- DETR (R50): 42.0 AP, 20.5 AP_S, 45.8 AP_M, 61.1 AP_L; 41M params,\n  86 GFLOPs, 28 FPS.\n- DETR-DC5 (R50, dilated C5 stride-1): 43.3 AP, 22.5 AP_S; 41M\n  params, 187 GFLOPs, 12 FPS.\n- DETR (R101): 43.5 AP; 60M params.\n- DETR-DC5 (R101): 44.9 AP; 60M params.\n- Faster R-CNN-R50-FPN (3× schedule): 42.0 AP, 26.6 AP_S, 45.4\n  AP_M, 53.4 AP_L; 42M params, 180 GFLOPs.\n- Faster R-CNN-R101-FPN (3× schedule): 44.0 AP, 27.2 AP_S.\nDETR matches Faster R-CNN on overall AP at lower FLOPs; large-object\nAP_L 61.1 vs 53.4 = +7.7 (large-object advantage from global\nattention); small-object AP_S 20.5 vs 26.6 = −6.1 (small-object\ndisadvantage from the coarse single-scale feature map).\n\nConvergence: DETR 300 epochs vs Faster R-CNN 12-36 epochs — 10-25×\nslower convergence (§4.1, Fig. 4). Later work (Deformable DETR)\nreduces this dramatically.\n\nPanoptic segmentation extension (§5): per-query mask head produces\nbinary masks; argmax across queries gives panoptic output. 45.1\nPQ on COCO panoptic val.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/detr",
+          "commit": "29901c51d7fe8712168b8d0d64351170bc0f83e0",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2020
+    }
+  },
+  {
     "slug": "faster-rcnn",
     "frontmatter": {
       "title": "Faster R-CNN",
@@ -2458,6 +2514,64 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "hrnet",
+    "frontmatter": {
+      "title": "HRNet",
+      "summary": "CNN backbone family for dense prediction that maintains a high-resolution branch throughout the network and runs four parallel multi-resolution streams ($C, 2C, 4C, 8C$ channels) with eight repeated cross-resolution fusions; V1 uses the high-resolution stream only (pose heatmaps), V2 upsamples and concatenates all four streams for per-pixel labelling (semantic segmentation, face landmarks), and V2p adds an FPN-style multi-scale output for object detection and instance segmentation.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 11,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "ritm-interactive-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "medium",
+          "caution": "ResNet is the dominant backbone for dense prediction; HRNet trades higher activation memory for better keypoint/segmentation accuracy via parallel high-resolution streams."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction",
+        "keypoint-detection"
+      ],
+      "domain": "features",
+      "arch_family": "cnn",
+      "params": "28.5M (W32), 63.6M (W48) — Table 1",
+      "flops": "7.10 GFLOPs (W32), 14.6 GFLOPs (W48) @ 256×192",
+      "sources": {
+        "primary": "sun2019-hrnet",
+        "references": [
+          "he2016-resnet",
+          "sun2019-hrnetv2",
+          "wang2020-hrnet-journal"
+        ],
+        "notes": "Four parallel resolution streams maintained throughout the network at\n$1\\times, \\frac{1}{2}\\times, \\frac{1}{4}\\times, \\frac{1}{8}\\times$ of\npost-stem resolution (¼ of input). Channel widths $C, 2C, 4C, 8C$ —\nW32 uses $C{=}32$ (32/64/128/256); W48 uses $C{=}48$ (48/96/192/384)\n(§3, Table 1 ablations). Exchange unit (§3): strided 3×3 for\ndownsampling, 1×1 conv + nearest-neighbour upsample for upsampling,\nidentity for same-resolution paths; each output branch is the sum of\nall transformed input branches: $Y_k = \\sum_i a(X_i, k)$. Total\narchitecture: Stage 1 = 4 residual bottleneck units (width 64), then\n1 exchange block; Stage 2 = 1 exchange block; Stage 3 = 4 blocks;\nStage 4 = 3 blocks; 8 cross-resolution fusions total. Head: 1×1 conv\non the high-resolution branch → K keypoint heatmaps; MSE loss against\n2D Gaussian GT with σ=1 px. Headline COCO val keypoint AP\n(256×192 input, ImageNet-pretrained): W32 74.4 AP / 28.5M / 7.10\nGFLOPs; W48 75.1 AP / 63.6M / 14.6 GFLOPs (Table 1). COCO test-dev:\nW48 75.5 AP; W48 + extra data 77.0 AP (Table 2). MPII PCKh@0.5: W32\n92.3, W48 92.3 (Table 3/4). Fusion ablation: 1 fusion → 70.8 AP,\n3 → 71.9, 8 (full) → 73.4 AP (W32 from scratch, Table 6).\nPretraining: ImageNet pretraining adds +1.0 AP on COCO val for W32\n(Table 1, 73.4 → 74.4). Efficiency: HRNet-W32 outperforms\nSimpleBaseline-ResNet152 by 1.5 AP at 384×288 input at ~45% of the\nGFLOPs (Table 1, §4.1).\n\nFamily extension grounded in sun2019-hrnetv2 + wang2020-hrnet-journal:\nHRNetV1 head — high-resolution stream output only (pose use). HRNetV2\nhead — upsample all four streams to ¼-resolution, concatenate (15C\nchannels for W32), 1×1 conv → per-pixel labels (sun2019-hrnetv2 §3).\nHRNetV2p head — V2 output downsampled to 5 pyramid levels (¼ to 1/64)\nfor FPN-style detection (sun2019-hrnetv2 §3, Mask R-CNN / Faster\nR-CNN backbone). ImageNet classification head (HRNet-C, wang2020-\nhrnet-journal Appendix B, Table XV): cascaded hierarchical merge of\nthe four streams, then global average pooling + linear. Width\nnomenclature for classification variants differs from dense-\nprediction variants (W18/W30/W40/W44/W76/W96 for classification;\nW18/W32/W40/W48 for dense). Headline benchmarks across the family:\nCityscapes val mIoU (HRNetV2-W48 81.1, sun2019-hrnetv2 Table); COCO\nobject detection AP with HRNetV2p (sun2019-hrnetv2 §4); ImageNet\nclassification top-1 advantage over ResNet at matched FLOPs is small\n(≤1.5 pp), confirming HRNet is a dense-prediction backbone first\n(wang2020-hrnet-journal Table XV).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/leoxiaobin/deep-high-resolution-net.pytorch",
+          "commit": "6f69e4676ad8d43d0d61b64b1b9726f0c369e7b1",
+          "framework": "pytorch",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2019
+    }
+  },
+  {
     "slug": "lightglue",
     "frontmatter": {
       "title": "LightGlue",
@@ -2569,6 +2683,58 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "mae",
+    "frontmatter": {
+      "title": "MAE",
+      "summary": "Masked Autoencoder — self-supervised pretraining for Vision Transformers: randomly mask 75 % of input patches, feed the visible 25 % through a ViT encoder, then run a lightweight ViT decoder over the full sequence (visible + shared learnable mask tokens) to reconstruct the masked patches' raw pixel values under MSE on per-patch-normalised targets. The asymmetric encoder-decoder design (encoder operates only on visible tokens, decoder is much smaller and discarded after pretraining) gives a 2.8–4.1× pretraining speedup vs full-sequence masked-ViT baselines and reaches 87.8 % ImageNet-1k top-1 with ViT-H fine-tuning.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM v1's ViT-H image encoder is MAE-pretrained; SAM 2's Hiera (hierarchical ViT) is also MAE-pretrained. MAE is the SSL recipe that makes the SAM-family foundation segmenters' large encoders feasible."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "vit",
+      "sources": {
+        "primary": "he2021-mae",
+        "references": [
+          "dosovitskiy2020-vit",
+          "he2016-resnet"
+        ],
+        "notes": "Asymmetric masked autoencoder for ViT (§3, Fig. 1).\nStep 1: split image into ViT patches (224×224 → 14×14=196 patches at\nP=16). Step 2: **uniformly sample 75% of patches to mask** (Sec. 3\n\"Masking\" — high masking ratio is critical for visual SSL because\nimage patches are highly redundant; NLP's 15% would give a too-easy\ntask). Step 3: **encoder operates only on visible 25%** — the full\nViT encoder runs on the unmasked 25% of patches (49 tokens at base\nconfig), saving 3-4× encoder compute vs full-sequence approaches.\nStep 4: **decoder operates on all positions** — encoded visible\ntokens are concatenated with a single shared learnable mask token\n(each with its positional encoding) and fed to a lightweight ViT\ndecoder. Step 5: **reconstruction loss** — per-patch MSE on\nmasked patches only (visible patches contribute no loss). Pixel\ntargets are normalised per-patch (subtract mean, divide by std)\nbefore MSE (Sec. 3 \"Reconstruction target\"); without per-patch\nnormalisation, transfer accuracy drops 0.5 top-1.\n\nLoss: $\\mathcal{L} = \\frac{1}{|\\mathcal{M}|}\\sum_{i \\in \\mathcal{M}} \\|\\hat{x}_i - x_i^\\text{norm}\\|_2^2$\nwhere $\\mathcal{M}$ is the masked-patch index set and $x_i^\\text{norm}$\nis the per-patch-normalised target.\n\nArchitecture details (Sec. 3 + Table 8 ablations):\n- Encoder: standard ViT-B / ViT-L / ViT-H (12 / 24 / 32 layers).\n- Decoder: 8 layers, width 512 (much smaller than encoder, <10%\n  per-token FLOPs of the encoder).\n- Mask token: a single learnable [MASK] embedding shared across\n  all masked positions, with position embedding added.\n\nTraining (Sec. 4): ImageNet-1k unlabeled (no extra data), 1600\nepochs the long pretraining schedule (Sec. 4 \"Pretraining\"); AdamW,\nbatch 4096, base LR 1.5e-4 (linearly scaled with batch size, cosine\ndecay, 40-epoch warmup); weight decay 0.05; random-resized-crop +\nhorizontal flip augmentation. **2.8-4.1× wall-clock speedup vs the\nnaive full-sequence ViT-BERT baseline** (Sec. 4 \"Speedup\"; Table 6).\n\nHeadline benchmarks:\n- **ImageNet-1k top-1 (fine-tune)**: ViT-B 83.6%, ViT-L 85.9%,\n  ViT-H 86.9%, ViT-H/14 87.8% (Sec. 4.2, Table 3 / Fig. 5).\n- **ViT-H/14 87.8%** is the headline — beats supervised JFT-300M\n  pretraining of the same architecture without using external\n  labelled data.\n- Linear probing (no fine-tune): ViT-L 75.8%, ViT-H 76.6% (Sec.\n  4.2, Fig. 5).\n- Masking-ratio sweep (Fig. 5): 75% is optimal; quality drops\n  sharply below 50%.\n- Transfer to COCO detection (ViT-L Mask R-CNN backbone): box AP\n  53.3, mask AP 47.2 (Table 4).\n- Transfer to ADE20K semantic segmentation (ViT-L UperNet\n  backbone): mIoU 53.6 (Table 6).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/mae",
+          "commit": "efb2a8062c206524e35e47d04501ed4f544c0ae8",
+          "framework": "pytorch",
+          "license": "CC-BY-NC-4.0"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2021
+    }
+  },
+  {
     "slug": "mask-rcnn",
     "frontmatter": {
       "title": "Mask R-CNN",
@@ -2623,6 +2789,74 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-11",
       "year": 2017
+    }
+  },
+  {
+    "slug": "mask2former",
+    "frontmatter": {
+      "title": "Mask2Former",
+      "summary": "Universal image segmentation family — MaskFormer (v1, NeurIPS 2021) reframes semantic segmentation as **mask classification**: predict a set of $N$ binary masks plus per-mask class labels via a DETR-style transformer decoder over pixel-decoder features, supervised by bipartite matching. Mask2Former (v2, CVPR 2022) extends v1 with **masked attention** (cross-attention restricted to each query's predicted mask foreground), multi-scale round-robin features (queries cross-attend to 1/32, 1/16, 1/8 maps across consecutive layers), and point-sampled mask loss for 3× memory reduction. A single architecture, trained per-dataset, beats specialised models on COCO panoptic (PQ 57.8), COCO instance (AP 50.1), and ADE20K semantic (mIoU 57.7) with Swin-L.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM 3's mask head is adapted from MaskFormer/Mask2Former — this family establishes the per-query mask classification + set-prediction paradigm SAM 3 inherits for concept segmentation."
+        },
+        {
+          "type": "compared_with",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN is the dominant per-RoI proposal-then-segment baseline; Mask2Former reframes the same problem as mask classification + set prediction, achieving unified handling of semantic, instance, and panoptic in one architecture."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "hybrid",
+      "params": "216M (Swin-L backbone, total)",
+      "sources": {
+        "primary": "cheng2022-mask2former",
+        "references": [
+          "cheng2021-maskformer",
+          "carion2020-detr",
+          "he2016-resnet"
+        ],
+        "notes": "MaskFormer v1 (cheng2021-maskformer, NeurIPS 2021): the foundational\nparadigm shift — per-pixel classification (FCN/DeepLab) replaced by\n**mask classification**. Architecture (Fig. 2, §3): backbone (ResNet\nor Swin) → **pixel decoder** (FPN-like upsampling, output\n$\\mathcal{E}_\\text{pixel} \\in \\mathbb{R}^{C \\times H/4 \\times W/4}$\nwith $C=256$) + **transformer decoder** (DETR-style with $N=100$\nlearnable queries, 6 layers, embedding dim 256) → per-query class\nhead (MLP) + per-query mask head ($m_i(x,y) = \\sigma(q_i^\\top\n\\mathcal{E}_\\text{pixel}(x,y))$, sigmoid of query·pixel dot product).\nLoss $\\mathcal{L}_\\text{mask-cls}$ (Eq. 1): bipartite-matching\nHungarian over $N$ predictions; per-pair = cross-entropy on class +\nbinary cross-entropy + dice on mask; $\\lambda_\\text{focal}=20.0$,\n$\\lambda_\\text{dice}=1.0$, \"no object\" weight 0.1, backbone stride\n$S=32$. Headline (Swin-L†): ADE20K val mIoU 55.6, COCO panoptic\nval PQ 52.7 (Tables 3-4).\n\nMask2Former v2 (cheng2022-mask2former, CVPR 2022): direct\narchitectural extension of v1 — same pixel-decoder + transformer-\ndecoder + mask-head topology, **three changes** in the decoder:\n(i) **Masked attention** (Eq. 2, §3.2): cross-attention is\nrestricted to the foreground of each query's previously-predicted\nmask. $\\mathbf{X}_l = \\text{softmax}(\\mathcal{M}_{l-1} + \\mathbf{Q}_l \\mathbf{K}_l^\\top) \\mathbf{V}_l + \\mathbf{X}_{l-1}$\nwhere $\\mathcal{M}_{l-1}(x,y) = 0$ if mask threshold > 0.5 at $(x,y)$,\n$-\\infty$ otherwise (Eq. 5). Forces queries to focus locally instead\nof globally (DETR-style), accelerating convergence and improving\nquality. (ii) **Multi-scale round-robin features**: queries\ncross-attend to 1/32, 1/16, 1/8 resolution feature maps in rotation\nacross consecutive decoder layers (instead of v1's single 1/32 map).\nImproves small-object segmentation. (iii) **Point-sampled mask\nloss**: compute mask loss on $K=12544$ importance-sampled points\ninstead of all $H \\times W$ pixels, reducing per-image memory ~3×\n(18 GB → 6 GB) and enabling larger batch.\nTraining: AdamW, LR $10^{-4}$, weight decay 0.05, backbone LR×0.1;\n50 epochs COCO, 160k iters ADE20K, 90k iters Cityscapes.\nHeadline (Swin-L, multi-scale): COCO panoptic val PQ 57.8 (+5.1 over\nv1), ADE20K semantic mIoU 57.7 (+2.1 over v1), COCO instance mask\nAP 50.1, Cityscapes panoptic PQ 66.6. Converges 6× faster than v1\n(50 vs 300 epochs). 216M params with Swin-L. Queries: 100 (semantic,\npanoptic) or 200 (instance).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/Mask2Former",
+          "commit": "9b0651c6c1d5b3af2e6da0589b719c514ec0d69a",
+          "framework": "pytorch",
+          "license": "MIT"
+        },
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/MaskFormer",
+          "commit": "da3e60d85fdeedcb31476b5edd7d328826ce56cc",
+          "framework": "pytorch",
+          "license": "CC-BY-NC-4.0"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2022
     }
   },
   {
@@ -2681,6 +2915,53 @@ export const modelPages: ModelIndexEntry[] = [
       },
       "date": "2026-05-02",
       "year": 2016
+    }
+  },
+  {
+    "slug": "mobilesam",
+    "frontmatter": {
+      "title": "MobileSAM",
+      "summary": "Lightweight SAM family — replaces SAM's heavy ViT-H image encoder (632M params, ~452 ms on a single GPU) with a distilled TinyViT encoder (5.78M params, ~8 ms), keeping SAM's prompt encoder + mask decoder frozen and unchanged; MobileSAMv2 adds an object-aware prompt sampler (YOLOv8-style detector → bounding-box prompts) that replaces SAM's 32×32 grid-prompt + NMS pipeline for the Segment-Everything task, cutting end-to-end latency from ≈1616 ms to ≈97 ms (>16×) at equivalent mask quality.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "sam",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "tags": [
+        "deep-learning",
+        "dense-prediction",
+        "real-time"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "vit",
+      "params": "9.66M (MobileSAM total, vs SAM ViT-H 632M)",
+      "sources": {
+        "primary": "zhang2023-mobilesam",
+        "references": [
+          "zhang2023-mobilesamv2",
+          "kirillov2023-sam"
+        ],
+        "notes": "MobileSAM v1 (zhang2023-mobilesam) — replaces SAM's image encoder only;\nprompt encoder (0.006M) + mask decoder (~4M) kept frozen from SAM\n(Apache-2.0 weights). Total model 9.66M params, ~5MB checkpoint.\nDecoupled distillation: student (TinyViT, 5.78M) learns to produce\nimage embeddings matching the ViT-H teacher's output (MSE loss on\nembeddings: $\\mathcal{L} = \\|z_s - z_t\\|_2^2$). Trained on 1% of\nSA-1B with 1 GPU in <1 day. Encoder latency: SAM ViT-H ~452 ms vs\nMobileSAM ~8 ms (a single A100 GPU); mask decoder ~4 ms. Mask\nquality vs SAM (relative mIoU on SA-1B held-out): 0.71–0.74 across\npoint/box prompts; vs FastSAM (68M params, 64 ms): 0.27–0.41.\nArchitectural detail: TinyViT's final downsampling stride set to 1\n(instead of 2) to preserve 64×64 token-grid output matching SAM's\ninterface.\n\nMobileSAMv2 (zhang2023-mobilesamv2) — object-aware prompt sampler\nfor Segment-Everything. Replaces SAM's 32×32 grid-prompt pipeline +\nNMS deduplication (1024 prompts, slow) with a YOLOv8-style detector\nthat proposes up to 320 object-aware bounding-box prompts directly.\nDecoder speedup ≥16× (the load-bearing claim). Total pipeline\n(encoder + sampler + decoder) latency on V100: SAM-ViT-H grid 1616\nms; MobileSAMv2 with original SAM encoder ~480 ms; MobileSAMv2 with\nEfficientViT-L2 encoder ~97 ms (Table 1). Mask quality: AR@1000\n59.3% vs SAM-grid 59.2% (Table 2); average AR@K 42.5% vs 38.9%\ngrid baseline (Table 3 / Abstract). Encoder-agnostic — the\nobject-aware sampler is compatible with the original SAM encoder,\nthe MobileSAM v1 encoder, or any swap-in encoder (EfficientViT-L2\nused in headline benchmarks, ~20 ms vs ViT-H >400 ms; §5.2).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/ChaoningZhang/MobileSAM",
+          "commit": "f706ad9c4eb7f219c00d9050e46328518ffb65d2",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2023
     }
   },
   {
@@ -2763,6 +3044,157 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-13",
       "year": 2016
+    }
+  },
+  {
+    "slug": "ritm-interactive-segmentation",
+    "frontmatter": {
+      "title": "RITM",
+      "summary": "Feedforward click-based interactive segmentation: HRNet+OCR encoder-decoder taking RGB + positive/negative disk-encoded clicks + previous mask, trained with iterative click simulation and Normalized Focal Loss on COCO+LVIS — sets a new state of the art without inference-time backward passes.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "graph-cut-segmentation",
+          "confidence": "medium",
+          "caution": "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "encoder-decoder",
+      "params": "10.03M",
+      "flops": "30.80 GFLOPs @ 400×400",
+      "sources": {
+        "primary": "sofiiuk2021-ritm",
+        "references": [
+          "chen2018-deeplab",
+          "sun2019-hrnet"
+        ],
+        "notes": "Inputs (Sec. 3): RGB image + two binary disk-encoded click maps (radius\n5 px, Conv1S scheme) + previous binary mask channel; first interaction\nuses zero mask. Loss is Normalized Focal Loss (NFL, Eq. 2, Sec. 3.4):\nNFL(i,j,M̂) = -[1/P(M̂)] · (1-p_ij)^γ · log p_ij, with P(M̂) = Σ_ij\n(1-p_ij)^γ — divides Focal Loss (Eq. 1) by its total weight so the\naggregate gradient stays bounded. Training: COCO+LVIS (104k images,\n1.6M masks after IoU>80% dedup, Sec. 4.2), Adam β₁=0.9 β₂=0.999, lr\n5×10⁻⁴, 55 epochs, batch 32, crop 320×480, scale 0.75–1.40, N_iters=3\n(Table 6 ablation). HRNet-18+OCR canonical: 10.03M params / 30.80\nGFLOPs (Table 4); HRNet-18s small variant: 4.22M / 17.84 GFLOPs.\nDeepLabV3+-ResNet-34 baseline: 19.17M / 122.28 GFLOPs. Headline\nNoC@90 with HRNet-18 ITER-M (C+L) cited in note: GrabCut 1.54, SBD\n5.43 (Table 7); contrast f-BRS GrabCut 2.50, SBD 8.08. NFL-vs-BCE\nablation NoC@90 on HRNet-18+OCR/COCO+LVIS baseline (Table 2): GrabCut\n1.70/1.82, Berkeley 2.48/3.13, SBD 6.72/7.58, DAVIS 5.90/6.31.\nInference uses ZoomIn crop around predicted bbox after first click +\nhorizontally-flipped average (Sec. 5).\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/supervisely-ecosystem/ritm-interactive-segmentation",
+          "commit": "55fec41d67770078f78b4f9dff10f19afd07acea",
+          "framework": "pytorch",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2021
+    }
+  },
+  {
+    "slug": "sam",
+    "frontmatter": {
+      "title": "SAM",
+      "summary": "Promptable segmentation foundation model family — SAM (v1, 2023) introduces image-prompt segmentation with a heavy ViT-H encoder and lightweight transformer decoder trained on the 1.1B-mask SA-1B dataset; SAM 2 (2024) extends to video via a streaming memory module on a Hiera hierarchical-ViT encoder; SAM 3 (2025) generalises from single-object prompts to *concept* prompts (free-form noun phrases or visual exemplars) via a presence token, segmenting all matching instances on images and videos.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "graph-cut-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-graph-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mask-rcnn",
+          "confidence": "medium",
+          "caution": "Different problem classes — Mask R-CNN is closed-set instance detection with category labels; SAM is class-agnostic promptable segmentation."
+        },
+        {
+          "type": "compared_with",
+          "target": "ritm-interactive-segmentation",
+          "confidence": "medium",
+          "caution": "Both are click-prompted interactive segmenters; different sub-paradigms — SAM is a foundation model with a prompt-conditioned decoder, RITM is iterative-mask refinement on a per-image encoder."
+        },
+        {
+          "type": "extended_by",
+          "target": "mobilesam",
+          "confidence": "high",
+          "caution": "MobileSAM is a lightweight derivative — distils SAM v1's ViT-H image encoder into a 5.78M-param TinyViT (~56× faster) while keeping SAM's prompt encoder + decoder frozen; MobileSAMv2 adds an object-aware prompt sampler for Segment-Everything."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "vit",
+      "sources": {
+        "primary": "kirillov2023-sam",
+        "references": [
+          "ravi2024-sam2",
+          "carion2025-sam3"
+        ],
+        "notes": "SAM v1 (kirillov2023-sam): three-component pipeline — heavy MAE-pretrained\nViT-H image encoder (1024 px longest side, 16 px patches, 64×64 token\ngrid, run once per image); lightweight prompt encoder (positional\nencodings for points/boxes, conv embedding for mask prompts, CLIP text\nencoder for text); fast two-way cross-attention mask decoder producing\n3 candidate masks + IoU scores. Training: focal + dice loss on\nminimum-loss mask of 3 predictions; IoU head trained with MSE; 11\nrounds of random prompt simulation per mask. Dataset: SA-1B — 1.1B\nmasks on 11M images, 400× more masks than Open Images, ~100 masks per\nimage average. Browser-CPU latency ~50 ms for prompt encoder +\ndecoder with precomputed image embedding.\n\nSAM 2 (ravi2024-sam2): four components — (1) MAE-pretrained Hiera\nimage encoder (hierarchical ViT); (2) memory attention stack —\ntransformer blocks performing self-attention on current-frame\nfeatures then cross-attention to a memory bank of past-frame feature\nmaps + object pointer vectors; (3) SAM-v1-compatible prompt encoder +\nmask decoder (minor modifications); (4) memory encoder that converts\npredicted mask + image embedding into a compact spatial memory\nentry. Streaming/causal: frame t uses only frames ≤ t. SA-V dataset\n— 50.9K videos, 642.6K masklets, 35.5M masks (53× scale-up vs prior\nlargest video annotation set). Image-segmentation 6× faster than SAM\nv1: Hiera-B+ 130.1 FPS vs SAM ViT-H 21.7 FPS (Table 15). MOSE J&F\n60.3 vs 47.9 baseline (+12.4).\n\nSAM 3 (carion2025-sam3): introduces **Promptable Concept Segmentation\n(PCS)** — given an image/video and a *concept* (free-form noun\nphrase or visual exemplars), output ALL instances matching the\nconcept. Distinct from v1/v2's single-object-per-prompt paradigm.\nArchitectural novelty: **presence token** — a global learned query\nthat decouples concept recognition $p(\\text{NP is present})$ from\nper-instance localisation, especially effective with hard-negative\ntraining phrases. Dataset: SA-Co — 5.2M images, 4M unique NPs, 52M\nmasks, plus 1.4B synthetic. Built with a 4-phase human+AI-verifier\ndata engine where Llama 3.2 AI verifiers double annotation\nthroughput. LVIS zero-shot mask AP 48.5 vs prior best 38.5;\nSA-Co/Gold cgF1 54.1 — 2× best baseline, 74% of human performance.\nPVS (VOS) also improves over SAM 2.1 L: MOSEv2 J&F 60.3 vs 47.9\n(+12.4).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/segment-anything",
+          "commit": "dca509fe793f601edb92606367a655c15ac00fdf",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/sam2",
+          "commit": "2b90b9f5ceec907a1c18123530e92e794ad901a4",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/sam3",
+          "commit": "8e451d5eb43c817b64ae7577fb7b9ae223db88a9",
+          "framework": "pytorch",
+          "license": "LicenseRef-SAM-License"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2023
     }
   },
   {
@@ -3053,6 +3485,76 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-12",
       "year": 2014
+    }
+  },
+  {
+    "slug": "vit",
+    "frontmatter": {
+      "title": "ViT",
+      "summary": "Vision Transformer — a pure-transformer image classification backbone that treats an image as a sequence of fixed-size patches: split RGB image into $N = HW/P^2$ patches of $P{\\times}P$ pixels (P=16 for ViT-B/L, P=14 for ViT-H), linearly project to $D$-dim tokens, prepend a learnable [CLS] token, add learned positional embeddings, and feed through a standard transformer encoder; classification head reads the [CLS] token's final-layer output. ViT-B/16 86M params, ViT-L/16 307M, ViT-H/14 632M. With large-scale pretraining (JFT-300M) ViT matches or exceeds ResNet-based BiT-L on ImageNet at lower compute.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "mobilesam",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "ViT vs ResNet (BiT) is the headline classification comparison in the paper. Both coexist as production backbones — ResNet's conv inductive bias dominates in small-data regimes; ViT scales better with large pretraining (JFT-300M)."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "vit",
+      "params": "86M (ViT-B/16), 307M (ViT-L/16), 632M (ViT-H/14)",
+      "flops": "17.6 GMAC (B/16), 61.6 GMAC (L/16), 167.4 GMAC (H/14) @ 224×224 (Table 6)",
+      "sources": {
+        "primary": "dosovitskiy2020-vit",
+        "references": [
+          "he2016-resnet"
+        ],
+        "notes": "Patch embedding (Eq. 1, §3.1): split $\\mathbf{x} \\in \\mathbb{R}^{H \\times W \\times C}$\ninto $N = HW/P^2$ patches of size $P \\times P$ pixels, flatten each\nto $P^2 \\cdot C$ dims, linearly project to $D$ dims with learned\nmatrix $\\mathbf{E} \\in \\mathbb{R}^{(P^2 \\cdot C) \\times D}$. Prepend\nlearnable $\\mathbf{x}_\\text{class}$ token; add learned 1D positional\nembedding $\\mathbf{E}_\\text{pos} \\in \\mathbb{R}^{(N+1) \\times D}$.\nForward pass (Eqs. 2-3): standard transformer encoder of $L$ blocks\nwith multi-head self-attention + MLP + pre-LayerNorm + residual.\nClassification head reads $\\mathbf{z}_L^0$ (final [CLS]) via single\nlinear layer (pretraining) or MLP-with-one-hidden-layer (fine-tune).\nSelf-attention (Eqs. 5-7): $\\mathbf{A} = \\mathrm{softmax}(\\mathbf{q}\\mathbf{k}^\\top / \\sqrt{D_h})$\non per-head queries/keys/values of dim $D_h = D/H$. MSA (Eq. 8):\nconcatenate $H$ heads → linear projection.\n\nCanonical variants (Table 1, §3.1):\n- ViT-Base (B): L=12, D=768, MLP=3072, H=12. ViT-B/16: 86M params.\n- ViT-Large (L): L=24, D=1024, MLP=4096, H=16. ViT-L/16: 307M params.\n- ViT-Huge (H): L=32, D=1280, MLP=5120, H=16. ViT-H/14: 632M params.\nNaming: ViT-B/16 = base with 16-px patches.\n\nHeadline benchmarks (Table 2, §4.2): JFT-300M-pretrained ViT-H/14\nreaches ImageNet top-1 88.55% (vs BiT-L 87.54%); ViT-L/16 (JFT)\n87.76%. Pretraining compute (TPUv3-core-days): ViT-H/14 2.5k vs\nBiT-L 9.9k — 4× cheaper at higher accuracy. ViT-L/16 self-supervised\n(Masked Patch Prediction) ImageNet top-1: 79.9%, +2% over scratch\nbut -4% under JFT-supervised pretraining (Appendix D, §4).\n\nPretraining-scale crossover (Fig. 3, §4.3): on ImageNet alone ViT\nunderperforms ResNet/BiT; on ImageNet-21k they break even; on\nJFT-300M ViT decisively wins. The crossover is around 100M images.\n\nPositional embedding ablation (Table 7, §4.5 / Appendix D.4): 1D\nlearned vs none = 0.642 vs 0.614 IN-Real linear-eval; 2D learned\nmatches 1D. The paper uses 1D learned for simplicity.\n\nHybrid (ResNet stem + ViT body): improves small/medium models on\nsmall-data regimes but ViT-L/H pure transformer wins at large\npretraining (Fig. 5, §4.4 — hybrid catches ViT at small budget,\nViT pulls ahead at larger budget).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/google-research/vision_transformer",
+          "commit": "0d03f554b83af02550407da1e8c702a7cb75e74b",
+          "framework": "jax",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/huggingface/pytorch-image-models",
+          "commit": "08fa5cd0b35860a4054738c4284a9c80b362cdc1",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2020
     }
   },
   {

@@ -1070,6 +1070,27 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "detr",
+    "path": "/atlas/detr",
+    "type": "model",
+    "title": "DETR",
+    "summary": "End-to-end object detector that recasts detection as direct set prediction — CNN backbone (ResNet-50/101) extracts $H/32 \\times W/32$ feature map; transformer encoder-decoder with 6+6 layers and $N=100$ learned object queries outputs (class, box) pairs; bipartite-matching loss via Hungarian algorithm eliminates anchor boxes, region proposals, and NMS. Comparable COCO AP to Faster R-CNN at simpler pipeline; better large-object AP, worse small-object AP, and ~10× slower convergence (300+ epochs).",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "N. Carion",
+      "F. Massa",
+      "G. Synnaeve",
+      "N. Usunier",
+      "A. Kirillov",
+      "S. Zagoruyko"
+    ],
+    "venue": "ECCV 2020"
+  },
+  {
     "slug": "faster-rcnn",
     "path": "/atlas/faster-rcnn",
     "type": "model",
@@ -1133,6 +1154,27 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR 2015"
   },
   {
+    "slug": "hrnet",
+    "path": "/atlas/hrnet",
+    "type": "model",
+    "title": "HRNet",
+    "summary": "CNN backbone family for dense prediction that maintains a high-resolution branch throughout the network and runs four parallel multi-resolution streams ($C, 2C, 4C, 8C$ channels) with eight repeated cross-resolution fusions; V1 uses the high-resolution stream only (pose heatmaps), V2 upsamples and concatenates all four streams for per-pixel labelling (semantic segmentation, face landmarks), and V2p adds an FPN-style multi-scale output for object detection and instance segmentation.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "keypoint-detection"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "K. Sun",
+      "B. Xiao",
+      "D. Liu",
+      "J. Wang"
+    ],
+    "venue": "CVPR 2019"
+  },
+  {
     "slug": "lightglue",
     "path": "/atlas/lightglue",
     "type": "model",
@@ -1175,6 +1217,27 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR"
   },
   {
+    "slug": "mae",
+    "path": "/atlas/mae",
+    "type": "model",
+    "title": "MAE",
+    "summary": "Masked Autoencoder — self-supervised pretraining for Vision Transformers: randomly mask 75 % of input patches, feed the visible 25 % through a ViT encoder, then run a lightweight ViT decoder over the full sequence (visible + shared learnable mask tokens) to reconstruct the masked patches' raw pixel values under MSE on per-patch-normalised targets. The asymmetric encoder-decoder design (encoder operates only on visible tokens, decoder is much smaller and discarded after pretraining) gives a 2.8–4.1× pretraining speedup vs full-sequence masked-ViT baselines and reaches 87.8 % ImageNet-1k top-1 with ViT-H fine-tuning.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "K. He",
+      "X. Chen",
+      "S. Xie",
+      "Y. Li",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "CVPR 2022 (arXiv 2021)"
+  },
+  {
     "slug": "mask-rcnn",
     "path": "/atlas/mask-rcnn",
     "type": "model",
@@ -1192,6 +1255,27 @@ export const searchRecords: SearchRecord[] = [
       "R. Girshick"
     ],
     "venue": "ICCV"
+  },
+  {
+    "slug": "mask2former",
+    "path": "/atlas/mask2former",
+    "type": "model",
+    "title": "Mask2Former",
+    "summary": "Universal image segmentation family — MaskFormer (v1, NeurIPS 2021) reframes semantic segmentation as **mask classification**: predict a set of $N$ binary masks plus per-mask class labels via a DETR-style transformer decoder over pixel-decoder features, supervised by bipartite matching. Mask2Former (v2, CVPR 2022) extends v1 with **masked attention** (cross-attention restricted to each query's predicted mask foreground), multi-scale round-robin features (queries cross-attend to 1/32, 1/16, 1/8 maps across consecutive layers), and point-sampled mask loss for 3× memory reduction. A single architecture, trained per-dataset, beats specialised models on COCO panoptic (PQ 57.8), COCO instance (AP 50.1), and ADE20K semantic (mIoU 57.7) with Swin-L.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "B. Cheng",
+      "I. Misra",
+      "A. G. Schwing",
+      "A. Kirillov",
+      "R. Girdhar"
+    ],
+    "venue": "CVPR 2022 (arXiv 2021)"
   },
   {
     "slug": "mate-checkerboard-detector",
@@ -1218,6 +1302,30 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Sensors"
   },
   {
+    "slug": "mobilesam",
+    "path": "/atlas/mobilesam",
+    "type": "model",
+    "title": "MobileSAM",
+    "summary": "Lightweight SAM family — replaces SAM's heavy ViT-H image encoder (632M params, ~452 ms on a single GPU) with a distilled TinyViT encoder (5.78M params, ~8 ms), keeping SAM's prompt encoder + mask decoder frozen and unchanged; MobileSAMv2 adds an object-aware prompt sampler (YOLOv8-style detector → bounding-box prompts) that replaces SAM's 32×32 grid-prompt + NMS pipeline for the Segment-Everything task, cutting end-to-end latency from ≈1616 ms to ≈97 ms (>16×) at equivalent mask quality.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "real-time"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "C. Zhang",
+      "D. Han",
+      "Y. Qiao",
+      "J. U. Kim",
+      "S. Bae",
+      "S. Lee",
+      "C. S. Hong"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
     "slug": "resnet",
     "path": "/atlas/resnet",
     "type": "model",
@@ -1235,6 +1343,53 @@ export const searchRecords: SearchRecord[] = [
       "J. Sun"
     ],
     "venue": "CVPR 2016"
+  },
+  {
+    "slug": "ritm-interactive-segmentation",
+    "path": "/atlas/ritm-interactive-segmentation",
+    "type": "model",
+    "title": "RITM",
+    "summary": "Feedforward click-based interactive segmentation: HRNet+OCR encoder-decoder taking RGB + positive/negative disk-encoded clicks + previous mask, trained with iterative click simulation and Normalized Focal Loss on COCO+LVIS — sets a new state of the art without inference-time backward passes.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "K. Sofiiuk",
+      "I. A. Petrov",
+      "A. Konushin"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "sam",
+    "path": "/atlas/sam",
+    "type": "model",
+    "title": "SAM",
+    "summary": "Promptable segmentation foundation model family — SAM (v1, 2023) introduces image-prompt segmentation with a heavy ViT-H encoder and lightweight transformer decoder trained on the 1.1B-mask SA-1B dataset; SAM 2 (2024) extends to video via a streaming memory module on a Hiera hierarchical-ViT encoder; SAM 3 (2025) generalises from single-object prompts to *concept* prompts (free-form noun phrases or visual exemplars) via a presence token, segmenting all matching instances on images and videos.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "A. Kirillov",
+      "E. Mintun",
+      "N. Ravi",
+      "H. Mao",
+      "C. Rolland",
+      "L. Gustafson",
+      "T. Xiao",
+      "S. Whitehead",
+      "A. C. Berg",
+      "W. Lo",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "ICCV"
   },
   {
     "slug": "superglue",
@@ -1315,6 +1470,33 @@ export const searchRecords: SearchRecord[] = [
       "A. Zisserman"
     ],
     "venue": "ICLR 2015 / arXiv"
+  },
+  {
+    "slug": "vit",
+    "path": "/atlas/vit",
+    "type": "model",
+    "title": "ViT",
+    "summary": "Vision Transformer — a pure-transformer image classification backbone that treats an image as a sequence of fixed-size patches: split RGB image into $N = HW/P^2$ patches of $P{\\times}P$ pixels (P=16 for ViT-B/L, P=14 for ViT-H), linearly project to $D$-dim tokens, prepend a learnable [CLS] token, add learned positional embeddings, and feed through a standard transformer encoder; classification head reads the [CLS] token's final-layer output. ViT-B/16 86M params, ViT-L/16 307M, ViT-H/14 632M. With large-scale pretraining (JFT-300M) ViT matches or exceeds ResNet-based BiT-L on ImageNet at lower compute.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "A. Dosovitskiy",
+      "L. Beyer",
+      "A. Kolesnikov",
+      "D. Weissenborn",
+      "X. Zhai",
+      "T. Unterthiner",
+      "M. Dehghani",
+      "M. Minderer",
+      "G. Heigold",
+      "S. Gelly",
+      "J. Uszkoreit",
+      "N. Houlsby"
+    ],
+    "venue": "ICLR 2021 (arXiv 2020)"
   },
   {
     "slug": "xfeat",

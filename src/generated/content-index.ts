@@ -3,6 +3,29 @@ import type { BlogIndexEntry, AlgorithmIndexEntry, DemoIndexEntry, ModelIndexEnt
 
 export const blogPosts: BlogIndexEntry[] = [
   {
+    "slug": "02-grid-deteciont-part1",
+    "frontmatter": {
+      "title": "Grid detection I: topology",
+      "summary": "How Delaunay triangulation and mesh filtering can turn detected chessboard corners into an ordered grid.",
+      "author": "Vitaly Vorobyev",
+      "repoLinks": [
+        "https://github.com/VitalyVorobyev/calib-targets-rs"
+      ],
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "tags": [
+        "feature-detection",
+        "calibration-targets"
+      ],
+      "relatedAlgorithms": [],
+      "relatedDemos": [
+        "delaunay-voronoi"
+      ],
+      "date": "2026-05-15"
+    }
+  },
+  {
     "slug": "01-chesscorners",
     "frontmatter": {
       "title": "ChESS Corners Detector",
@@ -12,19 +35,17 @@ export const blogPosts: BlogIndexEntry[] = [
         "https://github.com/VitalyVorobyev/chess-corners-rs"
       ],
       "difficulty": "intermediate",
-      "readingTimeMinutes": 12,
+      "readingTimeMinutes": 11,
       "access": "public",
       "tags": [
-        "computer-vision",
-        "rust",
-        "calibration",
         "feature-detection"
       ],
       "relatedAlgorithms": [
         "chess-corners",
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
-        "fast-corner-detector"
+        "fast-corner-detector",
+        "duda-radon-corners"
       ],
       "relatedDemos": [
         "chess-response"

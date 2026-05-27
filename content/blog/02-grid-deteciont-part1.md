@@ -53,6 +53,8 @@ The topological approach starts by building a candidate graph from the detected 
 Delaunay triangulation connects a set of points into triangles such that no point lies inside the circumcircle of any triangle.
 :::
 
+> "useful" is a wrong word here I think. It is not useful, it is the core of the approach
+
 This is useful because Delaunay triangulation tends to connect nearby points. For a regular grid, it usually contains the true neighbor connections, plus one diagonal inside each grid cell. On the test image, this gives:
 
 ![](../images/02-topo-grid/GeminiChess1/03-delaunay-edge-kinds.png)
@@ -64,7 +66,7 @@ The method does not fit lines through the corner cloud - it only uses local conn
 
 # 3. From triangles to cells
 
-Delaunay triangulation gives triangles, but a chessboard grid is made of quadrilateral cells. For each real board square, the triangulation usually creates two triangles separated by one diagonal.
+Delaunay triangulation gives triangles, but a chessboard grid is made of quadrilateral cells. For each board square, the triangulation usually creates two triangles separated by one diagonal.
 
 First step after triangulation is classification of edges in three categories: *grid*, `diagonal`, and `spurious`.
 
@@ -72,7 +74,7 @@ An edge is promoted to `grid` if it is aligned with both its endpoints withing t
 
 After the first pass, diagonals are inferred per triangle. If triangle has exactly two `grid` edges, then the remaining edge is promoted to `diagonal`.
 
-Edges not classified as `grid`or `diagonal` are assigned as `spurious`.
+Edges not classified as `grid` or `diagonal` are assigned as `spurious`.
 
 Only `mergable` triangles containing two `grid` and one `diagonal` edges take part in the grid formation. Two `mergable` triangles that share the same diagonal are merged into quadrilateral by removing the diagonal and enumerating the four vertices clockwise around their centroid, so that the top-left corner has index `0`.
 

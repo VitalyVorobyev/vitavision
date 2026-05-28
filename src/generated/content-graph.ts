@@ -491,6 +491,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/fcn-semantic-segmentation",
       "draft": false
     },
+    "focalclick": {
+      "slug": "focalclick",
+      "type": "model",
+      "title": "FocalClick",
+      "summary": "Practical click-based interactive segmentation that runs each click as a small local-crop forward pass (Segmentor on a Target Crop, Refiner on a Focus Crop) and composits results back via Progressive Merge — sub-300 ms per click on CPU with first-class support for refining preexisting masks.",
+      "path": "/atlas/focalclick",
+      "draft": false
+    },
     "googlenet": {
       "slug": "googlenet",
       "type": "model",
@@ -1929,6 +1937,32 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "focalclick": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "medium",
+          "caution": "FocalClick replaces interactive click-based annotation workflows; not a drop-in for energy-min/graph-cut on seeded segmentation generally."
+        },
+        {
+          "type": "compared_with",
+          "target": "mobilesam",
+          "confidence": "medium",
+          "caution": "Both target lightweight on-device interactive segmentation but from different lineages — MobileSAM distils SAM's foundation-model encoder into TinyViT (zero-shot, no mask correction); FocalClick is a small specialised two-stage network with native preexisting-mask refinement.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "sam",
+          "confidence": "medium",
+          "caution": "Opposite design points — SAM is a heavy promptable foundation model with zero-shot generalisation but no preexisting-mask refinement; FocalClick is a small specialised network with native mask correction but no zero-shot.",
+          "mirrored": true
+        }
+      ]
+    },
     "googlenet": {
       "prerequisites": [
         "convolutional-neural-network"
@@ -1972,6 +2006,12 @@ export const contentGraph: ContentGraph = {
           "type": "feeds_into",
           "target": "ritm-interactive-segmentation",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "FocalClick uses HRNet18s+OCR and HRNet32+OCR as the Segmentor backbone in three of its six published variants (hrnet18s-S1/S2, hrnet32-S2); the small-crop Segmentor input (128×128 or 256×256) makes HRNet practical for CPU deployment."
         },
         {
           "type": "compared_with",
@@ -2116,7 +2156,14 @@ export const contentGraph: ContentGraph = {
         "attention-mechanism"
       ],
       "failureModes": [],
-      "relations": []
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "focalclick",
+          "confidence": "medium",
+          "caution": "Both target lightweight on-device interactive segmentation but from different lineages — MobileSAM distils SAM's foundation-model encoder into TinyViT (zero-shot, no mask correction); FocalClick is a small specialised two-stage network with native preexisting-mask refinement."
+        }
+      ]
     },
     "resnet": {
       "prerequisites": [
@@ -2180,6 +2227,12 @@ export const contentGraph: ContentGraph = {
           "caution": "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
         },
         {
+          "type": "extended_by",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "FocalClick adds Focus View + Progressive Merge for CPU-feasible mask correction; RITM remains the foundational feedforward click-based reference."
+        },
+        {
           "type": "compared_with",
           "target": "sam",
           "confidence": "medium",
@@ -2221,6 +2274,12 @@ export const contentGraph: ContentGraph = {
           "target": "ritm-interactive-segmentation",
           "confidence": "medium",
           "caution": "Both are click-prompted interactive segmenters; different sub-paradigms — SAM is a foundation model with a prompt-conditioned decoder, RITM is iterative-mask refinement on a per-image encoder."
+        },
+        {
+          "type": "compared_with",
+          "target": "focalclick",
+          "confidence": "medium",
+          "caution": "Opposite design points — SAM is a heavy promptable foundation model with zero-shot generalisation but no preexisting-mask refinement; FocalClick is a small specialised network with native mask correction but no zero-shot."
         },
         {
           "type": "extended_by",
@@ -2847,6 +2906,11 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": [
         {
+          "slug": "focalclick",
+          "confidence": "medium",
+          "caution": "FocalClick replaces interactive click-based annotation workflows; not a drop-in for energy-min/graph-cut on seeded segmentation generally."
+        },
+        {
           "slug": "ritm-interactive-segmentation",
           "confidence": "high"
         },
@@ -3270,6 +3334,26 @@ export const contentGraph: ContentGraph = {
           "slug": "vgg",
           "confidence": "high",
           "caution": "VGG-16 is FCN's canonical backbone per FCN Table 1; FCN-VGG16 mean IU 56.0 vs FCN-AlexNet 39.8."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "focalclick": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "ritm-interactive-segmentation",
+          "confidence": "high",
+          "caution": "FocalClick adds Focus View + Progressive Merge for CPU-feasible mask correction; RITM remains the foundational feedforward click-based reference."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "hrnet",
+          "confidence": "high",
+          "caution": "FocalClick uses HRNet18s+OCR and HRNet32+OCR as the Segmentor backbone in three of its six published variants (hrnet18s-S1/S2, hrnet32-S2); the small-crop Segmentor input (128×128 or 256×256) makes HRNet practical for CPU deployment."
         }
       ],
       "hasLearnedAlternative": []
@@ -3991,6 +4075,7 @@ export const contentGraph: ContentGraph = {
     "detr": 2,
     "faster-rcnn": 0,
     "fcn-semantic-segmentation": 0,
+    "focalclick": 0,
     "googlenet": 2,
     "hrnet": 2,
     "lightglue": 4,

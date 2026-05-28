@@ -1130,6 +1130,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR"
   },
   {
+    "slug": "focalclick",
+    "path": "/atlas/focalclick",
+    "type": "model",
+    "title": "FocalClick",
+    "summary": "Practical click-based interactive segmentation that runs each click as a small local-crop forward pass (Segmentor on a Target Crop, Refiner on a Focus Crop) and composits results back via Progressive Merge — sub-300 ms per click on CPU with first-class support for refining preexisting masks.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "X. Chen",
+      "Z. Zhao",
+      "Y. Zhang",
+      "M. Duan",
+      "D. Qi",
+      "H. Zhao"
+    ],
+    "venue": "CVPR 2022 (arXiv 2022)"
+  },
+  {
     "slug": "googlenet",
     "path": "/atlas/googlenet",
     "type": "model",

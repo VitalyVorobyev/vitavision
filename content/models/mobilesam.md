@@ -11,6 +11,11 @@ arch_family: vit
 params: "9.66M (MobileSAM total, vs SAM ViT-H 632M)"
 prerequisites: [sam, attention-mechanism]
 failureModes: []
+relations:
+  - type: compared_with
+    target: focalclick
+    confidence: medium
+    caution: "Both target lightweight on-device interactive segmentation but from different lineages — MobileSAM distils SAM's foundation-model encoder into TinyViT (zero-shot, no mask correction); FocalClick is a small specialised two-stage network with native preexisting-mask refinement."
 sources:
   primary: zhang2023-mobilesam
   references:

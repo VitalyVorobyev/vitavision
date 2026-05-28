@@ -9,6 +9,7 @@ export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>
   "detr": () => import("./content/models/detr.ts"),
   "faster-rcnn": () => import("./content/models/faster-rcnn.ts"),
   "fcn-semantic-segmentation": () => import("./content/models/fcn-semantic-segmentation.ts"),
+  "focalclick": () => import("./content/models/focalclick.ts"),
   "googlenet": () => import("./content/models/googlenet.ts"),
   "hrnet": () => import("./content/models/hrnet.ts"),
   "lightglue": () => import("./content/models/lightglue.ts"),

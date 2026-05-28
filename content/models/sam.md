@@ -28,6 +28,10 @@ relations:
     target: ritm-interactive-segmentation
     confidence: medium
     caution: "Both are click-prompted interactive segmenters; different sub-paradigms — SAM is a foundation model with a prompt-conditioned decoder, RITM is iterative-mask refinement on a per-image encoder."
+  - type: compared_with
+    target: focalclick
+    confidence: medium
+    caution: "Opposite design points — SAM is a heavy promptable foundation model with zero-shot generalisation but no preexisting-mask refinement; FocalClick is a small specialised network with native mask correction but no zero-shot."
   - type: extended_by
     target: mobilesam
     confidence: high

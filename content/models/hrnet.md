@@ -15,6 +15,10 @@ relations:
   - type: feeds_into
     target: ritm-interactive-segmentation
     confidence: high
+  - type: feeds_into
+    target: focalclick
+    confidence: high
+    caution: "FocalClick uses HRNet18s+OCR and HRNet32+OCR as the Segmentor backbone in three of its six published variants (hrnet18s-S1/S2, hrnet32-S2); the small-crop Segmentor input (128×128 or 256×256) makes HRNet practical for CPU deployment."
   - type: compared_with
     target: resnet
     confidence: medium

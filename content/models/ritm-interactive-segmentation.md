@@ -20,6 +20,10 @@ relations:
     target: graph-cut-segmentation
     confidence: medium
     caution: "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
+  - type: extended_by
+    target: focalclick
+    confidence: high
+    caution: "FocalClick adds Focus View + Progressive Merge for CPU-feasible mask correction; RITM remains the foundational feedforward click-based reference."
 sources:
   primary: sofiiuk2021-ritm
   references:

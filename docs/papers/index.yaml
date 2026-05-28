@@ -1157,3 +1157,14 @@
   cites:
   - dosovitskiy2020-vit
   - he2016-resnet
+
+- id: chen2022-focalclick
+  title: "FocalClick: Towards Practical Interactive Image Segmentation"
+  authors: ["X. Chen", "Z. Zhao", "Y. Zhang", "M. Duan", "D. Qi", "H. Zhao"]
+  year: 2022
+  venue: CVPR 2022 (arXiv 2022)
+  url: https://arxiv.org/pdf/2204.02574
+  arxiv: "2204.02574"
+  doi: "10.48550/arxiv.2204.02574"
+  pdf: chen2022-focalclick.pdf
+  cites: []

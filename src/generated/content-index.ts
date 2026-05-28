@@ -2438,6 +2438,58 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "focalclick",
+    "frontmatter": {
+      "title": "FocalClick",
+      "summary": "Practical click-based interactive segmentation that runs each click as a small local-crop forward pass (Segmentor on a Target Crop, Refiner on a Focus Crop) and composits results back via Progressive Merge — sub-300 ms per click on CPU with first-class support for refining preexisting masks.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "medium",
+          "caution": "FocalClick replaces interactive click-based annotation workflows; not a drop-in for energy-min/graph-cut on seeded segmentation generally."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "encoder-decoder",
+      "params": "4.22M Segmentor + 0.011M Refiner (hrnet18s-S2)",
+      "flops": "3.66 + 0.16 G FLOPs @ 256×256 (hrnet18s-S2)",
+      "sources": {
+        "primary": "chen2022-focalclick",
+        "references": [
+          "sofiiuk2021-ritm",
+          "sun2019-hrnet"
+        ],
+        "notes": "Two contributions (Sec. 1, 3.1): (a) Focus View pipeline — Target Crop\n(TC) at $r_{TC}=1.4$ for the Segmentor, Focus Crop (FC) at $r_{FC}=1.4$\naround the largest connected component of the prediction-vs-prior XOR\nfor the Refiner; (b) Progressive Merge (PM) — morphologically composits\nonly the largest connected update region containing the new click,\nleaving the prior mask elsewhere intact.\n\nRefiner output (Eq. 1, Sec. 3.1): $M_r = \\sigma(M_b)\\,M_d +\n(1-\\sigma(M_b))\\,M_l$ where $M_b$ is a predicted boundary map, $M_d$ a\ndetail map, $M_l$ the RoiAligned coarse logits. Loss (Eq. 2): $L =\nL_{bce} + L_{nfl} + L_{bnfl}$ — BCE on the boundary head, NFL (from\nRITM) on the coarse head, boundary-weighted NFL with weight 1.5 on the\nrefined head.\n\nBackbone variants (Table 3): HRNet18s+OCR, HRNet32+OCR, SegFormer-B0,\nSegFormer-B3; input resolutions S1 = 128×128 and S2 = 256×256.\nClick encoding: binary disk radius 2 px (Fig. 3 caption).\n\nHeadline numbers — DAVIS-585 from initial mask (Table 4):\nhrnet18s-S1 NoC85=2.72, NoC90=3.82; B3-S2 NoC85=2.00, NoC90=2.76;\nRITM-hrnet18s baseline NoC85=3.71, NoC90=5.96. Standard DAVIS from\nscratch (Table 2, COCO+LVIS): hrnet18s-S2 NoC85=3.90, NoC90=5.25;\nsegformerB3-S2 NoC85=3.61, NoC90=4.90.\n\nEfficiency (Table 3, 2.4 GHz 4×Intel Core i5): B0-S1 total 0.43 + 0.17\nG FLOPs (15× lower than the lightest RITM variant at 8.96 G);\nhrnet18s-S2 213 ms Segmentor + 51 ms Refiner; B3-S2 634 ms Segmentor +\n72 ms Refiner. Progressive Merge activates after click 10 when\nannotating from scratch.\n\nTraining (Sec. 4.1): Adam $\\beta_1=0.9$, $\\beta_2=0.999$, lr\n$5\\times10^{-4}$, decay ×0.1 at epochs 190 and 220, 230 epochs total,\nbatch 32, 2×V100 ~24 h; iterative click simulation following RITM with\nmax 24 clicks and probability decay 0.8; Segmentor input 256×256\ncrops, Focus Crop simulated as 0.2–0.5 object-length local crops with\nrandom 1.1–2.0 expansion.\n\nDAVIS-585 benchmark construction (Sec. 3.2): 30 videos × 10 frames =\n300 base masks → 585 corrupted samples after filtering masks < 300 px;\ninitial-mask IoU ∈ [75%, 85%]; error-type probabilities boundary 0.65,\nexternal false-positive 0.25, internal true-negative 0.10.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/XavierCHEN34/ClickSEG",
+          "commit": "0c801cfa5f67f066fdaab28ff8f3afde1cb71ace",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-28",
+      "year": 2022
+    }
+  },
+  {
     "slug": "googlenet",
     "frontmatter": {
       "title": "GoogLeNet",
@@ -2532,6 +2584,12 @@ export const modelPages: ModelIndexEntry[] = [
           "type": "feeds_into",
           "target": "ritm-interactive-segmentation",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "FocalClick uses HRNet18s+OCR and HRNet32+OCR as the Segmentor backbone in three of its six published variants (hrnet18s-S1/S2, hrnet32-S2); the small-crop Segmentor input (128×128 or 256×256) makes HRNet practical for CPU deployment."
         },
         {
           "type": "compared_with",
@@ -2932,6 +2990,14 @@ export const modelPages: ModelIndexEntry[] = [
         "attention-mechanism"
       ],
       "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "focalclick",
+          "confidence": "medium",
+          "caution": "Both target lightweight on-device interactive segmentation but from different lineages — MobileSAM distils SAM's foundation-model encoder into TinyViT (zero-shot, no mask correction); FocalClick is a small specialised two-stage network with native preexisting-mask refinement."
+        }
+      ],
       "tags": [
         "deep-learning",
         "dense-prediction",
@@ -3069,6 +3135,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "graph-cut-segmentation",
           "confidence": "medium",
           "caution": "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
+        },
+        {
+          "type": "extended_by",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "FocalClick adds Focus View + Progressive Merge for CPU-feasible mask correction; RITM remains the foundational feedforward click-based reference."
         }
       ],
       "tags": [
@@ -3145,6 +3217,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "ritm-interactive-segmentation",
           "confidence": "medium",
           "caution": "Both are click-prompted interactive segmenters; different sub-paradigms — SAM is a foundation model with a prompt-conditioned decoder, RITM is iterative-mask refinement on a per-image encoder."
+        },
+        {
+          "type": "compared_with",
+          "target": "focalclick",
+          "confidence": "medium",
+          "caution": "Opposite design points — SAM is a heavy promptable foundation model with zero-shot generalisation but no preexisting-mask refinement; FocalClick is a small specialised network with native mask correction but no zero-shot."
         },
         {
           "type": "extended_by",

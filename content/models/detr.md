@@ -20,6 +20,10 @@ relations:
     target: sam
     confidence: high
     caution: "SAM's mask decoder two-way cross-attention is inspired by DETR's transformer decoder; SAM 3's concept detector is explicitly DETR-based."
+  - type: feeds_into
+    target: rf-detr
+    confidence: high
+    caution: "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
 sources:
   primary: carion2020-detr
   references:

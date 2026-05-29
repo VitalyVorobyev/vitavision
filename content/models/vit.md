@@ -19,6 +19,10 @@ relations:
   - type: feeds_into
     target: mobilesam
     confidence: high
+  - type: feeds_into
+    target: rf-detr
+    confidence: medium
+    caution: "RF-DETR's backbone is a DINOv2 self-supervised ViT."
   - type: compared_with
     target: resnet
     confidence: high

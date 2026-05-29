@@ -1168,3 +1168,126 @@
   doi: "10.48550/arxiv.2204.02574"
   pdf: chen2022-focalclick.pdf
   cites: []
+
+- id: xie2021-segformer
+  title: "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers"
+  authors: ["E. Xie", "W. Wang", "Z. Yu", "A. Anandkumar", "J. M. Alvarez", "P. Luo"]
+  year: 2021
+  venue: NeurIPS 2021 (arXiv 2021)
+  url: https://arxiv.org/pdf/2105.15203
+  arxiv: "2105.15203"
+  doi: "10.48550/arxiv.2105.15203"
+  pdf: xie2021-segformer.pdf
+  cites:
+  - simonyan2014-vgg
+  - long2015-fcn
+  - he2016-resnet
+  - chen2018-deeplab
+  - dosovitskiy2020-vit
+
+- id: yu2018-bisenet
+  title: "BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation"
+  authors: ["C. Yu", "J. Wang", "C. Peng", "C. Gao", "G. Yu", "S. Nong"]
+  year: 2018
+  venue: ECCV 2018 (arXiv 2018)
+  url: https://arxiv.org/pdf/1808.00897
+  arxiv: "1808.00897"
+  doi: "10.48550/arxiv.1808.00897"
+  pdf: yu2018-bisenet.pdf
+  cites:
+  - simonyan2014-vgg
+  - ronneberger2015-unet
+  - long2015-fcn
+  - krizhevsky2012-alexnet
+  - he2016-resnet
+  - chen2018-deeplab
+
+- id: yu2020-bisenet
+  title: "BiSeNet V2: Bilateral Network with Guided Aggregation for Real-time Semantic Segmentation"
+  authors: ["C. Yu", "C. Gao", "J. Wang", "G. Yu", "C. Shen", "S. Nong"]
+  year: 2020
+  venue: IJCV 2021 (arXiv 2020)
+  url: https://arxiv.org/pdf/2004.02147
+  arxiv: "2004.02147"
+  doi: "10.48550/arxiv.2004.02147"
+  pdf: yu2020-bisenet.pdf
+  cites:
+  - simonyan2014-vgg
+  - ronneberger2015-unet
+  - long2015-fcn
+  - rother2004-grabcut
+  - krizhevsky2012-alexnet
+  - boykov2001-graph-cut-segmentation
+  - he2016-resnet
+  - chen2018-deeplab
+  - yu2018-bisenet
+  - wang2020-hrnet-journal
+
+- id: poudel2019-fast-scnn
+  title: "Fast-SCNN: Fast Semantic Segmentation Network"
+  authors: ["R. P. K. Poudel", "S. Liwicki", "R. Cipolla"]
+  year: 2019
+  venue: BMVC 2019 (arXiv 2019)
+  url: https://arxiv.org/pdf/1902.04502
+  arxiv: "1902.04502"
+  doi: "10.48550/arxiv.1902.04502"
+  pdf: poudel2019-fast-scnn.pdf
+  cites:
+  - simonyan2014-vgg
+  - ronneberger2015-unet
+  - he2016-resnet
+  - chen2018-deeplab
+  - yu2018-bisenet
+  - long2015-fcn
+
+- id: howard2019-mobilenetv3
+  title: "Searching for MobileNetV3"
+  authors: ["A. Howard", "M. Sandler", "G. Chu", "L. Chen", "B. Chen", "M. Tan", "W. Wang", "Y. Zhu", "R. Pang", "V. Vasudevan", "Q. V. Le", "H. Adam"]
+  year: 2019
+  venue: ICCV 2019 (arXiv 2019)
+  url: https://arxiv.org/pdf/1905.02244
+  arxiv: "1905.02244"
+  doi: "10.1109/iccv.2019.00140"
+  pdf: howard2019-mobilenetv3.pdf
+  cites:
+  - chen2018-deeplab
+  - long2015-fcn
+
+- id: sandler2018-mobilenetv2
+  title: "MobileNetV2: Inverted Residuals and Linear Bottlenecks"
+  authors: ["M. Sandler", "A. Howard", "M. Zhu", "A. Zhmoginov", "L. Chen"]
+  year: 2018
+  venue: CVPR 2018 (arXiv 2018)
+  url: https://arxiv.org/pdf/1801.04381
+  arxiv: "1801.04381"
+  doi: "10.48550/arxiv.1801.04381"
+  pdf: sandler2018-mobilenetv2.pdf
+  cites:
+  - szegedy2015-inception
+  - he2016-resnet
+  - ren2015-faster
+  - chen2018-deeplab
+
+- id: tan2019-mnasnet
+  title: "MnasNet: Platform-Aware Neural Architecture Search for Mobile"
+  authors: ["M. Tan", "B. Chen", "R. Pang", "V. Vasudevan", "M. Sandler", "A. Howard", "Q. V. Le"]
+  year: 2019
+  venue: CVPR 2019 (arXiv 2018)
+  url: https://arxiv.org/pdf/1807.11626
+  arxiv: "1807.11626"
+  doi: "10.1109/cvpr.2019.00293"
+  pdf: tan2019-mnasnet.pdf
+  cites:
+  - he2016-resnet
+  - sandler2018-mobilenetv2
+
+- id: robinson2025-rf-detr
+  title: "RF-DETR: Neural Architecture Search for Real-Time Detection Transformers"
+  authors: ["I. Robinson", "P. Robicheaux", "M. Popov", "D. Ramanan", "N. Peri"]
+  year: 2025
+  venue: arXiv (2025)
+  url: https://arxiv.org/pdf/2511.09554
+  arxiv: "2511.09554"
+  doi: "10.48550/arxiv.2511.09554"
+  pdf: robinson2025-rf-detr.pdf
+  cites: []

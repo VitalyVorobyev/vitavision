@@ -443,6 +443,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/alexnet",
       "draft": false
     },
+    "bisenet": {
+      "slug": "bisenet",
+      "type": "model",
+      "title": "BiSeNet",
+      "summary": "Two-branch (bilateral) CNN for real-time semantic segmentation: a wide shallow path preserves spatial detail while a deep narrow path with global pooling supplies receptive field, merged by a learned fusion module. V1 (2018) pairs a Spatial Path and a Context Path (ARM + FFM) on an ImageNet-pretrained backbone; V2 (2020) redesigns it with a Detail Branch, a from-scratch Semantic Branch of Gather-and-Expansion layers, Bilateral Guided Aggregation, and a training-only Booster — 72.6% mIoU at 156 FPS on Cityscapes test (V2, Table 7).",
+      "path": "/atlas/bisenet",
+      "draft": false
+    },
     "ccdn-checkerboard-detector": {
       "slug": "ccdn-checkerboard-detector",
       "type": "model",
@@ -473,6 +481,14 @@ export const contentGraph: ContentGraph = {
       "title": "DETR",
       "summary": "End-to-end object detector that recasts detection as direct set prediction — CNN backbone (ResNet-50/101) extracts $H/32 \\times W/32$ feature map; transformer encoder-decoder with 6+6 layers and $N=100$ learned object queries outputs (class, box) pairs; bipartite-matching loss via Hungarian algorithm eliminates anchor boxes, region proposals, and NMS. Comparable COCO AP to Faster R-CNN at simpler pipeline; better large-object AP, worse small-object AP, and ~10× slower convergence (300+ epochs).",
       "path": "/atlas/detr",
+      "draft": false
+    },
+    "fast-scnn": {
+      "slug": "fast-scnn",
+      "type": "model",
+      "title": "Fast-SCNN",
+      "summary": "Real-time semantic segmentation CNN whose shared shallow 'Learning to Downsample' prefix feeds both a deep low-resolution global-feature branch and a high-resolution detail skip, merged by a feature-fusion module — eliminating the duplicate early downsampling that two-branch segmenters pay. Built from depthwise-separable and MobileNetV2 inverted-residual blocks; ~1.11M parameters; 68.0% mIoU at 123.5 FPS on Cityscapes test (1024×2048, Titan Xp, Table 5).",
+      "path": "/atlas/fast-scnn",
       "draft": false
     },
     "faster-rcnn": {
@@ -563,6 +579,30 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/mate-checkerboard-detector",
       "draft": false
     },
+    "mnasnet": {
+      "slug": "mnasnet",
+      "type": "model",
+      "title": "MnasNet",
+      "summary": "Mobile-CPU CNN image classifier discovered by platform-aware neural architecture search: an RNN controller trained with reinforcement learning samples architectures from a factorized hierarchical search space and maximizes a multi-objective reward trading ImageNet top-1 accuracy against latency measured directly on a phone.",
+      "path": "/atlas/mnasnet",
+      "draft": false
+    },
+    "mobilenetv2": {
+      "slug": "mobilenetv2",
+      "type": "model",
+      "title": "MobileNetV2",
+      "summary": "Efficient mobile CNN backbone built from inverted-residual blocks with a linear bottleneck — depthwise-separable convolution expanded to a wide interior and projected back to a thin, non-linearity-free bottleneck that the residual connects — for on-device classification, detection (SSDLite), and segmentation (Mobile DeepLabv3).",
+      "path": "/atlas/mobilenetv2",
+      "draft": false
+    },
+    "mobilenetv3": {
+      "slug": "mobilenetv3",
+      "type": "model",
+      "title": "MobileNetV3",
+      "summary": "Mobile-CPU-latency-targeted CNN backbone found by combined platform-aware NAS and NetAdapt, built from MobileNetV2 inverted-residual blocks augmented with squeeze-and-excitation and the h-swish nonlinearity, plus a Lite Reduced ASPP segmentation decoder; trained on ImageNet-1k and adapted to detection and segmentation.",
+      "path": "/atlas/mobilenetv3",
+      "draft": false
+    },
     "mobilesam": {
       "slug": "mobilesam",
       "type": "model",
@@ -579,6 +619,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/resnet",
       "draft": false
     },
+    "rf-detr": {
+      "slug": "rf-detr",
+      "type": "model",
+      "title": "RF-DETR",
+      "summary": "Light-weight specialist real-time detection transformer that discovers an accuracy-latency Pareto frontier for any target dataset from a single training run: a DINOv2-ViT backbone feeds an LW-DETR-style set-prediction decoder, and weight-sharing NAS evaluates thousands of sub-network configurations without retraining. First real-time detector to exceed 60 AP on COCO.",
+      "path": "/atlas/rf-detr",
+      "draft": false
+    },
     "ritm-interactive-segmentation": {
       "slug": "ritm-interactive-segmentation",
       "type": "model",
@@ -593,6 +641,14 @@ export const contentGraph: ContentGraph = {
       "title": "SAM",
       "summary": "Promptable segmentation foundation model family — SAM (v1, 2023) introduces image-prompt segmentation with a heavy ViT-H encoder and lightweight transformer decoder trained on the 1.1B-mask SA-1B dataset; SAM 2 (2024) extends to video via a streaming memory module on a Hiera hierarchical-ViT encoder; SAM 3 (2025) generalises from single-object prompts to *concept* prompts (free-form noun phrases or visual exemplars) via a presence token, segmenting all matching instances on images and videos.",
       "path": "/atlas/sam",
+      "draft": false
+    },
+    "segformer": {
+      "slug": "segformer",
+      "type": "model",
+      "title": "SegFormer",
+      "summary": "Hierarchical Transformer encoder (MiT) producing multi-scale features at $1/4, 1/8, 1/16, 1/32$ without positional encodings, plus an all-MLP decoder that fuses per-stage features into a per-pixel prediction. Six variants MiT-B0..B5 trade compute for accuracy; B5 reaches 51.8 mIoU on ADE20K and 84.0 mIoU on Cityscapes (Tables 1 and 2).",
+      "path": "/atlas/segformer",
       "draft": false
     },
     "superglue": {
@@ -1790,6 +1846,44 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "bisenet": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "medium",
+          "caution": "Both target spatial-detail loss in dense prediction — HRNet via a maintained high-resolution branch, BiSeNet via the Spatial/Detail Path."
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "mobilenetv3",
+          "confidence": "medium",
+          "caution": "Peer comparison in the real-time mobile segmentation regime.",
+          "mirrored": true
+        }
+      ]
+    },
     "ccdn-checkerboard-detector": {
       "prerequisites": [
         "image-gradient"
@@ -1853,6 +1947,30 @@ export const contentGraph: ContentGraph = {
           "target": "unet-segmentation",
           "confidence": "high",
           "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "medium",
+          "caution": "LR-ASPP is a lite, reduced reuse of DeepLab's ASPP as MobileNetV3's segmentation head."
+        },
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "high",
+          "mirrored": true
         }
       ]
     },
@@ -1874,6 +1992,47 @@ export const contentGraph: ContentGraph = {
           "target": "sam",
           "confidence": "high",
           "caution": "SAM's mask decoder two-way cross-attention is inspired by DETR's transformer decoder; SAM 3's concept detector is explicitly DETR-based."
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "high",
+          "caution": "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
+        }
+      ]
+    },
+    "fast-scnn": {
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "mobilenetv3",
+          "confidence": "medium",
+          "caution": "Peer comparison is specific to the real-time Cityscapes segmentation regime.",
+          "mirrored": true
         }
       ]
     },
@@ -1934,6 +2093,24 @@ export const contentGraph: ContentGraph = {
           "target": "mask-rcnn",
           "confidence": "high",
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        },
+        {
+          "type": "feeds_into",
+          "target": "bisenet",
+          "confidence": "medium",
+          "caution": "BiSeNet's parallel branches both produce fractional-stride dense feature maps feeding a pixel-wise head, following the FCN framing; FCN-32s is its ablation baseline and FCN-8s a benchmark comparison."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "caution": "Fast-SCNN frames itself as a special case of an FCN encoder-decoder with a single skip connection (§3.3.2); its classifier emits dense per-pixel logits upsampled to full resolution following the FCN template."
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "high",
+          "mirrored": true
         }
       ]
     },
@@ -2018,6 +2195,25 @@ export const contentGraph: ContentGraph = {
           "target": "resnet",
           "confidence": "medium",
           "caution": "ResNet is the dominant backbone for dense prediction; HRNet trades higher activation memory for better keypoint/segmentation accuracy via parallel high-resolution streams."
+        },
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "medium",
+          "caution": "Both target spatial-detail loss in dense prediction — HRNet via a maintained high-resolution branch, BiSeNet via the Spatial/Detail Path.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "high",
+          "mirrored": true
         }
       ]
     },
@@ -2123,6 +2319,13 @@ export const contentGraph: ContentGraph = {
           "target": "mask-rcnn",
           "confidence": "high",
           "caution": "Mask R-CNN is the dominant per-RoI proposal-then-segment baseline; Mask2Former reframes the same problem as mask classification + set prediction, achieving unified handling of semantic, instance, and panoptic in one architecture."
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "medium",
+          "caution": "Mask2Former 2022 follows SegFormer 2021 with a mask-classification paradigm; different formulation (set prediction over masks vs per-pixel).",
+          "mirrored": true
         }
       ]
     },
@@ -2147,6 +2350,69 @@ export const contentGraph: ContentGraph = {
           "type": "learned_alternative_of",
           "target": "chess-corners",
           "confidence": "high"
+        }
+      ]
+    },
+    "mnasnet": {
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "high",
+          "caution": "MobileNetV3 uses MnasNet-style platform-aware NAS and the SE-augmented search space as the basis of its block-level search."
+        }
+      ]
+    },
+    "mobilenetv2": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "convolution"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "high",
+          "caution": "MobileNetV3 inherits the inverted-residual + linear-bottleneck block as its core building primitive."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fast-scnn",
+          "confidence": "high",
+          "caution": "Fast-SCNN's Global Feature Extractor is built from MobileNetV2 inverted-residual bottlenecks."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mnasnet",
+          "confidence": "medium",
+          "caution": "MnasNet's MBConv search space is built on MobileNetV2's inverted-residual block."
+        }
+      ]
+    },
+    "mobilenetv3": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "convolution",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "caution": "Peer comparison is specific to the real-time Cityscapes segmentation regime."
+        },
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "medium",
+          "caution": "Peer comparison in the real-time mobile segmentation regime."
         }
       ]
     },
@@ -2210,6 +2476,14 @@ export const contentGraph: ContentGraph = {
           "mirrored": true
         }
       ]
+    },
+    "rf-detr": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": []
     },
     "ritm-interactive-segmentation": {
       "prerequisites": [],
@@ -2286,6 +2560,60 @@ export const contentGraph: ContentGraph = {
           "target": "mobilesam",
           "confidence": "high",
           "caution": "MobileSAM is a lightweight derivative — distils SAM v1's ViT-H image encoder into a 5.78M-param TinyViT (~56× faster) while keeping SAM's prompt encoder + decoder frozen; MobileSAMv2 adds an object-aware prompt sampler for Segment-Everything."
+        }
+      ]
+    },
+    "segformer": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "SegFormer-B0 and SegFormer-B3 are explicit Segmentor backbones in FocalClick Table 3; the MiT encoder + all-MLP decoder is reused intact and the decoder logits feed FocalClick's Refiner."
+        },
+        {
+          "type": "compared_with",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "unet-segmentation",
+          "confidence": "medium",
+          "caution": "U-Net is the encoder-decoder ancestor; SegFormer keeps the multi-scale-fuse idea but drops skip connections in favour of MLP-aggregating decoder."
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mask2former",
+          "confidence": "medium",
+          "caution": "Mask2Former 2022 follows SegFormer 2021 with a mask-classification paradigm; different formulation (set prediction over masks vs per-pixel)."
+        },
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "mirrored": true
         }
       ]
     },
@@ -2379,6 +2707,13 @@ export const contentGraph: ContentGraph = {
           "confidence": "high",
           "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation.",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "medium",
+          "caution": "U-Net is the encoder-decoder ancestor; SegFormer keeps the multi-scale-fuse idea but drops skip connections in favour of MLP-aggregating decoder.",
+          "mirrored": true
         }
       ]
     },
@@ -2431,6 +2766,12 @@ export const contentGraph: ContentGraph = {
           "type": "feeds_into",
           "target": "mobilesam",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "medium",
+          "caution": "RF-DETR's backbone is a DINOv2 self-supervised ViT."
         },
         {
           "type": "compared_with",
@@ -3262,6 +3603,20 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "bisenet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "BiSeNet's parallel branches both produce fractional-stride dense feature maps feeding a pixel-wise head, following the FCN framing; FCN-32s is its ablation baseline and FCN-8s a benchmark comparison."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "ccdn-checkerboard-detector": {
       "usedBy": [],
       "affects": [],
@@ -3311,6 +3666,25 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "fast-scnn": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "Fast-SCNN frames itself as a special case of an FCN encoder-decoder with a single skip connection (§3.3.2); its classifier emits dense per-pixel logits upsampled to full resolution following the FCN template."
+        },
+        {
+          "slug": "mobilenetv2",
+          "confidence": "high",
+          "caution": "Fast-SCNN's Global Feature Extractor is built from MobileNetV2 inverted-residual bottlenecks."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "faster-rcnn": {
       "usedBy": [],
       "affects": [],
@@ -3354,6 +3728,11 @@ export const contentGraph: ContentGraph = {
           "slug": "hrnet",
           "confidence": "high",
           "caution": "FocalClick uses HRNet18s+OCR and HRNet32+OCR as the Segmentor backbone in three of its six published variants (hrnet18s-S1/S2, hrnet32-S2); the small-crop Segmentor input (128×128 or 256×256) makes HRNet practical for CPU deployment."
+        },
+        {
+          "slug": "segformer",
+          "confidence": "high",
+          "caution": "SegFormer-B0 and SegFormer-B3 are explicit Segmentor backbones in FocalClick Table 3; the MiT encoder + all-MLP decoder is reused intact and the decoder logits feed FocalClick's Refiner."
         }
       ],
       "hasLearnedAlternative": []
@@ -3456,6 +3835,52 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "mnasnet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "mobilenetv2",
+          "confidence": "medium",
+          "caution": "MnasNet's MBConv search space is built on MobileNetV2's inverted-residual block."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "mobilenetv2": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "mobilenetv3": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "deeplab-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "LR-ASPP is a lite, reduced reuse of DeepLab's ASPP as MobileNetV3's segmentation head."
+        },
+        {
+          "slug": "mnasnet",
+          "confidence": "high",
+          "caution": "MobileNetV3 uses MnasNet-style platform-aware NAS and the SE-augmented search space as the basis of its block-level search."
+        },
+        {
+          "slug": "mobilenetv2",
+          "confidence": "high",
+          "caution": "MobileNetV3 inherits the inverted-residual + linear-bottleneck block as its core building primitive."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "mobilesam": {
       "usedBy": [],
       "affects": [],
@@ -3487,6 +3912,25 @@ export const contentGraph: ContentGraph = {
         }
       ],
       "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "rf-detr": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "detr",
+          "confidence": "high",
+          "caution": "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
+        },
+        {
+          "slug": "vit",
+          "confidence": "medium",
+          "caution": "RF-DETR's backbone is a DINOv2 self-supervised ViT."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "ritm-interactive-segmentation": {
@@ -3530,6 +3974,14 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         }
       ],
+      "hasLearnedAlternative": []
+    },
+    "segformer": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
       "hasLearnedAlternative": []
     },
     "superglue": {
@@ -3608,14 +4060,18 @@ export const contentGraph: ContentGraph = {
     },
     "attention-mechanism": {
       "usedBy": [
+        "bisenet",
         "detr",
         "feature-matching",
         "lightglue",
         "loftr",
         "mae",
         "mask2former",
+        "mobilenetv3",
         "mobilesam",
+        "rf-detr",
         "sam",
+        "segformer",
         "superglue",
         "vit"
       ],
@@ -3666,6 +4122,8 @@ export const contentGraph: ContentGraph = {
         "canny-edge-detector",
         "convolutional-neural-network",
         "image-gradient",
+        "mobilenetv2",
+        "mobilenetv3",
         "scale-space"
       ],
       "affects": [],
@@ -3677,14 +4135,21 @@ export const contentGraph: ContentGraph = {
     "convolutional-neural-network": {
       "usedBy": [
         "alexnet",
+        "bisenet",
         "detr",
+        "fast-scnn",
         "geometric-bev",
         "googlenet",
         "hrnet",
         "mae",
         "mask2former",
+        "mnasnet",
+        "mobilenetv2",
+        "mobilenetv3",
         "resnet",
+        "rf-detr",
         "sam",
+        "segformer",
         "vgg",
         "vit"
       ],
@@ -4068,11 +4533,13 @@ export const contentGraph: ContentGraph = {
     "yang-sub-pixel-corner-fit": 2,
     "zhang-planar-calibration": 2,
     "alexnet": 2,
+    "bisenet": 2,
     "ccdn-checkerboard-detector": 2,
     "chessboard-x-corner-detection": 2,
     "ccs-camera-calibration": 3,
     "deeplab-semantic-segmentation": 0,
     "detr": 2,
+    "fast-scnn": 2,
     "faster-rcnn": 0,
     "fcn-semantic-segmentation": 0,
     "focalclick": 0,
@@ -4084,10 +4551,15 @@ export const contentGraph: ContentGraph = {
     "mask-rcnn": 0,
     "mask2former": 2,
     "mate-checkerboard-detector": 2,
+    "mnasnet": 2,
+    "mobilenetv2": 2,
+    "mobilenetv3": 2,
     "sam": 2,
     "mobilesam": 3,
     "resnet": 2,
+    "rf-detr": 2,
     "ritm-interactive-segmentation": 0,
+    "segformer": 2,
     "superglue": 4,
     "superpoint": 2,
     "unet-segmentation": 0,

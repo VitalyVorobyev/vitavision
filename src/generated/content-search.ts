@@ -1010,6 +1010,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "NeurIPS"
   },
   {
+    "slug": "bisenet",
+    "path": "/atlas/bisenet",
+    "type": "model",
+    "title": "BiSeNet",
+    "summary": "Two-branch (bilateral) CNN for real-time semantic segmentation: a wide shallow path preserves spatial detail while a deep narrow path with global pooling supplies receptive field, merged by a learned fusion module. V1 (2018) pairs a Spatial Path and a Context Path (ARM + FFM) on an ImageNet-pretrained backbone; V2 (2020) redesigns it with a Detail Branch, a from-scratch Semantic Branch of Gather-and-Expansion layers, Bilateral Guided Aggregation, and a training-only Booster — 72.6% mIoU at 156 FPS on Cityscapes test (V2, Table 7).",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "C. Yu",
+      "J. Wang",
+      "C. Peng",
+      "C. Gao",
+      "G. Yu",
+      "S. Nong"
+    ],
+    "venue": "ECCV 2018 (arXiv 2018)"
+  },
+  {
     "slug": "ccdn-checkerboard-detector",
     "path": "/atlas/ccdn-checkerboard-detector",
     "type": "model",
@@ -1089,6 +1111,25 @@ export const searchRecords: SearchRecord[] = [
       "S. Zagoruyko"
     ],
     "venue": "ECCV 2020"
+  },
+  {
+    "slug": "fast-scnn",
+    "path": "/atlas/fast-scnn",
+    "type": "model",
+    "title": "Fast-SCNN",
+    "summary": "Real-time semantic segmentation CNN whose shared shallow 'Learning to Downsample' prefix feeds both a deep low-resolution global-feature branch and a high-resolution detail skip, merged by a feature-fusion module — eliminating the duplicate early downsampling that two-branch segmenters pay. Built from depthwise-separable and MobileNetV2 inverted-residual blocks; ~1.11M parameters; 68.0% mIoU at 123.5 FPS on Cityscapes test (1024×2048, Titan Xp, Table 5).",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "R. P. K. Poudel",
+      "S. Liwicki",
+      "R. Cipolla"
+    ],
+    "venue": "BMVC 2019 (arXiv 2019)"
   },
   {
     "slug": "faster-rcnn",
@@ -1324,6 +1365,75 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Sensors"
   },
   {
+    "slug": "mnasnet",
+    "path": "/atlas/mnasnet",
+    "type": "model",
+    "title": "MnasNet",
+    "summary": "Mobile-CPU CNN image classifier discovered by platform-aware neural architecture search: an RNN controller trained with reinforcement learning samples architectures from a factorized hierarchical search space and maximizes a multi-objective reward trading ImageNet top-1 accuracy against latency measured directly on a phone.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "M. Tan",
+      "B. Chen",
+      "R. Pang",
+      "V. Vasudevan",
+      "M. Sandler",
+      "A. Howard",
+      "Q. V. Le"
+    ],
+    "venue": "CVPR 2019 (arXiv 2018)"
+  },
+  {
+    "slug": "mobilenetv2",
+    "path": "/atlas/mobilenetv2",
+    "type": "model",
+    "title": "MobileNetV2",
+    "summary": "Efficient mobile CNN backbone built from inverted-residual blocks with a linear bottleneck — depthwise-separable convolution expanded to a wide interior and projected back to a thin, non-linearity-free bottleneck that the residual connects — for on-device classification, detection (SSDLite), and segmentation (Mobile DeepLabv3).",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "M. Sandler",
+      "A. Howard",
+      "M. Zhu",
+      "A. Zhmoginov",
+      "L. Chen"
+    ],
+    "venue": "CVPR 2018 (arXiv 2018)"
+  },
+  {
+    "slug": "mobilenetv3",
+    "path": "/atlas/mobilenetv3",
+    "type": "model",
+    "title": "MobileNetV3",
+    "summary": "Mobile-CPU-latency-targeted CNN backbone found by combined platform-aware NAS and NetAdapt, built from MobileNetV2 inverted-residual blocks augmented with squeeze-and-excitation and the h-swish nonlinearity, plus a Lite Reduced ASPP segmentation decoder; trained on ImageNet-1k and adapted to detection and segmentation.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "A. Howard",
+      "M. Sandler",
+      "G. Chu",
+      "L. Chen",
+      "B. Chen",
+      "M. Tan",
+      "W. Wang",
+      "Y. Zhu",
+      "R. Pang",
+      "V. Vasudevan",
+      "Q. V. Le",
+      "H. Adam"
+    ],
+    "venue": "ICCV 2019 (arXiv 2019)"
+  },
+  {
     "slug": "mobilesam",
     "path": "/atlas/mobilesam",
     "type": "model",
@@ -1365,6 +1475,26 @@ export const searchRecords: SearchRecord[] = [
       "J. Sun"
     ],
     "venue": "CVPR 2016"
+  },
+  {
+    "slug": "rf-detr",
+    "path": "/atlas/rf-detr",
+    "type": "model",
+    "title": "RF-DETR",
+    "summary": "Light-weight specialist real-time detection transformer that discovers an accuracy-latency Pareto frontier for any target dataset from a single training run: a DINOv2-ViT backbone feeds an LW-DETR-style set-prediction decoder, and weight-sharing NAS evaluates thousands of sub-network configurations without retraining. First real-time detector to exceed 60 AP on COCO.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "I. Robinson",
+      "P. Robicheaux",
+      "M. Popov",
+      "D. Ramanan",
+      "N. Peri"
+    ],
+    "venue": "arXiv (2025)"
   },
   {
     "slug": "ritm-interactive-segmentation",
@@ -1412,6 +1542,28 @@ export const searchRecords: SearchRecord[] = [
       "R. Girshick"
     ],
     "venue": "ICCV"
+  },
+  {
+    "slug": "segformer",
+    "path": "/atlas/segformer",
+    "type": "model",
+    "title": "SegFormer",
+    "summary": "Hierarchical Transformer encoder (MiT) producing multi-scale features at $1/4, 1/8, 1/16, 1/32$ without positional encodings, plus an all-MLP decoder that fuses per-stage features into a per-pixel prediction. Six variants MiT-B0..B5 trade compute for accuracy; B5 reaches 51.8 mIoU on ADE20K and 84.0 mIoU on Cityscapes (Tables 1 and 2).",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "E. Xie",
+      "W. Wang",
+      "Z. Yu",
+      "A. Anandkumar",
+      "J. M. Alvarez",
+      "P. Luo"
+    ],
+    "venue": "NeurIPS 2021 (arXiv 2021)"
   },
   {
     "slug": "superglue",

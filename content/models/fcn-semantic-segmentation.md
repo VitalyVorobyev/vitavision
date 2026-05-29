@@ -24,6 +24,14 @@ relations:
     target: mask-rcnn
     confidence: high
     caution: "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+  - type: feeds_into
+    target: bisenet
+    confidence: medium
+    caution: "BiSeNet's parallel branches both produce fractional-stride dense feature maps feeding a pixel-wise head, following the FCN framing; FCN-32s is its ablation baseline and FCN-8s a benchmark comparison."
+  - type: feeds_into
+    target: fast-scnn
+    confidence: medium
+    caution: "Fast-SCNN frames itself as a special case of an FCN encoder-decoder with a single skip connection (§3.3.2); its classifier emits dense per-pixel logits upsampled to full resolution following the FCN template."
 sources:
   primary: long2015-fcn
   references:

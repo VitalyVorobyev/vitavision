@@ -2065,6 +2065,86 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "bisenet",
+    "frontmatter": {
+      "title": "BiSeNet",
+      "summary": "Two-branch (bilateral) CNN for real-time semantic segmentation: a wide shallow path preserves spatial detail while a deep narrow path with global pooling supplies receptive field, merged by a learned fusion module. V1 (2018) pairs a Spatial Path and a Context Path (ARM + FFM) on an ImageNet-pretrained backbone; V2 (2020) redesigns it with a Detail Branch, a from-scratch Semantic Branch of Gather-and-Expansion layers, Bilateral Guided Aggregation, and a training-only Booster — 72.6% mIoU at 156 FPS on Cityscapes test (V2, Table 7).",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "medium",
+          "caution": "Both target spatial-detail loss in dense prediction — HRNet via a maintained high-resolution branch, BiSeNet via the Spatial/Detail Path."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "params": "5.8M–49.0M (V1 variants)",
+      "flops": "2.9–10.8 GFLOPs (V1 @ 640×360)",
+      "sources": {
+        "primary": "yu2018-bisenet",
+        "references": [
+          "yu2020-bisenet",
+          "long2015-fcn",
+          "he2016-resnet"
+        ],
+        "notes": "V1 (yu2018-bisenet): Spatial Path = 3 × (Conv stride-2 → BN → ReLU),\noutput 1/8 (§3.1). Context Path = lightweight backbone (Xception39 /\nResNet18 / ResNet101) + global average pooling + incomplete U-shape\n(§3.2). ARM = GAP → 1×1 conv → BN → sigmoid → channel reweight (§3.2).\nFFM = concat → BN → GAP → 1×1 conv → ReLU → 1×1 conv → sigmoid → reweight\n→ residual add (§3.3, SE-style). Joint loss (Eq. 2):\n$L(X;W)=l_p(X;W)+\\alpha\\sum_{i=2}^{K} l_i(X_i;W)$, $K=3$, $\\alpha=1$.\nHeadline (Table 6): Xception39 68.4% / 105.8 FPS, Res18 74.7% / 65.5 FPS\non Cityscapes test (Titan XP, 1536×768); Res101 78.9% test (Table 7).\nComplexity (Table 4, @640×360): Xception39 5.8M / 2.9 GFLOPs; Res18\n49.0M / 10.8 GFLOPs.\n\nV2 (yu2020-bisenet): Detail Branch (channels 64/64/128, 1/8, no\nresiduals) + Semantic Branch (Stem Block, GE layers, Context Embedding;\nchannel ratio λ=1/4; → 1/32). GE layer = 3×3 gather-expand → 3×3 DWconv →\n1×1 proj, ε=6 (Table 3c). BGA = bidirectional gating: Detail ⊗\nσ(↑Semantic); Semantic ⊗ APool(Detail); summed (§4.3, Fig. 6). Booster =\ntraining-only auxiliary seg-heads (§4.4). Trains from scratch (kaiming\nnormal). Headline (Table 7): BiSeNetV2 72.6% / 156 FPS, BiSeNetV2-L\n(α=2.0, d=3.0) 75.3% / 47.3 FPS on Cityscapes test (GTX 1080 Ti). Val\nablation (Table 2): +BGA 69.67%, +Booster 73.19%; BGA +1.07 mIoU over\nconcatenation. Complexity 21.15 GFLOPs at λ=1/4 (Table 3a).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/yu-changqian/TorchSeg",
+          "commit": "62eeb159aee77972048d9d7688a28249d3c56735",
+          "framework": "pytorch",
+          "license": "MIT"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/CoinCheung/BiSeNet",
+          "commit": "6b4b67a8e3eb0cc23b3d7a94843a7c3c11dedca8",
+          "framework": "pytorch",
+          "license": "MIT"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/open-mmlab/mmsegmentation",
+          "commit": "b040e147adfa027bbc071b624bedf0ae84dfc922",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-28",
+      "year": 2018
+    }
+  },
+  {
     "slug": "ccdn-checkerboard-detector",
     "frontmatter": {
       "title": "CCDN",
@@ -2198,6 +2278,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "unet-segmentation",
           "confidence": "high",
           "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "medium",
+          "caution": "LR-ASPP is a lite, reduced reuse of DeepLab's ASPP as MobileNetV3's segmentation head."
         }
       ],
       "tags": [
@@ -2292,6 +2378,80 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-27",
       "year": 2020
+    }
+  },
+  {
+    "slug": "fast-scnn",
+    "frontmatter": {
+      "title": "Fast-SCNN",
+      "summary": "Real-time semantic segmentation CNN whose shared shallow 'Learning to Downsample' prefix feeds both a deep low-resolution global-feature branch and a high-resolution detail skip, merged by a feature-fusion module — eliminating the duplicate early downsampling that two-branch segmenters pay. Built from depthwise-separable and MobileNetV2 inverted-residual blocks; ~1.11M parameters; 68.0% mIoU at 123.5 FPS on Cityscapes test (1024×2048, Titan Xp, Table 5).",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "medium"
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "params": "1.11M",
+      "sources": {
+        "primary": "poudel2019-fast-scnn",
+        "references": [
+          "yu2018-bisenet",
+          "long2015-fcn"
+        ],
+        "notes": "Learning to Downsample (LtD, §3.2.1): Conv2d 3×3 s2 (32 ch) → DSConv 3×3\ns2 (48 ch) → DSConv 3×3 s2 (64 ch); all BN+ReLU; output 1/8. Output shared\nas detail skip AND Global Feature Extractor input (§3.3.1). GFE (§3.2.2,\nTable 1): nine MobileNetV2 inverted-residual bottlenecks, expansion t=6 —\n3×(→64, init s2), 3×(→96, init s2), 3×(→128, s1) → 1/32 — then Pyramid\nPooling Module. FFM (Table 3, §3.2.3): low-res branch = bilinear upsample\n×4 → dilated DWConv (dilation = upsample factor = 4, ReLU) → 1×1 conv (no\nnonlinearity); skip branch = 1×1 conv (no nonlinearity); add → ReLU;\n128 ch at 1/8. Classifier: 2× DSConv (128) → 1×1 Conv (19) → upsample ×8.\nBottleneck (Table 2): 1×1 expand to tc → 3×3/s DWConv → 1×1 project to c'\n(no nonlinearity). Training (§4.1): SGD momentum 0.9, batch 12, poly LR\nbase 0.045 power 0.9, ℓ2 0.00004 (non-depthwise), ~1000 epochs from\nscratch, aux CE heads on LtD+GFE weight 0.4, resize 0.5–2. Results:\n68.0% test mIoU / 84.7% category, 1.11M params (Table 4); 123.5 FPS @\n1024×2048, 285.8 @ 512×1024, 51.9% @ 256×512 (Tables 5, 7); skip ablation\n69.22%→64.30% (§4.2); +ImageNet 68.62%→69.15% (+0.53 pp, Table 6).\nBiSeNet baseline: 71.4% test, 5.8M params, 57.3 FPS (Tables 4, 5).\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/Tramac/Fast-SCNN-pytorch",
+          "commit": "0638517d359ae1664a27dfb2cd1780a40a06c465",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/open-mmlab/mmsegmentation",
+          "commit": "b040e147adfa027bbc071b624bedf0ae84dfc922",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-28",
+      "year": 2019
     }
   },
   {
@@ -2398,6 +2558,18 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "mask-rcnn",
           "confidence": "high",
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        },
+        {
+          "type": "feeds_into",
+          "target": "bisenet",
+          "confidence": "medium",
+          "caution": "BiSeNet's parallel branches both produce fractional-stride dense feature maps feeding a pixel-wise head, following the FCN framing; FCN-32s is its ablation baseline and FCN-8s a benchmark comparison."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "caution": "Fast-SCNN frames itself as a special case of an FCN encoder-decoder with a single skip connection (§3.3.2); its classifier emits dense per-pixel logits upsampled to full resolution following the FCN template."
         }
       ],
       "tags": [
@@ -2976,6 +3148,209 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "mnasnet",
+    "frontmatter": {
+      "title": "MnasNet",
+      "summary": "Mobile-CPU CNN image classifier discovered by platform-aware neural architecture search: an RNN controller trained with reinforcement learning samples architectures from a factorized hierarchical search space and maximizes a multi-objective reward trading ImageNet top-1 accuracy against latency measured directly on a phone.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "high",
+          "caution": "MobileNetV3 uses MnasNet-style platform-aware NAS and the SE-augmented search space as the basis of its block-level search."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "3.9M (MnasNet-A1)",
+      "flops": "312M MAdds (MnasNet-A1)",
+      "sources": {
+        "primary": "tan2019-mnasnet",
+        "references": [
+          "sandler2018-mobilenetv2",
+          "howard2019-mobilenetv3"
+        ],
+        "notes": "Multi-objective reward (Eq. 2-3): max_m ACC(m)·[LAT(m)/T]^w, w=alpha if LAT<=T else beta;\nalpha=beta=-0.07 (doubling latency trades ~5% relative accuracy). Factorized hierarchical\nsearch space (Sec 4.1, Fig 4): B=7 predefined blocks, each searched for\nConvOp/KernelSize{3,5}/SERatio{0,0.25}/SkipOp/output-filters/layers; ~432^5 ≈ 1e13 vs ~1e39\nflat per-layer. Direct Pixel-1 latency, not FLOPs (proxy fails: MobileNetV1 575M MAdds/113ms\nvs NASNet 564M MAdds/183ms). RNN controller + PPO; ~8K models/search, 4.5 days on 64 TPUv2.\nMnasNet-A1: 75.2% top-1 / 92.5% top-5 / 78ms / 3.9M / 312M MAdds (Table 1); 1.8x faster than\nMobileNetV2, 2.3x faster than NASNet-A. SE ablation (Table 2): A1 75.2% vs B1 74.5%/77ms.\nCOCO SSDLite: 23.0 mAP / 203ms / 4.9M / 0.8B MAdds vs SSD300 23.2 mAP (Table 3).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/tensorflow/tpu",
+          "commit": "6da032f02921a26284d7d95a4f122d41ab927c21",
+          "framework": "tensorflow",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "78839c2b06c83c6cfb5c4da692ffb331bbd4c4cc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause"
+        }
+      ],
+      "date": "2026-05-29",
+      "year": 2019
+    }
+  },
+  {
+    "slug": "mobilenetv2",
+    "frontmatter": {
+      "title": "MobileNetV2",
+      "summary": "Efficient mobile CNN backbone built from inverted-residual blocks with a linear bottleneck — depthwise-separable convolution expanded to a wide interior and projected back to a thin, non-linearity-free bottleneck that the residual connects — for on-device classification, detection (SSDLite), and segmentation (Mobile DeepLabv3).",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "convolution"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "high",
+          "caution": "MobileNetV3 inherits the inverted-residual + linear-bottleneck block as its core building primitive."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fast-scnn",
+          "confidence": "high",
+          "caution": "Fast-SCNN's Global Feature Extractor is built from MobileNetV2 inverted-residual bottlenecks."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mnasnet",
+          "confidence": "medium",
+          "caution": "MnasNet's MBConv search space is built on MobileNetV2's inverted-residual block."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "3.4M (1.0/224)",
+      "flops": "300M MAdds @ 224×224",
+      "sources": {
+        "primary": "sandler2018-mobilenetv2",
+        "references": [
+          "he2016-resnet",
+          "tan2019-mnasnet",
+          "howard2019-mobilenetv3"
+        ],
+        "notes": "Inverted residual + linear bottleneck (Sec 3.2, Table 1): 1×1 expand to t·k channels (ReLU6) →\n3×3 depthwise (ReLU6) → 1×1 linear project to k' channels (NO nonlinearity); residual connects the\nthin bottleneck tensors. Default expansion t=6 (64→384 example). Linear projection motivated by the\nmanifold-of-interest argument: ReLU on a low-dim subspace collapses it; adding ReLU to the projection\ncosts several percent (Fig 6). Depthwise-separable cost reduction vs standard conv = k²·d_j/(k²+d_j)\n(~8–9× at k=3, Eq 1). ImageNet 1.0/224: 72.0% top-1, 300M MAdds, 3.4M params, 75ms Pixel-1 (Table 4);\nvs MobileNetV1 70.6% / 575M / 113ms. 1.4/224: 74.7% / 585M MAdds. SSDLite COCO: 22.1 mAP / 0.8B MAdds /\n4.3M / 200ms vs MobileNetV1+SSDLite 22.2 / 1.3B / 270ms; SSD300 23.2, SSD512 26.8 (Table 6). Mobile\nDeepLabv3 VOC: 75.70% mIOU / 4.52M / 5.8B MAdds, output stride 16 + ASPP (Table 7). Train (Sec 6.1):\nRMSProp 0.9/0.9, lr 0.045 ×0.98/epoch, weight decay 0.00004, batch 96 over 16 GPUs.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/tensorflow/models",
+          "commit": "451906e4e82f19712455066c1b27e2a6ba71b1dd",
+          "framework": "tensorflow",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "78839c2b06c83c6cfb5c4da692ffb331bbd4c4cc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause"
+        }
+      ],
+      "date": "2026-05-29",
+      "year": 2018
+    }
+  },
+  {
+    "slug": "mobilenetv3",
+    "frontmatter": {
+      "title": "MobileNetV3",
+      "summary": "Mobile-CPU-latency-targeted CNN backbone found by combined platform-aware NAS and NetAdapt, built from MobileNetV2 inverted-residual blocks augmented with squeeze-and-excitation and the h-swish nonlinearity, plus a Lite Reduced ASPP segmentation decoder; trained on ImageNet-1k and adapted to detection and segmentation.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "convolution",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "caution": "Peer comparison is specific to the real-time Cityscapes segmentation regime."
+        },
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "medium",
+          "caution": "Peer comparison in the real-time mobile segmentation regime."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification",
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "howard2019-mobilenetv3",
+        "references": [
+          "sandler2018-mobilenetv2",
+          "tan2019-mnasnet",
+          "chen2018-deeplab",
+          "long2015-fcn"
+        ],
+        "notes": "h-swish (§5.2): h-swish[x] = x · ReLU6(x+3)/6; hard-sigmoid = ReLU6(x+3)/6;\nReLU6(x) = min(max(x,0),6). SE bottleneck = 1/4 of expansion-layer channels\n(§5.3). Inverted-residual + linear-bottleneck block inherited from MobileNetV2.\nTwo-stage search: platform-aware NAS reward ACC(m)·[LAT(m)/TAR]^w with\nw=-0.07 (Large) / w=-0.15 (Small) (§4.1), then NetAdapt per-layer filter\ntrim. Expensive-layer redesign (§5.1): last stage moved past global-avg-pool\nsaves 7 ms / 30 M MAdds (11% of runtime); stem 32→16 filters saves 2 ms /\n10 M MAdds. ImageNet float, Pixel 1 (Table 3): V3-Large 1.0 75.2% top-1 @\n51 ms vs V2 1.0 72.0% @ 64 ms (+3.2%, −20%); V3-Small 1.0 67.4% @ 15.8 ms\nvs V2-0.35 60.8% @ 16.6 ms (+6.6%). LR-ASPP (§6.4, Fig. 10): strips DeepLab\nASPP's parallel multi-rate branches, keeps global-avg-pool context + 1×1.\nCityscapes val (Table 7): V3-Large LR-ASPP F=128 72.36% mIOU @ 657 ms vs\nV2 R-ASPP F=256 72.56% @ 793 ms; abstract claims 34% (note records the\nmatched-row comparison gives ~16%).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/tensorflow/models",
+          "commit": "451906e4e82f19712455066c1b27e2a6ba71b1dd",
+          "framework": "tensorflow",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "78839c2b06c83c6cfb5c4da692ffb331bbd4c4cc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause"
+        }
+      ],
+      "date": "2026-05-29",
+      "year": 2019
+    }
+  },
+  {
     "slug": "mobilesam",
     "frontmatter": {
       "title": "MobileSAM",
@@ -3273,6 +3648,105 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-27",
       "year": 2023
+    }
+  },
+  {
+    "slug": "segformer",
+    "frontmatter": {
+      "title": "SegFormer",
+      "summary": "Hierarchical Transformer encoder (MiT) producing multi-scale features at $1/4, 1/8, 1/16, 1/32$ without positional encodings, plus an all-MLP decoder that fuses per-stage features into a per-pixel prediction. Six variants MiT-B0..B5 trade compute for accuracy; B5 reaches 51.8 mIoU on ADE20K and 84.0 mIoU on Cityscapes (Tables 1 and 2).",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "SegFormer-B0 and SegFormer-B3 are explicit Segmentor backbones in FocalClick Table 3; the MiT encoder + all-MLP decoder is reused intact and the decoder logits feed FocalClick's Refiner."
+        },
+        {
+          "type": "compared_with",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "unet-segmentation",
+          "confidence": "medium",
+          "caution": "U-Net is the encoder-decoder ancestor; SegFormer keeps the multi-scale-fuse idea but drops skip connections in favour of MLP-aggregating decoder."
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mask2former",
+          "confidence": "medium",
+          "caution": "Mask2Former 2022 follows SegFormer 2021 with a mask-classification paradigm; different formulation (set prediction over masks vs per-pixel)."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "vit",
+      "params": "3.8M (B0) — 84.7M (B5)",
+      "flops": "8.4 GFLOPs (B0 @ 512×512) — 183.3 GFLOPs (B5 @ 640×640)",
+      "sources": {
+        "primary": "xie2021-segformer",
+        "references": [
+          "dosovitskiy2020-vit",
+          "long2015-fcn",
+          "chen2018-deeplab"
+        ],
+        "notes": "MiT encoder (Sec. 3.1, Fig. 2): four hierarchical stages with overlapping\npatch merging (kernels $K=7,3,3,3$, strides $S=4,2,2,2$, paddings\n$P=3,1,1,1$). Each stage's Transformer block uses efficient self-attention\nwith sequence-reduction ratio $R$ (Eq. 2): $\\hat{K} = \\text{Reshape}(N/R,\nC \\cdot R)(K)$ then $K = \\text{Linear}(C \\cdot R, C)(\\hat{K})$, reducing\nattention cost from $O(N^2)$ to $O(N^2/R)$. Reduction ratios per stage:\n$[64, 16, 4, 1]$ (Sec. 3.1.2). Mix-FFN (Eq. 3) replaces positional\nencoding: $x_\\text{out} = \\text{MLP}(\\text{GELU}(\\text{Conv}_{3 \\times 3}\n(\\text{MLP}(x_\\text{in})))) + x_\\text{in}$ — the $3 \\times 3$ depthwise\nconv inside the FFN supplies the positional information.\n\nAll-MLP decoder (Sec. 3.2, Eqs. 4a–4d): per-stage MLP projects channel\n$C_i$ to $C$; upsample to $H/4 \\times W/4$; concat; fused MLP to $C$;\nfinal MLP to $N_\\text{cls}$. Decoder channel $C = 256$ (B0–B2) or $C=768$\n(B3–B5).\n\nVariants (Table 7): B0 ($C_1..C_4 = 32,64,160,256$, 3.8M params), B1\n(13.7M), B2 (27.5M), B3 (47.3M), B4 (64.1M), B5 (84.7M).\n\nHeadline numbers — ADE20K val mIoU (Table 1): B0 37.4, B5 51.8 (best\npublished at submission). Cityscapes val mIoU (Table 2): B0 76.2, B5\n84.0. COCO-Stuff test mIoU (Table 3): B5 46.7. Cityscapes-C robustness\n(Table 5, mIoU averaged over 16 corruptions × 5 severities): B5 47.9\nvs DeepLabV3+ R101 27.5 — zero-shot gain of 20.4 mIoU on corrupted data.\n\nTraining (Sec. 4.1): AdamW, lr $6 \\times 10^{-5}$ with poly decay\n(power 1.0), weight decay 0.01, ImageNet-1k pretrained encoder, random\ncrop $512 \\times 512$ (ADE20K) or $1024 \\times 1024$ (Cityscapes),\nhorizontal flip + random scale $[0.5, 2.0]$ + random photometric\ndistortion. 160k iterations on ADE20K, batch size 16.\n\nEffective receptive field analysis (Fig. 3): stage-4 ERF of MiT already\ncovers the whole image, so the lightweight all-MLP decoder suffices —\nmotivation for replacing heavy ASPP / OCR / object-context heads with\nplain MLP fusion.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/NVlabs/SegFormer",
+          "commit": "65fa8cfa9b52b6ee7e8897a98705abf8570f9e32",
+          "framework": "pytorch",
+          "license": "NVIDIA-Source-Code-License",
+          "weights_url": "https://huggingface.co/nvidia/segformer-b0-finetuned-ade-512-512",
+          "weights_license": "NVIDIA-Source-Code-License"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/huggingface/transformers",
+          "commit": "c2820c94916e34baf4486accae74760972183a2f",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/open-mmlab/mmsegmentation",
+          "commit": "c685fe6767c4cadf6b051983ca6208f1b9d1ccb8",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-28",
+      "year": 2021
     }
   },
   {

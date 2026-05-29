@@ -15,6 +15,10 @@ relations:
     target: unet-segmentation
     confidence: high
     caution: "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation."
+  - type: feeds_into
+    target: mobilenetv3
+    confidence: medium
+    caution: "LR-ASPP is a lite, reduced reuse of DeepLab's ASPP as MobileNetV3's segmentation head."
 sources:
   primary: chen2018-deeplab
   references:

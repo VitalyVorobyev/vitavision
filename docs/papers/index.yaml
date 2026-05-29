@@ -1280,3 +1280,14 @@
   cites:
   - he2016-resnet
   - sandler2018-mobilenetv2
+
+- id: robinson2025-rf-detr
+  title: "RF-DETR: Neural Architecture Search for Real-Time Detection Transformers"
+  authors: ["I. Robinson", "P. Robicheaux", "M. Popov", "D. Ramanan", "N. Peri"]
+  year: 2025
+  venue: arXiv (2025)
+  url: https://arxiv.org/pdf/2511.09554
+  arxiv: "2511.09554"
+  doi: "10.48550/arxiv.2511.09554"
+  pdf: robinson2025-rf-detr.pdf
+  cites: []

@@ -1477,6 +1477,26 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR 2016"
   },
   {
+    "slug": "rf-detr",
+    "path": "/atlas/rf-detr",
+    "type": "model",
+    "title": "RF-DETR",
+    "summary": "Light-weight specialist real-time detection transformer that discovers an accuracy-latency Pareto frontier for any target dataset from a single training run: a DINOv2-ViT backbone feeds an LW-DETR-style set-prediction decoder, and weight-sharing NAS evaluates thousands of sub-network configurations without retraining. First real-time detector to exceed 60 AP on COCO.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "I. Robinson",
+      "P. Robicheaux",
+      "M. Popov",
+      "D. Ramanan",
+      "N. Peri"
+    ],
+    "venue": "arXiv (2025)"
+  },
+  {
     "slug": "ritm-interactive-segmentation",
     "path": "/atlas/ritm-interactive-segmentation",
     "type": "model",

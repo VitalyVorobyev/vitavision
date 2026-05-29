@@ -619,6 +619,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/resnet",
       "draft": false
     },
+    "rf-detr": {
+      "slug": "rf-detr",
+      "type": "model",
+      "title": "RF-DETR",
+      "summary": "Light-weight specialist real-time detection transformer that discovers an accuracy-latency Pareto frontier for any target dataset from a single training run: a DINOv2-ViT backbone feeds an LW-DETR-style set-prediction decoder, and weight-sharing NAS evaluates thousands of sub-network configurations without retraining. First real-time detector to exceed 60 AP on COCO.",
+      "path": "/atlas/rf-detr",
+      "draft": false
+    },
     "ritm-interactive-segmentation": {
       "slug": "ritm-interactive-segmentation",
       "type": "model",
@@ -1984,6 +1992,12 @@ export const contentGraph: ContentGraph = {
           "target": "sam",
           "confidence": "high",
           "caution": "SAM's mask decoder two-way cross-attention is inspired by DETR's transformer decoder; SAM 3's concept detector is explicitly DETR-based."
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "high",
+          "caution": "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
         }
       ]
     },
@@ -2463,6 +2477,14 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "rf-detr": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
     "ritm-interactive-segmentation": {
       "prerequisites": [],
       "failureModes": [],
@@ -2744,6 +2766,12 @@ export const contentGraph: ContentGraph = {
           "type": "feeds_into",
           "target": "mobilesam",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "medium",
+          "caution": "RF-DETR's backbone is a DINOv2 self-supervised ViT."
         },
         {
           "type": "compared_with",
@@ -3886,6 +3914,25 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "rf-detr": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "detr",
+          "confidence": "high",
+          "caution": "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
+        },
+        {
+          "slug": "vit",
+          "confidence": "medium",
+          "caution": "RF-DETR's backbone is a DINOv2 self-supervised ViT."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "ritm-interactive-segmentation": {
       "usedBy": [],
       "affects": [],
@@ -4022,6 +4069,7 @@ export const contentGraph: ContentGraph = {
         "mask2former",
         "mobilenetv3",
         "mobilesam",
+        "rf-detr",
         "sam",
         "segformer",
         "superglue",
@@ -4099,6 +4147,7 @@ export const contentGraph: ContentGraph = {
         "mobilenetv2",
         "mobilenetv3",
         "resnet",
+        "rf-detr",
         "sam",
         "segformer",
         "vgg",
@@ -4508,6 +4557,7 @@ export const contentGraph: ContentGraph = {
     "sam": 2,
     "mobilesam": 3,
     "resnet": 2,
+    "rf-detr": 2,
     "ritm-interactive-segmentation": 0,
     "segformer": 2,
     "superglue": 4,

@@ -291,68 +291,73 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 378.5260224,
     "cluster": "detectors"
   },
+  "rf-detr": {
+    "x": 651.784023,
+    "y": 376.5065952,
+    "cluster": "detectors"
+  },
   "shi-tomasi-corner-detector": {
-    "x": 653.5681252500001,
+    "x": 698.7181252500001,
     "y": 384.8199744,
     "cluster": "detectors"
   },
   "sift": {
-    "x": 698.6564955000001,
-    "y": 378.0448032,
+    "x": 518.0564955000001,
+    "y": 418.36480320000004,
     "cluster": "detectors"
   },
   "structure-tensor": {
-    "x": 524.2874212500001,
+    "x": 569.43742125,
     "y": 416.53729920000006,
     "cluster": "detectors"
   },
   "superglue": {
-    "x": 566.338551,
+    "x": 611.488551,
     "y": 421.16180160000005,
     "cluster": "detectors"
   },
   "superpoint": {
-    "x": 604.38848775,
+    "x": 649.5384877500001,
     "y": 421.54141440000006,
     "cluster": "detectors"
   },
   "surf": {
-    "x": 645.8549250000001,
+    "x": 691.0049250000001,
     "y": 425.6437728,
     "cluster": "detectors"
   },
   "topological-grid-recovery": {
-    "x": 695.0946120000001,
-    "y": 415.18395840000005,
+    "x": 514.4946120000001,
+    "y": 455.5039584,
     "cluster": "detectors"
   },
   "vgg": {
-    "x": 524.0424825,
+    "x": 569.1924825,
     "y": 464.0304288,
     "cluster": "detectors"
   },
   "viola-jones-detector": {
-    "x": 564.511782,
+    "x": 609.661782,
     "y": 459.8504544,
     "cluster": "detectors"
   },
   "vit": {
-    "x": 606.52814625,
+    "x": 651.67814625,
     "y": 463.7721792,
     "cluster": "detectors"
   },
   "xfeat": {
-    "x": 660.0740145000001,
+    "x": 705.2240145000001,
     "y": 464.5497504,
     "cluster": "detectors"
   },
   "yang-sub-pixel-corner-fit": {
-    "x": 693.3926827500001,
-    "y": 460.7042304,
+    "x": 512.79268275,
+    "y": 501.0242304,
     "cluster": "detectors"
   },
   "yolo-v1": {
-    "x": 523.9429267500001,
+    "x": 569.0929267500001,
     "y": 496.86965760000004,
     "cluster": "detectors"
   },

@@ -2351,6 +2351,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "sam",
           "confidence": "high",
           "caution": "SAM's mask decoder two-way cross-attention is inspired by DETR's transformer decoder; SAM 3's concept detector is explicitly DETR-based."
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "high",
+          "caution": "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
         }
       ],
       "tags": [
@@ -3488,6 +3494,47 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "rf-detr",
+    "frontmatter": {
+      "title": "RF-DETR",
+      "summary": "Light-weight specialist real-time detection transformer that discovers an accuracy-latency Pareto frontier for any target dataset from a single training run: a DINOv2-ViT backbone feeds an LW-DETR-style set-prediction decoder, and weight-sharing NAS evaluates thousands of sub-network configurations without retraining. First real-time detector to exceed 60 AP on COCO.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "advanced",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "detection",
+      "arch_family": "hybrid",
+      "params": "30.5M (nano), 126.9M (2x-large)",
+      "sources": {
+        "primary": "robinson2025-rf-detr",
+        "references": [
+          "carion2020-detr",
+          "dosovitskiy2020-vit"
+        ],
+        "notes": "Weight-sharing NAS (OFA-inspired, first end-to-end for detection/segmentation):\none base net trained once on the target dataset; each step samples a random\nsub-net config; after training, 6,468 configs grid-searched on val to trace the\naccuracy-latency Pareto frontier with no retraining. Five tunable knobs: image\nresolution (11 values 320-960), ViT patch size (7 values {8,10,12,16,20,24,32},\nFlexiVIT interpolation), decoder layers (<=6, each supervised independently so\ntruncatable), query tokens ({50,100,200,300}, lowest-confidence dropped), windowed\nattention blocks per encoder layer ({1,2,4}). Backbone: DINOv2 ViT-S/B replacing\nLW-DETR's CAEv2; layer-norm projector (not batch norm) for consumer-GPU training.\nNMS-free set prediction. lr 1e-4 (vs 4e-4 LW-DETR), per-layer backbone decay 0.8,\ngrad clip 0.1, scheduler-free + minimal aug. Results (T4, TensorRT, FP-16): nano\n48.0 AP @ 2.3 ms / 30.5M (+5.3 AP over D-FINE nano @ 2.1 ms); 2x-large 60.1 AP @\n17.2 ms / 126.9M (first real-time >60 AP on COCO); 2XL fine-tuned 63.5 AP on\nRF100-VL vs GroundingDINO tiny +1.2 AP at ~20x lower latency (15.6 vs 309.9 ms).\nFP-16-robust where D-FINE collapses 55.1 -> 0.5 AP. Code Apache-2.0; XL/2XL\nweights PML 1.0.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/roboflow/rf-detr",
+          "commit": "6e1620e751f3c814ead8648cada51ceff9029e5c",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-29",
+      "year": 2025
+    }
+  },
+  {
     "slug": "ritm-interactive-segmentation",
     "frontmatter": {
       "title": "RITM",
@@ -4064,6 +4111,12 @@ export const modelPages: ModelIndexEntry[] = [
           "type": "feeds_into",
           "target": "mobilesam",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "medium",
+          "caution": "RF-DETR's backbone is a DINOv2 self-supervised ViT."
         },
         {
           "type": "compared_with",

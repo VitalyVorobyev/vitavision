@@ -1092,6 +1092,76 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "depth-anything",
+    "path": "/atlas/depth-anything",
+    "type": "model",
+    "title": "Depth Anything",
+    "summary": "A monocular relative-depth foundation model that scales training to 62M unlabeled images via a teacher pseudo-labeling data engine, a CutMix challenge for the student, and a DINOv2 semantic-feature alignment loss.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "depth",
+    "headings": [],
+    "authors": [
+      "L. Yang",
+      "B. Kang",
+      "Z. Huang",
+      "X. Xu",
+      "J. Feng",
+      "H. Zhao"
+    ],
+    "venue": "CVPR 2024"
+  },
+  {
+    "slug": "depth-anything-3",
+    "path": "/atlas/depth-anything-3",
+    "type": "model",
+    "title": "Depth Anything 3",
+    "summary": "A single plain-transformer model that predicts spatially consistent geometry — depth plus camera rays — from one to many images, with or without known poses, distilled from Depth Anything 2 via a unified depth-ray target.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "H. Lin",
+      "S. Chen",
+      "J. Liew",
+      "D. Y. Chen",
+      "Z. Li",
+      "G. Shi",
+      "J. Feng",
+      "B. Kang"
+    ],
+    "venue": "arXiv (2025)"
+  },
+  {
+    "slug": "depth-anything-v2",
+    "path": "/atlas/depth-anything-v2",
+    "type": "model",
+    "title": "Depth Anything V2",
+    "summary": "A monocular depth foundation model that trains its teacher purely on synthetic images for label precision, then distills to a student over 62M pseudo-labeled real images, sharpening detail over V1 while staying far faster than diffusion-based depth.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "depth",
+    "headings": [],
+    "authors": [
+      "L. Yang",
+      "B. Kang",
+      "Z. Huang",
+      "Z. Zhao",
+      "X. Xu",
+      "J. Feng",
+      "H. Zhao"
+    ],
+    "venue": "NeurIPS 2024"
+  },
+  {
     "slug": "detr",
     "path": "/atlas/detr",
     "type": "model",
@@ -1111,6 +1181,69 @@ export const searchRecords: SearchRecord[] = [
       "S. Zagoruyko"
     ],
     "venue": "ECCV 2020"
+  },
+  {
+    "slug": "dinov2",
+    "path": "/atlas/dinov2",
+    "type": "model",
+    "title": "DINOv2",
+    "summary": "A self-supervised ViT trained on a curated 142M-image dataset that yields general-purpose visual features usable frozen — via kNN or linear probes — for classification, dense depth and segmentation without finetuning.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "M. Oquab",
+      "T. Darcet",
+      "T. Moutakanni",
+      "H. Vo",
+      "M. Szafraniec",
+      "V. Khalidov",
+      "P. Fernandez",
+      "D. Haziza",
+      "F. Massa",
+      "A. El-Nouby",
+      "M. Assran",
+      "N. Ballas",
+      "W. Galuba",
+      "R. Howes",
+      "P. Huang",
+      "S. Li",
+      "I. Misra",
+      "M. Rabbat",
+      "V. Sharma",
+      "G. Synnaeve",
+      "H. Xu",
+      "H. Jegou",
+      "J. Mairal",
+      "P. Labatut",
+      "A. Joulin",
+      "P. Bojanowski"
+    ],
+    "venue": "TMLR 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "dust3r",
+    "path": "/atlas/dust3r",
+    "type": "model",
+    "title": "DUSt3R",
+    "summary": "A feed-forward network that regresses two dense pointmaps in a shared coordinate frame from an uncalibrated, unposed image pair, jointly recovering correspondence, relative pose, intrinsics and depth without prior calibration.",
+    "tags": [
+      "deep-learning",
+      "two-view-geometry",
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "S. Wang",
+      "V. Leroy",
+      "Y. Cabon",
+      "B. Chidlovskii",
+      "J. Revaud"
+    ],
+    "venue": "CVPR 2024 (arXiv 2023)"
   },
   {
     "slug": "fast-scnn",
@@ -1341,6 +1474,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR 2022 (arXiv 2021)"
   },
   {
+    "slug": "mast3r",
+    "path": "/atlas/mast3r",
+    "type": "model",
+    "title": "MASt3R",
+    "summary": "A 3D-grounded image matcher that adds a dense local-descriptor head and an InfoNCE matching loss on top of DUSt3R's pointmap regression, with a fast reciprocal matching scheme, yielding correspondences robust to extreme viewpoint change.",
+    "tags": [
+      "deep-learning",
+      "two-view-geometry",
+      "local-descriptors"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "When to choose MASt3R over a 2D matcher"
+    ],
+    "authors": [
+      "V. Leroy",
+      "Y. Cabon",
+      "J. Revaud"
+    ],
+    "venue": "ECCV 2024"
+  },
+  {
     "slug": "mate-checkerboard-detector",
     "path": "/atlas/mate-checkerboard-detector",
     "type": "model",
@@ -1363,6 +1518,27 @@ export const searchRecords: SearchRecord[] = [
       "W. Philips"
     ],
     "venue": "Sensors"
+  },
+  {
+    "slug": "midas",
+    "path": "/atlas/midas",
+    "type": "model",
+    "title": "MiDaS",
+    "summary": "A monocular depth network trained for zero-shot cross-dataset transfer by mixing incompatible depth datasets under a scale-and-shift-invariant loss, predicting relative inverse depth up to an unknown global scale and shift.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "depth",
+    "headings": [],
+    "authors": [
+      "R. Ranftl",
+      "K. Lasinger",
+      "D. Hafner",
+      "K. Schindler",
+      "V. Koltun"
+    ],
+    "venue": "TPAMI 2022 (arXiv 2019)"
   },
   {
     "slug": "mnasnet",
@@ -1644,6 +1820,29 @@ export const searchRecords: SearchRecord[] = [
       "A. Zisserman"
     ],
     "venue": "ICLR 2015 / arXiv"
+  },
+  {
+    "slug": "vggt",
+    "path": "/atlas/vggt",
+    "type": "model",
+    "title": "VGGT (Visual Geometry Grounded Transformer)",
+    "summary": "A large feed-forward transformer that predicts cameras, depth maps, point maps and 3D point tracks for one to hundreds of views in a single pass, removing the optimization and global-alignment post-processing that pairwise pointmap methods require.",
+    "tags": [
+      "deep-learning",
+      "two-view-geometry",
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "J. Wang",
+      "M. Chen",
+      "N. Karaev",
+      "A. Vedaldi",
+      "C. Rupprecht",
+      "D. Novotny"
+    ],
+    "venue": "CVPR 2025"
   },
   {
     "slug": "vit",
@@ -1945,6 +2144,33 @@ export const searchRecords: SearchRecord[] = [
     "venue": "International Journal of Computer Vision"
   },
   {
+    "slug": "feed-forward-3d-reconstruction",
+    "path": "/atlas/feed-forward-3d-reconstruction",
+    "type": "concept",
+    "title": "Feed-Forward 3D Reconstruction",
+    "summary": "Recovering 3D geometry — point maps, depth, and camera poses — directly from images in a single network pass, replacing the detect-match-triangulate-bundle-adjust pipeline of classical structure-from-motion with learned pointmap regression.",
+    "tags": [
+      "deep-learning",
+      "two-view-geometry",
+      "survey"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Decision table",
+      "Pointmap regression",
+      "From pairwise to many views",
+      "3D-grounded matching"
+    ],
+    "authors": [
+      "S. Wang",
+      "V. Leroy",
+      "Y. Cabon",
+      "B. Chidlovskii",
+      "J. Revaud"
+    ],
+    "venue": "CVPR 2024 (arXiv 2023)"
+  },
+  {
     "slug": "hessian-saddle-response",
     "path": "/atlas/hessian-saddle-response",
     "type": "concept",
@@ -2038,6 +2264,32 @@ export const searchRecords: SearchRecord[] = [
       "F. C. Crow"
     ],
     "venue": "ACM SIGGRAPH Computer Graphics"
+  },
+  {
+    "slug": "monocular-depth-estimation",
+    "path": "/atlas/monocular-depth-estimation",
+    "type": "concept",
+    "title": "Monocular Depth Estimation",
+    "summary": "Predicting per-pixel scene depth from a single image — the scale ambiguity that forces relative (affine-invariant) versus metric formulations, the scale-and-shift-invariant training that lets incompatible datasets be mixed, and the foundation-model recipe that scaled it to zero-shot generalization.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "survey"
+    ],
+    "domain": "depth",
+    "headings": [
+      "Scale-and-shift-invariant loss",
+      "Relative vs metric depth",
+      "Scaling with pseudo-labels"
+    ],
+    "authors": [
+      "R. Ranftl",
+      "K. Lasinger",
+      "D. Hafner",
+      "K. Schindler",
+      "V. Koltun"
+    ],
+    "venue": "TPAMI 2022 (arXiv 2019)"
   },
   {
     "slug": "non-maximum-suppression",

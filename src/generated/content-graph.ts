@@ -475,12 +475,52 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/deeplab-semantic-segmentation",
       "draft": false
     },
+    "depth-anything": {
+      "slug": "depth-anything",
+      "type": "model",
+      "title": "Depth Anything",
+      "summary": "A monocular relative-depth foundation model that scales training to 62M unlabeled images via a teacher pseudo-labeling data engine, a CutMix challenge for the student, and a DINOv2 semantic-feature alignment loss.",
+      "path": "/atlas/depth-anything",
+      "draft": false
+    },
+    "depth-anything-3": {
+      "slug": "depth-anything-3",
+      "type": "model",
+      "title": "Depth Anything 3",
+      "summary": "A single plain-transformer model that predicts spatially consistent geometry — depth plus camera rays — from one to many images, with or without known poses, distilled from Depth Anything 2 via a unified depth-ray target.",
+      "path": "/atlas/depth-anything-3",
+      "draft": false
+    },
+    "depth-anything-v2": {
+      "slug": "depth-anything-v2",
+      "type": "model",
+      "title": "Depth Anything V2",
+      "summary": "A monocular depth foundation model that trains its teacher purely on synthetic images for label precision, then distills to a student over 62M pseudo-labeled real images, sharpening detail over V1 while staying far faster than diffusion-based depth.",
+      "path": "/atlas/depth-anything-v2",
+      "draft": false
+    },
     "detr": {
       "slug": "detr",
       "type": "model",
       "title": "DETR",
       "summary": "End-to-end object detector that recasts detection as direct set prediction — CNN backbone (ResNet-50/101) extracts $H/32 \\times W/32$ feature map; transformer encoder-decoder with 6+6 layers and $N=100$ learned object queries outputs (class, box) pairs; bipartite-matching loss via Hungarian algorithm eliminates anchor boxes, region proposals, and NMS. Comparable COCO AP to Faster R-CNN at simpler pipeline; better large-object AP, worse small-object AP, and ~10× slower convergence (300+ epochs).",
       "path": "/atlas/detr",
+      "draft": false
+    },
+    "dinov2": {
+      "slug": "dinov2",
+      "type": "model",
+      "title": "DINOv2",
+      "summary": "A self-supervised ViT trained on a curated 142M-image dataset that yields general-purpose visual features usable frozen — via kNN or linear probes — for classification, dense depth and segmentation without finetuning.",
+      "path": "/atlas/dinov2",
+      "draft": false
+    },
+    "dust3r": {
+      "slug": "dust3r",
+      "type": "model",
+      "title": "DUSt3R",
+      "summary": "A feed-forward network that regresses two dense pointmaps in a shared coordinate frame from an uncalibrated, unposed image pair, jointly recovering correspondence, relative pose, intrinsics and depth without prior calibration.",
+      "path": "/atlas/dust3r",
       "draft": false
     },
     "fast-scnn": {
@@ -571,12 +611,28 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/mask2former",
       "draft": false
     },
+    "mast3r": {
+      "slug": "mast3r",
+      "type": "model",
+      "title": "MASt3R",
+      "summary": "A 3D-grounded image matcher that adds a dense local-descriptor head and an InfoNCE matching loss on top of DUSt3R's pointmap regression, with a fast reciprocal matching scheme, yielding correspondences robust to extreme viewpoint change.",
+      "path": "/atlas/mast3r",
+      "draft": false
+    },
     "mate-checkerboard-detector": {
       "slug": "mate-checkerboard-detector",
       "type": "model",
       "title": "MATE",
       "summary": "First learned per-pixel checkerboard X-corner detector: a three-convolutional-layer CNN with 2,939 parameters trained with mean-squared-error loss against a binary corner mask and post-processed with a fixed 0.5 threshold.",
       "path": "/atlas/mate-checkerboard-detector",
+      "draft": false
+    },
+    "midas": {
+      "slug": "midas",
+      "type": "model",
+      "title": "MiDaS",
+      "summary": "A monocular depth network trained for zero-shot cross-dataset transfer by mixing incompatible depth datasets under a scale-and-shift-invariant loss, predicting relative inverse depth up to an unknown global scale and shift.",
+      "path": "/atlas/midas",
       "draft": false
     },
     "mnasnet": {
@@ -681,6 +737,14 @@ export const contentGraph: ContentGraph = {
       "title": "VGG",
       "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
       "path": "/atlas/vgg",
+      "draft": false
+    },
+    "vggt": {
+      "slug": "vggt",
+      "type": "model",
+      "title": "VGGT (Visual Geometry Grounded Transformer)",
+      "summary": "A large feed-forward transformer that predicts cameras, depth maps, point maps and 3D point tracks for one to hundreds of views in a single pass, removing the optimization and global-alignment post-processing that pairwise pointmap methods require.",
+      "path": "/atlas/vggt",
       "draft": false
     },
     "vit": {
@@ -795,6 +859,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/feature-matching",
       "draft": false
     },
+    "feed-forward-3d-reconstruction": {
+      "slug": "feed-forward-3d-reconstruction",
+      "type": "concept",
+      "title": "Feed-Forward 3D Reconstruction",
+      "summary": "Recovering 3D geometry — point maps, depth, and camera poses — directly from images in a single network pass, replacing the detect-match-triangulate-bundle-adjust pipeline of classical structure-from-motion with learned pointmap regression.",
+      "path": "/atlas/feed-forward-3d-reconstruction",
+      "draft": false
+    },
     "hessian-saddle-response": {
       "slug": "hessian-saddle-response",
       "type": "concept",
@@ -833,6 +905,14 @@ export const contentGraph: ContentGraph = {
       "title": "Integral Image",
       "summary": "A precomputed prefix-sum array that returns the sum of pixel values over any axis-aligned rectangle in constant time with four array reads.",
       "path": "/atlas/integral-image",
+      "draft": false
+    },
+    "monocular-depth-estimation": {
+      "slug": "monocular-depth-estimation",
+      "type": "concept",
+      "title": "Monocular Depth Estimation",
+      "summary": "Predicting per-pixel scene depth from a single image — the scale ambiguity that forces relative (affine-invariant) versus metric formulations, the scale-and-shift-invariant training that lets incompatible datasets be mixed, and the foundation-model recipe that scaled it to zero-shot generalization.",
+      "path": "/atlas/monocular-depth-estimation",
       "draft": false
     },
     "non-maximum-suppression": {
@@ -1974,6 +2054,46 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "depth-anything": {
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "vit"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "depth-anything-v2",
+          "confidence": "high"
+        }
+      ]
+    },
+    "depth-anything-3": {
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "feed-forward-3d-reconstruction",
+        "pose-estimation",
+        "epipolar-geometry",
+        "pinhole-camera-model"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "depth-anything-v2": {
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "vit"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "depth-anything-3",
+          "confidence": "high",
+          "caution": "DA3 generalizes DA2 to any-view geometry and surpasses it on monocular depth; DA2 is also DA3's distillation teacher."
+        }
+      ]
+    },
     "detr": {
       "prerequisites": [
         "convolutional-neural-network",
@@ -1998,6 +2118,63 @@ export const contentGraph: ContentGraph = {
           "target": "rf-detr",
           "confidence": "high",
           "caution": "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
+        }
+      ]
+    },
+    "dinov2": {
+      "prerequisites": [
+        "vit",
+        "mae"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "depth-anything",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-v2",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-3",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "vggt",
+          "confidence": "high"
+        }
+      ]
+    },
+    "dust3r": {
+      "prerequisites": [
+        "epipolar-geometry",
+        "pose-estimation",
+        "bundle-adjustment",
+        "pinhole-camera-model",
+        "feed-forward-3d-reconstruction"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "mast3r",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "vggt",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-3",
+          "confidence": "medium",
+          "caution": "DA3 inherits DUSt3R's pose-free feed-forward pointmap paradigm but is a distinct any-view model."
         }
       ]
     },
@@ -2230,6 +2407,13 @@ export const contentGraph: ContentGraph = {
           "confidence": "high",
           "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1).",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "mast3r",
+          "confidence": "medium",
+          "caution": "MASt3R is 3D-grounded and pose-robust; LightGlue is a fast sparse 2D matcher.",
+          "mirrored": true
         }
       ]
     },
@@ -2251,6 +2435,13 @@ export const contentGraph: ContentGraph = {
           "target": "lightglue",
           "confidence": "high",
           "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1)."
+        },
+        {
+          "type": "compared_with",
+          "target": "mast3r",
+          "confidence": "medium",
+          "caution": "MASt3R grounds matching in 3D and wins under extreme viewpoint change; LoFTR is a 2D detector-free matcher.",
+          "mirrored": true
         },
         {
           "type": "compared_with",
@@ -2329,6 +2520,30 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "mast3r": {
+      "prerequisites": [
+        "feature-matching",
+        "feature-descriptors",
+        "epipolar-geometry",
+        "pose-estimation",
+        "feed-forward-3d-reconstruction"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "medium",
+          "caution": "MASt3R grounds matching in 3D and wins under extreme viewpoint change; LoFTR is a 2D detector-free matcher."
+        },
+        {
+          "type": "compared_with",
+          "target": "lightglue",
+          "confidence": "medium",
+          "caution": "MASt3R is 3D-grounded and pose-robust; LightGlue is a fast sparse 2D matcher."
+        }
+      ]
+    },
     "mate-checkerboard-detector": {
       "prerequisites": [
         "image-gradient"
@@ -2349,6 +2564,20 @@ export const contentGraph: ContentGraph = {
         {
           "type": "learned_alternative_of",
           "target": "chess-corners",
+          "confidence": "high"
+        }
+      ]
+    },
+    "midas": {
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "pinhole-camera-model"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "depth-anything",
           "confidence": "high"
         }
       ]
@@ -2750,6 +2979,25 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "vggt": {
+      "prerequisites": [
+        "epipolar-geometry",
+        "pose-estimation",
+        "bundle-adjustment",
+        "vit",
+        "attention-mechanism",
+        "feed-forward-3d-reconstruction"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "depth-anything-3",
+          "confidence": "medium",
+          "caution": "DA3 surpasses VGGT on the any-view benchmark (+44% pose, +25% geometry) and adds pose-conditioned input; VGGT remains a strong, widely-used feed-forward baseline."
+        }
+      ]
+    },
     "vit": {
       "prerequisites": [
         "convolutional-neural-network",
@@ -2917,6 +3165,16 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": []
     },
+    "feed-forward-3d-reconstruction": {
+      "prerequisites": [
+        "epipolar-geometry",
+        "bundle-adjustment",
+        "pose-estimation",
+        "pinhole-camera-model"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
     "hessian-saddle-response": {
       "prerequisites": [
         "image-gradient"
@@ -2946,6 +3204,13 @@ export const contentGraph: ContentGraph = {
     },
     "integral-image": {
       "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
+    "monocular-depth-estimation": {
+      "prerequisites": [
+        "pinhole-camera-model"
+      ],
       "failureModes": [],
       "relations": []
     },
@@ -3658,7 +3923,87 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "depth-anything": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "dinov2",
+          "confidence": "high"
+        },
+        {
+          "slug": "midas",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "depth-anything-3": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [
+        {
+          "slug": "depth-anything-v2",
+          "confidence": "high",
+          "caution": "DA3 generalizes DA2 to any-view geometry and surpasses it on monocular depth; DA2 is also DA3's distillation teacher."
+        },
+        {
+          "slug": "vggt",
+          "confidence": "medium",
+          "caution": "DA3 surpasses VGGT on the any-view benchmark (+44% pose, +25% geometry) and adds pose-conditioned input; VGGT remains a strong, widely-used feed-forward baseline."
+        }
+      ],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "dinov2",
+          "confidence": "high"
+        },
+        {
+          "slug": "dust3r",
+          "confidence": "medium",
+          "caution": "DA3 inherits DUSt3R's pose-free feed-forward pointmap paradigm but is a distinct any-view model."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "depth-anything-v2": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "depth-anything",
+          "confidence": "high"
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "dinov2",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "detr": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "dinov2": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "dust3r": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -3788,7 +4133,9 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "mae": {
-      "usedBy": [],
+      "usedBy": [
+        "dinov2"
+      ],
       "affects": [],
       "generalises": [],
       "extending": [],
@@ -3827,7 +4174,28 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "mast3r": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "dust3r",
+          "confidence": "high"
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "mate-checkerboard-detector": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "midas": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -4034,8 +4402,30 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
-    "vit": {
+    "vggt": {
       "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "dinov2",
+          "confidence": "high"
+        },
+        {
+          "slug": "dust3r",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "vit": {
+      "usedBy": [
+        "depth-anything",
+        "depth-anything-v2",
+        "dinov2",
+        "vggt"
+      ],
       "affects": [],
       "generalises": [],
       "extending": [],
@@ -4073,6 +4463,7 @@ export const contentGraph: ContentGraph = {
         "sam",
         "segformer",
         "superglue",
+        "vggt",
         "vit"
       ],
       "affects": [],
@@ -4083,8 +4474,11 @@ export const contentGraph: ContentGraph = {
     },
     "bundle-adjustment": {
       "usedBy": [
+        "dust3r",
+        "feed-forward-3d-reconstruction",
         "scaramuzza-omni-calibration",
         "tsai-versatile-calibration",
+        "vggt",
         "zhang-planar-calibration"
       ],
       "affects": [],
@@ -4185,8 +4579,13 @@ export const contentGraph: ContentGraph = {
     },
     "epipolar-geometry": {
       "usedBy": [
+        "depth-anything-3",
+        "dust3r",
+        "feed-forward-3d-reconstruction",
         "fundamental-matrix-eight-point",
-        "longuet-higgins-eight-point"
+        "longuet-higgins-eight-point",
+        "mast3r",
+        "vggt"
       ],
       "affects": [],
       "generalises": [],
@@ -4199,6 +4598,7 @@ export const contentGraph: ContentGraph = {
         "brief",
         "feature-matching",
         "hog-descriptor",
+        "mast3r",
         "orb",
         "sift"
       ],
@@ -4212,8 +4612,22 @@ export const contentGraph: ContentGraph = {
       "usedBy": [
         "lightglue",
         "loftr",
+        "mast3r",
         "sift",
         "superglue"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "feed-forward-3d-reconstruction": {
+      "usedBy": [
+        "depth-anything-3",
+        "dust3r",
+        "mast3r",
+        "vggt"
       ],
       "affects": [],
       "generalises": [],
@@ -4320,6 +4734,19 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "monocular-depth-estimation": {
+      "usedBy": [
+        "depth-anything",
+        "depth-anything-3",
+        "depth-anything-v2",
+        "midas"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "non-maximum-suppression": {
       "usedBy": [
         "canny-edge-detector",
@@ -4349,8 +4776,13 @@ export const contentGraph: ContentGraph = {
       "usedBy": [
         "bundle-adjustment",
         "camera-distortion-models",
+        "depth-anything-3",
+        "dust3r",
         "epnp",
+        "feed-forward-3d-reconstruction",
         "geometric-bev",
+        "midas",
+        "monocular-depth-estimation",
         "pose-estimation",
         "scaramuzza-omni-calibration",
         "sturm-plane-based-calibration",
@@ -4365,8 +4797,13 @@ export const contentGraph: ContentGraph = {
     },
     "pose-estimation": {
       "usedBy": [
+        "depth-anything-3",
+        "dust3r",
         "epnp",
-        "longuet-higgins-eight-point"
+        "feed-forward-3d-reconstruction",
+        "longuet-higgins-eight-point",
+        "mast3r",
+        "vggt"
       ],
       "affects": [],
       "generalises": [],
@@ -4538,7 +4975,16 @@ export const contentGraph: ContentGraph = {
     "chessboard-x-corner-detection": 2,
     "ccs-camera-calibration": 3,
     "deeplab-semantic-segmentation": 0,
+    "monocular-depth-estimation": 1,
+    "vit": 2,
+    "depth-anything": 3,
+    "feed-forward-3d-reconstruction": 2,
+    "depth-anything-3": 3,
+    "depth-anything-v2": 3,
     "detr": 2,
+    "mae": 2,
+    "dinov2": 3,
+    "dust3r": 3,
     "fast-scnn": 2,
     "faster-rcnn": 0,
     "fcn-semantic-segmentation": 0,
@@ -4547,10 +4993,11 @@ export const contentGraph: ContentGraph = {
     "hrnet": 2,
     "lightglue": 4,
     "loftr": 4,
-    "mae": 2,
     "mask-rcnn": 0,
     "mask2former": 2,
+    "mast3r": 4,
     "mate-checkerboard-detector": 2,
+    "midas": 2,
     "mnasnet": 2,
     "mobilenetv2": 2,
     "mobilenetv3": 2,
@@ -4564,7 +5011,7 @@ export const contentGraph: ContentGraph = {
     "superpoint": 2,
     "unet-segmentation": 0,
     "vgg": 2,
-    "vit": 2,
+    "vggt": 3,
     "xfeat": 2,
     "yolo-v1": 0,
     "spatially-varying-image-stitching": 2

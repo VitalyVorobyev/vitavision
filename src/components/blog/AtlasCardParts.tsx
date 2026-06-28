@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { getNeighbors, shortTitle } from "../../lib/atlas/graphNeighbors.ts";
 import { contentGraph } from "../../generated/content-graph.ts";
 import { KIND_TEXT_CLASSES, KIND_LABEL } from "./cardText.ts";
+import { isRecentlyAdded } from "../../lib/atlas/recency.ts";
 
 /** Reader-visible warning that a page is an unpublished draft. */
 export function DraftBadge() {
@@ -13,6 +14,27 @@ export function DraftBadge() {
         <span className="inline-block text-[9px] font-bold tracking-wider uppercase bg-[hsl(var(--border))] text-foreground px-1.5 py-px rounded-[3px] mr-1.5 align-[1px]">
             DRAFT
         </span>
+    );
+}
+
+/** Reader-visible accent that a page was added within the recency window. */
+export function NewBadge() {
+    return (
+        <span className="inline-block text-[9px] font-bold tracking-wider uppercase bg-[hsl(191_70%_94%)] text-[hsl(191_55%_22%)] px-1.5 py-px rounded-[3px] mr-1.5 align-[1px]">
+            NEW
+        </span>
+    );
+}
+
+/** Renders DRAFT then NEW badges for a card based on its frontmatter. */
+export function CardBadges({ draft, date }: { draft?: boolean; date: string }) {
+    const fresh = isRecentlyAdded(date);
+    if (!draft && !fresh) return null;
+    return (
+        <>
+            {draft && <DraftBadge />}
+            {fresh && <NewBadge />}
+        </>
     );
 }
 

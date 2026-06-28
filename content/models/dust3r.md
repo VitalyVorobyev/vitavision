@@ -124,7 +124,7 @@ Official PyTorch release from NAVER Labs Europe; both code and pretrained weight
 
 # References
 
-1. S. Wang, V. Leroy, Y. Cabon, B. Chidlovskii, J. Revaud. *DUSt3R: Geometric 3D Vision Made Easy.* CVPR, 2024. [arXiv:2312.14132](https://arxiv.org/abs/2312.14132)
+1. S. Wang, V. Leroy, Y. Cabon, B. Chidlovskii, J. Revaud. *DUSt3R: Geometric 3D Vision Made Easy.* CVPR, 2024. [arXiv 2312.14132](https://arxiv.org/abs/2312.14132)
 2. P.-E. Weinzaepfel, V. Leroy, T. Lucas, R. Brégier, Y. Cabon, V. Arora, L. Barroso-Laguna, T. Janulewicz, D. Csurka, J. Revaud. *CroCo: Self-Supervised Pre-Training for 3D Vision Tasks by Cross-View Completion.* NeurIPS, 2022.
-3. V. Leroy, Y. Cabon, J. Revaud. *MASt3R: Grounding Image Matching in 3D with MASt3R.* ECCV, 2024. [arXiv:2406.09756](https://arxiv.org/abs/2406.09756)
-4. S. Wang, H. Hu, Y. Li, Y. Du, H. Liu, J. Revaud, C. Caesar. *VGGT: Visual Geometry Grounded Deep Structure From Motion.* CVPR, 2025. [arXiv:2503.11651](https://arxiv.org/abs/2503.11651)
+3. V. Leroy, Y. Cabon, J. Revaud. *MASt3R: Grounding Image Matching in 3D with MASt3R.* ECCV, 2024. [arXiv 2406.09756](https://arxiv.org/abs/2406.09756)
+4. S. Wang, H. Hu, Y. Li, Y. Du, H. Liu, J. Revaud, C. Caesar. *VGGT: Visual Geometry Grounded Deep Structure From Motion.* CVPR, 2025. [arXiv 2503.11651](https://arxiv.org/abs/2503.11651)

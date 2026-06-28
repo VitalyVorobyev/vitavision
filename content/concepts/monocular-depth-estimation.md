@@ -124,7 +124,7 @@ The following model pages in the Atlas cover the four methods surveyed above:
 - [Depth Anything V2](/atlas/depth-anything-v2) — replaced labeled real data with a synthetic-only teacher to eliminate annotation noise; the practical relative-depth foundation model as of mid-2024, with ViT-S/B/L variants spanning 25 M to 335 M parameters at 60–213 ms on V100.
 - [Depth Anything 3](/atlas/depth-anything-3) — extends the framework to any number of views; jointly predicts depth and per-pixel ray maps to recover metrically consistent 3D geometry and camera pose without bundle adjustment, while also surpassing Depth Anything V2 in the single-image (monocular) setting, with an average rank of 2.20 versus 2.60 across five standard benchmarks.
 
-DA3 is notable for dissolving the boundary between monocular depth estimation and multi-view reconstruction. The same plain DINOv2 transformer — partitioned into within-view and cross-view attention blocks at a 2:1 ratio — handles both the N = 1 monocular case and the any-view reconstruction case with identical weights, unifying what were previously separate model families under a single architecture.
+DA3 is notable for dissolving the boundary between monocular depth estimation and multi-view reconstruction. The same plain DINOv2 transformer — partitioned into within-view and cross-view attention blocks at a $2{:}1$ ratio — handles both the N = 1 monocular case and the any-view reconstruction case with identical weights, unifying what were previously separate model families under a single architecture.
 
 # References
 

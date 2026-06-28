@@ -61,7 +61,7 @@ $$
 \hat{\mathcal{D}}^u = \{(u_i,\, T(u_i)) \mid u_i \in \mathcal{D}^u\} \quad \text{(Eq.~4)}.
 $$
 
-The student (any ViT size) is trained on labeled and pseudo-labeled images at a 1:2 ratio. Two refinements prevent trivial teacher imitation:
+The student (any ViT size) is trained on labeled and pseudo-labeled images at a $1{:}2$ ratio. Two refinements prevent trivial teacher imitation:
 
 **CutMix challenge (Eqs. 5–8).** Images fed to the student are strongly perturbed — colour jitter, Gaussian blur, and CutMix at 50% probability — while images sent to the teacher for pseudo-labeling are clean. CutMix blends two unlabeled images $u_a$, $u_b$ via a binary spatial mask $M$:
 
@@ -121,7 +121,7 @@ Official PyTorch release under Apache-2.0 code and Apache-2.0 model weights.
 
 # References
 
-1. L. Yang, B. Kang, Z. Huang, X. Xu, J. Feng, H. Zhao. *Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data.* CVPR, 2024. [arXiv:2401.10891](https://arxiv.org/abs/2401.10891)
+1. L. Yang, B. Kang, Z. Huang, X. Xu, J. Feng, H. Zhao. *Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data.* CVPR, 2024. [arXiv 2401.10891](https://arxiv.org/abs/2401.10891)
 2. R. Ranftl, K. Lasinger, D. Hafner, K. Schindler, V. Koltun. *Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-shot Cross-Dataset Transfer.* IEEE TPAMI, 2022. (MiDaS)
-3. M. Oquab et al. *DINOv2: Learning Robust Visual Features without Supervision.* TMLR, 2024. [arXiv:2304.07193](https://arxiv.org/abs/2304.07193)
-4. L. Yang et al. *Depth Anything V2.* NeurIPS, 2024. [arXiv:2406.09414](https://arxiv.org/abs/2406.09414)
+3. M. Oquab et al. *DINOv2: Learning Robust Visual Features without Supervision.* TMLR, 2024. [arXiv 2304.07193](https://arxiv.org/abs/2304.07193)
+4. L. Yang et al. *Depth Anything V2.* NeurIPS, 2024. [arXiv 2406.09414](https://arxiv.org/abs/2406.09414)

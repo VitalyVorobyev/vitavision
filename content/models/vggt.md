@@ -103,7 +103,7 @@ Official PyTorch release from Facebook Research; all code and weights are distri
 
 # References
 
-1. J. Wang, M. Chen, N. Karaev, A. Vedaldi, C. Rupprecht, D. Novotný. *VGGT: Visual Geometry Grounded Transformer.* CVPR, 2025. [arXiv:2503.11651](https://arxiv.org/abs/2503.11651)
+1. J. Wang, M. Chen, N. Karaev, A. Vedaldi, C. Rupprecht, D. Novotný. *VGGT: Visual Geometry Grounded Transformer.* CVPR, 2025. [arXiv 2503.11651](https://arxiv.org/abs/2503.11651)
 2. S. Wang, V. Leroy, Y. Cabon, B. Chidlovskii, J. Revaud. *DUSt3R: Geometric 3D Vision Made Easy.* CVPR, 2024.
 3. V. Leroy, Y. Cabon, J. Revaud. *MASt3R: Grounding Image Matching in 3D with MASt3R.* 2024.
 4. M. Oquab et al. *DINOv2: Learning Robust Visual Features without Supervision.* TMLR, 2024.

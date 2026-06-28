@@ -41,7 +41,7 @@ Takes a single RGB image and produces a dense affine-invariant inverse depth map
 
 **Training.** Three stages define the V2 recipe:
 
-1. **Synthetic-only teacher.** DINOv2-G is trained exclusively on 595K precise synthetic images (BlendedMVS 115K, Hypersim 60K, IRS 103K, TartanAir 306K, VKITTI2 20K). Real labeled data is explicitly excluded; even mixing in 5% of a real dataset (HRWSI) visibly degrades sharpness (§B.9). Loss: scale-and-shift-invariant $L_\text{ssi}$ plus gradient-matching $L_\text{gm}$, both inherited from MiDaS, at weight ratio 1:2. $L_\text{gm}$ is critical for sharpness specifically on synthetic data; it was found ineffective on real labels whose coarseness removes fine-grained gradient signal. Teacher training: batch size 64, 160K iterations, Adam optimizer (encoder LR 5e-6, decoder LR 5e-5).
+1. **Synthetic-only teacher.** DINOv2-G is trained exclusively on 595K precise synthetic images (BlendedMVS 115K, Hypersim 60K, IRS 103K, TartanAir 306K, VKITTI2 20K). Real labeled data is explicitly excluded; even mixing in 5% of a real dataset (HRWSI) visibly degrades sharpness (§B.9). Loss: scale-and-shift-invariant $L_\text{ssi}$ plus gradient-matching $L_\text{gm}$, both inherited from MiDaS, at weight ratio $1{:}2$. $L_\text{gm}$ is critical for sharpness specifically on synthetic data; it was found ineffective on real labels whose coarseness removes fine-grained gradient signal. Teacher training: batch size 64, 160K iterations, Adam optimizer (encoder LR 5e-6, decoder LR 5e-5).
 
 2. **Pseudo-labeling at scale.** The DINOv2-G teacher inference runs over 62M unlabeled real images from eight public datasets (BDD100K 8.2M, Google Landmarks 4.1M, ImageNet-21K 13.1M, LSUN 9.8M, Objects365 1.7M, Open Images V7 7.8M, Places365 6.5M, SA-1B 11.1M). The teacher's predictions serve as pseudo-labels, bridging the synthetic-to-real domain gap while preserving annotation precision. A per-sample top-10% highest-loss pixel mask is ignored to suppress the noisiest pseudo-label regions.
 
@@ -85,7 +85,7 @@ Official PyTorch release under Apache-2.0 code; note the weights-license split: 
 
 # References
 
-1. L. Yang, B. Kang, Z. Huang, Z. Zhao, X. Xu, J. Feng, H. Zhao. *Depth Anything V2.* NeurIPS, 2024. [arXiv:2406.09414](https://arxiv.org/abs/2406.09414)
-2. L. Yang, B. Kang, Z. Huang, X. Xu, J. Feng, H. Zhao. *Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data.* CVPR, 2024. [arXiv:2401.10891](https://arxiv.org/abs/2401.10891)
-3. R. Ranftl, K. Lasinger, D. Hafner, K. Schindler, V. Koltun. *Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-Shot Cross-Dataset Transfer.* TPAMI, 2020. [arXiv:1907.01341](https://arxiv.org/abs/1907.01341)
-4. M. Oquab et al. *DINOv2: Learning Robust Visual Features without Supervision.* TMLR, 2024. [arXiv:2304.07193](https://arxiv.org/abs/2304.07193)
+1. L. Yang, B. Kang, Z. Huang, Z. Zhao, X. Xu, J. Feng, H. Zhao. *Depth Anything V2.* NeurIPS, 2024. [arXiv 2406.09414](https://arxiv.org/abs/2406.09414)
+2. L. Yang, B. Kang, Z. Huang, X. Xu, J. Feng, H. Zhao. *Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data.* CVPR, 2024. [arXiv 2401.10891](https://arxiv.org/abs/2401.10891)
+3. R. Ranftl, K. Lasinger, D. Hafner, K. Schindler, V. Koltun. *Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-Shot Cross-Dataset Transfer.* TPAMI, 2020. [arXiv 1907.01341](https://arxiv.org/abs/1907.01341)
+4. M. Oquab et al. *DINOv2: Learning Robust Visual Features without Supervision.* TMLR, 2024. [arXiv 2304.07193](https://arxiv.org/abs/2304.07193)

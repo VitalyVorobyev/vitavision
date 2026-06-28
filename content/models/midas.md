@@ -116,7 +116,7 @@ Official PyTorch release under MIT license, with MIT-licensed pretrained weights
 
 # References
 
-1. R. Ranftl, K. Lasinger, D. Hafner, K. Schindler, V. Koltun. *Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-shot Cross-dataset Transfer.* TPAMI, 2022 (arXiv 2019). [arXiv:1907.01341](https://arxiv.org/abs/1907.01341)
-2. L. Yang, B. Kang, Z. Huang, Z. Zhao, X. Xu, J. Feng, H. Zhao. *Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data.* CVPR, 2024. [arXiv:2401.10891](https://arxiv.org/abs/2401.10891)
-3. O. Sener, V. Koltun. *Multi-Task Learning as Multi-Objective Optimization.* NeurIPS, 2018. [arXiv:1810.04650](https://arxiv.org/abs/1810.04650)
+1. R. Ranftl, K. Lasinger, D. Hafner, K. Schindler, V. Koltun. *Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-shot Cross-dataset Transfer.* TPAMI, 2022 (arXiv 2019). [arXiv 1907.01341](https://arxiv.org/abs/1907.01341)
+2. L. Yang, B. Kang, Z. Huang, Z. Zhao, X. Xu, J. Feng, H. Zhao. *Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data.* CVPR, 2024. [arXiv 2401.10891](https://arxiv.org/abs/2401.10891)
+3. O. Sener, V. Koltun. *Multi-Task Learning as Multi-Objective Optimization.* NeurIPS, 2018. [arXiv 1810.04650](https://arxiv.org/abs/1810.04650)
 4. K. Xian, C. Shen, Z. Cao, H. Lu, Y. Xiao, R. Jones, S. Feng. *Monocular Relative Depth Perception with Web Stereo Data Supervision.* CVPR, 2018.

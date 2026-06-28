@@ -45,15 +45,21 @@ DUSt3R introduced the first complete formulation. A siamese ViT encoder with cro
 
 The ground-truth pointmap from camera $n$ expressed in frame $m$ is:
 
-$$\mathbf{X}^{n,m} = P_m P_n^{-1} h(\mathbf{X}^n) \tag{1}$$
+$$
+\mathbf{X}^{n,m} = P_m P_n^{-1} h(\mathbf{X}^n)
+$$
 
 where $P_m, P_n \in \mathbb{R}^{3 \times 4}$ are world-to-camera poses and $h$ is the homogeneous embedding (DUSt3R Eq. 1). Predictions are valid up to an unknown scale. The regression target normalises both prediction and ground truth by the mean point-to-origin distance across both views:
 
-$$z = \mathrm{norm}(\mathbf{X}^1, \mathbf{X}^2) = \frac{1}{|D^1|+|D^2|} \sum_{v \in \{1,2\}} \sum_{i \in D^v} \|\mathbf{X}_i^v\| \tag{2}$$
+$$
+z = \mathrm{norm}(\mathbf{X}^1, \mathbf{X}^2) = \frac{1}{|D^1|+|D^2|} \sum_{v \in \{1,2\}} \sum_{i \in D^v} \|\mathbf{X}_i^v\|
+$$
 
 (DUSt3R Eq. 3). The per-pixel regression term is $\ell_{\mathrm{regr}}(v,i) = \|(1/z)\mathbf{X}_i^{v,1} - (1/\bar{z})\bar{\mathbf{X}}_i^{v,1}\|$ (DUSt3R Eq. 2). The network jointly predicts per-pixel confidence maps $C^{v,1}$ and is trained with a confidence-weighted objective:
 
-$$\mathcal{L}_{\mathrm{conf}} = \sum_{v \in \{1,2\}} \sum_{i \in D^v} \left[ C_i^{v,1} \cdot \ell_{\mathrm{regr}}(v,i) - \alpha \log C_i^{v,1} \right] \tag{3}$$
+$$
+\mathcal{L}_{\mathrm{conf}} = \sum_{v \in \{1,2\}} \sum_{i \in D^v} \left[ C_i^{v,1} \cdot \ell_{\mathrm{regr}}(v,i) - \alpha \log C_i^{v,1} \right]
+$$
 
 (DUSt3R Eq. 4). The $-\alpha \log C$ term prevents the network from trivially zeroing all confidences; $C_i^{v,1} = 1 + \exp(\hat{C}_i^{v,1}) > 1$ is enforced strictly positive. This loss jointly trains correspondence, relative pose, and depth from image supervision alone, with no geometric constraints enforced at inference.
 
@@ -65,7 +71,9 @@ VGGT replaces multi-pass plus global alignment with a single forward pass over a
 
 Depth Anything 3 proposes a complementary minimal representation. Rather than regressing a pointmap $\mathbf{X} \in \mathbb{R}^{W \times H \times 3}$ per view, it jointly predicts a depth map $D_i \in \mathbb{R}^{H \times W}$ and a **ray map** $M_i \in \mathbb{R}^{H \times W \times 6}$. Each pixel's ray is defined as $r = (\mathbf{t}, \mathbf{d})$ where $\mathbf{t} \in \mathbb{R}^3$ is the camera centre and $\mathbf{d} = R K^{-1} \mathbf{p}$ is the back-projected direction rotated to world frame (DA3 §3.1). A 3D point is recovered by the element-wise product:
 
-$$\mathbf{P}(u, v) = \mathbf{t} + D(u, v) \cdot \mathbf{d} \tag{4}$$
+$$
+\mathbf{P}(u, v) = \mathbf{t} + D(u, v) \cdot \mathbf{d}
+$$
 
 Camera intrinsics and extrinsics are recoverable from the ray map alone via DLT + QR decomposition, encoding pose implicitly in ray geometry rather than as an explicit regression target. Cross-view reasoning is achieved by partitioning the transformer layers into within-view ($L_s$) and cross-view ($L_g$) groups at ratio $L_s : L_g = 2:1$ with no architectural changes to the DINOv2 backbone (DA3 §3.2).
 
@@ -73,7 +81,9 @@ Camera intrinsics and extrinsics are recoverable from the ray map alone via DLT 
 
 MASt3R augments DUSt3R with a dense descriptor head. Alongside the pointmap head that outputs $\mathbf{X}^{v,1}$ and $C^v$, a second two-layer GELU MLP head predicts L2-normalised local features $D^v \in \mathbb{R}^{H \times W \times 24}$ (MASt3R Eqs. 8–9; $d = 24$). These descriptors are trained with an InfoNCE contrastive matching loss at temperature $\tau = 0.07$ (MASt3R Eq. 10). The full objective is:
 
-$$\mathcal{L}_{\mathrm{total}} = \mathcal{L}_{\mathrm{conf}} + \beta\,\mathcal{L}_{\mathrm{match}} \tag{5}$$
+$$
+\mathcal{L}_{\mathrm{total}} = \mathcal{L}_{\mathrm{conf}} + \beta\,\mathcal{L}_{\mathrm{match}}
+$$
 
 with $\beta = 1$ (MASt3R Eq. 12). The critical ablation result: training with $\mathcal{L}_{\mathrm{match}}$ alone, removing the 3D grounding from $\mathcal{L}_{\mathrm{conf}}$, degrades median rotation accuracy from 3.0° to 10.8° (MASt3R Table 1). Dense 2D descriptor matching without pointmap supervision is insufficient for extreme-viewpoint correspondence; the 3D regression signal is the load-bearing component.
 
@@ -83,7 +93,7 @@ with $\beta = 1$ (MASt3R Eq. 12). The critical ablation result: training with $\
 
 **Coordinate frame ambiguity.** DUSt3R and VGGT anchor the world coordinate frame to the first camera (first image's extrinsics fixed to identity). Input ordering affects the world frame; independently reconstructed subsets can produce inconsistent combined clouds if merged naively. DA3 mitigates this by treating cross-view attention as permutation-invariant over all views processed simultaneously.
 
-**Memory growth with many views.** VGGT's global self-attention is quadratic in the total token count across all frames. At 200 frames and 336×518 resolution the model requires approximately 40.6 GB of GPU memory on an H100 (VGGT Table 9). Depth Anything 3 scales more favorably: its 2:1 partition of within-view and cross-view layers reduces cross-view compute, and the Small model variant handles over 4000 images on a single GPU by offloading intermediate tokens to CPU (DA3 §7.2.3).
+**Memory growth with many views.** VGGT's global self-attention is quadratic in the total token count across all frames. At 200 frames and 336×518 resolution the model requires approximately 40.6 GB of GPU memory on an H100 (VGGT Table 9). Depth Anything 3 scales more favorably: its $2{:}1$ partition of within-view and cross-view layers reduces cross-view compute, and the Small model variant handles over 4000 images on a single GPU by offloading intermediate tokens to CPU (DA3 §7.2.3).
 
 **Drift in pairwise global alignment.** Even without an explicit optimisation loop, pairwise DUSt3R runs accumulate inconsistencies when chained through a large coverage graph. The global alignment step corrects scale drift by jointly optimising scale factors and poses across all pairs, but it is a post-hoc step rather than an end-to-end constraint. VGGT and DA3 avoid this by fusing all views in one pass.
 
@@ -105,7 +115,7 @@ These methods stand as learned alternatives to the [bundle-adjustment](/atlas/bu
 
 # References
 
-1. S. Wang, V. Leroy, Y. Cabon, B. Chidlovskii, J. Revaud. *DUSt3R: Geometric 3D Vision Made Easy.* arXiv:2312.14132, 2023.
-2. V. Leroy, Y. Cabon, J. Revaud. *Grounding Image Matching in 3D with MASt3R.* arXiv:2406.09756, 2024.
-3. J. Wang, M. Chen, N. Karaev, A. Vedaldi, C. Rupprecht, D. Novotný. *VGGT: Visual Geometry Grounded Transformer.* arXiv:2503.11651, 2025. CVPR 2025 Best Paper.
-4. H. Lin, S. Chen, J. Liew, D. Y. Chen, Z. Li, G. Shi, J. Feng, B. Kang. *Depth Anything 3: Recovering the Visual Space from Any Views.* arXiv:2511.10647, 2025.
+1. S. Wang, V. Leroy, Y. Cabon, B. Chidlovskii, J. Revaud. *DUSt3R: Geometric 3D Vision Made Easy.* arXiv 2312.14132, 2023.
+2. V. Leroy, Y. Cabon, J. Revaud. *Grounding Image Matching in 3D with MASt3R.* arXiv 2406.09756, 2024.
+3. J. Wang, M. Chen, N. Karaev, A. Vedaldi, C. Rupprecht, D. Novotný. *VGGT: Visual Geometry Grounded Transformer.* arXiv 2503.11651, 2025. CVPR 2025 Best Paper.
+4. H. Lin, S. Chen, J. Liew, D. Y. Chen, Z. Li, G. Shi, J. Feng, B. Kang. *Depth Anything 3: Recovering the Visual Space from Any Views.* arXiv 2511.10647, 2025.

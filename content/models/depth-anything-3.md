@@ -92,7 +92,7 @@ Official PyTorch release from ByteDance Seed under Apache-2.0 code and weights l
 
 # References
 
-1. H. Lin et al. *Depth Anything 3: Recovering the Visual Space from Any Views.* arXiv:2511.10647, 2025. [arXiv](https://arxiv.org/abs/2511.10647)
+1. H. Lin et al. *Depth Anything 3: Recovering the Visual Space from Any Views.* arXiv 2511.10647, 2025. [arXiv](https://arxiv.org/abs/2511.10647)
 2. L. Yang et al. *Depth Anything V2.* NeurIPS, 2024. [arXiv](https://arxiv.org/abs/2406.09414)
 3. M. Oquab et al. *DINOv2: Learning Robust Visual Features without Supervision.* TMLR, 2024. [arXiv](https://arxiv.org/abs/2304.07193)
 4. S. Wang et al. *VGGT: Visual Geometry Grounded Deep Structure From Motion.* CVPR, 2025. [arXiv](https://arxiv.org/abs/2503.11651)

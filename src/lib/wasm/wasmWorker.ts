@@ -618,9 +618,12 @@ async function handleChessCorners(
     // set_nms_radius, set_refiner, …) with the typed `DetectorConfig` builder.
     // Start from the multiscale ChESS preset (library defaults) and overlay only
     // the user-provided fields onto the shared-cell config tree, preserving the
-    // old behaviour. Intermediate config objects are moved into the tree (their
-    // wasm-bindgen handles are consumed) so only the detector needs an explicit
-    // free.
+    // old behaviour. The field setters (threshold, upscale, refiner) move their
+    // wrapper into the tree, but `ChessDetector.withConfig` only *borrows* `cfg`
+    // — it snapshots the config into the detector without consuming the handle —
+    // so `cfg` must be freed explicitly after the detector is built, otherwise
+    // the WASM-side config allocation leaks on every detection in the live
+    // editor/webcam path.
     const cfg = mod.DetectorConfig.chessMultiscale();
 
     if (typeof config.thresholdRel === "number") {
@@ -647,6 +650,10 @@ async function handleChessCorners(
     // `withConfig` validates the config (e.g. upscale factor must be 2/3/4,
     // pyramid levels ≥ 1) and throws a descriptive Rust error on bad input.
     const detector = mod.ChessDetector.withConfig(cfg);
+    // `withConfig` borrows the config rather than taking ownership, so release
+    // the cfg handle (and the sub-tree it owns) now that the detector has
+    // snapshotted it — verified safe: detection runs correctly post-free.
+    cfg.free();
     try {
         const t0 = performance.now();
         const result = detector.detect_rgba(pixels, width, height);

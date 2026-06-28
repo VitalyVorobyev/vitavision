@@ -104,6 +104,6 @@ Choose LoFTR or LightGlue instead when: latency is a hard constraint (MASt3R's V
 
 # References
 
-1. V. Leroy, Y. Cabon, J. Revaud. *Grounding Image Matching in 3D with MASt3R.* ECCV, 2024. [arXiv:2406.09756](https://arxiv.org/abs/2406.09756)
-2. S. Wang, V. Leroy, Y. Cabon, B. Chidlovskii, J. Revaud. *DUSt3R: Geometric 3D Vision Made Easy.* CVPR, 2024. [arXiv:2312.14132](https://arxiv.org/abs/2312.14132)
-3. J. Sun, Z. Shen, Y. Wang, H. Bao, X. Zhou. *LoFTR: Detector-Free Local Feature Matching with Transformers.* CVPR, 2021. [arXiv:2104.00680](https://arxiv.org/abs/2104.00680)
+1. V. Leroy, Y. Cabon, J. Revaud. *Grounding Image Matching in 3D with MASt3R.* ECCV, 2024. [arXiv 2406.09756](https://arxiv.org/abs/2406.09756)
+2. S. Wang, V. Leroy, Y. Cabon, B. Chidlovskii, J. Revaud. *DUSt3R: Geometric 3D Vision Made Easy.* CVPR, 2024. [arXiv 2312.14132](https://arxiv.org/abs/2312.14132)
+3. J. Sun, Z. Shen, Y. Wang, H. Bao, X. Zhou. *LoFTR: Detector-Free Local Feature Matching with Transformers.* CVPR, 2021. [arXiv 2104.00680](https://arxiv.org/abs/2104.00680)

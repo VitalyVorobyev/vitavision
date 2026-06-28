@@ -132,8 +132,8 @@ Official PyTorch implementation in `facebookresearch/detectron2` (FAIR's success
 
 # References
 
-1. K. He, G. Gkioxari, P. Dollár, R. Girshick. *Mask R-CNN.* ICCV, 2017. [arXiv:1703.06870](https://arxiv.org/abs/1703.06870)
-2. S. Ren, K. He, R. Girshick, J. Sun. *Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.* NeurIPS, 2015. [arXiv:1506.01497](https://arxiv.org/abs/1506.01497)
-3. T.-Y. Lin, P. Dollár, R. Girshick, K. He, B. Hariharan, S. Belongie. *Feature Pyramid Networks for Object Detection.* CVPR, 2017. [arXiv:1612.03144](https://arxiv.org/abs/1612.03144)
-4. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015. [arXiv:1411.4038](https://arxiv.org/abs/1411.4038)
-5. K. He, X. Zhang, S. Ren, J. Sun. *Deep Residual Learning for Image Recognition.* CVPR, 2016. [arXiv:1512.03385](https://arxiv.org/abs/1512.03385)
+1. K. He, G. Gkioxari, P. Dollár, R. Girshick. *Mask R-CNN.* ICCV, 2017. [arXiv 1703.06870](https://arxiv.org/abs/1703.06870)
+2. S. Ren, K. He, R. Girshick, J. Sun. *Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.* NeurIPS, 2015. [arXiv 1506.01497](https://arxiv.org/abs/1506.01497)
+3. T.-Y. Lin, P. Dollár, R. Girshick, K. He, B. Hariharan, S. Belongie. *Feature Pyramid Networks for Object Detection.* CVPR, 2017. [arXiv 1612.03144](https://arxiv.org/abs/1612.03144)
+4. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015. [arXiv 1411.4038](https://arxiv.org/abs/1411.4038)
+5. K. He, X. Zhang, S. Ren, J. Sun. *Deep Residual Learning for Image Recognition.* CVPR, 2016. [arXiv 1512.03385](https://arxiv.org/abs/1512.03385)

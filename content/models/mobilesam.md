@@ -168,6 +168,6 @@ Official PyTorch repository from MobileSAM's first author Chaoning Zhang covers 
 
 # References
 
-1. Zhang, C., Han, D., Qiao, Y., Kim, J. U., Bae, S., Lee, S., & Hong, C. S. *Faster Segment Anything: Towards Lightweight SAM for Mobile Applications.* arXiv:2306.14289, 2023. [arxiv](https://arxiv.org/abs/2306.14289)
-2. Zhang, C., Han, D., Zheng, S., Choi, J., Kim, T., & Hong, C. S. *MobileSAMv2: Faster Segment Anything to Everything.* arXiv:2312.09579, 2023. [arxiv](https://arxiv.org/abs/2312.09579)
+1. Zhang, C., Han, D., Qiao, Y., Kim, J. U., Bae, S., Lee, S., & Hong, C. S. *Faster Segment Anything: Towards Lightweight SAM for Mobile Applications.* arXiv 2306.14289, 2023. [arxiv](https://arxiv.org/abs/2306.14289)
+2. Zhang, C., Han, D., Zheng, S., Choi, J., Kim, T., & Hong, C. S. *MobileSAMv2: Faster Segment Anything to Everything.* arXiv 2312.09579, 2023. [arxiv](https://arxiv.org/abs/2312.09579)
 3. Kirillov, A. et al. *Segment Anything.* ICCV, 2023. [arxiv](https://arxiv.org/abs/2304.02643)

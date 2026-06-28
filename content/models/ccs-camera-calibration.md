@@ -170,5 +170,5 @@ Choose CCS when the goal is end-to-end intrinsic calibration with sub-pixel accu
 1. Y. Zhang, X. Zhao, D. Qian. *Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration.* IEEE Robotics and Automation Letters 7(4):10470–10477, 2022. [arXiv](https://arxiv.org/pdf/2202.00158)
 2. Z. Zhang. *A Flexible New Technique for Camera Calibration.* IEEE Trans. Pattern Anal. Mach. Intell. 22(11):1330–1334, 2000.
 3. S. Donné, J. De Vylder, B. Goossens, W. Philips. *MATE: Machine Learning for Adaptive Calibration Template Detection.* MDPI Sensors 16(11):1858, 2016.
-4. B. Chen, C. Xiong, Q. Zhang. *CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration.* arXiv:2302.05097, 2023. [arXiv](https://arxiv.org/pdf/2302.05097)
+4. B. Chen, C. Xiong, Q. Zhang. *CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration.* arXiv 2302.05097, 2023. [arXiv](https://arxiv.org/pdf/2302.05097)
 5. A. Geiger, F. Moosmann, Ö. Car, B. Schuster. *Automatic Camera and Range Sensor Calibration using a Single Shot.* ICRA 2012.

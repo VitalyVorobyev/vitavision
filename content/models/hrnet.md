@@ -220,5 +220,5 @@ Official PyTorch release by co-author Bin Xiao; widely ported (mmsegmentation, m
 
 1. Sun, K., Xiao, B., Liu, D., & Wang, J. *Deep High-Resolution Representation Learning for Human Pose Estimation.* CVPR, 2019. [arxiv](https://arxiv.org/abs/1902.09212)
 2. He, K., Zhang, X., Ren, S., & Sun, J. *Deep Residual Learning for Image Recognition.* CVPR, 2016. [arxiv](https://arxiv.org/abs/1512.03385)
-3. Sun, K. et al. *High-Resolution Representations for Labeling Pixels and Regions.* arXiv:1904.04514, 2019. [arxiv](https://arxiv.org/abs/1904.04514)
+3. Sun, K. et al. *High-Resolution Representations for Labeling Pixels and Regions.* arXiv 1904.04514, 2019. [arxiv](https://arxiv.org/abs/1904.04514)
 4. Wang, J. et al. *Deep High-Resolution Representation Learning for Visual Recognition.* TPAMI, 2020. [arxiv](https://arxiv.org/abs/1908.07919)

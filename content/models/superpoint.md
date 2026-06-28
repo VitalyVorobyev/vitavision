@@ -172,7 +172,7 @@ Choose SuperPoint when (1) you have GPU inference and want maximum descriptor ca
 
 # References
 
-1. D. DeTone, T. Malisiewicz, A. Rabinovich. *SuperPoint: Self-Supervised Interest Point Detection and Description.* CVPR Workshops, 2018. [arXiv:1712.07629](https://arxiv.org/abs/1712.07629)
+1. D. DeTone, T. Malisiewicz, A. Rabinovich. *SuperPoint: Self-Supervised Interest Point Detection and Description.* CVPR Workshops, 2018. [arXiv 1712.07629](https://arxiv.org/abs/1712.07629)
 2. G. Potje, F. Cadar, A. Araújo, R. Martins, E. R. Nascimento. *XFeat: Accelerated Features for Lightweight Image Matching.* IEEE CVPR, 2024. (Direct architectural successor.)
 3. E. Rosten, T. Drummond. *Machine Learning for High-Speed Corner Detection.* ECCV, 2006. (FAST — the prior art that "cast high-speed corner detection as a machine learning problem.")
 4. K. M. Yi, E. Trulls, V. Lepetit, P. Fua. *LIFT: Learned Invariant Feature Transform.* ECCV, 2016. (Supervised SfM-trained competitor; superseded on HPatches.)

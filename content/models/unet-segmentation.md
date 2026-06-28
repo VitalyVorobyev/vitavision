@@ -168,8 +168,8 @@ Official Fiji/ImageJ plugin with Caffe backend from the authors' lab; a widely-u
 
 # References
 
-1. O. Ronneberger, P. Fischer, T. Brox. *U-Net: Convolutional Networks for Biomedical Image Segmentation.* MICCAI, 2015. [arXiv:1505.04597](https://arxiv.org/abs/1505.04597)
-2. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* IEEE CVPR, 2015. [arXiv:1411.4038](https://arxiv.org/abs/1411.4038) (Immediate antecedent: U-Net inherits the fully-convolutional dense-prediction framing and extends it with a symmetric decoder and skip concatenation.)
-3. K. He, X. Zhang, S. Ren, J. Sun. *Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification.* ICCV, 2015. [arXiv:1502.01852](https://arxiv.org/abs/1502.01852) (He weight initialisation $\sqrt{2/N}$ used in U-Net training.)
-4. Ö. Çiçek, A. Abdulkadir, S. S. Lienkamp, T. Brox, O. Ronneberger. *3D U-Net: Learning Dense Volumetric Segmentation from Sparse Annotation.* MICCAI, 2016. [arXiv:1606.06650](https://arxiv.org/abs/1606.06650) (Direct 3D extension by the same authors.)
+1. O. Ronneberger, P. Fischer, T. Brox. *U-Net: Convolutional Networks for Biomedical Image Segmentation.* MICCAI, 2015. [arXiv 1505.04597](https://arxiv.org/abs/1505.04597)
+2. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* IEEE CVPR, 2015. [arXiv 1411.4038](https://arxiv.org/abs/1411.4038) (Immediate antecedent: U-Net inherits the fully-convolutional dense-prediction framing and extends it with a symmetric decoder and skip concatenation.)
+3. K. He, X. Zhang, S. Ren, J. Sun. *Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification.* ICCV, 2015. [arXiv 1502.01852](https://arxiv.org/abs/1502.01852) (He weight initialisation $\sqrt{2/N}$ used in U-Net training.)
+4. Ö. Çiçek, A. Abdulkadir, S. S. Lienkamp, T. Brox, O. Ronneberger. *3D U-Net: Learning Dense Volumetric Segmentation from Sparse Annotation.* MICCAI, 2016. [arXiv 1606.06650](https://arxiv.org/abs/1606.06650) (Direct 3D extension by the same authors.)
 5. F. Isensee, P. F. Jaeger, S. A. A. Kohl, J. Petersen, K. H. Maier-Hein. *nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation.* Nature Methods, 2021. [doi:10.1038/s41592-020-01008-z](https://doi.org/10.1038/s41592-020-01008-z) (Modern standardisation of the U-Net training recipe.)

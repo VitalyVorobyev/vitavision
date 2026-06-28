@@ -1,5 +1,6 @@
 import type { Plugin } from "unified";
 import type { Parent, PhrasingContent, Root } from "mdast";
+import type { Properties } from "hast";
 import { visit } from "unist-util-visit";
 
 interface DirectiveNode extends Parent {
@@ -15,7 +16,7 @@ interface MdastNodeWithHast extends Parent {
     children: Parent["children"];
     data?: {
         hName?: string;
-        hProperties?: Record<string, unknown>;
+        hProperties?: Properties;
     };
 }
 
@@ -70,7 +71,7 @@ const remarkVvEmbeds: Plugin<[], Root> = () => {
             const attributes = node.attributes ?? {};
             const data = node.data || (node.data = {});
             data.hName = "div";
-            const baseProps: Record<string, unknown> = {
+            const baseProps: Properties = {
                 className: "vv-embed vv-embed--illustration",
                 "data-vv-illustration": illustration,
             };
@@ -98,7 +99,7 @@ const remarkVvEmbeds: Plugin<[], Root> = () => {
                     "vv-embed__fallback",
                     FALLBACK_TEXT[illustration] ?? "Interactive illustration loads here.",
                 ),
-            ] as DirectiveNode["children"];
+            ] as unknown as typeof node.children;
         });
     };
 };

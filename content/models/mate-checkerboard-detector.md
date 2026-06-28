@@ -132,8 +132,8 @@ No public implementation of MATE has been verified at the time of writing this s
 # References
 
 1. S. Donné, J. De Vylder, B. Goossens, W. Philips. *MATE: Machine Learning for Adaptive Calibration Template Detection.* MDPI *Sensors* 16(11):1858, 2016. [doi:10.3390/s16111858](https://doi.org/10.3390/s16111858)
-2. B. Chen, C. Xiong, Q. Zhang. *CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration.* arXiv:2302.05097, 2023. [arXiv](https://arxiv.org/pdf/2302.05097)
+2. B. Chen, C. Xiong, Q. Zhang. *CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration.* arXiv 2302.05097, 2023. [arXiv](https://arxiv.org/pdf/2302.05097)
 3. S. Placht, P. Fürsattel, E. Mengue, H. Hofmann, C. Schaller, M. Balda, E. Angelopoulou. *ROCHADE: Robust Checkerboard Advanced Detection for Camera Calibration.* ECCV 2014, 766–779.
-4. S. Bennett, J. Lasenby. *ChESS — Quick and Robust Detection of Chess-board Features.* arXiv:1301.5491, 2013.
+4. S. Bennett, J. Lasenby. *ChESS — Quick and Robust Detection of Chess-board Features.* arXiv 1301.5491, 2013.
 5. M. Rufli, D. Scaramuzza, R. Siegwart. *Automatic Detection of Checkerboards on Blurred and Distorted Images.* IROS 2008, 3121–3126.
 6. Y. Zhang, X. Zhao, D. Qian. *Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration.* IEEE Robotics and Automation Letters 7(4):10470–10477, 2022. [arXiv](https://arxiv.org/pdf/2202.00158)

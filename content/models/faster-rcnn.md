@@ -136,7 +136,7 @@ Original MATLAB + Caffe release by the paper authors; the Python + Caffe port by
 
 # References
 
-1. Ren, He, Girshick, Sun. *Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.* NeurIPS, 2015. [arXiv:1506.01497](https://arxiv.org/abs/1506.01497).
+1. Ren, He, Girshick, Sun. *Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.* NeurIPS, 2015. [arXiv 1506.01497](https://arxiv.org/abs/1506.01497).
 2. Long, Shelhamer, Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015. (The FCN formulation the RPN adopts.)
 3. Krizhevsky, Sutskever, Hinton. *ImageNet Classification with Deep Convolutional Neural Networks.* NeurIPS, 2012. (Backbone pre-training paradigm.)
 4. He, Zhang, Ren, Sun. *Deep Residual Learning for Image Recognition.* CVPR, 2016. (ResNet-101 backbone for the 2015 competition wins.)

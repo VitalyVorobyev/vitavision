@@ -191,8 +191,8 @@ The original Caffe release accompanies the paper; the PyTorch torchvision port (
 
 # References
 
-1. He, Zhang, Ren, Sun. *Deep Residual Learning for Image Recognition.* CVPR 2016. [arXiv:1512.03385](https://arxiv.org/abs/1512.03385)
+1. He, Zhang, Ren, Sun. *Deep Residual Learning for Image Recognition.* CVPR 2016. [arXiv 1512.03385](https://arxiv.org/abs/1512.03385)
 2. Krizhevsky, Sutskever, Hinton. *ImageNet Classification with Deep Convolutional Neural Networks.* NeurIPS 2012.
-3. Simonyan, Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR 2015. [arXiv:1409.1556](https://arxiv.org/abs/1409.1556)
-4. Szegedy et al. *Going Deeper with Convolutions.* CVPR 2015. [arXiv:1409.4842](https://arxiv.org/abs/1409.4842)
+3. Simonyan, Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR 2015. [arXiv 1409.1556](https://arxiv.org/abs/1409.1556)
+4. Szegedy et al. *Going Deeper with Convolutions.* CVPR 2015. [arXiv 1409.4842](https://arxiv.org/abs/1409.4842)
 5. Ioffe, Szegedy. *Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift.* ICML 2015.

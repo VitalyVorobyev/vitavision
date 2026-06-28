@@ -7,6 +7,7 @@
  */
 import type { Plugin } from "unified";
 import type { Root, Parent, PhrasingContent } from "mdast";
+import type { Properties } from "hast";
 import { visit } from "unist-util-visit";
 
 const SUPPORTED_BLOCKS = new Set([
@@ -52,7 +53,7 @@ interface MdastNodeWithHast extends Parent {
     children: Parent["children"];
     data?: {
         hName?: string;
-        hProperties?: Record<string, unknown>;
+        hProperties?: Properties;
     };
 }
 
@@ -71,7 +72,7 @@ function isDirectiveNode(node: unknown): node is DirectiveNode {
  */
 function createHastMappedNode(
     tagName: string,
-    properties: Record<string, unknown>,
+    properties: Properties,
     children: Parent["children"] = [],
 ): MdastNodeWithHast {
     return {
@@ -163,17 +164,17 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             const newChildren: Parent["children"] = [];
 
             // Title div
-            newChildren.push(createTextDiv("vv-block__title", BLOCK_TITLES[kind] ?? kind));
+            newChildren.push(createTextDiv("vv-block__title", BLOCK_TITLES[kind] ?? kind) as unknown as Parent["children"][0]);
 
             // Label div (optional)
             if (label) {
-                newChildren.push(createTextDiv("vv-block__label", label));
+                newChildren.push(createTextDiv("vv-block__label", label) as unknown as Parent["children"][0]);
             }
 
             // Filter out the label child from body content
             let bodyContent = node.children.filter(
                 (c) => !(c as { data?: { directiveLabel?: boolean } }).data?.directiveLabel,
-            );
+            ) as unknown as Parent["children"];
 
             // For algorithm blocks, extract meta
             if (kind === "algorithm") {
@@ -192,8 +193,8 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
                                 m.children,
                             ) as unknown as PhrasingContent,
                         ]),
-                    );
-                    newChildren.push(createHastMappedNode("div", { className: "vv-block__meta" }, metaItems));
+                    ) as unknown as Parent["children"];
+                    newChildren.push(createHastMappedNode("div", { className: "vv-block__meta" }, metaItems) as unknown as Parent["children"][0]);
                 }
             }
 
@@ -210,10 +211,10 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             }
 
             // Body wrapper
-            newChildren.push(createHastMappedNode("div", { className: "vv-block__body" }, bodyContent));
+            newChildren.push(createHastMappedNode("div", { className: "vv-block__body" }, bodyContent) as unknown as Parent["children"][0]);
 
             // Replace children
-            node.children = newChildren as DirectiveNode["children"];
+            node.children = newChildren as unknown as typeof node.children;
         });
     };
 };

@@ -16,17 +16,33 @@ const tests: Array<{ name: string; code: string }> = [
         code: `
 const mod = await import('@vitavision/chess-corners');
 await mod.default();
-const d = mod.ChessDetector.multiscale();
-d.set_threshold(0.2);
-d.set_nms_radius(2);
-d.set_broad_mode(false);
-d.set_min_cluster_size(2);
-try { d.set_pyramid_levels(4); } catch(e) { throw new Error('set_pyramid_levels failed: ' + e); }
-d.set_pyramid_min_size(128);
-try { d.set_upscale_factor(0); } catch(e) { throw new Error('set_upscale_factor failed: ' + e); }
-try { d.set_refiner('center_of_mass'); } catch(e) { throw new Error('set_refiner failed: ' + e); }
-d.free();
-console.log('PASS: multiscale detector created with all setters');
+// chess-corners 0.11 uses the typed DetectorConfig builder (the flat
+// set_* setters were removed). Validate every config combination the UI's
+// ChessCornersConfigForm can produce is accepted by ChessDetector.withConfig.
+function makeRefiner(kind) {
+    if (kind === 'forstner') return mod.ChessRefiner.withForstner(new mod.ForstnerConfig());
+    if (kind === 'saddle_point') return mod.ChessRefiner.withSaddlePoint(new mod.SaddlePointConfig());
+    return mod.ChessRefiner.withCenterOfMass(new mod.CenterOfMassConfig());
+}
+for (const refiner of ['center_of_mass', 'forstner', 'saddle_point']) {
+    for (const upscaleFactor of [0, 2, 3, 4]) {
+        for (const broadMode of [false, true]) {
+            const cfg = mod.DetectorConfig.chessMultiscale();
+            cfg.threshold = mod.Threshold.relative(0.2);
+            cfg.upscale = upscaleFactor >= 2 ? mod.UpscaleConfig.fixed(upscaleFactor) : mod.UpscaleConfig.disabled();
+            cfg.multiscale.levels = 4;
+            cfg.multiscale.minSize = 128;
+            const chess = cfg.strategy.chess;
+            chess.nmsRadius = 2;
+            chess.minClusterSize = 2;
+            chess.ring = broadMode ? mod.ChessRing.Broad : mod.ChessRing.Canonical;
+            chess.refiner = makeRefiner(refiner);
+            const d = mod.ChessDetector.withConfig(cfg);
+            d.free();
+        }
+    }
+}
+console.log('PASS: DetectorConfig builder accepts all UI-config combinations');
 process.exit(0);
 `,
     },

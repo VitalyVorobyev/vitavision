@@ -2325,6 +2325,151 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "depth-anything",
+    "frontmatter": {
+      "title": "Depth Anything",
+      "summary": "A monocular relative-depth foundation model that scales training to 62M unlabeled images via a teacher pseudo-labeling data engine, a CutMix challenge for the student, and a DINOv2 semantic-feature alignment loss.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "vit"
+      ],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "depth-anything-v2",
+          "confidence": "high"
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "depth",
+      "arch_family": "vit",
+      "params": "ViT-S 24.8M / ViT-B 97.5M / ViT-L 335.3M",
+      "sources": {
+        "primary": "yang2024-depth-anything",
+        "references": [
+          "ranftl2019-midas",
+          "oquab2023-dinov2"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/LiheYoung/Depth-Anything",
+          "commit": "1d03336771fe09c5398ffdd211441e33941a97dc",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2024
+    }
+  },
+  {
+    "slug": "depth-anything-3",
+    "frontmatter": {
+      "title": "Depth Anything 3",
+      "summary": "A single plain-transformer model that predicts spatially consistent geometry — depth plus camera rays — from one to many images, with or without known poses, distilled from Depth Anything 2 via a unified depth-ray target.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "feed-forward-3d-reconstruction",
+        "pose-estimation",
+        "epipolar-geometry",
+        "pinhole-camera-model"
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction",
+        "pose-estimation"
+      ],
+      "domain": "geometry",
+      "arch_family": "vit",
+      "params": "Plain DINO ViT backbone; Giant variant ~1.13B",
+      "sources": {
+        "primary": "lin2025-depth-anything-3",
+        "references": [
+          "yang2024-depth-anything-v2",
+          "oquab2023-dinov2",
+          "wang2025-vggt",
+          "wang2023-dust3r"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/ByteDance-Seed/Depth-Anything-3",
+          "commit": "41736238f5bced4debf3f2a12375d2466874866d",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2025
+    }
+  },
+  {
+    "slug": "depth-anything-v2",
+    "frontmatter": {
+      "title": "Depth Anything V2",
+      "summary": "A monocular depth foundation model that trains its teacher purely on synthetic images for label precision, then distills to a student over 62M pseudo-labeled real images, sharpening detail over V1 while staying far faster than diffusion-based depth.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "vit"
+      ],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "depth-anything-3",
+          "confidence": "high",
+          "caution": "DA3 generalizes DA2 to any-view geometry and surpasses it on monocular depth; DA2 is also DA3's distillation teacher."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "depth",
+      "arch_family": "vit",
+      "params": "ViT-S 25M / ViT-L 335M / ViT-G 1.3B (teacher)",
+      "sources": {
+        "primary": "yang2024-depth-anything-v2",
+        "references": [
+          "yang2024-depth-anything",
+          "ranftl2019-midas",
+          "oquab2023-dinov2"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/DepthAnything/Depth-Anything-V2",
+          "commit": "a561b849ebae10a6f5ef49e26c83cbbcd36c71bf",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_license": "CC-BY-NC-4.0 (ViT-B/L/G); Apache-2.0 (ViT-S)"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2024
+    }
+  },
+  {
     "slug": "detr",
     "frontmatter": {
       "title": "DETR",
@@ -2384,6 +2529,127 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-27",
       "year": 2020
+    }
+  },
+  {
+    "slug": "dinov2",
+    "frontmatter": {
+      "title": "DINOv2",
+      "summary": "A self-supervised ViT trained on a curated 142M-image dataset that yields general-purpose visual features usable frozen — via kNN or linear probes — for classification, dense depth and segmentation without finetuning.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "vit",
+        "mae"
+      ],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "depth-anything",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-v2",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-3",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "vggt",
+          "confidence": "high"
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "arch_family": "vit",
+      "params": "ViT-S/B/L/g; ViT-g ~1.1B",
+      "sources": {
+        "primary": "oquab2023-dinov2",
+        "references": [
+          "dosovitskiy2020-vit",
+          "he2021-mae"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/dinov2",
+          "commit": "7764ea0f912e53c92e82eb78a2a1631e92725fc8",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2023
+    }
+  },
+  {
+    "slug": "dust3r",
+    "frontmatter": {
+      "title": "DUSt3R",
+      "summary": "A feed-forward network that regresses two dense pointmaps in a shared coordinate frame from an uncalibrated, unposed image pair, jointly recovering correspondence, relative pose, intrinsics and depth without prior calibration.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "epipolar-geometry",
+        "pose-estimation",
+        "bundle-adjustment",
+        "pinhole-camera-model",
+        "feed-forward-3d-reconstruction"
+      ],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "mast3r",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "vggt",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-3",
+          "confidence": "medium",
+          "caution": "DA3 inherits DUSt3R's pose-free feed-forward pointmap paradigm but is a distinct any-view model."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "two-view-geometry",
+        "pose-estimation"
+      ],
+      "domain": "geometry",
+      "arch_family": "vit",
+      "params": "ViT-Large encoder + ViT-Base decoders (CroCo-pretrained)",
+      "sources": {
+        "primary": "wang2023-dust3r"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/naver/dust3r",
+          "commit": "4c24a6ebf04809f2cfe59915e51779c8984aaa40",
+          "framework": "pytorch",
+          "license": "CC-BY-NC-SA-4.0",
+          "weights_license": "CC-BY-NC-SA-4.0"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2023
     }
   },
   {
@@ -3096,6 +3362,67 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "mast3r",
+    "frontmatter": {
+      "title": "MASt3R",
+      "summary": "A 3D-grounded image matcher that adds a dense local-descriptor head and an InfoNCE matching loss on top of DUSt3R's pointmap regression, with a fast reciprocal matching scheme, yielding correspondences robust to extreme viewpoint change.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "feature-matching",
+        "feature-descriptors",
+        "epipolar-geometry",
+        "pose-estimation",
+        "feed-forward-3d-reconstruction"
+      ],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "medium",
+          "caution": "MASt3R grounds matching in 3D and wins under extreme viewpoint change; LoFTR is a 2D detector-free matcher."
+        },
+        {
+          "type": "compared_with",
+          "target": "lightglue",
+          "confidence": "medium",
+          "caution": "MASt3R is 3D-grounded and pose-robust; LightGlue is a fast sparse 2D matcher."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "two-view-geometry",
+        "local-descriptors"
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "local-feature-matching"
+      ],
+      "arch_family": "vit",
+      "params": "DUSt3R backbone (ViT-L enc + ViT-B dec) + descriptor head",
+      "sources": {
+        "primary": "leroy2024-mast3r",
+        "references": [
+          "wang2023-dust3r"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/naver/mast3r",
+          "commit": "f5209afc300cec36239a7ac992263f36847bbba0",
+          "framework": "pytorch",
+          "license": "CC-BY-NC-SA-4.0",
+          "weights_license": "CC-BY-NC-SA-4.0"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2024
+    }
+  },
+  {
     "slug": "mate-checkerboard-detector",
     "frontmatter": {
       "title": "MATE",
@@ -3151,6 +3478,49 @@ export const modelPages: ModelIndexEntry[] = [
       },
       "date": "2026-05-02",
       "year": 2016
+    }
+  },
+  {
+    "slug": "midas",
+    "frontmatter": {
+      "title": "MiDaS",
+      "summary": "A monocular depth network trained for zero-shot cross-dataset transfer by mixing incompatible depth datasets under a scale-and-shift-invariant loss, predicting relative inverse depth up to an unknown global scale and shift.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "pinhole-camera-model"
+      ],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "depth-anything",
+          "confidence": "high"
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "depth",
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "ranftl2019-midas"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/isl-org/MiDaS",
+          "commit": "454597711a62eabcbf7d1e89f3fb9f569051ac9b",
+          "framework": "pytorch",
+          "license": "MIT",
+          "weights_license": "MIT"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2019
     }
   },
   {
@@ -4087,6 +4457,61 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "vggt",
+    "frontmatter": {
+      "title": "VGGT (Visual Geometry Grounded Transformer)",
+      "summary": "A large feed-forward transformer that predicts cameras, depth maps, point maps and 3D point tracks for one to hundreds of views in a single pass, removing the optimization and global-alignment post-processing that pairwise pointmap methods require.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "epipolar-geometry",
+        "pose-estimation",
+        "bundle-adjustment",
+        "vit",
+        "attention-mechanism",
+        "feed-forward-3d-reconstruction"
+      ],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "depth-anything-3",
+          "confidence": "medium",
+          "caution": "DA3 surpasses VGGT on the any-view benchmark (+44% pose, +25% geometry) and adds pose-conditioned input; VGGT remains a strong, widely-used feed-forward baseline."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "two-view-geometry",
+        "pose-estimation"
+      ],
+      "domain": "geometry",
+      "arch_family": "vit",
+      "params": "~1.2B",
+      "sources": {
+        "primary": "wang2025-vggt",
+        "references": [
+          "wang2023-dust3r",
+          "leroy2024-mast3r",
+          "oquab2023-dinov2"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/vggt",
+          "commit": "a288dd0f14786c93483e45524328726ab7b1b4ce",
+          "framework": "pytorch",
+          "license": "VGGT License v1 (non-commercial research)",
+          "weights_license": "VGGT License v1 (non-commercial research)"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2025
+    }
+  },
+  {
     "slug": "vit",
     "frontmatter": {
       "title": "ViT",
@@ -4610,6 +5035,39 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "feed-forward-3d-reconstruction",
+    "frontmatter": {
+      "title": "Feed-Forward 3D Reconstruction",
+      "summary": "Recovering 3D geometry — point maps, depth, and camera poses — directly from images in a single network pass, replacing the detect-match-triangulate-bundle-adjust pipeline of classical structure-from-motion with learned pointmap regression.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 11,
+      "access": "public",
+      "prerequisites": [
+        "epipolar-geometry",
+        "bundle-adjustment",
+        "pose-estimation",
+        "pinhole-camera-model"
+      ],
+      "tags": [
+        "deep-learning",
+        "two-view-geometry",
+        "survey"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "primary": "wang2023-dust3r",
+        "references": [
+          "leroy2024-mast3r",
+          "wang2025-vggt",
+          "lin2025-depth-anything-3"
+        ]
+      },
+      "date": "2026-06-27",
+      "year": 2023
+    }
+  },
+  {
     "slug": "hessian-saddle-response",
     "frontmatter": {
       "title": "Hessian Saddle Response",
@@ -4732,6 +5190,36 @@ export const conceptPages: ConceptIndexEntry[] = [
       },
       "date": "2026-05-16",
       "year": 1984
+    }
+  },
+  {
+    "slug": "monocular-depth-estimation",
+    "frontmatter": {
+      "title": "Monocular Depth Estimation",
+      "summary": "Predicting per-pixel scene depth from a single image — the scale ambiguity that forces relative (affine-invariant) versus metric formulations, the scale-and-shift-invariant training that lets incompatible datasets be mixed, and the foundation-model recipe that scaled it to zero-shot generalization.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 13,
+      "access": "public",
+      "prerequisites": [
+        "pinhole-camera-model"
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction",
+        "survey"
+      ],
+      "domain": "depth",
+      "sources": {
+        "primary": "ranftl2019-midas",
+        "references": [
+          "yang2024-depth-anything",
+          "yang2024-depth-anything-v2",
+          "lin2025-depth-anything-3"
+        ]
+      },
+      "date": "2026-06-27",
+      "year": 2019
     }
   },
   {

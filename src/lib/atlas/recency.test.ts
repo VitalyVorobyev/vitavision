@@ -1,10 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { isRecentlyAdded, selectRecentlyAdded, RECENT_SECTION_MAX } from "./recency.ts";
 
-// Anchor: 2026-06-28T00:00:00Z (midnight UTC so ISO date strings align exactly)
-// 30 days before = 2026-05-29T00:00:00Z  →  "2026-05-29" is exactly on the boundary
-// 31 days before = 2026-05-28T00:00:00Z  →  "2026-05-28" is one day outside
-const NOW = new Date("2026-06-28T00:00:00Z");
+// Anchor at NOON UTC on purpose: the comparison must be calendar-day granular,
+// so a non-midnight `now` (the realistic case — `now` is wall-clock time) must
+// not shift the window edge. 30 days before 2026-06-28 = 2026-05-29 (boundary in),
+// 31 days before = 2026-05-28 (out).
+const NOW = new Date("2026-06-28T12:00:00Z");
 
 describe("isRecentlyAdded", () => {
     it("returns true for a date exactly 30 days before now (boundary in)", () => {
@@ -25,6 +26,19 @@ describe("isRecentlyAdded", () => {
 
     it("returns false for an invalid date string", () => {
         expect(isRecentlyAdded("not-a-date", NOW)).toBe(false);
+    });
+
+    it("keeps the boundary day in-window regardless of now's time-of-day", () => {
+        // Regression guard: a date exactly 30 days ago must stay in-window for any
+        // `now` during that day, not just at 00:00 UTC.
+        for (const now of [
+            new Date("2026-06-28T00:00:00Z"),
+            new Date("2026-06-28T12:00:00Z"),
+            new Date("2026-06-28T23:59:59Z"),
+        ]) {
+            expect(isRecentlyAdded("2026-05-29", now)).toBe(true);
+            expect(isRecentlyAdded("2026-05-28", now)).toBe(false);
+        }
     });
 });
 

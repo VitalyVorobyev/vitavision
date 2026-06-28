@@ -11,7 +11,13 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export function isRecentlyAdded(dateStr: string, now: Date = new Date()): boolean {
     const t = new Date(dateStr).getTime();
     if (Number.isNaN(t)) return false;
-    const cutoff = now.getTime() - RECENT_WINDOW_DAYS * DAY_MS;
+    // Frontmatter dates are date-only, parsed at UTC midnight. Compare at
+    // calendar-day granularity by flooring `now` to its UTC midnight before
+    // applying the window — otherwise a date exactly RECENT_WINDOW_DAYS ago
+    // falls just outside the cutoff for any `now` past 00:00 UTC, dropping
+    // boundary-day entries for most of the day.
+    const nowDay = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+    const cutoff = nowDay - RECENT_WINDOW_DAYS * DAY_MS;
     return t >= cutoff;
 }
 

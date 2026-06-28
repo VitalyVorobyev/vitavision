@@ -168,5 +168,5 @@ Official Apache-2.0 release `XavierCHEN34/ClickSEG` bundles training, evaluation
 # References
 
 1. Chen, X., Zhao, Z., Zhang, Y., Duan, M., Qi, D., & Zhao, H. *FocalClick: Towards Practical Interactive Image Segmentation.* CVPR, 2022. [arxiv](https://arxiv.org/abs/2204.02574)
-2. Sofiiuk, K., Petrov, I. A., & Konushin, A. *Reviving Iterative Training with Mask Guidance for Interactive Segmentation.* arXiv:2102.06583, 2021. [arxiv](https://arxiv.org/abs/2102.06583)
+2. Sofiiuk, K., Petrov, I. A., & Konushin, A. *Reviving Iterative Training with Mask Guidance for Interactive Segmentation.* arXiv 2102.06583, 2021. [arxiv](https://arxiv.org/abs/2102.06583)
 3. Sun, K., Xiao, B., Liu, D., & Wang, J. *Deep High-Resolution Representation Learning for Human Pose Estimation (HRNet).* CVPR, 2019. [arxiv](https://arxiv.org/abs/1902.09212)

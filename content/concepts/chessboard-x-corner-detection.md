@@ -102,7 +102,7 @@ Every chessboard X-corner detector page in the atlas lists this concept in `rela
 
 # References
 
-1. S. Bennett, J. Lasenby. *ChESS — Quick and Robust Detection of Chess-board Features.* arXiv:1301.5491, 2013.
+1. S. Bennett, J. Lasenby. *ChESS — Quick and Robust Detection of Chess-board Features.* arXiv 1301.5491, 2013.
 2. A. Geiger, F. Moosmann, O. Car, B. Schuster. *Automatic Camera and Range Sensor Calibration Using a Single Shot.* IEEE ICRA, 2012.
 3. S. Placht et al. *ROCHADE: Robust Checkerboard Advanced Detection for Camera Calibration.* ECCV, 2014.
 4. F. Abeles. *A Pyramidal Blur-Aware X-Corner Detector.* IEEE ICCAR, 2021.
@@ -111,7 +111,7 @@ Every chessboard X-corner detector page in the atlas lists this concept in `rela
 7. P. Fürsattel et al. *OCPAD — Occluded Checkerboard Pattern Detector.* WACV, 2016.
 8. J. M. Duda, K. Frese. *Accurate Detection and Localisation of Checkerboard Corners for Calibration.* BMVC, 2018.
 9. S. Donné et al. *MATE: Machine Learning for Adaptive Calibration Template Detection.* MDPI Sensors, 2016.
-10. B. Chen, C. Xiong, Q. Zhang. *CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration.* arXiv:2302.05097, 2023.
+10. B. Chen, C. Xiong, Q. Zhang. *CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration.* arXiv 2302.05097, 2023.
 11. Y. Zhang, X. Zhao, D. Qian. *Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration.* IEEE Robotics and Automation Letters 7(4):10470–10477, 2022.
 12. P. Stelldinger, N. Schönherr, J. Biermann. *PuzzleBoard.* (See atlas page.)
 13. M. Hillen et al. *Enhanced Checkerboard Detection Using Gaussian Processes.* MDPI *Mathematics* 11(22):4568, 2023.

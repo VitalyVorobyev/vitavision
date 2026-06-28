@@ -165,7 +165,7 @@ The official author release (TorchSeg) covers V1; community PyTorch implementati
 
 # References
 
-1. C. Yu, J. Wang, C. Peng, C. Gao, G. Yu, S. Nong. *BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation.* ECCV, 2018. [arXiv:1808.00897](https://arxiv.org/pdf/1808.00897)
-2. C. Yu, C. Gao, J. Wang, G. Yu, C. Shen, S. Nong. *BiSeNet V2: Bilateral Network with Guided Aggregation for Real-time Semantic Segmentation.* IJCV, 2021. [arXiv:2004.02147](https://arxiv.org/pdf/2004.02147)
-3. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015. [arXiv:1411.4038](https://arxiv.org/abs/1411.4038)
-4. K. He, X. Zhang, S. Ren, J. Sun. *Deep Residual Learning for Image Recognition.* CVPR, 2016. [arXiv:1512.03385](https://arxiv.org/pdf/1512.03385)
+1. C. Yu, J. Wang, C. Peng, C. Gao, G. Yu, S. Nong. *BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation.* ECCV, 2018. [arXiv 1808.00897](https://arxiv.org/pdf/1808.00897)
+2. C. Yu, C. Gao, J. Wang, G. Yu, C. Shen, S. Nong. *BiSeNet V2: Bilateral Network with Guided Aggregation for Real-time Semantic Segmentation.* IJCV, 2021. [arXiv 2004.02147](https://arxiv.org/pdf/2004.02147)
+3. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015. [arXiv 1411.4038](https://arxiv.org/abs/1411.4038)
+4. K. He, X. Zhang, S. Ren, J. Sun. *Deep Residual Learning for Image Recognition.* CVPR, 2016. [arXiv 1512.03385](https://arxiv.org/pdf/1512.03385)

@@ -199,5 +199,5 @@ Three official PyTorch repositories from Meta FAIR — `segment-anything` (v1), 
 # References
 
 1. Kirillov, A. et al. *Segment Anything.* ICCV, 2023. [arxiv](https://arxiv.org/abs/2304.02643)
-2. Ravi, N. et al. *SAM 2: Segment Anything in Images and Videos.* arXiv:2408.00714, 2024. [arxiv](https://arxiv.org/abs/2408.00714)
-3. Carion, N. et al. *SAM 3: Segment Anything with Concepts.* arXiv:2511.16719, 2025. [arxiv](https://arxiv.org/abs/2511.16719)
+2. Ravi, N. et al. *SAM 2: Segment Anything in Images and Videos.* arXiv 2408.00714, 2024. [arxiv](https://arxiv.org/abs/2408.00714)
+3. Carion, N. et al. *SAM 3: Segment Anything with Concepts.* arXiv 2511.16719, 2025. [arxiv](https://arxiv.org/abs/2511.16719)

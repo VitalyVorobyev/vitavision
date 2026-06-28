@@ -166,8 +166,8 @@ Official TensorFlow-slim release; torchvision's port is the de-facto PyTorch ref
 
 # References
 
-1. A. Howard, M. Sandler, G. Chu, L. Chen, B. Chen, M. Tan, W. Wang, Y. Zhu, R. Pang, V. Vasudevan, Q. V. Le, H. Adam. *Searching for MobileNetV3.* ICCV, 2019. [arXiv:1905.02244](https://arxiv.org/abs/1905.02244)
-2. M. Sandler, A. Howard, M. Zhu, A. Zhmoginov, L. Chen. *MobileNetV2: Inverted Residuals and Linear Bottlenecks.* CVPR, 2018. [arXiv:1801.04381](https://arxiv.org/abs/1801.04381)
-3. M. Tan, B. Chen, R. Pang, V. Vasudevan, M. Sandler, A. Howard, Q. V. Le. *MnasNet: Platform-Aware Neural Architecture Search for Mobile.* CVPR, 2019. [arXiv:1807.11626](https://arxiv.org/abs/1807.11626)
+1. A. Howard, M. Sandler, G. Chu, L. Chen, B. Chen, M. Tan, W. Wang, Y. Zhu, R. Pang, V. Vasudevan, Q. V. Le, H. Adam. *Searching for MobileNetV3.* ICCV, 2019. [arXiv 1905.02244](https://arxiv.org/abs/1905.02244)
+2. M. Sandler, A. Howard, M. Zhu, A. Zhmoginov, L. Chen. *MobileNetV2: Inverted Residuals and Linear Bottlenecks.* CVPR, 2018. [arXiv 1801.04381](https://arxiv.org/abs/1801.04381)
+3. M. Tan, B. Chen, R. Pang, V. Vasudevan, M. Sandler, A. Howard, Q. V. Le. *MnasNet: Platform-Aware Neural Architecture Search for Mobile.* CVPR, 2019. [arXiv 1807.11626](https://arxiv.org/abs/1807.11626)
 4. L. Chen, G. Papandreou, I. Kokkinos, K. Murphy, A. Yuille. *DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs.* IEEE TPAMI, 2018.
 5. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015.

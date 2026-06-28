@@ -2660,7 +2660,7 @@ export const modelPages: ModelIndexEntry[] = [
       "author": "Vitaly Vorobyev",
       "draft": false,
       "difficulty": "intermediate",
-      "readingTimeMinutes": 6,
+      "readingTimeMinutes": 7,
       "access": "public",
       "prerequisites": [
         "convolutional-neural-network"

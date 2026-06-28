@@ -164,6 +164,6 @@ No official authors' repository is maintained; the BVLC Caffe Model Zoo replicat
 
 # References
 
-1. Szegedy, Liu, Jia, Sermanet, Reed, Anguelov, Erhan, Vanhoucke, Rabinovich. *Going deeper with convolutions.* CVPR 2015. [arXiv:1409.4842](https://arxiv.org/abs/1409.4842)
+1. Szegedy, Liu, Jia, Sermanet, Reed, Anguelov, Erhan, Vanhoucke, Rabinovich. *Going deeper with convolutions.* CVPR 2015. [arXiv 1409.4842](https://arxiv.org/abs/1409.4842)
 2. Krizhevsky, Sutskever, Hinton. *ImageNet Classification with Deep Convolutional Neural Networks.* NeurIPS 2012. [paper](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf)
-3. Simonyan, Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR 2015 (arXiv 2014). [arXiv:1409.1556](https://arxiv.org/abs/1409.1556)
+3. Simonyan, Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR 2015 (arXiv 2014). [arXiv 1409.1556](https://arxiv.org/abs/1409.1556)

@@ -138,6 +138,6 @@ No official author repository has been publicly released; community PyTorch reim
 
 # References
 
-1. R. P. K. Poudel, S. Liwicki, R. Cipolla. *Fast-SCNN: Fast Semantic Segmentation Network.* BMVC, 2019. [arXiv:1902.04502](https://arxiv.org/pdf/1902.04502)
-2. C. Yu, J. Wang, C. Peng, C. Gao, G. Yu, S. Nong. *BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation.* ECCV, 2018. [arXiv:1808.00897](https://arxiv.org/pdf/1808.00897)
-3. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015. [arXiv:1411.4038](https://arxiv.org/abs/1411.4038)
+1. R. P. K. Poudel, S. Liwicki, R. Cipolla. *Fast-SCNN: Fast Semantic Segmentation Network.* BMVC, 2019. [arXiv 1902.04502](https://arxiv.org/pdf/1902.04502)
+2. C. Yu, J. Wang, C. Peng, C. Gao, G. Yu, S. Nong. *BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation.* ECCV, 2018. [arXiv 1808.00897](https://arxiv.org/pdf/1808.00897)
+3. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015. [arXiv 1411.4038](https://arxiv.org/abs/1411.4038)

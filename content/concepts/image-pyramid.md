@@ -78,5 +78,5 @@ The continuous object the pyramid discretises is the [scale-space](/atlas/scale-
 1. P. J. Burt, E. H. Adelson. *The Laplacian Pyramid as a Compact Image Code.* IEEE Transactions on Communications, 31(4):532–540, 1983.
 2. D. G. Lowe. *Distinctive Image Features from Scale-Invariant Keypoints.* International Journal of Computer Vision, 60(2):91–110, 2004.
 3. H. Bay, T. Tuytelaars, L. Van Gool. *SURF: Speeded Up Robust Features.* ECCV, 2006.
-4. P. Abeles. *Pyramidal Blur Aware X-Corner Chessboard Detector.* arXiv:2110.13793, 2021.
+4. P. Abeles. *Pyramidal Blur Aware X-Corner Chessboard Detector.* arXiv 2110.13793, 2021.
 5. T. Lindeberg. *Scale-Space Theory in Computer Vision.* Kluwer Academic Publishers, 1994.

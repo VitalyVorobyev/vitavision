@@ -176,8 +176,8 @@ Official Caffe release (no `LICENSE` file at pinned commit; BSD-2-Clause declare
 
 # References
 
-1. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* IEEE CVPR, 2015. [arXiv:1411.4038](https://arxiv.org/abs/1411.4038)
-2. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation* (extended journal version). IEEE TPAMI, 2016. [arXiv:1605.06211](https://arxiv.org/abs/1605.06211)
-3. K. Simonyan, A. Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR, 2015. [arXiv:1409.1556](https://arxiv.org/abs/1409.1556) (VGG-16 backbone.)
-4. O. Ronneberger, P. Fischer, T. Brox. *U-Net: Convolutional Networks for Biomedical Image Segmentation.* MICCAI, 2015. [arXiv:1505.04597](https://arxiv.org/abs/1505.04597) (Immediate extension: symmetric encoder-decoder with dense skip connections.)
-5. L.-C. Chen, G. Papandreou, I. Kokkinos, K. Murphy, A. L. Yuille. *Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs.* ICLR, 2015. [arXiv:1412.7062](https://arxiv.org/abs/1412.7062) (DeepLab: dilated convolutions + CRF post-processing to recover boundary precision.)
+1. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* IEEE CVPR, 2015. [arXiv 1411.4038](https://arxiv.org/abs/1411.4038)
+2. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation* (extended journal version). IEEE TPAMI, 2016. [arXiv 1605.06211](https://arxiv.org/abs/1605.06211)
+3. K. Simonyan, A. Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR, 2015. [arXiv 1409.1556](https://arxiv.org/abs/1409.1556) (VGG-16 backbone.)
+4. O. Ronneberger, P. Fischer, T. Brox. *U-Net: Convolutional Networks for Biomedical Image Segmentation.* MICCAI, 2015. [arXiv 1505.04597](https://arxiv.org/abs/1505.04597) (Immediate extension: symmetric encoder-decoder with dense skip connections.)
+5. L.-C. Chen, G. Papandreou, I. Kokkinos, K. Murphy, A. L. Yuille. *Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs.* ICLR, 2015. [arXiv 1412.7062](https://arxiv.org/abs/1412.7062) (DeepLab: dilated convolutions + CRF post-processing to recover boundary precision.)

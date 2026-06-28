@@ -19,6 +19,7 @@ import type { Element, Root as HastRoot } from "hast";
 import remarkVvEmbeds from "./remark-vv-embeds.ts";
 import remarkVvBlocks from "./remark-vv-blocks.ts";
 import remarkVvInline from "./remark-vv-inline.ts";
+import remarkVvDirectiveFallback from "./remark-vv-directive-fallback.ts";
 import { computeReadingTimeMinutes } from "./reading-time.ts";
 import remarkEquationReferences from "./remark-equation-references.ts";
 import rehypeNumberedEquations from "./rehype-numbered-equations.ts";
@@ -276,6 +277,7 @@ async function renderMarkdown(content: string, highlighter: Awaited<ReturnType<t
         .use(remarkVvInline)
         .use(remarkVvBlocks)
         .use(remarkVvEmbeds)
+        .use(remarkVvDirectiveFallback)
         .use(remarkMath)
         .use(remarkEquationReferences)
         .use(remarkRehype)
@@ -700,6 +702,33 @@ async function main(): Promise<void> {
         const y = resolvePrimaryYear(e.frontmatter as { sources?: { primary?: string } });
         if (y !== undefined) (e.frontmatter as { year?: number }).year = y;
     }
+
+    // ---- Build-time guard -------------------------------------------------------
+    // Fail if any rendered page still contains <div></div>: the exact signature of
+    // an unclaimed remark-directive node. Legitimate vv-block <div>s always carry
+    // a className and KaTeX output always has content — so this string is a zero-
+    // false-positive sentinel for stray prose colons that leaked through as directives.
+    const emptyDivViolations: { slug: string; count: number }[] = [];
+    for (const { slug, html } of [
+        ...rawBlogPosts,
+        ...rawAlgorithmPages,
+        ...rawDemoPages,
+        ...rawModelPages,
+        ...rawConceptPages,
+    ]) {
+        const count = (html.match(/<div><\/div>/g) ?? []).length;
+        if (count > 0) emptyDivViolations.push({ slug, count });
+    }
+    if (emptyDivViolations.length > 0) {
+        const details = emptyDivViolations
+            .map(({ slug, count }) => `  ${slug}: ${count} occurrence(s)`)
+            .join("\n");
+        throw new Error(
+            `content:build — ${emptyDivViolations.length} page(s) contain <div></div> ` +
+            `(unclaimed remark-directive — a stray colon in prose triggers an empty div):\n${details}`,
+        );
+    }
+    // -----------------------------------------------------------------------------
 
     generateOutput(blogPosts, algorithmPages, demoPages, modelPages, conceptPages, algorithmPublished, modelPublished, conceptPublished);
 

@@ -179,7 +179,7 @@ Official NVlabs PyTorch release, with widely-used community ports in HuggingFace
 
 # References
 
-1. Xie, Wang, Yu, Anandkumar, Alvarez, Luo. *SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers.* NeurIPS, 2021. [arXiv:2105.15203](https://arxiv.org/abs/2105.15203)
-2. Dosovitskiy et al. *An Image Is Worth 16×16 Words: Transformers for Image Recognition at Scale.* ICLR, 2021. [arXiv:2010.11929](https://arxiv.org/abs/2010.11929)
-3. Long, Shelhamer, Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015. [arXiv:1411.4038](https://arxiv.org/abs/1411.4038)
-4. Chen, Papandreou, Schroff, Adam. *Rethinking Atrous Convolution for Semantic Image Segmentation.* arXiv preprint, 2017. [arXiv:1706.05587](https://arxiv.org/abs/1706.05587)
+1. Xie, Wang, Yu, Anandkumar, Alvarez, Luo. *SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers.* NeurIPS, 2021. [arXiv 2105.15203](https://arxiv.org/abs/2105.15203)
+2. Dosovitskiy et al. *An Image Is Worth 16×16 Words: Transformers for Image Recognition at Scale.* ICLR, 2021. [arXiv 2010.11929](https://arxiv.org/abs/2010.11929)
+3. Long, Shelhamer, Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015. [arXiv 1411.4038](https://arxiv.org/abs/1411.4038)
+4. Chen, Papandreou, Schroff, Adam. *Rethinking Atrous Convolution for Semantic Image Segmentation.* arXiv preprint, 2017. [arXiv 1706.05587](https://arxiv.org/abs/1706.05587)

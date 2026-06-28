@@ -105,7 +105,7 @@ One public TensorFlow implementation. The repository carries no LICENSE file, wh
 
 # References
 
-1. B. Chen, C. Xiong, Q. Zhang. *CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration.* arXiv:2302.05097, 2023. [arXiv](https://arxiv.org/pdf/2302.05097)
+1. B. Chen, C. Xiong, Q. Zhang. *CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration.* arXiv 2302.05097, 2023. [arXiv](https://arxiv.org/pdf/2302.05097)
 2. S. Donné, J. De Vylder, B. Goossens, W. Philips. *MATE: Machine Learning for Adaptive Calibration Template Detection.* Sensors 16(11):1858, 2016. [MDPI](https://www.mdpi.com/1424-8220/16/11/1858)
 3. S. Bennett, J. Lasenby. *ChESS — Quick and Robust Detection of Chess-board Features.* Computer Vision and Image Understanding 118:197–210, 2014. [arXiv](https://arxiv.org/pdf/1301.5491v1)
 4. S. Placht, P. Fürsattel, E. Mengue, H. Hofmann, C. Schaller, M. Balda, E. Angelopoulou. *ROCHADE: Robust Checkerboard Advanced Detection for Camera Calibration.* ECCV 2014, 766–779.

@@ -100,9 +100,9 @@ Authors' TPU/TensorFlow release; torchvision provides the de-facto PyTorch port.
 
 # References
 
-1. M. Tan, B. Chen, R. Pang, V. Vasudevan, M. Sandler, A. Howard, Q. V. Le. *MnasNet: Platform-Aware Neural Architecture Search for Mobile.* CVPR, 2019. [arXiv:1807.11626](https://arxiv.org/abs/1807.11626)
-2. M. Sandler, A. Howard, M. Zhu, A. Zhmoginov, L. Chen. *MobileNetV2: Inverted Residuals and Linear Bottlenecks.* CVPR, 2018. [arXiv:1801.04381](https://arxiv.org/abs/1801.04381)
-3. A. Howard, M. Sandler, et al. *Searching for MobileNetV3.* ICCV, 2019. [arXiv:1905.02244](https://arxiv.org/abs/1905.02244)
+1. M. Tan, B. Chen, R. Pang, V. Vasudevan, M. Sandler, A. Howard, Q. V. Le. *MnasNet: Platform-Aware Neural Architecture Search for Mobile.* CVPR, 2019. [arXiv 1807.11626](https://arxiv.org/abs/1807.11626)
+2. M. Sandler, A. Howard, M. Zhu, A. Zhmoginov, L. Chen. *MobileNetV2: Inverted Residuals and Linear Bottlenecks.* CVPR, 2018. [arXiv 1801.04381](https://arxiv.org/abs/1801.04381)
+3. A. Howard, M. Sandler, et al. *Searching for MobileNetV3.* ICCV, 2019. [arXiv 1905.02244](https://arxiv.org/abs/1905.02244)
 
 ```mermaid
 flowchart LR

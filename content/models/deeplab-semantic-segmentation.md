@@ -155,8 +155,8 @@ Official Caffe v2 release on Bitbucket; the most widely used PyTorch reimplement
 
 # References
 
-1. L. Chen, G. Papandreou, I. Kokkinos, K. Murphy, A. Yuille. *DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs.* IEEE TPAMI, 2018. [arXiv:1606.00915](https://arxiv.org/abs/1606.00915)
-2. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015. [arXiv:1411.4038](https://arxiv.org/abs/1411.4038)
-3. O. Ronneberger, P. Fischer, T. Brox. *U-Net: Convolutional Networks for Biomedical Image Segmentation.* MICCAI, 2015. [arXiv:1505.04597](https://arxiv.org/abs/1505.04597)
+1. L. Chen, G. Papandreou, I. Kokkinos, K. Murphy, A. Yuille. *DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs.* IEEE TPAMI, 2018. [arXiv 1606.00915](https://arxiv.org/abs/1606.00915)
+2. J. Long, E. Shelhamer, T. Darrell. *Fully Convolutional Networks for Semantic Segmentation.* CVPR, 2015. [arXiv 1411.4038](https://arxiv.org/abs/1411.4038)
+3. O. Ronneberger, P. Fischer, T. Brox. *U-Net: Convolutional Networks for Biomedical Image Segmentation.* MICCAI, 2015. [arXiv 1505.04597](https://arxiv.org/abs/1505.04597)
 4. P. Krähenbühl, V. Koltun. *Efficient Inference in Fully Connected CRFs with Gaussian Edge Potentials.* NeurIPS, 2011.
-5. K. Simonyan, A. Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR, 2015. [arXiv:1409.1556](https://arxiv.org/abs/1409.1556)
+5. K. Simonyan, A. Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR, 2015. [arXiv 1409.1556](https://arxiv.org/abs/1409.1556)

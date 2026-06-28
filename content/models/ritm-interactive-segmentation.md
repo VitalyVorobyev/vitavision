@@ -138,5 +138,5 @@ The original Samsung AI Center Moscow release (`saic-vul/ritm_interactive_segmen
 
 # References
 
-1. Sofiiuk, K., Petrov, I. A., & Konushin, A. *Reviving Iterative Training with Mask Guidance for Interactive Segmentation.* arXiv:2102.06583, 2021. [arxiv](https://arxiv.org/abs/2102.06583)
+1. Sofiiuk, K., Petrov, I. A., & Konushin, A. *Reviving Iterative Training with Mask Guidance for Interactive Segmentation.* arXiv 2102.06583, 2021. [arxiv](https://arxiv.org/abs/2102.06583)
 2. Chen, L.-C., Zhu, Y., Papandreou, G., Schroff, F., & Adam, H. *Encoder-Decoder with Atrous Separable Convolution for Semantic Image Segmentation (DeepLabV3+).* ECCV, 2018. [arxiv](https://arxiv.org/abs/1802.02611)

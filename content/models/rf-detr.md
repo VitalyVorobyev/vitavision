@@ -90,9 +90,9 @@ Official Roboflow PyTorch release; N/S/M/L weights under Apache-2.0, XL/2XL weig
 
 # References
 
-1. I. Robinson, P. Robicheaux, M. Popov, D. Ramanan, N. Peri. *RF-DETR: Neural Architecture Search for Real-Time Detection Transformers.* arXiv, 2025. [arXiv:2511.09554](https://arxiv.org/abs/2511.09554)
-2. N. Carion, F. Massa, G. Synnaeve, N. Usunier, A. Kirillov, S. Zagoruyko. *End-to-End Object Detection with Transformers.* ECCV, 2020. [arXiv:2005.12872](https://arxiv.org/abs/2005.12872)
-3. A. Dosovitskiy, et al. *An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale.* ICLR, 2021. [arXiv:2010.11929](https://arxiv.org/abs/2010.11929)
+1. I. Robinson, P. Robicheaux, M. Popov, D. Ramanan, N. Peri. *RF-DETR: Neural Architecture Search for Real-Time Detection Transformers.* arXiv, 2025. [arXiv 2511.09554](https://arxiv.org/abs/2511.09554)
+2. N. Carion, F. Massa, G. Synnaeve, N. Usunier, A. Kirillov, S. Zagoruyko. *End-to-End Object Detection with Transformers.* ECCV, 2020. [arXiv 2005.12872](https://arxiv.org/abs/2005.12872)
+3. A. Dosovitskiy, et al. *An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale.* ICLR, 2021. [arXiv 2010.11929](https://arxiv.org/abs/2010.11929)
 
 ```mermaid
 flowchart LR

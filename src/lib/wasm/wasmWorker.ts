@@ -502,12 +502,16 @@ async function handleRinggrid(
 ) {
     const mod = await getRinggridModule();
 
-    // Start from WASM defaults, override with user-provided fields
+    // Start from WASM defaults, override with user-provided fields.
+    // ringgrid.target.v5 nests layout under lattice/marker/coding, so a
+    // shallow merge would wipe sibling keys (e.g. lattice.kind) whenever the
+    // user overrides only part of a nested block — use the nested-aware
+    // deepMerge (defined below in this file) instead.
     const defaults = JSON.parse(mod.default_board_json()) as Record<string, unknown>;
     const userBoard = config.boardJson
         ? JSON.parse(config.boardJson as string) as Record<string, unknown>
         : {};
-    const merged = { ...defaults, ...userBoard };
+    const merged = deepMerge(defaults, userBoard);
     const boardJson = JSON.stringify(merged);
 
     const detector = new mod.RinggridDetector(boardJson);

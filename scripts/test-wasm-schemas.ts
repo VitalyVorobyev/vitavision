@@ -51,15 +51,82 @@ process.exit(0);
         code: `
 const mod = await import('@vitavision/ringgrid');
 await mod.default();
+
+// 1. Schema check: v5, not the legacy flat v4.
 const def = JSON.parse(mod.default_board_json());
-if (def.schema !== 'ringgrid.target.v4' || typeof def.name !== 'string')
-    throw new Error('default board missing schema/name');
-console.log('PASS: default board JSON has schema + name');
-const user = { rows: 15, long_row_cols: 14, pitch_mm: 8.0, marker_outer_radius_mm: 5.6, marker_inner_radius_mm: 3.2, marker_ring_width_mm: 0.8 };
-const merged = { ...def, ...user };
-const det = new mod.RinggridDetector(JSON.stringify(merged));
+if (def.schema !== 'ringgrid.target.v5' || typeof def.name !== 'string')
+    throw new Error('default board missing schema/name: ' + JSON.stringify(def));
+console.log('PASS: default board JSON has schema ringgrid.target.v5 + name');
+
+// 2. Build a board through the same nested-aware merge path the adapter/worker
+// use (wasmWorker.ts handleRinggrid), with non-default values, and assert the
+// nested structure is correct AND that untouched sibling keys (lattice.kind,
+// coding.kind) survive — a shallow {...target, ...source} merge would wipe them.
+function deepMerge(target, source) {
+    const out = { ...target };
+    for (const key of Object.keys(source)) {
+        const sv = source[key], tv = target[key];
+        if (sv !== null && typeof sv === 'object' && !Array.isArray(sv) && tv !== null && typeof tv === 'object' && !Array.isArray(tv))
+            out[key] = deepMerge(tv, sv);
+        else out[key] = sv;
+    }
+    return out;
+}
+const adapterBoardOverride = {
+    lattice: { rows: 9, long_row_cols: 8, pitch_mm: 12 },
+    marker: { outer_radius_mm: 5.6, inner_radius_mm: 3.2 },
+    coding: { ring_width_mm: 1.0 },
+};
+const merged = deepMerge(def, adapterBoardOverride);
+if (merged.lattice.kind !== 'hex')
+    throw new Error('lattice.kind was dropped by merge: ' + JSON.stringify(merged.lattice));
+if (merged.lattice.rows !== 9 || merged.lattice.long_row_cols !== 8 || merged.lattice.pitch_mm !== 12)
+    throw new Error('lattice override not applied: ' + JSON.stringify(merged.lattice));
+if (merged.coding.kind !== 'coded16' || merged.coding.ring_width_mm !== 1.0)
+    throw new Error('coding merge incorrect: ' + JSON.stringify(merged.coding));
+if (merged.marker.outer_radius_mm !== 5.6 || merged.marker.inner_radius_mm !== 3.2)
+    throw new Error('marker override not applied: ' + JSON.stringify(merged.marker));
+console.log('PASS: nested board merge applies overrides while preserving lattice.kind/coding.kind');
+const det0 = new mod.RinggridDetector(JSON.stringify(merged));
+det0.free();
+console.log('PASS: detector constructs from merged non-default v5 board');
+
+// 3. Round-trip: update_config with an overlay carrying non-default values
+// under the new advanced.* nesting, then read back config_json() and assert
+// those exact values are present AND that untouched sibling fields survive
+// (catches a knob being silently dropped by the advanced-block move).
+const det = new mod.RinggridDetector(mod.default_board_json());
+const overlay = {
+    marker_scale: { diameter_min_px: 22 },
+    advanced: { decode: { min_decode_confidence: 0.55 } },
+};
+det.update_config(JSON.stringify(overlay));
+const effective = JSON.parse(det.config_json());
+if (effective.marker_scale.diameter_min_px !== 22)
+    throw new Error('marker_scale.diameter_min_px overlay was dropped: ' + JSON.stringify(effective.marker_scale));
+if (effective.advanced.decode.min_decode_confidence !== 0.55)
+    throw new Error('advanced.decode.min_decode_confidence overlay was dropped: ' + JSON.stringify(effective.advanced.decode));
+if (effective.marker_scale.diameter_max_px !== 66)
+    throw new Error('unrelated sibling field diameter_max_px was clobbered: ' + effective.marker_scale.diameter_max_px);
+if (effective.advanced.decode.max_decode_dist !== 3)
+    throw new Error('unrelated sibling field max_decode_dist was clobbered: ' + effective.advanced.decode.max_decode_dist);
+console.log('PASS: update_config round-trip preserves overlay values under advanced.* and leaves siblings untouched');
 det.free();
-console.log('PASS: detector created from merged user + default board JSON');
+
+// 4. Real-image detection: run detect_adaptive_rgba on public/ringgrid.png and
+// assert markers are actually detected, not merely that the call returns.
+const { PNG } = await import('pngjs');
+const { readFileSync } = await import('fs');
+const png = PNG.sync.read(readFileSync('public/ringgrid.png'));
+const detImg = new mod.RinggridDetector(mod.default_board_json());
+const resultJson = detImg.detect_adaptive_rgba(new Uint8Array(png.data), png.width, png.height);
+const result = JSON.parse(resultJson);
+const markers = result.detected_markers ?? [];
+if (markers.length === 0)
+    throw new Error('no markers detected on public/ringgrid.png');
+console.log('PASS: detected ' + markers.length + ' markers on real ringgrid.png image');
+detImg.free();
+
 process.exit(0);
 `,
     },

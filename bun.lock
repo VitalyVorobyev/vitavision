@@ -13,7 +13,7 @@
         "@vitavision/calib-targets": "^0.8.0",
         "@vitavision/chess-corners": "^0.11.2",
         "@vitavision/radsym": "^0.4.1",
-        "@vitavision/ringgrid": "^0.6.0",
+        "@vitavision/ringgrid": "^0.10.1",
         "d3-delaunay": "^6.0.4",
         "framer-motion": "^12.42.2",
         "jszip": "^3.10.1",
@@ -484,7 +484,7 @@
 
     "@vitavision/radsym": ["@vitavision/radsym@0.4.1", "", {}, "sha512-Fy8+ECUZlWOeBcoTYmhcjfDy+cGRqM2SrjkLLSIQlUO/272nyYgdhBifRkn04Tfbn4HjwR/GxlqUMOWkQaS9+w=="],
 
-    "@vitavision/ringgrid": ["@vitavision/ringgrid@0.6.0", "", {}, "sha512-9n5rp/onwelmxC+t1Sqkh3b+TMIFA8uQzqQQPvQbTN03YP9anZUfBliK4RnHfDSRY88vHpxsBprdfR+TRhF2FQ=="],
+    "@vitavision/ringgrid": ["@vitavision/ringgrid@0.10.1", "", {}, "sha512-Cy2cfC0vYLbDY6ab9ALFQ1twrzKaJj8W61uW1dOPpsz38p0RAb4wbQzJlPTaFq4I+Oa1hy/SWUDXeafn6lwQTg=="],
 
     "@vitejs/plugin-react": ["@vitejs/plugin-react@6.0.3", "", { "dependencies": { "@rolldown/pluginutils": "^1.0.1" }, "peerDependencies": { "@rolldown/plugin-babel": "^0.1.7 || ^0.2.0", "babel-plugin-react-compiler": "^1.0.0", "vite": "^8.0.0" }, "optionalPeers": ["@rolldown/plugin-babel", "babel-plugin-react-compiler"] }, "sha512-vmFvco5/QuC2f9Oj+wTk0+9XeDFkHxSamwZKYc7MxYwKICfvUvlMhqKI0VuICPltGqh1neqBKDvO4kes1ya8vg=="],
 

@@ -79,14 +79,14 @@ flowchart TB
 ```
 
 :::algorithm[Hartley projective rectification]
-::input[Point correspondences $\mathbf{x}_i \leftrightarrow \mathbf{x}'_i$, $n \geq 8$ (or a precomputed fundamental matrix $F$); view windows $W, W'$ containing the matched points.]
+::input[Point correspondences $\mathbf{x}_i \leftrightarrow \mathbf{x}'_i$, $n \geq 8$; view windows $W, W'$ containing the matched points. A precomputed fundamental matrix $F$ may be supplied to skip step 1, but the correspondences are still required — step 6 fits the matching transform to them.]
 ::output[Rectifying homography pair $(H, H')$.]
 
 1. Estimate $F$ from the correspondences by a linear least-squares method if not already known, and factor it as $F = [\mathbf{e}']_\times M$ with $\mathbf{e}'$ the epipole in image 2.
 2. Choose a reference point $\mathbf{u}_0$ in image 2 and build $T$, the translation sending $\mathbf{u}_0$ to the origin.
 3. Build $R$, the rotation about the origin that aligns the translated epipole with the $x$-axis, and read off $f$, its distance from the origin.
 4. Build $G$ from $f$ and form $H' = G R T$.
-5. Verify that $H'$ is quasi-affine on $W'$; if the epipole $\mathbf{e}'$ lies inside $W'$, shrink the view window or choose a different reference point $\mathbf{u}_0$ and repeat from step 2.
+5. Verify that $H'$ is quasi-affine on $W'$. If the epipole $\mathbf{e}'$ lies inside $W'$, shrink the view window until it excludes $\mathbf{e}'$, or abandon this construction for a different projectivity — a new reference point $\mathbf{u}_0$ cannot help, since $GRT$ sends that same in-window epipole to infinity regardless of where the window is centred, so $H'(W')$ still meets the line at infinity.
 6. Transform the matched points by $H'M$ (image 1) and $H'$ (image 2), and fit $a, b, c$ of $A$ by linear least squares.
 7. Form $H = A(H'M)$ and confirm it is quasi-affine on some convex subwindow $W^+ \subseteq W$.
 8. Resample both images through $H$ and $H'$ by inverse mapping with interpolation.

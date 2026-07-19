@@ -1388,7 +1388,7 @@
   url: https://users.cecs.anu.edu.au/~hartley/Papers/joint-epipolar/journal/joint3.pdf
   doi: "10.1023/A:1008115206617"
   pdf: hartley1999-projective-rectification.pdf
-  cites: [hartley1997-eight-point, longuet-higgins1981-eight-point]
+  cites: [longuet-higgins1981-eight-point]
 
 - id: loop1999-rectifying-homographies
   title: "Computing Rectifying Homographies for Stereo Vision"
@@ -1398,7 +1398,7 @@
   url: https://dev.ipol.im/~morel/Dossier_MVA_2011_Cours_Transparents_Documents/2011_Cours7_Document2_Loop-Zhang-CVPR1999.pdf
   doi: "10.1109/CVPR.1999.786928"
   pdf: loop1999-rectifying-homographies.pdf
-  cites: [hartley1997-eight-point]
+  cites: []
 
 - id: pollefeys1999-polar-rectification
   title: "A Simple and Efficient Rectification Method for General Motion"
@@ -1408,7 +1408,7 @@
   url: https://people.inf.ethz.ch/pomarc/pubs/PollefeysICCV99.pdf
   doi: "10.1109/ICCV.1999.791262"
   pdf: pollefeys1999-polar-rectification.pdf
-  cites: [hartley1997-eight-point]
+  cites: [longuet-higgins1981-eight-point]
 
 - id: fusiello2000-compact-rectification
   title: "A Compact Algorithm for Rectification of Stereo Pairs"
@@ -1418,4 +1418,4 @@
   url: https://fusiello.github.io/papers/mva99.pdf
   doi: "10.1007/s001380050120"
   pdf: fusiello2000-compact-rectification.pdf
-  cites: []
+  cites: [hartley1999-projective-rectification, loop1999-rectifying-homographies, pollefeys1999-polar-rectification]

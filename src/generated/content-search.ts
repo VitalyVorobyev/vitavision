@@ -287,6 +287,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Communications of the ACM"
   },
   {
+    "slug": "fusiello-compact-rectification",
+    "path": "/atlas/fusiello-compact-rectification",
+    "type": "algorithm",
+    "title": "Fusiello Compact Stereo Rectification",
+    "summary": "Calibrated Euclidean rectification that builds a new pair of projection matrices sharing a common orientation from the two known PPMs, yielding a per-image rectifying homography.",
+    "tags": [
+      "stereo",
+      "two-view-geometry",
+      "classical"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "A. Fusiello",
+      "E. Trucco",
+      "A. Verri"
+    ],
+    "venue": "Machine Vision and Applications"
+  },
+  {
     "slug": "gao-dual-homography-stitching",
     "path": "/atlas/gao-dual-homography-stitching",
     "type": "algorithm",
@@ -468,6 +490,26 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Alvey Vision Conference"
   },
   {
+    "slug": "hartley-projective-rectification",
+    "path": "/atlas/hartley-projective-rectification",
+    "type": "algorithm",
+    "title": "Hartley Projective Rectification",
+    "summary": "Computes a rectifying homography pair from the fundamental matrix alone, sending the epipole to infinity with a quasi-affine perspectivity and fixing the matching transform by least-squares disparity minimisation.",
+    "tags": [
+      "stereo",
+      "two-view-geometry",
+      "classical"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "R. I. Hartley"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
     "slug": "hog-descriptor",
     "path": "/atlas/hog-descriptor",
     "type": "algorithm",
@@ -580,6 +622,27 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Nature"
   },
   {
+    "slug": "loop-zhang-rectification",
+    "path": "/atlas/loop-zhang-rectification",
+    "type": "algorithm",
+    "title": "Loop-Zhang Rectifying Homographies",
+    "summary": "Computes a rectifying homography pair from a known fundamental matrix by factoring each homography as shearing × similarity × projective, choosing the projective component to minimize image distortion.",
+    "tags": [
+      "stereo",
+      "two-view-geometry",
+      "classical"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "C. Loop",
+      "Z. Zhang"
+    ],
+    "venue": "IEEE CVPR 1999"
+  },
+  {
     "slug": "lucas-kanade",
     "path": "/atlas/lucas-kanade",
     "type": "algorithm",
@@ -683,6 +746,28 @@ export const searchRecords: SearchRecord[] = [
       "G. Bradski"
     ],
     "venue": "ICCV"
+  },
+  {
+    "slug": "pollefeys-polar-rectification",
+    "path": "/atlas/pollefeys-polar-rectification",
+    "type": "algorithm",
+    "title": "Pollefeys Polar Rectification",
+    "summary": "Rectification by polar reparametrisation around the epipole, requiring only the oriented fundamental matrix and remaining bounded even when the epipole lies inside the image.",
+    "tags": [
+      "stereo",
+      "two-view-geometry",
+      "classical"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "M. Pollefeys",
+      "R. Koch",
+      "L. Van Gool"
+    ],
+    "venue": "IEEE ICCV 1999"
   },
   {
     "slug": "puzzleboard",
@@ -2202,6 +2287,7 @@ export const searchRecords: SearchRecord[] = [
       "Projective geometry of the homography",
       "Special cases",
       "Physical correspondences",
+      "Applying a homography: warping and resampling",
       "Estimation: DLT and normalized DLT",
       "Decomposition for calibration"
     ]
@@ -2430,6 +2516,25 @@ export const searchRecords: SearchRecord[] = [
       "Gao DHW — discrete two-plane decomposition",
       "SVA — continuous affine deviation field",
       "APAP — continuous projective field via Moving DLT"
+    ]
+  },
+  {
+    "slug": "stereo-rectification",
+    "path": "/atlas/stereo-rectification",
+    "type": "concept",
+    "title": "Stereo Rectification",
+    "summary": "Warping a stereo pair so corresponding epipolar lines become collinear image rows, reducing dense correspondence to a scanline search; calibrated Euclidean methods and uncalibrated projective methods solve the same problem under different input assumptions.",
+    "tags": [
+      "stereo",
+      "two-view-geometry",
+      "survey"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Hartley 1999 - uncalibrated, minimum-disparity",
+      "Loop-Zhang 1999 - uncalibrated, minimum-distortion",
+      "Pollefeys 1999 - polar, handles in-image epipoles",
+      "Fusiello 2000 - calibrated, Euclidean"
     ]
   },
   {

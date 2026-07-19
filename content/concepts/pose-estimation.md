@@ -47,7 +47,7 @@ For two calibrated views with normalised coordinates, the essential matrix $E$ e
 
 $$E = R\,S, \qquad S = [\mathbf{T}]_\times,$$
 
-the skew-symmetric matrix of the unit translation $\mathbf{T}$. Each correspondence supplies one linear constraint on the nine entries of $E$; eight correspondences determine their ratios by linear least squares, and the scale is fixed by $\mathrm{tr}(E^\top E) = 2$. The translation components follow from $E^\top E$, whose diagonal entries are $1 - T_\lambda^2$ and off-diagonal entries $-T_\lambda T_\mu$; the rotation follows in closed form. The recovered pose carries a four-fold sign ambiguity, resolved by cheirality — all reconstructed points must lie in front of both cameras.
+the skew-symmetric matrix of the unit translation $\mathbf{T}$. Each correspondence supplies one linear constraint on the nine entries of $E$; eight correspondences determine their ratios by linear least squares, and the scale is fixed by $\mathrm{tr}(E^\top E) = 2$. The translation components follow from $E^\top E$, whose diagonal entries are $1 - T_\lambda^2$ and off-diagonal entries $-T_\lambda T_\mu$; the rotation follows in closed form. The recovered pose carries a four-fold sign ambiguity, resolved by cheirality — all reconstructed points must lie in front of both cameras. This recovered $(R, \mathbf{T})$ is precisely the input calibrated [stereo rectification](/atlas/stereo-rectification) consumes to re-orient both cameras onto a common baseline-aligned frame, as in [Fusiello compact rectification](/atlas/fusiello-compact-rectification).
 
 ## Pose from a calibration target
 
@@ -83,6 +83,8 @@ Pose estimation appears at every layer of the calibration and localisation pipel
 - [longuet-higgins-eight-point](/atlas/longuet-higgins-eight-point) — the foundational linear algorithm for relative pose from $n \geq 8$ calibrated correspondences; introduces the essential matrix and cheirality resolution.
 - [zhang-planar-calibration](/atlas/zhang-planar-calibration) — recovers per-view extrinsic pose alongside intrinsics; pose extraction follows from the per-view homography factorisation.
 - [tsai-versatile-calibration](/atlas/tsai-versatile-calibration) — recovers extrinsic pose from a 3-D calibration rig via the radial alignment constraint.
+- [stereo-rectification](/atlas/stereo-rectification) — calibrated rectification consumes the relative pose $(R, \mathbf{T})$ recovered here to build the common-orientation camera pair.
+- [fusiello-compact-rectification](/atlas/fusiello-compact-rectification) — builds its new, shared-orientation projection matrices directly from this relative pose.
 
 Pose is defined within the [pinhole-camera-model](/atlas/pinhole-camera-model): it is precisely the extrinsic component $[R \mid t]$ of the central projection equation.
 

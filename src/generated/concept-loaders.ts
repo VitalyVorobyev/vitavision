@@ -27,6 +27,7 @@ export const conceptHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModul
   "ransac": () => import("./content/concepts/ransac.ts"),
   "scale-space": () => import("./content/concepts/scale-space.ts"),
   "spatially-varying-image-stitching": () => import("./content/concepts/spatially-varying-image-stitching.ts"),
+  "stereo-rectification": () => import("./content/concepts/stereo-rectification.ts"),
   "structure-tensor": () => import("./content/concepts/structure-tensor.ts"),
   "svd-null-space": () => import("./content/concepts/svd-null-space.ts"),
   "topological-grid-recovery": () => import("./content/concepts/topological-grid-recovery.ts"),

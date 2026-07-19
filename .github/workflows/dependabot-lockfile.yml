@@ -1,0 +1,92 @@
+name: Dependabot lockfile
+
+# Dependabot edits package.json but does not reliably regenerate bun.lock, so its
+# PRs fail CI at `bun install --frozen-lockfile`. This workflow regenerates the
+# lockfile on the Dependabot branch and pushes it back.
+#
+# Why this needs a PAT rather than the default GITHUB_TOKEN — two independent
+# GitHub restrictions, either of which alone would break it:
+#
+#   1. For events triggered by Dependabot, GITHUB_TOKEN is downgraded to
+#      read-only regardless of the `permissions:` block below, so the push is
+#      rejected outright.
+#      https://docs.github.com/en/code-security/dependabot/troubleshooting-dependabot/troubleshooting-dependabot-on-github-actions#restrictions-when-dependabot-triggers-events
+#   2. A push authenticated with GITHUB_TOKEN does not trigger further workflow
+#      runs. Even with write access, CI would never re-run on the regenerated
+#      commit — the PR would keep showing the stale pre-regeneration failure.
+#      https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow#triggering-a-workflow-from-a-workflow
+#
+# A fine-grained PAT (or GitHub App token) avoids both: it may write Dependabot
+# branches, and its pushes raise a normal `pull_request` synchronize event so CI
+# runs against the fixed SHA.
+#
+# SETUP (one-time): create a fine-grained PAT scoped to this repository with
+# Contents: Read and write, then store it as the repository secret
+# DEPENDABOT_LOCKFILE_TOKEN. Until that secret exists this workflow no-ops with
+# an explanatory log line rather than failing.
+#
+# Trade-off: once a workflow pushes to a Dependabot branch, Dependabot treats the
+# PR as modified by someone else and stops auto-rebasing it. Accepted.
+
+on:
+  push:
+    branches: ['dependabot/**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependabot-lockfile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync-lockfile:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check for push credentials
+        id: creds
+        env:
+          TOKEN: ${{ secrets.DEPENDABOT_LOCKFILE_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::DEPENDABOT_LOCKFILE_TOKEN is not set — skipping."
+            echo "The default GITHUB_TOKEN is read-only for Dependabot-triggered events"
+            echo "and its pushes do not retrigger CI, so a PAT is required."
+            echo "Create a fine-grained PAT with Contents: Read and write and store it"
+            echo "as the repository secret DEPENDABOT_LOCKFILE_TOKEN."
+          else
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        if: steps.creds.outputs.has_token == 'true'
+        with:
+          ref: ${{ github.ref_name }}
+          token: ${{ secrets.DEPENDABOT_LOCKFILE_TOKEN }}
+          persist-credentials: true
+
+      - uses: oven-sh/setup-bun@3d267786b128fe76c2f16a390aa2448b815359f3 # v2
+        if: steps.creds.outputs.has_token == 'true'
+
+      # Deliberately not --frozen-lockfile: regenerating the lockfile is the point.
+      - name: Regenerate bun.lock
+        if: steps.creds.outputs.has_token == 'true'
+        run: bun install
+
+      - name: Commit and push if changed
+        if: steps.creds.outputs.has_token == 'true'
+        run: |
+          if git diff --quiet -- bun.lock; then
+            echo "bun.lock already in sync — nothing to do."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bun.lock
+          git commit -m "chore(deps): regenerate bun.lock"
+          # Authenticated with the PAT, so this raises a pull_request synchronize
+          # event and CI runs against the regenerated commit.
+          git push origin HEAD:"${GITHUB_REF_NAME}"

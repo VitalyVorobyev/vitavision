@@ -15,3 +15,10 @@ updates:
         patterns: ["eslint*", "@eslint/*", "typescript-eslint", "@typescript-eslint/*"]
       vite:
         patterns: ["vite*", "@vitejs/*"]
+    ignore:
+      # TypeScript 7 (the Go-native port) is blocked on typescript-eslint, which
+      # declares peer `typescript: ">=4.8.4 <6.1.0"` as of 8.64.0. Remove this
+      # entry once a stable typescript-eslint widens that range; until then the
+      # bump only produces PRs that fail `bun run lint`.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]

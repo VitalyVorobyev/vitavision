@@ -21,9 +21,20 @@ name: Dependabot lockfile
 # runs against the fixed SHA.
 #
 # SETUP (one-time): create a fine-grained PAT scoped to this repository with
-# Contents: Read and write, then store it as the repository secret
-# DEPENDABOT_LOCKFILE_TOKEN. Until that secret exists this workflow no-ops with
-# an explanatory log line rather than failing.
+# Contents: Read and write, then store it as a DEPENDABOT secret named
+# DEPENDABOT_LOCKFILE_TOKEN:
+#
+#     gh secret set DEPENDABOT_LOCKFILE_TOKEN --app dependabot
+#
+# It MUST be a Dependabot secret, not an Actions secret. This workflow is
+# triggered by a Dependabot push, and for Dependabot-triggered events the
+# `secrets` context exposes only Dependabot secrets — Actions secrets are not
+# available and would silently read as empty, leaving the job permanently
+# skipped.
+# https://docs.github.com/en/code-security/dependabot/troubleshooting-dependabot/troubleshooting-dependabot-on-github-actions
+#
+# Until that secret exists this workflow no-ops with an explanatory log line
+# rather than failing.
 #
 # Trade-off: once a workflow pushes to a Dependabot branch, Dependabot treats the
 # PR as modified by someone else and stops auto-rebasing it. Accepted.
@@ -55,8 +66,9 @@ jobs:
             echo "::warning::DEPENDABOT_LOCKFILE_TOKEN is not set — skipping."
             echo "The default GITHUB_TOKEN is read-only for Dependabot-triggered events"
             echo "and its pushes do not retrigger CI, so a PAT is required."
-            echo "Create a fine-grained PAT with Contents: Read and write and store it"
-            echo "as the repository secret DEPENDABOT_LOCKFILE_TOKEN."
+            echo "Create a fine-grained PAT (Contents: Read and write) and store it as a"
+            echo "DEPENDABOT secret — Actions secrets are NOT visible to this workflow:"
+            echo "    gh secret set DEPENDABOT_LOCKFILE_TOKEN --app dependabot"
           else
             echo "has_token=true" >> "$GITHUB_OUTPUT"
           fi

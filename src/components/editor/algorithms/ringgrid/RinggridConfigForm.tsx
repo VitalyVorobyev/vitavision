@@ -16,7 +16,6 @@ export interface RinggridConfig {
     diameterMaxPx: number;
     // Proposal
     gradThreshold: number;
-    edgeThinning: boolean;
     // Decode
     maxDecodeDist: number;
     minDecodeConfidence: number;
@@ -141,13 +140,6 @@ const RinggridConfigForm = (props: AlgorithmConfigFormProps<RinggridConfig>) => 
                     min={0}
                     max={1}
                     step={0.01}
-                />
-                <CheckboxField
-                    label="Edge thinning"
-                    tooltip="Apply non-maximum suppression to gradient field before voting."
-                    checked={config.edgeThinning}
-                    onChange={(v) => set("edgeThinning", v)}
-                    disabled={disabled}
                 />
             </CollapsibleSection>
             <CollapsibleSection title="Decode" columns={modal ? 2 : undefined}>

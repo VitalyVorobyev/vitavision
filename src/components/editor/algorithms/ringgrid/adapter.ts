@@ -18,7 +18,6 @@ const initialConfig: RinggridConfig = {
     diameterMinPx: 14,
     diameterMaxPx: 66,
     gradThreshold: 0.05,
-    edgeThinning: true,
     maxDecodeDist: 3,
     minDecodeConfidence: 0.3,
     enableCompletion: true,
@@ -89,30 +88,43 @@ export const ringgridAlgorithm: AlgorithmDefinition = {
     },
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as RinggridConfig;
+        // ringgrid.target.v5 nests layout fields under lattice/marker/coding.
+        // This is a partial override merged (nested-aware) onto the WASM
+        // module's default board in wasmWorker.ts — do not add `kind` here,
+        // it must come from the module defaults.
         const boardJson = JSON.stringify({
-            rows: c.rows,
-            long_row_cols: c.longRowCols,
-            pitch_mm: c.pitchMm,
-            marker_outer_radius_mm: c.markerOuterRadiusMm,
-            marker_inner_radius_mm: c.markerInnerRadiusMm,
-            marker_ring_width_mm: c.markerRingWidthMm,
+            lattice: {
+                rows: c.rows,
+                long_row_cols: c.longRowCols,
+                pitch_mm: c.pitchMm,
+            },
+            marker: {
+                outer_radius_mm: c.markerOuterRadiusMm,
+                inner_radius_mm: c.markerInnerRadiusMm,
+            },
+            coding: {
+                ring_width_mm: c.markerRingWidthMm,
+            },
         });
+        // Detection config: proposal/decode/completion moved under `advanced`
+        // in the v5 config schema; marker_scale and self_undistort stay top-level.
         const configOverlay = JSON.stringify({
             marker_scale: {
                 diameter_min_px: c.diameterMinPx,
                 diameter_max_px: c.diameterMaxPx,
             },
-            proposal: {
-                grad_threshold: c.gradThreshold,
-                edge_thinning: c.edgeThinning,
-            },
-            decode: {
-                codebook_profile: c.profile === "extended" ? "extended" : "base",
-                max_decode_dist: c.maxDecodeDist,
-                min_decode_confidence: c.minDecodeConfidence,
-            },
-            completion: { enable: c.enableCompletion },
             self_undistort: { enable: c.enableSelfUndistort },
+            advanced: {
+                proposal: {
+                    grad_threshold: c.gradThreshold,
+                },
+                decode: {
+                    codebook_profile: c.profile === "extended" ? "extended" : "base",
+                    max_decode_dist: c.maxDecodeDist,
+                    min_decode_confidence: c.minDecodeConfidence,
+                },
+                completion: { enable: c.enableCompletion },
+            },
         });
         return detectRinggridWasm(pixels, width, height, { boardJson, configOverlay });
     },

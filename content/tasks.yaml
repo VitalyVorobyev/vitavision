@@ -81,3 +81,13 @@ tasks:
       cross-image matching, typically as the input to homography or
       fundamental-matrix estimation. Distinct from feature detection alone:
       the descriptor + matching machinery is part of the task.
+
+  - slug: stereo-rectification
+    description: |
+      Warp a pair of images of the same scene so that corresponding epipolar
+      lines become collinear and parallel to the image rows, reducing dense
+      correspondence search from a 2-D search to a scan along a single row.
+      Covers the calibrated (Euclidean) case, where the rigid relative pose is
+      known, and the uncalibrated (projective) case, where only the fundamental
+      matrix is available and the residual family of rectifying warps must be
+      pinned down by an explicit distortion criterion.

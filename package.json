@@ -31,7 +31,7 @@
     "@vitavision/calib-targets": "^0.8.0",
     "@vitavision/chess-corners": "^0.11.2",
     "@vitavision/radsym": "^0.4.1",
-    "@vitavision/ringgrid": "^0.6.0",
+    "@vitavision/ringgrid": "^0.10.1",
     "d3-delaunay": "^6.0.4",
     "framer-motion": "^12.42.2",
     "jszip": "^3.10.1",

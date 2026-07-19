@@ -122,6 +122,7 @@ export const taskValues = [
     "image-segmentation",
     "image-stitching",
     "local-feature-matching",
+    "stereo-rectification",
 ] as const;
 export type Task = (typeof taskValues)[number];
 

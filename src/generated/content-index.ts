@@ -574,6 +574,50 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "fusiello-compact-rectification",
+    "frontmatter": {
+      "title": "Fusiello Compact Stereo Rectification",
+      "summary": "Calibrated Euclidean rectification that builds a new pair of projection matrices sharing a common orientation from the two known PPMs, yielding a per-image rectifying homography.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "stereo-rectification",
+        "pinhole-camera-model",
+        "pose-estimation",
+        "epipolar-geometry"
+      ],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "hartley-projective-rectification",
+          "confidence": "high",
+          "caution": "Requires known projection matrices; the 1999 uncalibrated methods need only F."
+        }
+      ],
+      "tags": [
+        "stereo",
+        "two-view-geometry",
+        "classical"
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "stereo-rectification"
+      ],
+      "sources": {
+        "primary": "fusiello2000-compact-rectification",
+        "references": [
+          "hartley1999-projective-rectification",
+          "loop1999-rectifying-homographies",
+          "pollefeys1999-polar-rectification"
+        ]
+      },
+      "date": "2026-07-19",
+      "year": 2000
+    }
+  },
+  {
     "slug": "gao-dual-homography-stitching",
     "frontmatter": {
       "title": "Gao Dual-Homography Stitching",
@@ -900,6 +944,53 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "hartley-projective-rectification",
+    "frontmatter": {
+      "title": "Hartley Projective Rectification",
+      "summary": "Computes a rectifying homography pair from the fundamental matrix alone, sending the epipole to infinity with a quasi-affine perspectivity and fixing the matching transform by least-squares disparity minimisation.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry",
+        "homography"
+      ],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "loop-zhang-rectification",
+          "confidence": "high",
+          "caution": "Loop-Zhang minimises rectification distortion explicitly; Hartley minimises disparity."
+        },
+        {
+          "type": "compared_with",
+          "target": "pollefeys-polar-rectification",
+          "confidence": "high",
+          "caution": "Hartley's own remedy for an epipole inside the view window is to shrink the window; polar rectification covers that forward-motion case without cropping."
+        }
+      ],
+      "tags": [
+        "stereo",
+        "two-view-geometry",
+        "classical"
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "stereo-rectification"
+      ],
+      "sources": {
+        "primary": "hartley1999-projective-rectification",
+        "references": [
+          "longuet-higgins1981-eight-point"
+        ]
+      },
+      "date": "2026-07-19",
+      "year": 1999
+    }
+  },
+  {
     "slug": "hog-descriptor",
     "frontmatter": {
       "title": "HOG: Histograms of Oriented Gradients",
@@ -1137,6 +1228,44 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "loop-zhang-rectification",
+    "frontmatter": {
+      "title": "Loop-Zhang Rectifying Homographies",
+      "summary": "Computes a rectifying homography pair from a known fundamental matrix by factoring each homography as shearing × similarity × projective, choosing the projective component to minimize image distortion.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry",
+        "homography"
+      ],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "pollefeys-polar-rectification",
+          "confidence": "high",
+          "caution": "The decomposition still sends the epipole to infinity, so an epipole inside the image forces cropping; polar rectification avoids it."
+        }
+      ],
+      "tags": [
+        "stereo",
+        "two-view-geometry",
+        "classical"
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "stereo-rectification"
+      ],
+      "sources": {
+        "primary": "loop1999-rectifying-homographies"
+      },
+      "date": "2026-07-19",
+      "year": 1999
+    }
+  },
+  {
     "slug": "lucas-kanade",
     "frontmatter": {
       "title": "Lucas-Kanade Image Registration",
@@ -1316,6 +1445,38 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       },
       "date": "2026-05-09",
       "year": 2011
+    }
+  },
+  {
+    "slug": "pollefeys-polar-rectification",
+    "frontmatter": {
+      "title": "Pollefeys Polar Rectification",
+      "summary": "Rectification by polar reparametrisation around the epipole, requiring only the oriented fundamental matrix and remaining bounded even when the epipole lies inside the image.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry"
+      ],
+      "tags": [
+        "stereo",
+        "two-view-geometry",
+        "classical"
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "stereo-rectification"
+      ],
+      "sources": {
+        "primary": "pollefeys1999-polar-rectification",
+        "references": [
+          "longuet-higgins1981-eight-point"
+        ]
+      },
+      "date": "2026-07-19",
+      "year": 1999
     }
   },
   {
@@ -4957,9 +5118,12 @@ export const conceptPages: ConceptIndexEntry[] = [
       "summary": "The intrinsic projective geometry of two views of a scene, encoding the constraint that a point visible in one image must lie on a specific line in the other image determined entirely by the camera positions.",
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
+        "pinhole-camera-model",
+        "homography",
+        "svd-null-space",
         "ransac"
       ],
       "tags": [
@@ -5102,7 +5266,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       "summary": "An invertible projective transformation of the plane, represented by a 3×3 matrix defined up to a non-zero scalar, mapping points between two images of a planar surface or capturing a pure camera rotation.",
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [
         "ransac",
@@ -5402,6 +5566,39 @@ export const conceptPages: ConceptIndexEntry[] = [
         ]
       },
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "stereo-rectification",
+    "frontmatter": {
+      "title": "Stereo Rectification",
+      "summary": "Warping a stereo pair so corresponding epipolar lines become collinear image rows, reducing dense correspondence to a scanline search; calibrated Euclidean methods and uncalibrated projective methods solve the same problem under different input assumptions.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 18,
+      "access": "public",
+      "prerequisites": [
+        "epipolar-geometry",
+        "homography",
+        "pinhole-camera-model",
+        "pose-estimation"
+      ],
+      "tags": [
+        "stereo",
+        "two-view-geometry",
+        "survey"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "references": [
+          "hartley1999-projective-rectification",
+          "loop1999-rectifying-homographies",
+          "pollefeys1999-polar-rectification",
+          "fusiello2000-compact-rectification",
+          "hartley1997-eight-point"
+        ]
+      },
+      "date": "2026-07-19"
     }
   },
   {

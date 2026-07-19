@@ -1379,3 +1379,43 @@
   doi: "10.48550/arxiv.2503.11651"
   pdf: wang2025-vggt.pdf
   cites: []
+
+- id: hartley1999-projective-rectification
+  title: "Theory and Practice of Projective Rectification"
+  authors: ["R. I. Hartley"]
+  year: 1999
+  venue: International Journal of Computer Vision
+  url: https://users.cecs.anu.edu.au/~hartley/Papers/joint-epipolar/journal/joint3.pdf
+  doi: "10.1023/A:1008115206617"
+  pdf: hartley1999-projective-rectification.pdf
+  cites: [longuet-higgins1981-eight-point]
+
+- id: loop1999-rectifying-homographies
+  title: "Computing Rectifying Homographies for Stereo Vision"
+  authors: ["C. Loop", "Z. Zhang"]
+  year: 1999
+  venue: IEEE CVPR 1999
+  url: https://dev.ipol.im/~morel/Dossier_MVA_2011_Cours_Transparents_Documents/2011_Cours7_Document2_Loop-Zhang-CVPR1999.pdf
+  doi: "10.1109/CVPR.1999.786928"
+  pdf: loop1999-rectifying-homographies.pdf
+  cites: []
+
+- id: pollefeys1999-polar-rectification
+  title: "A Simple and Efficient Rectification Method for General Motion"
+  authors: ["M. Pollefeys", "R. Koch", "L. Van Gool"]
+  year: 1999
+  venue: IEEE ICCV 1999
+  url: https://people.inf.ethz.ch/pomarc/pubs/PollefeysICCV99.pdf
+  doi: "10.1109/ICCV.1999.791262"
+  pdf: pollefeys1999-polar-rectification.pdf
+  cites: [longuet-higgins1981-eight-point]
+
+- id: fusiello2000-compact-rectification
+  title: "A Compact Algorithm for Rectification of Stereo Pairs"
+  authors: ["A. Fusiello", "E. Trucco", "A. Verri"]
+  year: 2000
+  venue: Machine Vision and Applications
+  url: https://fusiello.github.io/papers/mva99.pdf
+  doi: "10.1007/s001380050120"
+  pdf: fusiello2000-compact-rectification.pdf
+  cites: [hartley1999-projective-rectification, loop1999-rectifying-homographies, pollefeys1999-polar-rectification]

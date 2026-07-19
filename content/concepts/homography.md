@@ -65,6 +65,14 @@ A homography arises in four distinct physical situations:
 3. **Projective texture-mapping**: the mapping from a reference texture atlas to a rendered image is a homography of the texture plane.
 4. **Image rectification**: the warp that remaps two perspective images into a common rectified plane is a homography applied to each image.
 
+## Applying a homography: warping and resampling
+
+Producing a warped output image from $H$ and a source image can proceed in two directions. **Forward mapping** iterates over source pixels and pushes each through $H$ to a destination location; because those locations are generally non-integer and do not cover every destination pixel, forward mapping leaves holes. **Inverse mapping** iterates over destination pixels instead: for each destination pixel $\mathbf{x}'$, apply $H^{-1}$ to find the source location $\mathbf{x} = H^{-1}\mathbf{x}'$ and sample the source there. This guarantees full coverage of the destination and is the standard approach. Because $H^{-1}\mathbf{x}'$ almost never lands on an integer source coordinate, the sample is taken by bilinear interpolation over the four surrounding source pixels.
+
+The output bounding box is usually computed by mapping the four corners of the source image through $H$ and taking the axis-aligned rectangle enclosing the four dehomogenized corner locations. This shortcut is valid **only** when $H$ is quasi-affine over the whole source rectangle — that is, when the line $\mathbf{h}_3^\top \mathbf{x} = 0$, the preimage of the line at infinity, does not cross it. Otherwise all four corners can map to finite locations while interior points diverge, and the corner rule silently returns a finite canvas that omits an unbounded part of the warp. Check the sign of $\mathbf{h}_3^\top \mathbf{x}$ at the four corners first: if it is not constant, the zero line crosses the rectangle and the source region must be clipped against it before any bounding box is meaningful.
+
+**Unbounded output near the line at infinity.** When a source point maps to a destination point whose homogeneous third coordinate approaches zero, the dehomogenized destination coordinate diverges. This is exactly the effect [stereo rectification](/atlas/stereo-rectification) must control: a rectifying homography sends the epipole toward infinity, so an epipole close to the view window drives the output size toward this same divergence.
+
 ## Estimation: DLT and normalized DLT
 
 Given $n \geq 4$ point correspondences $\{(\mathbf{x}_i, \mathbf{x}'_i)\}$, each correspondence yields two linear constraints on the $9$-vector $\mathbf{h} = \mathrm{vec}(H)$:
@@ -109,6 +117,10 @@ The homography is the geometric primitive underlying planar calibration, marker 
 
 - **zhang-planar-calibration** — estimates one homography per view of a planar calibration target; stacks the two linear constraints per view to solve for the intrinsic matrix $K$; decomposes each homography into the extrinsic rotation and translation for that view.
 - **apap-image-stitching** — the global DLT homography between two images is the baseline warp; APAP replaces it with a spatially-varying field of per-pixel homographies estimated by Moving DLT, each weighted by proximity to matched feature points.
+- **stereo-rectification** — the four-method rectification survey; three of the four methods represent the rectifying map as a homography (or homography pair), fixed by different optimization criteria.
+- **hartley-projective-rectification** — computes a rectifying homography pair from the fundamental matrix alone, fixed by linear least-squares disparity minimization.
+- **loop-zhang-rectification** — computes a rectifying homography pair factored as projective × similarity × shear, chosen to minimize rectification distortion.
+- **fusiello-compact-rectification** — derives a per-image rectifying homography from calibrated projection matrices sharing a common orientation, yielding a Euclidean rectification.
 
 # References
 

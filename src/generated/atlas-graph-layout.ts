@@ -32,98 +32,123 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "cluster": "fundamentals"
   },
   "barath-magsac": {
-    "x": 296.0591485,
-    "y": 99.430176,
+    "x": 298.106099,
+    "y": 99.6362112,
     "cluster": "geometry"
   },
   "depth-anything-3": {
-    "x": 400.066237,
-    "y": 104.790384,
+    "x": 367.44415799999996,
+    "y": 106.06846080000001,
     "cluster": "geometry"
   },
   "dlt-normalisation": {
-    "x": 498.52348749999993,
-    "y": 92.181312,
+    "x": 433.08232499999997,
+    "y": 90.9375744,
     "cluster": "geometry"
   },
   "dust3r": {
-    "x": 289.01755449999996,
-    "y": 161.38992000000002,
+    "x": 474.01170299999995,
+    "y": 93.347904,
     "cluster": "geometry"
   },
   "epipolar-geometry": {
-    "x": 406.3082245,
-    "y": 157.95600000000002,
+    "x": 311.405483,
+    "y": 169.86720000000003,
     "cluster": "geometry"
   },
   "epnp": {
-    "x": 494.61710949999997,
-    "y": 156.47424,
+    "x": 370.27807299999995,
+    "y": 168.08908800000003,
     "cluster": "geometry"
   },
   "feed-forward-3d-reconstruction": {
-    "x": 312.0828835,
-    "y": 222.23481600000002,
+    "x": 429.188589,
+    "y": 166.36177920000003,
     "cluster": "geometry"
   },
   "fischler-bolles-ransac": {
-    "x": 395.3602525,
-    "y": 240.528672,
+    "x": 484.70683499999996,
+    "y": 188.31440640000002,
     "cluster": "geometry"
   },
   "fundamental-matrix-eight-point": {
-    "x": 481.59268899999995,
-    "y": 226.301424,
+    "x": 301.395126,
+    "y": 251.8817088,
+    "cluster": "geometry"
+  },
+  "fusiello-compact-rectification": {
+    "x": 368.801066,
+    "y": 261.5343168,
     "cluster": "geometry"
   },
   "geometric-bev": {
-    "x": 311.61512949999997,
-    "y": 289.08672,
+    "x": 428.87675299999995,
+    "y": 246.584064,
+    "cluster": "geometry"
+  },
+  "hartley-projective-rectification": {
+    "x": 485.74558599999995,
+    "y": 256.9055808,
     "cluster": "geometry"
   },
   "homography": {
-    "x": 399.560557,
-    "y": 299.654256,
+    "x": 306.907038,
+    "y": 339.90510720000003,
     "cluster": "geometry"
   },
   "longuet-higgins-eight-point": {
-    "x": 478.46695449999993,
-    "y": 302.37552,
+    "x": 359.511303,
+    "y": 343.17062400000003,
+    "cluster": "geometry"
+  },
+  "loop-zhang-rectification": {
+    "x": 419.08131,
+    "y": 328.8864576,
     "cluster": "geometry"
   },
   "mast3r": {
-    "x": 306.068452,
-    "y": 364.478736,
+    "x": 485.37896799999993,
+    "y": 337.05448320000005,
+    "cluster": "geometry"
+  },
+  "pollefeys-polar-rectification": {
+    "x": 294.052231,
+    "y": 416.76591360000003,
     "cluster": "geometry"
   },
   "pose-estimation": {
-    "x": 389.3047345,
-    "y": 370.42224000000004,
+    "x": 360.269823,
+    "y": 424.82668800000005,
     "cluster": "geometry"
   },
   "raguram-usac": {
-    "x": 475.347541,
-    "y": 356.05387200000007,
+    "x": 417.631694,
+    "y": 407.58464640000005,
     "cluster": "geometry"
   },
   "ransac": {
-    "x": 290.386051,
-    "y": 443.52811199999996,
+    "x": 474.92403399999995,
+    "y": 431.9137344,
     "cluster": "geometry"
   },
   "spatially-varying-image-stitching": {
-    "x": 386.842705,
-    "y": 424.58980799999995,
+    "x": 298.42847,
+    "y": 489.8277696,
+    "cluster": "geometry"
+  },
+  "stereo-rectification": {
+    "x": 358.80756499999995,
+    "y": 503.50794240000005,
     "cluster": "geometry"
   },
   "svd-null-space": {
-    "x": 477.69263199999995,
-    "y": 424.999056,
+    "x": 419.19508799999994,
+    "y": 490.3188672,
     "cluster": "geometry"
   },
   "vggt": {
-    "x": 303.78024999999997,
-    "y": 497.17588800000004,
+    "x": 483.85349999999994,
+    "y": 496.2910656,
     "cluster": "geometry"
   },
   "alexnet": {

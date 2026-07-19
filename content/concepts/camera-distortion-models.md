@@ -92,6 +92,8 @@ Given the forward distortion $f: (x, y) \to (x_d, y_d)$, the inverse $f^{-1}: (x
 - **Lookup table.** Precompute the inverse on a dense pixel grid; bilinearly interpolate at query time. Used in real-time rectification pipelines (camera streamers, AR/VR engines).
 - **Approximation polynomial.** Fit a separate polynomial $g(x_d, y_d) \approx (x, y)$ to the ground-truth inverse on training samples. Used when a forward-only model is needed at runtime (no Newton step) and a moderate accuracy floor is acceptable.
 
+This use of "rectification" denotes lens **undistortion**, a different sense from [stereo rectification](/atlas/stereo-rectification), which resamples an already-undistorted image pair so that conjugate epipolar lines become collinear rows. The two compose in a fixed order — undistort first, then rectify — and are normally fused into a single per-pixel remap rather than applied as two sequential resampling passes, since two passes compound interpolation blur.
+
 ## Coefficient estimation in calibration
 
 Distortion coefficients are estimated jointly with intrinsics and per-view extrinsics by Levenberg-Marquardt minimisation of the total reprojection error. Initial guesses depend on the calibration method:

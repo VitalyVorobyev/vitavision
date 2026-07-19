@@ -163,6 +163,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/fischler-bolles-ransac",
       "draft": false
     },
+    "fusiello-compact-rectification": {
+      "slug": "fusiello-compact-rectification",
+      "type": "algorithm",
+      "title": "Fusiello Compact Stereo Rectification",
+      "summary": "Calibrated Euclidean rectification that builds a new pair of projection matrices sharing a common orientation from the two known PPMs, yielding a per-image rectifying homography.",
+      "path": "/atlas/fusiello-compact-rectification",
+      "draft": false
+    },
     "gao-dual-homography-stitching": {
       "slug": "gao-dual-homography-stitching",
       "type": "algorithm",
@@ -227,6 +235,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/harris-corner-detector",
       "draft": false
     },
+    "hartley-projective-rectification": {
+      "slug": "hartley-projective-rectification",
+      "type": "algorithm",
+      "title": "Hartley Projective Rectification",
+      "summary": "Computes a rectifying homography pair from the fundamental matrix alone, sending the epipole to infinity with a quasi-affine perspectivity and fixing the matching transform by least-squares disparity minimisation.",
+      "path": "/atlas/hartley-projective-rectification",
+      "draft": false
+    },
     "hog-descriptor": {
       "slug": "hog-descriptor",
       "type": "algorithm",
@@ -275,6 +291,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/longuet-higgins-eight-point",
       "draft": false
     },
+    "loop-zhang-rectification": {
+      "slug": "loop-zhang-rectification",
+      "type": "algorithm",
+      "title": "Loop-Zhang Rectifying Homographies",
+      "summary": "Computes a rectifying homography pair from a known fundamental matrix by factoring each homography as shearing × similarity × projective, choosing the projective component to minimize image distortion.",
+      "path": "/atlas/loop-zhang-rectification",
+      "draft": false
+    },
     "lucas-kanade": {
       "slug": "lucas-kanade",
       "type": "algorithm",
@@ -313,6 +337,14 @@ export const contentGraph: ContentGraph = {
       "title": "ORB: Oriented FAST and Rotated BRIEF",
       "summary": "Detects rotation-invariant oriented keypoints by running FAST-9 on a √2 image pyramid, ranking by Harris cornerness, and assigning orientation from the intensity centroid; describes each keypoint with a 256-bit rBRIEF binary string formed by greedy selection of low-correlation, high-variance pairwise pixel-intensity tests on a smoothed 31×31 patch.",
       "path": "/atlas/orb",
+      "draft": false
+    },
+    "pollefeys-polar-rectification": {
+      "slug": "pollefeys-polar-rectification",
+      "type": "algorithm",
+      "title": "Pollefeys Polar Rectification",
+      "summary": "Rectification by polar reparametrisation around the epipole, requiring only the oriented fundamental matrix and remaining bounded even when the epipole lies inside the image.",
+      "path": "/atlas/pollefeys-polar-rectification",
       "draft": false
     },
     "puzzleboard": {
@@ -971,6 +1003,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/spatially-varying-image-stitching",
       "draft": false
     },
+    "stereo-rectification": {
+      "slug": "stereo-rectification",
+      "type": "concept",
+      "title": "Stereo Rectification",
+      "summary": "Warping a stereo pair so corresponding epipolar lines become collinear image rows, reducing dense correspondence to a scanline search; calibrated Euclidean methods and uncalibrated projective methods solve the same problem under different input assumptions.",
+      "path": "/atlas/stereo-rectification",
+      "draft": false
+    },
     "structure-tensor": {
       "slug": "structure-tensor",
       "type": "concept",
@@ -1218,6 +1258,23 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "fusiello-compact-rectification": {
+      "prerequisites": [
+        "stereo-rectification",
+        "pinhole-camera-model",
+        "pose-estimation",
+        "epipolar-geometry"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "hartley-projective-rectification",
+          "confidence": "high",
+          "caution": "Requires known projection matrices; the 1999 uncalibrated methods need only F."
+        }
+      ]
+    },
     "gao-dual-homography-stitching": {
       "prerequisites": [
         "homography",
@@ -1359,6 +1416,35 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "hartley-projective-rectification": {
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry",
+        "homography"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "loop-zhang-rectification",
+          "confidence": "high",
+          "caution": "Loop-Zhang minimises rectification distortion explicitly; Hartley minimises disparity."
+        },
+        {
+          "type": "compared_with",
+          "target": "pollefeys-polar-rectification",
+          "confidence": "high",
+          "caution": "Hartley's own remedy for an epipole inside the view window is to shrink the window; polar rectification covers that forward-motion case without cropping."
+        },
+        {
+          "type": "compared_with",
+          "target": "fusiello-compact-rectification",
+          "confidence": "high",
+          "caution": "Requires known projection matrices; the 1999 uncalibrated methods need only F.",
+          "mirrored": true
+        }
+      ]
+    },
     "hog-descriptor": {
       "prerequisites": [
         "image-gradient",
@@ -1458,6 +1544,29 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "loop-zhang-rectification": {
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry",
+        "homography"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "pollefeys-polar-rectification",
+          "confidence": "high",
+          "caution": "The decomposition still sends the epipole to infinity, so an epipole inside the image forces cropping; polar rectification avoids it."
+        },
+        {
+          "type": "parallel_foundation_with",
+          "target": "hartley-projective-rectification",
+          "confidence": "high",
+          "caution": "Loop-Zhang minimises rectification distortion explicitly; Hartley minimises disparity.",
+          "mirrored": true
+        }
+      ]
+    },
     "lucas-kanade": {
       "prerequisites": [
         "image-gradient",
@@ -1547,6 +1656,29 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "surf",
           "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
+    "pollefeys-polar-rectification": {
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "hartley-projective-rectification",
+          "confidence": "high",
+          "caution": "Hartley's own remedy for an epipole inside the view window is to shrink the window; polar rectification covers that forward-motion case without cropping.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "loop-zhang-rectification",
+          "confidence": "high",
+          "caution": "The decomposition still sends the epipole to infinity, so an epipole inside the image forces cropping; polar rectification avoids it.",
           "mirrored": true
         }
       ]
@@ -3145,6 +3277,9 @@ export const contentGraph: ContentGraph = {
     },
     "epipolar-geometry": {
       "prerequisites": [
+        "pinhole-camera-model",
+        "homography",
+        "svd-null-space",
         "ransac"
       ],
       "failureModes": [],
@@ -3255,6 +3390,16 @@ export const contentGraph: ContentGraph = {
       "prerequisites": [
         "homography",
         "ransac"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "stereo-rectification": {
+      "prerequisites": [
+        "epipolar-geometry",
+        "homography",
+        "pinhole-camera-model",
+        "pose-estimation"
       ],
       "failureModes": [],
       "relations": []
@@ -3454,6 +3599,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "fusiello-compact-rectification": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "gao-dual-homography-stitching": {
       "usedBy": [],
       "affects": [],
@@ -3558,6 +3711,14 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "hartley-projective-rectification": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "hog-descriptor": {
       "usedBy": [],
       "affects": [],
@@ -3599,6 +3760,14 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "longuet-higgins-eight-point": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "loop-zhang-rectification": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -3683,6 +3852,14 @@ export const contentGraph: ContentGraph = {
           "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
         }
       ]
+    },
+    "pollefeys-polar-rectification": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "puzzleboard": {
       "usedBy": [],
@@ -4583,8 +4760,13 @@ export const contentGraph: ContentGraph = {
         "dust3r",
         "feed-forward-3d-reconstruction",
         "fundamental-matrix-eight-point",
+        "fusiello-compact-rectification",
+        "hartley-projective-rectification",
         "longuet-higgins-eight-point",
+        "loop-zhang-rectification",
         "mast3r",
+        "pollefeys-polar-rectification",
+        "stereo-rectification",
         "vggt"
       ],
       "affects": [],
@@ -4650,11 +4832,15 @@ export const contentGraph: ContentGraph = {
     "homography": {
       "usedBy": [
         "apap-image-stitching",
+        "epipolar-geometry",
         "fundamental-matrix-eight-point",
         "gao-dual-homography-stitching",
         "geometric-bev",
+        "hartley-projective-rectification",
         "lin-sva-stitching",
+        "loop-zhang-rectification",
         "spatially-varying-image-stitching",
+        "stereo-rectification",
         "sturm-plane-based-calibration",
         "zhang-planar-calibration"
       ],
@@ -4778,13 +4964,16 @@ export const contentGraph: ContentGraph = {
         "camera-distortion-models",
         "depth-anything-3",
         "dust3r",
+        "epipolar-geometry",
         "epnp",
         "feed-forward-3d-reconstruction",
+        "fusiello-compact-rectification",
         "geometric-bev",
         "midas",
         "monocular-depth-estimation",
         "pose-estimation",
         "scaramuzza-omni-calibration",
+        "stereo-rectification",
         "sturm-plane-based-calibration",
         "tsai-versatile-calibration",
         "zhang-planar-calibration"
@@ -4801,8 +4990,10 @@ export const contentGraph: ContentGraph = {
         "dust3r",
         "epnp",
         "feed-forward-3d-reconstruction",
+        "fusiello-compact-rectification",
         "longuet-higgins-eight-point",
         "mast3r",
+        "stereo-rectification",
         "vggt"
       ],
       "affects": [],
@@ -4856,6 +5047,19 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "stereo-rectification": {
+      "usedBy": [
+        "fusiello-compact-rectification",
+        "hartley-projective-rectification",
+        "loop-zhang-rectification",
+        "pollefeys-polar-rectification"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "structure-tensor": {
       "usedBy": [
         "harris-corner-detector",
@@ -4872,6 +5076,7 @@ export const contentGraph: ContentGraph = {
     "svd-null-space": {
       "usedBy": [
         "dlt-normalisation",
+        "epipolar-geometry",
         "fundamental-matrix-eight-point",
         "gao-dual-homography-stitching",
         "homography",
@@ -4928,6 +5133,9 @@ export const contentGraph: ContentGraph = {
     "energy-minimization": 0,
     "felzenszwalb-graph-segmentation": 1,
     "fischler-bolles-ransac": 1,
+    "epipolar-geometry": 2,
+    "stereo-rectification": 3,
+    "fusiello-compact-rectification": 4,
     "gao-dual-homography-stitching": 2,
     "geiger-chessboard-detector": 2,
     "ni-generalized-fast-radial-symmetry": 2,
@@ -4937,20 +5145,22 @@ export const contentGraph: ContentGraph = {
     "grabcut-iterative-segmentation": 1,
     "graph-cut-segmentation": 1,
     "harris-corner-detector": 3,
+    "hartley-projective-rectification": 4,
     "hog-descriptor": 3,
     "horn-schunck": 4,
     "camera-distortion-models": 1,
     "kumar-generalized-rac": 2,
     "lin-sva-stitching": 2,
     "duda-radon-corners": 2,
-    "epipolar-geometry": 1,
-    "longuet-higgins-eight-point": 2,
+    "longuet-higgins-eight-point": 3,
+    "loop-zhang-rectification": 4,
     "lucas-kanade": 4,
     "barath-magsac": 1,
-    "fundamental-matrix-eight-point": 2,
+    "fundamental-matrix-eight-point": 3,
     "ocpad": 2,
     "image-pyramid": 0,
     "orb": 3,
+    "pollefeys-polar-rectification": 4,
     "puzzleboard": 3,
     "pyramidal-blur-aware-xcorner": 2,
     "rochade": 3,
@@ -4978,13 +5188,13 @@ export const contentGraph: ContentGraph = {
     "monocular-depth-estimation": 1,
     "vit": 2,
     "depth-anything": 3,
-    "feed-forward-3d-reconstruction": 2,
-    "depth-anything-3": 3,
+    "feed-forward-3d-reconstruction": 3,
+    "depth-anything-3": 4,
     "depth-anything-v2": 3,
     "detr": 2,
     "mae": 2,
     "dinov2": 3,
-    "dust3r": 3,
+    "dust3r": 4,
     "fast-scnn": 2,
     "faster-rcnn": 0,
     "fcn-semantic-segmentation": 0,
@@ -5011,7 +5221,7 @@ export const contentGraph: ContentGraph = {
     "superpoint": 2,
     "unet-segmentation": 0,
     "vgg": 2,
-    "vggt": 3,
+    "vggt": 4,
     "xfeat": 2,
     "yolo-v1": 0,
     "spatially-varying-image-stitching": 2

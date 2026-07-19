@@ -12,6 +12,7 @@ export const taskLabels: Record<Task, string> = {
     "image-segmentation": "Image segmentation",
     "image-stitching": "Image stitching",
     "local-feature-matching": "Feature matching",
+    "stereo-rectification": "Stereo rectification",
 };
 
 export const taskOrder: Task[] = [...taskValues];

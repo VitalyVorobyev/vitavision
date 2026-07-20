@@ -1237,7 +1237,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "summary": "Computes a rectifying homography pair from a known fundamental matrix by factoring each homography as shearing × similarity × projective, choosing the projective component to minimize image distortion.",
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 7,
+      "readingTimeMinutes": 8,
       "access": "public",
       "prerequisites": [
         "stereo-rectification",
@@ -1457,7 +1457,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "summary": "Rectification by polar reparametrisation around the epipole, requiring only the oriented fundamental matrix and remaining bounded even when the epipole lies inside the image.",
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 5,
+      "readingTimeMinutes": 6,
       "access": "public",
       "prerequisites": [
         "stereo-rectification",

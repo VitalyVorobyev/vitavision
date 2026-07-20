@@ -79,7 +79,7 @@ $H_s$ (and $H_s'$) is a shearing transform, affecting only the $u$-coordinate of
 8. Compose the final homographies $H = H_s H_r H_p$ and $H' = H_s' H_r' H_p'$.
 :::
 
-<!-- TODO figure: schematic of the H_p (epipole-to-infinity) -> H_r (scanline alignment) -> H_s (shear) decomposition applied to one image, once a generator script for the geometric scheme is authored. -->
+![Four-panel schematic of the $H = H_s H_r H_p$ decomposition applied to one image. Panel 1 shows the original rectangular image with the epipole $\mathbf e$ outside the frame and four epipolar lines converging toward it. Panel 2 shows the effect of the projective component $H_p$: the epipole has been sent to a point at infinity, the rectangle has become a trapezoid, and the four epipolar lines are now parallel to each other but still tilted — not yet aligned with the horizontal scanlines. Panel 3 shows the effect of the similarity component $H_r$: the same trapezoid has been rigidly rotated so the epipolar lines are now exactly horizontal, though the quadrilateral itself appears tilted within the frame as a result of that rotation. Panel 4 shows the effect of the shearing component $H_s$: the quadrilateral is partially squared back up toward a rectangle while the epipolar lines stay horizontal, but a visible residual skew remains, since the affine shear cannot fully undo the projective distortion introduced by $H_p$.](./images/loop-zhang-rectification/decomposition.svg)
 
 # Implementation
 

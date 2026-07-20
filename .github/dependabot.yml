@@ -22,3 +22,24 @@ updates:
       # bump only produces PRs that fail `bun run lint`.
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
+      # katex is pinned to the version rehype-katex actually renders with, not
+      # just imported for its CSS. src/main.tsx imports katex/dist/katex.min.css
+      # (the top-level `katex` dependency), but the HTML is generated at build
+      # time by rehype-katex (scripts/content-build.ts), which resolves its OWN
+      # nested katex copy. rehype-katex@7.0.1 — the latest published release —
+      # still declares `katex: ^0.16.0`, so a top-level bump to 0.17+ ships CSS
+      # for a renderer version that never actually produced the HTML.
+      # katex 0.18.0 renames internal classes (mord, mbin, vlist, pstrut, …)
+      # that saturate src/generated/content/**, so this isn't cosmetic drift —
+      # it silently breaks math styling on every atlas page.
+      # Pinning into the 0.16 line lets bun hoist a single shared copy, so the
+      # CSS and the renderer are now literally the same code. bun.lock must
+      # contain exactly ONE katex entry; a nested "rehype-katex/katex" or
+      # "micromark-extension-math/katex" entry reappearing means the skew is
+      # back. Verify with:
+      #   find node_modules -path '*katex/package.json' -not -path '*@types*'
+      # Unblock condition: a rehype-katex release whose dependencies accept
+      # katex >= 0.17. Until then, bump katex only in lockstep with a
+      # rehype-katex upgrade.
+      - dependency-name: "katex"
+        versions: [">= 0.17"]

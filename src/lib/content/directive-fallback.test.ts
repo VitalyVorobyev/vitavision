@@ -3,7 +3,9 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkDirective from "remark-directive";
+import remarkMath from "remark-math";
 import remarkRehype from "remark-rehype";
+import rehypeKatex from "rehype-katex";
 import rehypeStringify from "rehype-stringify";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -13,6 +15,9 @@ import remarkVvBlocks from "../../../scripts/remark-vv-blocks.ts";
 import remarkVvEmbeds from "../../../scripts/remark-vv-embeds.ts";
 import remarkVvDirectiveFallback from "../../../scripts/remark-vv-directive-fallback.ts";
 
+// Mirrors the real plugin order in scripts/content-build.ts: remarkParse, remarkGfm,
+// remarkDirective, remarkVvInline, remarkVvBlocks, remarkVvEmbeds,
+// remarkVvDirectiveFallback, remarkMath, ..., remarkRehype, ..., rehypeKatex.
 async function render(markdown: string): Promise<string> {
     const file = await unified()
         .use(remarkParse)
@@ -22,7 +27,9 @@ async function render(markdown: string): Promise<string> {
         .use(remarkVvBlocks)
         .use(remarkVvEmbeds)
         .use(remarkVvDirectiveFallback)
+        .use(remarkMath)
         .use(remarkRehype)
+        .use(rehypeKatex)
         .use(rehypeStringify)
         .process(markdown);
 
@@ -103,5 +110,35 @@ describe("remark-vv-directive-fallback", () => {
         }
 
         expect(violations).toEqual([]);
+    });
+
+    it("renders inline math inside a directive label as KaTeX, not raw TeX", async () => {
+        const html = await render(
+            ":::definition[Global DLT homography ($\\hat{h}$)]\nbody text\n:::",
+        );
+        expect(html).toContain('class="vv-block__label"');
+        // Real KaTeX output: a `class="katex"` wrapper with rendered MathML/HTML.
+        expect(html).toContain('class="katex"');
+        expect(html).toContain("katex-mathml");
+        expect(html).toContain("katex-html");
+        // The pre-fix bug rendered the raw TeX source as plain visible text right
+        // next to the surrounding label text, with no KaTeX markup in between.
+        expect(html).not.toContain("(\\hat{h})");
+        expect(html).not.toMatch(/vv-block__label">[^<]*\\hat/);
+    });
+
+    it("plain-text directive label still renders as before (no math involved)", async () => {
+        const html = await render(
+            ":::definition[Global DLT homography]\nbody text\n:::",
+        );
+        expect(html).toContain(
+            '<div class="vv-block__label">Global DLT homography</div>',
+        );
+        expect(html).not.toContain("katex");
+    });
+
+    it("directive with no label produces no vv-block__label div", async () => {
+        const html = await render(":::note\nbody text\n:::");
+        expect(html).not.toContain("vv-block__label");
     });
 });

@@ -97,6 +97,31 @@ function createTextDiv(
     ]);
 }
 
+/** Minimal shape shared by mdast nodes we need to walk for plain-text extraction. */
+interface ValueOrParentNode {
+    value?: string;
+    children?: ValueOrParentNode[];
+}
+
+/**
+ * Recursively concatenate the literal text content of a node list. Nodes with a
+ * literal `value` (text, inlineMath, inlineCode, ...) contribute that value directly;
+ * container nodes (emphasis, strong, links, ...) contribute their children's text.
+ * Used only to detect whether a directive label is non-empty — the actual child
+ * nodes are preserved as-is (not this stringified form) when rendering the label.
+ */
+function getPlainText(nodes: ValueOrParentNode[]): string {
+    let text = "";
+    for (const node of nodes) {
+        if (typeof node.value === "string") {
+            text += node.value;
+        } else if (node.children) {
+            text += getPlainText(node.children);
+        }
+    }
+    return text;
+}
+
 /**
  * Extract ::input[...] and ::output[...] leaf-directive metadata rows from algorithm block children.
  * Children are preserved as-is so inline math and other inline markdown render in the meta value.
@@ -144,13 +169,14 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             const kind = node.name.toLowerCase();
             if (!SUPPORTED_BLOCKS.has(kind)) return;
 
-            // Extract label from directive [label] syntax
-            const labelChild = (node.children as Array<{ data?: { directiveLabel?: boolean }; children?: Array<{ value?: string }> }>)
+            // Extract label from directive [label] syntax. Preserve the label's child
+            // *nodes* (not a stringified concatenation) so inline formatting — most
+            // importantly remark-math's `inlineMath` nodes — survives into the hast
+            // tree and gets rendered downstream (e.g. by rehype-katex).
+            const labelChild = (node.children as Array<{ data?: { directiveLabel?: boolean }; children?: Parent["children"] }>)
                 .find((c) => c.data?.directiveLabel);
-            const label = labelChild
-                ?.children?.map((c) => c.value ?? "")
-                .join("")
-                .trim() || undefined;
+            const labelChildren = labelChild?.children ?? [];
+            const hasLabel = getPlainText(labelChildren as unknown as ValueOrParentNode[]).trim().length > 0;
 
             // Set up the outer wrapper
             const data = node.data || (node.data = {});
@@ -167,8 +193,10 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             newChildren.push(createTextDiv("vv-block__title", BLOCK_TITLES[kind] ?? kind) as unknown as Parent["children"][0]);
 
             // Label div (optional)
-            if (label) {
-                newChildren.push(createTextDiv("vv-block__label", label) as unknown as Parent["children"][0]);
+            if (hasLabel) {
+                newChildren.push(
+                    createHastMappedNode("div", { className: "vv-block__label" }, labelChildren) as unknown as Parent["children"][0],
+                );
             }
 
             // Filter out the label child from body content

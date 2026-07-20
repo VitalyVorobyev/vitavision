@@ -115,29 +115,28 @@ Section: Remarks
 - **Revise "Kernel half-length" bullet.** Current text says $m \in \{1, \dots, 4\}$ (i.e. $1 \times 3$ to $1 \times 9$ blurs). The paper fixes $m = 4$ ($1 \times 9$) throughout all evaluations (§4.1: "blur kernel size of 1x9 pixel is fixed"). The range hint is correct in principle but may imply adaptivity that the paper does not demonstrate. Should note the paper's fixed-$m$ policy.
 - **Add bullet — GPU/SIMD affinity.** The paper's §5 notes "due to the usage of simple image processing primitives such as blur and rotate, it can be easily implemented on GPUs and embedded systems." Currently absent.
 
-Section: relatedAlgorithms / comparedWith — relationship-edge audit (defer to frontmatter update pass)
+Section: `relations[]` — relationship-edge audit
 
-Current frontmatter:
-```
-relatedAlgorithms: [chess-corners, harris-corner-detector, rochade, pyramidal-blur-aware-xcorner]
-comparedWith: []
-```
+The `duda-radon-corners` page's frontmatter has no `relations:` field (the `relatedAlgorithms: [chess-corners, harris-corner-detector, rochade, pyramidal-blur-aware-xcorner]` / `comparedWith: []` this note originally proposed no longer exist as schema fields).
 
-Comments for future audit:
-1. **`chess-corners` could move to `comparedWith`** — ChESS (2013) and Duda-Frese (2018) are direct competitors in the X-corner detection space (same problem, different mechanisms: ring-sampling vs ray-sampling). Neither cites the other, but the comparison axis is technically well-defined. Per `docs/README.md` §4 tiebreaker: chess-corners is older (2013 vs 2018) → chess-corners hosts `## When to choose ChESS over Duda-Radon`. Both research notes are now ingested → comparison-authoring preconditions met (see comparison-policy note below).
-2. **`pyramidal-blur-aware-xcorner` correctly in `relatedAlgorithms`** — abeles explicitly cites Duda-Frese as the conceptual ancestor of the spoke pass. Could also be `comparedWith` (same problem, different scale handling) — defer to a comparison-writing pass.
-3. **`rochade` correctly in `relatedAlgorithms`** — different architectural approach (graph-saddle vs Radon-response), same problem class.
+Comments for the audit, translated to `relations[]`:
+
+1. **Status: resolved.** ChESS (2013) and Duda-Frese (2018) are direct competitors in the X-corner detection space (same problem, different mechanisms: ring-sampling vs ray-sampling). Neither cites the other, but the comparison axis is technically well-defined and the "Comparison bullets" below were applied. Per `docs/README.md` §4 tiebreaker: chess-corners is older → chess-corners hosts. `content/algorithms/chess-corners.md` now carries `{ type: compared_with, target: duda-radon-corners, confidence: high }`, and `## When to choose ChESS over Duda-Radon` is live (no pointer-back Remarks bullet has been checked on the duda-radon-corners page itself — verify on a completeness pass).
+
+2. **`pyramidal-blur-aware-xcorner` — still open, and the type is `feeds_into`, not `compared_with`.** Abeles' own paper describes the spoke pass as "conceptually similar to the approximated Radon transform" in Duda-Frese — both use directional line-integral sampling around a candidate corner, and Abeles names it as a distinct pipeline stage (the spoke pass) built on that idea, not a peer detector chosen instead of Duda-Radon. That is `feeds_into` (A=duda-radon-corners → B=pyramidal-blur-aware-xcorner; chronology 2018 ≤ 2021 holds), authored on `content/algorithms/duda-radon-corners.md`: `{ type: feeds_into, target: pyramidal-blur-aware-xcorner, confidence: medium, caution: "Abeles describes the spoke pass as only 'conceptually similar to' the Radon-transform approximation, not an explicit adoption — treat as intellectual influence, not confirmed direct incorporation." }`. Medium, not high, because the evidence is a single hedged phrase in the source paper rather than an explicit build-on statement. Not yet applied to either page.
+
+3. **`rochade` — still open, `compared_with`.** Different architectural approach (graph-saddle vs Radon-response) but the same problem class (chessboard X-corner detection) — a genuine practitioner choice, not a Rule-B cross-domain pairing. Rochade (2014) predates duda-radon-corners (2018) → rochade hosts: `{ type: compared_with, target: duda-radon-corners, confidence: medium }` on `content/algorithms/rochade.md`. Medium rather than high (unlike item 1) because this note's own analysis here is a single sentence with no worked comparison-bullets section, versus the multi-paragraph, table-grounded treatment behind the ChESS↔Duda-Radon edge. Not yet applied — `rochade.md` currently carries only a `compared_with` edge to `pyramidal-blur-aware-xcorner`.
 
 ## UPDATE: chess-corners (comparison preparation)
 
-The chess-corners page (`content/algorithms/chess-corners.md`) currently has `comparedWith: []`. The bennett2013-chess research note (already ingested) deferred all comparison content pending ingestion of the counterpart notes. Now that `duda2018-accurate` is ingested:
+**Status: resolved.** The `bennett2013-chess` research note (already ingested) deferred all comparison content pending ingestion of the counterpart notes. Now that `duda2018-accurate` is ingested, `content/algorithms/chess-corners.md` carries `relations: [{ type: compared_with, target: duda-radon-corners, confidence: high }, ...]` (superseding the legacy `comparedWith: []` this note originally referenced) and a live `## When to choose ChESS over Duda-Radon` section, per the tiebreaker below.
 
-**Preconditions met for ChESS ↔ Duda-Radon comparison:**
+**Preconditions that were met for the ChESS ↔ Duda-Radon comparison:**
 - `docs/research/notes/bennett2013-chess.md` — exists.
 - `docs/research/notes/duda2018-accurate.md` — this file.
 - Per `docs/README.md` §4: chess-corners is older (2013) → chess-corners hosts the `## When to choose ChESS over Duda-Radon` section.
 
-**Comparison bullets (for the future `## When to choose ChESS over Duda-Radon` section on the chess-corners page):**
+**Comparison bullets applied to the `## When to choose ChESS over Duda-Radon` section on the chess-corners page** (recorded here for provenance of the original editorial reasoning; not re-verified against the live page text):
 
 - **Sampling geometry.** ChESS samples a *ring* of 16 pixels at radius $r$ (RING5, $r = 5$), computing four subtraction-summation differences (DR, MR, SR). Duda-Radon integrates *rays* through the centre pixel at four discrete angles. Ring sampling tests whether the full perimeter alternates bright-dark; ray sampling tests whether the intensities along opposite spokes differ. Ring sampling is more sensitive to the checkerboard's repeating structure at one specific scale; ray sampling is more noise-robust because the line integral averages more pixels.
 - **Noise robustness.** Duda-Radon box-filter sums attenuate noise by $\sim\sqrt{2m+1}$; ChESS uses point samples on the ring, which do not attenuate additive noise. On noisy images, Duda-Radon is more accurate (demonstrated in §4.1, Fig. 5b against Förstner as proxy; ChESS is not directly tested but is architecturally gradient-like in its ring-sampling).

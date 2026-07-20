@@ -132,24 +132,21 @@ Section: Remarks
 - The existing bullet on minimum resolution (5 px / 3.3 px per edge) is correct.
 - The existing bullets on complexity, position-encoding locality, error tolerance (40%), backward compatibility are well-grounded.
 
-Section: relatedAlgorithms / comparedWith — for the relationship-edges audit pass
+Section: `relations[]` — relationship-edges audit pass
 
-The page's frontmatter currently has:
-- `relatedAlgorithms: [chess-corners, harris-corner-detector, shu-topological-grid]`
-- `comparedWith: []`
-- `sources.references: [harris1988-corner]`
+The page's frontmatter currently has no `relations:` field (the `relatedAlgorithms` / `comparedWith` fields this note originally proposed no longer exist as schema fields on algorithm pages). `sources.references: [harris1988-corner]` is unaffected.
 
-Comments for the audit:
+Translated to `relations[]`, with each item re-checked against CLAUDE.md Rule B (cross-domain / different-problem-class pairs get no edge) rather than the old soft `relatedAlgorithms` bucket that no longer exists as an escape hatch:
 
-1. **`chess-corners` could move from `relatedAlgorithms` to `comparedWith`** — they are direct competitors in the chessboard X-corner detection problem space. Per `docs/README.md` §4 tiebreaker, chess-corners (2013) hosts the comparison; puzzleboard (2024) carries a Remarks pointer. Both notes ingested → policy preconditions met.
+1. **Status: resolved.** `chess-corners` and puzzleboard are direct competitors in the chessboard X-corner detection problem space. Per `docs/README.md` §4 tiebreaker, chess-corners (2013) hosts the comparison; puzzleboard (2024) carries a Remarks pointer. `content/algorithms/chess-corners.md` now carries `{ type: compared_with, target: puzzleboard, confidence: high }`, and `## When to choose ChESS over PuzzleBoard` is live with the pointer bullet on the puzzleboard page.
 
-2. **`rochade` is missing from both lists**. ROCHADE (2014) is the immediate predecessor in the chessboard X-corner family with subpixel saddle fitting that the PuzzleBoard paper explicitly mentions as a substitutable alternative for step 4.1. Should be in `relatedAlgorithms`. Both notes ingested → could be a `comparedWith` candidate too (different problems: full-pattern detection vs self-identifying pattern), but `relatedAlgorithms` is more conservative.
+2. **`rochade` gets no `relations[]` entry.** ROCHADE (2014) is the immediate predecessor in the chessboard X-corner family with subpixel saddle fitting that the PuzzleBoard paper explicitly mentions as a substitutable alternative for step 4.1 — but this note's own analysis already called out "different problems: full-pattern detection vs self-identifying pattern," which is Rule B. Omit; not a pending task.
 
-3. **`pyramidal-blur-aware-xcorner` could be in `relatedAlgorithms`**. The PuzzleBoard paper §4.1 explicitly lists "pyramid based [1]" subpixel detectors as a substitutable corner-detection step; abeles2021-pyramidal is exactly such a detector. Same family, different sub-problem.
+3. **`pyramidal-blur-aware-xcorner` gets no `relations[]` entry.** Same reasoning as (2): the PuzzleBoard paper §4.1 lists "pyramid based [1]" subpixel detectors as a substitutable corner-detection step, but this is a shared-component mention, not a same-problem peer relationship — "same family, different sub-problem" is Rule B. Omit.
 
-4. **`ocpad` could be in `relatedAlgorithms`**. OCPAD solves the same partial-visibility problem PuzzleBoard solves, but via subgraph matching rather than position encoding. The two papers do not cite each other (publication years 2016 vs 2024 — OCPAD predates) but they are conceptual peers.
+4. **`ocpad` is the one genuine `compared_with` candidate here — still open.** OCPAD solves the same partial-visibility/occlusion-tolerant checkerboard-detection problem PuzzleBoard solves, but via subgraph matching against a plain pattern rather than bit-encoded self-identification — a real practitioner choice between two occlusion-robust target/detector designs, not a cross-domain pairing. OCPAD (2016) predates PuzzleBoard (2024) → OCPAD hosts: `{ type: compared_with, target: puzzleboard, confidence: medium }` on `content/algorithms/ocpad.md` (medium, not high, because the two papers do not cite each other — this is an editorial inference, not a paper-stated comparison). Not yet applied — `ocpad.md` carries no `relations:` field currently (see the companion `fuersattel2016-ocpad` note, which flags the same open item).
 
-5. **`harris-corner-detector` correctly appears in `relatedAlgorithms`**. The Hessian-vs-structure-tensor distinction in §4.1 is a substantive technical contrast that cements this as a "related but contrasted" pair.
+5. **`harris-corner-detector` gets no `relations[]` entry.** The Hessian-vs-structure-tensor distinction in §4.1 is a substantive technical contrast, but it explains a *design choice* (why PuzzleBoard's saddle response doesn't use Harris) rather than a same-problem peer choice — Harris is a general-purpose corner detector, PuzzleBoard is a full pattern-decoding pipeline that uses a Hessian response as one internal stage. This is Rule B, not `compared_with` or `feeds_into` (PuzzleBoard explicitly does *not* build on Harris — it's a rejected alternative, not an incorporated component). The contrast belongs in Remarks prose only, which this note's earlier "Strengthen the Harris distinction" bullet already covers.
 
 # Provenance
 

@@ -155,9 +155,11 @@ Range sensor planes are segmented by region-growing on normal-vector similarity 
 - The origin of the libcbdetect / libomnical open-source implementation referenced in subsequent works.
 - Cited as a direct competitor in abeles2021-pyramidal (the existing `pyramidal-blur-aware-xcorner` page), where it ranks second overall (F1 = 0.92 vs 0.97).
 - Technically distinct from all existing pages: neither a graph-based detector (rochade, ocpad), nor a single-scale ring-intensity detector (chess-corners), nor a full pyramid detector (pyramidal). It uses a four-kernel prototype filter + multi-scale maximum at three fixed scales + gradient-orientation verification + gradient-orthogonality subpixel refinement.
-- Referenced by abeles2021-pyramidal, which is the primary source of the existing `pyramidal-blur-aware-xcorner` page → already satisfies ≥1 reference; the new page would in turn reference `chess-corners`, `rochade`, and `pyramidal-blur-aware-xcorner` in `comparedWith` / `relatedAlgorithms`, establishing bidirectional graph edges.
+- Referenced by abeles2021-pyramidal, which is the primary source of the existing `pyramidal-blur-aware-xcorner` page → already satisfies ≥1 reference; the new page would in turn carry `relations[type=compared_with]` entries to `chess-corners`, `rochade`, and `pyramidal-blur-aware-xcorner`, establishing bidirectional graph edges.
 
 The page warrants creation. Suggested slug: `geiger-chessboard-detector`.
+
+**Status: page created** (`content/algorithms/geiger-chessboard-detector.md`, non-draft). Of the three comparisons proposed below, only Geiger↔Pyramidal is currently authored on the page; the Geiger↔ChESS and Geiger↔ROCHADE comparisons remain open (see the per-page UPDATE sections below).
 
 **Caution.** The paper `geiger2012-automatic` is not yet in `docs/papers/index.yaml`. It must be added (via `bun papers:fetch-meta` or manual entry) before `sources.primary: geiger2012-automatic` can pass build validation. The `algo-page` skill must refuse until this is resolved.
 
@@ -173,8 +175,16 @@ author: "Vitaly Vorobyev"
 difficulty: intermediate
 draft: true
 prerequisites: [image-gradient]
-relatedAlgorithms: [chess-corners, rochade, pyramidal-blur-aware-xcorner]
-comparedWith: []
+relations:
+  - type: compared_with
+    target: chess-corners
+    confidence: high
+  - type: compared_with
+    target: rochade
+    confidence: high
+  - type: compared_with
+    target: pyramidal-blur-aware-xcorner
+    confidence: high
 failureModes: []
 sources:
   primary: geiger2012-automatic
@@ -213,14 +223,15 @@ sources:
 ## UPDATE: pyramidal-blur-aware-xcorner
 
 Section: Remarks / Comparisons
-- The page's comparison list (Remarks section referencing §V of abeles2021-pyramidal) mentions "Geiger [18]" as second-best F1. A Remarks bullet could surface the specific design contrast: Geiger's three-fixed-scale multi-scale vs pyramidal's full pyramid; and the "many more logical branches" quote from abeles2021-pyramidal §II as the motivation for the xscore design.
-- Once `geiger-chessboard-detector` is created, add it to `relatedAlgorithms` so the relationship panel surfaces the connection from the pyramidal page.
+- **Status: resolved.** `geiger-chessboard-detector.md` carries `relations: [{ type: compared_with, target: pyramidal-blur-aware-xcorner, confidence: high }]` (Geiger is the older paper and hosts) and the page has a live `## When to choose Geiger over Pyramidal` section. The design contrast this note proposed — Geiger's three-fixed-scale multi-scale vs pyramidal's full pyramid, plus the "many more logical branches" quote from abeles2021-pyramidal §II as the motivation for the `xscore` design — should be checked against that section's actual content on a future completeness pass; not re-verified here.
 
 ## UPDATE: chess-corners
 
-Section: Remarks / Comparisons (deferred until geiger-chessboard-detector page exists)
-- Per comparison policy, `chess-corners` (Bennett 2013) is older than Geiger (2012)? Actually: Bennett 2013 vs Geiger 2012 → Geiger is older. Per the more-authoritative tiebreaker (older paper hosts), the **`geiger-chessboard-detector`** page should host the "When to choose Geiger over ChESS" comparison section. The `chess-corners` page carries a pointer Remarks bullet only.
-- Once `geiger-chessboard-detector` is published, add `geiger-chessboard-detector` to `chess-corners.comparedWith` if the tiebreaker resolution above is accepted (Geiger 2012 hosts; chess-corners 2013 points).
+Section: Remarks / Comparisons — **still open**
+
+Per comparison policy, the more-authoritative tiebreaker is "older paper hosts": Geiger 2012 predates ChESS 2013, so **`geiger-chessboard-detector`** hosts the "When to choose Geiger over ChESS" comparison section, not `chess-corners`. (Correcting an internal inconsistency in this note's original draft, which stated the Geiger-hosts conclusion in one sentence and then instructed adding the edge to `chess-corners.comparedWith` — i.e. chess-corners hosting — in the next; the "older paper hosts" rule the note itself invokes means Geiger hosts.)
+
+Translated to `relations[]`: add `{ type: compared_with, target: chess-corners, confidence: high }` to `content/algorithms/geiger-chessboard-detector.md` (already reflected in the frontmatter sketch above), and a single pointer Remarks bullet on `chess-corners.md` — e.g. "Compared with Geiger: see [When to choose Geiger over ChESS](/atlas/geiger-chessboard-detector#when-to-choose-geiger-over-chess) on the Geiger page, which hosts the comparison per the older-paper-hosts rule." **Not yet applied** — `chess-corners.md` currently has no Geiger entry in its Remarks, and `geiger-chessboard-detector.md` currently has no `compared_with` entry targeting `chess-corners`.
 
 # Provenance
 

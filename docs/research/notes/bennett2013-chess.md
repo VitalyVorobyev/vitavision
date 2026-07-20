@@ -120,14 +120,28 @@ Section: Remarks
 - **Strengthen orientation bullet.** The current bullet says "Orientation is recovered post-detection by maximizing the signed measure $M_n = (I_n + I_{n+8}) - (I_{n+4} + I_{n+12})$ over the eight discrete directions." The paper actually computes a 3-tap *averaged* measure $3\,\mathrm{AM}_n = M_{n-1} + M_n + M_{n+1}$ (with sign flip on cyclic wrap), then $i = \arg\max_n |\mathrm{AM}_n|$, then bins by $\mathrm{sign}(M_i)$ to give 8 orientation bins at $22.5°$ spacing (§6). The simpler "maximize $M_n$" formulation in the page is a simplification; the actual paper formulation is slightly more robust to per-sample noise. Update the bullet to reference $\mathrm{AM}_n$ rather than $M_n$, or note that the simpler form is an approximation.
 - **Optional bullet — contrast scaling.** $R$ scales linearly with image contrast (vs $\rho^4$ for Harris). Threshold adaptation across exposures is therefore much simpler than for Harris — a fraction of the maximum positive response is robust. Worth mentioning if the page eventually discusses adaptive thresholding.
 
-Section: When to choose chess-corners over X (preparation, defer)
+Section: When to choose chess-corners over X
 
-The page's `comparedWith` field lists `[rochade, pyramidal-blur-aware-xcorner, puzzleboard]`. ChESS is older than all three; per `docs/README.md` §4, the chess-corners page is the host for the corresponding `## When to choose ChESS over X` sections. **None of these comparisons can be authored yet** — the comparison-authoring policy requires research notes for both sides, and the rochade, abeles2021-pyramidal, stelldinger2024-puzzleboard notes have not been ingested. Defer to a future comparison-writing pass after those papers are ingested.
-
-When the comparisons are written, dimensions to cover (paper §7 + later-paper data):
+**Status: resolved.** ChESS is older than rochade (2013 vs 2014), pyramidal-blur-aware-xcorner (2013 vs 2021), puzzleboard (2013 vs 2024), and duda-radon-corners (2013 vs 2018 — see `duda2018-accurate` note); per `docs/README.md` §4, the chess-corners page is the host for all four. This is now expressed as four entries on `content/algorithms/chess-corners.md`:
+```yaml
+relations:
+  - type: compared_with
+    target: rochade
+    confidence: high
+  - type: compared_with
+    target: pyramidal-blur-aware-xcorner
+    confidence: high
+  - type: compared_with
+    target: puzzleboard
+    confidence: high
+  - type: compared_with
+    target: duda-radon-corners
+    confidence: high
+```
+All four required research notes (`rochade` ← `placht2014-rochade`, `pyramidal-blur-aware-xcorner` ← `abeles2021-pyramidal`, `puzzleboard` ← `stelldinger2024-puzzleboard`, `duda-radon-corners` ← `duda2018-accurate`) are now ingested, and the corresponding `## When to choose ChESS over ROCHADE`, `## When to choose ChESS over Pyramidal`, `## When to choose ChESS over PuzzleBoard`, and `## When to choose ChESS over Duda-Radon` sections are live on the chess-corners page. Original dimensions this note recorded before those notes existed (retained for provenance):
 - ChESS vs rochade: ChESS is faster and integer-only; ROCHADE is more accurate at subpixel via polynomial saddle fitting. ChESS detects, ROCHADE detects + refines.
 - ChESS vs pyramidal-blur-aware-xcorner: ChESS works at one scale (r=5 or r=10); pyramidal handles arbitrary blur via per-corner pyramid level selection. Pyramidal is heavier.
-- ChESS vs puzzleboard: ChESS is for chessboards; puzzleboard handles aperiodic patterns. Different problem class — this comparison may belong on chess-corners only as a "different problem" note rather than a `## When to choose` section.
+- ChESS vs puzzleboard: ChESS is for chessboards; puzzleboard handles aperiodic patterns. This note originally flagged puzzleboard as a possible "different problem class" that might not warrant a `compared_with` edge at all (see Rule B) — the applied page treats them as `compared_with` regardless, since both are read as chessboard-family X-corner options by a practitioner choosing a target/detector pairing; flagged here as the one entry in this batch with the least clear-cut type choice.
 
 Section: References
 - Already correct (Bennett-Lasenby + Rosten-Drummond). No change.

@@ -27,8 +27,19 @@ jobs:
       - name: Install
         run: bun install --frozen-lockfile
 
-      - name: Validate content
+      # NOTE: `content:validate` and `scripts/validate-content.ts` are two
+      # different scripts with different coverage — the similar names are a
+      # known trap (see .claude/CLAUDE.md → "Validation"). `content:validate`
+      # (scripts/content-validate.ts) checks blog/algorithm markdown links and
+      # `relatedPosts`. `scripts/validate-content.ts` is the real Atlas graph
+      # validator — slug resolution (including `relations[].target`),
+      # prerequisite cycles, source-id existence, canonical-quality gates.
+      # Run by explicit path so the distinction stays unmissable in the log.
+      - name: Validate content (blog/demo links)
         run: bun run content:validate
+
+      - name: Validate content (Atlas graph)
+        run: bun run scripts/validate-content.ts
 
   # ── Frontend: lint + build ────────────────────────────────────────────────
   build-frontend:

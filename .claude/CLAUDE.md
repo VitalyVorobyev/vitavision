@@ -137,11 +137,13 @@ Run `bun run scripts/validate-content.ts` **by path** before opening a PR. It ch
 resolution (including `relations[].target`), prerequisite cycles, source-id existence, and
 canonical-quality gates.
 
-Nothing automated runs it. `bun run build` does not, and CI's `validate-content` job runs
-`bun run content:validate` → `scripts/content-validate.ts`, a different and much narrower
-script that only checks blog/algorithm internal links and `relatedPosts`. So a broken
-`relations[].target` slug or a prerequisite cycle will pass CI. Until that gap is closed,
-the manual run is the only gate — do not skip it.
+CI's `validate-content` job runs both scripts: `bun run content:validate` →
+`scripts/content-validate.ts` (narrower — blog/algorithm internal links and
+`relatedPosts` only), and `bun run scripts/validate-content.ts` by path (the real
+Atlas graph validator described above). The two script names are confusingly
+similar but cover different ground — don't assume one supersedes the other, and
+don't remove either without replacing its coverage. `bun run build` still does not
+run either validator, so a local build succeeding is not proof content is valid.
 
 ### Research notes (unpublished reasoning substrate)
 

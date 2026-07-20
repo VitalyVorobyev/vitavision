@@ -949,28 +949,31 @@ async function handlePuzzleboard(
     const merged = deepMerge(defaults, config);
 
     const t0 = performance.now();
-    const raw = mod.detect_puzzleboard(width, height, gray, null, merged) as
-        | { corners: unknown[]; alignment: unknown; decode: unknown }
-        | null;
     // 0.10.1 flattened PuzzleBoardDetectionResult to { corners, alignment, decode }
     // — the `detection` wrapper is gone, and `observed_edges` (consumed by
     // PuzzleboardOverlay's edge-bit markers) moved to the `_with_diagnostics`
-    // sibling. We deliberately keep calling the plain (throwing) function here
-    // rather than switching to _with_diagnostics: that variant does NOT throw
-    // on a failed decode (it returns `result: null` with diagnostics still
-    // populated), which would silently turn the known public/puzzleboard.png
-    // real-photo failure into a quiet empty-but-successful result instead of
-    // a surfaced error. Preserving the throw means `observed_edges` is now
-    // always empty — a real (reported) regression for the overlay, not one to
-    // paper over here.
-    const normalized = raw
-        ? {
-            detection: { kind: "puzzleboard", corners: raw.corners },
-            alignment: raw.alignment,
-            decode: raw.decode,
-            observed_edges: [],
-        }
-        : null;
+    // sibling, which also returns a nested Map (see unwrapMaps).
+    //
+    // The two variants differ on failure: the plain one throws, while
+    // _with_diagnostics resolves `result` to *undefined* (not null) and still
+    // populates diagnostics. We use the diagnostics variant for observed_edges
+    // and re-raise ourselves, so a failed decode stays a surfaced error rather
+    // than a quiet empty-but-successful result.
+    const withDiag = unwrapMaps(
+        mod.detect_puzzleboard_with_diagnostics(width, height, gray, null, merged),
+    ) as {
+        result?: { corners: unknown[]; alignment: unknown; decode: unknown } | null;
+        diagnostics?: { observed_edges?: unknown[] };
+    };
+    if (withDiag?.result == null) {
+        throw new Error("decoding failed: no position match above confidence threshold");
+    }
+    const normalized = {
+        detection: { kind: "puzzleboard", corners: withDiag.result.corners },
+        alignment: withDiag.result.alignment,
+        decode: withDiag.result.decode,
+        observed_edges: withDiag.diagnostics?.observed_edges ?? [],
+    };
     const runtimeMs = performance.now() - t0;
 
     return adaptPuzzleboardResult(normalized, runtimeMs, width, height, merged);

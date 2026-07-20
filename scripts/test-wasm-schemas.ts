@@ -329,18 +329,8 @@ if (params.decode?.search_mode?.kind !== 'full')
     throw new Error('expected default decode.search_mode.kind=full, got: ' + JSON.stringify(params.decode?.search_mode));
 console.log('PASS: board=10x10 and decode.search_mode.kind=full');
 
-// NOTE: public/puzzleboard.png (a real photograph) no longer decodes under
-// 0.10.1 — it throws "decoding failed: no position match above confidence
-// threshold". This was verified NOT recoverable by sweeping board size,
-// min_window, max_bit_error_rate, and alignment_min_margin; the detector
-// itself is healthy (see the round-trip below), so this is tracked as a
-// separate, known regression rather than papered over here. Do not
-// reintroduce a public/puzzleboard.png assertion to "fix" this test without
-// first re-verifying the real-photo decode actually works again.
-//
-// In its place: a deterministic round-trip using a library-rendered board,
-// which exercises the same detect_puzzleboard contract without depending on
-// a photo that's known to fail.
+// A deterministic round-trip using a library-rendered board, which exercises
+// the detect_puzzleboard contract without depending on any committed asset.
 const { PNG } = await import('pngjs');
 const pngBytes = mod.render_puzzleboard_png(10, 10, 20, 150);
 const rendered = PNG.sync.read(Buffer.from(pngBytes));
@@ -356,6 +346,39 @@ if (!Array.isArray(c.position) || c.position.length !== 2)
 if (!c.grid || typeof c.grid.u !== 'number' || typeof c.grid.v !== 'number')
     throw new Error('corner.grid is missing or malformed (expected {u,v}): ' + JSON.stringify(c.grid));
 console.log('PASS: corner has [x,y] position and {u,v} grid index');
+
+// Real-photo decode, via the exact path the worker uses. The plain
+// detect_puzzleboard throws on failure, but _with_diagnostics resolves
+// \`result\` to *undefined* and still returns diagnostics — so the worker calls
+// the diagnostics variant (for observed_edges) and re-raises itself. Both
+// halves of that contract are asserted here.
+//
+// The board self-locates against a master map: params.board rows/cols do not
+// constrain detection (verified — 4x4 through 30x30 all yield 361 corners),
+// which is why a mismatched 10x10 declaration is fine.
+const { readFileSync } = await import('fs');
+const photo = PNG.sync.read(readFileSync('public/author_like_oblique.png'));
+const photoGray = mod.rgba_to_gray(new Uint8Array(photo.data), photo.width, photo.height);
+const unwrap = (v) => v instanceof Map
+    ? Object.fromEntries([...v].map(([k, x]) => [k, unwrap(x)]))
+    : Array.isArray(v) ? v.map(unwrap) : v;
+const diag = unwrap(mod.detect_puzzleboard_with_diagnostics(photo.width, photo.height, photoGray, null, params));
+if (diag?.result == null)
+    throw new Error('public/author_like_oblique.png failed to decode (result is ' + diag?.result + ')');
+if (diag.result.corners.length !== 361)
+    throw new Error('expected 361 corners on public/author_like_oblique.png, got ' + diag.result.corners.length);
+if (diag.result.decode.bit_error_rate !== 0)
+    throw new Error('expected a clean decode (bit_error_rate 0), got ' + diag.result.decode.bit_error_rate);
+console.log('PASS: real photo decodes to 361 corners at bit_error_rate 0');
+// observed_edges backs PuzzleboardOverlay's edge-bit markers and lives ONLY on
+// the diagnostics side — an empty array here means the overlay renders nothing.
+const edges = diag.diagnostics?.observed_edges;
+if (!edges?.length)
+    throw new Error('diagnostics.observed_edges is empty — PuzzleboardOverlay edge-bit markers would not render');
+const e = edges[0];
+if (typeof e.row !== 'number' || typeof e.col !== 'number' || (e.orientation !== 'horizontal' && e.orientation !== 'vertical'))
+    throw new Error('observed_edges entry is malformed: ' + JSON.stringify(e));
+console.log('PASS: diagnostics.observed_edges has ' + edges.length + ' well-formed entries');
 process.exit(0);
 `,
     },

@@ -14,12 +14,10 @@ Detect every corner of a chessboard calibration pattern and assign it an integer
 - [[image-gradient]]
 - [[topological-grid-recovery]]
 
-## Related
+## Lineage
 
-- [[chess-corners]]
-- [[chessboard-x-corner-detection]]
-- [[fast-corner-detector]]
-- [[shu-topological-grid]]
+- **Alternative formulation of** — [[geiger-chessboard-detector]] _(confidence: medium)_
+  > Less influential in practice than Geiger but methodologically distinct — the X-corner detector is a ring-alternation count rather than a quadrant template, and the topology filter operates on Delaunay triangles directly.
 
 ## Sources
 

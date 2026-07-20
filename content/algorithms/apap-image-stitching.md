@@ -7,7 +7,7 @@ domain: stitching
 tasks: [image-stitching]
 author: "Vitaly Vorobyev"
 difficulty: advanced
-prerequisites: [homography, dlt-normalisation, ransac]
+prerequisites: [homography, dlt-normalisation, ransac, spatially-varying-image-stitching]
 failureModes: []
 sources:
   primary: zaragoza2013-apap

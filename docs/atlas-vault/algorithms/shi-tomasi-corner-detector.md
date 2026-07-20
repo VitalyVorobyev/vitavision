@@ -11,13 +11,8 @@ Scores each pixel by the smaller eigenvalue of the gradient structure tensor M; 
 ## Prerequisites
 
 - [[image-gradient]]
+- [[non-maximum-suppression]]
 - [[structure-tensor]]
-
-## Related
-
-- [[chess-corners]]
-- [[fast-corner-detector]]
-- [[harris-corner-detector]]
 
 ## Sources
 

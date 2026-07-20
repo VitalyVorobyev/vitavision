@@ -14,13 +14,6 @@ Detect and decode a self-identifying checkerboard calibration pattern: saddle-po
 - [[image-gradient]]
 - [[topological-grid-recovery]]
 
-## Related
-
-- [[chess-corners]]
-- [[chessboard-x-corner-detection]]
-- [[harris-corner-detector]]
-- [[shu-topological-grid]]
-
 ## Sources
 
 - Primary: [[stelldinger2024-puzzleboard]]

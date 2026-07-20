@@ -8,16 +8,17 @@
 
 An Obsidian-compatible projection of the atlas — every algorithm, model,
 concept, and paper is a stub `.md` whose body contains `[[wikilinks]]` for
-every forward edge (prerequisites, related, comparedWith, failureModes,
-sources, paper→paper citations). Open this folder as a vault in Obsidian
-and use the graph view to look for clusters, gaps, and isolated islands.
+every forward edge (prerequisites, typed relations — grouped as Lineage /
+Practice / Cross-paradigm, failureModes, sources, paper→paper citations).
+Open this folder as a vault in Obsidian and use the graph view to look
+for clusters, gaps, and isolated islands.
 
 ## Counts
 
-- Algorithms: 24
-- Models: 4
-- Concepts: 11
-- Papers: 38
+- Algorithms: 52
+- Models: 42
+- Concepts: 29
+- Papers: 115
 
 ## Conventions
 

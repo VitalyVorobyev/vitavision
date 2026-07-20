@@ -11,8 +11,3 @@ A symmetric 2×2 matrix formed by summing the outer products of the image gradie
 ## Prerequisites
 
 - [[image-gradient]]
-
-## Related
-
-- [[harris-corner-detector]]
-- [[shi-tomasi-corner-detector]]

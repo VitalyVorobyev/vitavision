@@ -111,7 +111,7 @@ fn output_size_bound(w: f64, h: f64) -> (f64, f64) {
 }
 ```
 
-<!-- TODO figure: the 9-region epipole classification (Fig. 3 of Pollefeys 1999) — a small fixed geometric scheme (image rectangle with corners a, b, c, d and nine numbered regions) that determines which corners bound the extreme epipolar lines. Candidate for a hand-authored SVG under content/images/pollefeys-polar-rectification/. Not authored in this pass — this page's authoring task is scoped to a single file. -->
+![The nine-region epipole classification used to find the extreme epipolar lines. The image rectangle has corners $a$ (top-left), $b$ (top-right), $c$ (bottom-right), $d$ (bottom-left); its four sides, extended across the whole plane as dashed construction lines, partition the plane into a $3 \times 3$ grid of nine numbered regions. Region 5 is the rectangle itself — the region containing the image — shown with a blue tint and border to set it apart from the eight surrounding regions. A worked example places the epipole in region 6, directly to the right of the image: its two extreme epipolar lines, drawn in red, pass through corners $b$ and $c$, the two corners bounding the image's right edge. In general, an epipole in an edge region (2, 4, 6, 8) has extreme lines through that edge's two corners; an epipole in a corner region (1, 3, 7, 9) has extreme lines through the two corners on the opposite diagonal; and an epipole inside the central region (5) falls inside the image itself, which is the case the polar-rectification sweep must wrap around $360°$ to handle.](./images/pollefeys-polar-rectification/epipole-regions.svg)
 
 # Remarks
 

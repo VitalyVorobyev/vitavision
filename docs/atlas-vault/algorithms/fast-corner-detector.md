@@ -11,12 +11,11 @@ Segment-test corner detector on a 16-pixel Bresenham ring of radius 3 around eac
 ## Prerequisites
 
 - [[image-gradient]]
+- [[non-maximum-suppression]]
 
-## Related
+## Practice
 
-- [[chess-corners]]
-- [[harris-corner-detector]]
-- [[shi-tomasi-corner-detector]]
+- **Feeds into** — [[orb]]
 
 ## Sources
 

@@ -128,20 +128,19 @@ Section: Remarks
 - **Strengthen — anchor selection rationale.** The page mentions quad-density anchor selection but does not justify the depth-3 BFS choice. Paper §4.1 second paragraph: "We obtain this density for every vertex by counting the number of adjacent vertices which are part of a quad cycle via breadth-first search down to a depth of 3." The paper considered alternatives (centre-of-mass, sum-of-shortest-distances) and found quad-density empirically best. Worth a one-line note.
 - **Optional — runtime characteristic shape.** Per the page's existing "logarithmic in N" Remarks bullet, the binary search converges fast on strongly-connected graphs. Strengthen by noting that fragmented inputs degrade to linear region-growing — this is the paper's §4.1 last paragraph observation.
 
-Section: relatedAlgorithms / comparedWith — for the relationship-edges audit pass
+Section: `relations[]` — for the relationship-edges audit pass (still pending; not yet applied to `content/algorithms/ocpad.md`, which currently carries no `relations:` field at all)
 
 The page's frontmatter currently has:
-- `relatedAlgorithms: [shu-topological-grid, puzzleboard, laureano-topological-chessboard]`
-- `comparedWith: []`
+- no `relations:` field
 - `sources.references: [placht2014-rochade, cordella2004-vf2]`
 
-Three observations for the future relationship-edges audit:
+Three observations for the future relationship-edges audit, translated to the `relations[]` vocabulary:
 
-1. **Add `rochade` to `relatedAlgorithms`.** OCPAD's stage 1 *is* ROCHADE's stage 1, and the relationship is the most direct "extends" link in the atlas. Currently this lives only in `sources.references`, which is for paper citations, not the page-graph. The relationship deserves to surface in the on-page relationship panel.
+1. **Add `{ type: feeds_into, target: ocpad, confidence: high }` to the `rochade` page.** OCPAD's stage 1 *is* ROCHADE's stage 1 (Scharr gradient → threshold → centreline → saddle graph), reused verbatim; OCPAD then swaps ROCHADE's strict $rc$-saddle verification (step 7) for VF2 subgraph isomorphism to handle partial visibility — a distinct method that incorporates ROCHADE's stage 1 as a named component, not the same method incrementally improved. That is `feeds_into`, not `extended_by` (per CLAUDE.md's own distinguishing rule: `extended_by` = same method improved, `feeds_into` = different method using A as a component). Chronology holds (rochade 2014 ≤ ocpad 2016). `feeds_into` is authored on the earlier page (A → B, i.e. on `rochade`, not `ocpad`) — see `harris-corner-detector.md`/`fast-corner-detector.md` → `orb` for the established pattern. Currently this relationship lives only in `sources.references`, which is for paper citations, not the page-graph; it deserves to surface in the on-page relationship panel.
 
-2. **Consider adding `chess-corners` to `relatedAlgorithms`.** ChESS and OCPAD both target chessboard X-corners but solve different sub-problems (per-pixel detection vs full-pattern matching). They are not direct competitors but live in the same family. Per the user's "different problem class" criterion, `relatedAlgorithms` is appropriate; `comparedWith` is not.
+2. **`chess-corners` gets no `relations[]` entry at all.** ChESS and OCPAD both target chessboard X-corners but solve different sub-problems (per-pixel detection vs full-pattern matching) — this is exactly CLAUDE.md Rule B ("cross-domain methods are not comparable... omit the link entirely"), now that the legacy soft-touch `relatedAlgorithms` bucket no longer exists on algorithm pages. Not `compared_with`, and there is no other type that fits a "same family, different sub-problem" pairing. Omit.
 
-3. **The current `comparedWith: []` is consistent with the comparison policy** but a future comparison-writing pass could add `puzzleboard` or `shu-topological-grid` if both papers' notes get ingested. None of those notes exists yet, so the policy preconditions are not met.
+3. **`compared_with` candidates against `puzzleboard` or `shu-topological-grid` are now unblocked** (both `docs/research/notes/stelldinger2024-puzzleboard.md` and `docs/research/notes/shu2009-topological.md` exist as of this update) but still **not yet authored** — neither `content/algorithms/puzzleboard.md` nor `content/algorithms/shu-topological-grid.md` carries an OCPAD edge, and `ocpad.md` carries no `relations:` field. The companion `stelldinger2024-puzzleboard` note has since worked out the OCPAD↔PuzzleBoard case: `{ type: compared_with, target: puzzleboard, confidence: medium }` on `ocpad.md` (OCPAD 2016 hosts, predating PuzzleBoard 2024; medium confidence because the papers don't cite each other — an editorial inference, not a paper-stated comparison). The Shu case is not yet analysed — a future pass should decide `compared_with` vs Rule-B omission there (topological grid recovery from a candidate corner set vs subgraph-isomorphism partial-pattern matching may turn out to be a different-problem-class pairing too; do not default to `compared_with` without checking).
 
 Section: References
 - Already correct (3 entries — paper, ROCHADE, VF2). No change.

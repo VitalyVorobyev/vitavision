@@ -169,14 +169,21 @@ sources:
   primary: detone2018-superpoint
   references:
     - rosten2006-fast
-relatedAlgorithms:
-  - harris-corner-detector
-  - shi-tomasi-corner-detector
-  - fast-corner-detector
-comparedWith:
-  - xfeat
+relations:
+  - type: learned_alternative_of
+    target: harris-corner-detector
+    confidence: high
+  - type: learned_alternative_of
+    target: shi-tomasi-corner-detector
+    confidence: high
+  - type: learned_alternative_of
+    target: fast-corner-detector
+    confidence: medium
+  - type: compared_with
+    target: xfeat
+    confidence: high
 ```
-Note: `comparedWith: [xfeat]` — the xfeat page (2024) references SuperPoint (2018); SuperPoint is the older paper, so SuperPoint hosts the comparison per the "older paper hosts" tiebreaker. However, since `content/models/xfeat.md` already exists as a draft, confirm whether a comparison section belongs on the `superpoint` page or is deferred until both pages are non-draft.
+Note: `relations[type=compared_with, target=xfeat]` — the xfeat page (2024) references SuperPoint (2018); SuperPoint is the older paper, so SuperPoint hosts the comparison per the "older paper hosts" tiebreaker. However, since `content/models/xfeat.md` already exists as a draft, confirm whether a comparison section belongs on the `superpoint` page or is deferred until both pages are non-draft.
 
 ## UPDATE: xfeat (supplementary)
 

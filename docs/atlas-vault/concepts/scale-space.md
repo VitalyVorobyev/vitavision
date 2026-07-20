@@ -8,7 +8,6 @@ slug: scale-space
 
 A one-parameter family of images obtained by progressively blurring an input image with Gaussians of increasing standard deviation, providing a principled multi-scale representation for detecting and describing image features.
 
-## Related
+## Prerequisites
 
-- [[chess-corners]]
-- [[pyramidal-blur-aware-xcorner]]
+- [[convolution]]

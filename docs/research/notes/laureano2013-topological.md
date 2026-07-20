@@ -183,7 +183,7 @@ The Shu page already lists the `laureano2013-topological` paper in its coverage 
 - **When a quad-level topological abstraction is preferred:** Shu merges triangles into quads first, then filters; Laureano filters at the triangle level. The quad representation directly models the chessboard tile topology.
 - **When Laureano is preferred over Shu:** partial occlusion support without orientation markers; per-pixel x-corner detector avoids Harris's threshold sensitivity; Chen-Zhang Hessian subpixel refinement is more principled than Harris's own subpixel output; iterative fixed-point filter is more aggressive at removing marginal triangles than Shu's single-pass degree-pruning.
 
-Add `comparedWith: [laureano-topological-chessboard]` to the Shu page frontmatter (Shu is the host).
+Add `relations: [{ type: compared_with, target: laureano-topological-chessboard, confidence: high }]` to the Shu page frontmatter (Shu is the host).
 
 ---
 

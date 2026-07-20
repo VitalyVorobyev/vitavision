@@ -124,9 +124,9 @@ Section: Remarks
 - **Add bullet — when ROCHADE does *not* dominate.** The paper's IDS uEye result (§3.1, Figure 3e) shows ROCHADE and OpenCV essentially tied on clean high-resolution low-distortion images. This is the converse of the previous bullet and an important applicability fact: ROCHADE's advantage erodes on the regime OpenCV was tuned for. Worth flagging so readers don't choose ROCHADE blindly.
 - **Optional — rotational-symmetry justification for Scharr.** The page's Procedure step 2 says "Scharr 3 × 3 gradient magnitude" without justifying the choice. Paper §2 step 1: "We have chosen a Scharr kernel for filtering because of its better rotational symmetry compared to the more commonly used Sobel filter." Minor; mention only if the page eventually expands the rationale.
 
-Section: When to choose ROCHADE over X (preparation, defer)
+Section: When to choose ROCHADE over X
 
-ROCHADE's `comparedWith` field is currently empty. Per the comparison policy, ROCHADE would be the *non-host* side of the chess-corners ↔ rochade pair (chess-corners is older, 2013 vs 2014; chess-corners hosts). Bullets recorded here for the eventual `## When to choose ChESS over ROCHADE` section on the chess-corners page:
+**Status: resolved.** ROCHADE is the *non-host* side of the chess-corners ↔ rochade pair (chess-corners is older, 2013 vs 2014; chess-corners hosts), expressed as `relations: [{ type: compared_with, target: rochade, confidence: high }]` on `content/algorithms/chess-corners.md` (symmetric type, authored on the host side only). The `## When to choose ChESS over ROCHADE` section is now live on the chess-corners page. Bullets recorded here for provenance of the original editorial reasoning:
 
 - ChESS is corner *detection*; ROCHADE is corner *detection + subpixel refinement*. Pairing ChESS with a separate refinement step (e.g. centre-of-mass on a 5 × 5 patch, or ROCHADE's own cone-fit refinement decoupled from its detection stage) is a viable middle ground.
 - ChESS is integer-only and SIMD-friendly; ROCHADE's stage 1 has graph-walking and clustering that are harder to vectorise. ChESS is faster on simple chessboards.
@@ -136,7 +136,7 @@ ROCHADE's `comparedWith` field is currently empty. Per the comparison policy, RO
 - ROCHADE handles extreme poses and severe lens distortion better than ChESS in the paper's test conditions; ChESS handles arbitrary chessboard scenes more flexibly because it is a per-pixel detector.
 - **Recommendation:** ROCHADE for calibration when the full pattern is reliably visible and subpixel accuracy is critical; ChESS for general chessboard detection in scenes where full-pattern visibility cannot be assumed, or when paired with a per-pixel descriptor pipeline.
 
-This block is for the eventual chess-corners-page comparison; **do not** apply to the rochade page (which would only carry a Remarks bullet pointing to the comparison anchor on chess-corners).
+This content lives on the chess-corners page; the rochade page correctly carries only a Remarks bullet pointing to the comparison anchor on chess-corners (confirmed present).
 
 ## UPDATE: ocpad (supplementary)
 

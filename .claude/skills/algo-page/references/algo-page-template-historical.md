@@ -40,7 +40,6 @@ relations:
 # Optional
 difficulty: <beginner|intermediate|advanced>
 draft: false
-relatedAlgorithms: ["<algo-slug>"]   # OK if a genuine pipeline link exists; do NOT list the successor here (it lives on `relations[]`)
 prerequisites: []                     # concept slugs this method depends on; keep only if still load-bearing
 sources:
   primary: <paper-id>                 # the original paper's id from docs/papers/index.yaml
@@ -48,9 +47,13 @@ sources:
   notes: |
     Brief reasoning substrate (optional). Same shape as canonical pages.
 
+# A genuine pipeline link is OK as an additional `relations[]` entry
+# (e.g. `type: feeds_into`); do NOT list the successor there — that
+# relationship is the required `generalized_by` entry above.
+
 # Forbidden on historical pages
-# editorAlgorithmId: ...   ← drop entirely; no Try-in-editor CTA
-# comparedWith: [...]      ← drop entirely; supersession is not comparison (CLAUDE.md → Rule A)
+# editorAlgorithmId: ...                        ← drop entirely; no Try-in-editor CTA
+# relations[type=compared_with]: [...]          ← drop entirely; supersession is not comparison (CLAUDE.md → Rule A)
 ---
 
 # Goal

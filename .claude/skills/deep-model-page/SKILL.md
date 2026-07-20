@@ -132,7 +132,6 @@ flops: "4.1 GMAC @ 224×224"  # canonical config — human-readable
 difficulty: intermediate     # beginner | intermediate | advanced
 draft: false
 relatedPosts: [...]          # Blog post slugs
-relatedAlgorithms: [...]     # Algorithm page slugs (for hybrid pipelines)
 relatedDemos: [...]          # Demo page slugs
 coverImage: "..."
 ```
@@ -160,10 +159,10 @@ The note's `## NEW: <slug>` or `## UPDATE: <slug>` block provides authoritative 
 **Explicit rules:**
 
 - **1:1 page = primary paper (or paper family).** Every model page has exactly one primary paper in `sources.primary`. Supplementary papers go in `sources.references` only.
-- **No pairwise comparison pages.** Use `comparedWith:` field + an inline `## When to choose X over Y` section in the more authoritative page. Surveys allowed only with ≥3 methods, ≥800 words, and a decision table.
+- **No pairwise comparison pages.** Use `relations[type=compared_with]` + an inline `## When to choose X over Y` section in the more authoritative page. Surveys allowed only with ≥3 methods, ≥800 words, and a decision table.
 - **Never publish raw LLM summaries.** Always synthesize against the research note's structured fields and your own understanding. Each claim must trace to a paper section, equation, table, or impl file/line.
 - **Cite source IDs only from `docs/papers/index.yaml`.** Do not invent paper IDs.
-- **Never reference unresolved slugs.** Verify every slug in `relatedAlgorithms`, `prerequisites`, `comparedWith` exists on disk before adding it.
+- **Never reference unresolved slugs.** Verify every slug in `relations[].target` and `prerequisites` exists on disk before adding it.
 - **Do not author reverse edges.** `usedBy:` and similar reverse fields are computed by the build. Never add them manually.
 - Use `quality: stub` only for intentional public placeholders; `quality: canonical` only when the canonical gate is satisfied.
 
@@ -196,7 +195,7 @@ B8. **Synthesize the frontmatter — sources, category, and header metadata.** N
    - `title` (display name, quoted), `date: <today>`, `summary` (one sentence: what the model takes in, produces, and how it is trained), `tags` (at least `computer-vision` + primary task), `category` (one of the six vision-domain values), `difficulty: intermediate` unless clearly another tier, `author: "Vitaly Vorobyev"`.
    - `sources.primary`, `sources.references` (curated in B4 + cross-link candidates from `bun papers:query pages-using <ref-id>`), `sources.notes` (key equations / losses / table references grounding the page).
    - `arch_family`, `params`, `flops` if the paper reports them. Use the canonical configuration the paper tables compare against.
-   - `relatedAlgorithms` / `relatedPosts` as applicable.
+   - `relations[]` cross-links (e.g. `learned_alternative_of` to the classical algorithm this model replaces) / `relatedPosts` as applicable.
    - **Omit `implementations` for now; it is filled in B9a.**
 
 B9. **Write `content/models/<slug>.md`** with the frontmatter above — no body, no `implementations` yet. This file will not validate as a non-draft until B9a completes; set `draft: true` temporarily if running a build during Bootstrap.
@@ -240,7 +239,7 @@ B10. **Flip `draft: false`** once B9a wrote at least one valid implementations e
    - `curl -fLsI <repo>` returns 200/301.
    - `curl -fLs https://raw.githubusercontent.com/<owner>/<repo>/<commit>/LICENSE | head -3` returns the recorded license header.
    - If the repo has moved, rewritten history, or changed license: update the entry (or remove it with a note in working notes).
-4. **Query the citation graph** (lightweight, in-orchestrator). `bun papers:query cites <primary-id>` and `bun papers:query pages-using <ref-id>` for each reference — used to populate `relatedAlgorithms` candidates. Output is small (slug list).
+4. **Query the citation graph** (lightweight, in-orchestrator). `bun papers:query cites <primary-id>` and `bun papers:query pages-using <ref-id>` for each reference — used to populate `relations[]` cross-link candidates. Output is small (slug list).
 5. **Read frontmatter of candidate cross-link pages.** For each candidate slug from §4, read only the page's frontmatter (cheap, ~200 tokens each). Do not load page bodies. Use the frontmatter `summary` and `sources.primary` to confirm a cross-link makes sense.
 6. **Assemble the Draft contract input.** Collect: primary note path, reference note paths, implementations[] entries (with verified licenses from §3), page-template skeleton path (`references/deep-model-page-template.md`), target slug. **Opus does NOT read the notes themselves at this step** — the Draft subagent will. Pass the verified `implementations[]` data to Sonnet so the page text can refer to license/framework/role correctly.
 7. **Delegate the page draft to Sonnet.** Invoke the Draft contract from `.claude/skills/_shared/subagent-prompts.md` with the inputs from §6. Sonnet returns:
@@ -259,7 +258,7 @@ B10. **Flip `draft: false`** once B9a wrote at least one valid implementations e
    # Zero MISS lines = page faithfully copies from notes
    ```
    Additionally: every `license`, `weights_license`, `framework`, and `role` claim in the body must match the verified `implementations[]` entry from §3 — string-match. Any mismatch is a hallucination flag. In case of MISS, either extend the note and re-delegate, or reject the draft and re-delegate with a stricter prompt.
-9. **Assemble and write.** Opus assembles `--- frontmatter ---\n<body string from Sonnet>` and calls `Write` once. Frontmatter `relatedAlgorithms` slugs come from §4 candidates + the primary note's `Connections` section, NOT from the body string. Cross-check every slug against `knownSlugs` (read from `src/generated/content-graph.ts` or by listing `content/{algorithms,models,concepts}/`).
+9. **Assemble and write.** Opus assembles `--- frontmatter ---\n<body string from Sonnet>` and calls `Write` once. Frontmatter `relations[].target` slugs come from §4 candidates + the primary note's `Connections` section, NOT from the body string. Cross-check every slug against `knownSlugs` (read from `src/generated/content-graph.ts` or by listing `content/{algorithms,models,concepts}/`).
 10. **Verify.** `bun run build && bun run lint && npx vitest run`.
 
 ## Voice rules
@@ -315,8 +314,8 @@ For arxiv papers, `docs/papers/.cache/<id>.html` (ar5iv rendering) preserves LaT
 ## When not to use this skill
 
 - For **closed-form algorithms** (FAST, Harris, ChESS, non-maximum suppression, homography refinement), use `algo-page`. The `# Algorithm` section with defining formulas and per-pixel code is the right shape for those.
-- For **blog posts about a model** — history, intuition, comparison narrative, personal benchmarks — use `tech-writer`. Move the material to `content/blog/` and link back to the model page via `relatedModels`.
-- For **hybrid pipelines that combine a learned component with a classical algorithm** (e.g. SuperGlue on top of SuperPoint), pick the content type that dominates: if the page's primary contribution is the learned matcher's architecture, use `deep-model-page`; if it is the classical geometric verification, use `algo-page`. The other component goes in `sources.references` or `relatedAlgorithms` / `relatedModels`.
+- For **blog posts about a model** — history, intuition, comparison narrative, personal benchmarks — use `tech-writer`. Move the material to `content/blog/` and link back to the model page via the blog post's own `relatedAlgorithms` field (untyped; accepts any atlas slug — algorithm, model, or concept).
+- For **hybrid pipelines that combine a learned component with a classical algorithm** (e.g. SuperGlue on top of SuperPoint), pick the content type that dominates: if the page's primary contribution is the learned matcher's architecture, use `deep-model-page`; if it is the classical geometric verification, use `algo-page`. The other component goes in `sources.references` or as a `relations[]` cross-link (e.g. `learned_alternative_of`, `feeds_into`).
 
 ## Resources
 

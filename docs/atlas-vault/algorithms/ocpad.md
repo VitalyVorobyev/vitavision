@@ -13,13 +13,6 @@ Recover the largest visible checkerboard subgraph from a partially occluded patt
 - [[image-gradient]]
 - [[topological-grid-recovery]]
 
-## Related
-
-- [[chessboard-x-corner-detection]]
-- [[laureano-topological-chessboard]]
-- [[puzzleboard]]
-- [[shu-topological-grid]]
-
 ## Sources
 
 - Primary: [[fuersattel2016-ocpad]]

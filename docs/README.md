@@ -70,7 +70,7 @@ Pairwise pages are prohibited. A survey of ≥3 methods lives as a **concept pag
 - ≥3 surveyed methods.
 - ≥800 words of substantive content.
 - A decision table near the top (rows = methods, columns = "use when / avoid when / typical cost / typical accuracy").
-- Each surveyed algorithm page references the survey concept via a `relations[]` entry (so the relationship panel surfaces it from each method's page).
+- Each surveyed algorithm page lists the survey concept in its `prerequisites` (so the build derives a `usedBy` backlink and the relationship panel surfaces it from each method's page). Not `relations[]` — that field excludes prerequisites, and its type vocabulary is method-to-method with no type expressing survey membership.
 
 ### Agentic discipline
 

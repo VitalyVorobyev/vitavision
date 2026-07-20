@@ -41,7 +41,6 @@ flops: "<4.1 GMAC @ 224×224 | 17.6 GMAC @ 1024×1024 | ...>"
 difficulty: <beginner|intermediate|advanced>
 draft: false
 relatedPosts: ["<blog-slug>"]
-relatedAlgorithms: ["<algo-slug>"]
 relatedDemos: ["<demo-slug>"]
 coverImage: "./images/<slug>/cover.png"
 ---

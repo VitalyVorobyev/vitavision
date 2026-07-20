@@ -149,7 +149,6 @@ author: "..."
 difficulty: ...               # beginner | intermediate | advanced
 draft: false
 relatedPosts: [...]           # Blog post slugs
-relatedAlgorithms: [...]      # Other algorithm page slugs
 relatedDemos: [...]           # Demo page slugs
 editorAlgorithmId: ...        # chess-corners | chessboard | charuco | markerboard | ringgrid | radsym
 sources:                      # Authoritative sources for this page (see Workflow section)
@@ -211,12 +210,12 @@ The note's `## NEW: <slug>` or `## UPDATE: <slug>` block provides authoritative 
 **Explicit rules:**
 
 - **1:1 page = primary paper.** Every algorithm page has exactly one primary paper in `sources.primary`. Supplementary papers go in `sources.references` only.
-- **No pairwise comparison pages.** Use `comparedWith:` field + an inline `## When to choose X over Y` section inside the more authoritative page. Surveys allowed only with ≥3 methods, ≥800 words, and a decision table.
+- **No pairwise comparison pages.** Use `relations[type=compared_with]` + an inline `## When to choose X over Y` section inside the more authoritative page. Surveys allowed only with ≥3 methods, ≥800 words, and a decision table.
 - **Never publish raw LLM summaries.** Always synthesize against the research note's structured fields and your own understanding. Each claim must trace to a paper section, equation, or impl line.
 - **Cite source IDs only from `docs/papers/index.yaml`.** Do not invent paper IDs.
-- **Never reference unresolved slugs.** Verify every slug in `relatedAlgorithms`, `prerequisites`, `comparedWith` exists on disk before adding it.
+- **Never reference unresolved slugs.** Verify every slug in `relations[].target` and `prerequisites` exists on disk before adding it.
 - **Do not author reverse edges.** `usedBy:` and similar reverse fields are computed by the build. Never add them manually.
-- Use `quality: stub` only for intentional public placeholders; `quality: canonical` only when the canonical gate is satisfied (sources present, prerequisites non-empty, no TODO markers); `quality: historical` only when a same-domain successor on the site supersedes this method (per CLAUDE.md → Comparison authoring discipline → Rule A). Historical pages must include at least one `relations[]` entry with `{ type: generalized_by, confidence: high, target: <successor-slug> }`, drop `editorAlgorithmId`, and omit `comparedWith:` entirely.
+- Use `quality: stub` only for intentional public placeholders; `quality: canonical` only when the canonical gate is satisfied (sources present, prerequisites non-empty, no TODO markers); `quality: historical` only when a same-domain successor on the site supersedes this method (per CLAUDE.md → Comparison authoring discipline → Rule A). Historical pages must include at least one `relations[]` entry with `{ type: generalized_by, confidence: high, target: <successor-slug> }`, drop `editorAlgorithmId`, and omit any `relations[type=compared_with]` entry entirely.
 
 ## Workflow
 
@@ -240,7 +239,7 @@ B2. **Fetch metadata.** `bun papers:fetch-meta <arg>`; capture stdout YAML. Revi
 B3. **Append to `docs/papers/index.yaml`.** Use the `Edit` tool to insert the stanza at the end of the file. Preserve the inline `# <title>` comments on unresolved `<name><year>-???` cite lines — they are the only hint about what each placeholder refers to. Show the user the diff after the write.
 
 B4. **Curate the cites list.** Each `<name><year>-???` entry is a paper the primary cites but the registry doesn't have yet. Decide per line:
-  - **Chase** if the placeholder is a direct algorithmic antecedent worth showing in the page's `# References` or as a `relatedAlgorithms` cross-link (the corner detector fed into this algorithm, the numerical method it builds on, the paper that introduced the same idea in a different context). Recurse on steps B2–B3 to fetch and append each one.
+  - **Chase** if the placeholder is a direct algorithmic antecedent worth showing in the page's `# References` or as a `relations[]` cross-link (the corner detector fed into this algorithm, the numerical method it builds on, the paper that introduced the same idea in a different context). Recurse on steps B2–B3 to fetch and append each one.
   - **Drop** if the placeholder is tangential (cited in passing, a generic textbook, the venue's comparison survey, a self-citation from the authors). Delete the line from the primary's `cites:` block.
   - Report the keep/drop decisions in the turn log. When in doubt between chase and drop, read the primary (after step B5) for context first.
 
@@ -255,10 +254,10 @@ B8. **Synthesize the frontmatter.** No body yet — just the yaml block.
   - `sources.primary`: the paper id.
   - `sources.references`: curated — direct antecedents from B4 plus any cross-link candidates from `bun papers:query pages-using <ref-id>`. These are the papers that will appear in `# References`.
   - `sources.notes`: freeform summary of key equations, symbols, and constants grounding the page.
-  - `relatedAlgorithms`: union of `bun papers:query pages-using <ref-id>` over `sources.references`, plus judgment-based cross-links from the same algorithmic family.
+  - Citation-graph candidates from `bun papers:query pages-using <ref-id>` over `sources.references`, plus judgment-based cross-links from the same algorithmic family, are candidates for `relations[]` entries — pick the correct `type` and `confidence` per CLAUDE.md → "Relations field", or omit the edge (Rule B) if the methods are not comparable.
   - **Omit `sources.impl` and `editorAlgorithmId`.** Neither can be inferred safely. Add them only when the user supplies a repo URL or names an existing adapter id.
   - **Typed relations.** If the research note's `## NEW: <slug>` or `## UPDATE: <slug>` block records a `Relations:` block (one or more `{ type, target, confidence, caution }` entries — recorded by `paper-ingest` Step 4b), copy each entry into the frontmatter `relations:` list verbatim. Verify each `target` slug resolves to an on-disk page before writing.
-  - **Historical fork.** If the research note ALSO records `Quality: historical`, set `quality: historical` in the frontmatter; **drop** `editorAlgorithmId` (no Try-in-editor CTA on a historical page); **omit** `comparedWith` entirely (per CLAUDE.md → Comparison authoring discipline → Rule A — supersession is not comparison). The historical fork requires that at least one of the copied `relations[]` entries is `{ type: generalized_by, confidence: high }` and that its target is non-draft, non-historical — the validator (Rule 4b) enforces this.
+  - **Historical fork.** If the research note ALSO records `Quality: historical`, set `quality: historical` in the frontmatter; **drop** `editorAlgorithmId` (no Try-in-editor CTA on a historical page); **omit** any `relations[type=compared_with]` entry entirely (per CLAUDE.md → Comparison authoring discipline → Rule A — supersession is not comparison). The historical fork requires that at least one of the copied `relations[]` entries is `{ type: generalized_by, confidence: high }` and that its target is non-draft, non-historical — the validator (Rule 4b) enforces this.
 
 B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no body. Then continue with Workflow §4.
 
@@ -278,7 +277,7 @@ B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no b
 1. **Read `sources` from the page frontmatter.** If absent, run Bootstrap above.
 2. **Confirm research notes.** Verify `docs/research/notes/<primary-id>.md` exists. For each `<ref-id>` in `sources.references`, verify `docs/research/notes/<ref-id>.md` exists. Any missing note → stop, tell the user to run `/paper-ingest` first. Do NOT fall back to reading the cache.
 3. **Cache the impl** (only if `sources.impl` is set). `bun impls:fetch <slug>` writes raw files into `docs/impls/.cache/<owner>/<repo>/<sha>/<file>`. Opus will pass these paths to the Draft subagent in Step 7.
-4. **Query the citation graph** (lightweight, in-orchestrator). `bun papers:query cites <primary-id>` and `bun papers:query pages-using <ref-id>` for each reference — used to populate `relatedAlgorithms` candidates. Output is small (slug list).
+4. **Query the citation graph** (lightweight, in-orchestrator). `bun papers:query cites <primary-id>` and `bun papers:query pages-using <ref-id>` for each reference — used to populate `relations[]` cross-link candidates. Output is small (slug list).
 5. **Read frontmatter of candidate cross-link pages.** For each candidate slug from §4, read only the page's frontmatter (cheap, ~200 tokens each). Do not load page bodies. Use the frontmatter `summary` and `sources.primary` to confirm a cross-link makes sense.
 6. **Assemble the Draft contract input.** Collect: primary note path, reference note paths, cached impl file paths, page-template skeleton path, target slug. **Pick the template on `frontmatter.quality`**: when `quality: "historical"`, pass `references/algo-page-template-historical.md` (trimmed: Goal + Historical context + References — no Algorithm/Implementation/Remarks); otherwise pass `references/algo-page-template.md`. **Opus does NOT read the notes themselves at this step** — the Draft subagent will.
 7. **Delegate the page draft to Sonnet.** Invoke the Draft contract from `.claude/skills/_shared/subagent-prompts.md` with the inputs from §6. Sonnet returns:
@@ -299,7 +298,7 @@ B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no b
    # Zero MISS lines = page faithfully copies from notes
    ```
    Any MISS line means either (a) the note is incomplete and should be extended, or (b) Sonnet hallucinated. In case (a), extend the note and re-delegate. In case (b), reject the draft and re-delegate with a stricter prompt.
-9. **Assemble and write.** Opus assembles `--- frontmatter ---\n<body string from Sonnet>` and calls `Write` once. The frontmatter `prerequisites` / `relatedAlgorithms` / `comparedWith` slugs come from the note's `Connections` section + the §4 citation-graph candidates, NOT from the body string. Cross-check every slug against `knownSlugs` (read from `src/generated/content-graph.ts` or by listing `content/{algorithms,models,concepts}/`).
+9. **Assemble and write.** Opus assembles `--- frontmatter ---\n<body string from Sonnet>` and calls `Write` once. The frontmatter `prerequisites` / `relations[].target` slugs come from the note's `Connections` section + the §4 citation-graph candidates, NOT from the body string. Cross-check every slug against `knownSlugs` (read from `src/generated/content-graph.ts` or by listing `content/{algorithms,models,concepts}/`).
 10. **Verify.** `bun run build && bun run lint && npx vitest run`.
 
 ## Voice rules
@@ -360,7 +359,7 @@ Run before handing off a draft.
 - [ ] If `editorAlgorithmId` is set, the sample-id mapping in `src/pages/AlgorithmPost.tsx` covers it and the "Try in the editor" button lands the user in editor mode with an image preloaded and the algorithm preselected — one click to Run.
 - [ ] A research note exists for `sources.primary` AND every entry in `sources.references`. Page draft is the result of the Draft contract on those notes; the orchestrator did not load any `docs/papers/.cache/*` file.
 - [ ] AUDIT JSON returned by the Draft subagent has zero MISS entries when grep-checked against the cited notes (verification recipe in `_shared/subagent-prompts.md`).
-- [ ] Frontmatter `prerequisites` / `relatedAlgorithms` / `comparedWith` slugs were sourced from the primary note's `Connections` section + §4 citation-graph candidates, NOT taken from the body string Sonnet returned.
+- [ ] Frontmatter `prerequisites` / `relations[].target` slugs were sourced from the primary note's `Connections` section + §4 citation-graph candidates, NOT taken from the body string Sonnet returned.
 
 ## Notes on cache file fidelity
 

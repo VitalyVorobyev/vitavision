@@ -78,7 +78,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "homography",
         "dlt-normalisation",
-        "ransac"
+        "ransac",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "tags": [
@@ -629,7 +630,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "homography",
         "ransac",
-        "svd-null-space"
+        "svd-null-space",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "quality": "historical",
@@ -1121,7 +1123,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "homography",
-        "ransac"
+        "ransac",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "relations": [

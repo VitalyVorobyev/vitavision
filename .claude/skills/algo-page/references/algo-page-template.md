@@ -11,7 +11,6 @@ author: "Vitaly Vorobyev"
 difficulty: <beginner|intermediate|advanced>
 draft: false
 relatedPosts: ["<blog-slug>"]
-relatedAlgorithms: ["<algo-slug>"]
 relatedDemos: ["<demo-slug>"]
 editorAlgorithmId: <chess-corners|chessboard|charuco|markerboard|ringgrid|radsym>
 coverImage: "./images/<slug>/cover.png"
@@ -20,8 +19,15 @@ demoLinks: ["https://..."]
 
 # Atlas relationship fields (optional)
 prerequisites: []   # concept slugs this algorithm depends on
-comparedWith: []    # algorithms that this is directly contrasted with (author one side; build mirrors)
 failureModes: []    # failure-mode page slugs (always empty in MVP)
+
+# Quality + typed relations (optional) — see CLAUDE.md → "Relations field"
+quality: <stub|canonical|historical>
+relations:
+  - type: <generalized_by|alternative_formulation_of|parallel_foundation_with|extended_by|compared_with|feeds_into|learned_alternative_of>
+    target: <slug>
+    confidence: <high|medium|low>
+    caution: "<one-line note, optional>"
 ---
 
 # Goal

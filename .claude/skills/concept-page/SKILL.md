@@ -86,9 +86,16 @@ category: ...            # image-formation | geometry | feature-theory | calibra
 
 # Optional relationship fields
 prerequisites: []        # concept slugs this concept depends on (often empty for primitives)
-related: [...]           # algorithm/model slugs that genuinely use this concept
-comparedWith: []         # rare for concepts; used when two formulations are directly contrasted
 failureModes: []         # always empty in MVP; required as placeholder
+
+# Quality + typed relations (optional)
+quality: stub | canonical | historical    # see CLAUDE.md → "Quality field"
+relations:                                # see CLAUDE.md → "Relations field". The single field for all
+                                          # inter-page links beyond prerequisites/failureModes.
+  - type: generalized_by | alternative_formulation_of | parallel_foundation_with | extended_by | compared_with | feeds_into | learned_alternative_of
+    target: <slug>
+    confidence: high | medium | low
+    caution: <one-line note, optional>
 
 # Optional sources
 sources:
@@ -100,7 +107,7 @@ sources:
 
 **Source kinds.** `sources.primary` and `sources.references[]` accept `<bare-id>` (defaults to `paper`), `paper:<id>`, `repo:<url>@<sha>`, or `doc:<repo-relative-path>`. Concepts most often cite `paper:` and occasionally `doc:` (a textbook chapter, a foundational design doc); `repo:` is rare for concepts but accepted when the canonical reference for the concept is a repo (e.g. an algorithm whose only specification is a reference implementation).
 
-`category` is required. `related` is strongly recommended — a concept page with no `related` entries is not yet doing its job in the graph. `prerequisites` is often empty for primitive concepts (`image-gradient`, `homography`) but populated for derived ones.
+`category` is required. `prerequisites` (this concept's own dependencies) is often empty for primitive concepts (`image-gradient`, `homography`) but populated for derived ones. A concept page does not author outgoing links to the algorithm/model pages that use it — those pages list this concept's slug in *their own* `prerequisites`, and the build derives the reverse `usedBy` edge on this page automatically. `relations[]` is for concept-to-concept lineage only (e.g. two alternative formulations of the same idea), not for linking out to dependents.
 
 **Do not write `usedBy:` or any reverse field.** Reverse edges are derived by the build.
 
@@ -108,7 +115,13 @@ sources:
 
 ### Step 1 — Page-creation criterion check
 
-Evaluate the criterion before doing anything else. Count how many existing `content/algorithms/` and `content/models/` pages list the concept slug in their `prerequisites` field. Count planned pages from any open research notes. If the count is below 3, reject. If the planned content is too narrow for 500 words, reject.
+Evaluate the criterion from `## Page-creation criterion` above before doing anything else — do not proxy it with a referencing-page count. Check, in order:
+
+1. **Fundamental and cross-cutting.** The topic is a genuinely fundamental, cross-cutting computer-vision concept — not one that happens to be reused, but one that would deserve a page even before its dependents exist. The number of pages that currently (or will eventually) reference the concept is **not** a gate.
+2. **≥500 words of substance.** The topic can support at least 500 words of substantive standalone content across the five required sections (definition, math, numerical concerns, implementation implications, where it appears).
+3. **Source diversity (the real second gate).** The concept can synthesise ≥3 distinct sources — check `docs/research/notes/` for existing notes and confirm at least 3 will be cited (see Step 2 and Step 4). A topic backed by a single paper belongs as a section inside that paper's page, not as a standalone concept.
+
+If (1) fails, the topic is probably too peripheral — prefer to defer it. If (2) or (3) fails, **reject the request**: suggest adding it as a `## <Concept>` subsection inside the most relevant existing algorithm or model page instead.
 
 ### Step 2 — Confirm required research notes exist
 
@@ -151,7 +164,7 @@ Additionally check the multi-source rule: at least 3 of the 5 sections must draw
 
 ### Step 5.6 — Assemble and write
 
-Opus assembles `--- frontmatter --- \n <body string from Sonnet>` and calls `Write` once. Frontmatter `related` slugs come from the notes' `Connections` sections + the candidate page slugs that listed this concept in their `prerequisites` (from Step 1's count), NOT from the body string.
+Opus assembles `--- frontmatter --- \n <body string from Sonnet>` and calls `Write` once. Frontmatter `prerequisites` (this concept's own dependencies on other concepts) and any `relations[]` entries (concept-to-concept lineage, e.g. `alternative_formulation_of`) come from the notes' `Connections` sections, NOT from the body string. Do not add a forward link to the algorithm/model pages that use this concept — those pages carry it in their own `prerequisites`, and the build derives this page's `usedBy` bucket automatically.
 
 ### Step 6 — Verify
 
@@ -171,7 +184,7 @@ Inherit the full `algo-page` forbidden-patterns list. The following are concept-
 - **No "fundamental to all of computer vision" openers.** The `# Definition` section begins with a precise statement of what the concept is, not with a claim about its importance.
 - **No paraphrase of the `# Definition` as the opening sentence of `# Mathematical Description`.** The definition is already stated; `# Mathematical Description` develops it.
 - **No Wikipedia-style "history of" paragraphs** — attribution lives in `# References`.
-- **No pairwise concept comparisons as standalone pages.** Use `comparedWith:` field + inline `## When X vs Y` subsection.
+- **No pairwise concept comparisons as standalone pages.** Use `relations[type=compared_with]` + inline `## When X vs Y` subsection.
 - **Loading the paper cache file (`docs/papers/.cache/*.{html,txt}`) into the orchestrator's context.** All paper reads happen in the Sonnet Extract contract during paper-ingest; the orchestrator works from notes only.
 
 ## Checklist
@@ -185,7 +198,7 @@ Run before handing off a draft.
 - [ ] `# Numerical Concerns` covers at least floating-point behavior and scale sensitivity (when applicable).
 - [ ] `# Where it appears` names specific registered page slugs.
 - [ ] `# References` is a numbered list, 1–5 entries.
-- [ ] Frontmatter: `category` present and valid. `related` populated.
+- [ ] Frontmatter: `category` present and valid. `prerequisites` reflects this concept's own dependencies (often empty for primitives); no forward link authored to dependent algorithm/model pages.
 - [ ] At least 3 of the 5 sections draw from ≥2 distinct sources.
 - [ ] No first-person pronouns anywhere on the page.
 - [ ] No `usedBy:` or any reverse field in frontmatter.

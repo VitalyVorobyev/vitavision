@@ -1041,7 +1041,8 @@ export const contentGraph: ContentGraph = {
       "prerequisites": [
         "homography",
         "dlt-normalisation",
-        "ransac"
+        "ransac",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "relations": []
@@ -1279,7 +1280,8 @@ export const contentGraph: ContentGraph = {
       "prerequisites": [
         "homography",
         "ransac",
-        "svd-null-space"
+        "svd-null-space",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "relations": [
@@ -1497,7 +1499,8 @@ export const contentGraph: ContentGraph = {
     "lin-sva-stitching": {
       "prerequisites": [
         "homography",
-        "ransac"
+        "ransac",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "relations": [
@@ -5040,7 +5043,11 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "spatially-varying-image-stitching": {
-      "usedBy": [],
+      "usedBy": [
+        "apap-image-stitching",
+        "gao-dual-homography-stitching",
+        "lin-sva-stitching"
+      ],
       "affects": [],
       "generalises": [],
       "extending": [],
@@ -5107,7 +5114,8 @@ export const contentGraph: ContentGraph = {
     "svd-null-space": 0,
     "homography": 1,
     "dlt-normalisation": 1,
-    "apap-image-stitching": 2,
+    "spatially-varying-image-stitching": 2,
+    "apap-image-stitching": 3,
     "convolution": 0,
     "image-gradient": 1,
     "scale-space": 1,
@@ -5136,7 +5144,7 @@ export const contentGraph: ContentGraph = {
     "epipolar-geometry": 2,
     "stereo-rectification": 3,
     "fusiello-compact-rectification": 4,
-    "gao-dual-homography-stitching": 2,
+    "gao-dual-homography-stitching": 3,
     "geiger-chessboard-detector": 2,
     "ni-generalized-fast-radial-symmetry": 2,
     "convolutional-neural-network": 1,
@@ -5150,7 +5158,7 @@ export const contentGraph: ContentGraph = {
     "horn-schunck": 4,
     "camera-distortion-models": 1,
     "kumar-generalized-rac": 2,
-    "lin-sva-stitching": 2,
+    "lin-sva-stitching": 3,
     "duda-radon-corners": 2,
     "longuet-higgins-eight-point": 3,
     "loop-zhang-rectification": 4,
@@ -5223,7 +5231,6 @@ export const contentGraph: ContentGraph = {
     "vgg": 2,
     "vggt": 4,
     "xfeat": 2,
-    "yolo-v1": 0,
-    "spatially-varying-image-stitching": 2
+    "yolo-v1": 0
   }
 };

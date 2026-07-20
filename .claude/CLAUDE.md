@@ -71,7 +71,7 @@ For symmetric relation types (`compared_with`, `alternative_formulation_of`, `pa
 - **Concept page**: when the topic is a genuinely fundamental, cross-cutting CV concept that can support ≥500 words of substantive standalone content (definition, math, numerical concerns, implementation implications). The number of pages referencing the concept is **not** a gate — fundamental concepts get a page even before their dependents are written. Source-diversity still applies: a concept must synthesise ≥3 distinct sources (see the `concept-page` skill).
 - **Failure-mode page**: only when referenced by 3+ algorithm/model pages AND can support ≥500 words. Failure-mode authoring is deferred until natural candidates accumulate.
 - **Pairwise comparison page**: prohibited. Use `relations[type=compared_with]` + an inline `## When to choose X over Y` section inside the more authoritative page. The non-host page carries a single Remarks bullet linking to the comparison anchor — never duplicate the prose. When the relationship is supersession, alternative formulation, parallel foundation, extension, pipeline, or cross-paradigm rather than peer practitioner-choice, pick the appropriate `type` from the Relations field vocabulary below.
-- **Survey concept page** (3+ methods): a concept page (`content/concepts/<survey-slug>.md`), not an algorithm page. Required: ≥3 surveyed methods, ≥800 words, decision table near the top, every surveyed algorithm page lists the survey concept in its `related`. Author only when ≥3 of the surveyed papers have research notes.
+- **Survey concept page** (3+ methods): a concept page (`content/concepts/<survey-slug>.md`), not an algorithm page. Required: ≥3 surveyed methods, ≥800 words, decision table near the top, every surveyed algorithm page lists the survey concept in its `prerequisites`. Author only when ≥3 of the surveyed papers have research notes.
 
 ### Comparison authoring discipline
 - **More-authoritative tiebreaker** for which page hosts the `## When to choose X over Y` section: (1) older paper hosts; (2) same year → more general scope hosts; (3) tied → author judgment with reason recorded in the commit message. No "more cited" rule. The tiebreaker applies only to **peer** comparisons; it does not apply when one method supersedes the other (see Rule A).
@@ -133,7 +133,15 @@ Each registered source has a corresponding research note at `docs/research/notes
 Concept pages may omit `sources:` if no canonical source exists.
 
 ### Validation
-Run `bun run scripts/validate-content.ts` before opening a PR. The build runs the same validation and will fail on broken slugs, prerequisite cycles, missing source IDs, or canonical-quality violations.
+Run `bun run scripts/validate-content.ts` **by path** before opening a PR. It checks slug
+resolution (including `relations[].target`), prerequisite cycles, source-id existence, and
+canonical-quality gates.
+
+Nothing automated runs it. `bun run build` does not, and CI's `validate-content` job runs
+`bun run content:validate` → `scripts/content-validate.ts`, a different and much narrower
+script that only checks blog/algorithm internal links and `relatedPosts`. So a broken
+`relations[].target` slug or a prerequisite cycle will pass CI. Until that gap is closed,
+the manual run is the only gate — do not skip it.
 
 ### Research notes (unpublished reasoning substrate)
 

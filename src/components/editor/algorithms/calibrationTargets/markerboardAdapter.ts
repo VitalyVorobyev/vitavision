@@ -77,7 +77,10 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as MarkerBoardConfig;
         return detectMarkerboardWasm(pixels, width, height, {
-            chessCfg: { threshold_value: c.minCornerStrength },
+            // calib-targets 0.10.1 replaced the flat `threshold_value` field
+            // with a tagged `threshold: { relative | absolute }` enum (see
+            // handleCalibTarget's chessCfg merge in wasmWorker.ts).
+            chessCfg: { threshold: { relative: c.minCornerStrength } },
             params: {
                 layout: {
                     rows: c.boardRows,

@@ -70,7 +70,10 @@ export const charucoAlgorithm: AlgorithmDefinition = {
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as CharucoConfig;
         return detectCharucoWasm(pixels, width, height, {
-            chessCfg: { threshold_value: c.chessMinCornerStrength },
+            // calib-targets 0.10.1 replaced the flat `threshold_value` field
+            // with a tagged `threshold: { relative | absolute }` enum (see
+            // handleCalibTarget's chessCfg merge in wasmWorker.ts).
+            chessCfg: { threshold: { relative: c.chessMinCornerStrength } },
             params: {
                 px_per_square: c.pxPerSquare,
                 board: {

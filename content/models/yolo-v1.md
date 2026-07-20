@@ -72,7 +72,9 @@ Takes a full RGB image and produces, in a single CNN forward pass, a set of boun
 
 **Blocks.** 24 convolutional layers followed by 2 fully connected layers; alternating 1×1 reduction layers precede 3×3 conv layers throughout the backbone (§2.1). All layers except the final output use leaky ReLU:
 
-$$\phi(x) = \begin{cases} x & \text{if } x > 0 \\ 0.1x & \text{otherwise} \end{cases} \tag{eq. 2}$$
+$$
+\phi(x) = \begin{cases} x & \text{if } x > 0 \\ 0.1x & \text{otherwise} \end{cases} \tag{eq. 2}
+$$
 
 The final layer uses a linear activation. At test time, class-specific confidence scores per cell are computed as $\Pr(\text{Class}_i) \times \text{IOU}_\text{pred}^\text{truth} = \Pr(\text{Class}_i \mid \text{Object}) \times \Pr(\text{Object}) \times \text{IOU}_\text{pred}^\text{truth}$ (§2, eq. 1). The YOLO head decode for a single cell in Python:
 

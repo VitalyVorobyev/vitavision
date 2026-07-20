@@ -8,11 +8,9 @@ slug: camera-distortion-models
 
 Mathematical models for departures from the ideal pinhole projection — radial barrel/pincushion, tangential decentering, thin-prism — and the historical lineage from Brown's photogrammetric polynomial through Tsai's one-term radial, Weng's full Brown-Conrady, and Zhang's two-term planar formulation.
 
-## Related
+## Prerequisites
 
-- [[kumar-generalized-rac]]
-- [[tsai-versatile-calibration]]
-- [[zhang-planar-calibration]]
+- [[pinhole-camera-model]]
 
 ## Sources
 
@@ -20,3 +18,4 @@ Mathematical models for departures from the ideal pinhole projection — radial 
 - Reference: [[tsai1987-versatile]]
 - Reference: [[weng1992-camera]]
 - Reference: [[zhang2000-flexible]]
+- Reference: [[zhang2022-learning-based]]

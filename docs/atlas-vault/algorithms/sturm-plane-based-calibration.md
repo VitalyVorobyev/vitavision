@@ -11,10 +11,7 @@ Recover camera intrinsics from one or more views of one or more planar targets v
 ## Prerequisites
 
 - [[homography]]
-
-## Related
-
-- [[zhang-planar-calibration]]
+- [[pinhole-camera-model]]
 
 ## Sources
 

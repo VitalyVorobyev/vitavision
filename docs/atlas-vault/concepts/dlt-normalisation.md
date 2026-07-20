@@ -8,12 +8,10 @@ slug: dlt-normalisation
 
 A two-line similarity transform — translate the point centroid to the origin, isotropically scale so the average distance is √2 — that conditions the design matrix of any DLT-based estimator (homography, fundamental matrix, projective camera, Moving DLT) by ~10⁸, and is the difference between unusable and reliable linear solutions.
 
-## Related
+## Prerequisites
 
-- [[apap-image-stitching]]
-- [[epipolar-geometry]]
-- [[fundamental-matrix-eight-point]]
-- [[homography]]
+- [[ransac]]
+- [[svd-null-space]]
 
 ## Sources
 

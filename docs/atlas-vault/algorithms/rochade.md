@@ -13,17 +13,9 @@ Detect a full planar checkerboard in an image by reducing the gradient-magnitude
 - [[hessian-saddle-response]]
 - [[image-gradient]]
 
-## Related
+## Practice
 
-- [[chess-corners]]
-- [[chessboard-x-corner-detection]]
-- [[laureano-topological-chessboard]]
-- [[ocpad]]
-- [[shu-topological-grid]]
-
-## Compared with
-
-- [[pyramidal-blur-aware-xcorner]]
+- **Compared with** — [[pyramidal-blur-aware-xcorner]]
 
 ## Sources
 

@@ -11,13 +11,7 @@ A 2011–2013 lineage of stitching methods that replace the single global homogr
 ## Prerequisites
 
 - [[homography]]
-
-## Related
-
-- [[apap-image-stitching]]
-- [[dlt-normalisation]]
-- [[gao-dual-homography-stitching]]
-- [[lin-sva-stitching]]
+- [[ransac]]
 
 ## Sources
 

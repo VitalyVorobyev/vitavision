@@ -10,18 +10,16 @@ Recover camera intrinsics, radial distortion, and per-view extrinsics from at le
 
 ## Prerequisites
 
+- [[bundle-adjustment]]
 - [[camera-distortion-models]]
 - [[homography]]
+- [[pinhole-camera-model]]
+- [[ransac]]
 
-## Related
+## Lineage
 
-- [[chess-corners]]
-- [[puzzleboard]]
-- [[rochade]]
-
-## Compared with
-
-- [[sturm-plane-based-calibration]]
+- **Parallel foundation with** — [[sturm-plane-based-calibration]]
+  > Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis.
 
 ## Sources
 
@@ -29,3 +27,4 @@ Recover camera intrinsics, radial distortion, and per-view extrinsics from at le
 - Reference: [[sturm2003-plane-based]]
 - Reference: [[tsai1987-versatile]]
 - Reference: [[weng1992-camera]]
+- Reference: [[zhang2022-learning-based]]

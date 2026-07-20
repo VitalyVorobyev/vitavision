@@ -12,10 +12,6 @@ Extend Tsai's radial alignment constraint to a non-frontal sensor by modelling l
 
 - [[camera-distortion-models]]
 
-## Related
-
-- [[zhang-planar-calibration]]
-
 ## Sources
 
 - Primary: [[kumar2014-grac]]

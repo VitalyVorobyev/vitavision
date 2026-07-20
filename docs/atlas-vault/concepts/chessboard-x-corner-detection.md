@@ -6,28 +6,11 @@ slug: chessboard-x-corner-detection
 
 > Generated stub — do not edit. Source: `content/concepts/chessboard-x-corner-detection.md`.
 
-Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.
+Twenty-five years of methods for finding the inner corners of a planar checkerboard calibration target — from Harris-on-thresholded-images through hand-crafted ring/quadrant/Hessian responses (ChESS, Geiger, Shu, Laureano, ROCHADE) to learned per-pixel CNNs (MATE, CCDN) and learned heatmap pipelines (CCS), grouped by the four design axes that drive the trade-off: per-pixel response operator, multi-scale strategy, structure recovery, and subpixel refinement.
 
 ## Prerequisites
 
 - [[image-gradient]]
-
-## Related
-
-- [[ccdn-checkerboard-detector]]
-- [[chess-corners]]
-- [[duda-radon-corners]]
-- [[geiger-chessboard-detector]]
-- [[gp-checkerboard-enhancement]]
-- [[hessian-saddle-response]]
-- [[laureano-topological-chessboard]]
-- [[mate-checkerboard-detector]]
-- [[ocpad]]
-- [[puzzleboard]]
-- [[pyramidal-blur-aware-xcorner]]
-- [[rochade]]
-- [[shu-topological-grid]]
-- [[topological-grid-recovery]]
 
 ## Sources
 
@@ -43,3 +26,5 @@ Twenty-five years of methods for finding the inner corners of a planar checkerbo
 - Reference: [[placht2014-rochade]]
 - Reference: [[shu2009-topological]]
 - Reference: [[stelldinger2024-puzzleboard]]
+- Reference: [[yang2018-sub-pixel]]
+- Reference: [[zhang2022-learning-based]]

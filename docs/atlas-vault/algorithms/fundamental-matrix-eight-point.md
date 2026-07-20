@@ -13,11 +13,10 @@ Compute the fundamental matrix from n ≥ 8 point correspondences by conditionin
 - [[dlt-normalisation]]
 - [[epipolar-geometry]]
 - [[homography]]
-
-## Related
-
-- [[apap-image-stitching]]
+- [[ransac]]
+- [[svd-null-space]]
 
 ## Sources
 
 - Primary: [[hartley1997-eight-point]]
+- Reference: [[longuet-higgins1981-eight-point]]

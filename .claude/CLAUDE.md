@@ -42,6 +42,7 @@ After any code change, run **all** of the following before committing:
 2. `bun run lint` — ESLint
 3. `npx vitest run` — unit tests
 4. `bun run scripts/test-wasm-schemas.ts` — WASM integration tests (when touching algorithm configs)
+5. `bun run ds:validate` — design-system boundary (when touching a component exported from `.design-sync/ds-entry.tsx`)
 
 ### Secrets & Credentials
 

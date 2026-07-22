@@ -1,0 +1,67 @@
+{
+  "projectId": "a6966999-10fa-4b45-b283-48534bdd45d3",
+  "shape": "package",
+  "pkg": "vitcv",
+  "globalName": "Vitavision",
+  "srcDir": "src",
+  "tsconfig": "tsconfig.app.json",
+  "buildCmd": "npx vite build && npx tsc -p .design-sync/tsconfig.ds.json && node .design-sync/build-ds.mjs",
+  "cssEntry": "dist/ds/styles.css",
+  "docsDir": ".design-sync/docs",
+  "readmeHeader": ".design-sync/conventions.md",
+  "guidelinesGlob": [],
+  "provider": {
+    "component": "DesignPreviewProvider"
+  },
+  "componentSrcMap": {
+    "Tooltip": "src/components/ui/Tooltip.tsx",
+    "ErrorBoundary": "src/components/ui/ErrorBoundary.tsx",
+
+    "VitavisionLogo": "src/components/shared/VitavisionLogo.tsx",
+    "ZoomControls": "src/components/shared/ZoomControls.tsx",
+    "CanvasControlsHint": "src/components/shared/CanvasControlsHint.tsx",
+
+
+    "DifficultyBadge": "src/components/blog/DifficultyBadge.tsx",
+    "TagFilter": "src/components/blog/TagFilter.tsx",
+    "TableOfContents": "src/components/blog/TableOfContents.tsx",
+    "ReadingProgress": "src/components/blog/ReadingProgress.tsx",
+
+    "QualityBadge": "src/components/atlas/QualityBadge.tsx",
+    "SourceCard": "src/components/atlas/SourceCard.tsx",
+    "SourceStrip": "src/components/atlas/SourceStrip.tsx",
+    "EntryIcon": "src/components/atlas/EntryIcon.tsx",
+    "ImplementationsList": "src/components/atlas/ImplementationsList.tsx",
+    "AIDisclosure": "src/components/atlas/AIDisclosure.tsx",
+
+    "AlgorithmGlyph": "src/components/algorithms/AlgorithmGlyph.tsx",
+    "CategoryGlyph": "src/components/algorithms/CategoryGlyph.tsx",
+    "AlgorithmsSidebar": "src/components/algorithms/AlgorithmsSidebar.tsx",
+    "AlgorithmsViewToggle": "src/components/algorithms/AlgorithmsViewToggle.tsx",
+    "AlgorithmsFilterSheet": "src/components/algorithms/AlgorithmsFilterSheet.tsx",
+
+    "DemoCover": "src/components/demos/DemoCover.tsx",
+    "DemoThumbnail": "src/components/demos/DemoThumbnail.tsx",
+
+    "TargetPreview": "src/components/targetgen/TargetPreview.tsx",
+    "TargetTypeSelector": "src/components/targetgen/panels/TargetTypeSelector.tsx",
+    "PaperConfig": "src/components/targetgen/panels/PaperConfig.tsx",
+    "TargetConfigPanel": "src/components/targetgen/panels/TargetConfigPanel.tsx",
+    "DownloadBar": "src/components/targetgen/panels/DownloadBar.tsx",
+
+    "SpecBlog": "src/components/home/specimens/index.tsx",
+    "SpecAlgorithms": "src/components/home/specimens/index.tsx",
+    "SpecEditor": "src/components/home/specimens/index.tsx",
+    "SpecTargets": "src/components/home/specimens/index.tsx",
+
+    "Panel": "src/components/illustrations/_shared/primitives.tsx",
+    "PanelFlat": "src/components/illustrations/_shared/primitives.tsx",
+    "FloatingPanel": "src/components/illustrations/_shared/primitives.tsx",
+    "TinyBrow": "src/components/illustrations/_shared/primitives.tsx",
+    "Eyebrow": "src/components/illustrations/_shared/primitives.tsx",
+    "MetricCell": "src/components/illustrations/_shared/primitives.tsx",
+    "Kbd": "src/components/illustrations/_shared/primitives.tsx",
+    "Pill": "src/components/illustrations/_shared/primitives.tsx",
+    "Note": "src/components/illustrations/_shared/primitives.tsx"
+  }
+}

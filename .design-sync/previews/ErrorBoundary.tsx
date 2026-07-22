@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ErrorBoundary } from 'vitcv';
 
 function Cracked() {

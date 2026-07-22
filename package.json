@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "content:build": "INCLUDE_DRAFTS=true bun run scripts/content-build.ts",
     "content:validate": "bun run scripts/content-validate.ts",
+    "ds:validate": "bun run scripts/validate-ds-boundary.ts",
     "atlas:layout": "bun run scripts/computeConstellationLayout.ts",
     "impls:fetch": "bun run scripts/impls-fetch.ts",
     "papers:fetch": "bun run scripts/papers-fetch.ts",

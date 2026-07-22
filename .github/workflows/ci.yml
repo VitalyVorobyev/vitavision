@@ -58,6 +58,14 @@ jobs:
       - name: Lint
         run: bun run lint
 
+      # Guards the components synced to claude.ai/design against reaching the
+      # editor store, the WASM proxy, konva, or Clerk. Those break a design
+      # render SILENTLY — the preview card comes up blank with no error in any
+      # log — so nothing else in CI would catch it. Fast (no vite), so it runs
+      # before the build.
+      - name: Validate design-system boundary
+        run: bun run ds:validate
+
       - name: Build
         run: bun run build
 

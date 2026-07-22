@@ -198,9 +198,16 @@ but confusing — write comments as prose rather than pasting markup into them.
   breaks the `tsc` step loudly (good), but a *new* component worth syncing will never
   appear on its own — the entry is a hand-curated list.
 - **Coupling can change under you.** A component that is standalone today starts
-  throwing the moment someone adds a store/router/Clerk import to it or to one of its
-  children. Symptom is `[RENDER] root empty` on a component that used to pass. Re-check
-  the transitive import graph rather than patching the preview.
+  throwing the moment someone adds a store/WASM/konva/Clerk import to it or to one of
+  its children. Symptom is `[RENDER] root empty` on a component that used to pass —
+  i.e. a blank card with a clean log, the most expensive failure mode here.
+  `bun run ds:validate` (`scripts/validate-ds-boundary.ts`) now guards this in CI: it
+  bundles `ds-entry.tsx` with esbuild and fails on any forbidden path or package in the
+  **runtime** graph (type-only imports are erased, so they correctly pass). Extend the
+  `FORBIDDEN_PATHS` / `FORBIDDEN_PACKAGES` tables at the top of that script when a new
+  ambient dependency turns out to be unprovidable in a design render. It does not cover
+  non-import coupling — a missing React context or a runtime `fetch` of an asset from
+  `public/` still only shows up in the render check.
 - **`dist/` is gitignored**, so a fresh clone has no stylesheet, no `.d.ts` tree, and no
   pre-bundle until `buildCmd` runs. Also recreate the fork symlink if overrides ever land:
   `ln -sfn ../.ds-sync/node_modules .design-sync/node_modules`.

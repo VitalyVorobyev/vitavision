@@ -11,7 +11,7 @@
         "@fontsource/inter": "^5.3.0",
         "@radix-ui/react-tooltip": "^1.2.12",
         "@vitavision/calib-targets": "^0.10.1",
-        "@vitavision/chess-corners": "^0.11.2",
+        "@vitavision/chess-corners": "^1.2.0",
         "@vitavision/radsym": "^0.4.1",
         "@vitavision/ringgrid": "^0.10.1",
         "d3-delaunay": "^6.0.4",
@@ -533,7 +533,7 @@
 
     "@vitavision/calib-targets": ["@vitavision/calib-targets@0.10.1", "", {}, "sha512-A8f/4/DYmMPFlJ81a3pT5Ze5vraAGGBdWuG7uEeu2fih76FakI7nOO3GBcpr+M0PBiWLLGXaFkYdkdHvCIKe8g=="],
 
-    "@vitavision/chess-corners": ["@vitavision/chess-corners@0.11.2", "", {}, "sha512-ZpBsXX2iKLjeKi0sXcCA+WHx0VTs12n/veLI02qYrWFE8CX+MLQcbJToEaePI4gZs0j/tqEMB1D/HNAQ0jxpDw=="],
+    "@vitavision/chess-corners": ["@vitavision/chess-corners@1.2.0", "", {}, "sha512-vPj7RQArvQcrVWvPRxDYU0C7DwcWSMGjMmiW/7pOOEqmtBRYaltuB4BRODnYAKMKVVFeDhVPMbKh+tzG1pzJIA=="],
 
     "@vitavision/radsym": ["@vitavision/radsym@0.4.1", "", {}, "sha512-Fy8+ECUZlWOeBcoTYmhcjfDy+cGRqM2SrjkLLSIQlUO/272nyYgdhBifRkn04Tfbn4HjwR/GxlqUMOWkQaS9+w=="],
 

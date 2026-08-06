@@ -31,4 +31,5 @@ export const conceptHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModul
   "structure-tensor": () => import("./content/concepts/structure-tensor.ts"),
   "svd-null-space": () => import("./content/concepts/svd-null-space.ts"),
   "topological-grid-recovery": () => import("./content/concepts/topological-grid-recovery.ts"),
+  "visual-anomaly-detection": () => import("./content/concepts/visual-anomaly-detection.ts"),
 };

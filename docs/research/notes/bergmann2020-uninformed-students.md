@@ -52,9 +52,18 @@ per-pixel anomaly signals are derived from this mixture at inference:
 2. **Predictive variance** $v_{(r,c)}$ — the ensemble's *disagreement* about
    its own prediction, computed as the trace-style mixture variance from
    Kendall et al.'s formula for the variance of a Gaussian mixture with
-   equal weights and constant per-component covariance (Eq. 10). High when
-   students diverge from each other, independent of whether their mean is
-   close to the teacher's target.
+   equal weights and constant per-component covariance (Eq. 10):
+   $v_{(r,c)} = \frac{1}{M}\sum_{i=1}^{M} \lVert \mu^{S_i}_{(r,c)} \rVert_2^2 -
+   \lVert \mu_{(r,c)} \rVert_2^2$, where $\mu_{(r,c)} = \frac{1}{M}\sum_{i=1}^M
+   \mu^{S_i}_{(r,c)}$ is the mixture mean already used in Eq. 8–9. The paper's
+   printed form of Eq. 10 does not carry an explicit $+s$ term for the
+   per-student constant covariance $s$ — since $s$ is a scalar constant
+   (identical across pixels, students, and the ensemble), including or
+   omitting it only adds a uniform offset to every $v_{(r,c)}$ and therefore
+   cannot change the per-pixel ranking of scores, nor does it survive the
+   z-normalization of Eq. 11 (a constant offset cancels exactly against the
+   validation-set mean $v_\mu$). High when students diverge from each other,
+   independent of whether their mean is close to the teacher's target.
 
 These two terms are separately z-normalized over a held-out anomaly-free
 validation set and summed (Eq. 11) to give a single combined score per pixel;
@@ -382,6 +391,16 @@ authored, per the batch-authoring forward-reference workflow.
   not reconstructed from a generic-autoencoder template.
 - Eq. 10 (predictive variance $v_{(r,c)}$, citing Kendall et al. [14] for
   the mixture-variance form): `.txt` lines ~274–281.
+- Eq. 10 exact expression cross-verified directly against HTML MathML block
+  at HTML lines 1313–1317 (`id="S3.E10"`, `application/x-tex` annotation
+  `id="S3.E10.m1.7c"` reads exactly
+  `v_{(r,c)}=\frac{1}{M}\sum_{i=1}^{M}||\bm{\mu}_{(r,c)}^{S_{i}}||_{2}^{2}-||\bm{\mu}_{(r,c)}||_{2}^{2}.`,
+  §3.2 "Ensemble of Student Networks for Deep Anomaly Detection" →
+  "Scoring Functions for Anomaly Detection") — no additive $+s$ (constant
+  per-student covariance) term appears in the printed equation; $s$ is used
+  earlier (§3.2, before Eq. 7) only to justify collapsing the Gaussian
+  log-likelihood training criterion to the squared-$\ell_2$ loss, and does
+  not reappear in Eq. 8, 9, 10, or 11.
 - Eq. 11 (z-normalization and summation of $e$, $v$ scores; validation-set
   statistics $e_\mu, v_\mu, e_\sigma, v_\sigma$): `.txt` lines ~283–290.
 - §3.3 "Multi-Scale Anomaly Segmentation": scale-dependent under/over-

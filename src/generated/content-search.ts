@@ -1331,6 +1331,26 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR 2024 (arXiv 2023)"
   },
   {
+    "slug": "efficientad",
+    "path": "/atlas/efficientad",
+    "type": "model",
+    "title": "EfficientAD",
+    "summary": "Millisecond-latency one-class anomaly detection combining a loss-induced-asymmetric student-teacher branch for structural defects with a feature-space autoencoder branch for logical defects, running 2.2 ms (S) / 4.5 ms (M) per image on an RTX A6000.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "real-time"
+    ],
+    "domain": "anomaly-detection",
+    "headings": [],
+    "authors": [
+      "K. Batzner",
+      "L. Heckler",
+      "R. König"
+    ],
+    "venue": "WACV 2024 (arXiv 2023)"
+  },
+  {
     "slug": "fast-scnn",
     "path": "/atlas/fast-scnn",
     "type": "model",
@@ -1719,6 +1739,31 @@ export const searchRecords: SearchRecord[] = [
     "venue": "arXiv (Cornell University)"
   },
   {
+    "slug": "patchcore",
+    "path": "/atlas/patchcore",
+    "type": "model",
+    "title": "PatchCore",
+    "summary": "Training-free industrial anomaly detection: a single forward pass over defect-free images builds a coreset-subsampled memory bank of locally aware mid-level CNN patch features, and test images are scored by reweighted nearest-neighbour distance in that feature space.",
+    "tags": [
+      "deep-learning",
+      "local-descriptors",
+      "dense-prediction"
+    ],
+    "domain": "anomaly-detection",
+    "headings": [
+      "When to choose PatchCore over EfficientAD"
+    ],
+    "authors": [
+      "K. Roth",
+      "L. Pemula",
+      "J. Zepeda",
+      "B. Schölkopf",
+      "T. Brox",
+      "P. Gehler"
+    ],
+    "venue": "CVPR 2022"
+  },
+  {
     "slug": "resnet",
     "path": "/atlas/resnet",
     "type": "model",
@@ -1888,6 +1933,32 @@ export const searchRecords: SearchRecord[] = [
       "T. Brox"
     ],
     "venue": "MICCAI (Lecture Notes in Computer Science)"
+  },
+  {
+    "slug": "uninformed-students",
+    "path": "/atlas/uninformed-students",
+    "type": "model",
+    "title": "Uninformed Students",
+    "summary": "Pixel-precise anomaly segmentation from an ensemble of student networks trained only on anomaly-free images to regress a fixed off-domain teacher's dense descriptors, scoring each pixel by regression error against the mixture mean plus the ensemble's predictive variance, across three receptive-field scales.",
+    "tags": [
+      "deep-learning",
+      "probabilistic",
+      "dense-prediction",
+      "multi-scale"
+    ],
+    "domain": "anomaly-detection",
+    "headings": [
+      "Novelty",
+      "Strengths",
+      "Limitations"
+    ],
+    "authors": [
+      "P. Bergmann",
+      "M. Fauser",
+      "D. Sattlegger",
+      "C. Steger"
+    ],
+    "venue": "CVPR 2020"
   },
   {
     "slug": "vgg",
@@ -2592,6 +2663,25 @@ export const searchRecords: SearchRecord[] = [
       "Variants — what \"topology\" means in each method",
       "Detection–verification decoupling",
       "Comparison summary"
+    ]
+  },
+  {
+    "slug": "visual-anomaly-detection",
+    "path": "/atlas/visual-anomaly-detection",
+    "type": "concept",
+    "title": "Visual Anomaly Detection",
+    "summary": "One-class detection and localisation of defects from defect-free training images only, organised by the structural-versus-logical anomaly distinction and surveying the student-teacher, memory-bank, and feature-space-autoencoder method families.",
+    "tags": [
+      "survey",
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "anomaly-detection",
+    "headings": [
+      "Student–teacher residual scoring",
+      "Memory-bank / kNN scoring",
+      "Autoencoder reconstruction in feature space",
+      "Evaluation metrics"
     ]
   }
 ];

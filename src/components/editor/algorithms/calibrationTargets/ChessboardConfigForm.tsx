@@ -42,13 +42,13 @@ const ChessboardConfigForm = (props: AlgorithmConfigFormProps<ChessboardConfig>)
             <CollapsibleSection title="Detector tuning" columns={modal ? 2 : undefined}>
                 <NumberField
                     label="Min corner strength"
-                    tooltip="Minimum ChESS response threshold (0-1). Lower values detect weaker corners but may increase false positives."
+                    tooltip="Absolute floor on the raw ChESS response (detector default 15). Lower values detect weaker corners but may increase false positives."
                     value={config.minCornerStrength}
-                    onChange={(v) => set("minCornerStrength", v ?? 0.2)}
+                    onChange={(v) => set("minCornerStrength", v ?? 15)}
                     disabled={disabled}
                     min={0}
-                    max={1}
-                    step={0.05}
+                    max={500}
+                    step={1}
                 />
                 <NumberField
                     label="Completeness threshold"

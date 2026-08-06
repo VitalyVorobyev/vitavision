@@ -131,13 +131,13 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                 />
                 <NumberField
                     label="Min corner strength"
-                    tooltip="Minimum ChESS response threshold (0-1). Lower values detect weaker corners but increase false positives."
+                    tooltip="Absolute floor on the raw ChESS response (detector default 15). Lower values detect weaker corners but may increase false positives."
                     value={config.chessMinCornerStrength}
-                    onChange={(v) => set("chessMinCornerStrength", v ?? 0.2)}
+                    onChange={(v) => set("chessMinCornerStrength", v ?? 15)}
                     disabled={disabled}
                     min={0}
-                    max={1}
-                    step={0.05}
+                    max={500}
+                    step={1}
                 />
                 <NumberField
                     label="Completeness threshold"

@@ -19,6 +19,15 @@ await mod.default();
 // chess-corners 0.11 uses the typed DetectorConfig builder (the flat
 // set_* setters were removed). Validate every config combination the UI's
 // ChessCornersConfigForm can produce is accepted by ChessDetector.withConfig.
+//
+// 1.x moved the NMS / clustering knobs off ChessConfig onto the shared
+// cfg.detection, and replaced the Threshold tagged enum with a plain f32.
+// Both changes fail QUIETLY on the old call shape: assigning the removed
+// cfg.strategy.chess.nmsRadius just sets a JS property on the wrapper that
+// reads back fine and never reaches WASM. Assert the fields are where the
+// worker expects them rather than trusting that no error was thrown.
+if (mod.Threshold !== undefined)
+    throw new Error('Threshold enum is back — revisit the scalar-threshold migration');
 function makeRefiner(kind) {
     if (kind === 'forstner') return mod.ChessRefiner.withForstner(new mod.ForstnerConfig());
     if (kind === 'saddle_point') return mod.ChessRefiner.withSaddlePoint(new mod.SaddlePointConfig());
@@ -28,13 +37,17 @@ for (const refiner of ['center_of_mass', 'forstner', 'saddle_point']) {
     for (const upscaleFactor of [0, 2, 3, 4]) {
         for (const broadMode of [false, true]) {
             const cfg = mod.DetectorConfig.chessMultiscale();
-            cfg.threshold = mod.Threshold.relative(0.2);
+            cfg.threshold = 30;
             cfg.upscale = upscaleFactor >= 2 ? mod.UpscaleConfig.fixed(upscaleFactor) : mod.UpscaleConfig.disabled();
             cfg.multiscale.levels = 4;
             cfg.multiscale.minSize = 128;
+            cfg.detection.nmsRadius = 2;
+            cfg.detection.minClusterSize = 2;
+            if (cfg.detection.nmsRadius !== 2 || cfg.detection.minClusterSize !== 2)
+                throw new Error('cfg.detection did not retain the NMS/cluster overrides');
             const chess = cfg.strategy.chess;
-            chess.nmsRadius = 2;
-            chess.minClusterSize = 2;
+            if ('nmsRadius' in chess)
+                throw new Error('ChessConfig.nmsRadius is back — the worker writes cfg.detection instead');
             chess.ring = broadMode ? mod.ChessRing.Broad : mod.ChessRing.Canonical;
             chess.refiner = makeRefiner(refiner);
             const d = mod.ChessDetector.withConfig(cfg);
@@ -43,6 +56,63 @@ for (const refiner of ['center_of_mass', 'forstner', 'saddle_point']) {
     }
 }
 console.log('PASS: DetectorConfig builder accepts all UI-config combinations');
+
+// Stride guard. The detector hands back a bare Float32Array, so a stride the
+// type-checker cannot see (9 in 0.11, 7 in 1.x) would silently reinterpret
+// axis angles as contrast and shear every corner. Pin it against a synthetic
+// board whose corner count and positions are known exactly.
+const W = 256, H = 256, SQ = 32;
+const rgba = new Uint8Array(W * H * 4);
+for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+        const v = ((Math.floor(x / SQ) + Math.floor(y / SQ)) % 2) === 0 ? 235 : 20;
+        const i = (y * W + x) * 4;
+        rgba[i] = rgba[i + 1] = rgba[i + 2] = v;
+        rgba[i + 3] = 255;
+    }
+}
+const STRIDE = 7; // x, y, response, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma
+const cfg = mod.DetectorConfig.chessMultiscale();
+const det = mod.ChessDetector.withConfig(cfg);
+cfg.free();
+const raw = det.detect_rgba(rgba, W, H);
+if (raw.length % STRIDE !== 0)
+    throw new Error('detect_rgba output ' + raw.length + ' is not a multiple of stride ' + STRIDE);
+// A 256px board of 32px squares has 7x7 = 49 interior X-junctions.
+const count = raw.length / STRIDE;
+if (count !== 49)
+    throw new Error('expected 49 interior corners on the synthetic board, got ' + count);
+// First corner sits at the first interior junction; with stride 7 the two
+// following floats are an angle in [-pi, pi] and a small sigma, not a
+// contrast/fit_rms pair. A stale stride of 9 fails both checks.
+const [x0, y0, r0, a0, s0] = raw;
+if (Math.abs(x0 - 31.5) > 1.5 || Math.abs(y0 - 31.5) > 1.5)
+    throw new Error('first corner at (' + x0 + ',' + y0 + '), expected ~(31.5,31.5)');
+if (!(r0 > 100))
+    throw new Error('expected a strong response on a synthetic board, got ' + r0);
+if (!(Math.abs(a0) <= Math.PI + 1e-3) || !(s0 >= 0 && s0 < 1))
+    throw new Error('stride 7 misaligned: angle=' + a0 + ' sigma=' + s0);
+console.log('PASS: detect_rgba stride is ' + STRIDE + ' (' + count + ' corners, first at ' + x0.toFixed(1) + ',' + y0.toFixed(1) + ')');
+
+// Threshold is an ABSOLUTE floor on the raw response now, not a 0-1 fraction.
+// The UI feeds it straight through, so prove the scale: a value the old
+// relative UI would have sent (0.2) keeps every corner, and a value far above
+// the response range removes them all.
+function countAt(threshold) {
+    const c = mod.DetectorConfig.chessMultiscale();
+    c.threshold = threshold;
+    const d = mod.ChessDetector.withConfig(c);
+    c.free();
+    const n = d.detect_rgba(rgba, W, H).length / STRIDE;
+    d.free();
+    return n;
+}
+if (countAt(0.2) !== 49)
+    throw new Error('threshold 0.2 should admit every corner under absolute semantics');
+if (countAt(1e6) !== 0)
+    throw new Error('threshold 1e6 should reject every corner under absolute semantics');
+console.log('PASS: cfg.threshold is an absolute response floor (0.2 -> 49 corners, 1e6 -> 0)');
+det.free();
 process.exit(0);
 `,
     },
@@ -52,11 +122,12 @@ process.exit(0);
 const mod = await import('@vitavision/ringgrid');
 await mod.default();
 
-// 1. Schema check: v5, not the legacy flat v4.
+// 1. Schema check: v6 (0.11.0), not v5 or the legacy flat v4. The board's
+// shape is unchanged across v5 -> v6; only the version string moved.
 const def = JSON.parse(mod.default_board_json());
-if (def.schema !== 'ringgrid.target.v5' || typeof def.name !== 'string')
+if (def.schema !== 'ringgrid.target.v6' || typeof def.name !== 'string')
     throw new Error('default board missing schema/name: ' + JSON.stringify(def));
-console.log('PASS: default board JSON has schema ringgrid.target.v5 + name');
+console.log('PASS: default board JSON has schema ringgrid.target.v6 + name');
 
 // 2. Build a board through the same nested-aware merge path the adapter/worker
 // use (wasmWorker.ts handleRinggrid), with non-default values, and assert the
@@ -89,7 +160,7 @@ if (merged.marker.outer_radius_mm !== 5.6 || merged.marker.inner_radius_mm !== 3
 console.log('PASS: nested board merge applies overrides while preserving lattice.kind/coding.kind');
 const det0 = new mod.RinggridDetector(JSON.stringify(merged));
 det0.free();
-console.log('PASS: detector constructs from merged non-default v5 board');
+console.log('PASS: detector constructs from merged non-default v6 board');
 
 // 3. Round-trip: update_config with an overlay carrying non-default values
 // under the new advanced.* nesting, then read back config_json() and assert
@@ -147,23 +218,30 @@ const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
 
-// 0.10.1: ChessConfig.threshold is a tagged Rust enum (exactly one variant
-// key — { absolute: N } or { relative: N }), NOT the old flat
-// threshold_value field. A naive deepMerge unions the default's variant key
-// ({ absolute: 15 }) with an override's ({ relative: 0.2 }) and the WASM
-// deserializer rejects that ("invalid length 2, expected 1"). Mirror
-// wasmWorker.ts's handleCalibTarget fix: merge normally, then replace
-// threshold/upscale wholesale when overridden.
+// 0.11 collapsed ChessConfig.threshold from the 0.10.1 tagged Rust enum
+// ({ absolute: N } | { relative: N }) back to a plain f32 — an ABSOLUTE floor
+// on the raw ChESS response, default 15. Relative mode is gone. Passing the
+// old object shape throws "invalid type: JsValue(Object(...)), expected f32"
+// at detect time, not at config-build time, so assert the scalar shape here.
+// The wholesale-replace path in buildChessCfg is kept: 'upscale' is still a
+// tagged enum, and a naive deepMerge would union its variant keys.
 function buildChessCfg(overrides) {
     const merged = deepMerge(mod.default_chess_config(), overrides);
     if (overrides.threshold !== undefined) merged.threshold = overrides.threshold;
     if (overrides.upscale !== undefined) merged.upscale = overrides.upscale;
     return merged;
 }
-const chessCfg = buildChessCfg({ threshold: { relative: 0.2 } });
-if (chessCfg.threshold.relative !== 0.2 || 'absolute' in chessCfg.threshold)
+const defaultCfg = mod.default_chess_config();
+if (typeof defaultCfg.threshold !== 'number')
+    throw new Error('default_chess_config().threshold is no longer a scalar: ' + JSON.stringify(defaultCfg.threshold));
+// 0.11 also relocated the NMS / clustering knobs onto a shared 'detection'
+// block, mirroring chess-corners 1.x.
+if (typeof defaultCfg.detection?.nms_radius !== 'number')
+    throw new Error('default_chess_config().detection.nms_radius missing: ' + JSON.stringify(defaultCfg));
+const chessCfg = buildChessCfg({ threshold: 20 });
+if (chessCfg.threshold !== 20)
     throw new Error('threshold override was merged instead of replaced: ' + JSON.stringify(chessCfg.threshold));
-console.log('PASS: tagged threshold enum replaced wholesale, not merged with the default variant');
+console.log('PASS: chess config threshold is a scalar absolute floor (default ' + defaultCfg.threshold + '), detection block present');
 
 // The legacy flat fields the old ChessConfig/DetectorParams schemas used
 // (expected_rows, completeness_threshold, graph, chess) are silently ignored
@@ -171,7 +249,7 @@ console.log('PASS: tagged threshold enum replaced wholesale, not merged with the
 // error (forward-compat with any stale adapter payload), while the current
 // stable-core keys (min_corner_strength, max_fit_rms_ratio, ...) still apply.
 const params = deepMerge(mod.default_chessboard_params(), {
-    min_corner_strength: 0.2, completeness_threshold: 0.1,
+    min_corner_strength: 15, completeness_threshold: 0.1,
     expected_rows: 7, expected_cols: 11,
     max_fit_rms_ratio: 0.5, peak_min_separation_deg: 60, min_peak_weight_fraction: 0.02,
     graph: { min_spacing_pix: 5, max_spacing_pix: 50 },
@@ -179,21 +257,22 @@ const params = deepMerge(mod.default_chessboard_params(), {
 mod.detect_chessboard(32, 32, gray, chessCfg, params);
 console.log('PASS: detect_chessboard accepts merged params (forward-compatible with legacy fields)');
 
-// Regression guard for the threshold_value → threshold.relative fix: prove
-// the override is actually wired into detection sensitivity on a real image,
-// not silently dropped like the old flat threshold_value field was.
+// Regression guard: prove the threshold override is actually wired into
+// detection sensitivity on a real image, not silently dropped like the old
+// flat threshold_value field was. Under absolute semantics the strict end of
+// the range is a large response floor, not a fraction near 1.
 const { PNG } = await import('pngjs');
 const { readFileSync } = await import('fs');
 const png = PNG.sync.read(readFileSync('public/chessboard.png'));
 const grayReal = mod.rgba_to_gray(new Uint8Array(png.data), png.width, png.height);
 const paramsReal = mod.default_chessboard_params();
-const lenient = mod.detect_chessboard(png.width, png.height, grayReal, buildChessCfg({ threshold: { relative: 0.2 } }), paramsReal);
-const strict = mod.detect_chessboard(png.width, png.height, grayReal, buildChessCfg({ threshold: { relative: 0.9 } }), paramsReal);
+const lenient = mod.detect_chessboard(png.width, png.height, grayReal, buildChessCfg({ threshold: 15 }), paramsReal);
+const strict = mod.detect_chessboard(png.width, png.height, grayReal, buildChessCfg({ threshold: 1e6 }), paramsReal);
 if (!lenient || lenient.corners.length === 0)
     throw new Error('lenient threshold found no corners on public/chessboard.png');
 if (strict !== null && strict !== undefined && strict.corners.length === lenient.corners.length)
-    throw new Error('threshold.relative override had no effect on detection (chessCfg is not reaching the detector)');
-console.log('PASS: chessCfg.threshold.relative override changes real detection sensitivity (lenient=' + lenient.corners.length + ' corners, strict=' + (strict ? strict.corners.length : 'null') + ')');
+    throw new Error('threshold override had no effect on detection (chessCfg is not reaching the detector)');
+console.log('PASS: chessCfg.threshold override changes real detection sensitivity (lenient=' + lenient.corners.length + ' corners, strict=' + (strict ? strict.corners.length : 'null') + ')');
 process.exit(0);
 `,
     },
@@ -213,15 +292,15 @@ function deepMerge(t, s) {
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
-// threshold is a tagged enum ({ absolute: N } | { relative: N }) — see the
+// threshold is a plain f32 absolute response floor as of 0.11 — see the
 // "chessboard schema" test above for why this can't be a plain deepMerge.
-const chessCfg = { ...mod.default_chess_config(), threshold: { relative: 0.2 } };
+const chessCfg = { ...mod.default_chess_config(), threshold: 15 };
 const cbDefaults = mod.default_chessboard_params();
 const params = {
     px_per_square: 40,
     board: { rows: 22, cols: 22, cell_size: 4.8, marker_size_rel: 0.75, dictionary: 'DICT_4X4_1000', marker_layout: 'opencv_charuco' },
     chessboard: deepMerge(cbDefaults, {
-        min_corner_strength: 0.2, expected_rows: 22, expected_cols: 22,
+        min_corner_strength: 15, expected_rows: 22, expected_cols: 22,
         completeness_threshold: 0.05,
         graph: { min_spacing_pix: 40, max_spacing_pix: 160, k_neighbors: 8, orientation_tolerance_deg: 12.5 },
     }),
@@ -257,12 +336,12 @@ function deepMerge(t, s) {
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
-// threshold is a tagged enum ({ absolute: N } | { relative: N }) — see the
+// threshold is a plain f32 absolute response floor as of 0.11 — see the
 // "chessboard schema" test above for why this can't be a plain deepMerge.
-const chessCfg = { ...mod.default_chess_config(), threshold: { relative: 0.2 } };
+const chessCfg = { ...mod.default_chess_config(), threshold: 15 };
 const params = deepMerge(mod.default_marker_board_params(), {
     layout: { rows: 22, cols: 22, circles: [{ cell: { i: 11, j: 11 }, polarity: 'black' }, { cell: { i: 12, j: 11 }, polarity: 'white' }, { cell: { i: 12, j: 12 }, polarity: 'white' }] },
-    chessboard: { min_corner_strength: 0.2, expected_rows: 22, expected_cols: 22, completeness_threshold: 0.05, graph: { min_spacing_pix: 20, max_spacing_pix: 160 } },
+    chessboard: { min_corner_strength: 15, expected_rows: 22, expected_cols: 22, completeness_threshold: 0.05, graph: { min_spacing_pix: 20, max_spacing_pix: 160 } },
     circle_score: { patch_size: 64, min_contrast: 10 },
 });
 mod.detect_marker_board(32, 32, gray, chessCfg, params);

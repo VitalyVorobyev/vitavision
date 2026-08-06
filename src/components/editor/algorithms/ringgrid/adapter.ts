@@ -88,7 +88,7 @@ export const ringgridAlgorithm: AlgorithmDefinition = {
     },
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as RinggridConfig;
-        // ringgrid.target.v5 nests layout fields under lattice/marker/coding.
+        // ringgrid.target.v6 nests layout fields under lattice/marker/coding.
         // This is a partial override merged (nested-aware) onto the WASM
         // module's default board in wasmWorker.ts — do not add `kind` here,
         // it must come from the module defaults.

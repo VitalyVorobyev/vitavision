@@ -21,7 +21,7 @@ function mockChessCornersResult(count: number): ChessCornersResult {
         image_height: 480,
         frame: { name: "image_px_center", origin: "top_left", x_axis: "right", y_axis: "down", units: "pixels" },
         config: {
-            threshold_rel: 0.2,
+            threshold: 30,
             nms_radius: 2,
             broad_mode: false,
             min_cluster_size: 2,
@@ -46,8 +46,6 @@ function mockChessCornersResult(count: number): ChessCornersResult {
             x_norm: (50 + i * 20) / 640,
             y_norm: (60 + i * 15) / 480,
             response: 0.5,
-            contrast: 0.3,
-            fit_rms: 0.1,
             axes: [
                 { angle_rad: axis0Angle, angle_deg: 45, sigma_rad: 0.05, direction: { dx: Math.cos(axis0Angle), dy: Math.sin(axis0Angle) } },
                 { angle_rad: axis1Angle, angle_deg: 135, sigma_rad: 0.06, direction: { dx: Math.cos(axis1Angle), dy: Math.sin(axis1Angle) } },
@@ -194,8 +192,6 @@ describe("chessCornersAlgorithm", () => {
             expect(f.axes[1].dy).toBeCloseTo(result.corners[0].axes[1].direction.dy, 5);
             expect(f.axes[1].angleRad).toBeCloseTo(result.corners[0].axes[1].angle_rad, 5);
             expect(f.axes[1].sigmaRad).toBeCloseTo(result.corners[0].axes[1].sigma_rad, 5);
-            expect(f.contrast).toBeCloseTo(result.corners[0].contrast, 5);
-            expect(f.fitRms).toBeCloseTo(result.corners[0].fit_rms, 5);
         }
     });
 

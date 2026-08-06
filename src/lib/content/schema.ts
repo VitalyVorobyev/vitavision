@@ -98,6 +98,7 @@ export const domainValues = [
     "depth",
     "detection",
     "segmentation",
+    "anomaly-detection",
 ] as const;
 export type Domain = (typeof domainValues)[number];
 
@@ -112,6 +113,8 @@ export type Domain = (typeof domainValues)[number];
  * The list below is the validation enforcer; keep the two in sync.
  */
 export const taskValues = [
+    "anomaly-detection",
+    "anomaly-segmentation",
     "camera-calibration",
     "chessboard-detection",
     "corner-detection",

@@ -555,6 +555,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/dust3r",
       "draft": false
     },
+    "efficientad": {
+      "slug": "efficientad",
+      "type": "model",
+      "title": "EfficientAD",
+      "summary": "Millisecond-latency one-class anomaly detection combining a loss-induced-asymmetric student-teacher branch for structural defects with a feature-space autoencoder branch for logical defects, running 2.2 ms (S) / 4.5 ms (M) per image on an RTX A6000.",
+      "path": "/atlas/efficientad",
+      "draft": false
+    },
     "fast-scnn": {
       "slug": "fast-scnn",
       "type": "model",
@@ -699,6 +707,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/mobilesam",
       "draft": false
     },
+    "patchcore": {
+      "slug": "patchcore",
+      "type": "model",
+      "title": "PatchCore",
+      "summary": "Training-free industrial anomaly detection: a single forward pass over defect-free images builds a coreset-subsampled memory bank of locally aware mid-level CNN patch features, and test images are scored by reweighted nearest-neighbour distance in that feature space.",
+      "path": "/atlas/patchcore",
+      "draft": false
+    },
     "resnet": {
       "slug": "resnet",
       "type": "model",
@@ -761,6 +777,14 @@ export const contentGraph: ContentGraph = {
       "title": "U-Net",
       "summary": "Symmetric encoder-decoder fully-convolutional network for dense pixel-wise biomedical image segmentation — contracting path with channel-doubling 3×3 convs and max-pool downsampling, expansive path with up-convs and skip concatenation of cropped encoder features, trained from scratch on tens of images via heavy elastic-deformation augmentation and a distance-weighted cross-entropy loss that learns inter-instance separation borders.",
       "path": "/atlas/unet-segmentation",
+      "draft": false
+    },
+    "uninformed-students": {
+      "slug": "uninformed-students",
+      "type": "model",
+      "title": "Uninformed Students",
+      "summary": "Pixel-precise anomaly segmentation from an ensemble of student networks trained only on anomaly-free images to regress a fixed off-domain teacher's dense descriptors, scoring each pixel by regression error against the mixture mean plus the ensemble's predictive variance, across three receptive-field scales.",
+      "path": "/atlas/uninformed-students",
       "draft": false
     },
     "vgg": {
@@ -1033,6 +1057,14 @@ export const contentGraph: ContentGraph = {
       "title": "Topological Grid Recovery",
       "summary": "Verify candidate calibration-pattern corners by constructing a graph over them (Delaunay triangulation, k-nearest-neighbours, or proximity) and accepting only configurations that match the expected chessboard topology — false positives are eliminated by structural rules rather than per-pixel response thresholds.",
       "path": "/atlas/topological-grid-recovery",
+      "draft": false
+    },
+    "visual-anomaly-detection": {
+      "slug": "visual-anomaly-detection",
+      "type": "concept",
+      "title": "Visual Anomaly Detection",
+      "summary": "One-class detection and localisation of defects from defect-free training images only, organised by the structural-versus-logical anomaly distinction and surveying the student-teacher, memory-bank, and feature-space-autoencoder method families.",
+      "path": "/atlas/visual-anomaly-detection",
       "draft": false
     }
   },
@@ -2313,6 +2345,22 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "efficientad": {
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "patchcore",
+          "confidence": "high",
+          "caution": "Peer choice, not supersession — EfficientAD leads on accuracy and latency, but PatchCore requires no per-scenario training.",
+          "mirrored": true
+        }
+      ]
+    },
     "fast-scnn": {
       "prerequisites": [
         "convolutional-neural-network"
@@ -2795,6 +2843,21 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "patchcore": {
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "efficientad",
+          "confidence": "high",
+          "caution": "Peer choice, not supersession — EfficientAD leads on accuracy and latency, but PatchCore requires no per-scenario training."
+        }
+      ]
+    },
     "resnet": {
       "prerequisites": [
         "convolutional-neural-network"
@@ -2824,6 +2887,12 @@ export const contentGraph: ContentGraph = {
           "target": "loftr",
           "confidence": "medium",
           "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+        },
+        {
+          "type": "feeds_into",
+          "target": "efficientad",
+          "confidence": "medium",
+          "caution": "EfficientAD distils its patch description network from a WideResNet-101 teacher; the wide variant is not this page's subject, hence medium confidence."
         },
         {
           "type": "compared_with",
@@ -3078,6 +3147,21 @@ export const contentGraph: ContentGraph = {
           "confidence": "medium",
           "caution": "U-Net is the encoder-decoder ancestor; SegFormer keeps the multi-scale-fuse idea but drops skip connections in favour of MLP-aggregating decoder.",
           "mirrored": true
+        }
+      ]
+    },
+    "uninformed-students": {
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "efficientad",
+          "confidence": "high",
+          "caution": "EfficientAD keeps the student-teacher principle but replaces the pretrained-backbone ensemble with a single distilled patch description network and loss-induced asymmetry."
         }
       ]
     },
@@ -3421,6 +3505,13 @@ export const contentGraph: ContentGraph = {
     },
     "topological-grid-recovery": {
       "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
+    "visual-anomaly-detection": {
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": []
     }
@@ -4191,6 +4282,26 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "efficientad": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "uninformed-students",
+          "confidence": "high",
+          "caution": "EfficientAD keeps the student-teacher principle but replaces the pretrained-backbone ensemble with a single distilled patch description network and loss-induced asymmetry."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "medium",
+          "caution": "EfficientAD distils its patch description network from a WideResNet-101 teacher; the wide variant is not this page's subject, hence medium confidence."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "fast-scnn": {
       "usedBy": [],
       "affects": [],
@@ -4448,6 +4559,14 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "patchcore": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "resnet": {
       "usedBy": [],
       "affects": [],
@@ -4565,6 +4684,14 @@ export const contentGraph: ContentGraph = {
           "caution": "U-Net adapts the fully-convolutional framing to small-data biomedical regimes via symmetric decoder and skip concatenation."
         }
       ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "uninformed-students": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -4711,6 +4838,7 @@ export const contentGraph: ContentGraph = {
         "alexnet",
         "bisenet",
         "detr",
+        "efficientad",
         "fast-scnn",
         "geometric-bev",
         "googlenet",
@@ -4720,11 +4848,14 @@ export const contentGraph: ContentGraph = {
         "mnasnet",
         "mobilenetv2",
         "mobilenetv3",
+        "patchcore",
         "resnet",
         "rf-detr",
         "sam",
         "segformer",
+        "uninformed-students",
         "vgg",
+        "visual-anomaly-detection",
         "vit"
       ],
       "affects": [],
@@ -5107,6 +5238,18 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
+    },
+    "visual-anomaly-detection": {
+      "usedBy": [
+        "efficientad",
+        "patchcore",
+        "uninformed-students"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     }
   },
   "depth": {
@@ -5203,6 +5346,8 @@ export const contentGraph: ContentGraph = {
     "mae": 2,
     "dinov2": 3,
     "dust3r": 4,
+    "visual-anomaly-detection": 2,
+    "efficientad": 3,
     "fast-scnn": 2,
     "faster-rcnn": 0,
     "fcn-semantic-segmentation": 0,
@@ -5221,6 +5366,7 @@ export const contentGraph: ContentGraph = {
     "mobilenetv3": 2,
     "sam": 2,
     "mobilesam": 3,
+    "patchcore": 3,
     "resnet": 2,
     "rf-detr": 2,
     "ritm-interactive-segmentation": 0,
@@ -5228,6 +5374,7 @@ export const contentGraph: ContentGraph = {
     "superglue": 4,
     "superpoint": 2,
     "unet-segmentation": 0,
+    "uninformed-students": 3,
     "vgg": 2,
     "vggt": 4,
     "xfeat": 2,

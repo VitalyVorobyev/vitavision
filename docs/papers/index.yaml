@@ -1419,3 +1419,78 @@
   doi: "10.1007/s001380050120"
   pdf: fusiello2000-compact-rectification.pdf
   cites: [hartley1999-projective-rectification, loop1999-rectifying-homographies, pollefeys1999-polar-rectification]
+
+- id: batzner2023-efficientad
+  title: "EfficientAD: Accurate Visual Anomaly Detection at Millisecond-Level Latencies"
+  authors: ["K. Batzner", "L. Heckler", "R. König"]
+  year: 2023
+  venue: WACV 2024 (arXiv 2023)
+  url: https://arxiv.org/pdf/2303.14535
+  arxiv: "2303.14535"
+  doi: "10.48550/arxiv.2303.14535"
+  pdf: batzner2023-efficientad.pdf
+  cites: [bergmann2019-mvtec-ad, bergmann2020-uninformed-students, bergmann2022-mvtec-loco, roth2022-patchcore, rudolph2023-ast, zou2022-visa]
+
+- id: bergmann2019-mvtec-ad
+  title: "MVTec AD — A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection"
+  authors: ["P. Bergmann", "M. Fauser", "D. Sattlegger", "C. Steger"]
+  year: 2019
+  venue: CVPR 2019
+  url: https://openaccess.thecvf.com/content_CVPR_2019/papers/Bergmann_MVTec_AD_--_A_Comprehensive_Real-World_Dataset_for_Unsupervised_Anomaly_CVPR_2019_paper.pdf
+  doi: "10.1109/CVPR.2019.00982"
+  pdf: bergmann2019-mvtec-ad.pdf
+  cites: []
+
+- id: bergmann2020-uninformed-students
+  title: "Uninformed Students: Student-Teacher Anomaly Detection With Discriminative Latent Embeddings"
+  authors: ["P. Bergmann", "M. Fauser", "D. Sattlegger", "C. Steger"]
+  year: 2020
+  venue: CVPR 2020
+  url: https://arxiv.org/pdf/1911.02357
+  arxiv: "1911.02357"
+  doi: "10.1109/CVPR42600.2020.00424"
+  pdf: bergmann2020-uninformed-students.pdf
+  cites: [bergmann2019-mvtec-ad]
+
+- id: bergmann2022-mvtec-loco
+  title: "Beyond Dents and Scratches: Logical Constraints in Unsupervised Anomaly Detection and Localization"
+  authors: ["P. Bergmann", "K. Batzner", "M. Fauser", "D. Sattlegger", "C. Steger"]
+  year: 2022
+  venue: International Journal of Computer Vision
+  url: https://mediatum.ub.tum.de/download/1782820/1782820.pdf
+  doi: "10.1007/s11263-022-01578-9"
+  pdf: bergmann2022-mvtec-loco.pdf
+  cites: [bergmann2019-mvtec-ad, bergmann2020-uninformed-students]
+
+- id: roth2022-patchcore
+  title: "Towards Total Recall in Industrial Anomaly Detection"
+  authors: ["K. Roth", "L. Pemula", "J. Zepeda", "B. Schölkopf", "T. Brox", "P. Gehler"]
+  year: 2022
+  venue: CVPR 2022
+  url: https://arxiv.org/pdf/2106.08265
+  arxiv: "2106.08265"
+  doi: "10.1109/CVPR52688.2022.01392"
+  pdf: roth2022-patchcore.pdf
+  cites: [bergmann2019-mvtec-ad, bergmann2020-uninformed-students]
+
+- id: rudolph2023-ast
+  title: "Asymmetric Student-Teacher Networks for Industrial Anomaly Detection"
+  authors: ["M. Rudolph", "T. Wehrbein", "B. Rosenhahn", "B. Wandt"]
+  year: 2023
+  venue: WACV 2023
+  url: https://arxiv.org/pdf/2210.07829
+  arxiv: "2210.07829"
+  doi: "10.1109/WACV56688.2023.00262"
+  pdf: rudolph2023-ast.pdf
+  cites: [bergmann2019-mvtec-ad, bergmann2020-uninformed-students, roth2022-patchcore]
+
+- id: zou2022-visa
+  title: "SPot-the-Difference Self-Supervised Pre-training for Anomaly Detection and Segmentation"
+  authors: ["Y. Zou", "J. Jeong", "L. Pemula", "D. Zhang", "O. Dabeer"]
+  year: 2022
+  venue: ECCV 2022
+  url: https://arxiv.org/pdf/2207.14315
+  arxiv: "2207.14315"
+  doi: "10.1007/978-3-031-20056-4_23"
+  pdf: zou2022-visa.pdf
+  cites: [bergmann2019-mvtec-ad]

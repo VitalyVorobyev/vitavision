@@ -29,6 +29,10 @@ relations:
     target: loftr
     confidence: medium
     caution: "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+  - type: feeds_into
+    target: efficientad
+    confidence: medium
+    caution: "EfficientAD distils its patch description network from a WideResNet-101 teacher; the wide variant is not this page's subject, hence medium confidence."
 sources:
   primary: he2016-resnet
   references:

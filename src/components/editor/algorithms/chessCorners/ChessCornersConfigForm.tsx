@@ -2,7 +2,7 @@ import { CheckboxField, CollapsibleSection, NumberField, Section, SelectField } 
 import type { AlgorithmConfigFormProps } from "../types";
 
 export interface ChessCornersConfig {
-    thresholdRel: number;
+    threshold: number;
     nmsRadius: number;
     minClusterSize: number;
     broadMode: boolean;
@@ -35,14 +35,14 @@ const ChessCornersConfigForm = (props: AlgorithmConfigFormProps<ChessCornersConf
         <>
             <Section title="Detection" columns={modal ? 2 : undefined}>
                 <NumberField
-                    label="Threshold (relative)"
-                    tooltip="Relative response threshold (0–1). Lower values detect more corners but may increase false positives."
-                    value={config.thresholdRel}
-                    onChange={(v) => set("thresholdRel", v ?? 0.2)}
+                    label="Response threshold"
+                    tooltip="Absolute floor on the raw ChESS response (detector default 30). Lower values detect more corners but may increase false positives."
+                    value={config.threshold}
+                    onChange={(v) => set("threshold", v ?? 30)}
                     disabled={disabled}
                     min={0}
-                    max={1}
-                    step={0.01}
+                    max={500}
+                    step={1}
                 />
                 <NumberField
                     label="NMS radius"

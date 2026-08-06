@@ -2,6 +2,8 @@ import type { Task } from "./schema";
 import { taskValues } from "./schema";
 
 export const taskLabels: Record<Task, string> = {
+    "anomaly-detection": "Anomaly detection",
+    "anomaly-segmentation": "Anomaly segmentation",
     "camera-calibration": "Camera calibration",
     "chessboard-detection": "Chessboard detection",
     "corner-detection": "Corner detection",

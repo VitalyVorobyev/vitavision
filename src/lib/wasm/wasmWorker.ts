@@ -106,7 +106,12 @@ function adaptChessCornersResult(
     config: Record<string, unknown>,
     runtimeMs: number,
 ) {
-    const stride = 9; // x, y, response, contrast, fit_rms, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma
+    // chess-corners 1.x narrowed the per-corner stride from 9 to 7: `contrast`
+    // and `fit_rms` were removed along with the response-fit prefilter that
+    // produced them. Nothing in the type-checker sees this — the detector
+    // returns a bare Float32Array — so a stale stride here would silently
+    // reinterpret axis angles as contrast and shear every corner's geometry.
+    const stride = 7; // x, y, response, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma
     if (raw.length % stride !== 0) {
         throw new Error(`chess-corners: unexpected output length ${raw.length} (expected multiple of ${stride})`);
     }
@@ -121,12 +126,10 @@ function adaptChessCornersResult(
         const x = raw[i * stride];
         const y = raw[i * stride + 1];
         const response = raw[i * stride + 2];
-        const contrast = raw[i * stride + 3];
-        const fit_rms = raw[i * stride + 4];
-        const axis0_angle = raw[i * stride + 5];
-        const axis0_sigma = raw[i * stride + 6];
-        const axis1_angle = raw[i * stride + 7];
-        const axis1_sigma = raw[i * stride + 8];
+        const axis0_angle = raw[i * stride + 3];
+        const axis0_sigma = raw[i * stride + 4];
+        const axis1_angle = raw[i * stride + 5];
+        const axis1_sigma = raw[i * stride + 6];
 
         if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(response)) continue;
 
@@ -134,7 +137,7 @@ function adaptChessCornersResult(
         responseMax = Math.max(responseMax, response);
         responseSum += response;
 
-        corners.push({ x, y, response, contrast, fit_rms, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma });
+        corners.push({ x, y, response, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma });
     }
 
     type AxisOut = { angle_rad: number; angle_deg: number; sigma_rad: number; direction: { dx: number; dy: number } };
@@ -159,8 +162,6 @@ function adaptChessCornersResult(
             x_norm: c.x / width,
             y_norm: c.y / height,
             response: c.response,
-            contrast: c.contrast,
-            fit_rms: c.fit_rms,
             axes: [makeAxis(c.axis0_angle, c.axis0_sigma), makeAxis(c.axis1_angle, c.axis1_sigma)] as [AxisOut, AxisOut],
             confidence,
             confidence_level: confidenceLevel,
@@ -185,7 +186,7 @@ function adaptChessCornersResult(
             units: "pixels" as const,
         },
         config: {
-            threshold_rel: (config.thresholdRel as number) ?? 0.2,
+            threshold: (config.threshold as number) ?? 30,
             nms_radius: (config.nmsRadius as number) ?? 2,
             broad_mode: (config.broadMode as boolean) ?? false,
             min_cluster_size: (config.minClusterSize as number) ?? 2,
@@ -510,7 +511,7 @@ async function handleRinggrid(
     const mod = await getRinggridModule();
 
     // Start from WASM defaults, override with user-provided fields.
-    // ringgrid.target.v5 nests layout under lattice/marker/coding, so a
+    // ringgrid.target.v6 nests layout under lattice/marker/coding, so a
     // shallow merge would wipe sibling keys (e.g. lattice.kind) whenever the
     // user overrides only part of a nested block — use the nested-aware
     // deepMerge (defined below in this file) instead.
@@ -629,7 +630,18 @@ async function handleChessCorners(
     // set_nms_radius, set_refiner, …) with the typed `DetectorConfig` builder.
     // Start from the multiscale ChESS preset (library defaults) and overlay only
     // the user-provided fields onto the shared-cell config tree, preserving the
-    // old behaviour. The field setters (threshold, upscale, refiner) move their
+    // old behaviour.
+    //
+    // 1.x then dropped the `Threshold` tagged enum: `cfg.threshold` is a plain
+    // f32, an ABSOLUTE floor on the raw ChESS response (preset default 30).
+    // There is no relative mode any more, so `config.threshold` is passed
+    // through unscaled. It also moved the NMS / clustering knobs off
+    // `ChessConfig` onto a shared `cfg.detection` honoured by both the ChESS
+    // and Radon strategies — assigning `cfg.strategy.chess.nmsRadius` now
+    // writes a plain JS property on the wrapper that reads back correctly and
+    // never reaches WASM.
+    //
+    // The field setters (threshold, upscale, refiner) move their
     // wrapper into the tree, but `ChessDetector.withConfig` only *borrows* `cfg`
     // — it snapshots the config into the detector without consuming the handle —
     // so `cfg` must be freed explicitly after the detector is built, otherwise
@@ -637,8 +649,8 @@ async function handleChessCorners(
     // editor/webcam path.
     const cfg = mod.DetectorConfig.chessMultiscale();
 
-    if (typeof config.thresholdRel === "number") {
-        cfg.threshold = mod.Threshold.relative(config.thresholdRel);
+    if (typeof config.threshold === "number") {
+        cfg.threshold = config.threshold;
     }
     if (typeof config.upscaleFactor === "number") {
         cfg.upscale = config.upscaleFactor >= 2
@@ -648,9 +660,10 @@ async function handleChessCorners(
     if (typeof config.pyramidLevels === "number") cfg.multiscale.levels = config.pyramidLevels;
     if (typeof config.pyramidMinSize === "number") cfg.multiscale.minSize = config.pyramidMinSize;
 
+    if (typeof config.nmsRadius === "number") cfg.detection.nmsRadius = config.nmsRadius;
+    if (typeof config.minClusterSize === "number") cfg.detection.minClusterSize = config.minClusterSize;
+
     const chess = cfg.strategy.chess;
-    if (typeof config.nmsRadius === "number") chess.nmsRadius = config.nmsRadius;
-    if (typeof config.minClusterSize === "number") chess.minClusterSize = config.minClusterSize;
     if (typeof config.broadMode === "boolean") {
         chess.ring = config.broadMode ? mod.ChessRing.Broad : mod.ChessRing.Canonical;
     }
@@ -738,13 +751,17 @@ async function handleCalibTarget(
     // Convert RGBA to grayscale
     const gray = mod.rgba_to_gray(pixels, width, height);
 
-    // Start from WASM defaults and merge user overrides. `threshold` and
-    // `upscale` on ChessConfig are internally-tagged Rust enums (exactly one
-    // variant key, e.g. `{ absolute: 15 }` or `{ relative: 0.2 }`) — a plain
-    // deepMerge would union the default's variant key with the override's,
-    // and the WASM deserializer rejects that ("invalid length 2, expected
-    // 1"). Replace those two fields wholesale when overridden instead of
-    // merging them.
+    // Start from WASM defaults and merge user overrides. `upscale` on
+    // ChessConfig is an internally-tagged Rust enum (exactly one variant key)
+    // — a plain deepMerge would union the default's variant key with the
+    // override's, and the WASM deserializer rejects that ("invalid length 2,
+    // expected 1"). Replace it wholesale when overridden instead of merging.
+    //
+    // `threshold` was such an enum in 0.10.1; 0.11 collapsed it to a plain f32
+    // absolute response floor (default 15). It stays in the wholesale-replace
+    // list because replacing a scalar is what deepMerge would do anyway, and
+    // keeping both fields on the same path means a future re-tagging cannot
+    // reintroduce the union bug silently.
     const chessCfg = config.chessCfg
         ? (() => {
             const overrides = config.chessCfg as Record<string, unknown>;

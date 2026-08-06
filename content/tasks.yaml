@@ -14,6 +14,24 @@
 # src/lib/content/schema.ts → taskValues, then run validate-content.
 
 tasks:
+  - slug: anomaly-detection
+    description: |
+      Decide whether an image contains an anomaly, given a training set of
+      defect-free ("normal") examples only. Output is one score per image,
+      thresholded into a binary normal/anomalous verdict. The one-class
+      framing is what separates this from image classification: the anomalous
+      class is never observed at training time, so the model must characterise
+      normality rather than discriminate between known categories.
+
+  - slug: anomaly-segmentation
+    description: |
+      Localise an anomaly to the pixels that constitute it, producing a dense
+      anomaly-score map over the image. Distinct from image segmentation,
+      which partitions an image into coherent regions by appearance: here the
+      map scores deviation from learned normality, and is evaluated against
+      ground-truth defect masks by region-overlap metrics (AU-PRO) rather
+      than by IoU against a class label.
+
   - slug: camera-calibration
     description: |
       Recover intrinsic and/or extrinsic camera parameters from images of a

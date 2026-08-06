@@ -51,8 +51,9 @@ export interface ChessCornerFeature {
     x_norm: number;
     y_norm: number;
     response: number;
-    contrast: number;
-    fit_rms: number;
+    // chess-corners 1.x dropped `contrast` and `fit_rms` from the detection
+    // output (stride 9 → 7); the corner prefilter is now a gate on the axes'
+    // reported angular uncertainty, exposed as `sigma_rad` below.
     axes: [ChessCornerAxis, ChessCornerAxis];
     confidence: number;
     confidence_level: ConfidenceLevel;
@@ -72,7 +73,7 @@ export interface ChessCornersResult {
         units: "pixels";
     };
     config: {
-        threshold_rel: number;
+        threshold: number;
         nms_radius: number;
         broad_mode: boolean;
         min_cluster_size: number;

@@ -2817,6 +2817,62 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "efficientad",
+    "frontmatter": {
+      "title": "EfficientAD",
+      "summary": "Millisecond-latency one-class anomaly detection combining a loss-induced-asymmetric student-teacher branch for structural defects with a feature-space autoencoder branch for logical defects, running 2.2 ms (S) / 4.5 ms (M) per image on an RTX A6000.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction",
+        "real-time"
+      ],
+      "domain": "anomaly-detection",
+      "tasks": [
+        "anomaly-detection",
+        "anomaly-segmentation"
+      ],
+      "arch_family": "hybrid",
+      "params": "8M (EfficientAD-S) / 21M (EfficientAD-M)",
+      "flops": "76 GFLOPs (S) / 235 GFLOPs (M) @ 256×256",
+      "sources": {
+        "primary": "batzner2023-efficientad",
+        "references": [
+          "bergmann2020-uninformed-students",
+          "rudolph2023-ast",
+          "bergmann2022-mvtec-loco",
+          "roth2022-patchcore"
+        ],
+        "notes": "Headline accuracy figures are the clean-protocol ones (98.8 %\nEfficientAD-S / 99.1 % EfficientAD-M on MVTec AD, Table 2). The paper's\n99.8 % figure comes from the early-stopping protocol it criticises in\nSimpleNet and is not comparable to its own tables; it appears on the\npage only with that caveat attached.\n\nThe autoencoder branch is NOT a U-Net. §3.3 describes \"a standard\nconvolutional autoencoder comprising strided convolutions in the\nencoder and bilinear upsampling in the decoder\", and its layer table\nhas no skip connections. The U-Net attribution in the paper belongs to\nthe GCAD baseline from MVTec LOCO.\n\nThe \"24x latency reduction vs AST\" claim is attributed to this paper's\nown conclusion, not presented as independently verified: AST reports no\nend-to-end throughput of its own, only student-only inference on a\ndifferent GPU (rudolph2023-ast note, Table 6).\n\nNo relations authored here. The compared_with edge to patchcore is\nauthored on the patchcore page (symmetric, one side only); the\nextended_by edge is authored on uninformed-students; the feeds_into\nedge is authored on resnet.\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/nelson1425/EfficientAD",
+          "commit": "fcab5146f84ae17597044ad5ddf1656ccf805401",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/open-edge-platform/anomalib",
+          "commit": "091ca6aca92c8d0e416394f79e52f5a3cea3db73",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-08-06",
+      "year": 2023
+    }
+  },
+  {
     "slug": "fast-scnn",
     "frontmatter": {
       "title": "Fast-SCNN",
@@ -3946,6 +4002,68 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "patchcore",
+    "frontmatter": {
+      "title": "PatchCore",
+      "summary": "Training-free industrial anomaly detection: a single forward pass over defect-free images builds a coreset-subsampled memory bank of locally aware mid-level CNN patch features, and test images are scored by reweighted nearest-neighbour distance in that feature space.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "efficientad",
+          "confidence": "high",
+          "caution": "Peer choice, not supersession — EfficientAD leads on accuracy and latency, but PatchCore requires no per-scenario training."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "local-descriptors",
+        "dense-prediction"
+      ],
+      "domain": "anomaly-detection",
+      "tasks": [
+        "anomaly-detection",
+        "anomaly-segmentation"
+      ],
+      "arch_family": "cnn",
+      "params": "No trained parameters — frozen ImageNet-pretrained WideResNet-50; memory-bank size scales with the coreset percentage of the training set.",
+      "sources": {
+        "primary": "roth2022-patchcore",
+        "references": [
+          "bergmann2019-mvtec-ad",
+          "bergmann2020-uninformed-students",
+          "batzner2023-efficientad"
+        ],
+        "notes": "This page hosts the `## When to choose PatchCore over EfficientAD`\ncomparison; the older paper hosts, per docs/README.md §4. The\nefficientad page carries only a back-pointer to the anchor\n#when-to-choose-patchcore-over-efficientad.\n\nTwo values the paper never assigns numerically: the reweighting\nneighbourhood size b, and the Johnson-Lindenstrauss target\ndimensionality d*. Both are stated as unspecified rather than guessed.\n\nThe paper is internally inconsistent about one figure: §4.2 prose says\n\"PaDiM\" where Table 1 says \"PaDiM*\" (the backbone-selected variant).\nThe page attributes it as the table does.\n\n\"Nvidia Tesla V4\" in Appendix A is an OCR artifact of the cached PDF\nand is not repeated as fact anywhere on the page.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/amazon-science/patchcore-inspection",
+          "commit": "fcaa92f124fb1ad74a7acf56726decd4b27cbcad",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/open-edge-platform/anomalib",
+          "commit": "091ca6aca92c8d0e416394f79e52f5a3cea3db73",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-08-06",
+      "year": 2022
+    }
+  },
+  {
     "slug": "resnet",
     "frontmatter": {
       "title": "ResNet",
@@ -3983,6 +4101,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "loftr",
           "confidence": "medium",
           "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+        },
+        {
+          "type": "feeds_into",
+          "target": "efficientad",
+          "confidence": "medium",
+          "caution": "EfficientAD distils its patch description network from a WideResNet-101 teacher; the wide variant is not this page's subject, hence medium confidence."
         }
       ],
       "tags": [
@@ -4543,6 +4667,52 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-11",
       "year": 2015
+    }
+  },
+  {
+    "slug": "uninformed-students",
+    "frontmatter": {
+      "title": "Uninformed Students",
+      "summary": "Pixel-precise anomaly segmentation from an ensemble of student networks trained only on anomaly-free images to regress a fixed off-domain teacher's dense descriptors, scoring each pixel by regression error against the mixture mean plus the ensemble's predictive variance, across three receptive-field scales.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "efficientad",
+          "confidence": "high",
+          "caution": "EfficientAD keeps the student-teacher principle but replaces the pretrained-backbone ensemble with a single distilled patch description network and loss-induced asymmetry."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "probabilistic",
+        "dense-prediction",
+        "multi-scale"
+      ],
+      "domain": "anomaly-detection",
+      "tasks": [
+        "anomaly-detection",
+        "anomaly-segmentation"
+      ],
+      "noPublicImpl": true,
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "bergmann2020-uninformed-students",
+        "references": [
+          "bergmann2019-mvtec-ad",
+          "batzner2023-efficientad"
+        ],
+        "notes": "noPublicImpl is deliberate, not an omission. MVTec released no official\ncode. The most-used third-party reimplementation carries no LICENSE\nfile at all, so its licence field cannot be populated; the only\npermissively licensed alternative is unmaintained and low-traction.\nCiting either would put an unverifiable or dead implementation on a\nreference page.\n\nNot to be confused with anomalib's `stfpm` model, which implements\nWang et al., \"Student-Teacher Feature Pyramid Matching\" (BMVC 2021) —\na descendant of this paper, not an implementation of it.\n\nThis paper never uses the term \"AU-PRO\". It reports \"normalized area\nunder the PRO-curve\" up to a 30% per-pixel false-positive rate. The\npage uses the paper's own wording.\n\nPredictive variance (Eq. 10) is transcribed in the paper's own\nnotation, verified against the ar5iv MathML source. The constant\nper-component covariance s does not appear in Eq. 10 and cancels under\nthe Eq. 11 normalisation.\n"
+      },
+      "date": "2026-08-06",
+      "year": 2020
     }
   },
   {
@@ -5674,6 +5844,38 @@ export const conceptPages: ConceptIndexEntry[] = [
         ]
       },
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "visual-anomaly-detection",
+    "frontmatter": {
+      "title": "Visual Anomaly Detection",
+      "summary": "One-class detection and localisation of defects from defect-free training images only, organised by the structural-versus-logical anomaly distinction and surveying the student-teacher, memory-bank, and feature-space-autoencoder method families.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 18,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "tags": [
+        "survey",
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "anomaly-detection",
+      "sources": {
+        "references": [
+          "bergmann2019-mvtec-ad",
+          "bergmann2022-mvtec-loco",
+          "zou2022-visa",
+          "bergmann2020-uninformed-students",
+          "roth2022-patchcore",
+          "batzner2023-efficientad"
+        ],
+        "notes": "Survey concept page per docs/README.md §4: three surveyed methods\n(uninformed-students, patchcore, efficientad), decision table near the\ntop, >=800 words. AST and GCAD appear as context only — neither has a\npage.\n\nMetric attribution is deliberate. AU-PRO is defined in none of the\ncited papers: MVTec AD 2019 never uses the term, MVTec LOCO always\nspells out \"area under the sPRO curve\" and credits plain PRO to prior\nwork, and VisA argues for AU-PR over AU-ROC without using AU-PRO. The\nAU-PRO definition lives in the 2021 IJCV MVTec AD extension, which is\nnot ingested — the page must not attribute it to a source it cites.\n\nLatency figures are not cross-comparable: AST reports student-only\ninference on an RTX 1080 Ti, EfficientAD end-to-end on an RTX A6000,\nPatchCore seconds-per-image on unstated hardware. The decision table\ncarries the measurement basis per row rather than ranking a single\nlatency axis.\n"
+      },
+      "date": "2026-08-06"
     }
   }
 ];

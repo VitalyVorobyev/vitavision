@@ -11,7 +11,7 @@ relatedDemos: ["chess-response"]
 difficulty: intermediate
 ---
 
-# 1. Introduction
+# Introduction
 
 Calibrating visual sensors in challenging setups is part of my job. In practice this means multi-camera rigs, significant lens distortion, tilted optics, and images where corner localization is expected to be both accurate and stable. At some point it became clear to me that the [OpenCV](https://opencv.org) calibration toolset was not good enough for my use cases: not only in accuracy, but also in performance, robustness, and control over the full pipeline. That is how I started building my own calibration stack, beginning with chessboard target detection.
 
@@ -23,7 +23,7 @@ Classical detectors such as [Harris](/atlas/harris-corner-detector), [Shi-Tomasi
 
 Bennett and Lasenby [proposed](https://arxiv.org/abs/1301.5491) an elegant, robust, and efficient detector, ChESS (Chess-board Extraction by Subtraction and Summation), designed specifically for chessboard-like X-junctions. In my view, this idea deserves more attention in the vision community. In this post, we will look at ChESS in some detail, closely following the original paper. By the end, you should have a clear picture of how [my implementation of ChESS](https://github.com/VitalyVorobyev/chess-corners-rs) works.
 
-# 2. The ChESS response
+# 1. The ChESS response
 
 The ChESS detector computes a score for each pixel. Pixels that lie on X-junctions receive a large score; pixels on edges, stripes, or textured regions receive a small one.
 
@@ -113,7 +113,7 @@ The demo below shows how the ChESS score behaves on three characteristic pattern
 :::illustration[chess-response]{preset="compact" pattern="corner"}
 :::
 
-# 3. From heat map to features
+# 2. From heat map to features
 
 The response defined above gives a dense heat map, but in practice we need actual feature points.
 
@@ -133,7 +133,7 @@ where the sums run over all $(x, y)$ in the refinement window, and $w(x,y)$ is t
 
 In my implementation, I use several classical subpixel refinement methods, as well as a CNN-based refiner. That part deserves a separate discussion, so I will return to it in another post.
 
-# 4. Corner orientations
+# 3. Corner orientations
 
 The original paper also discusses corner orientation, but in a quantized form: it assigns each detected corner to one of eight orientation bins.
 
@@ -149,7 +149,7 @@ Here $\theta_1$ and $\theta_2$ are the two local grid directions, $\mu$ is the r
 
 The measured orientations become useful later when reconstructing board structure and filtering out geometrically inconsistent detections.
 
-# 5. ChESS in Rust
+# 4. ChESS in Rust
 
 The Rust implementation lives in [this repository](https://github.com/VitalyVorobyev/chess-corners-rs). You can install it with cargo:
 
@@ -198,7 +198,7 @@ The last comparison is only partial, because `findChessboardCornersSB` is a full
 
 A more detailed discussion can be found in the [performance report](https://github.com/VitalyVorobyev/chess-corners-rs/blob/main/book/src/part-05-performance-and-integration.md).
 
-# 6. Final thoughts
+# Conclusion
 
 The main advantage of ChESS is that it is both simple and designed specifically for chessboard corners:
 
@@ -208,3 +208,5 @@ The main advantage of ChESS is that it is both simple and designed specifically 
 * It is computationally simple. That simplicity translates directly into fast implementations, parallel execution, and clean multiscale extensions.
 
 Overall, ChESS is a simple and practical detector. It is fast, robust, and well suited to pipelines that need millisecond-scale corner detection under strong lens distortion.
+
+The [next post](/blog/02-topological-grid-reconstruction) shows how these local corner detections are assembled into a globally ordered grid using topological reconstruction.

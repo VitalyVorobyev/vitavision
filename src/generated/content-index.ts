@@ -3,22 +3,48 @@ import type { BlogIndexEntry, AlgorithmIndexEntry, DemoIndexEntry, ModelIndexEnt
 
 export const blogPosts: BlogIndexEntry[] = [
   {
-    "slug": "02-grid-deteciont-part1",
+    "slug": "03-puzzleboard",
     "frontmatter": {
-      "title": "Grid detection I: topology",
-      "summary": "How Delaunay triangulation and mesh filtering can turn detected chessboard corners into an ordered grid.",
+      "title": "PuzzleBoard",
+      "summary": "s",
       "author": "Vitaly Vorobyev",
+      "draft": true,
       "repoLinks": [
         "https://github.com/VitalyVorobyev/calib-targets-rs"
       ],
       "difficulty": "intermediate",
-      "readingTimeMinutes": 10,
+      "readingTimeMinutes": 1,
       "access": "public",
       "tags": [
         "feature-detection",
         "calibration-targets"
       ],
       "relatedAlgorithms": [],
+      "relatedDemos": [],
+      "date": "2026-08-01"
+    }
+  },
+  {
+    "slug": "02-topological-grid-reconstruction",
+    "frontmatter": {
+      "title": "Topological grid reconstruction",
+      "summary": "How Delaunay triangulation and mesh filtering can turn candidate grid corners into an ordered grid.",
+      "author": "Vitaly Vorobyev",
+      "repoLinks": [
+        "https://github.com/VitalyVorobyev/calib-targets-rs"
+      ],
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "tags": [
+        "feature-detection",
+        "calibration-targets"
+      ],
+      "relatedAlgorithms": [
+        "shu-topological-grid",
+        "puzzleboard",
+        "chess-corners"
+      ],
       "relatedDemos": [
         "delaunay-voronoi"
       ],
@@ -69,7 +95,7 @@ export const blogPosts: BlogIndexEntry[] = [
     }
   },
   {
-    "slug": "02-demo-blocks",
+    "slug": "demo-blocks",
     "frontmatter": {
       "title": "Rich Content Demo: Semantic Blocks, Math, and Code",
       "summary": "A demonstration of all supported content features including semantic blocks, math rendering, syntax highlighting, and typography.",

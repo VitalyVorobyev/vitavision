@@ -2,8 +2,8 @@
 export interface GeneratedHtmlModule { html: string; }
 
 export const blogHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {
-  "03-puzzleboard": () => import("./content/blog/03-puzzleboard.ts"),
   "02-topological-grid-reconstruction": () => import("./content/blog/02-topological-grid-reconstruction.ts"),
+  "03-puzzleboard": () => import("./content/blog/03-puzzleboard.ts"),
   "01-chesscorners": () => import("./content/blog/01-chesscorners.ts"),
   "00-intro": () => import("./content/blog/00-intro.ts"),
   "demo-blocks": () => import("./content/blog/demo-blocks.ts"),

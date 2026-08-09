@@ -3,28 +3,6 @@ import type { BlogIndexEntry, AlgorithmIndexEntry, DemoIndexEntry, ModelIndexEnt
 
 export const blogPosts: BlogIndexEntry[] = [
   {
-    "slug": "03-puzzleboard",
-    "frontmatter": {
-      "title": "PuzzleBoard",
-      "summary": "s",
-      "author": "Vitaly Vorobyev",
-      "draft": true,
-      "repoLinks": [
-        "https://github.com/VitalyVorobyev/calib-targets-rs"
-      ],
-      "difficulty": "intermediate",
-      "readingTimeMinutes": 1,
-      "access": "public",
-      "tags": [
-        "feature-detection",
-        "calibration-targets"
-      ],
-      "relatedAlgorithms": [],
-      "relatedDemos": [],
-      "date": "2026-08-01"
-    }
-  },
-  {
     "slug": "02-topological-grid-reconstruction",
     "frontmatter": {
       "title": "Topological grid reconstruction",
@@ -48,7 +26,29 @@ export const blogPosts: BlogIndexEntry[] = [
       "relatedDemos": [
         "delaunay-voronoi"
       ],
-      "date": "2026-05-15"
+      "date": "2026-08-09"
+    }
+  },
+  {
+    "slug": "03-puzzleboard",
+    "frontmatter": {
+      "title": "PuzzleBoard",
+      "summary": "s",
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "repoLinks": [
+        "https://github.com/VitalyVorobyev/calib-targets-rs"
+      ],
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 1,
+      "access": "public",
+      "tags": [
+        "feature-detection",
+        "calibration-targets"
+      ],
+      "relatedAlgorithms": [],
+      "relatedDemos": [],
+      "date": "2026-08-01"
     }
   },
   {

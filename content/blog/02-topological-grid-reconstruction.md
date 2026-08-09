@@ -1,6 +1,6 @@
 ---
 title: "Topological grid reconstruction"
-date: 2026-05-15
+date: 2026-08-09
 summary: "How Delaunay triangulation and mesh filtering can turn candidate grid corners into an ordered grid."
 tags: ["feature-detection", "calibration-targets"]
 author: "Vitaly Vorobyev"

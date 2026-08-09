@@ -3,6 +3,55 @@ import type { BlogIndexEntry, AlgorithmIndexEntry, DemoIndexEntry, ModelIndexEnt
 
 export const blogPosts: BlogIndexEntry[] = [
   {
+    "slug": "02-topological-grid-reconstruction",
+    "frontmatter": {
+      "title": "Topological grid reconstruction",
+      "summary": "How Delaunay triangulation and mesh filtering can turn candidate grid corners into an ordered grid.",
+      "author": "Vitaly Vorobyev",
+      "repoLinks": [
+        "https://github.com/VitalyVorobyev/calib-targets-rs"
+      ],
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "tags": [
+        "feature-detection",
+        "calibration-targets"
+      ],
+      "relatedAlgorithms": [
+        "shu-topological-grid",
+        "puzzleboard",
+        "chess-corners"
+      ],
+      "relatedDemos": [
+        "delaunay-voronoi"
+      ],
+      "date": "2026-08-09"
+    }
+  },
+  {
+    "slug": "03-puzzleboard",
+    "frontmatter": {
+      "title": "PuzzleBoard",
+      "summary": "s",
+      "author": "Vitaly Vorobyev",
+      "draft": true,
+      "repoLinks": [
+        "https://github.com/VitalyVorobyev/calib-targets-rs"
+      ],
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 1,
+      "access": "public",
+      "tags": [
+        "feature-detection",
+        "calibration-targets"
+      ],
+      "relatedAlgorithms": [],
+      "relatedDemos": [],
+      "date": "2026-08-01"
+    }
+  },
+  {
     "slug": "01-chesscorners",
     "frontmatter": {
       "title": "ChESS Corners Detector",
@@ -12,19 +61,17 @@ export const blogPosts: BlogIndexEntry[] = [
         "https://github.com/VitalyVorobyev/chess-corners-rs"
       ],
       "difficulty": "intermediate",
-      "readingTimeMinutes": 12,
+      "readingTimeMinutes": 11,
       "access": "public",
       "tags": [
-        "computer-vision",
-        "rust",
-        "calibration",
         "feature-detection"
       ],
       "relatedAlgorithms": [
         "chess-corners",
         "harris-corner-detector",
         "shi-tomasi-corner-detector",
-        "fast-corner-detector"
+        "fast-corner-detector",
+        "duda-radon-corners"
       ],
       "relatedDemos": [
         "chess-response"
@@ -48,7 +95,7 @@ export const blogPosts: BlogIndexEntry[] = [
     }
   },
   {
-    "slug": "02-demo-blocks",
+    "slug": "demo-blocks",
     "frontmatter": {
       "title": "Rich Content Demo: Semantic Blocks, Math, and Code",
       "summary": "A demonstration of all supported content features including semantic blocks, math rendering, syntax highlighting, and typography.",

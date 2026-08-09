@@ -12,11 +12,8 @@ Replace a global homography with a spatially varying field of homographies, each
 
 - [[dlt-normalisation]]
 - [[homography]]
-
-## Related
-
+- [[ransac]]
 - [[spatially-varying-image-stitching]]
-- [[zhang-planar-calibration]]
 
 ## Sources
 

@@ -12,11 +12,9 @@ Post-process a partially detected checkerboard by training two Gaussian processe
 
 - [[image-gradient]]
 
-## Related
+## Practice
 
-- [[chessboard-x-corner-detection]]
-- [[geiger-chessboard-detector]]
-- [[ocpad]]
+- **Compared with** — [[ocpad]]
 
 ## Sources
 

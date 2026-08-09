@@ -8,14 +8,10 @@ slug: tsai-lenz-handeye
 
 Recover the constant rigid transform from a robot gripper to a rigidly mounted camera by solving the AX=XB equation in two stages — modified Rodrigues rotation, then translation.
 
-## Related
+## Lineage
 
-- [[daniilidis-dual-quaternion-handeye]]
-- [[zhang-planar-calibration]]
-
-## Compared with
-
-- [[daniilidis-dual-quaternion-handeye]]
+- **Alternative formulation of** — [[daniilidis-dual-quaternion-handeye]]
+  > Daniilidis's dual-quaternion solver couples rotation and translation simultaneously; both methods remain in practitioner use.
 
 ## Sources
 

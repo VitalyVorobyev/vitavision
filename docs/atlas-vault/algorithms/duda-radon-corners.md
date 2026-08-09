@@ -12,14 +12,6 @@ Detect checkerboard X-junctions by approximating a localized Radon transform wit
 
 - [[image-gradient]]
 
-## Related
-
-- [[chess-corners]]
-- [[chessboard-x-corner-detection]]
-- [[harris-corner-detector]]
-- [[pyramidal-blur-aware-xcorner]]
-- [[rochade]]
-
 ## Sources
 
 - Primary: [[duda2018-accurate]]

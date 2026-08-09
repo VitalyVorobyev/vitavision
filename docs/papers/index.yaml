@@ -992,3 +992,505 @@
   cites:
   - he2016-resnet
   - he2017-maskrcnn
+
+- id: sofiiuk2021-ritm
+  title: "Reviving Iterative Training with Mask Guidance for Interactive Segmentation"
+  authors: ["K. Sofiiuk", "I. A. Petrov", "A. Konushin"]
+  year: 2021
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2102.06583
+  arxiv: "2102.06583"
+  doi: "10.48550/arxiv.2102.06583"
+  pdf: sofiiuk2021-ritm.pdf
+  cites: []
+
+- id: sun2019-hrnet
+  title: "Deep High-Resolution Representation Learning for Human Pose Estimation"
+  authors: ["K. Sun", "B. Xiao", "D. Liu", "J. Wang"]
+  year: 2019
+  venue: CVPR 2019
+  url: https://arxiv.org/pdf/1902.09212
+  arxiv: "1902.09212"
+  doi: "10.48550/arxiv.1902.09212"
+  pdf: sun2019-hrnet.pdf
+  cites:
+  - he2016-resnet
+  - szegedy2015-inception
+
+- id: sun2019-hrnetv2
+  title: "High-Resolution Representations for Labeling Pixels and Regions"
+  authors: ["K. Sun", "Y. Zhao", "B. Jiang", "T. Cheng", "B. Xiao", "D. Liu", "Y. Mu", "X. Wang", "W. Liu", "J. Wang"]
+  year: 2019
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/1904.04514
+  arxiv: "1904.04514"
+  doi: "10.48550/arxiv.1904.04514"
+  pdf: sun2019-hrnetv2.pdf
+  cites:
+  - sun2019-hrnet
+  - he2016-resnet
+  - he2017-maskrcnn
+
+- id: wang2020-hrnet-journal
+  title: "Deep High-Resolution Representation Learning for Visual Recognition"
+  authors: ["J. Wang", "K. Sun", "T. Cheng", "B. Jiang", "C. Deng", "Y. Zhao", "D. Liu", "Y. Mu", "M. Tan", "X. Wang", "W. Liu", "B. Xiao"]
+  year: 2020
+  venue: TPAMI 2020 (arXiv 2019)
+  url: https://arxiv.org/pdf/1908.07919
+  arxiv: "1908.07919"
+  doi: "10.48550/arxiv.1908.07919"
+  pdf: wang2020-hrnet-journal.pdf
+  cites:
+  - sun2019-hrnet
+  - sun2019-hrnetv2
+  - he2016-resnet
+
+- id: zhang2023-mobilesam
+  title: "Faster Segment Anything: Towards Lightweight SAM for Mobile Applications"
+  authors: ["C. Zhang", "D. Han", "Y. Qiao", "J. U. Kim", "S. Bae", "S. Lee", "C. S. Hong"]
+  year: 2023
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2306.14289
+  arxiv: "2306.14289"
+  doi: "10.48550/arxiv.2306.14289"
+  pdf: zhang2023-mobilesam.pdf
+  cites:
+  - kirillov2023-sam
+
+- id: zhang2023-mobilesamv2
+  title: "MobileSAMv2: Faster Segment Anything to Everything"
+  authors: ["C. Zhang", "D. Han", "S. Zheng", "J. Choi", "T. Kim", "C. S. Hong"]
+  year: 2023
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2312.09579
+  arxiv: "2312.09579"
+  doi: "10.48550/arxiv.2312.09579"
+  pdf: zhang2023-mobilesamv2.pdf
+  cites:
+  - kirillov2023-sam
+  - zhang2023-mobilesam
+
+- id: ravi2024-sam2
+  title: "SAM 2: Segment Anything in Images and Videos"
+  authors: ["N. Ravi", "V. Gabeur", "Y. Hu", "R. Hu", "C. K. Ryali", "T. Ma", "H. Khedr", "R. Rädle", "C. Rolland", "L. Gustafson", "E. Mintun", "J. Pan", "K. V. Alwala", "N. Carion", "C. Wu", "R. Girshick", "P. Dollár", "C. Feichtenhofer"]
+  year: 2024
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2408.00714
+  arxiv: "2408.00714"
+  doi: "10.48550/arxiv.2408.00714"
+  pdf: ravi2024-sam2.pdf
+  cites:
+  - kirillov2023-sam
+
+- id: carion2025-sam3
+  title: "SAM 3: Segment Anything with Concepts"
+  authors: ["N. Carion", "L. Gustafson", "Y. Hu", "S. Debnath", "R. Hu", "D. Suris", "C. K. Ryali", "K. V. Alwala", "H. Khedr", "A. C. Huang", "J. Lei", "T. Ma", "B. Guo", "A. Kalla", "M. D. Marks", "J. Greer", "M. Wang", "P. Sun", "R. Rädle", "T. Afouras", "E. Mavroudi", "K. Xu", "T. Wu", "Y. Zhou", "L. Momeni", "R. Hazra", "S. Ding", "S. Vaze", "F. Porcher", "L. Feng", "S. Li", "A. Kamath", "H. Cheng", "P. Dollár", "N. Ravi", "K. Saenko", "P. Zhang", "C. Feichtenhofer"]
+  year: 2025
+  venue: arXiv (Cornell University)
+  url: https://arxiv.org/pdf/2511.16719
+  arxiv: "2511.16719"
+  doi: "10.48550/arxiv.2511.16719"
+  pdf: carion2025-sam3.pdf
+  cites:
+  - kirillov2023-sam
+  - ravi2024-sam2
+
+- id: dosovitskiy2020-vit
+  title: "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"
+  authors: ["A. Dosovitskiy", "L. Beyer", "A. Kolesnikov", "D. Weissenborn", "X. Zhai", "T. Unterthiner", "M. Dehghani", "M. Minderer", "G. Heigold", "S. Gelly", "J. Uszkoreit", "N. Houlsby"]
+  year: 2020
+  venue: ICLR 2021 (arXiv 2020)
+  url: https://arxiv.org/pdf/2010.11929
+  arxiv: "2010.11929"
+  doi: "10.48550/arxiv.2010.11929"
+  pdf: dosovitskiy2020-vit.pdf
+  cites: []
+
+- id: carion2020-detr
+  title: "End-to-End Object Detection with Transformers"
+  authors: ["N. Carion", "F. Massa", "G. Synnaeve", "N. Usunier", "A. Kirillov", "S. Zagoruyko"]
+  year: 2020
+  venue: ECCV 2020
+  url: https://arxiv.org/pdf/2005.12872
+  arxiv: "2005.12872"
+  doi: "10.1007/978-3-030-58452-8_13"
+  pdf: carion2020-detr.pdf
+  cites:
+  - he2016-resnet
+
+- id: cheng2021-maskformer
+  title: "Per-Pixel Classification is Not All You Need for Semantic Segmentation"
+  authors: ["B. Cheng", "A. G. Schwing", "A. Kirillov"]
+  year: 2021
+  venue: NeurIPS 2021
+  url: https://arxiv.org/pdf/2107.06278
+  arxiv: "2107.06278"
+  doi: "10.48550/arxiv.2107.06278"
+  pdf: cheng2021-maskformer.pdf
+  cites:
+  - he2016-resnet
+  - carion2020-detr
+
+- id: cheng2022-mask2former
+  title: "Masked-attention Mask Transformer for Universal Image Segmentation"
+  authors: ["B. Cheng", "I. Misra", "A. G. Schwing", "A. Kirillov", "R. Girdhar"]
+  year: 2022
+  venue: CVPR 2022 (arXiv 2021)
+  url: https://arxiv.org/pdf/2112.01527
+  arxiv: "2112.01527"
+  doi: "10.48550/arxiv.2112.01527"
+  pdf: cheng2022-mask2former.pdf
+  cites:
+  - cheng2021-maskformer
+  - carion2020-detr
+  - he2016-resnet
+
+- id: he2021-mae
+  title: "Masked Autoencoders Are Scalable Vision Learners"
+  authors: ["K. He", "X. Chen", "S. Xie", "Y. Li", "P. Dollár", "R. Girshick"]
+  year: 2021
+  venue: CVPR 2022 (arXiv 2021)
+  url: https://arxiv.org/pdf/2111.06377
+  arxiv: "2111.06377"
+  doi: "10.48550/arxiv.2111.06377"
+  pdf: he2021-mae.pdf
+  cites:
+  - dosovitskiy2020-vit
+  - he2016-resnet
+
+- id: chen2022-focalclick
+  title: "FocalClick: Towards Practical Interactive Image Segmentation"
+  authors: ["X. Chen", "Z. Zhao", "Y. Zhang", "M. Duan", "D. Qi", "H. Zhao"]
+  year: 2022
+  venue: CVPR 2022 (arXiv 2022)
+  url: https://arxiv.org/pdf/2204.02574
+  arxiv: "2204.02574"
+  doi: "10.48550/arxiv.2204.02574"
+  pdf: chen2022-focalclick.pdf
+  cites: []
+
+- id: xie2021-segformer
+  title: "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers"
+  authors: ["E. Xie", "W. Wang", "Z. Yu", "A. Anandkumar", "J. M. Alvarez", "P. Luo"]
+  year: 2021
+  venue: NeurIPS 2021 (arXiv 2021)
+  url: https://arxiv.org/pdf/2105.15203
+  arxiv: "2105.15203"
+  doi: "10.48550/arxiv.2105.15203"
+  pdf: xie2021-segformer.pdf
+  cites:
+  - simonyan2014-vgg
+  - long2015-fcn
+  - he2016-resnet
+  - chen2018-deeplab
+  - dosovitskiy2020-vit
+
+- id: yu2018-bisenet
+  title: "BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation"
+  authors: ["C. Yu", "J. Wang", "C. Peng", "C. Gao", "G. Yu", "S. Nong"]
+  year: 2018
+  venue: ECCV 2018 (arXiv 2018)
+  url: https://arxiv.org/pdf/1808.00897
+  arxiv: "1808.00897"
+  doi: "10.48550/arxiv.1808.00897"
+  pdf: yu2018-bisenet.pdf
+  cites:
+  - simonyan2014-vgg
+  - ronneberger2015-unet
+  - long2015-fcn
+  - krizhevsky2012-alexnet
+  - he2016-resnet
+  - chen2018-deeplab
+
+- id: yu2020-bisenet
+  title: "BiSeNet V2: Bilateral Network with Guided Aggregation for Real-time Semantic Segmentation"
+  authors: ["C. Yu", "C. Gao", "J. Wang", "G. Yu", "C. Shen", "S. Nong"]
+  year: 2020
+  venue: IJCV 2021 (arXiv 2020)
+  url: https://arxiv.org/pdf/2004.02147
+  arxiv: "2004.02147"
+  doi: "10.48550/arxiv.2004.02147"
+  pdf: yu2020-bisenet.pdf
+  cites:
+  - simonyan2014-vgg
+  - ronneberger2015-unet
+  - long2015-fcn
+  - rother2004-grabcut
+  - krizhevsky2012-alexnet
+  - boykov2001-graph-cut-segmentation
+  - he2016-resnet
+  - chen2018-deeplab
+  - yu2018-bisenet
+  - wang2020-hrnet-journal
+
+- id: poudel2019-fast-scnn
+  title: "Fast-SCNN: Fast Semantic Segmentation Network"
+  authors: ["R. P. K. Poudel", "S. Liwicki", "R. Cipolla"]
+  year: 2019
+  venue: BMVC 2019 (arXiv 2019)
+  url: https://arxiv.org/pdf/1902.04502
+  arxiv: "1902.04502"
+  doi: "10.48550/arxiv.1902.04502"
+  pdf: poudel2019-fast-scnn.pdf
+  cites:
+  - simonyan2014-vgg
+  - ronneberger2015-unet
+  - he2016-resnet
+  - chen2018-deeplab
+  - yu2018-bisenet
+  - long2015-fcn
+
+- id: howard2019-mobilenetv3
+  title: "Searching for MobileNetV3"
+  authors: ["A. Howard", "M. Sandler", "G. Chu", "L. Chen", "B. Chen", "M. Tan", "W. Wang", "Y. Zhu", "R. Pang", "V. Vasudevan", "Q. V. Le", "H. Adam"]
+  year: 2019
+  venue: ICCV 2019 (arXiv 2019)
+  url: https://arxiv.org/pdf/1905.02244
+  arxiv: "1905.02244"
+  doi: "10.1109/iccv.2019.00140"
+  pdf: howard2019-mobilenetv3.pdf
+  cites:
+  - chen2018-deeplab
+  - long2015-fcn
+
+- id: sandler2018-mobilenetv2
+  title: "MobileNetV2: Inverted Residuals and Linear Bottlenecks"
+  authors: ["M. Sandler", "A. Howard", "M. Zhu", "A. Zhmoginov", "L. Chen"]
+  year: 2018
+  venue: CVPR 2018 (arXiv 2018)
+  url: https://arxiv.org/pdf/1801.04381
+  arxiv: "1801.04381"
+  doi: "10.48550/arxiv.1801.04381"
+  pdf: sandler2018-mobilenetv2.pdf
+  cites:
+  - szegedy2015-inception
+  - he2016-resnet
+  - ren2015-faster
+  - chen2018-deeplab
+
+- id: tan2019-mnasnet
+  title: "MnasNet: Platform-Aware Neural Architecture Search for Mobile"
+  authors: ["M. Tan", "B. Chen", "R. Pang", "V. Vasudevan", "M. Sandler", "A. Howard", "Q. V. Le"]
+  year: 2019
+  venue: CVPR 2019 (arXiv 2018)
+  url: https://arxiv.org/pdf/1807.11626
+  arxiv: "1807.11626"
+  doi: "10.1109/cvpr.2019.00293"
+  pdf: tan2019-mnasnet.pdf
+  cites:
+  - he2016-resnet
+  - sandler2018-mobilenetv2
+
+- id: robinson2025-rf-detr
+  title: "RF-DETR: Neural Architecture Search for Real-Time Detection Transformers"
+  authors: ["I. Robinson", "P. Robicheaux", "M. Popov", "D. Ramanan", "N. Peri"]
+  year: 2025
+  venue: arXiv (2025)
+  url: https://arxiv.org/pdf/2511.09554
+  arxiv: "2511.09554"
+  doi: "10.48550/arxiv.2511.09554"
+  pdf: robinson2025-rf-detr.pdf
+  cites: []
+
+- id: lin2025-depth-anything-3
+  title: "Depth Anything 3: Recovering the Visual Space from Any Views"
+  authors: ["H. Lin", "S. Chen", "J. Liew", "D. Y. Chen", "Z. Li", "G. Shi", "J. Feng", "B. Kang"]
+  year: 2025
+  venue: arXiv (2025)
+  url: https://arxiv.org/pdf/2511.10647
+  arxiv: "2511.10647"
+  doi: "10.48550/arxiv.2511.10647"
+  pdf: lin2025-depth-anything-3.pdf
+  cites: []
+
+- id: oquab2023-dinov2
+  title: "DINOv2: Learning Robust Visual Features without Supervision"
+  authors: ["M. Oquab", "T. Darcet", "T. Moutakanni", "H. Vo", "M. Szafraniec", "V. Khalidov", "P. Fernandez", "D. Haziza", "F. Massa", "A. El-Nouby", "M. Assran", "N. Ballas", "W. Galuba", "R. Howes", "P. Huang", "S. Li", "I. Misra", "M. Rabbat", "V. Sharma", "G. Synnaeve", "H. Xu", "H. Jegou", "J. Mairal", "P. Labatut", "A. Joulin", "P. Bojanowski"]
+  year: 2023
+  venue: TMLR 2024 (arXiv 2023)
+  url: https://arxiv.org/pdf/2304.07193
+  arxiv: "2304.07193"
+  doi: "10.48550/arxiv.2304.07193"
+  pdf: oquab2023-dinov2.pdf
+  cites: []
+
+- id: ranftl2019-midas
+  title: "Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-shot Cross-dataset Transfer"
+  authors: ["R. Ranftl", "K. Lasinger", "D. Hafner", "K. Schindler", "V. Koltun"]
+  year: 2019
+  venue: TPAMI 2022 (arXiv 2019)
+  url: https://arxiv.org/pdf/1907.01341
+  arxiv: "1907.01341"
+  doi: "10.48550/arxiv.1907.01341"
+  pdf: ranftl2019-midas.pdf
+  cites: []
+
+- id: yang2024-depth-anything
+  title: "Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data"
+  authors: ["L. Yang", "B. Kang", "Z. Huang", "X. Xu", "J. Feng", "H. Zhao"]
+  year: 2024
+  venue: CVPR 2024
+  url: https://arxiv.org/pdf/2401.10891
+  arxiv: "2401.10891"
+  doi: "10.48550/arxiv.2401.10891"
+  pdf: yang2024-depth-anything.pdf
+  cites: []
+
+- id: yang2024-depth-anything-v2
+  title: "Depth Anything V2"
+  authors: ["L. Yang", "B. Kang", "Z. Huang", "Z. Zhao", "X. Xu", "J. Feng", "H. Zhao"]
+  year: 2024
+  venue: NeurIPS 2024
+  url: https://arxiv.org/pdf/2406.09414
+  arxiv: "2406.09414"
+  doi: "10.48550/arxiv.2406.09414"
+  pdf: yang2024-depth-anything-v2.pdf
+  cites: []
+
+- id: wang2023-dust3r
+  title: "DUSt3R: Geometric 3D Vision Made Easy"
+  authors: ["S. Wang", "V. Leroy", "Y. Cabon", "B. Chidlovskii", "J. Revaud"]
+  year: 2023
+  venue: CVPR 2024 (arXiv 2023)
+  url: https://arxiv.org/pdf/2312.14132
+  arxiv: "2312.14132"
+  doi: "10.48550/arxiv.2312.14132"
+  pdf: wang2023-dust3r.pdf
+  cites: []
+
+- id: leroy2024-mast3r
+  title: "Grounding Image Matching in 3D with MASt3R"
+  authors: ["V. Leroy", "Y. Cabon", "J. Revaud"]
+  year: 2024
+  venue: ECCV 2024
+  url: https://arxiv.org/pdf/2406.09756
+  arxiv: "2406.09756"
+  doi: "10.48550/arxiv.2406.09756"
+  pdf: leroy2024-mast3r.pdf
+  cites: []
+
+- id: wang2025-vggt
+  title: "VGGT: Visual Geometry Grounded Transformer"
+  authors: ["J. Wang", "M. Chen", "N. Karaev", "A. Vedaldi", "C. Rupprecht", "D. Novotny"]
+  year: 2025
+  venue: CVPR 2025
+  url: https://arxiv.org/pdf/2503.11651
+  arxiv: "2503.11651"
+  doi: "10.48550/arxiv.2503.11651"
+  pdf: wang2025-vggt.pdf
+  cites: []
+
+- id: hartley1999-projective-rectification
+  title: "Theory and Practice of Projective Rectification"
+  authors: ["R. I. Hartley"]
+  year: 1999
+  venue: International Journal of Computer Vision
+  url: https://users.cecs.anu.edu.au/~hartley/Papers/joint-epipolar/journal/joint3.pdf
+  doi: "10.1023/A:1008115206617"
+  pdf: hartley1999-projective-rectification.pdf
+  cites: [longuet-higgins1981-eight-point]
+
+- id: loop1999-rectifying-homographies
+  title: "Computing Rectifying Homographies for Stereo Vision"
+  authors: ["C. Loop", "Z. Zhang"]
+  year: 1999
+  venue: IEEE CVPR 1999
+  url: https://dev.ipol.im/~morel/Dossier_MVA_2011_Cours_Transparents_Documents/2011_Cours7_Document2_Loop-Zhang-CVPR1999.pdf
+  doi: "10.1109/CVPR.1999.786928"
+  pdf: loop1999-rectifying-homographies.pdf
+  cites: []
+
+- id: pollefeys1999-polar-rectification
+  title: "A Simple and Efficient Rectification Method for General Motion"
+  authors: ["M. Pollefeys", "R. Koch", "L. Van Gool"]
+  year: 1999
+  venue: IEEE ICCV 1999
+  url: https://people.inf.ethz.ch/pomarc/pubs/PollefeysICCV99.pdf
+  doi: "10.1109/ICCV.1999.791262"
+  pdf: pollefeys1999-polar-rectification.pdf
+  cites: [longuet-higgins1981-eight-point]
+
+- id: fusiello2000-compact-rectification
+  title: "A Compact Algorithm for Rectification of Stereo Pairs"
+  authors: ["A. Fusiello", "E. Trucco", "A. Verri"]
+  year: 2000
+  venue: Machine Vision and Applications
+  url: https://fusiello.github.io/papers/mva99.pdf
+  doi: "10.1007/s001380050120"
+  pdf: fusiello2000-compact-rectification.pdf
+  cites: [hartley1999-projective-rectification, loop1999-rectifying-homographies, pollefeys1999-polar-rectification]
+
+- id: batzner2023-efficientad
+  title: "EfficientAD: Accurate Visual Anomaly Detection at Millisecond-Level Latencies"
+  authors: ["K. Batzner", "L. Heckler", "R. König"]
+  year: 2023
+  venue: WACV 2024 (arXiv 2023)
+  url: https://arxiv.org/pdf/2303.14535
+  arxiv: "2303.14535"
+  doi: "10.48550/arxiv.2303.14535"
+  pdf: batzner2023-efficientad.pdf
+  cites: [bergmann2019-mvtec-ad, bergmann2020-uninformed-students, bergmann2022-mvtec-loco, roth2022-patchcore, rudolph2023-ast, zou2022-visa]
+
+- id: bergmann2019-mvtec-ad
+  title: "MVTec AD — A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection"
+  authors: ["P. Bergmann", "M. Fauser", "D. Sattlegger", "C. Steger"]
+  year: 2019
+  venue: CVPR 2019
+  url: https://openaccess.thecvf.com/content_CVPR_2019/papers/Bergmann_MVTec_AD_--_A_Comprehensive_Real-World_Dataset_for_Unsupervised_Anomaly_CVPR_2019_paper.pdf
+  doi: "10.1109/CVPR.2019.00982"
+  pdf: bergmann2019-mvtec-ad.pdf
+  cites: []
+
+- id: bergmann2020-uninformed-students
+  title: "Uninformed Students: Student-Teacher Anomaly Detection With Discriminative Latent Embeddings"
+  authors: ["P. Bergmann", "M. Fauser", "D. Sattlegger", "C. Steger"]
+  year: 2020
+  venue: CVPR 2020
+  url: https://arxiv.org/pdf/1911.02357
+  arxiv: "1911.02357"
+  doi: "10.1109/CVPR42600.2020.00424"
+  pdf: bergmann2020-uninformed-students.pdf
+  cites: [bergmann2019-mvtec-ad]
+
+- id: bergmann2022-mvtec-loco
+  title: "Beyond Dents and Scratches: Logical Constraints in Unsupervised Anomaly Detection and Localization"
+  authors: ["P. Bergmann", "K. Batzner", "M. Fauser", "D. Sattlegger", "C. Steger"]
+  year: 2022
+  venue: International Journal of Computer Vision
+  url: https://mediatum.ub.tum.de/download/1782820/1782820.pdf
+  doi: "10.1007/s11263-022-01578-9"
+  pdf: bergmann2022-mvtec-loco.pdf
+  cites: [bergmann2019-mvtec-ad, bergmann2020-uninformed-students]
+
+- id: roth2022-patchcore
+  title: "Towards Total Recall in Industrial Anomaly Detection"
+  authors: ["K. Roth", "L. Pemula", "J. Zepeda", "B. Schölkopf", "T. Brox", "P. Gehler"]
+  year: 2022
+  venue: CVPR 2022
+  url: https://arxiv.org/pdf/2106.08265
+  arxiv: "2106.08265"
+  doi: "10.1109/CVPR52688.2022.01392"
+  pdf: roth2022-patchcore.pdf
+  cites: [bergmann2019-mvtec-ad, bergmann2020-uninformed-students]
+
+- id: rudolph2023-ast
+  title: "Asymmetric Student-Teacher Networks for Industrial Anomaly Detection"
+  authors: ["M. Rudolph", "T. Wehrbein", "B. Rosenhahn", "B. Wandt"]
+  year: 2023
+  venue: WACV 2023
+  url: https://arxiv.org/pdf/2210.07829
+  arxiv: "2210.07829"
+  doi: "10.1109/WACV56688.2023.00262"
+  pdf: rudolph2023-ast.pdf
+  cites: [bergmann2019-mvtec-ad, bergmann2020-uninformed-students, roth2022-patchcore]
+
+- id: zou2022-visa
+  title: "SPot-the-Difference Self-Supervised Pre-training for Anomaly Detection and Segmentation"
+  authors: ["Y. Zou", "J. Jeong", "L. Pemula", "D. Zhang", "O. Dabeer"]
+  year: 2022
+  venue: ECCV 2022
+  url: https://arxiv.org/pdf/2207.14315
+  arxiv: "2207.14315"
+  doi: "10.1007/978-3-031-20056-4_23"
+  pdf: zou2022-visa.pdf
+  cites: [bergmann2019-mvtec-ad]

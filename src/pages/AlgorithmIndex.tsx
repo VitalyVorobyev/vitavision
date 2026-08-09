@@ -28,6 +28,7 @@ import { contentGraph } from "../generated/content-graph.ts";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 import { searchSlugs } from "../lib/atlas/searchClient.ts";
+import { selectRecentlyAdded } from "../lib/atlas/recency.ts";
 
 // ── Discriminated entry type ───────────────────────────────────────────────────
 
@@ -205,6 +206,31 @@ function UnifiedResults({ groups, layout, isMobile = false }: UnifiedResultsProp
     );
 }
 
+// ── Recently added section ────────────────────────────────────────────────────
+
+function RecentlyAddedSection({ entries, layout }: { entries: UnifiedEntry[]; layout: "grid" | "list" }) {
+    const gridClass =
+        layout === "grid"
+            ? "grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            : "flex flex-col gap-2.5";
+    return (
+        <section className="mb-6 pb-5 border-b border-[hsl(var(--border)/0.4)]">
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground flex items-center gap-2.5 mb-3">
+                <span className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand" aria-hidden="true" />
+                    Recently added
+                </span>
+                <span className="font-normal text-[hsl(var(--muted-foreground)/0.7)]">{entries.length}</span>
+            </h2>
+            <div className={gridClass}>
+                {entries.map((entry) => (
+                    <EntryCard key={entry.slug} entry={entry} layout={layout} />
+                ))}
+            </div>
+        </section>
+    );
+}
+
 // ── Active-tag chip row ───────────────────────────────────────────────────────
 
 interface ActiveTagChipsProps {
@@ -277,6 +303,23 @@ export default function AlgorithmIndex() {
         () => conceptPages.filter((p) => isAdmin || !p.frontmatter.draft),
         [isAdmin],
     );
+
+    const recentEntries = useMemo<UnifiedEntry[]>(
+        () =>
+            selectRecentlyAdded<UnifiedEntry>([
+                ...visibleAlgorithms.map((e) => ({ kind: "algorithm" as const, slug: e.slug, frontmatter: e.frontmatter })),
+                ...visibleModels.map((e) => ({ kind: "model" as const, slug: e.slug, frontmatter: e.frontmatter })),
+                ...visibleConcepts.map((e) => ({ kind: "concept" as const, slug: e.slug, frontmatter: e.frontmatter })),
+            ]),
+        [visibleAlgorithms, visibleModels, visibleConcepts],
+    );
+
+    const showRecentlyAdded =
+        filters.kind === "all" &&
+        filters.query.trim() === "" &&
+        filters.tags.length === 0 &&
+        filters.problem === "all" &&
+        recentEntries.length > 0;
 
     const facets = useMemo(
         () => computeFacets(visibleAlgorithms, visibleModels, visibleConcepts, filters, searchMatchedSlugs),
@@ -396,6 +439,9 @@ export default function AlgorithmIndex() {
                         )}
 
                         {/* Results */}
+                        {showRecentlyAdded && (
+                            <RecentlyAddedSection entries={recentEntries} layout={effectiveView === "list" ? "list" : "grid"} />
+                        )}
                         <UnifiedResults
                             groups={unifiedGroups}
                             layout={effectiveView === "list" ? "list" : "grid"}
@@ -503,6 +549,9 @@ export default function AlgorithmIndex() {
             />
 
             {/* Card sections */}
+            {showRecentlyAdded && (
+                <RecentlyAddedSection entries={recentEntries} layout="list" />
+            )}
             <UnifiedResults
                 groups={unifiedGroups}
                 layout="list"

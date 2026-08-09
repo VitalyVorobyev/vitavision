@@ -11,16 +11,13 @@ Stitch two images under moderate parallax by replacing the global affine with a 
 ## Prerequisites
 
 - [[homography]]
-
-## Related
-
-- [[apap-image-stitching]]
-- [[gao-dual-homography-stitching]]
+- [[ransac]]
 - [[spatially-varying-image-stitching]]
 
-## Compared with
+## Lineage
 
-- [[apap-image-stitching]]
+- **Generalised by** — [[apap-image-stitching]] _(confidence: medium)_
+  > Affine deviation field remains a useful baseline; APAP's projective per-cell grid is more general but not strictly necessary for moderate-parallax planar-scene panoramas.
 
 ## Sources
 

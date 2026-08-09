@@ -8,7 +8,7 @@ If you only have time for one section, read **§6 Workflow at a glance**.
 
 ## 1. What the atlas is
 
-`vitavision.dev/algorithms` is a connected **practical computer vision atlas**: short reference cards for algorithms, models, and concepts, cross-linked by a typed relationship graph (prerequisites, related, compared-with, used-by, failure-modes). The atlas is intentionally curated — depth and correctness over coverage. Public pages are source-grounded and machine-checked; private research notes carry the reasoning substrate that backs the public content.
+`vitavision.dev/algorithms` is a connected **practical computer vision atlas**: short reference cards for algorithms, models, and concepts, cross-linked by a typed relationship graph (prerequisites, typed `relations[]`, used-by, failure-modes). The atlas is intentionally curated — depth and correctness over coverage. Public pages are source-grounded and machine-checked; private research notes carry the reasoning substrate that backs the public content.
 
 Public site lives at:
 - `/algorithms` — the atlas index (heading: "Atlas"; URL kept stable for SEO).
@@ -70,7 +70,7 @@ Pairwise pages are prohibited. A survey of ≥3 methods lives as a **concept pag
 - ≥3 surveyed methods.
 - ≥800 words of substantive content.
 - A decision table near the top (rows = methods, columns = "use when / avoid when / typical cost / typical accuracy").
-- Each surveyed algorithm page references the survey concept via a `relations[]` entry (so the relationship panel surfaces it from each method's page).
+- Each surveyed algorithm page lists the survey concept in its `prerequisites` (so the build derives a `usedBy` backlink and the relationship panel surfaces it from each method's page). Not `relations[]` — that field excludes prerequisites, and its type vocabulary is method-to-method with no type expressing survey membership.
 
 ### Agentic discipline
 
@@ -218,7 +218,7 @@ Type-specific fields (`category` enum, `editorAlgorithmId`, model `implementatio
 
 ## 11. Atlas vault — graph view in Obsidian
 
-`docs/atlas-vault/` is a generated Obsidian-compatible projection of the atlas. Every algorithm, model, concept, and paper becomes a stub `.md` whose body is `[[wikilinks]]` for every forward edge — useful for opening in Obsidian and looking at the atlas as a graph (clusters by shared concepts, by `comparedWith`, by paper citations).
+`docs/atlas-vault/` is a generated Obsidian-compatible projection of the atlas. Every algorithm, model, concept, and paper becomes a stub `.md` whose body is `[[wikilinks]]` for every forward edge — useful for opening in Obsidian and looking at the atlas as a graph (clusters by shared concepts, by `relations[]`, by paper citations).
 
 ```bash
 bun run vault:build       # regenerate docs/atlas-vault/ from content/** + docs/papers/index.yaml

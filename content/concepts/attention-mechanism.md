@@ -94,4 +94,4 @@ The transformer architecture underlying all three originates outside computer vi
 2. P.-E. Sarlin, D. DeTone, T. Malisiewicz, A. Rabinovich. *SuperGlue: Learning Feature Matching with Graph Neural Networks.* IEEE CVPR, 2020.
 3. P. Lindenberger, P.-E. Sarlin, M. Pollefeys. *LightGlue: Local Feature Matching at Light Speed.* IEEE ICCV, 2023.
 4. J. Sun, Z. Shen, Y. Wang, H. Bao, X. Zhou. *LoFTR: Detector-Free Local Feature Matching with Transformers.* IEEE CVPR, 2021.
-5. J. Su, Y. Lu, S. Pan, A. Murtadha, B. Wen, Y. Liu. *RoFormer: Enhanced Transformer with Rotary Position Embedding.* arXiv:2104.09864, 2021.
+5. J. Su, Y. Lu, S. Pan, A. Murtadha, B. Wen, Y. Liu. *RoFormer: Enhanced Transformer with Rotary Position Embedding.* arXiv 2104.09864, 2021.

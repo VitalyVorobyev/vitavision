@@ -423,7 +423,7 @@ export const useEditorStore = create<EditorState>((set) => ({
         },
         {
             id: 'sample-puzzleboard',
-            src: '/puzzleboard.png',
+            src: '/author_like_oblique.png',
             name: 'PuzzleBoard',
             sampleId: 'puzzleboard',
             description: 'Self-identifying checkerboard with embedded edge-bit pattern for absolute (u,v) grid.',

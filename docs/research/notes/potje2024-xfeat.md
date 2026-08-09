@@ -135,9 +135,9 @@ The existing `content/models/xfeat.md` page is substantive and well-grounded. Th
 
 - Once `content/models/superpoint.md` exists as a non-draft, add entry 2 for SuperPoint (replacing any placeholder). As the direct architectural ancestor, it warrants explicit placement in the reference list. The current page already cites DeTone 2018 as reference entry 2.
 
-### Comparison policy — `comparedWith:` field
+### Comparison policy — `relations[type=compared_with]`
 
-The `xfeat` page's `comparedWith: []` is currently empty. The most important comparison edge is `xfeat ↔ superpoint`:
+The `xfeat` page currently has no `compared_with` entry in `relations[]`. The most important comparison edge is `xfeat ↔ superpoint`:
 - SuperPoint is the older paper (2018 vs. 2024) → SuperPoint hosts the `## When to choose SuperPoint over XFeat` section, per the "older paper hosts" tiebreaker.
 - Preconditions for authoring comparison content: `docs/research/notes/detone2018-superpoint.md` ✓ exists; `docs/research/notes/potje2024-xfeat.md` ✓ exists (this note). Both required research notes are now present — the comparison section can be written when the `superpoint` model page is authored.
 - The non-host page (`xfeat`) should carry a single Remarks bullet: "Compared with SuperPoint: see [When to choose SuperPoint over XFeat](/atlas/superpoint#when-to-choose-superpoint-over-xfeat). SuperPoint hosts the comparison as the older paper."

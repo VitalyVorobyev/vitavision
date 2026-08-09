@@ -8,13 +8,6 @@ slug: topological-grid-recovery
 
 Verify candidate calibration-pattern corners by constructing a graph over them (Delaunay triangulation, k-nearest-neighbours, or proximity) and accepting only configurations that match the expected chessboard topology — false positives are eliminated by structural rules rather than per-pixel response thresholds.
 
-## Related
-
-- [[laureano-topological-chessboard]]
-- [[ocpad]]
-- [[puzzleboard]]
-- [[shu-topological-grid]]
-
 ## Sources
 
 - Reference: [[fuersattel2016-ocpad]]

@@ -287,6 +287,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Communications of the ACM"
   },
   {
+    "slug": "fusiello-compact-rectification",
+    "path": "/atlas/fusiello-compact-rectification",
+    "type": "algorithm",
+    "title": "Fusiello Compact Stereo Rectification",
+    "summary": "Calibrated Euclidean rectification that builds a new pair of projection matrices sharing a common orientation from the two known PPMs, yielding a per-image rectifying homography.",
+    "tags": [
+      "stereo",
+      "two-view-geometry",
+      "classical"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "A. Fusiello",
+      "E. Trucco",
+      "A. Verri"
+    ],
+    "venue": "Machine Vision and Applications"
+  },
+  {
     "slug": "gao-dual-homography-stitching",
     "path": "/atlas/gao-dual-homography-stitching",
     "type": "algorithm",
@@ -468,6 +490,26 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Alvey Vision Conference"
   },
   {
+    "slug": "hartley-projective-rectification",
+    "path": "/atlas/hartley-projective-rectification",
+    "type": "algorithm",
+    "title": "Hartley Projective Rectification",
+    "summary": "Computes a rectifying homography pair from the fundamental matrix alone, sending the epipole to infinity with a quasi-affine perspectivity and fixing the matching transform by least-squares disparity minimisation.",
+    "tags": [
+      "stereo",
+      "two-view-geometry",
+      "classical"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "R. I. Hartley"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
     "slug": "hog-descriptor",
     "path": "/atlas/hog-descriptor",
     "type": "algorithm",
@@ -580,6 +622,27 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Nature"
   },
   {
+    "slug": "loop-zhang-rectification",
+    "path": "/atlas/loop-zhang-rectification",
+    "type": "algorithm",
+    "title": "Loop-Zhang Rectifying Homographies",
+    "summary": "Computes a rectifying homography pair from a known fundamental matrix by factoring each homography as shearing × similarity × projective, choosing the projective component to minimize image distortion.",
+    "tags": [
+      "stereo",
+      "two-view-geometry",
+      "classical"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "C. Loop",
+      "Z. Zhang"
+    ],
+    "venue": "IEEE CVPR 1999"
+  },
+  {
     "slug": "lucas-kanade",
     "path": "/atlas/lucas-kanade",
     "type": "algorithm",
@@ -683,6 +746,28 @@ export const searchRecords: SearchRecord[] = [
       "G. Bradski"
     ],
     "venue": "ICCV"
+  },
+  {
+    "slug": "pollefeys-polar-rectification",
+    "path": "/atlas/pollefeys-polar-rectification",
+    "type": "algorithm",
+    "title": "Pollefeys Polar Rectification",
+    "summary": "Rectification by polar reparametrisation around the epipole, requiring only the oriented fundamental matrix and remaining bounded even when the epipole lies inside the image.",
+    "tags": [
+      "stereo",
+      "two-view-geometry",
+      "classical"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure"
+    ],
+    "authors": [
+      "M. Pollefeys",
+      "R. Koch",
+      "L. Van Gool"
+    ],
+    "venue": "IEEE ICCV 1999"
   },
   {
     "slug": "puzzleboard",
@@ -1010,6 +1095,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "NeurIPS"
   },
   {
+    "slug": "bisenet",
+    "path": "/atlas/bisenet",
+    "type": "model",
+    "title": "BiSeNet",
+    "summary": "Two-branch (bilateral) CNN for real-time semantic segmentation: a wide shallow path preserves spatial detail while a deep narrow path with global pooling supplies receptive field, merged by a learned fusion module. V1 (2018) pairs a Spatial Path and a Context Path (ARM + FFM) on an ImageNet-pretrained backbone; V2 (2020) redesigns it with a Detail Branch, a from-scratch Semantic Branch of Gather-and-Expansion layers, Bilateral Guided Aggregation, and a training-only Booster — 72.6% mIoU at 156 FPS on Cityscapes test (V2, Table 7).",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "C. Yu",
+      "J. Wang",
+      "C. Peng",
+      "C. Gao",
+      "G. Yu",
+      "S. Nong"
+    ],
+    "venue": "ECCV 2018 (arXiv 2018)"
+  },
+  {
     "slug": "ccdn-checkerboard-detector",
     "path": "/atlas/ccdn-checkerboard-detector",
     "type": "model",
@@ -1070,6 +1177,199 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "depth-anything",
+    "path": "/atlas/depth-anything",
+    "type": "model",
+    "title": "Depth Anything",
+    "summary": "A monocular relative-depth foundation model that scales training to 62M unlabeled images via a teacher pseudo-labeling data engine, a CutMix challenge for the student, and a DINOv2 semantic-feature alignment loss.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "depth",
+    "headings": [],
+    "authors": [
+      "L. Yang",
+      "B. Kang",
+      "Z. Huang",
+      "X. Xu",
+      "J. Feng",
+      "H. Zhao"
+    ],
+    "venue": "CVPR 2024"
+  },
+  {
+    "slug": "depth-anything-3",
+    "path": "/atlas/depth-anything-3",
+    "type": "model",
+    "title": "Depth Anything 3",
+    "summary": "A single plain-transformer model that predicts spatially consistent geometry — depth plus camera rays — from one to many images, with or without known poses, distilled from Depth Anything 2 via a unified depth-ray target.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "H. Lin",
+      "S. Chen",
+      "J. Liew",
+      "D. Y. Chen",
+      "Z. Li",
+      "G. Shi",
+      "J. Feng",
+      "B. Kang"
+    ],
+    "venue": "arXiv (2025)"
+  },
+  {
+    "slug": "depth-anything-v2",
+    "path": "/atlas/depth-anything-v2",
+    "type": "model",
+    "title": "Depth Anything V2",
+    "summary": "A monocular depth foundation model that trains its teacher purely on synthetic images for label precision, then distills to a student over 62M pseudo-labeled real images, sharpening detail over V1 while staying far faster than diffusion-based depth.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "depth",
+    "headings": [],
+    "authors": [
+      "L. Yang",
+      "B. Kang",
+      "Z. Huang",
+      "Z. Zhao",
+      "X. Xu",
+      "J. Feng",
+      "H. Zhao"
+    ],
+    "venue": "NeurIPS 2024"
+  },
+  {
+    "slug": "detr",
+    "path": "/atlas/detr",
+    "type": "model",
+    "title": "DETR",
+    "summary": "End-to-end object detector that recasts detection as direct set prediction — CNN backbone (ResNet-50/101) extracts $H/32 \\times W/32$ feature map; transformer encoder-decoder with 6+6 layers and $N=100$ learned object queries outputs (class, box) pairs; bipartite-matching loss via Hungarian algorithm eliminates anchor boxes, region proposals, and NMS. Comparable COCO AP to Faster R-CNN at simpler pipeline; better large-object AP, worse small-object AP, and ~10× slower convergence (300+ epochs).",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "N. Carion",
+      "F. Massa",
+      "G. Synnaeve",
+      "N. Usunier",
+      "A. Kirillov",
+      "S. Zagoruyko"
+    ],
+    "venue": "ECCV 2020"
+  },
+  {
+    "slug": "dinov2",
+    "path": "/atlas/dinov2",
+    "type": "model",
+    "title": "DINOv2",
+    "summary": "A self-supervised ViT trained on a curated 142M-image dataset that yields general-purpose visual features usable frozen — via kNN or linear probes — for classification, dense depth and segmentation without finetuning.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "M. Oquab",
+      "T. Darcet",
+      "T. Moutakanni",
+      "H. Vo",
+      "M. Szafraniec",
+      "V. Khalidov",
+      "P. Fernandez",
+      "D. Haziza",
+      "F. Massa",
+      "A. El-Nouby",
+      "M. Assran",
+      "N. Ballas",
+      "W. Galuba",
+      "R. Howes",
+      "P. Huang",
+      "S. Li",
+      "I. Misra",
+      "M. Rabbat",
+      "V. Sharma",
+      "G. Synnaeve",
+      "H. Xu",
+      "H. Jegou",
+      "J. Mairal",
+      "P. Labatut",
+      "A. Joulin",
+      "P. Bojanowski"
+    ],
+    "venue": "TMLR 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "dust3r",
+    "path": "/atlas/dust3r",
+    "type": "model",
+    "title": "DUSt3R",
+    "summary": "A feed-forward network that regresses two dense pointmaps in a shared coordinate frame from an uncalibrated, unposed image pair, jointly recovering correspondence, relative pose, intrinsics and depth without prior calibration.",
+    "tags": [
+      "deep-learning",
+      "two-view-geometry",
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "S. Wang",
+      "V. Leroy",
+      "Y. Cabon",
+      "B. Chidlovskii",
+      "J. Revaud"
+    ],
+    "venue": "CVPR 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "efficientad",
+    "path": "/atlas/efficientad",
+    "type": "model",
+    "title": "EfficientAD",
+    "summary": "Millisecond-latency one-class anomaly detection combining a loss-induced-asymmetric student-teacher branch for structural defects with a feature-space autoencoder branch for logical defects, running 2.2 ms (S) / 4.5 ms (M) per image on an RTX A6000.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "real-time"
+    ],
+    "domain": "anomaly-detection",
+    "headings": [],
+    "authors": [
+      "K. Batzner",
+      "L. Heckler",
+      "R. König"
+    ],
+    "venue": "WACV 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "fast-scnn",
+    "path": "/atlas/fast-scnn",
+    "type": "model",
+    "title": "Fast-SCNN",
+    "summary": "Real-time semantic segmentation CNN whose shared shallow 'Learning to Downsample' prefix feeds both a deep low-resolution global-feature branch and a high-resolution detail skip, merged by a feature-fusion module — eliminating the duplicate early downsampling that two-branch segmenters pay. Built from depthwise-separable and MobileNetV2 inverted-residual blocks; ~1.11M parameters; 68.0% mIoU at 123.5 FPS on Cityscapes test (1024×2048, Titan Xp, Table 5).",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "R. P. K. Poudel",
+      "S. Liwicki",
+      "R. Cipolla"
+    ],
+    "venue": "BMVC 2019 (arXiv 2019)"
+  },
+  {
     "slug": "faster-rcnn",
     "path": "/atlas/faster-rcnn",
     "type": "model",
@@ -1109,6 +1409,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR"
   },
   {
+    "slug": "focalclick",
+    "path": "/atlas/focalclick",
+    "type": "model",
+    "title": "FocalClick",
+    "summary": "Practical click-based interactive segmentation that runs each click as a small local-crop forward pass (Segmentor on a Target Crop, Refiner on a Focus Crop) and composits results back via Progressive Merge — sub-300 ms per click on CPU with first-class support for refining preexisting masks.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "X. Chen",
+      "Z. Zhao",
+      "Y. Zhang",
+      "M. Duan",
+      "D. Qi",
+      "H. Zhao"
+    ],
+    "venue": "CVPR 2022 (arXiv 2022)"
+  },
+  {
     "slug": "googlenet",
     "path": "/atlas/googlenet",
     "type": "model",
@@ -1131,6 +1453,27 @@ export const searchRecords: SearchRecord[] = [
       "A. Rabinovich"
     ],
     "venue": "CVPR 2015"
+  },
+  {
+    "slug": "hrnet",
+    "path": "/atlas/hrnet",
+    "type": "model",
+    "title": "HRNet",
+    "summary": "CNN backbone family for dense prediction that maintains a high-resolution branch throughout the network and runs four parallel multi-resolution streams ($C, 2C, 4C, 8C$ channels) with eight repeated cross-resolution fusions; V1 uses the high-resolution stream only (pose heatmaps), V2 upsamples and concatenates all four streams for per-pixel labelling (semantic segmentation, face landmarks), and V2p adds an FPN-style multi-scale output for object detection and instance segmentation.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "keypoint-detection"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "K. Sun",
+      "B. Xiao",
+      "D. Liu",
+      "J. Wang"
+    ],
+    "venue": "CVPR 2019"
   },
   {
     "slug": "lightglue",
@@ -1175,6 +1518,27 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR"
   },
   {
+    "slug": "mae",
+    "path": "/atlas/mae",
+    "type": "model",
+    "title": "MAE",
+    "summary": "Masked Autoencoder — self-supervised pretraining for Vision Transformers: randomly mask 75 % of input patches, feed the visible 25 % through a ViT encoder, then run a lightweight ViT decoder over the full sequence (visible + shared learnable mask tokens) to reconstruct the masked patches' raw pixel values under MSE on per-patch-normalised targets. The asymmetric encoder-decoder design (encoder operates only on visible tokens, decoder is much smaller and discarded after pretraining) gives a 2.8–4.1× pretraining speedup vs full-sequence masked-ViT baselines and reaches 87.8 % ImageNet-1k top-1 with ViT-H fine-tuning.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "K. He",
+      "X. Chen",
+      "S. Xie",
+      "Y. Li",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "CVPR 2022 (arXiv 2021)"
+  },
+  {
     "slug": "mask-rcnn",
     "path": "/atlas/mask-rcnn",
     "type": "model",
@@ -1192,6 +1556,49 @@ export const searchRecords: SearchRecord[] = [
       "R. Girshick"
     ],
     "venue": "ICCV"
+  },
+  {
+    "slug": "mask2former",
+    "path": "/atlas/mask2former",
+    "type": "model",
+    "title": "Mask2Former",
+    "summary": "Universal image segmentation family — MaskFormer (v1, NeurIPS 2021) reframes semantic segmentation as **mask classification**: predict a set of $N$ binary masks plus per-mask class labels via a DETR-style transformer decoder over pixel-decoder features, supervised by bipartite matching. Mask2Former (v2, CVPR 2022) extends v1 with **masked attention** (cross-attention restricted to each query's predicted mask foreground), multi-scale round-robin features (queries cross-attend to 1/32, 1/16, 1/8 maps across consecutive layers), and point-sampled mask loss for 3× memory reduction. A single architecture, trained per-dataset, beats specialised models on COCO panoptic (PQ 57.8), COCO instance (AP 50.1), and ADE20K semantic (mIoU 57.7) with Swin-L.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "B. Cheng",
+      "I. Misra",
+      "A. G. Schwing",
+      "A. Kirillov",
+      "R. Girdhar"
+    ],
+    "venue": "CVPR 2022 (arXiv 2021)"
+  },
+  {
+    "slug": "mast3r",
+    "path": "/atlas/mast3r",
+    "type": "model",
+    "title": "MASt3R",
+    "summary": "A 3D-grounded image matcher that adds a dense local-descriptor head and an InfoNCE matching loss on top of DUSt3R's pointmap regression, with a fast reciprocal matching scheme, yielding correspondences robust to extreme viewpoint change.",
+    "tags": [
+      "deep-learning",
+      "two-view-geometry",
+      "local-descriptors"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "When to choose MASt3R over a 2D matcher"
+    ],
+    "authors": [
+      "V. Leroy",
+      "Y. Cabon",
+      "J. Revaud"
+    ],
+    "venue": "ECCV 2024"
   },
   {
     "slug": "mate-checkerboard-detector",
@@ -1218,6 +1625,145 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Sensors"
   },
   {
+    "slug": "midas",
+    "path": "/atlas/midas",
+    "type": "model",
+    "title": "MiDaS",
+    "summary": "A monocular depth network trained for zero-shot cross-dataset transfer by mixing incompatible depth datasets under a scale-and-shift-invariant loss, predicting relative inverse depth up to an unknown global scale and shift.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "depth",
+    "headings": [],
+    "authors": [
+      "R. Ranftl",
+      "K. Lasinger",
+      "D. Hafner",
+      "K. Schindler",
+      "V. Koltun"
+    ],
+    "venue": "TPAMI 2022 (arXiv 2019)"
+  },
+  {
+    "slug": "mnasnet",
+    "path": "/atlas/mnasnet",
+    "type": "model",
+    "title": "MnasNet",
+    "summary": "Mobile-CPU CNN image classifier discovered by platform-aware neural architecture search: an RNN controller trained with reinforcement learning samples architectures from a factorized hierarchical search space and maximizes a multi-objective reward trading ImageNet top-1 accuracy against latency measured directly on a phone.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "M. Tan",
+      "B. Chen",
+      "R. Pang",
+      "V. Vasudevan",
+      "M. Sandler",
+      "A. Howard",
+      "Q. V. Le"
+    ],
+    "venue": "CVPR 2019 (arXiv 2018)"
+  },
+  {
+    "slug": "mobilenetv2",
+    "path": "/atlas/mobilenetv2",
+    "type": "model",
+    "title": "MobileNetV2",
+    "summary": "Efficient mobile CNN backbone built from inverted-residual blocks with a linear bottleneck — depthwise-separable convolution expanded to a wide interior and projected back to a thin, non-linearity-free bottleneck that the residual connects — for on-device classification, detection (SSDLite), and segmentation (Mobile DeepLabv3).",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "M. Sandler",
+      "A. Howard",
+      "M. Zhu",
+      "A. Zhmoginov",
+      "L. Chen"
+    ],
+    "venue": "CVPR 2018 (arXiv 2018)"
+  },
+  {
+    "slug": "mobilenetv3",
+    "path": "/atlas/mobilenetv3",
+    "type": "model",
+    "title": "MobileNetV3",
+    "summary": "Mobile-CPU-latency-targeted CNN backbone found by combined platform-aware NAS and NetAdapt, built from MobileNetV2 inverted-residual blocks augmented with squeeze-and-excitation and the h-swish nonlinearity, plus a Lite Reduced ASPP segmentation decoder; trained on ImageNet-1k and adapted to detection and segmentation.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "A. Howard",
+      "M. Sandler",
+      "G. Chu",
+      "L. Chen",
+      "B. Chen",
+      "M. Tan",
+      "W. Wang",
+      "Y. Zhu",
+      "R. Pang",
+      "V. Vasudevan",
+      "Q. V. Le",
+      "H. Adam"
+    ],
+    "venue": "ICCV 2019 (arXiv 2019)"
+  },
+  {
+    "slug": "mobilesam",
+    "path": "/atlas/mobilesam",
+    "type": "model",
+    "title": "MobileSAM",
+    "summary": "Lightweight SAM family — replaces SAM's heavy ViT-H image encoder (632M params, ~452 ms on a single GPU) with a distilled TinyViT encoder (5.78M params, ~8 ms), keeping SAM's prompt encoder + mask decoder frozen and unchanged; MobileSAMv2 adds an object-aware prompt sampler (YOLOv8-style detector → bounding-box prompts) that replaces SAM's 32×32 grid-prompt + NMS pipeline for the Segment-Everything task, cutting end-to-end latency from ≈1616 ms to ≈97 ms (>16×) at equivalent mask quality.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "real-time"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "C. Zhang",
+      "D. Han",
+      "Y. Qiao",
+      "J. U. Kim",
+      "S. Bae",
+      "S. Lee",
+      "C. S. Hong"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "patchcore",
+    "path": "/atlas/patchcore",
+    "type": "model",
+    "title": "PatchCore",
+    "summary": "Training-free industrial anomaly detection: a single forward pass over defect-free images builds a coreset-subsampled memory bank of locally aware mid-level CNN patch features, and test images are scored by reweighted nearest-neighbour distance in that feature space.",
+    "tags": [
+      "deep-learning",
+      "local-descriptors",
+      "dense-prediction"
+    ],
+    "domain": "anomaly-detection",
+    "headings": [
+      "When to choose PatchCore over EfficientAD"
+    ],
+    "authors": [
+      "K. Roth",
+      "L. Pemula",
+      "J. Zepeda",
+      "B. Schölkopf",
+      "T. Brox",
+      "P. Gehler"
+    ],
+    "venue": "CVPR 2022"
+  },
+  {
     "slug": "resnet",
     "path": "/atlas/resnet",
     "type": "model",
@@ -1235,6 +1781,95 @@ export const searchRecords: SearchRecord[] = [
       "J. Sun"
     ],
     "venue": "CVPR 2016"
+  },
+  {
+    "slug": "rf-detr",
+    "path": "/atlas/rf-detr",
+    "type": "model",
+    "title": "RF-DETR",
+    "summary": "Light-weight specialist real-time detection transformer that discovers an accuracy-latency Pareto frontier for any target dataset from a single training run: a DINOv2-ViT backbone feeds an LW-DETR-style set-prediction decoder, and weight-sharing NAS evaluates thousands of sub-network configurations without retraining. First real-time detector to exceed 60 AP on COCO.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "I. Robinson",
+      "P. Robicheaux",
+      "M. Popov",
+      "D. Ramanan",
+      "N. Peri"
+    ],
+    "venue": "arXiv (2025)"
+  },
+  {
+    "slug": "ritm-interactive-segmentation",
+    "path": "/atlas/ritm-interactive-segmentation",
+    "type": "model",
+    "title": "RITM",
+    "summary": "Feedforward click-based interactive segmentation: HRNet+OCR encoder-decoder taking RGB + positive/negative disk-encoded clicks + previous mask, trained with iterative click simulation and Normalized Focal Loss on COCO+LVIS — sets a new state of the art without inference-time backward passes.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "K. Sofiiuk",
+      "I. A. Petrov",
+      "A. Konushin"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "sam",
+    "path": "/atlas/sam",
+    "type": "model",
+    "title": "SAM",
+    "summary": "Promptable segmentation foundation model family — SAM (v1, 2023) introduces image-prompt segmentation with a heavy ViT-H encoder and lightweight transformer decoder trained on the 1.1B-mask SA-1B dataset; SAM 2 (2024) extends to video via a streaming memory module on a Hiera hierarchical-ViT encoder; SAM 3 (2025) generalises from single-object prompts to *concept* prompts (free-form noun phrases or visual exemplars) via a presence token, segmenting all matching instances on images and videos.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "A. Kirillov",
+      "E. Mintun",
+      "N. Ravi",
+      "H. Mao",
+      "C. Rolland",
+      "L. Gustafson",
+      "T. Xiao",
+      "S. Whitehead",
+      "A. C. Berg",
+      "W. Lo",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "segformer",
+    "path": "/atlas/segformer",
+    "type": "model",
+    "title": "SegFormer",
+    "summary": "Hierarchical Transformer encoder (MiT) producing multi-scale features at $1/4, 1/8, 1/16, 1/32$ without positional encodings, plus an all-MLP decoder that fuses per-stage features into a per-pixel prediction. Six variants MiT-B0..B5 trade compute for accuracy; B5 reaches 51.8 mIoU on ADE20K and 84.0 mIoU on Cityscapes (Tables 1 and 2).",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "E. Xie",
+      "W. Wang",
+      "Z. Yu",
+      "A. Anandkumar",
+      "J. M. Alvarez",
+      "P. Luo"
+    ],
+    "venue": "NeurIPS 2021 (arXiv 2021)"
   },
   {
     "slug": "superglue",
@@ -1300,6 +1935,32 @@ export const searchRecords: SearchRecord[] = [
     "venue": "MICCAI (Lecture Notes in Computer Science)"
   },
   {
+    "slug": "uninformed-students",
+    "path": "/atlas/uninformed-students",
+    "type": "model",
+    "title": "Uninformed Students",
+    "summary": "Pixel-precise anomaly segmentation from an ensemble of student networks trained only on anomaly-free images to regress a fixed off-domain teacher's dense descriptors, scoring each pixel by regression error against the mixture mean plus the ensemble's predictive variance, across three receptive-field scales.",
+    "tags": [
+      "deep-learning",
+      "probabilistic",
+      "dense-prediction",
+      "multi-scale"
+    ],
+    "domain": "anomaly-detection",
+    "headings": [
+      "Novelty",
+      "Strengths",
+      "Limitations"
+    ],
+    "authors": [
+      "P. Bergmann",
+      "M. Fauser",
+      "D. Sattlegger",
+      "C. Steger"
+    ],
+    "venue": "CVPR 2020"
+  },
+  {
     "slug": "vgg",
     "path": "/atlas/vgg",
     "type": "model",
@@ -1315,6 +1976,56 @@ export const searchRecords: SearchRecord[] = [
       "A. Zisserman"
     ],
     "venue": "ICLR 2015 / arXiv"
+  },
+  {
+    "slug": "vggt",
+    "path": "/atlas/vggt",
+    "type": "model",
+    "title": "VGGT (Visual Geometry Grounded Transformer)",
+    "summary": "A large feed-forward transformer that predicts cameras, depth maps, point maps and 3D point tracks for one to hundreds of views in a single pass, removing the optimization and global-alignment post-processing that pairwise pointmap methods require.",
+    "tags": [
+      "deep-learning",
+      "two-view-geometry",
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "J. Wang",
+      "M. Chen",
+      "N. Karaev",
+      "A. Vedaldi",
+      "C. Rupprecht",
+      "D. Novotny"
+    ],
+    "venue": "CVPR 2025"
+  },
+  {
+    "slug": "vit",
+    "path": "/atlas/vit",
+    "type": "model",
+    "title": "ViT",
+    "summary": "Vision Transformer — a pure-transformer image classification backbone that treats an image as a sequence of fixed-size patches: split RGB image into $N = HW/P^2$ patches of $P{\\times}P$ pixels (P=16 for ViT-B/L, P=14 for ViT-H), linearly project to $D$-dim tokens, prepend a learnable [CLS] token, add learned positional embeddings, and feed through a standard transformer encoder; classification head reads the [CLS] token's final-layer output. ViT-B/16 86M params, ViT-L/16 307M, ViT-H/14 632M. With large-scale pretraining (JFT-300M) ViT matches or exceeds ResNet-based BiT-L on ImageNet at lower compute.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "A. Dosovitskiy",
+      "L. Beyer",
+      "A. Kolesnikov",
+      "D. Weissenborn",
+      "X. Zhai",
+      "T. Unterthiner",
+      "M. Dehghani",
+      "M. Minderer",
+      "G. Heigold",
+      "S. Gelly",
+      "J. Uszkoreit",
+      "N. Houlsby"
+    ],
+    "venue": "ICLR 2021 (arXiv 2020)"
   },
   {
     "slug": "xfeat",
@@ -1589,6 +2300,33 @@ export const searchRecords: SearchRecord[] = [
     "venue": "International Journal of Computer Vision"
   },
   {
+    "slug": "feed-forward-3d-reconstruction",
+    "path": "/atlas/feed-forward-3d-reconstruction",
+    "type": "concept",
+    "title": "Feed-Forward 3D Reconstruction",
+    "summary": "Recovering 3D geometry — point maps, depth, and camera poses — directly from images in a single network pass, replacing the detect-match-triangulate-bundle-adjust pipeline of classical structure-from-motion with learned pointmap regression.",
+    "tags": [
+      "deep-learning",
+      "two-view-geometry",
+      "survey"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Decision table",
+      "Pointmap regression",
+      "From pairwise to many views",
+      "3D-grounded matching"
+    ],
+    "authors": [
+      "S. Wang",
+      "V. Leroy",
+      "Y. Cabon",
+      "B. Chidlovskii",
+      "J. Revaud"
+    ],
+    "venue": "CVPR 2024 (arXiv 2023)"
+  },
+  {
     "slug": "hessian-saddle-response",
     "path": "/atlas/hessian-saddle-response",
     "type": "concept",
@@ -1620,6 +2358,7 @@ export const searchRecords: SearchRecord[] = [
       "Projective geometry of the homography",
       "Special cases",
       "Physical correspondences",
+      "Applying a homography: warping and resampling",
       "Estimation: DLT and normalized DLT",
       "Decomposition for calibration"
     ]
@@ -1682,6 +2421,32 @@ export const searchRecords: SearchRecord[] = [
       "F. C. Crow"
     ],
     "venue": "ACM SIGGRAPH Computer Graphics"
+  },
+  {
+    "slug": "monocular-depth-estimation",
+    "path": "/atlas/monocular-depth-estimation",
+    "type": "concept",
+    "title": "Monocular Depth Estimation",
+    "summary": "Predicting per-pixel scene depth from a single image — the scale ambiguity that forces relative (affine-invariant) versus metric formulations, the scale-and-shift-invariant training that lets incompatible datasets be mixed, and the foundation-model recipe that scaled it to zero-shot generalization.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "survey"
+    ],
+    "domain": "depth",
+    "headings": [
+      "Scale-and-shift-invariant loss",
+      "Relative vs metric depth",
+      "Scaling with pseudo-labels"
+    ],
+    "authors": [
+      "R. Ranftl",
+      "K. Lasinger",
+      "D. Hafner",
+      "K. Schindler",
+      "V. Koltun"
+    ],
+    "venue": "TPAMI 2022 (arXiv 2019)"
   },
   {
     "slug": "non-maximum-suppression",
@@ -1825,6 +2590,25 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "stereo-rectification",
+    "path": "/atlas/stereo-rectification",
+    "type": "concept",
+    "title": "Stereo Rectification",
+    "summary": "Warping a stereo pair so corresponding epipolar lines become collinear image rows, reducing dense correspondence to a scanline search; calibrated Euclidean methods and uncalibrated projective methods solve the same problem under different input assumptions.",
+    "tags": [
+      "stereo",
+      "two-view-geometry",
+      "survey"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Hartley 1999 - uncalibrated, minimum-disparity",
+      "Loop-Zhang 1999 - uncalibrated, minimum-distortion",
+      "Pollefeys 1999 - polar, handles in-image epipoles",
+      "Fusiello 2000 - calibrated, Euclidean"
+    ]
+  },
+  {
     "slug": "structure-tensor",
     "path": "/atlas/structure-tensor",
     "type": "concept",
@@ -1879,6 +2663,25 @@ export const searchRecords: SearchRecord[] = [
       "Variants — what \"topology\" means in each method",
       "Detection–verification decoupling",
       "Comparison summary"
+    ]
+  },
+  {
+    "slug": "visual-anomaly-detection",
+    "path": "/atlas/visual-anomaly-detection",
+    "type": "concept",
+    "title": "Visual Anomaly Detection",
+    "summary": "One-class detection and localisation of defects from defect-free training images only, organised by the structural-versus-logical anomaly distinction and surveying the student-teacher, memory-bank, and feature-space-autoencoder method families.",
+    "tags": [
+      "survey",
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "anomaly-detection",
+    "headings": [
+      "Student–teacher residual scoring",
+      "Memory-bank / kNN scoring",
+      "Autoencoder reconstruction in feature space",
+      "Evaluation metrics"
     ]
   }
 ];

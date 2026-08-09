@@ -125,9 +125,8 @@ summary: "Computes the fundamental matrix from n ≥ 8 point correspondences by 
 tags: ["geometry", "stereo", "two-view-geometry", "fundamental-matrix"]
 category: geometry
 difficulty: intermediate
-prerequisites: [epipolar-geometry]
-related: [homography]
-comparedWith: []
+prerequisites: [epipolar-geometry, homography]
+relations: []
 sources:
   primary: hartley1997-eight-point
   references: []

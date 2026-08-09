@@ -14,7 +14,7 @@ const initialConfig: CharucoConfig = {
     pxPerSquare: 40,
     chessExpectedRows: 22,
     chessExpectedCols: 22,
-    chessMinCornerStrength: 0.2,
+    chessMinCornerStrength: 15,
     chessCompletenessThreshold: 0.05,
     graphMinSpacingPix: 40,
     graphMaxSpacingPix: 160,
@@ -70,7 +70,13 @@ export const charucoAlgorithm: AlgorithmDefinition = {
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as CharucoConfig;
         return detectCharucoWasm(pixels, width, height, {
-            chessCfg: { threshold_value: c.chessMinCornerStrength },
+            // calib-targets 0.11 collapsed the tagged
+            // `threshold: { relative | absolute }` enum back to a plain f32,
+            // dropping relative mode entirely — the value is now an ABSOLUTE
+            // floor on the raw ChESS response (default_chess_config() ships 15).
+            // Passing the old `{ relative: v }` object throws
+            // "invalid type: JsValue(Object(...)), expected f32" at detect time.
+            chessCfg: { threshold: c.chessMinCornerStrength },
             params: {
                 px_per_square: c.pxPerSquare,
                 board: {

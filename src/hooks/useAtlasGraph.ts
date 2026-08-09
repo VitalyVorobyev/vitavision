@@ -40,9 +40,9 @@ interface UseAtlasGraphReturn {
 
 /**
  * Derive a deduplicated `{ nodes, edges }` view of the Atlas content graph.
- * Edges combine `prerequisites`, `comparedWith`, and `related` from
- * `contentGraph.forward` for every node we know about, deduped pair-wise so
- * each undirected relationship contributes a single edge.
+ * Edges combine `prerequisites` and typed `relations[]` (target only, type
+ * ignored) from `contentGraph.forward` for every node we know about, deduped
+ * pair-wise so each undirected relationship contributes a single edge.
  */
 export default function useAtlasGraph({ algorithms, models, concepts }: UseAtlasGraphArgs): UseAtlasGraphReturn {
     return useMemo(() => {

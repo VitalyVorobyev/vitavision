@@ -6,7 +6,7 @@ import { detectChessCornersWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 import ChessCornersConfigForm, { type ChessCornersConfig } from "./ChessCornersConfigForm";
 
 const initialConfig: ChessCornersConfig = {
-    thresholdRel: 0.2,
+    threshold: 30,
     nmsRadius: 2,
     minClusterSize: 2,
     broadMode: false,
@@ -19,8 +19,8 @@ const initialConfig: ChessCornersConfig = {
 const presets: AlgorithmPreset[] = [
     {
         label: "Sensitive",
-        description: "Lower threshold, broad mode, more pyramid levels",
-        config: { thresholdRel: 0.1, nmsRadius: 2, minClusterSize: 2, broadMode: true, pyramidLevels: 5, pyramidMinSize: 128, upscaleFactor: 0, refiner: "center_of_mass" },
+        description: "Lower response floor, broad mode, more pyramid levels",
+        config: { threshold: 12, nmsRadius: 2, minClusterSize: 2, broadMode: true, pyramidLevels: 5, pyramidMinSize: 128, upscaleFactor: 0, refiner: "center_of_mass" },
     },
     {
         label: "Balanced",
@@ -60,8 +60,6 @@ const toFeatures = (result: ChessCornersResult, runId: string): Feature[] => {
             { dx: corner.axes[1].direction.dx, dy: corner.axes[1].direction.dy, angleRad: corner.axes[1].angle_rad, sigmaRad: corner.axes[1].sigma_rad },
         ],
         score: corner.confidence,
-        contrast: corner.contrast,
-        fitRms: corner.fit_rms,
         label: `corner ${corner.id.slice(0, 8)}`,
     }));
 
@@ -83,7 +81,7 @@ export const chessCornersAlgorithm: AlgorithmDefinition = {
     runWasm: async ({ pixels, width, height, config }) => {
         const typedConfig = config as ChessCornersConfig;
         return detectChessCornersWasm(pixels, width, height, {
-            thresholdRel: typedConfig.thresholdRel,
+            threshold: typedConfig.threshold,
             nmsRadius: typedConfig.nmsRadius,
             minClusterSize: typedConfig.minClusterSize,
             broadMode: typedConfig.broadMode,

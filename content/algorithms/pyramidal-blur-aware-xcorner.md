@@ -171,8 +171,8 @@ The intensity loop is the pixel hot path and is run once per pyramid level. Each
 
 # References
 
-1. P. Abeles. *Pyramidal Blur Aware X-Corner Chessboard Detector.* arXiv:2110.13793, 2021. [arxiv.org/abs/2110.13793](https://arxiv.org/abs/2110.13793)
+1. P. Abeles. *Pyramidal Blur Aware X-Corner Chessboard Detector.* arXiv 2110.13793, 2021. [arxiv.org/abs/2110.13793](https://arxiv.org/abs/2110.13793)
 2. S. Placht, P. Fürsattel, E. A. Mengue, H. Hofmann, C. Schaller, M. Balda, E. Angelopoulou. *ROCHADE: Robust Checkerboard Advanced Detection for Camera Calibration.* ECCV, 2014. DOI: [10.1007/978-3-319-10593-2_50](https://doi.org/10.1007/978-3-319-10593-2_50)
-3. S. Bennett, J. Lasenby. *ChESS — Quick and Robust Detection of Chess-board Features.* arXiv:1301.5491, 2013. [arxiv.org/abs/1301.5491](https://arxiv.org/abs/1301.5491)
+3. S. Bennett, J. Lasenby. *ChESS — Quick and Robust Detection of Chess-board Features.* arXiv 1301.5491, 2013. [arxiv.org/abs/1301.5491](https://arxiv.org/abs/1301.5491)
 4. L. Lucchese, S. K. Mitra. *Using saddle points for subpixel feature detection in camera calibration targets.* Asia Pacific Conference on Circuits and Systems, 2003. DOI: [10.1109/APCCAS.2002.1115151](https://doi.org/10.1109/apccas.2002.1115151)
 5. J. Shi, C. Tomasi. *Good Features to Track.* IEEE CVPR, 1994. DOI: [10.1109/CVPR.1994.323794](https://doi.org/10.1109/cvpr.1994.323794)

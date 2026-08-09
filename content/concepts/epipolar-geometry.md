@@ -6,7 +6,7 @@ tags: ["stereo", "two-view-geometry"]
 author: "Vitaly Vorobyev"
 domain: geometry
 difficulty: advanced
-prerequisites: [ransac]
+prerequisites: [pinhole-camera-model, homography, svd-null-space, ransac]
 sources:
   references:
     - hartley1997-eight-point
@@ -99,7 +99,7 @@ where $W = \begin{bmatrix}0&-1&0\\1&0&0\\0&0&1\end{bmatrix}$ and $u_3$ is the th
 
 **Degenerate configurations.** The fundamental matrix is undefined when all scene points are coplanar (the epipolar constraint degenerates to a planar homography). This case is detected when the design matrix $A$ is rank-deficient or has two near-equal small singular values. Structure-from-motion pipelines use a homography-vs-fundamental-matrix test (comparing inlier counts under both models) to detect planar scenes and select the appropriate initialization.
 
-**Epipole near or in the image.** When the second camera is looking at the first camera (forward motion), $\mathbf{e}'$ lies inside or near the image. Algorithms that parameterize $F$ via the epipole (e.g., 7-point solver) become poorly conditioned. The Sampson correction to the algebraic error is well-behaved even in this case.
+**Epipole near or in the image.** When the second camera is looking at the first camera (forward motion), $\mathbf{e}'$ lies inside or near the image. Algorithms that parameterize $F$ via the epipole (e.g., 7-point solver) become poorly conditioned. The Sampson correction to the algebraic error is well-behaved even in this case. [Pollefeys polar rectification](/atlas/pollefeys-polar-rectification) is the rectification method built for exactly this regime, remaining bounded when a planar rectifying homography would not.
 
 **Translation-only degeneracy.** Pure translation with no rotation gives $E = [t]_\times$, which is symmetric and has a unique right null vector $t$. The 5-point solver does not degenerate in this case, but the 8-point solver can yield inaccurate rotation estimates because the off-diagonal terms are dominated by the skew-symmetric part.
 
@@ -107,7 +107,7 @@ where $W = \begin{bmatrix}0&-1&0\\1&0&0\\0&0&1\end{bmatrix}$ and $u_3$ is the th
 
 Epipolar geometry is the foundational constraint for any algorithm that uses two or more camera views. It reduces stereo matching from a 2-D search to a 1-D search along epipolar lines, and it is the core relation recovered in the first step of structure-from-motion.
 
-No algorithm pages on this site currently cover stereo reconstruction, triangulation, or multi-view structure-from-motion — the domains where epipolar geometry is used directly. The concept is documented here because it is a prerequisite for those topics and because the homography (documented separately) is the degenerate case of epipolar geometry for planar scenes.
+Four algorithm pages now build directly on this constraint via [stereo rectification](/atlas/stereo-rectification), which resamples a stereo pair so that conjugate epipolar lines become collinear image rows — turning the 1-D epipolar-line search into a same-row scanline search: [Hartley projective rectification](/atlas/hartley-projective-rectification), [Loop-Zhang rectifying homographies](/atlas/loop-zhang-rectification), [Pollefeys polar rectification](/atlas/pollefeys-polar-rectification), and [Fusiello compact rectification](/atlas/fusiello-compact-rectification). Triangulation and multi-view structure-from-motion — the other domains where epipolar geometry is used directly — are still not covered by any page on this site. The concept is documented here because it is a prerequisite for those topics and because the homography (documented separately) is the degenerate case of epipolar geometry for planar scenes.
 
 # References
 

@@ -6,7 +6,11 @@ import tseslint from 'typescript-eslint'
 import { globalIgnores } from 'eslint/config'
 
 export default tseslint.config([
-  globalIgnores(['dist', '.venv/**', 'py/**']),
+  // ds-bundle/ and .ds-sync/ hold generated /design-sync output (the compiled
+  // bundle and the staged converter scripts). Both are gitignored, so CI never
+  // sees them, but eslint flat config does not read .gitignore — without this
+  // a local `bun run lint` fails on generated code.
+  globalIgnores(['dist', '.venv/**', 'py/**', 'ds-bundle/**', '.ds-sync/**']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

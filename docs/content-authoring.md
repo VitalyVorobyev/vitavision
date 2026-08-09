@@ -132,7 +132,14 @@ coverImage: "/content/images/my-cover.jpg"
 repoLinks: ["https://github.com/user/repo"]
 demoLinks: ["https://vitavision.dev/editor"]
 relatedPosts: ["02-my-topic"]
-relatedAlgorithms: ["another-algorithm"]
+# Atlas relationship fields (optional; single global slug namespace across
+# algorithms, models, and concepts — see CLAUDE.md → "Atlas authoring policy"):
+prerequisites: ["homography"]     # concept/algorithm/model slugs this page depends on
+quality: canonical                # stub | canonical | historical
+relations:                        # typed inter-page links — see CLAUDE.md → "Relations field"
+  - type: compared_with
+    target: another-algorithm
+    confidence: high
 ---
 ```
 

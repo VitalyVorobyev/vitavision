@@ -138,19 +138,17 @@ Section: Remarks
 Section: References
 - The page lists 5 references. Paper §II also cites duda2018-accurate (the spoke pass is "conceptually similar to the approximated Radon transform" in that paper) — currently in `docs/papers/index.yaml` but not in the page's references. Would be appropriate to add when the page is reviewed for completeness, especially if the spoke pass becomes a focus of the description.
 
-Section: relatedAlgorithms / comparedWith — for the relationship-edges audit pass
+Section: `relations[]` — relationship-edges audit pass
 
-The page's frontmatter currently has:
-- `relatedAlgorithms: [chess-corners, rochade, shu-topological-grid, shi-tomasi-corner-detector]`
-- `comparedWith: []`
+The page's frontmatter currently has no `relations:` field (the legacy `relatedAlgorithms: [chess-corners, rochade, shu-topological-grid, shi-tomasi-corner-detector]` / `comparedWith: []` this note originally proposed no longer exist as schema fields).
 
-Comments for the future relationship-edges audit:
+Comments for the future relationship-edges audit, translated to `relations[]`:
 
-1. **Consider adding `chess-corners` to `comparedWith`** (currently in `relatedAlgorithms`). They are direct competitors in the chessboard X-corner detection space — chess-corners is the single-scale predecessor that motivates the multi-scale extension. Per the more-authoritative tiebreaker, chess-corners (2013) hosts the comparison; pyramidal (2021) carries a Remarks pointer. Both notes ingested → comparison policy preconditions met.
+1. **Status: resolved.** `chess-corners` and pyramidal are direct competitors in the chessboard X-corner detection space — chess-corners is the single-scale predecessor that motivates the multi-scale extension. Per the more-authoritative tiebreaker, chess-corners (2013) hosts the comparison; pyramidal (2021) carries a Remarks pointer. `content/algorithms/chess-corners.md` now carries `{ type: compared_with, target: pyramidal-blur-aware-xcorner, confidence: high }`, and `## When to choose ChESS over Pyramidal` is live on the chess-corners page with the pointer bullet on the pyramidal page.
 
-2. **Consider adding `rochade` to `comparedWith`**. Different sub-problems (graph-based vs per-pixel) but both target chessboard X-corner detection with different scale-handling strategies. Per tiebreaker, rochade (2014) hosts. Both notes ingested → comparison policy preconditions met.
+2. **Status: resolved.** Different sub-problems (graph-based vs per-pixel) but both target chessboard X-corner detection with different scale-handling strategies. Per tiebreaker, rochade (2014) hosts. `content/algorithms/rochade.md` now carries `{ type: compared_with, target: pyramidal-blur-aware-xcorner, confidence: high }`, and `## When to choose ROCHADE over Pyramidal` is live with the pointer bullet on the pyramidal page.
 
-3. **`ocpad` could be added to `relatedAlgorithms`** — both detect chessboard X-corners but with very different approaches (OCPAD does graph matching; pyramidal does per-pixel multi-scale). Different problem class for `comparedWith` purposes (full-pattern matching vs single-corner detection); `relatedAlgorithms` is appropriate.
+3. **`ocpad` gets no `relations[]` entry.** Both detect chessboard X-corners but with very different approaches (OCPAD does graph matching; pyramidal does per-pixel multi-scale) — different problem class (full-pattern matching vs single-corner detection). This is CLAUDE.md Rule B (cross-domain / different problem class → omit the link entirely), which the note's original "`relatedAlgorithms` is appropriate" softer bucket approximated before that field was restricted to blog/demo pages. No edge exists on either page currently, which is the correct end state — not a pending task.
 
 4. **`sources.impl` could be added** pointing to BoofCV. Paper §I footnote 1 explicitly references "Detector and source code has been available since 2019 in BoofCV" with URL https://boofcv.org. The paper's author Peter Abeles is the BoofCV maintainer. This is a verifiable open-source reference implementation by the paper's author — a high-quality `sources.impl` candidate. Defer to a future page-completeness pass.
 

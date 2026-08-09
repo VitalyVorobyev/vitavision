@@ -163,6 +163,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/fischler-bolles-ransac",
       "draft": false
     },
+    "fusiello-compact-rectification": {
+      "slug": "fusiello-compact-rectification",
+      "type": "algorithm",
+      "title": "Fusiello Compact Stereo Rectification",
+      "summary": "Calibrated Euclidean rectification that builds a new pair of projection matrices sharing a common orientation from the two known PPMs, yielding a per-image rectifying homography.",
+      "path": "/atlas/fusiello-compact-rectification",
+      "draft": false
+    },
     "gao-dual-homography-stitching": {
       "slug": "gao-dual-homography-stitching",
       "type": "algorithm",
@@ -227,6 +235,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/harris-corner-detector",
       "draft": false
     },
+    "hartley-projective-rectification": {
+      "slug": "hartley-projective-rectification",
+      "type": "algorithm",
+      "title": "Hartley Projective Rectification",
+      "summary": "Computes a rectifying homography pair from the fundamental matrix alone, sending the epipole to infinity with a quasi-affine perspectivity and fixing the matching transform by least-squares disparity minimisation.",
+      "path": "/atlas/hartley-projective-rectification",
+      "draft": false
+    },
     "hog-descriptor": {
       "slug": "hog-descriptor",
       "type": "algorithm",
@@ -275,6 +291,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/longuet-higgins-eight-point",
       "draft": false
     },
+    "loop-zhang-rectification": {
+      "slug": "loop-zhang-rectification",
+      "type": "algorithm",
+      "title": "Loop-Zhang Rectifying Homographies",
+      "summary": "Computes a rectifying homography pair from a known fundamental matrix by factoring each homography as shearing × similarity × projective, choosing the projective component to minimize image distortion.",
+      "path": "/atlas/loop-zhang-rectification",
+      "draft": false
+    },
     "lucas-kanade": {
       "slug": "lucas-kanade",
       "type": "algorithm",
@@ -313,6 +337,14 @@ export const contentGraph: ContentGraph = {
       "title": "ORB: Oriented FAST and Rotated BRIEF",
       "summary": "Detects rotation-invariant oriented keypoints by running FAST-9 on a √2 image pyramid, ranking by Harris cornerness, and assigning orientation from the intensity centroid; describes each keypoint with a 256-bit rBRIEF binary string formed by greedy selection of low-correlation, high-variance pairwise pixel-intensity tests on a smoothed 31×31 patch.",
       "path": "/atlas/orb",
+      "draft": false
+    },
+    "pollefeys-polar-rectification": {
+      "slug": "pollefeys-polar-rectification",
+      "type": "algorithm",
+      "title": "Pollefeys Polar Rectification",
+      "summary": "Rectification by polar reparametrisation around the epipole, requiring only the oriented fundamental matrix and remaining bounded even when the epipole lies inside the image.",
+      "path": "/atlas/pollefeys-polar-rectification",
       "draft": false
     },
     "puzzleboard": {
@@ -443,6 +475,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/alexnet",
       "draft": false
     },
+    "bisenet": {
+      "slug": "bisenet",
+      "type": "model",
+      "title": "BiSeNet",
+      "summary": "Two-branch (bilateral) CNN for real-time semantic segmentation: a wide shallow path preserves spatial detail while a deep narrow path with global pooling supplies receptive field, merged by a learned fusion module. V1 (2018) pairs a Spatial Path and a Context Path (ARM + FFM) on an ImageNet-pretrained backbone; V2 (2020) redesigns it with a Detail Branch, a from-scratch Semantic Branch of Gather-and-Expansion layers, Bilateral Guided Aggregation, and a training-only Booster — 72.6% mIoU at 156 FPS on Cityscapes test (V2, Table 7).",
+      "path": "/atlas/bisenet",
+      "draft": false
+    },
     "ccdn-checkerboard-detector": {
       "slug": "ccdn-checkerboard-detector",
       "type": "model",
@@ -467,6 +507,70 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/deeplab-semantic-segmentation",
       "draft": false
     },
+    "depth-anything": {
+      "slug": "depth-anything",
+      "type": "model",
+      "title": "Depth Anything",
+      "summary": "A monocular relative-depth foundation model that scales training to 62M unlabeled images via a teacher pseudo-labeling data engine, a CutMix challenge for the student, and a DINOv2 semantic-feature alignment loss.",
+      "path": "/atlas/depth-anything",
+      "draft": false
+    },
+    "depth-anything-3": {
+      "slug": "depth-anything-3",
+      "type": "model",
+      "title": "Depth Anything 3",
+      "summary": "A single plain-transformer model that predicts spatially consistent geometry — depth plus camera rays — from one to many images, with or without known poses, distilled from Depth Anything 2 via a unified depth-ray target.",
+      "path": "/atlas/depth-anything-3",
+      "draft": false
+    },
+    "depth-anything-v2": {
+      "slug": "depth-anything-v2",
+      "type": "model",
+      "title": "Depth Anything V2",
+      "summary": "A monocular depth foundation model that trains its teacher purely on synthetic images for label precision, then distills to a student over 62M pseudo-labeled real images, sharpening detail over V1 while staying far faster than diffusion-based depth.",
+      "path": "/atlas/depth-anything-v2",
+      "draft": false
+    },
+    "detr": {
+      "slug": "detr",
+      "type": "model",
+      "title": "DETR",
+      "summary": "End-to-end object detector that recasts detection as direct set prediction — CNN backbone (ResNet-50/101) extracts $H/32 \\times W/32$ feature map; transformer encoder-decoder with 6+6 layers and $N=100$ learned object queries outputs (class, box) pairs; bipartite-matching loss via Hungarian algorithm eliminates anchor boxes, region proposals, and NMS. Comparable COCO AP to Faster R-CNN at simpler pipeline; better large-object AP, worse small-object AP, and ~10× slower convergence (300+ epochs).",
+      "path": "/atlas/detr",
+      "draft": false
+    },
+    "dinov2": {
+      "slug": "dinov2",
+      "type": "model",
+      "title": "DINOv2",
+      "summary": "A self-supervised ViT trained on a curated 142M-image dataset that yields general-purpose visual features usable frozen — via kNN or linear probes — for classification, dense depth and segmentation without finetuning.",
+      "path": "/atlas/dinov2",
+      "draft": false
+    },
+    "dust3r": {
+      "slug": "dust3r",
+      "type": "model",
+      "title": "DUSt3R",
+      "summary": "A feed-forward network that regresses two dense pointmaps in a shared coordinate frame from an uncalibrated, unposed image pair, jointly recovering correspondence, relative pose, intrinsics and depth without prior calibration.",
+      "path": "/atlas/dust3r",
+      "draft": false
+    },
+    "efficientad": {
+      "slug": "efficientad",
+      "type": "model",
+      "title": "EfficientAD",
+      "summary": "Millisecond-latency one-class anomaly detection combining a loss-induced-asymmetric student-teacher branch for structural defects with a feature-space autoencoder branch for logical defects, running 2.2 ms (S) / 4.5 ms (M) per image on an RTX A6000.",
+      "path": "/atlas/efficientad",
+      "draft": false
+    },
+    "fast-scnn": {
+      "slug": "fast-scnn",
+      "type": "model",
+      "title": "Fast-SCNN",
+      "summary": "Real-time semantic segmentation CNN whose shared shallow 'Learning to Downsample' prefix feeds both a deep low-resolution global-feature branch and a high-resolution detail skip, merged by a feature-fusion module — eliminating the duplicate early downsampling that two-branch segmenters pay. Built from depthwise-separable and MobileNetV2 inverted-residual blocks; ~1.11M parameters; 68.0% mIoU at 123.5 FPS on Cityscapes test (1024×2048, Titan Xp, Table 5).",
+      "path": "/atlas/fast-scnn",
+      "draft": false
+    },
     "faster-rcnn": {
       "slug": "faster-rcnn",
       "type": "model",
@@ -483,12 +587,28 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/fcn-semantic-segmentation",
       "draft": false
     },
+    "focalclick": {
+      "slug": "focalclick",
+      "type": "model",
+      "title": "FocalClick",
+      "summary": "Practical click-based interactive segmentation that runs each click as a small local-crop forward pass (Segmentor on a Target Crop, Refiner on a Focus Crop) and composits results back via Progressive Merge — sub-300 ms per click on CPU with first-class support for refining preexisting masks.",
+      "path": "/atlas/focalclick",
+      "draft": false
+    },
     "googlenet": {
       "slug": "googlenet",
       "type": "model",
       "title": "GoogLeNet",
       "summary": "Twenty-two-layer CNN built from Inception modules — parallel 1×1, 3×3, 5×5 convolutions and 3×3 max-pool concatenated along the channel axis, with 1×1 bottlenecks reducing dimensionality before the larger spatial convs. ILSVRC-2014 classification winner at 6.67% top-5 error with 7M parameters (12× fewer than AlexNet).",
       "path": "/atlas/googlenet",
+      "draft": false
+    },
+    "hrnet": {
+      "slug": "hrnet",
+      "type": "model",
+      "title": "HRNet",
+      "summary": "CNN backbone family for dense prediction that maintains a high-resolution branch throughout the network and runs four parallel multi-resolution streams ($C, 2C, 4C, 8C$ channels) with eight repeated cross-resolution fusions; V1 uses the high-resolution stream only (pose heatmaps), V2 upsamples and concatenates all four streams for per-pixel labelling (semantic segmentation, face landmarks), and V2p adds an FPN-style multi-scale output for object detection and instance segmentation.",
+      "path": "/atlas/hrnet",
       "draft": false
     },
     "lightglue": {
@@ -507,12 +627,36 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/loftr",
       "draft": false
     },
+    "mae": {
+      "slug": "mae",
+      "type": "model",
+      "title": "MAE",
+      "summary": "Masked Autoencoder — self-supervised pretraining for Vision Transformers: randomly mask 75 % of input patches, feed the visible 25 % through a ViT encoder, then run a lightweight ViT decoder over the full sequence (visible + shared learnable mask tokens) to reconstruct the masked patches' raw pixel values under MSE on per-patch-normalised targets. The asymmetric encoder-decoder design (encoder operates only on visible tokens, decoder is much smaller and discarded after pretraining) gives a 2.8–4.1× pretraining speedup vs full-sequence masked-ViT baselines and reaches 87.8 % ImageNet-1k top-1 with ViT-H fine-tuning.",
+      "path": "/atlas/mae",
+      "draft": false
+    },
     "mask-rcnn": {
       "slug": "mask-rcnn",
       "type": "model",
       "title": "Mask R-CNN",
       "summary": "Two-stage instance segmentation by adding a parallel FCN mask branch to Faster R-CNN — per-class binary masks predicted at each RoI under a decoupled per-pixel sigmoid loss, with RoIAlign's bilinear-sampling replacement for RoIPool's quantization that recovers pixel-accurate alignment.",
       "path": "/atlas/mask-rcnn",
+      "draft": false
+    },
+    "mask2former": {
+      "slug": "mask2former",
+      "type": "model",
+      "title": "Mask2Former",
+      "summary": "Universal image segmentation family — MaskFormer (v1, NeurIPS 2021) reframes semantic segmentation as **mask classification**: predict a set of $N$ binary masks plus per-mask class labels via a DETR-style transformer decoder over pixel-decoder features, supervised by bipartite matching. Mask2Former (v2, CVPR 2022) extends v1 with **masked attention** (cross-attention restricted to each query's predicted mask foreground), multi-scale round-robin features (queries cross-attend to 1/32, 1/16, 1/8 maps across consecutive layers), and point-sampled mask loss for 3× memory reduction. A single architecture, trained per-dataset, beats specialised models on COCO panoptic (PQ 57.8), COCO instance (AP 50.1), and ADE20K semantic (mIoU 57.7) with Swin-L.",
+      "path": "/atlas/mask2former",
+      "draft": false
+    },
+    "mast3r": {
+      "slug": "mast3r",
+      "type": "model",
+      "title": "MASt3R",
+      "summary": "A 3D-grounded image matcher that adds a dense local-descriptor head and an InfoNCE matching loss on top of DUSt3R's pointmap regression, with a fast reciprocal matching scheme, yielding correspondences robust to extreme viewpoint change.",
+      "path": "/atlas/mast3r",
       "draft": false
     },
     "mate-checkerboard-detector": {
@@ -523,12 +667,92 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/mate-checkerboard-detector",
       "draft": false
     },
+    "midas": {
+      "slug": "midas",
+      "type": "model",
+      "title": "MiDaS",
+      "summary": "A monocular depth network trained for zero-shot cross-dataset transfer by mixing incompatible depth datasets under a scale-and-shift-invariant loss, predicting relative inverse depth up to an unknown global scale and shift.",
+      "path": "/atlas/midas",
+      "draft": false
+    },
+    "mnasnet": {
+      "slug": "mnasnet",
+      "type": "model",
+      "title": "MnasNet",
+      "summary": "Mobile-CPU CNN image classifier discovered by platform-aware neural architecture search: an RNN controller trained with reinforcement learning samples architectures from a factorized hierarchical search space and maximizes a multi-objective reward trading ImageNet top-1 accuracy against latency measured directly on a phone.",
+      "path": "/atlas/mnasnet",
+      "draft": false
+    },
+    "mobilenetv2": {
+      "slug": "mobilenetv2",
+      "type": "model",
+      "title": "MobileNetV2",
+      "summary": "Efficient mobile CNN backbone built from inverted-residual blocks with a linear bottleneck — depthwise-separable convolution expanded to a wide interior and projected back to a thin, non-linearity-free bottleneck that the residual connects — for on-device classification, detection (SSDLite), and segmentation (Mobile DeepLabv3).",
+      "path": "/atlas/mobilenetv2",
+      "draft": false
+    },
+    "mobilenetv3": {
+      "slug": "mobilenetv3",
+      "type": "model",
+      "title": "MobileNetV3",
+      "summary": "Mobile-CPU-latency-targeted CNN backbone found by combined platform-aware NAS and NetAdapt, built from MobileNetV2 inverted-residual blocks augmented with squeeze-and-excitation and the h-swish nonlinearity, plus a Lite Reduced ASPP segmentation decoder; trained on ImageNet-1k and adapted to detection and segmentation.",
+      "path": "/atlas/mobilenetv3",
+      "draft": false
+    },
+    "mobilesam": {
+      "slug": "mobilesam",
+      "type": "model",
+      "title": "MobileSAM",
+      "summary": "Lightweight SAM family — replaces SAM's heavy ViT-H image encoder (632M params, ~452 ms on a single GPU) with a distilled TinyViT encoder (5.78M params, ~8 ms), keeping SAM's prompt encoder + mask decoder frozen and unchanged; MobileSAMv2 adds an object-aware prompt sampler (YOLOv8-style detector → bounding-box prompts) that replaces SAM's 32×32 grid-prompt + NMS pipeline for the Segment-Everything task, cutting end-to-end latency from ≈1616 ms to ≈97 ms (>16×) at equivalent mask quality.",
+      "path": "/atlas/mobilesam",
+      "draft": false
+    },
+    "patchcore": {
+      "slug": "patchcore",
+      "type": "model",
+      "title": "PatchCore",
+      "summary": "Training-free industrial anomaly detection: a single forward pass over defect-free images builds a coreset-subsampled memory bank of locally aware mid-level CNN patch features, and test images are scored by reweighted nearest-neighbour distance in that feature space.",
+      "path": "/atlas/patchcore",
+      "draft": false
+    },
     "resnet": {
       "slug": "resnet",
       "type": "model",
       "title": "ResNet",
       "summary": "Family of very deep CNN image classifiers (18 to 152 layers) built from residual blocks $y = \\mathcal{F}(x, \\{W_i\\}) + x$ that reformulate each block as learning a residual mapping rather than a direct one, resolving the depth-degradation problem and enabling 152-layer training. ILSVRC-2015 classification winner (3.57% top-5 test ensemble) and the default backbone for downstream detection and segmentation.",
       "path": "/atlas/resnet",
+      "draft": false
+    },
+    "rf-detr": {
+      "slug": "rf-detr",
+      "type": "model",
+      "title": "RF-DETR",
+      "summary": "Light-weight specialist real-time detection transformer that discovers an accuracy-latency Pareto frontier for any target dataset from a single training run: a DINOv2-ViT backbone feeds an LW-DETR-style set-prediction decoder, and weight-sharing NAS evaluates thousands of sub-network configurations without retraining. First real-time detector to exceed 60 AP on COCO.",
+      "path": "/atlas/rf-detr",
+      "draft": false
+    },
+    "ritm-interactive-segmentation": {
+      "slug": "ritm-interactive-segmentation",
+      "type": "model",
+      "title": "RITM",
+      "summary": "Feedforward click-based interactive segmentation: HRNet+OCR encoder-decoder taking RGB + positive/negative disk-encoded clicks + previous mask, trained with iterative click simulation and Normalized Focal Loss on COCO+LVIS — sets a new state of the art without inference-time backward passes.",
+      "path": "/atlas/ritm-interactive-segmentation",
+      "draft": false
+    },
+    "sam": {
+      "slug": "sam",
+      "type": "model",
+      "title": "SAM",
+      "summary": "Promptable segmentation foundation model family — SAM (v1, 2023) introduces image-prompt segmentation with a heavy ViT-H encoder and lightweight transformer decoder trained on the 1.1B-mask SA-1B dataset; SAM 2 (2024) extends to video via a streaming memory module on a Hiera hierarchical-ViT encoder; SAM 3 (2025) generalises from single-object prompts to *concept* prompts (free-form noun phrases or visual exemplars) via a presence token, segmenting all matching instances on images and videos.",
+      "path": "/atlas/sam",
+      "draft": false
+    },
+    "segformer": {
+      "slug": "segformer",
+      "type": "model",
+      "title": "SegFormer",
+      "summary": "Hierarchical Transformer encoder (MiT) producing multi-scale features at $1/4, 1/8, 1/16, 1/32$ without positional encodings, plus an all-MLP decoder that fuses per-stage features into a per-pixel prediction. Six variants MiT-B0..B5 trade compute for accuracy; B5 reaches 51.8 mIoU on ADE20K and 84.0 mIoU on Cityscapes (Tables 1 and 2).",
+      "path": "/atlas/segformer",
       "draft": false
     },
     "superglue": {
@@ -555,12 +779,36 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/unet-segmentation",
       "draft": false
     },
+    "uninformed-students": {
+      "slug": "uninformed-students",
+      "type": "model",
+      "title": "Uninformed Students",
+      "summary": "Pixel-precise anomaly segmentation from an ensemble of student networks trained only on anomaly-free images to regress a fixed off-domain teacher's dense descriptors, scoring each pixel by regression error against the mixture mean plus the ensemble's predictive variance, across three receptive-field scales.",
+      "path": "/atlas/uninformed-students",
+      "draft": false
+    },
     "vgg": {
       "slug": "vgg",
       "type": "model",
       "title": "VGG",
       "summary": "Family of very deep CNN image classifiers (11 to 19 weight layers) built from stacked 3×3 convolutions with stride 1 and 2×2 max-pool stride 2, trained on ImageNet with SGD + dropout. ILSVRC-2014 localisation winner and classification runner-up.",
       "path": "/atlas/vgg",
+      "draft": false
+    },
+    "vggt": {
+      "slug": "vggt",
+      "type": "model",
+      "title": "VGGT (Visual Geometry Grounded Transformer)",
+      "summary": "A large feed-forward transformer that predicts cameras, depth maps, point maps and 3D point tracks for one to hundreds of views in a single pass, removing the optimization and global-alignment post-processing that pairwise pointmap methods require.",
+      "path": "/atlas/vggt",
+      "draft": false
+    },
+    "vit": {
+      "slug": "vit",
+      "type": "model",
+      "title": "ViT",
+      "summary": "Vision Transformer — a pure-transformer image classification backbone that treats an image as a sequence of fixed-size patches: split RGB image into $N = HW/P^2$ patches of $P{\\times}P$ pixels (P=16 for ViT-B/L, P=14 for ViT-H), linearly project to $D$-dim tokens, prepend a learnable [CLS] token, add learned positional embeddings, and feed through a standard transformer encoder; classification head reads the [CLS] token's final-layer output. ViT-B/16 86M params, ViT-L/16 307M, ViT-H/14 632M. With large-scale pretraining (JFT-300M) ViT matches or exceeds ResNet-based BiT-L on ImageNet at lower compute.",
+      "path": "/atlas/vit",
       "draft": false
     },
     "xfeat": {
@@ -667,6 +915,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/feature-matching",
       "draft": false
     },
+    "feed-forward-3d-reconstruction": {
+      "slug": "feed-forward-3d-reconstruction",
+      "type": "concept",
+      "title": "Feed-Forward 3D Reconstruction",
+      "summary": "Recovering 3D geometry — point maps, depth, and camera poses — directly from images in a single network pass, replacing the detect-match-triangulate-bundle-adjust pipeline of classical structure-from-motion with learned pointmap regression.",
+      "path": "/atlas/feed-forward-3d-reconstruction",
+      "draft": false
+    },
     "hessian-saddle-response": {
       "slug": "hessian-saddle-response",
       "type": "concept",
@@ -705,6 +961,14 @@ export const contentGraph: ContentGraph = {
       "title": "Integral Image",
       "summary": "A precomputed prefix-sum array that returns the sum of pixel values over any axis-aligned rectangle in constant time with four array reads.",
       "path": "/atlas/integral-image",
+      "draft": false
+    },
+    "monocular-depth-estimation": {
+      "slug": "monocular-depth-estimation",
+      "type": "concept",
+      "title": "Monocular Depth Estimation",
+      "summary": "Predicting per-pixel scene depth from a single image — the scale ambiguity that forces relative (affine-invariant) versus metric formulations, the scale-and-shift-invariant training that lets incompatible datasets be mixed, and the foundation-model recipe that scaled it to zero-shot generalization.",
+      "path": "/atlas/monocular-depth-estimation",
       "draft": false
     },
     "non-maximum-suppression": {
@@ -763,6 +1027,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/spatially-varying-image-stitching",
       "draft": false
     },
+    "stereo-rectification": {
+      "slug": "stereo-rectification",
+      "type": "concept",
+      "title": "Stereo Rectification",
+      "summary": "Warping a stereo pair so corresponding epipolar lines become collinear image rows, reducing dense correspondence to a scanline search; calibrated Euclidean methods and uncalibrated projective methods solve the same problem under different input assumptions.",
+      "path": "/atlas/stereo-rectification",
+      "draft": false
+    },
     "structure-tensor": {
       "slug": "structure-tensor",
       "type": "concept",
@@ -786,6 +1058,14 @@ export const contentGraph: ContentGraph = {
       "summary": "Verify candidate calibration-pattern corners by constructing a graph over them (Delaunay triangulation, k-nearest-neighbours, or proximity) and accepting only configurations that match the expected chessboard topology — false positives are eliminated by structural rules rather than per-pixel response thresholds.",
       "path": "/atlas/topological-grid-recovery",
       "draft": false
+    },
+    "visual-anomaly-detection": {
+      "slug": "visual-anomaly-detection",
+      "type": "concept",
+      "title": "Visual Anomaly Detection",
+      "summary": "One-class detection and localisation of defects from defect-free training images only, organised by the structural-versus-logical anomaly distinction and surveying the student-teacher, memory-bank, and feature-space-autoencoder method families.",
+      "path": "/atlas/visual-anomaly-detection",
+      "draft": false
     }
   },
   "forward": {
@@ -793,7 +1073,8 @@ export const contentGraph: ContentGraph = {
       "prerequisites": [
         "homography",
         "dlt-normalisation",
-        "ransac"
+        "ransac",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "relations": []
@@ -1010,11 +1291,29 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "fusiello-compact-rectification": {
+      "prerequisites": [
+        "stereo-rectification",
+        "pinhole-camera-model",
+        "pose-estimation",
+        "epipolar-geometry"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "hartley-projective-rectification",
+          "confidence": "high",
+          "caution": "Requires known projection matrices; the 1999 uncalibrated methods need only F."
+        }
+      ]
+    },
     "gao-dual-homography-stitching": {
       "prerequisites": [
         "homography",
         "ransac",
-        "svd-null-space"
+        "svd-null-space",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "relations": [
@@ -1151,6 +1450,35 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "hartley-projective-rectification": {
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry",
+        "homography"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "loop-zhang-rectification",
+          "confidence": "high",
+          "caution": "Loop-Zhang minimises rectification distortion explicitly; Hartley minimises disparity."
+        },
+        {
+          "type": "compared_with",
+          "target": "pollefeys-polar-rectification",
+          "confidence": "high",
+          "caution": "Hartley's own remedy for an epipole inside the view window is to shrink the window; polar rectification covers that forward-motion case without cropping."
+        },
+        {
+          "type": "compared_with",
+          "target": "fusiello-compact-rectification",
+          "confidence": "high",
+          "caution": "Requires known projection matrices; the 1999 uncalibrated methods need only F.",
+          "mirrored": true
+        }
+      ]
+    },
     "hog-descriptor": {
       "prerequisites": [
         "image-gradient",
@@ -1203,7 +1531,8 @@ export const contentGraph: ContentGraph = {
     "lin-sva-stitching": {
       "prerequisites": [
         "homography",
-        "ransac"
+        "ransac",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "relations": [
@@ -1247,6 +1576,29 @@ export const contentGraph: ContentGraph = {
           "type": "generalized_by",
           "target": "fundamental-matrix-eight-point",
           "confidence": "high"
+        }
+      ]
+    },
+    "loop-zhang-rectification": {
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry",
+        "homography"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "pollefeys-polar-rectification",
+          "confidence": "high",
+          "caution": "The decomposition still sends the epipole to infinity, so an epipole inside the image forces cropping; polar rectification avoids it."
+        },
+        {
+          "type": "parallel_foundation_with",
+          "target": "hartley-projective-rectification",
+          "confidence": "high",
+          "caution": "Loop-Zhang minimises rectification distortion explicitly; Hartley minimises disparity.",
+          "mirrored": true
         }
       ]
     },
@@ -1339,6 +1691,29 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "surf",
           "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
+    "pollefeys-polar-rectification": {
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "hartley-projective-rectification",
+          "confidence": "high",
+          "caution": "Hartley's own remedy for an epipole inside the view window is to shrink the window; polar rectification covers that forward-motion case without cropping.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "loop-zhang-rectification",
+          "confidence": "high",
+          "caution": "The decomposition still sends the epipole to infinity, so an epipole inside the image forces cropping; polar rectification avoids it.",
           "mirrored": true
         }
       ]
@@ -1718,6 +2093,44 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "bisenet": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "medium",
+          "caution": "Both target spatial-detail loss in dense prediction — HRNet via a maintained high-resolution branch, BiSeNet via the Spatial/Detail Path."
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "mobilenetv3",
+          "confidence": "medium",
+          "caution": "Peer comparison in the real-time mobile segmentation regime.",
+          "mirrored": true
+        }
+      ]
+    },
     "ccdn-checkerboard-detector": {
       "prerequisites": [
         "image-gradient"
@@ -1781,6 +2194,205 @@ export const contentGraph: ContentGraph = {
           "target": "unet-segmentation",
           "confidence": "high",
           "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "medium",
+          "caution": "LR-ASPP is a lite, reduced reuse of DeepLab's ASPP as MobileNetV3's segmentation head."
+        },
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
+    "depth-anything": {
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "vit"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "depth-anything-v2",
+          "confidence": "high"
+        }
+      ]
+    },
+    "depth-anything-3": {
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "feed-forward-3d-reconstruction",
+        "pose-estimation",
+        "epipolar-geometry",
+        "pinhole-camera-model"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "depth-anything-v2": {
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "vit"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "depth-anything-3",
+          "confidence": "high",
+          "caution": "DA3 generalizes DA2 to any-view geometry and surpasses it on monocular depth; DA2 is also DA3's distillation teacher."
+        }
+      ]
+    },
+    "detr": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "faster-rcnn",
+          "confidence": "high",
+          "caution": "DETR vs Faster R-CNN is the headline detection comparison; DETR removes hand-designed RPN + anchor boxes + NMS in favour of bipartite matching + transformer decoder at comparable COCO AP."
+        },
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM's mask decoder two-way cross-attention is inspired by DETR's transformer decoder; SAM 3's concept detector is explicitly DETR-based."
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "high",
+          "caution": "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
+        }
+      ]
+    },
+    "dinov2": {
+      "prerequisites": [
+        "vit",
+        "mae"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "depth-anything",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-v2",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-3",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "vggt",
+          "confidence": "high"
+        }
+      ]
+    },
+    "dust3r": {
+      "prerequisites": [
+        "epipolar-geometry",
+        "pose-estimation",
+        "bundle-adjustment",
+        "pinhole-camera-model",
+        "feed-forward-3d-reconstruction"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "mast3r",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "vggt",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-3",
+          "confidence": "medium",
+          "caution": "DA3 inherits DUSt3R's pose-free feed-forward pointmap paradigm but is a distinct any-view model."
+        }
+      ]
+    },
+    "efficientad": {
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "patchcore",
+          "confidence": "high",
+          "caution": "Peer choice, not supersession — EfficientAD leads on accuracy and latency, but PatchCore requires no per-scenario training.",
+          "mirrored": true
+        }
+      ]
+    },
+    "fast-scnn": {
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "mobilenetv3",
+          "confidence": "medium",
+          "caution": "Peer comparison is specific to the real-time Cityscapes segmentation regime.",
+          "mirrored": true
         }
       ]
     },
@@ -1803,6 +2415,13 @@ export const contentGraph: ContentGraph = {
           "type": "extended_by",
           "target": "mask-rcnn",
           "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "detr",
+          "confidence": "high",
+          "caution": "DETR vs Faster R-CNN is the headline detection comparison; DETR removes hand-designed RPN + anchor boxes + NMS in favour of bipartite matching + transformer decoder at comparable COCO AP.",
+          "mirrored": true
         },
         {
           "type": "compared_with",
@@ -1834,6 +2453,50 @@ export const contentGraph: ContentGraph = {
           "target": "mask-rcnn",
           "confidence": "high",
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        },
+        {
+          "type": "feeds_into",
+          "target": "bisenet",
+          "confidence": "medium",
+          "caution": "BiSeNet's parallel branches both produce fractional-stride dense feature maps feeding a pixel-wise head, following the FCN framing; FCN-32s is its ablation baseline and FCN-8s a benchmark comparison."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "caution": "Fast-SCNN frames itself as a special case of an FCN encoder-decoder with a single skip connection (§3.3.2); its classifier emits dense per-pixel logits upsampled to full resolution following the FCN template."
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
+    "focalclick": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "medium",
+          "caution": "FocalClick replaces interactive click-based annotation workflows; not a drop-in for energy-min/graph-cut on seeded segmentation generally."
+        },
+        {
+          "type": "compared_with",
+          "target": "mobilesam",
+          "confidence": "medium",
+          "caution": "Both target lightweight on-device interactive segmentation but from different lineages — MobileSAM distils SAM's foundation-model encoder into TinyViT (zero-shot, no mask correction); FocalClick is a small specialised two-stage network with native preexisting-mask refinement.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "sam",
+          "confidence": "medium",
+          "caution": "Opposite design points — SAM is a heavy promptable foundation model with zero-shot generalisation but no preexisting-mask refinement; FocalClick is a small specialised network with native mask correction but no zero-shot.",
+          "mirrored": true
         }
       ]
     },
@@ -1870,6 +2533,50 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "hrnet": {
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "ritm-interactive-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "FocalClick uses HRNet18s+OCR and HRNet32+OCR as the Segmentor backbone in three of its six published variants (hrnet18s-S1/S2, hrnet32-S2); the small-crop Segmentor input (128×128 or 256×256) makes HRNet practical for CPU deployment."
+        },
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "medium",
+          "caution": "ResNet is the dominant backbone for dense prediction; HRNet trades higher activation memory for better keypoint/segmentation accuracy via parallel high-resolution streams."
+        },
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "medium",
+          "caution": "Both target spatial-detail loss in dense prediction — HRNet via a maintained high-resolution branch, BiSeNet via the Spatial/Detail Path.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "high",
+          "mirrored": true
+        }
+      ]
+    },
     "lightglue": {
       "prerequisites": [
         "feature-matching",
@@ -1882,6 +2589,13 @@ export const contentGraph: ContentGraph = {
           "target": "loftr",
           "confidence": "high",
           "caution": "Different paradigm — LoFTR is detector-free dense; LightGlue is detector-based sparse with adaptive depth. LoFTR wins in textureless regions; LightGlue wins on speed (~8× faster per Lindenberger et al. Fig. 1).",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "mast3r",
+          "confidence": "medium",
+          "caution": "MASt3R is 3D-grounded and pose-robust; LightGlue is a fast sparse 2D matcher.",
           "mirrored": true
         }
       ]
@@ -1907,9 +2621,31 @@ export const contentGraph: ContentGraph = {
         },
         {
           "type": "compared_with",
+          "target": "mast3r",
+          "confidence": "medium",
+          "caution": "MASt3R grounds matching in 3D and wins under extreme viewpoint change; LoFTR is a 2D detector-free matcher.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
           "target": "superglue",
           "confidence": "high",
           "mirrored": true
+        }
+      ]
+    },
+    "mae": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM v1's ViT-H image encoder is MAE-pretrained; SAM 2's Hiera (hierarchical ViT) is also MAE-pretrained. MAE is the SSL recipe that makes the SAM-family foundation segmenters' large encoders feasible."
         }
       ]
     },
@@ -1922,6 +2658,72 @@ export const contentGraph: ContentGraph = {
           "target": "felzenszwalb-deformable-parts",
           "confidence": "medium",
           "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        },
+        {
+          "type": "compared_with",
+          "target": "mask2former",
+          "confidence": "high",
+          "caution": "Mask R-CNN is the dominant per-RoI proposal-then-segment baseline; Mask2Former reframes the same problem as mask classification + set prediction, achieving unified handling of semantic, instance, and panoptic in one architecture.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "sam",
+          "confidence": "medium",
+          "caution": "Different problem classes — Mask R-CNN is closed-set instance detection with category labels; SAM is class-agnostic promptable segmentation.",
+          "mirrored": true
+        }
+      ]
+    },
+    "mask2former": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM 3's mask head is adapted from MaskFormer/Mask2Former — this family establishes the per-query mask classification + set-prediction paradigm SAM 3 inherits for concept segmentation."
+        },
+        {
+          "type": "compared_with",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN is the dominant per-RoI proposal-then-segment baseline; Mask2Former reframes the same problem as mask classification + set prediction, achieving unified handling of semantic, instance, and panoptic in one architecture."
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "medium",
+          "caution": "Mask2Former 2022 follows SegFormer 2021 with a mask-classification paradigm; different formulation (set prediction over masks vs per-pixel).",
+          "mirrored": true
+        }
+      ]
+    },
+    "mast3r": {
+      "prerequisites": [
+        "feature-matching",
+        "feature-descriptors",
+        "epipolar-geometry",
+        "pose-estimation",
+        "feed-forward-3d-reconstruction"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "medium",
+          "caution": "MASt3R grounds matching in 3D and wins under extreme viewpoint change; LoFTR is a 2D detector-free matcher."
+        },
+        {
+          "type": "compared_with",
+          "target": "lightglue",
+          "confidence": "medium",
+          "caution": "MASt3R is 3D-grounded and pose-robust; LightGlue is a fast sparse 2D matcher."
         }
       ]
     },
@@ -1946,6 +2748,113 @@ export const contentGraph: ContentGraph = {
           "type": "learned_alternative_of",
           "target": "chess-corners",
           "confidence": "high"
+        }
+      ]
+    },
+    "midas": {
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "pinhole-camera-model"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "depth-anything",
+          "confidence": "high"
+        }
+      ]
+    },
+    "mnasnet": {
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "high",
+          "caution": "MobileNetV3 uses MnasNet-style platform-aware NAS and the SE-augmented search space as the basis of its block-level search."
+        }
+      ]
+    },
+    "mobilenetv2": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "convolution"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "high",
+          "caution": "MobileNetV3 inherits the inverted-residual + linear-bottleneck block as its core building primitive."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fast-scnn",
+          "confidence": "high",
+          "caution": "Fast-SCNN's Global Feature Extractor is built from MobileNetV2 inverted-residual bottlenecks."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mnasnet",
+          "confidence": "medium",
+          "caution": "MnasNet's MBConv search space is built on MobileNetV2's inverted-residual block."
+        }
+      ]
+    },
+    "mobilenetv3": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "convolution",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "caution": "Peer comparison is specific to the real-time Cityscapes segmentation regime."
+        },
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "medium",
+          "caution": "Peer comparison in the real-time mobile segmentation regime."
+        }
+      ]
+    },
+    "mobilesam": {
+      "prerequisites": [
+        "sam",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "focalclick",
+          "confidence": "medium",
+          "caution": "Both target lightweight on-device interactive segmentation but from different lineages — MobileSAM distils SAM's foundation-model encoder into TinyViT (zero-shot, no mask correction); FocalClick is a small specialised two-stage network with native preexisting-mask refinement."
+        }
+      ]
+    },
+    "patchcore": {
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "efficientad",
+          "confidence": "high",
+          "caution": "Peer choice, not supersession — EfficientAD leads on accuracy and latency, but PatchCore requires no per-scenario training."
         }
       ]
     },
@@ -1978,6 +2887,166 @@ export const contentGraph: ContentGraph = {
           "target": "loftr",
           "confidence": "medium",
           "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+        },
+        {
+          "type": "feeds_into",
+          "target": "efficientad",
+          "confidence": "medium",
+          "caution": "EfficientAD distils its patch description network from a WideResNet-101 teacher; the wide variant is not this page's subject, hence medium confidence."
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "medium",
+          "caution": "ResNet is the dominant backbone for dense prediction; HRNet trades higher activation memory for better keypoint/segmentation accuracy via parallel high-resolution streams.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "vit",
+          "confidence": "high",
+          "caution": "ViT vs ResNet (BiT) is the headline classification comparison in the paper. Both coexist as production backbones — ResNet's conv inductive bias dominates in small-data regimes; ViT scales better with large pretraining (JFT-300M).",
+          "mirrored": true
+        }
+      ]
+    },
+    "rf-detr": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "ritm-interactive-segmentation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "graph-cut-segmentation",
+          "confidence": "medium",
+          "caution": "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
+        },
+        {
+          "type": "extended_by",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "FocalClick adds Focus View + Progressive Merge for CPU-feasible mask correction; RITM remains the foundational feedforward click-based reference."
+        },
+        {
+          "type": "compared_with",
+          "target": "sam",
+          "confidence": "medium",
+          "caution": "Both are click-prompted interactive segmenters; different sub-paradigms — SAM is a foundation model with a prompt-conditioned decoder, RITM is iterative-mask refinement on a per-image encoder.",
+          "mirrored": true
+        }
+      ]
+    },
+    "sam": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "graph-cut-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-graph-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mask-rcnn",
+          "confidence": "medium",
+          "caution": "Different problem classes — Mask R-CNN is closed-set instance detection with category labels; SAM is class-agnostic promptable segmentation."
+        },
+        {
+          "type": "compared_with",
+          "target": "ritm-interactive-segmentation",
+          "confidence": "medium",
+          "caution": "Both are click-prompted interactive segmenters; different sub-paradigms — SAM is a foundation model with a prompt-conditioned decoder, RITM is iterative-mask refinement on a per-image encoder."
+        },
+        {
+          "type": "compared_with",
+          "target": "focalclick",
+          "confidence": "medium",
+          "caution": "Opposite design points — SAM is a heavy promptable foundation model with zero-shot generalisation but no preexisting-mask refinement; FocalClick is a small specialised network with native mask correction but no zero-shot."
+        },
+        {
+          "type": "extended_by",
+          "target": "mobilesam",
+          "confidence": "high",
+          "caution": "MobileSAM is a lightweight derivative — distils SAM v1's ViT-H image encoder into a 5.78M-param TinyViT (~56× faster) while keeping SAM's prompt encoder + decoder frozen; MobileSAMv2 adds an object-aware prompt sampler for Segment-Everything."
+        }
+      ]
+    },
+    "segformer": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "SegFormer-B0 and SegFormer-B3 are explicit Segmentor backbones in FocalClick Table 3; the MiT encoder + all-MLP decoder is reused intact and the decoder logits feed FocalClick's Refiner."
+        },
+        {
+          "type": "compared_with",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "unet-segmentation",
+          "confidence": "medium",
+          "caution": "U-Net is the encoder-decoder ancestor; SegFormer keeps the multi-scale-fuse idea but drops skip connections in favour of MLP-aggregating decoder."
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mask2former",
+          "confidence": "medium",
+          "caution": "Mask2Former 2022 follows SegFormer 2021 with a mask-classification paradigm; different formulation (set prediction over masks vs per-pixel)."
+        },
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "high",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "mirrored": true
         }
       ]
     },
@@ -2071,6 +3140,28 @@ export const contentGraph: ContentGraph = {
           "confidence": "high",
           "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation.",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "medium",
+          "caution": "U-Net is the encoder-decoder ancestor; SegFormer keeps the multi-scale-fuse idea but drops skip connections in favour of MLP-aggregating decoder.",
+          "mirrored": true
+        }
+      ]
+    },
+    "uninformed-students": {
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "efficientad",
+          "confidence": "high",
+          "caution": "EfficientAD keeps the student-teacher principle but replaces the pretrained-backbone ensemble with a single distilled patch description network and loss-induced asymmetry."
         }
       ]
     },
@@ -2104,6 +3195,56 @@ export const contentGraph: ContentGraph = {
           "confidence": "high",
           "caution": "Both ILSVRC-2014 entries — GoogLeNet won classification (6.67% top-5), VGG won localisation. Different design philosophies: Inception modules vs homogeneous 3×3 depth scaling.",
           "mirrored": true
+        }
+      ]
+    },
+    "vggt": {
+      "prerequisites": [
+        "epipolar-geometry",
+        "pose-estimation",
+        "bundle-adjustment",
+        "vit",
+        "attention-mechanism",
+        "feed-forward-3d-reconstruction"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "depth-anything-3",
+          "confidence": "medium",
+          "caution": "DA3 surpasses VGGT on the any-view benchmark (+44% pose, +25% geometry) and adds pose-conditioned input; VGGT remains a strong, widely-used feed-forward baseline."
+        }
+      ]
+    },
+    "vit": {
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "mobilesam",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "medium",
+          "caution": "RF-DETR's backbone is a DINOv2 self-supervised ViT."
+        },
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "ViT vs ResNet (BiT) is the headline classification comparison in the paper. Both coexist as production backbones — ResNet's conv inductive bias dominates in small-data regimes; ViT scales better with large pretraining (JFT-300M)."
         }
       ]
     },
@@ -2223,6 +3364,9 @@ export const contentGraph: ContentGraph = {
     },
     "epipolar-geometry": {
       "prerequisites": [
+        "pinhole-camera-model",
+        "homography",
+        "svd-null-space",
         "ransac"
       ],
       "failureModes": [],
@@ -2239,6 +3383,16 @@ export const contentGraph: ContentGraph = {
       "prerequisites": [
         "feature-descriptors",
         "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "feed-forward-3d-reconstruction": {
+      "prerequisites": [
+        "epipolar-geometry",
+        "bundle-adjustment",
+        "pose-estimation",
+        "pinhole-camera-model"
       ],
       "failureModes": [],
       "relations": []
@@ -2272,6 +3426,13 @@ export const contentGraph: ContentGraph = {
     },
     "integral-image": {
       "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
+    "monocular-depth-estimation": {
+      "prerequisites": [
+        "pinhole-camera-model"
+      ],
       "failureModes": [],
       "relations": []
     },
@@ -2320,6 +3481,16 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": []
     },
+    "stereo-rectification": {
+      "prerequisites": [
+        "epipolar-geometry",
+        "homography",
+        "pinhole-camera-model",
+        "pose-estimation"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
     "structure-tensor": {
       "prerequisites": [
         "image-gradient"
@@ -2334,6 +3505,13 @@ export const contentGraph: ContentGraph = {
     },
     "topological-grid-recovery": {
       "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
+    "visual-anomaly-detection": {
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
       "failureModes": [],
       "relations": []
     }
@@ -2500,9 +3678,22 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [],
       "fedBy": [],
-      "hasLearnedAlternative": []
+      "hasLearnedAlternative": [
+        {
+          "slug": "sam",
+          "confidence": "high"
+        }
+      ]
     },
     "fischler-bolles-ransac": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "fusiello-compact-rectification": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -2566,7 +3757,21 @@ export const contentGraph: ContentGraph = {
         }
       ],
       "fedBy": [],
-      "hasLearnedAlternative": []
+      "hasLearnedAlternative": [
+        {
+          "slug": "focalclick",
+          "confidence": "medium",
+          "caution": "FocalClick replaces interactive click-based annotation workflows; not a drop-in for energy-min/graph-cut on seeded segmentation generally."
+        },
+        {
+          "slug": "ritm-interactive-segmentation",
+          "confidence": "high"
+        },
+        {
+          "slug": "sam",
+          "confidence": "high"
+        }
+      ]
     },
     "graph-cut-segmentation": {
       "usedBy": [],
@@ -2574,7 +3779,17 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [],
       "fedBy": [],
-      "hasLearnedAlternative": []
+      "hasLearnedAlternative": [
+        {
+          "slug": "ritm-interactive-segmentation",
+          "confidence": "medium",
+          "caution": "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
+        },
+        {
+          "slug": "sam",
+          "confidence": "high"
+        }
+      ]
     },
     "harris-corner-detector": {
       "usedBy": [],
@@ -2589,6 +3804,14 @@ export const contentGraph: ContentGraph = {
           "caution": "SuperPoint replaces classical sparse keypoint+descriptor pipelines (Harris/Shi-Tomasi + SIFT/ORB) with a single learned model; it does not literally re-implement the Harris response."
         }
       ]
+    },
+    "hartley-projective-rectification": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "hog-descriptor": {
       "usedBy": [],
@@ -2631,6 +3854,14 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "longuet-higgins-eight-point": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "loop-zhang-rectification": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -2715,6 +3946,14 @@ export const contentGraph: ContentGraph = {
           "caution": "XFeat targets ORB-class deployment budgets (mobile, real-time, low-power CPU) and replaces ORB's hand-crafted oFAST + rBRIEF binary pipeline with a learned 64-D float descriptor."
         }
       ]
+    },
+    "pollefeys-polar-rectification": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     },
     "puzzleboard": {
       "usedBy": [],
@@ -2900,6 +4139,20 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "bisenet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "BiSeNet's parallel branches both produce fractional-stride dense feature maps feeding a pixel-wise head, following the FCN framing; FCN-32s is its ablation baseline and FCN-8s a benchmark comparison."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "ccdn-checkerboard-detector": {
       "usedBy": [],
       "affects": [],
@@ -2941,6 +4194,133 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "depth-anything": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "dinov2",
+          "confidence": "high"
+        },
+        {
+          "slug": "midas",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "depth-anything-3": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [
+        {
+          "slug": "depth-anything-v2",
+          "confidence": "high",
+          "caution": "DA3 generalizes DA2 to any-view geometry and surpasses it on monocular depth; DA2 is also DA3's distillation teacher."
+        },
+        {
+          "slug": "vggt",
+          "confidence": "medium",
+          "caution": "DA3 surpasses VGGT on the any-view benchmark (+44% pose, +25% geometry) and adds pose-conditioned input; VGGT remains a strong, widely-used feed-forward baseline."
+        }
+      ],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "dinov2",
+          "confidence": "high"
+        },
+        {
+          "slug": "dust3r",
+          "confidence": "medium",
+          "caution": "DA3 inherits DUSt3R's pose-free feed-forward pointmap paradigm but is a distinct any-view model."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "depth-anything-v2": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "depth-anything",
+          "confidence": "high"
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "dinov2",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "detr": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "dinov2": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "dust3r": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "efficientad": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "uninformed-students",
+          "confidence": "high",
+          "caution": "EfficientAD keeps the student-teacher principle but replaces the pretrained-backbone ensemble with a single distilled patch description network and loss-induced asymmetry."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "medium",
+          "caution": "EfficientAD distils its patch description network from a WideResNet-101 teacher; the wide variant is not this page's subject, hence medium confidence."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "fast-scnn": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "fcn-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "Fast-SCNN frames itself as a special case of an FCN encoder-decoder with a single skip connection (§3.3.2); its classifier emits dense per-pixel logits upsampled to full resolution following the FCN template."
+        },
+        {
+          "slug": "mobilenetv2",
+          "confidence": "high",
+          "caution": "Fast-SCNN's Global Feature Extractor is built from MobileNetV2 inverted-residual bottlenecks."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "faster-rcnn": {
       "usedBy": [],
       "affects": [],
@@ -2968,7 +4348,40 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "focalclick": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "ritm-interactive-segmentation",
+          "confidence": "high",
+          "caution": "FocalClick adds Focus View + Progressive Merge for CPU-feasible mask correction; RITM remains the foundational feedforward click-based reference."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "hrnet",
+          "confidence": "high",
+          "caution": "FocalClick uses HRNet18s+OCR and HRNet32+OCR as the Segmentor backbone in three of its six published variants (hrnet18s-S1/S2, hrnet32-S2); the small-crop Segmentor input (128×128 or 256×256) makes HRNet practical for CPU deployment."
+        },
+        {
+          "slug": "segformer",
+          "confidence": "high",
+          "caution": "SegFormer-B0 and SegFormer-B3 are explicit Segmentor backbones in FocalClick Table 3; the MiT encoder + all-MLP decoder is reused intact and the decoder logits feed FocalClick's Refiner."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "googlenet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "hrnet": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -3010,6 +4423,16 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "mae": {
+      "usedBy": [
+        "dinov2"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "mask-rcnn": {
       "usedBy": [],
       "affects": [],
@@ -3034,7 +4457,109 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "mask2former": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "mast3r": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "dust3r",
+          "confidence": "high"
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "mate-checkerboard-detector": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "midas": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "mnasnet": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "mobilenetv2",
+          "confidence": "medium",
+          "caution": "MnasNet's MBConv search space is built on MobileNetV2's inverted-residual block."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "mobilenetv2": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "mobilenetv3": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "deeplab-semantic-segmentation",
+          "confidence": "medium",
+          "caution": "LR-ASPP is a lite, reduced reuse of DeepLab's ASPP as MobileNetV3's segmentation head."
+        },
+        {
+          "slug": "mnasnet",
+          "confidence": "high",
+          "caution": "MobileNetV3 uses MnasNet-style platform-aware NAS and the SE-augmented search space as the basis of its block-level search."
+        },
+        {
+          "slug": "mobilenetv2",
+          "confidence": "high",
+          "caution": "MobileNetV3 inherits the inverted-residual + linear-bottleneck block as its core building primitive."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "mobilesam": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "sam",
+          "confidence": "high",
+          "caution": "MobileSAM is a lightweight derivative — distils SAM v1's ViT-H image encoder into a 5.78M-param TinyViT (~56× faster) while keeping SAM's prompt encoder + decoder frozen; MobileSAMv2 adds an object-aware prompt sampler for Segment-Everything."
+        }
+      ],
+      "fedBy": [
+        {
+          "slug": "vit",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "patchcore": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
@@ -3053,6 +4578,76 @@ export const contentGraph: ContentGraph = {
           "caution": "ResNet reformulates VGG-style plain depth scaling: identity shortcuts let 152-layer nets train where 19-layer plain nets already plateau (ResNet §1, Fig. 1)."
         }
       ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "rf-detr": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "detr",
+          "confidence": "high",
+          "caution": "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
+        },
+        {
+          "slug": "vit",
+          "confidence": "medium",
+          "caution": "RF-DETR's backbone is a DINOv2 self-supervised ViT."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "ritm-interactive-segmentation": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "hrnet",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "sam": {
+      "usedBy": [
+        "mobilesam"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "detr",
+          "confidence": "high",
+          "caution": "SAM's mask decoder two-way cross-attention is inspired by DETR's transformer decoder; SAM 3's concept detector is explicitly DETR-based."
+        },
+        {
+          "slug": "mae",
+          "confidence": "high",
+          "caution": "SAM v1's ViT-H image encoder is MAE-pretrained; SAM 2's Hiera (hierarchical ViT) is also MAE-pretrained. MAE is the SSL recipe that makes the SAM-family foundation segmenters' large encoders feasible."
+        },
+        {
+          "slug": "mask2former",
+          "confidence": "high",
+          "caution": "SAM 3's mask head is adapted from MaskFormer/Mask2Former — this family establishes the per-query mask classification + set-prediction paradigm SAM 3 inherits for concept segmentation."
+        },
+        {
+          "slug": "vit",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "segformer": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -3092,6 +4687,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "uninformed-students": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "vgg": {
       "usedBy": [],
       "affects": [],
@@ -3103,6 +4706,36 @@ export const contentGraph: ContentGraph = {
           "caution": "VGG extends AlexNet's CNN classifier paradigm from 8 to 16/19 weight layers via stacked 3×3 conv blocks; same task, deeper architecture, same training framework."
         }
       ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "vggt": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "dinov2",
+          "confidence": "high"
+        },
+        {
+          "slug": "dust3r",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "vit": {
+      "usedBy": [
+        "depth-anything",
+        "depth-anything-v2",
+        "dinov2",
+        "vggt"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -3124,10 +4757,21 @@ export const contentGraph: ContentGraph = {
     },
     "attention-mechanism": {
       "usedBy": [
+        "bisenet",
+        "detr",
         "feature-matching",
         "lightglue",
         "loftr",
-        "superglue"
+        "mae",
+        "mask2former",
+        "mobilenetv3",
+        "mobilesam",
+        "rf-detr",
+        "sam",
+        "segformer",
+        "superglue",
+        "vggt",
+        "vit"
       ],
       "affects": [],
       "generalises": [],
@@ -3137,8 +4781,11 @@ export const contentGraph: ContentGraph = {
     },
     "bundle-adjustment": {
       "usedBy": [
+        "dust3r",
+        "feed-forward-3d-reconstruction",
         "scaramuzza-omni-calibration",
         "tsai-versatile-calibration",
+        "vggt",
         "zhang-planar-calibration"
       ],
       "affects": [],
@@ -3176,6 +4823,8 @@ export const contentGraph: ContentGraph = {
         "canny-edge-detector",
         "convolutional-neural-network",
         "image-gradient",
+        "mobilenetv2",
+        "mobilenetv3",
         "scale-space"
       ],
       "affects": [],
@@ -3187,10 +4836,27 @@ export const contentGraph: ContentGraph = {
     "convolutional-neural-network": {
       "usedBy": [
         "alexnet",
+        "bisenet",
+        "detr",
+        "efficientad",
+        "fast-scnn",
         "geometric-bev",
         "googlenet",
+        "hrnet",
+        "mae",
+        "mask2former",
+        "mnasnet",
+        "mobilenetv2",
+        "mobilenetv3",
+        "patchcore",
         "resnet",
-        "vgg"
+        "rf-detr",
+        "sam",
+        "segformer",
+        "uninformed-students",
+        "vgg",
+        "visual-anomaly-detection",
+        "vit"
       ],
       "affects": [],
       "generalises": [],
@@ -3224,8 +4890,18 @@ export const contentGraph: ContentGraph = {
     },
     "epipolar-geometry": {
       "usedBy": [
+        "depth-anything-3",
+        "dust3r",
+        "feed-forward-3d-reconstruction",
         "fundamental-matrix-eight-point",
-        "longuet-higgins-eight-point"
+        "fusiello-compact-rectification",
+        "hartley-projective-rectification",
+        "longuet-higgins-eight-point",
+        "loop-zhang-rectification",
+        "mast3r",
+        "pollefeys-polar-rectification",
+        "stereo-rectification",
+        "vggt"
       ],
       "affects": [],
       "generalises": [],
@@ -3238,6 +4914,7 @@ export const contentGraph: ContentGraph = {
         "brief",
         "feature-matching",
         "hog-descriptor",
+        "mast3r",
         "orb",
         "sift"
       ],
@@ -3251,8 +4928,22 @@ export const contentGraph: ContentGraph = {
       "usedBy": [
         "lightglue",
         "loftr",
+        "mast3r",
         "sift",
         "superglue"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "feed-forward-3d-reconstruction": {
+      "usedBy": [
+        "depth-anything-3",
+        "dust3r",
+        "mast3r",
+        "vggt"
       ],
       "affects": [],
       "generalises": [],
@@ -3275,11 +4966,15 @@ export const contentGraph: ContentGraph = {
     "homography": {
       "usedBy": [
         "apap-image-stitching",
+        "epipolar-geometry",
         "fundamental-matrix-eight-point",
         "gao-dual-homography-stitching",
         "geometric-bev",
+        "hartley-projective-rectification",
         "lin-sva-stitching",
+        "loop-zhang-rectification",
         "spatially-varying-image-stitching",
+        "stereo-rectification",
         "sturm-plane-based-calibration",
         "zhang-planar-calibration"
       ],
@@ -3359,6 +5054,19 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "monocular-depth-estimation": {
+      "usedBy": [
+        "depth-anything",
+        "depth-anything-3",
+        "depth-anything-v2",
+        "midas"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "non-maximum-suppression": {
       "usedBy": [
         "canny-edge-detector",
@@ -3388,10 +5096,18 @@ export const contentGraph: ContentGraph = {
       "usedBy": [
         "bundle-adjustment",
         "camera-distortion-models",
+        "depth-anything-3",
+        "dust3r",
+        "epipolar-geometry",
         "epnp",
+        "feed-forward-3d-reconstruction",
+        "fusiello-compact-rectification",
         "geometric-bev",
+        "midas",
+        "monocular-depth-estimation",
         "pose-estimation",
         "scaramuzza-omni-calibration",
+        "stereo-rectification",
         "sturm-plane-based-calibration",
         "tsai-versatile-calibration",
         "zhang-planar-calibration"
@@ -3404,8 +5120,15 @@ export const contentGraph: ContentGraph = {
     },
     "pose-estimation": {
       "usedBy": [
+        "depth-anything-3",
+        "dust3r",
         "epnp",
-        "longuet-higgins-eight-point"
+        "feed-forward-3d-reconstruction",
+        "fusiello-compact-rectification",
+        "longuet-higgins-eight-point",
+        "mast3r",
+        "stereo-rectification",
+        "vggt"
       ],
       "affects": [],
       "generalises": [],
@@ -3451,7 +5174,24 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "spatially-varying-image-stitching": {
-      "usedBy": [],
+      "usedBy": [
+        "apap-image-stitching",
+        "gao-dual-homography-stitching",
+        "lin-sva-stitching"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "stereo-rectification": {
+      "usedBy": [
+        "fusiello-compact-rectification",
+        "hartley-projective-rectification",
+        "loop-zhang-rectification",
+        "pollefeys-polar-rectification"
+      ],
       "affects": [],
       "generalises": [],
       "extending": [],
@@ -3474,6 +5214,7 @@ export const contentGraph: ContentGraph = {
     "svd-null-space": {
       "usedBy": [
         "dlt-normalisation",
+        "epipolar-geometry",
         "fundamental-matrix-eight-point",
         "gao-dual-homography-stitching",
         "homography",
@@ -3497,6 +5238,18 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [],
       "hasLearnedAlternative": []
+    },
+    "visual-anomaly-detection": {
+      "usedBy": [
+        "efficientad",
+        "patchcore",
+        "uninformed-students"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
     }
   },
   "depth": {
@@ -3504,7 +5257,8 @@ export const contentGraph: ContentGraph = {
     "svd-null-space": 0,
     "homography": 1,
     "dlt-normalisation": 1,
-    "apap-image-stitching": 2,
+    "spatially-varying-image-stitching": 2,
+    "apap-image-stitching": 3,
     "convolution": 0,
     "image-gradient": 1,
     "scale-space": 1,
@@ -3530,7 +5284,10 @@ export const contentGraph: ContentGraph = {
     "energy-minimization": 0,
     "felzenszwalb-graph-segmentation": 1,
     "fischler-bolles-ransac": 1,
-    "gao-dual-homography-stitching": 2,
+    "epipolar-geometry": 2,
+    "stereo-rectification": 3,
+    "fusiello-compact-rectification": 4,
+    "gao-dual-homography-stitching": 3,
     "geiger-chessboard-detector": 2,
     "ni-generalized-fast-radial-symmetry": 2,
     "convolutional-neural-network": 1,
@@ -3539,20 +5296,22 @@ export const contentGraph: ContentGraph = {
     "grabcut-iterative-segmentation": 1,
     "graph-cut-segmentation": 1,
     "harris-corner-detector": 3,
+    "hartley-projective-rectification": 4,
     "hog-descriptor": 3,
     "horn-schunck": 4,
     "camera-distortion-models": 1,
     "kumar-generalized-rac": 2,
-    "lin-sva-stitching": 2,
+    "lin-sva-stitching": 3,
     "duda-radon-corners": 2,
-    "epipolar-geometry": 1,
-    "longuet-higgins-eight-point": 2,
+    "longuet-higgins-eight-point": 3,
+    "loop-zhang-rectification": 4,
     "lucas-kanade": 4,
     "barath-magsac": 1,
-    "fundamental-matrix-eight-point": 2,
+    "fundamental-matrix-eight-point": 3,
     "ocpad": 2,
     "image-pyramid": 0,
     "orb": 3,
+    "pollefeys-polar-rectification": 4,
     "puzzleboard": 3,
     "pyramidal-blur-aware-xcorner": 2,
     "rochade": 3,
@@ -3572,24 +5331,53 @@ export const contentGraph: ContentGraph = {
     "yang-sub-pixel-corner-fit": 2,
     "zhang-planar-calibration": 2,
     "alexnet": 2,
+    "bisenet": 2,
     "ccdn-checkerboard-detector": 2,
     "chessboard-x-corner-detection": 2,
     "ccs-camera-calibration": 3,
     "deeplab-semantic-segmentation": 0,
+    "monocular-depth-estimation": 1,
+    "vit": 2,
+    "depth-anything": 3,
+    "feed-forward-3d-reconstruction": 3,
+    "depth-anything-3": 4,
+    "depth-anything-v2": 3,
+    "detr": 2,
+    "mae": 2,
+    "dinov2": 3,
+    "dust3r": 4,
+    "visual-anomaly-detection": 2,
+    "efficientad": 3,
+    "fast-scnn": 2,
     "faster-rcnn": 0,
     "fcn-semantic-segmentation": 0,
+    "focalclick": 0,
     "googlenet": 2,
+    "hrnet": 2,
     "lightglue": 4,
     "loftr": 4,
     "mask-rcnn": 0,
+    "mask2former": 2,
+    "mast3r": 4,
     "mate-checkerboard-detector": 2,
+    "midas": 2,
+    "mnasnet": 2,
+    "mobilenetv2": 2,
+    "mobilenetv3": 2,
+    "sam": 2,
+    "mobilesam": 3,
+    "patchcore": 3,
     "resnet": 2,
+    "rf-detr": 2,
+    "ritm-interactive-segmentation": 0,
+    "segformer": 2,
     "superglue": 4,
     "superpoint": 2,
     "unet-segmentation": 0,
+    "uninformed-students": 3,
     "vgg": 2,
+    "vggt": 4,
     "xfeat": 2,
-    "yolo-v1": 0,
-    "spatially-varying-image-stitching": 2
+    "yolo-v1": 0
   }
 };

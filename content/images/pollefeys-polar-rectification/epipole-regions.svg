@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 440" class="h-auto w-full text-foreground" style="color:#64748b" width="575" height="550" role="img" aria-label="The nine-region epipole classification used by polar rectification. The image rectangle with corners a (top-left), b (top-right), c (bottom-right), d (bottom-left) is shown with its four sides extended as thin dashed construction lines across the whole plane. These four extended lines partition the plane into a three-by-three grid of nine numbered regions: 1, 2, 3 across the top; 4, 5, 6 across the middle, where region 5 is the rectangle itself, shown with a blue tint and border to set it apart as the region containing the image; and 7, 8, 9 across the bottom. An example epipole is drawn in region 6, directly to the right of the image, with its two extreme epipolar lines drawn in red to corners b and c — the two corners bounding the image's right edge, since that edge faces the epipole. In general, an epipole in an edge region has extreme lines through that edge's two corners, an epipole in a corner region has extreme lines through the two corners on the opposite diagonal, and an epipole inside the central region falls inside the image itself and needs the wrap-around sweep instead of a bounded angular range.">
+  <defs>
+    <marker id="pr-arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b91c1c"/>
+    </marker>
+  </defs>
+
+  <!-- ============ grid construction lines (extensions of the rectangle's sides) ============ -->
+  <g stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 4" fill="none">
+    <!-- vertical: x = 130 (through a, d) -->
+    <line x1="130" y1="0"   x2="130" y2="130"/>
+    <line x1="130" y1="270" x2="130" y2="400"/>
+    <!-- vertical: x = 330 (through b, c) -->
+    <line x1="330" y1="0"   x2="330" y2="130"/>
+    <line x1="330" y1="270" x2="330" y2="400"/>
+    <!-- horizontal: y = 130 (through a, b) -->
+    <line x1="0"   y1="130" x2="130" y2="130"/>
+    <line x1="330" y1="130" x2="460" y2="130"/>
+    <!-- horizontal: y = 270 (through d, c) -->
+    <line x1="0"   y1="270" x2="130" y2="270"/>
+    <line x1="330" y1="270" x2="460" y2="270"/>
+  </g>
+
+  <!-- ============ central region = the image rectangle, visually distinct ============ -->
+  <rect x="130" y="130" width="200" height="140" fill="#1d4ed8" fill-opacity="0.09" stroke="#1d4ed8" stroke-width="2.2"/>
+
+  <!-- ============ corner points a, b, c, d ============ -->
+  <g fill="currentColor">
+    <circle cx="130" cy="130" r="3"/>
+    <circle cx="330" cy="130" r="3"/>
+    <circle cx="330" cy="270" r="3"/>
+    <circle cx="130" cy="270" r="3"/>
+  </g>
+  <g font-family="Geist Mono, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="currentColor">
+    <text x="114" y="122" text-anchor="end">a</text>
+    <text x="346" y="122" text-anchor="start">b</text>
+    <text x="346" y="286" text-anchor="start">c</text>
+    <text x="114" y="286" text-anchor="end">d</text>
+  </g>
+
+  <!-- ============ region numbers ============ -->
+  <g font-family="Geist Mono, SFMono-Regular, Menlo, Consolas, monospace" font-size="20" text-anchor="middle" fill="currentColor">
+    <text x="65"  y="72">1</text>
+    <text x="230" y="72">2</text>
+    <text x="395" y="72">3</text>
+    <text x="65"  y="207">4</text>
+    <text x="65"  y="342">7</text>
+    <text x="230" y="342">8</text>
+    <text x="395" y="342">9</text>
+  </g>
+  <g font-family="Geist Mono, SFMono-Regular, Menlo, Consolas, monospace" font-size="22" text-anchor="middle" fill="#1d4ed8">
+    <text x="230" y="162">5</text>
+  </g>
+  <g font-family="Geist, Inter, system-ui, sans-serif" font-size="12" text-anchor="middle" fill="#1d4ed8">
+    <text x="230" y="182">(image)</text>
+  </g>
+
+  <!-- ============ worked example: epipole in region 6 ============ -->
+  <g stroke="#b91c1c" stroke-width="1.8" fill="none">
+    <line x1="400" y1="175" x2="330" y2="130" marker-end="url(#pr-arrow-red)"/>
+    <line x1="400" y1="175" x2="330" y2="270" marker-end="url(#pr-arrow-red)"/>
+  </g>
+  <circle cx="400" cy="175" r="4" fill="#b91c1c"/>
+  <text x="412" y="168" font-family="Geist Mono, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" fill="#b91c1c">e</text>
+  <text x="420" y="235" font-family="Geist Mono, SFMono-Regular, Menlo, Consolas, monospace" font-size="20" text-anchor="middle" fill="currentColor">6</text>
+
+  <!-- ============ caption ============ -->
+  <text x="230" y="422" text-anchor="middle" font-style="italic" font-family="Geist, Inter, system-ui, sans-serif" font-size="13" fill="#64748b">epipole in region 6 &#8594; extreme lines through b and c</text>
+</svg>

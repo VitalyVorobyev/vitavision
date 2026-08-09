@@ -16,17 +16,103 @@ const tests: Array<{ name: string; code: string }> = [
         code: `
 const mod = await import('@vitavision/chess-corners');
 await mod.default();
-const d = mod.ChessDetector.multiscale();
-d.set_threshold(0.2);
-d.set_nms_radius(2);
-d.set_broad_mode(false);
-d.set_min_cluster_size(2);
-try { d.set_pyramid_levels(4); } catch(e) { throw new Error('set_pyramid_levels failed: ' + e); }
-d.set_pyramid_min_size(128);
-try { d.set_upscale_factor(0); } catch(e) { throw new Error('set_upscale_factor failed: ' + e); }
-try { d.set_refiner('center_of_mass'); } catch(e) { throw new Error('set_refiner failed: ' + e); }
-d.free();
-console.log('PASS: multiscale detector created with all setters');
+// chess-corners 0.11 uses the typed DetectorConfig builder (the flat
+// set_* setters were removed). Validate every config combination the UI's
+// ChessCornersConfigForm can produce is accepted by ChessDetector.withConfig.
+//
+// 1.x moved the NMS / clustering knobs off ChessConfig onto the shared
+// cfg.detection, and replaced the Threshold tagged enum with a plain f32.
+// Both changes fail QUIETLY on the old call shape: assigning the removed
+// cfg.strategy.chess.nmsRadius just sets a JS property on the wrapper that
+// reads back fine and never reaches WASM. Assert the fields are where the
+// worker expects them rather than trusting that no error was thrown.
+if (mod.Threshold !== undefined)
+    throw new Error('Threshold enum is back — revisit the scalar-threshold migration');
+function makeRefiner(kind) {
+    if (kind === 'forstner') return mod.ChessRefiner.withForstner(new mod.ForstnerConfig());
+    if (kind === 'saddle_point') return mod.ChessRefiner.withSaddlePoint(new mod.SaddlePointConfig());
+    return mod.ChessRefiner.withCenterOfMass(new mod.CenterOfMassConfig());
+}
+for (const refiner of ['center_of_mass', 'forstner', 'saddle_point']) {
+    for (const upscaleFactor of [0, 2, 3, 4]) {
+        for (const broadMode of [false, true]) {
+            const cfg = mod.DetectorConfig.chessMultiscale();
+            cfg.threshold = 30;
+            cfg.upscale = upscaleFactor >= 2 ? mod.UpscaleConfig.fixed(upscaleFactor) : mod.UpscaleConfig.disabled();
+            cfg.multiscale.levels = 4;
+            cfg.multiscale.minSize = 128;
+            cfg.detection.nmsRadius = 2;
+            cfg.detection.minClusterSize = 2;
+            if (cfg.detection.nmsRadius !== 2 || cfg.detection.minClusterSize !== 2)
+                throw new Error('cfg.detection did not retain the NMS/cluster overrides');
+            const chess = cfg.strategy.chess;
+            if ('nmsRadius' in chess)
+                throw new Error('ChessConfig.nmsRadius is back — the worker writes cfg.detection instead');
+            chess.ring = broadMode ? mod.ChessRing.Broad : mod.ChessRing.Canonical;
+            chess.refiner = makeRefiner(refiner);
+            const d = mod.ChessDetector.withConfig(cfg);
+            d.free();
+        }
+    }
+}
+console.log('PASS: DetectorConfig builder accepts all UI-config combinations');
+
+// Stride guard. The detector hands back a bare Float32Array, so a stride the
+// type-checker cannot see (9 in 0.11, 7 in 1.x) would silently reinterpret
+// axis angles as contrast and shear every corner. Pin it against a synthetic
+// board whose corner count and positions are known exactly.
+const W = 256, H = 256, SQ = 32;
+const rgba = new Uint8Array(W * H * 4);
+for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+        const v = ((Math.floor(x / SQ) + Math.floor(y / SQ)) % 2) === 0 ? 235 : 20;
+        const i = (y * W + x) * 4;
+        rgba[i] = rgba[i + 1] = rgba[i + 2] = v;
+        rgba[i + 3] = 255;
+    }
+}
+const STRIDE = 7; // x, y, response, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma
+const cfg = mod.DetectorConfig.chessMultiscale();
+const det = mod.ChessDetector.withConfig(cfg);
+cfg.free();
+const raw = det.detect_rgba(rgba, W, H);
+if (raw.length % STRIDE !== 0)
+    throw new Error('detect_rgba output ' + raw.length + ' is not a multiple of stride ' + STRIDE);
+// A 256px board of 32px squares has 7x7 = 49 interior X-junctions.
+const count = raw.length / STRIDE;
+if (count !== 49)
+    throw new Error('expected 49 interior corners on the synthetic board, got ' + count);
+// First corner sits at the first interior junction; with stride 7 the two
+// following floats are an angle in [-pi, pi] and a small sigma, not a
+// contrast/fit_rms pair. A stale stride of 9 fails both checks.
+const [x0, y0, r0, a0, s0] = raw;
+if (Math.abs(x0 - 31.5) > 1.5 || Math.abs(y0 - 31.5) > 1.5)
+    throw new Error('first corner at (' + x0 + ',' + y0 + '), expected ~(31.5,31.5)');
+if (!(r0 > 100))
+    throw new Error('expected a strong response on a synthetic board, got ' + r0);
+if (!(Math.abs(a0) <= Math.PI + 1e-3) || !(s0 >= 0 && s0 < 1))
+    throw new Error('stride 7 misaligned: angle=' + a0 + ' sigma=' + s0);
+console.log('PASS: detect_rgba stride is ' + STRIDE + ' (' + count + ' corners, first at ' + x0.toFixed(1) + ',' + y0.toFixed(1) + ')');
+
+// Threshold is an ABSOLUTE floor on the raw response now, not a 0-1 fraction.
+// The UI feeds it straight through, so prove the scale: a value the old
+// relative UI would have sent (0.2) keeps every corner, and a value far above
+// the response range removes them all.
+function countAt(threshold) {
+    const c = mod.DetectorConfig.chessMultiscale();
+    c.threshold = threshold;
+    const d = mod.ChessDetector.withConfig(c);
+    c.free();
+    const n = d.detect_rgba(rgba, W, H).length / STRIDE;
+    d.free();
+    return n;
+}
+if (countAt(0.2) !== 49)
+    throw new Error('threshold 0.2 should admit every corner under absolute semantics');
+if (countAt(1e6) !== 0)
+    throw new Error('threshold 1e6 should reject every corner under absolute semantics');
+console.log('PASS: cfg.threshold is an absolute response floor (0.2 -> 49 corners, 1e6 -> 0)');
+det.free();
 process.exit(0);
 `,
     },
@@ -35,15 +121,83 @@ process.exit(0);
         code: `
 const mod = await import('@vitavision/ringgrid');
 await mod.default();
+
+// 1. Schema check: v6 (0.11.0), not v5 or the legacy flat v4. The board's
+// shape is unchanged across v5 -> v6; only the version string moved.
 const def = JSON.parse(mod.default_board_json());
-if (def.schema !== 'ringgrid.target.v4' || typeof def.name !== 'string')
-    throw new Error('default board missing schema/name');
-console.log('PASS: default board JSON has schema + name');
-const user = { rows: 15, long_row_cols: 14, pitch_mm: 8.0, marker_outer_radius_mm: 5.6, marker_inner_radius_mm: 3.2, marker_ring_width_mm: 0.8 };
-const merged = { ...def, ...user };
-const det = new mod.RinggridDetector(JSON.stringify(merged));
+if (def.schema !== 'ringgrid.target.v6' || typeof def.name !== 'string')
+    throw new Error('default board missing schema/name: ' + JSON.stringify(def));
+console.log('PASS: default board JSON has schema ringgrid.target.v6 + name');
+
+// 2. Build a board through the same nested-aware merge path the adapter/worker
+// use (wasmWorker.ts handleRinggrid), with non-default values, and assert the
+// nested structure is correct AND that untouched sibling keys (lattice.kind,
+// coding.kind) survive — a shallow {...target, ...source} merge would wipe them.
+function deepMerge(target, source) {
+    const out = { ...target };
+    for (const key of Object.keys(source)) {
+        const sv = source[key], tv = target[key];
+        if (sv !== null && typeof sv === 'object' && !Array.isArray(sv) && tv !== null && typeof tv === 'object' && !Array.isArray(tv))
+            out[key] = deepMerge(tv, sv);
+        else out[key] = sv;
+    }
+    return out;
+}
+const adapterBoardOverride = {
+    lattice: { rows: 9, long_row_cols: 8, pitch_mm: 12 },
+    marker: { outer_radius_mm: 5.6, inner_radius_mm: 3.2 },
+    coding: { ring_width_mm: 1.0 },
+};
+const merged = deepMerge(def, adapterBoardOverride);
+if (merged.lattice.kind !== 'hex')
+    throw new Error('lattice.kind was dropped by merge: ' + JSON.stringify(merged.lattice));
+if (merged.lattice.rows !== 9 || merged.lattice.long_row_cols !== 8 || merged.lattice.pitch_mm !== 12)
+    throw new Error('lattice override not applied: ' + JSON.stringify(merged.lattice));
+if (merged.coding.kind !== 'coded16' || merged.coding.ring_width_mm !== 1.0)
+    throw new Error('coding merge incorrect: ' + JSON.stringify(merged.coding));
+if (merged.marker.outer_radius_mm !== 5.6 || merged.marker.inner_radius_mm !== 3.2)
+    throw new Error('marker override not applied: ' + JSON.stringify(merged.marker));
+console.log('PASS: nested board merge applies overrides while preserving lattice.kind/coding.kind');
+const det0 = new mod.RinggridDetector(JSON.stringify(merged));
+det0.free();
+console.log('PASS: detector constructs from merged non-default v6 board');
+
+// 3. Round-trip: update_config with an overlay carrying non-default values
+// under the new advanced.* nesting, then read back config_json() and assert
+// those exact values are present AND that untouched sibling fields survive
+// (catches a knob being silently dropped by the advanced-block move).
+const det = new mod.RinggridDetector(mod.default_board_json());
+const overlay = {
+    marker_scale: { diameter_min_px: 22 },
+    advanced: { decode: { min_decode_confidence: 0.55 } },
+};
+det.update_config(JSON.stringify(overlay));
+const effective = JSON.parse(det.config_json());
+if (effective.marker_scale.diameter_min_px !== 22)
+    throw new Error('marker_scale.diameter_min_px overlay was dropped: ' + JSON.stringify(effective.marker_scale));
+if (effective.advanced.decode.min_decode_confidence !== 0.55)
+    throw new Error('advanced.decode.min_decode_confidence overlay was dropped: ' + JSON.stringify(effective.advanced.decode));
+if (effective.marker_scale.diameter_max_px !== 66)
+    throw new Error('unrelated sibling field diameter_max_px was clobbered: ' + effective.marker_scale.diameter_max_px);
+if (effective.advanced.decode.max_decode_dist !== 3)
+    throw new Error('unrelated sibling field max_decode_dist was clobbered: ' + effective.advanced.decode.max_decode_dist);
+console.log('PASS: update_config round-trip preserves overlay values under advanced.* and leaves siblings untouched');
 det.free();
-console.log('PASS: detector created from merged user + default board JSON');
+
+// 4. Real-image detection: run detect_adaptive_rgba on public/ringgrid.png and
+// assert markers are actually detected, not merely that the call returns.
+const { PNG } = await import('pngjs');
+const { readFileSync } = await import('fs');
+const png = PNG.sync.read(readFileSync('public/ringgrid.png'));
+const detImg = new mod.RinggridDetector(mod.default_board_json());
+const resultJson = detImg.detect_adaptive_rgba(new Uint8Array(png.data), png.width, png.height);
+const result = JSON.parse(resultJson);
+const markers = result.detected_markers ?? [];
+if (markers.length === 0)
+    throw new Error('no markers detected on public/ringgrid.png');
+console.log('PASS: detected ' + markers.length + ' markers on real ringgrid.png image');
+detImg.free();
+
 process.exit(0);
 `,
     },
@@ -63,20 +217,62 @@ function deepMerge(t, s) {
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
-const chessCfg = deepMerge(mod.default_chess_config(), { threshold_value: 0.2 });
-// 0.7+ schema: top-level fields like min_corner_strength / max_fit_rms_ratio /
-// peak_min_separation_deg / min_peak_weight_fraction. The legacy fields
-// (expected_rows, completeness_threshold, graph, chess) are silently ignored —
-// keep them in the merge to confirm forward compatibility from the editor's
-// adapter payload.
+
+// 0.11 collapsed ChessConfig.threshold from the 0.10.1 tagged Rust enum
+// ({ absolute: N } | { relative: N }) back to a plain f32 — an ABSOLUTE floor
+// on the raw ChESS response, default 15. Relative mode is gone. Passing the
+// old object shape throws "invalid type: JsValue(Object(...)), expected f32"
+// at detect time, not at config-build time, so assert the scalar shape here.
+// The wholesale-replace path in buildChessCfg is kept: 'upscale' is still a
+// tagged enum, and a naive deepMerge would union its variant keys.
+function buildChessCfg(overrides) {
+    const merged = deepMerge(mod.default_chess_config(), overrides);
+    if (overrides.threshold !== undefined) merged.threshold = overrides.threshold;
+    if (overrides.upscale !== undefined) merged.upscale = overrides.upscale;
+    return merged;
+}
+const defaultCfg = mod.default_chess_config();
+if (typeof defaultCfg.threshold !== 'number')
+    throw new Error('default_chess_config().threshold is no longer a scalar: ' + JSON.stringify(defaultCfg.threshold));
+// 0.11 also relocated the NMS / clustering knobs onto a shared 'detection'
+// block, mirroring chess-corners 1.x.
+if (typeof defaultCfg.detection?.nms_radius !== 'number')
+    throw new Error('default_chess_config().detection.nms_radius missing: ' + JSON.stringify(defaultCfg));
+const chessCfg = buildChessCfg({ threshold: 20 });
+if (chessCfg.threshold !== 20)
+    throw new Error('threshold override was merged instead of replaced: ' + JSON.stringify(chessCfg.threshold));
+console.log('PASS: chess config threshold is a scalar absolute floor (default ' + defaultCfg.threshold + '), detection block present');
+
+// The legacy flat fields the old ChessConfig/DetectorParams schemas used
+// (expected_rows, completeness_threshold, graph, chess) are silently ignored
+// under 0.10.1 — keep them in the merge to confirm they don't cause a schema
+// error (forward-compat with any stale adapter payload), while the current
+// stable-core keys (min_corner_strength, max_fit_rms_ratio, ...) still apply.
 const params = deepMerge(mod.default_chessboard_params(), {
-    min_corner_strength: 0.2, completeness_threshold: 0.1,
+    min_corner_strength: 15, completeness_threshold: 0.1,
     expected_rows: 7, expected_cols: 11,
     max_fit_rms_ratio: 0.5, peak_min_separation_deg: 60, min_peak_weight_fraction: 0.02,
     graph: { min_spacing_pix: 5, max_spacing_pix: 50 },
 });
 mod.detect_chessboard(32, 32, gray, chessCfg, params);
 console.log('PASS: detect_chessboard accepts merged params (forward-compatible with legacy fields)');
+
+// Regression guard: prove the threshold override is actually wired into
+// detection sensitivity on a real image, not silently dropped like the old
+// flat threshold_value field was. Under absolute semantics the strict end of
+// the range is a large response floor, not a fraction near 1.
+const { PNG } = await import('pngjs');
+const { readFileSync } = await import('fs');
+const png = PNG.sync.read(readFileSync('public/chessboard.png'));
+const grayReal = mod.rgba_to_gray(new Uint8Array(png.data), png.width, png.height);
+const paramsReal = mod.default_chessboard_params();
+const lenient = mod.detect_chessboard(png.width, png.height, grayReal, buildChessCfg({ threshold: 15 }), paramsReal);
+const strict = mod.detect_chessboard(png.width, png.height, grayReal, buildChessCfg({ threshold: 1e6 }), paramsReal);
+if (!lenient || lenient.corners.length === 0)
+    throw new Error('lenient threshold found no corners on public/chessboard.png');
+if (strict !== null && strict !== undefined && strict.corners.length === lenient.corners.length)
+    throw new Error('threshold override had no effect on detection (chessCfg is not reaching the detector)');
+console.log('PASS: chessCfg.threshold override changes real detection sensitivity (lenient=' + lenient.corners.length + ' corners, strict=' + (strict ? strict.corners.length : 'null') + ')');
 process.exit(0);
 `,
     },
@@ -96,13 +292,15 @@ function deepMerge(t, s) {
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
-const chessCfg = deepMerge(mod.default_chess_config(), { threshold_value: 0.2 });
+// threshold is a plain f32 absolute response floor as of 0.11 — see the
+// "chessboard schema" test above for why this can't be a plain deepMerge.
+const chessCfg = { ...mod.default_chess_config(), threshold: 15 };
 const cbDefaults = mod.default_chessboard_params();
 const params = {
     px_per_square: 40,
     board: { rows: 22, cols: 22, cell_size: 4.8, marker_size_rel: 0.75, dictionary: 'DICT_4X4_1000', marker_layout: 'opencv_charuco' },
     chessboard: deepMerge(cbDefaults, {
-        min_corner_strength: 0.2, expected_rows: 22, expected_cols: 22,
+        min_corner_strength: 15, expected_rows: 22, expected_cols: 22,
         completeness_threshold: 0.05,
         graph: { min_spacing_pix: 40, max_spacing_pix: 160, k_neighbors: 8, orientation_tolerance_deg: 12.5 },
     }),
@@ -138,10 +336,12 @@ function deepMerge(t, s) {
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
-const chessCfg = deepMerge(mod.default_chess_config(), { threshold_value: 0.2 });
+// threshold is a plain f32 absolute response floor as of 0.11 — see the
+// "chessboard schema" test above for why this can't be a plain deepMerge.
+const chessCfg = { ...mod.default_chess_config(), threshold: 15 };
 const params = deepMerge(mod.default_marker_board_params(), {
     layout: { rows: 22, cols: 22, circles: [{ cell: { i: 11, j: 11 }, polarity: 'black' }, { cell: { i: 12, j: 11 }, polarity: 'white' }, { cell: { i: 12, j: 12 }, polarity: 'white' }] },
-    chessboard: { min_corner_strength: 0.2, expected_rows: 22, expected_cols: 22, completeness_threshold: 0.05, graph: { min_spacing_pix: 20, max_spacing_pix: 160 } },
+    chessboard: { min_corner_strength: 15, expected_rows: 22, expected_cols: 22, completeness_threshold: 0.05, graph: { min_spacing_pix: 20, max_spacing_pix: 160 } },
     circle_score: { patch_size: 64, min_contrast: 10 },
 });
 mod.detect_marker_board(32, 32, gray, chessCfg, params);
@@ -158,14 +358,19 @@ const png = PNG.sync.read(readFileSync('public/chessboard.png'));
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = mod.rgba_to_gray(new Uint8Array(png.data), png.width, png.height);
-// 0.7+ returns { target: { kind, corners }, grid_directions, cell_size, strong_indices }.
-// The worker normalises target → detection before consumers see it; here we
-// validate the raw shape so a future package change is caught early.
+// 0.10.1 flattened ChessboardDetectionResult to { corners, cell_size } — the
+// target/detection wrapper is gone entirely. The worker re-wraps this into
+// the internal { detection: { kind, corners } } shape; here we validate the
+// raw WASM shape directly so a future package change is caught early.
 const result = mod.detect_chessboard(png.width, png.height, gray, mod.default_chess_config(), mod.default_chessboard_params());
-const corners = result?.target?.corners ?? result?.detection?.corners;
+const corners = result?.corners;
 if (!corners || corners.length === 0)
     throw new Error('no corners detected on real chessboard image');
-console.log('PASS: detected ' + corners.length + ' corners');
+// Regression guard: 0.10.1 must detect the same 77 corners 0.8.0 found on
+// this image (verified same positions, not just same count).
+if (corners.length !== 77)
+    throw new Error('expected exactly 77 corners on public/chessboard.png (0.8.0 parity), got ' + corners.length);
+console.log('PASS: detected ' + corners.length + ' corners (matches 0.8.0 baseline)');
 const c = corners[0];
 if (!Array.isArray(c.position) || c.position.length !== 2)
     throw new Error('corner.position is not [x,y] array: ' + JSON.stringify(c.position));
@@ -175,14 +380,16 @@ if (typeof x !== 'number' || typeof y !== 'number' || isNaN(x) || isNaN(y))
 if (x < 0 || x > png.width || y < 0 || y > png.height)
     throw new Error('corner coordinates out of image bounds: ' + x + ', ' + y);
 console.log('PASS: corner coordinates are valid [x,y] arrays within image bounds');
+// 0.10.1 renamed the grid coordinate from GridCoords{i,j} to Coord{u,v}.
+if (!c.grid || typeof c.grid.u !== 'number' || typeof c.grid.v !== 'number')
+    throw new Error('corner.grid is missing or malformed (expected {u,v}): ' + JSON.stringify(c.grid));
+console.log('PASS: corner.grid is a {u,v} Coord (0.10.1 rename from {i,j})');
 process.exit(0);
 `,
     },
     {
-        name: "@vitavision/calib-targets: puzzleboard defaults + real image",
+        name: "@vitavision/calib-targets: puzzleboard defaults + round-trip",
         code: `
-const { PNG } = await import('pngjs');
-const { readFileSync } = await import('fs');
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 
@@ -201,18 +408,56 @@ if (params.decode?.search_mode?.kind !== 'full')
     throw new Error('expected default decode.search_mode.kind=full, got: ' + JSON.stringify(params.decode?.search_mode));
 console.log('PASS: board=10x10 and decode.search_mode.kind=full');
 
-const png = PNG.sync.read(readFileSync('public/puzzleboard.png'));
-const gray = mod.rgba_to_gray(new Uint8Array(png.data), png.width, png.height);
-const result = mod.detect_puzzleboard(png.width, png.height, gray, null, params);
-if (!result?.detection?.corners?.length)
-    throw new Error('no corners detected on public/puzzleboard.png');
-console.log('PASS: detected ' + result.detection.corners.length + ' puzzleboard corners on real image (mean conf ' + result.decode.mean_confidence.toFixed(3) + ')');
-const c = result.detection.corners[0];
+// A deterministic round-trip using a library-rendered board, which exercises
+// the detect_puzzleboard contract without depending on any committed asset.
+const { PNG } = await import('pngjs');
+const pngBytes = mod.render_puzzleboard_png(10, 10, 20, 150);
+const rendered = PNG.sync.read(Buffer.from(pngBytes));
+const gray = mod.rgba_to_gray(new Uint8Array(rendered.data), rendered.width, rendered.height);
+const result = mod.detect_puzzleboard(rendered.width, rendered.height, gray, null, params);
+if (!result?.corners?.length)
+    throw new Error('no corners detected on rendered round-trip puzzleboard');
+console.log('PASS: detected ' + result.corners.length + ' puzzleboard corners on rendered round-trip (bit_error_rate ' + result.decode.bit_error_rate.toFixed(3) + ')');
+const c = result.corners[0];
 if (!Array.isArray(c.position) || c.position.length !== 2)
     throw new Error('corner.position is not [x,y] array: ' + JSON.stringify(c.position));
-if (!c.grid || typeof c.grid.i !== 'number' || typeof c.grid.j !== 'number')
-    throw new Error('corner.grid is missing or malformed: ' + JSON.stringify(c.grid));
-console.log('PASS: corner has [x,y] position and {i,j} grid index');
+// 0.10.1 renamed the grid coordinate from GridCoords{i,j} to Coord{u,v}.
+if (!c.grid || typeof c.grid.u !== 'number' || typeof c.grid.v !== 'number')
+    throw new Error('corner.grid is missing or malformed (expected {u,v}): ' + JSON.stringify(c.grid));
+console.log('PASS: corner has [x,y] position and {u,v} grid index');
+
+// Real-photo decode, via the exact path the worker uses. The plain
+// detect_puzzleboard throws on failure, but _with_diagnostics resolves
+// \`result\` to *undefined* and still returns diagnostics — so the worker calls
+// the diagnostics variant (for observed_edges) and re-raises itself. Both
+// halves of that contract are asserted here.
+//
+// The board self-locates against a master map: params.board rows/cols do not
+// constrain detection (verified — 4x4 through 30x30 all yield 361 corners),
+// which is why a mismatched 10x10 declaration is fine.
+const { readFileSync } = await import('fs');
+const photo = PNG.sync.read(readFileSync('public/author_like_oblique.png'));
+const photoGray = mod.rgba_to_gray(new Uint8Array(photo.data), photo.width, photo.height);
+const unwrap = (v) => v instanceof Map
+    ? Object.fromEntries([...v].map(([k, x]) => [k, unwrap(x)]))
+    : Array.isArray(v) ? v.map(unwrap) : v;
+const diag = unwrap(mod.detect_puzzleboard_with_diagnostics(photo.width, photo.height, photoGray, null, params));
+if (diag?.result == null)
+    throw new Error('public/author_like_oblique.png failed to decode (result is ' + diag?.result + ')');
+if (diag.result.corners.length !== 361)
+    throw new Error('expected 361 corners on public/author_like_oblique.png, got ' + diag.result.corners.length);
+if (diag.result.decode.bit_error_rate !== 0)
+    throw new Error('expected a clean decode (bit_error_rate 0), got ' + diag.result.decode.bit_error_rate);
+console.log('PASS: real photo decodes to 361 corners at bit_error_rate 0');
+// observed_edges backs PuzzleboardOverlay's edge-bit markers and lives ONLY on
+// the diagnostics side — an empty array here means the overlay renders nothing.
+const edges = diag.diagnostics?.observed_edges;
+if (!edges?.length)
+    throw new Error('diagnostics.observed_edges is empty — PuzzleboardOverlay edge-bit markers would not render');
+const e = edges[0];
+if (typeof e.row !== 'number' || typeof e.col !== 'number' || (e.orientation !== 'horizontal' && e.orientation !== 'vertical'))
+    throw new Error('observed_edges entry is malformed: ' + JSON.stringify(e));
+console.log('PASS: diagnostics.observed_edges has ' + edges.length + ' well-formed entries');
 process.exit(0);
 `,
     },

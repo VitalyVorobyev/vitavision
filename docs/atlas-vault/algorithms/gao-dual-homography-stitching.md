@@ -6,20 +6,19 @@ slug: gao-dual-homography-stitching
 
 > Generated stub — do not edit. Source: `content/algorithms/gao-dual-homography-stitching.md`.
 
-Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group with RANSAC, and blending per pixel by inverse-distance weights — the direct two-plane predecessor of APAP's continuous grid of per-cell homographies.
+Stitch two-plane outdoor panoramas by clustering SIFT correspondences into a ground group and a distant group via spatial K-means, fitting one homography per group, and blending per pixel by inverse-distance weights. Superseded for practical use by APAP's continuous per-cell grid.
 
 ## Prerequisites
 
 - [[homography]]
-
-## Related
-
-- [[apap-image-stitching]]
+- [[ransac]]
 - [[spatially-varying-image-stitching]]
+- [[svd-null-space]]
 
-## Compared with
+## Lineage
 
-- [[apap-image-stitching]]
+- **Generalised by** — [[apap-image-stitching]]
+  > APAP's continuous grid of per-cell homographies subsumes the two-plane parametrisation; the two methods are not peer practitioner choices.
 
 ## Sources
 

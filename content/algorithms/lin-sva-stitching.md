@@ -7,7 +7,7 @@ domain: stitching
 tasks: [image-stitching]
 author: "Vitaly Vorobyev"
 difficulty: advanced
-prerequisites: [homography, ransac]
+prerequisites: [homography, ransac, spatially-varying-image-stitching]
 failureModes: []
 relations:
   - type: generalized_by

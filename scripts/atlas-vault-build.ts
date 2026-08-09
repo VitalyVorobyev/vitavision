@@ -15,6 +15,7 @@ import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync, rmSync
 import { join, basename } from "node:path";
 import matter from "gray-matter";
 import { parse as parseYaml } from "yaml";
+import type { RelationType, TypedRelation } from "../src/lib/content/schema.ts";
 
 const REPO_ROOT = join(import.meta.dir, "..");
 const CONTENT_DIR = join(REPO_ROOT, "content");
@@ -23,14 +24,54 @@ const VAULT_DIR = join(REPO_ROOT, "docs", "atlas-vault");
 
 type NodeType = "algorithm" | "model" | "concept" | "paper";
 
+// ── Relation type → category + label ────────────────────────────────────────
+// Mirrors src/components/atlas/RelationshipPanel.tsx (FORWARD_LABEL, ~L14, and
+// the three sidebar categories per .claude/CLAUDE.md → "Relations field"). Kept
+// as a local copy rather than an import: the component pulls in React,
+// react-router-dom, and the generated content graph, none of which belong in
+// this Node/Bun build script. Keep in sync by hand if the label text changes.
+type RelationCategory = "Lineage" | "Practice" | "Cross-paradigm";
+
+const CATEGORY_ORDER: readonly RelationCategory[] = ["Lineage", "Practice", "Cross-paradigm"];
+
+const RELATION_CATEGORY: Record<RelationType, RelationCategory> = {
+    generalized_by: "Lineage",
+    alternative_formulation_of: "Lineage",
+    parallel_foundation_with: "Lineage",
+    extended_by: "Lineage",
+    compared_with: "Practice",
+    feeds_into: "Practice",
+    learned_alternative_of: "Cross-paradigm",
+};
+
+const RELATION_LABEL: Record<RelationType, string> = {
+    generalized_by: "Generalised by",
+    alternative_formulation_of: "Alternative formulation of",
+    parallel_foundation_with: "Parallel foundation with",
+    extended_by: "Extended by",
+    compared_with: "Compared with",
+    feeds_into: "Feeds into",
+    learned_alternative_of: "Learned alternative of",
+};
+
+function sortRelations(relations: TypedRelation[]): TypedRelation[] {
+    return [...relations].sort((a, b) => {
+        const catDiff =
+            CATEGORY_ORDER.indexOf(RELATION_CATEGORY[a.type]) -
+            CATEGORY_ORDER.indexOf(RELATION_CATEGORY[b.type]);
+        if (catDiff !== 0) return catDiff;
+        if (a.type !== b.type) return a.type.localeCompare(b.type);
+        return a.target.localeCompare(b.target);
+    });
+}
+
 interface PageNode {
     slug: string;
     type: "algorithm" | "model" | "concept";
     title: string;
     summary: string;
     prerequisites: string[];
-    related: string[];          // includes normalized relatedAlgorithms
-    comparedWith: string[];
+    relations: TypedRelation[];   // authored forward edges only; see readPages()
     failureModes: string[];
     sourcesPrimary?: string;
     sourcesReferences: string[];
@@ -58,9 +99,7 @@ interface PageFrontmatter {
     title?: string;
     summary?: string;
     prerequisites?: string[];
-    related?: string[];
-    relatedAlgorithms?: string[];
-    comparedWith?: string[];
+    relations?: TypedRelation[];
     failureModes?: string[];
     sources?: {
         primary?: string;
@@ -80,18 +119,13 @@ function readPages(dir: string, type: PageNode["type"]): PageNode[] {
         const { data } = matter(raw);
         const fm = data as PageFrontmatter;
         const slug = basename(file, ".md");
-        const related = uniqSorted([
-            ...(fm.related ?? []),
-            ...(fm.relatedAlgorithms ?? []),
-        ]);
         return {
             slug,
             type,
             title: fm.title ?? slug,
             summary: fm.summary ?? "",
             prerequisites: uniqSorted(fm.prerequisites ?? []),
-            related,
-            comparedWith: uniqSorted(fm.comparedWith ?? []),
+            relations: sortRelations(fm.relations ?? []),
             failureModes: uniqSorted(fm.failureModes ?? []),
             sourcesPrimary: fm.sources?.primary,
             sourcesReferences: uniqSorted(fm.sources?.references ?? []),
@@ -150,17 +184,31 @@ function renderPageStub(node: PageNode): string {
         for (const s of node.prerequisites) lines.push(wikilinkLine(s));
         lines.push("");
     }
-    if (node.related.length > 0) {
-        lines.push("## Related");
-        lines.push("");
-        for (const s of node.related) lines.push(wikilinkLine(s));
-        lines.push("");
-    }
-    if (node.comparedWith.length > 0) {
-        lines.push("## Compared with");
-        lines.push("");
-        for (const s of node.comparedWith) lines.push(wikilinkLine(s));
-        lines.push("");
+    if (node.relations.length > 0) {
+        const byCategory = new Map<RelationCategory, TypedRelation[]>();
+        for (const rel of node.relations) {
+            const cat = RELATION_CATEGORY[rel.type];
+            const list = byCategory.get(cat) ?? [];
+            list.push(rel);
+            byCategory.set(cat, list);
+        }
+        for (const cat of CATEGORY_ORDER) {
+            const rels = byCategory.get(cat);
+            if (!rels || rels.length === 0) continue;
+            lines.push(`## ${cat}`);
+            lines.push("");
+            for (const rel of rels) {
+                let line = `- **${RELATION_LABEL[rel.type]}** — [[${rel.target}]]`;
+                if (rel.confidence !== "high") {
+                    line += ` _(confidence: ${rel.confidence})_`;
+                }
+                lines.push(line);
+                if (rel.caution) {
+                    lines.push(`  > ${rel.caution}`);
+                }
+            }
+            lines.push("");
+        }
     }
     if (node.failureModes.length > 0) {
         lines.push("## Failure modes");
@@ -224,9 +272,10 @@ function renderVaultReadme(counts: Record<NodeType, number>): string {
         "",
         "An Obsidian-compatible projection of the atlas — every algorithm, model,",
         "concept, and paper is a stub `.md` whose body contains `[[wikilinks]]` for",
-        "every forward edge (prerequisites, related, comparedWith, failureModes,",
-        "sources, paper→paper citations). Open this folder as a vault in Obsidian",
-        "and use the graph view to look for clusters, gaps, and isolated islands.",
+        "every forward edge (prerequisites, typed relations — grouped as Lineage /",
+        "Practice / Cross-paradigm, failureModes, sources, paper→paper citations).",
+        "Open this folder as a vault in Obsidian and use the graph view to look",
+        "for clusters, gaps, and isolated islands.",
         "",
         "## Counts",
         "",

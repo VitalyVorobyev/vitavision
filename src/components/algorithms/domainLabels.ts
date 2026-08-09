@@ -10,6 +10,7 @@ export const domainLabels: Record<Domain, string> = {
     "depth": "Depth",
     "detection": "Detection",
     "segmentation": "Segmentation",
+    "anomaly-detection": "Anomaly detection",
 };
 
 export const domainOrder: Domain[] = [
@@ -22,4 +23,5 @@ export const domainOrder: Domain[] = [
     "depth",
     "detection",
     "segmentation",
+    "anomaly-detection",
 ];

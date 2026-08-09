@@ -72,7 +72,9 @@ Takes a full RGB image and produces, in a single CNN forward pass, a set of boun
 
 **Blocks.** 24 convolutional layers followed by 2 fully connected layers; alternating 1×1 reduction layers precede 3×3 conv layers throughout the backbone (§2.1). All layers except the final output use leaky ReLU:
 
-$$\phi(x) = \begin{cases} x & \text{if } x > 0 \\ 0.1x & \text{otherwise} \end{cases} \tag{eq. 2}$$
+$$
+\phi(x) = \begin{cases} x & \text{if } x > 0 \\ 0.1x & \text{otherwise} \end{cases} \tag{eq. 2}
+$$
 
 The final layer uses a linear activation. At test time, class-specific confidence scores per cell are computed as $\Pr(\text{Class}_i) \times \text{IOU}_\text{pred}^\text{truth} = \Pr(\text{Class}_i \mid \text{Object}) \times \Pr(\text{Object}) \times \text{IOU}_\text{pred}^\text{truth}$ (§2, eq. 1). The YOLO head decode for a single cell in Python:
 
@@ -162,8 +164,8 @@ Official Darknet (C/CUDA) release by the paper authors; a widely-used PyTorch co
 
 # References
 
-1. Redmon, Divvala, Girshick, Farhadi. *You Only Look Once: Unified, Real-Time Object Detection.* CVPR 2016. [arXiv:1506.02640](https://arxiv.org/pdf/1506.02640)
-2. Szegedy, Liu, Jia, Sermanet, Reed, Anguelov, Erhan, Vanhoucke, Rabinovich. *Going deeper with convolutions.* CVPR 2015. [arXiv:1409.4842](https://arxiv.org/pdf/1409.4842)
-3. Simonyan, Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR 2015. [arXiv:1409.1556](https://arxiv.org/pdf/1409.1556)
-4. Ren, He, Girshick, Sun. *Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.* NeurIPS 2015. [arXiv:1506.01497](https://arxiv.org/pdf/1506.01497)
+1. Redmon, Divvala, Girshick, Farhadi. *You Only Look Once: Unified, Real-Time Object Detection.* CVPR 2016. [arXiv 1506.02640](https://arxiv.org/pdf/1506.02640)
+2. Szegedy, Liu, Jia, Sermanet, Reed, Anguelov, Erhan, Vanhoucke, Rabinovich. *Going deeper with convolutions.* CVPR 2015. [arXiv 1409.4842](https://arxiv.org/pdf/1409.4842)
+3. Simonyan, Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR 2015. [arXiv 1409.1556](https://arxiv.org/pdf/1409.1556)
+4. Ren, He, Girshick, Sun. *Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.* NeurIPS 2015. [arXiv 1506.01497](https://arxiv.org/pdf/1506.01497)
 5. Felzenszwalb, Girshick, McAllester, Ramanan. *Object Detection with Discriminatively Trained Part-Based Models.* IEEE TPAMI, 2010. [paper](https://cs.brown.edu/people/pfelzens/papers/lsvm-pami.pdf)

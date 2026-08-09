@@ -3,7 +3,7 @@ import type { AlgorithmIndexEntry } from "../../lib/content/schema.ts";
 import { EntryIcon } from "../atlas/EntryIcon.tsx";
 import { taskLabel } from "../../lib/content/taskLabels.ts";
 import { domainLabels } from "../algorithms/domainLabels.ts";
-import { DraftBadge, GraphChip, CardMeta, RelationLine } from "./AtlasCardParts.tsx";
+import { CardBadges, GraphChip, CardMeta, RelationLine } from "./AtlasCardParts.tsx";
 import { cardBody } from "./cardText.ts";
 
 interface AlgorithmCardProps {
@@ -27,7 +27,7 @@ function CompactCard({ entry }: { entry: AlgorithmIndexEntry }) {
             <div className="flex items-start gap-2.5">
                 <EntryIcon slug={slug} kind="algorithm" size={30} coverImage={fm.coverImage} />
                 <div className="min-w-0 flex-1">
-                    {fm.draft && <DraftBadge />}
+                    <CardBadges draft={fm.draft} date={fm.date} />
                     {/* Stretched-link title — ::after covers the whole card */}
                     <Link
                         to={`/algorithms/${slug}`}
@@ -61,7 +61,7 @@ function HorizontalCard({ entry }: { entry: AlgorithmIndexEntry }) {
             <div className="min-w-0 flex-1">
                 <div className="flex items-start gap-1.5">
                     <div className="min-w-0 flex-1">
-                        {fm.draft && <DraftBadge />}
+                        <CardBadges draft={fm.draft} date={fm.date} />
                         <Link
                             to={`/algorithms/${slug}`}
                             className="text-[14px] font-semibold -tracking-[0.1px] truncate group-hover:underline text-foreground after:absolute after:inset-0 after:content-['']"

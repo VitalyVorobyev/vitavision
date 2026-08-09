@@ -12,16 +12,15 @@ First learned per-pixel checkerboard X-corner detector: a three-convolutional-la
 
 - [[image-gradient]]
 
-## Related
+## Practice
 
-- [[chess-corners]]
-- [[chessboard-x-corner-detection]]
-- [[fast-corner-detector]]
-- [[rochade]]
+- **Compared with** — [[ccdn-checkerboard-detector]]
+- **Compared with** — [[ccs-camera-calibration]]
+  > Different scope: MATE is a detector, CCS is a full calibration pipeline; comparison is at the corner-detection level.
 
-## Compared with
+## Cross-paradigm
 
-- [[ccdn-checkerboard-detector]]
+- **Learned alternative of** — [[chess-corners]]
 
 ## Sources
 
@@ -30,3 +29,4 @@ First learned per-pixel checkerboard X-corner detector: a three-convolutional-la
 - Reference: [[chen2023-ccdn]]
 - Reference: [[placht2014-rochade]]
 - Reference: [[rufli2008-blurred]]
+- Reference: [[zhang2022-learning-based]]

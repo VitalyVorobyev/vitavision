@@ -12,16 +12,9 @@ Detect checkerboard X-corners by computing a four-quadrant corner likelihood at 
 
 - [[image-gradient]]
 
-## Related
+## Practice
 
-- [[chess-corners]]
-- [[chessboard-x-corner-detection]]
-- [[pyramidal-blur-aware-xcorner]]
-- [[rochade]]
-
-## Compared with
-
-- [[pyramidal-blur-aware-xcorner]]
+- **Compared with** — [[pyramidal-blur-aware-xcorner]]
 
 ## Sources
 

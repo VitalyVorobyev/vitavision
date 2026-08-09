@@ -12,14 +12,6 @@ A scalar response computed from the determinant of the image Hessian, negative a
 
 - [[image-gradient]]
 
-## Related
-
-- [[chess-corners]]
-- [[laureano-topological-chessboard]]
-- [[puzzleboard]]
-- [[rochade]]
-- [[structure-tensor]]
-
 ## Sources
 
 - Reference: [[chen2005-xcorner]]

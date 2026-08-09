@@ -138,11 +138,15 @@ category: calibration-targets
 difficulty: intermediate
 draft: true
 prerequisites: []
-related: [geiger-chessboard, ocpad]
-comparedWith: []
+relations:
+  - type: compared_with
+    target: ocpad
+    confidence: high
 sources:
   primary: hillen2023-enhanced
 ```
+
+(Dropped Geiger from the relation set: the method is detector-agnostic — "no requirement on which upstream detector produced" the input, per the Inputs section above — so the Geiger link is a citation, not a graph edge. `geiger2012-automatic` belongs in `sources.references` only, per the "UPDATE: geiger-chessboard" section below; CLAUDE.md's `feeds_into` explicitly excludes plain "A's output can feed B" pipeline data-flow with no genuine build-on.)
 
 Bullets for page sections:
 

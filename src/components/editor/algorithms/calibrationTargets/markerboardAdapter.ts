@@ -19,7 +19,7 @@ const initialConfig: MarkerBoardConfig = {
     ],
     expectedRows: 22,
     expectedCols: 22,
-    minCornerStrength: 0.2,
+    minCornerStrength: 15,
     completenessThreshold: 0.05,
     graphMinSpacingPix: 20,
     graphMaxSpacingPix: 160,
@@ -77,7 +77,13 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as MarkerBoardConfig;
         return detectMarkerboardWasm(pixels, width, height, {
-            chessCfg: { threshold_value: c.minCornerStrength },
+            // calib-targets 0.11 collapsed the tagged
+            // `threshold: { relative | absolute }` enum back to a plain f32,
+            // dropping relative mode entirely — the value is now an ABSOLUTE
+            // floor on the raw ChESS response (default_chess_config() ships 15).
+            // Passing the old `{ relative: v }` object throws
+            // "invalid type: JsValue(Object(...)), expected f32" at detect time.
+            chessCfg: { threshold: c.minCornerStrength },
             params: {
                 layout: {
                     rows: c.boardRows,

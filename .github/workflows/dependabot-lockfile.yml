@@ -1,0 +1,105 @@
+name: Dependabot lockfile
+
+# Dependabot edits package.json but does not reliably regenerate bun.lock, so its
+# PRs fail CI at `bun install --frozen-lockfile`. This workflow regenerates the
+# lockfile on the Dependabot branch and pushes it back.
+#
+# Why this needs a PAT rather than the default GITHUB_TOKEN — two independent
+# GitHub restrictions, either of which alone would break it:
+#
+#   1. For events triggered by Dependabot, GITHUB_TOKEN is downgraded to
+#      read-only regardless of the `permissions:` block below, so the push is
+#      rejected outright.
+#      https://docs.github.com/en/code-security/dependabot/troubleshooting-dependabot/troubleshooting-dependabot-on-github-actions#restrictions-when-dependabot-triggers-events
+#   2. A push authenticated with GITHUB_TOKEN does not trigger further workflow
+#      runs. Even with write access, CI would never re-run on the regenerated
+#      commit — the PR would keep showing the stale pre-regeneration failure.
+#      https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow#triggering-a-workflow-from-a-workflow
+#
+# A fine-grained PAT (or GitHub App token) avoids both: it may write Dependabot
+# branches, and its pushes raise a normal `pull_request` synchronize event so CI
+# runs against the fixed SHA.
+#
+# SETUP (one-time): create a fine-grained PAT scoped to this repository with
+# Contents: Read and write, then store it as a DEPENDABOT secret named
+# DEPENDABOT_LOCKFILE_TOKEN:
+#
+#     gh secret set DEPENDABOT_LOCKFILE_TOKEN --app dependabot
+#
+# It MUST be a Dependabot secret, not an Actions secret. This workflow is
+# triggered by a Dependabot push, and for Dependabot-triggered events the
+# `secrets` context exposes only Dependabot secrets — Actions secrets are not
+# available and would silently read as empty, leaving the job permanently
+# skipped.
+# https://docs.github.com/en/code-security/dependabot/troubleshooting-dependabot/troubleshooting-dependabot-on-github-actions
+#
+# A missing secret FAILS this workflow. It used to no-op with a warning and exit
+# 0, which made a permanently-skipped job indistinguishable from a working one in
+# the checks UI — the token was absent for a month and every run showed green.
+# The grace period is over: the token is configured and verified, so absence is
+# now a real misconfiguration and is reported as one.
+#
+# Trade-off: once a workflow pushes to a Dependabot branch, Dependabot treats the
+# PR as modified by someone else and stops auto-rebasing it. Accepted.
+
+on:
+  push:
+    branches: ['dependabot/**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependabot-lockfile-${{ github.ref }}
+  # NOT cancel-in-progress: this workflow pushes to the same ref that triggers
+  # it, so the push raises a second run in this group and cancelling in progress
+  # makes the run cancel *itself*. The work still completes — but the run is
+  # reported as "cancelled", which reads as a failure. The self-triggered run is
+  # cheap: the `github.actor` guard below skips it immediately.
+  cancel-in-progress: false
+
+jobs:
+  sync-lockfile:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Require push credentials
+        env:
+          TOKEN: ${{ secrets.DEPENDABOT_LOCKFILE_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::DEPENDABOT_LOCKFILE_TOKEN is not set — cannot regenerate the lockfile."
+            echo "The default GITHUB_TOKEN is read-only for Dependabot-triggered events"
+            echo "and its pushes do not retrigger CI, so a PAT is required."
+            echo "Create a fine-grained PAT (Contents: Read and write) and store it as a"
+            echo "DEPENDABOT secret — Actions secrets are NOT visible to this workflow:"
+            echo "    gh secret set DEPENDABOT_LOCKFILE_TOKEN --app dependabot"
+            exit 1
+          fi
+
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: ${{ github.ref_name }}
+          token: ${{ secrets.DEPENDABOT_LOCKFILE_TOKEN }}
+          persist-credentials: true
+
+      - uses: oven-sh/setup-bun@3d267786b128fe76c2f16a390aa2448b815359f3 # v2
+
+      # Deliberately not --frozen-lockfile: regenerating the lockfile is the point.
+      - name: Regenerate bun.lock
+        run: bun install
+
+      - name: Commit and push if changed
+        run: |
+          if git diff --quiet -- bun.lock; then
+            echo "bun.lock already in sync — nothing to do."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bun.lock
+          git commit -m "chore(deps): regenerate bun.lock"
+          # Authenticated with the PAT, so this raises a pull_request synchronize
+          # event and CI runs against the regenerated commit.
+          git push origin HEAD:"${GITHUB_REF_NAME}"

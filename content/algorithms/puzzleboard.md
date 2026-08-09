@@ -141,5 +141,5 @@ The response kernel is arithmetic-only per pixel; the decoder is four modular op
 
 # References
 
-1. P. Stelldinger, N. Schönherr, J. Biermann. *PuzzleBoard: A New Camera Calibration Pattern with Position Encoding.* arXiv:2409.20127, 2024. [arxiv.org/abs/2409.20127](https://arxiv.org/abs/2409.20127)
+1. P. Stelldinger, N. Schönherr, J. Biermann. *PuzzleBoard: A New Camera Calibration Pattern with Position Encoding.* arXiv 2409.20127, 2024. [arxiv.org/abs/2409.20127](https://arxiv.org/abs/2409.20127)
 2. C. Harris, M. J. Stephens. *A Combined Corner and Edge Detector.* Alvey Vision Conference, 1988. DOI: [10.5244/c.2.23](https://doi.org/10.5244/c.2.23)

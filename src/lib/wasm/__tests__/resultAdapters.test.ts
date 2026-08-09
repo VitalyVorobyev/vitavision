@@ -25,8 +25,6 @@ function mockChessCornersResult(cornerCount: number): ChessCornersResult {
             x_norm: (100 + i * 10) / 640,
             y_norm: (200 + i * 5) / 480,
             response: 0.5 + i * 0.1,
-            contrast: 0.3 + i * 0.02,
-            fit_rms: 0.05 + i * 0.01,
             axes: [
                 {
                     angle_rad: axis0Angle,
@@ -64,7 +62,7 @@ function mockChessCornersResult(cornerCount: number): ChessCornersResult {
             units: "pixels",
         },
         config: {
-            threshold_rel: 0.2,
+            threshold: 30,
             nms_radius: 2,
             broad_mode: false,
             min_cluster_size: 2,
@@ -110,8 +108,6 @@ describe("Chess Corners WASM result shape", () => {
             expect(corner.y_norm).toBeGreaterThanOrEqual(0);
             expect(corner.y_norm).toBeLessThanOrEqual(1);
             expect(typeof corner.response).toBe("number");
-            expect(typeof corner.contrast).toBe("number");
-            expect(typeof corner.fit_rms).toBe("number");
             expect(corner.axes).toHaveLength(2);
             expect(typeof corner.axes[0].angle_rad).toBe("number");
             expect(typeof corner.axes[0].direction.dx).toBe("number");

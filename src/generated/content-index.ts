@@ -99,7 +99,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "homography",
         "dlt-normalisation",
-        "ransac"
+        "ransac",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "tags": [
@@ -595,6 +596,50 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "fusiello-compact-rectification",
+    "frontmatter": {
+      "title": "Fusiello Compact Stereo Rectification",
+      "summary": "Calibrated Euclidean rectification that builds a new pair of projection matrices sharing a common orientation from the two known PPMs, yielding a per-image rectifying homography.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "stereo-rectification",
+        "pinhole-camera-model",
+        "pose-estimation",
+        "epipolar-geometry"
+      ],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "hartley-projective-rectification",
+          "confidence": "high",
+          "caution": "Requires known projection matrices; the 1999 uncalibrated methods need only F."
+        }
+      ],
+      "tags": [
+        "stereo",
+        "two-view-geometry",
+        "classical"
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "stereo-rectification"
+      ],
+      "sources": {
+        "primary": "fusiello2000-compact-rectification",
+        "references": [
+          "hartley1999-projective-rectification",
+          "loop1999-rectifying-homographies",
+          "pollefeys1999-polar-rectification"
+        ]
+      },
+      "date": "2026-07-19",
+      "year": 2000
+    }
+  },
+  {
     "slug": "gao-dual-homography-stitching",
     "frontmatter": {
       "title": "Gao Dual-Homography Stitching",
@@ -606,7 +651,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "prerequisites": [
         "homography",
         "ransac",
-        "svd-null-space"
+        "svd-null-space",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "quality": "historical",
@@ -921,6 +967,53 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "hartley-projective-rectification",
+    "frontmatter": {
+      "title": "Hartley Projective Rectification",
+      "summary": "Computes a rectifying homography pair from the fundamental matrix alone, sending the epipole to infinity with a quasi-affine perspectivity and fixing the matching transform by least-squares disparity minimisation.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry",
+        "homography"
+      ],
+      "relations": [
+        {
+          "type": "parallel_foundation_with",
+          "target": "loop-zhang-rectification",
+          "confidence": "high",
+          "caution": "Loop-Zhang minimises rectification distortion explicitly; Hartley minimises disparity."
+        },
+        {
+          "type": "compared_with",
+          "target": "pollefeys-polar-rectification",
+          "confidence": "high",
+          "caution": "Hartley's own remedy for an epipole inside the view window is to shrink the window; polar rectification covers that forward-motion case without cropping."
+        }
+      ],
+      "tags": [
+        "stereo",
+        "two-view-geometry",
+        "classical"
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "stereo-rectification"
+      ],
+      "sources": {
+        "primary": "hartley1999-projective-rectification",
+        "references": [
+          "longuet-higgins1981-eight-point"
+        ]
+      },
+      "date": "2026-07-19",
+      "year": 1999
+    }
+  },
+  {
     "slug": "hog-descriptor",
     "frontmatter": {
       "title": "HOG: Histograms of Oriented Gradients",
@@ -1051,7 +1144,8 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "homography",
-        "ransac"
+        "ransac",
+        "spatially-varying-image-stitching"
       ],
       "failureModes": [],
       "relations": [
@@ -1155,6 +1249,44 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       },
       "date": "2026-05-10",
       "year": 1981
+    }
+  },
+  {
+    "slug": "loop-zhang-rectification",
+    "frontmatter": {
+      "title": "Loop-Zhang Rectifying Homographies",
+      "summary": "Computes a rectifying homography pair from a known fundamental matrix by factoring each homography as shearing × similarity × projective, choosing the projective component to minimize image distortion.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry",
+        "homography"
+      ],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "pollefeys-polar-rectification",
+          "confidence": "high",
+          "caution": "The decomposition still sends the epipole to infinity, so an epipole inside the image forces cropping; polar rectification avoids it."
+        }
+      ],
+      "tags": [
+        "stereo",
+        "two-view-geometry",
+        "classical"
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "stereo-rectification"
+      ],
+      "sources": {
+        "primary": "loop1999-rectifying-homographies"
+      },
+      "date": "2026-07-19",
+      "year": 1999
     }
   },
   {
@@ -1337,6 +1469,38 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       },
       "date": "2026-05-09",
       "year": 2011
+    }
+  },
+  {
+    "slug": "pollefeys-polar-rectification",
+    "frontmatter": {
+      "title": "Pollefeys Polar Rectification",
+      "summary": "Rectification by polar reparametrisation around the epipole, requiring only the oriented fundamental matrix and remaining bounded even when the epipole lies inside the image.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "stereo-rectification",
+        "epipolar-geometry"
+      ],
+      "tags": [
+        "stereo",
+        "two-view-geometry",
+        "classical"
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "stereo-rectification"
+      ],
+      "sources": {
+        "primary": "pollefeys1999-polar-rectification",
+        "references": [
+          "longuet-higgins1981-eight-point"
+        ]
+      },
+      "date": "2026-07-19",
+      "year": 1999
     }
   },
   {
@@ -2086,6 +2250,86 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "bisenet",
+    "frontmatter": {
+      "title": "BiSeNet",
+      "summary": "Two-branch (bilateral) CNN for real-time semantic segmentation: a wide shallow path preserves spatial detail while a deep narrow path with global pooling supplies receptive field, merged by a learned fusion module. V1 (2018) pairs a Spatial Path and a Context Path (ARM + FFM) on an ImageNet-pretrained backbone; V2 (2020) redesigns it with a Detail Branch, a from-scratch Semantic Branch of Gather-and-Expansion layers, Bilateral Guided Aggregation, and a training-only Booster — 72.6% mIoU at 156 FPS on Cityscapes test (V2, Table 7).",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "medium",
+          "caution": "Both target spatial-detail loss in dense prediction — HRNet via a maintained high-resolution branch, BiSeNet via the Spatial/Detail Path."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "params": "5.8M–49.0M (V1 variants)",
+      "flops": "2.9–10.8 GFLOPs (V1 @ 640×360)",
+      "sources": {
+        "primary": "yu2018-bisenet",
+        "references": [
+          "yu2020-bisenet",
+          "long2015-fcn",
+          "he2016-resnet"
+        ],
+        "notes": "V1 (yu2018-bisenet): Spatial Path = 3 × (Conv stride-2 → BN → ReLU),\noutput 1/8 (§3.1). Context Path = lightweight backbone (Xception39 /\nResNet18 / ResNet101) + global average pooling + incomplete U-shape\n(§3.2). ARM = GAP → 1×1 conv → BN → sigmoid → channel reweight (§3.2).\nFFM = concat → BN → GAP → 1×1 conv → ReLU → 1×1 conv → sigmoid → reweight\n→ residual add (§3.3, SE-style). Joint loss (Eq. 2):\n$L(X;W)=l_p(X;W)+\\alpha\\sum_{i=2}^{K} l_i(X_i;W)$, $K=3$, $\\alpha=1$.\nHeadline (Table 6): Xception39 68.4% / 105.8 FPS, Res18 74.7% / 65.5 FPS\non Cityscapes test (Titan XP, 1536×768); Res101 78.9% test (Table 7).\nComplexity (Table 4, @640×360): Xception39 5.8M / 2.9 GFLOPs; Res18\n49.0M / 10.8 GFLOPs.\n\nV2 (yu2020-bisenet): Detail Branch (channels 64/64/128, 1/8, no\nresiduals) + Semantic Branch (Stem Block, GE layers, Context Embedding;\nchannel ratio λ=1/4; → 1/32). GE layer = 3×3 gather-expand → 3×3 DWconv →\n1×1 proj, ε=6 (Table 3c). BGA = bidirectional gating: Detail ⊗\nσ(↑Semantic); Semantic ⊗ APool(Detail); summed (§4.3, Fig. 6). Booster =\ntraining-only auxiliary seg-heads (§4.4). Trains from scratch (kaiming\nnormal). Headline (Table 7): BiSeNetV2 72.6% / 156 FPS, BiSeNetV2-L\n(α=2.0, d=3.0) 75.3% / 47.3 FPS on Cityscapes test (GTX 1080 Ti). Val\nablation (Table 2): +BGA 69.67%, +Booster 73.19%; BGA +1.07 mIoU over\nconcatenation. Complexity 21.15 GFLOPs at λ=1/4 (Table 3a).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/yu-changqian/TorchSeg",
+          "commit": "62eeb159aee77972048d9d7688a28249d3c56735",
+          "framework": "pytorch",
+          "license": "MIT"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/CoinCheung/BiSeNet",
+          "commit": "6b4b67a8e3eb0cc23b3d7a94843a7c3c11dedca8",
+          "framework": "pytorch",
+          "license": "MIT"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/open-mmlab/mmsegmentation",
+          "commit": "b040e147adfa027bbc071b624bedf0ae84dfc922",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-28",
+      "year": 2018
+    }
+  },
+  {
     "slug": "ccdn-checkerboard-detector",
     "frontmatter": {
       "title": "CCDN",
@@ -2219,6 +2463,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "unet-segmentation",
           "confidence": "high",
           "caution": "Same task, different mechanism — atrous backbone + multi-scale head + dense CRF vs symmetric encoder-decoder with skip concatenation."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "medium",
+          "caution": "LR-ASPP is a lite, reduced reuse of DeepLab's ASPP as MobileNetV3's segmentation head."
         }
       ],
       "tags": [
@@ -2257,6 +2507,464 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-11",
       "year": 2018
+    }
+  },
+  {
+    "slug": "depth-anything",
+    "frontmatter": {
+      "title": "Depth Anything",
+      "summary": "A monocular relative-depth foundation model that scales training to 62M unlabeled images via a teacher pseudo-labeling data engine, a CutMix challenge for the student, and a DINOv2 semantic-feature alignment loss.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "vit"
+      ],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "depth-anything-v2",
+          "confidence": "high"
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "depth",
+      "arch_family": "vit",
+      "params": "ViT-S 24.8M / ViT-B 97.5M / ViT-L 335.3M",
+      "sources": {
+        "primary": "yang2024-depth-anything",
+        "references": [
+          "ranftl2019-midas",
+          "oquab2023-dinov2"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/LiheYoung/Depth-Anything",
+          "commit": "1d03336771fe09c5398ffdd211441e33941a97dc",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2024
+    }
+  },
+  {
+    "slug": "depth-anything-3",
+    "frontmatter": {
+      "title": "Depth Anything 3",
+      "summary": "A single plain-transformer model that predicts spatially consistent geometry — depth plus camera rays — from one to many images, with or without known poses, distilled from Depth Anything 2 via a unified depth-ray target.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "feed-forward-3d-reconstruction",
+        "pose-estimation",
+        "epipolar-geometry",
+        "pinhole-camera-model"
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction",
+        "pose-estimation"
+      ],
+      "domain": "geometry",
+      "arch_family": "vit",
+      "params": "Plain DINO ViT backbone; Giant variant ~1.13B",
+      "sources": {
+        "primary": "lin2025-depth-anything-3",
+        "references": [
+          "yang2024-depth-anything-v2",
+          "oquab2023-dinov2",
+          "wang2025-vggt",
+          "wang2023-dust3r"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/ByteDance-Seed/Depth-Anything-3",
+          "commit": "41736238f5bced4debf3f2a12375d2466874866d",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2025
+    }
+  },
+  {
+    "slug": "depth-anything-v2",
+    "frontmatter": {
+      "title": "Depth Anything V2",
+      "summary": "A monocular depth foundation model that trains its teacher purely on synthetic images for label precision, then distills to a student over 62M pseudo-labeled real images, sharpening detail over V1 while staying far faster than diffusion-based depth.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "vit"
+      ],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "depth-anything-3",
+          "confidence": "high",
+          "caution": "DA3 generalizes DA2 to any-view geometry and surpasses it on monocular depth; DA2 is also DA3's distillation teacher."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "depth",
+      "arch_family": "vit",
+      "params": "ViT-S 25M / ViT-L 335M / ViT-G 1.3B (teacher)",
+      "sources": {
+        "primary": "yang2024-depth-anything-v2",
+        "references": [
+          "yang2024-depth-anything",
+          "ranftl2019-midas",
+          "oquab2023-dinov2"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/DepthAnything/Depth-Anything-V2",
+          "commit": "a561b849ebae10a6f5ef49e26c83cbbcd36c71bf",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_license": "CC-BY-NC-4.0 (ViT-B/L/G); Apache-2.0 (ViT-S)"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2024
+    }
+  },
+  {
+    "slug": "detr",
+    "frontmatter": {
+      "title": "DETR",
+      "summary": "End-to-end object detector that recasts detection as direct set prediction — CNN backbone (ResNet-50/101) extracts $H/32 \\times W/32$ feature map; transformer encoder-decoder with 6+6 layers and $N=100$ learned object queries outputs (class, box) pairs; bipartite-matching loss via Hungarian algorithm eliminates anchor boxes, region proposals, and NMS. Comparable COCO AP to Faster R-CNN at simpler pipeline; better large-object AP, worse small-object AP, and ~10× slower convergence (300+ epochs).",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "faster-rcnn",
+          "confidence": "high",
+          "caution": "DETR vs Faster R-CNN is the headline detection comparison; DETR removes hand-designed RPN + anchor boxes + NMS in favour of bipartite matching + transformer decoder at comparable COCO AP."
+        },
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM's mask decoder two-way cross-attention is inspired by DETR's transformer decoder; SAM 3's concept detector is explicitly DETR-based."
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "high",
+          "caution": "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "detection",
+      "arch_family": "hybrid",
+      "params": "41M (DETR R50), 60M (DETR R101)",
+      "flops": "86 GFLOPs (DETR R50), 152 GFLOPs (DETR R101)",
+      "sources": {
+        "primary": "carion2020-detr",
+        "references": [
+          "he2016-resnet"
+        ],
+        "notes": "Architecture (§3.2): CNN backbone (ResNet-50 or -101) extracts feature\nmap $f \\in \\mathbb{R}^{C \\times H/32 \\times W/32}$ with $C=2048$. 1×1\nconv projects to $d=256$ channels; flatten to $HW/32^2$ tokens; add\nfixed 2D sinusoidal positional encoding. Transformer encoder: 6\nlayers of standard multi-head self-attention (8 heads, $d_\\text{ff}=2048$).\nTransformer decoder: 6 layers, takes $N=100$ learnable **object\nqueries** as positional embeddings; cross-attends to encoder\noutput; non-autoregressive (all $N$ queries decoded in parallel).\nTwo prediction heads per query: 3-layer MLP for box (cx, cy, w, h\nrelative to image); single linear for class (over $K+1$ classes\nincluding \"no object\").\n\nSet-prediction loss (Eq. 1-2, §3.1):\n$$\\hat{\\sigma} = \\arg\\min_{\\sigma \\in \\mathfrak{S}_N} \\sum_i \\mathcal{L}_\\text{match}(y_i, \\hat{y}_{\\sigma(i)})$$\nHungarian algorithm solves the assignment in $O(N^3)$. Matching\ncost combines class probability + box L1 + box GIoU. Hungarian\nloss applied per matched pair: $-\\log \\hat{p}_{\\hat{\\sigma}(i)}(c_i)\n+ \\mathbb{1}_{c_i \\neq \\emptyset}[\\lambda_\\text{L1}\\|b_i - \\hat{b}_{\\hat{\\sigma}(i)}\\|_1\n+ \\lambda_\\text{GIoU}\\mathcal{L}_\\text{GIoU}(b_i, \\hat{b}_{\\hat{\\sigma}(i)})]$.\nNo-object class weight ×0.1 for class imbalance.\n\nTraining (§4.1): COCO 2017 detection (118k train, 5k val).\nAdamW, transformer LR $10^{-4}$, backbone LR $10^{-5}$, weight\ndecay $10^{-4}$, batch size 64 across 16 V100s, 300-epoch schedule\n(or 500 for the \"long\" config). LR drops ×0.1 at epoch 200 (300\nschedule) or 400 (500 schedule). Augmentation: random horizontal\nflip, random scale, random crop (shortest side 480-800, longest\n1333). Dropout 0.1 in transformer.\n\nHeadline benchmarks (Table 1, §4.2):\n- DETR (R50): 42.0 AP, 20.5 AP_S, 45.8 AP_M, 61.1 AP_L; 41M params,\n  86 GFLOPs, 28 FPS.\n- DETR-DC5 (R50, dilated C5 stride-1): 43.3 AP, 22.5 AP_S; 41M\n  params, 187 GFLOPs, 12 FPS.\n- DETR (R101): 43.5 AP; 60M params.\n- DETR-DC5 (R101): 44.9 AP; 60M params.\n- Faster R-CNN-R50-FPN (3× schedule): 42.0 AP, 26.6 AP_S, 45.4\n  AP_M, 53.4 AP_L; 42M params, 180 GFLOPs.\n- Faster R-CNN-R101-FPN (3× schedule): 44.0 AP, 27.2 AP_S.\nDETR matches Faster R-CNN on overall AP at lower FLOPs; large-object\nAP_L 61.1 vs 53.4 = +7.7 (large-object advantage from global\nattention); small-object AP_S 20.5 vs 26.6 = −6.1 (small-object\ndisadvantage from the coarse single-scale feature map).\n\nConvergence: DETR 300 epochs vs Faster R-CNN 12-36 epochs — 10-25×\nslower convergence (§4.1, Fig. 4). Later work (Deformable DETR)\nreduces this dramatically.\n\nPanoptic segmentation extension (§5): per-query mask head produces\nbinary masks; argmax across queries gives panoptic output. 45.1\nPQ on COCO panoptic val.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/detr",
+          "commit": "29901c51d7fe8712168b8d0d64351170bc0f83e0",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2020
+    }
+  },
+  {
+    "slug": "dinov2",
+    "frontmatter": {
+      "title": "DINOv2",
+      "summary": "A self-supervised ViT trained on a curated 142M-image dataset that yields general-purpose visual features usable frozen — via kNN or linear probes — for classification, dense depth and segmentation without finetuning.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "vit",
+        "mae"
+      ],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "depth-anything",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-v2",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-3",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "vggt",
+          "confidence": "high"
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "arch_family": "vit",
+      "params": "ViT-S/B/L/g; ViT-g ~1.1B",
+      "sources": {
+        "primary": "oquab2023-dinov2",
+        "references": [
+          "dosovitskiy2020-vit",
+          "he2021-mae"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/dinov2",
+          "commit": "7764ea0f912e53c92e82eb78a2a1631e92725fc8",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2023
+    }
+  },
+  {
+    "slug": "dust3r",
+    "frontmatter": {
+      "title": "DUSt3R",
+      "summary": "A feed-forward network that regresses two dense pointmaps in a shared coordinate frame from an uncalibrated, unposed image pair, jointly recovering correspondence, relative pose, intrinsics and depth without prior calibration.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "epipolar-geometry",
+        "pose-estimation",
+        "bundle-adjustment",
+        "pinhole-camera-model",
+        "feed-forward-3d-reconstruction"
+      ],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "mast3r",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "vggt",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-3",
+          "confidence": "medium",
+          "caution": "DA3 inherits DUSt3R's pose-free feed-forward pointmap paradigm but is a distinct any-view model."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "two-view-geometry",
+        "pose-estimation"
+      ],
+      "domain": "geometry",
+      "arch_family": "vit",
+      "params": "ViT-Large encoder + ViT-Base decoders (CroCo-pretrained)",
+      "sources": {
+        "primary": "wang2023-dust3r"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/naver/dust3r",
+          "commit": "4c24a6ebf04809f2cfe59915e51779c8984aaa40",
+          "framework": "pytorch",
+          "license": "CC-BY-NC-SA-4.0",
+          "weights_license": "CC-BY-NC-SA-4.0"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2023
+    }
+  },
+  {
+    "slug": "efficientad",
+    "frontmatter": {
+      "title": "EfficientAD",
+      "summary": "Millisecond-latency one-class anomaly detection combining a loss-induced-asymmetric student-teacher branch for structural defects with a feature-space autoencoder branch for logical defects, running 2.2 ms (S) / 4.5 ms (M) per image on an RTX A6000.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction",
+        "real-time"
+      ],
+      "domain": "anomaly-detection",
+      "tasks": [
+        "anomaly-detection",
+        "anomaly-segmentation"
+      ],
+      "arch_family": "hybrid",
+      "params": "8M (EfficientAD-S) / 21M (EfficientAD-M)",
+      "flops": "76 GFLOPs (S) / 235 GFLOPs (M) @ 256×256",
+      "sources": {
+        "primary": "batzner2023-efficientad",
+        "references": [
+          "bergmann2020-uninformed-students",
+          "rudolph2023-ast",
+          "bergmann2022-mvtec-loco",
+          "roth2022-patchcore"
+        ],
+        "notes": "Headline accuracy figures are the clean-protocol ones (98.8 %\nEfficientAD-S / 99.1 % EfficientAD-M on MVTec AD, Table 2). The paper's\n99.8 % figure comes from the early-stopping protocol it criticises in\nSimpleNet and is not comparable to its own tables; it appears on the\npage only with that caveat attached.\n\nThe autoencoder branch is NOT a U-Net. §3.3 describes \"a standard\nconvolutional autoencoder comprising strided convolutions in the\nencoder and bilinear upsampling in the decoder\", and its layer table\nhas no skip connections. The U-Net attribution in the paper belongs to\nthe GCAD baseline from MVTec LOCO.\n\nThe \"24x latency reduction vs AST\" claim is attributed to this paper's\nown conclusion, not presented as independently verified: AST reports no\nend-to-end throughput of its own, only student-only inference on a\ndifferent GPU (rudolph2023-ast note, Table 6).\n\nNo relations authored here. The compared_with edge to patchcore is\nauthored on the patchcore page (symmetric, one side only); the\nextended_by edge is authored on uninformed-students; the feeds_into\nedge is authored on resnet.\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/nelson1425/EfficientAD",
+          "commit": "fcab5146f84ae17597044ad5ddf1656ccf805401",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/open-edge-platform/anomalib",
+          "commit": "091ca6aca92c8d0e416394f79e52f5a3cea3db73",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-08-06",
+      "year": 2023
+    }
+  },
+  {
+    "slug": "fast-scnn",
+    "frontmatter": {
+      "title": "Fast-SCNN",
+      "summary": "Real-time semantic segmentation CNN whose shared shallow 'Learning to Downsample' prefix feeds both a deep low-resolution global-feature branch and a high-resolution detail skip, merged by a feature-fusion module — eliminating the duplicate early downsampling that two-branch segmenters pay. Built from depthwise-separable and MobileNetV2 inverted-residual blocks; ~1.11M parameters; 68.0% mIoU at 123.5 FPS on Cityscapes test (1024×2048, Titan Xp, Table 5).",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "medium"
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "medium"
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "params": "1.11M",
+      "sources": {
+        "primary": "poudel2019-fast-scnn",
+        "references": [
+          "yu2018-bisenet",
+          "long2015-fcn"
+        ],
+        "notes": "Learning to Downsample (LtD, §3.2.1): Conv2d 3×3 s2 (32 ch) → DSConv 3×3\ns2 (48 ch) → DSConv 3×3 s2 (64 ch); all BN+ReLU; output 1/8. Output shared\nas detail skip AND Global Feature Extractor input (§3.3.1). GFE (§3.2.2,\nTable 1): nine MobileNetV2 inverted-residual bottlenecks, expansion t=6 —\n3×(→64, init s2), 3×(→96, init s2), 3×(→128, s1) → 1/32 — then Pyramid\nPooling Module. FFM (Table 3, §3.2.3): low-res branch = bilinear upsample\n×4 → dilated DWConv (dilation = upsample factor = 4, ReLU) → 1×1 conv (no\nnonlinearity); skip branch = 1×1 conv (no nonlinearity); add → ReLU;\n128 ch at 1/8. Classifier: 2× DSConv (128) → 1×1 Conv (19) → upsample ×8.\nBottleneck (Table 2): 1×1 expand to tc → 3×3/s DWConv → 1×1 project to c'\n(no nonlinearity). Training (§4.1): SGD momentum 0.9, batch 12, poly LR\nbase 0.045 power 0.9, ℓ2 0.00004 (non-depthwise), ~1000 epochs from\nscratch, aux CE heads on LtD+GFE weight 0.4, resize 0.5–2. Results:\n68.0% test mIoU / 84.7% category, 1.11M params (Table 4); 123.5 FPS @\n1024×2048, 285.8 @ 512×1024, 51.9% @ 256×512 (Tables 5, 7); skip ablation\n69.22%→64.30% (§4.2); +ImageNet 68.62%→69.15% (+0.53 pp, Table 6).\nBiSeNet baseline: 71.4% test, 5.8M params, 57.3 FPS (Tables 4, 5).\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/Tramac/Fast-SCNN-pytorch",
+          "commit": "0638517d359ae1664a27dfb2cd1780a40a06c465",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/open-mmlab/mmsegmentation",
+          "commit": "b040e147adfa027bbc071b624bedf0ae84dfc922",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-28",
+      "year": 2019
     }
   },
   {
@@ -2363,6 +3071,18 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "mask-rcnn",
           "confidence": "high",
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
+        },
+        {
+          "type": "feeds_into",
+          "target": "bisenet",
+          "confidence": "medium",
+          "caution": "BiSeNet's parallel branches both produce fractional-stride dense feature maps feeding a pixel-wise head, following the FCN framing; FCN-32s is its ablation baseline and FCN-8s a benchmark comparison."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "caution": "Fast-SCNN frames itself as a special case of an FCN encoder-decoder with a single skip connection (§3.3.2); its classifier emits dense per-pixel logits upsampled to full resolution following the FCN template."
         }
       ],
       "tags": [
@@ -2400,6 +3120,58 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-10",
       "year": 2015
+    }
+  },
+  {
+    "slug": "focalclick",
+    "frontmatter": {
+      "title": "FocalClick",
+      "summary": "Practical click-based interactive segmentation that runs each click as a small local-crop forward pass (Segmentor on a Target Crop, Refiner on a Focus Crop) and composits results back via Progressive Merge — sub-300 ms per click on CPU with first-class support for refining preexisting masks.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "medium",
+          "caution": "FocalClick replaces interactive click-based annotation workflows; not a drop-in for energy-min/graph-cut on seeded segmentation generally."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "encoder-decoder",
+      "params": "4.22M Segmentor + 0.011M Refiner (hrnet18s-S2)",
+      "flops": "3.66 + 0.16 G FLOPs @ 256×256 (hrnet18s-S2)",
+      "sources": {
+        "primary": "chen2022-focalclick",
+        "references": [
+          "sofiiuk2021-ritm",
+          "sun2019-hrnet"
+        ],
+        "notes": "Two contributions (Sec. 1, 3.1): (a) Focus View pipeline — Target Crop\n(TC) at $r_{TC}=1.4$ for the Segmentor, Focus Crop (FC) at $r_{FC}=1.4$\naround the largest connected component of the prediction-vs-prior XOR\nfor the Refiner; (b) Progressive Merge (PM) — morphologically composits\nonly the largest connected update region containing the new click,\nleaving the prior mask elsewhere intact.\n\nRefiner output (Eq. 1, Sec. 3.1): $M_r = \\sigma(M_b)\\,M_d +\n(1-\\sigma(M_b))\\,M_l$ where $M_b$ is a predicted boundary map, $M_d$ a\ndetail map, $M_l$ the RoiAligned coarse logits. Loss (Eq. 2): $L =\nL_{bce} + L_{nfl} + L_{bnfl}$ — BCE on the boundary head, NFL (from\nRITM) on the coarse head, boundary-weighted NFL with weight 1.5 on the\nrefined head.\n\nBackbone variants (Table 3): HRNet18s+OCR, HRNet32+OCR, SegFormer-B0,\nSegFormer-B3; input resolutions S1 = 128×128 and S2 = 256×256.\nClick encoding: binary disk radius 2 px (Fig. 3 caption).\n\nHeadline numbers — DAVIS-585 from initial mask (Table 4):\nhrnet18s-S1 NoC85=2.72, NoC90=3.82; B3-S2 NoC85=2.00, NoC90=2.76;\nRITM-hrnet18s baseline NoC85=3.71, NoC90=5.96. Standard DAVIS from\nscratch (Table 2, COCO+LVIS): hrnet18s-S2 NoC85=3.90, NoC90=5.25;\nsegformerB3-S2 NoC85=3.61, NoC90=4.90.\n\nEfficiency (Table 3, 2.4 GHz 4×Intel Core i5): B0-S1 total 0.43 + 0.17\nG FLOPs (15× lower than the lightest RITM variant at 8.96 G);\nhrnet18s-S2 213 ms Segmentor + 51 ms Refiner; B3-S2 634 ms Segmentor +\n72 ms Refiner. Progressive Merge activates after click 10 when\nannotating from scratch.\n\nTraining (Sec. 4.1): Adam $\\beta_1=0.9$, $\\beta_2=0.999$, lr\n$5\\times10^{-4}$, decay ×0.1 at epochs 190 and 220, 230 epochs total,\nbatch 32, 2×V100 ~24 h; iterative click simulation following RITM with\nmax 24 clicks and probability decay 0.8; Segmentor input 256×256\ncrops, Focus Crop simulated as 0.2–0.5 object-length local crops with\nrandom 1.1–2.0 expansion.\n\nDAVIS-585 benchmark construction (Sec. 3.2): 30 videos × 10 frames =\n300 base masks → 585 corrupted samples after filtering masks < 300 px;\ninitial-mask IoU ∈ [75%, 85%]; error-type probabilities boundary 0.65,\nexternal false-positive 0.25, internal true-negative 0.10.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/XavierCHEN34/ClickSEG",
+          "commit": "0c801cfa5f67f066fdaab28ff8f3afde1cb71ace",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-28",
+      "year": 2022
     }
   },
   {
@@ -2476,6 +3248,70 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-12",
       "year": 2015
+    }
+  },
+  {
+    "slug": "hrnet",
+    "frontmatter": {
+      "title": "HRNet",
+      "summary": "CNN backbone family for dense prediction that maintains a high-resolution branch throughout the network and runs four parallel multi-resolution streams ($C, 2C, 4C, 8C$ channels) with eight repeated cross-resolution fusions; V1 uses the high-resolution stream only (pose heatmaps), V2 upsamples and concatenates all four streams for per-pixel labelling (semantic segmentation, face landmarks), and V2p adds an FPN-style multi-scale output for object detection and instance segmentation.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 11,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "ritm-interactive-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "FocalClick uses HRNet18s+OCR and HRNet32+OCR as the Segmentor backbone in three of its six published variants (hrnet18s-S1/S2, hrnet32-S2); the small-crop Segmentor input (128×128 or 256×256) makes HRNet practical for CPU deployment."
+        },
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "medium",
+          "caution": "ResNet is the dominant backbone for dense prediction; HRNet trades higher activation memory for better keypoint/segmentation accuracy via parallel high-resolution streams."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction",
+        "keypoint-detection"
+      ],
+      "domain": "features",
+      "arch_family": "cnn",
+      "params": "28.5M (W32), 63.6M (W48) — Table 1",
+      "flops": "7.10 GFLOPs (W32), 14.6 GFLOPs (W48) @ 256×192",
+      "sources": {
+        "primary": "sun2019-hrnet",
+        "references": [
+          "he2016-resnet",
+          "sun2019-hrnetv2",
+          "wang2020-hrnet-journal"
+        ],
+        "notes": "Four parallel resolution streams maintained throughout the network at\n$1\\times, \\frac{1}{2}\\times, \\frac{1}{4}\\times, \\frac{1}{8}\\times$ of\npost-stem resolution (¼ of input). Channel widths $C, 2C, 4C, 8C$ —\nW32 uses $C{=}32$ (32/64/128/256); W48 uses $C{=}48$ (48/96/192/384)\n(§3, Table 1 ablations). Exchange unit (§3): strided 3×3 for\ndownsampling, 1×1 conv + nearest-neighbour upsample for upsampling,\nidentity for same-resolution paths; each output branch is the sum of\nall transformed input branches: $Y_k = \\sum_i a(X_i, k)$. Total\narchitecture: Stage 1 = 4 residual bottleneck units (width 64), then\n1 exchange block; Stage 2 = 1 exchange block; Stage 3 = 4 blocks;\nStage 4 = 3 blocks; 8 cross-resolution fusions total. Head: 1×1 conv\non the high-resolution branch → K keypoint heatmaps; MSE loss against\n2D Gaussian GT with σ=1 px. Headline COCO val keypoint AP\n(256×192 input, ImageNet-pretrained): W32 74.4 AP / 28.5M / 7.10\nGFLOPs; W48 75.1 AP / 63.6M / 14.6 GFLOPs (Table 1). COCO test-dev:\nW48 75.5 AP; W48 + extra data 77.0 AP (Table 2). MPII PCKh@0.5: W32\n92.3, W48 92.3 (Table 3/4). Fusion ablation: 1 fusion → 70.8 AP,\n3 → 71.9, 8 (full) → 73.4 AP (W32 from scratch, Table 6).\nPretraining: ImageNet pretraining adds +1.0 AP on COCO val for W32\n(Table 1, 73.4 → 74.4). Efficiency: HRNet-W32 outperforms\nSimpleBaseline-ResNet152 by 1.5 AP at 384×288 input at ~45% of the\nGFLOPs (Table 1, §4.1).\n\nFamily extension grounded in sun2019-hrnetv2 + wang2020-hrnet-journal:\nHRNetV1 head — high-resolution stream output only (pose use). HRNetV2\nhead — upsample all four streams to ¼-resolution, concatenate (15C\nchannels for W32), 1×1 conv → per-pixel labels (sun2019-hrnetv2 §3).\nHRNetV2p head — V2 output downsampled to 5 pyramid levels (¼ to 1/64)\nfor FPN-style detection (sun2019-hrnetv2 §3, Mask R-CNN / Faster\nR-CNN backbone). ImageNet classification head (HRNet-C, wang2020-\nhrnet-journal Appendix B, Table XV): cascaded hierarchical merge of\nthe four streams, then global average pooling + linear. Width\nnomenclature for classification variants differs from dense-\nprediction variants (W18/W30/W40/W44/W76/W96 for classification;\nW18/W32/W40/W48 for dense). Headline benchmarks across the family:\nCityscapes val mIoU (HRNetV2-W48 81.1, sun2019-hrnetv2 Table); COCO\nobject detection AP with HRNetV2p (sun2019-hrnetv2 §4); ImageNet\nclassification top-1 advantage over ResNet at matched FLOPs is small\n(≤1.5 pp), confirming HRNet is a dense-prediction backbone first\n(wang2020-hrnet-journal Table XV).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/leoxiaobin/deep-high-resolution-net.pytorch",
+          "commit": "6f69e4676ad8d43d0d61b64b1b9726f0c369e7b1",
+          "framework": "pytorch",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2019
     }
   },
   {
@@ -2590,6 +3426,58 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "mae",
+    "frontmatter": {
+      "title": "MAE",
+      "summary": "Masked Autoencoder — self-supervised pretraining for Vision Transformers: randomly mask 75 % of input patches, feed the visible 25 % through a ViT encoder, then run a lightweight ViT decoder over the full sequence (visible + shared learnable mask tokens) to reconstruct the masked patches' raw pixel values under MSE on per-patch-normalised targets. The asymmetric encoder-decoder design (encoder operates only on visible tokens, decoder is much smaller and discarded after pretraining) gives a 2.8–4.1× pretraining speedup vs full-sequence masked-ViT baselines and reaches 87.8 % ImageNet-1k top-1 with ViT-H fine-tuning.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM v1's ViT-H image encoder is MAE-pretrained; SAM 2's Hiera (hierarchical ViT) is also MAE-pretrained. MAE is the SSL recipe that makes the SAM-family foundation segmenters' large encoders feasible."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "vit",
+      "sources": {
+        "primary": "he2021-mae",
+        "references": [
+          "dosovitskiy2020-vit",
+          "he2016-resnet"
+        ],
+        "notes": "Asymmetric masked autoencoder for ViT (§3, Fig. 1).\nStep 1: split image into ViT patches (224×224 → 14×14=196 patches at\nP=16). Step 2: **uniformly sample 75% of patches to mask** (Sec. 3\n\"Masking\" — high masking ratio is critical for visual SSL because\nimage patches are highly redundant; NLP's 15% would give a too-easy\ntask). Step 3: **encoder operates only on visible 25%** — the full\nViT encoder runs on the unmasked 25% of patches (49 tokens at base\nconfig), saving 3-4× encoder compute vs full-sequence approaches.\nStep 4: **decoder operates on all positions** — encoded visible\ntokens are concatenated with a single shared learnable mask token\n(each with its positional encoding) and fed to a lightweight ViT\ndecoder. Step 5: **reconstruction loss** — per-patch MSE on\nmasked patches only (visible patches contribute no loss). Pixel\ntargets are normalised per-patch (subtract mean, divide by std)\nbefore MSE (Sec. 3 \"Reconstruction target\"); without per-patch\nnormalisation, transfer accuracy drops 0.5 top-1.\n\nLoss: $\\mathcal{L} = \\frac{1}{|\\mathcal{M}|}\\sum_{i \\in \\mathcal{M}} \\|\\hat{x}_i - x_i^\\text{norm}\\|_2^2$\nwhere $\\mathcal{M}$ is the masked-patch index set and $x_i^\\text{norm}$\nis the per-patch-normalised target.\n\nArchitecture details (Sec. 3 + Table 8 ablations):\n- Encoder: standard ViT-B / ViT-L / ViT-H (12 / 24 / 32 layers).\n- Decoder: 8 layers, width 512 (much smaller than encoder, <10%\n  per-token FLOPs of the encoder).\n- Mask token: a single learnable [MASK] embedding shared across\n  all masked positions, with position embedding added.\n\nTraining (Sec. 4): ImageNet-1k unlabeled (no extra data), 1600\nepochs the long pretraining schedule (Sec. 4 \"Pretraining\"); AdamW,\nbatch 4096, base LR 1.5e-4 (linearly scaled with batch size, cosine\ndecay, 40-epoch warmup); weight decay 0.05; random-resized-crop +\nhorizontal flip augmentation. **2.8-4.1× wall-clock speedup vs the\nnaive full-sequence ViT-BERT baseline** (Sec. 4 \"Speedup\"; Table 6).\n\nHeadline benchmarks:\n- **ImageNet-1k top-1 (fine-tune)**: ViT-B 83.6%, ViT-L 85.9%,\n  ViT-H 86.9%, ViT-H/14 87.8% (Sec. 4.2, Table 3 / Fig. 5).\n- **ViT-H/14 87.8%** is the headline — beats supervised JFT-300M\n  pretraining of the same architecture without using external\n  labelled data.\n- Linear probing (no fine-tune): ViT-L 75.8%, ViT-H 76.6% (Sec.\n  4.2, Fig. 5).\n- Masking-ratio sweep (Fig. 5): 75% is optimal; quality drops\n  sharply below 50%.\n- Transfer to COCO detection (ViT-L Mask R-CNN backbone): box AP\n  53.3, mask AP 47.2 (Table 4).\n- Transfer to ADE20K semantic segmentation (ViT-L UperNet\n  backbone): mIoU 53.6 (Table 6).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/mae",
+          "commit": "efb2a8062c206524e35e47d04501ed4f544c0ae8",
+          "framework": "pytorch",
+          "license": "CC-BY-NC-4.0"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2021
+    }
+  },
+  {
     "slug": "mask-rcnn",
     "frontmatter": {
       "title": "Mask R-CNN",
@@ -2644,6 +3532,135 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-11",
       "year": 2017
+    }
+  },
+  {
+    "slug": "mask2former",
+    "frontmatter": {
+      "title": "Mask2Former",
+      "summary": "Universal image segmentation family — MaskFormer (v1, NeurIPS 2021) reframes semantic segmentation as **mask classification**: predict a set of $N$ binary masks plus per-mask class labels via a DETR-style transformer decoder over pixel-decoder features, supervised by bipartite matching. Mask2Former (v2, CVPR 2022) extends v1 with **masked attention** (cross-attention restricted to each query's predicted mask foreground), multi-scale round-robin features (queries cross-attend to 1/32, 1/16, 1/8 maps across consecutive layers), and point-sampled mask loss for 3× memory reduction. A single architecture, trained per-dataset, beats specialised models on COCO panoptic (PQ 57.8), COCO instance (AP 50.1), and ADE20K semantic (mIoU 57.7) with Swin-L.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high",
+          "caution": "SAM 3's mask head is adapted from MaskFormer/Mask2Former — this family establishes the per-query mask classification + set-prediction paradigm SAM 3 inherits for concept segmentation."
+        },
+        {
+          "type": "compared_with",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN is the dominant per-RoI proposal-then-segment baseline; Mask2Former reframes the same problem as mask classification + set prediction, achieving unified handling of semantic, instance, and panoptic in one architecture."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "hybrid",
+      "params": "216M (Swin-L backbone, total)",
+      "sources": {
+        "primary": "cheng2022-mask2former",
+        "references": [
+          "cheng2021-maskformer",
+          "carion2020-detr",
+          "he2016-resnet"
+        ],
+        "notes": "MaskFormer v1 (cheng2021-maskformer, NeurIPS 2021): the foundational\nparadigm shift — per-pixel classification (FCN/DeepLab) replaced by\n**mask classification**. Architecture (Fig. 2, §3): backbone (ResNet\nor Swin) → **pixel decoder** (FPN-like upsampling, output\n$\\mathcal{E}_\\text{pixel} \\in \\mathbb{R}^{C \\times H/4 \\times W/4}$\nwith $C=256$) + **transformer decoder** (DETR-style with $N=100$\nlearnable queries, 6 layers, embedding dim 256) → per-query class\nhead (MLP) + per-query mask head ($m_i(x,y) = \\sigma(q_i^\\top\n\\mathcal{E}_\\text{pixel}(x,y))$, sigmoid of query·pixel dot product).\nLoss $\\mathcal{L}_\\text{mask-cls}$ (Eq. 1): bipartite-matching\nHungarian over $N$ predictions; per-pair = cross-entropy on class +\nbinary cross-entropy + dice on mask; $\\lambda_\\text{focal}=20.0$,\n$\\lambda_\\text{dice}=1.0$, \"no object\" weight 0.1, backbone stride\n$S=32$. Headline (Swin-L†): ADE20K val mIoU 55.6, COCO panoptic\nval PQ 52.7 (Tables 3-4).\n\nMask2Former v2 (cheng2022-mask2former, CVPR 2022): direct\narchitectural extension of v1 — same pixel-decoder + transformer-\ndecoder + mask-head topology, **three changes** in the decoder:\n(i) **Masked attention** (Eq. 2, §3.2): cross-attention is\nrestricted to the foreground of each query's previously-predicted\nmask. $\\mathbf{X}_l = \\text{softmax}(\\mathcal{M}_{l-1} + \\mathbf{Q}_l \\mathbf{K}_l^\\top) \\mathbf{V}_l + \\mathbf{X}_{l-1}$\nwhere $\\mathcal{M}_{l-1}(x,y) = 0$ if mask threshold > 0.5 at $(x,y)$,\n$-\\infty$ otherwise (Eq. 5). Forces queries to focus locally instead\nof globally (DETR-style), accelerating convergence and improving\nquality. (ii) **Multi-scale round-robin features**: queries\ncross-attend to 1/32, 1/16, 1/8 resolution feature maps in rotation\nacross consecutive decoder layers (instead of v1's single 1/32 map).\nImproves small-object segmentation. (iii) **Point-sampled mask\nloss**: compute mask loss on $K=12544$ importance-sampled points\ninstead of all $H \\times W$ pixels, reducing per-image memory ~3×\n(18 GB → 6 GB) and enabling larger batch.\nTraining: AdamW, LR $10^{-4}$, weight decay 0.05, backbone LR×0.1;\n50 epochs COCO, 160k iters ADE20K, 90k iters Cityscapes.\nHeadline (Swin-L, multi-scale): COCO panoptic val PQ 57.8 (+5.1 over\nv1), ADE20K semantic mIoU 57.7 (+2.1 over v1), COCO instance mask\nAP 50.1, Cityscapes panoptic PQ 66.6. Converges 6× faster than v1\n(50 vs 300 epochs). 216M params with Swin-L. Queries: 100 (semantic,\npanoptic) or 200 (instance).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/Mask2Former",
+          "commit": "9b0651c6c1d5b3af2e6da0589b719c514ec0d69a",
+          "framework": "pytorch",
+          "license": "MIT"
+        },
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/MaskFormer",
+          "commit": "da3e60d85fdeedcb31476b5edd7d328826ce56cc",
+          "framework": "pytorch",
+          "license": "CC-BY-NC-4.0"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2022
+    }
+  },
+  {
+    "slug": "mast3r",
+    "frontmatter": {
+      "title": "MASt3R",
+      "summary": "A 3D-grounded image matcher that adds a dense local-descriptor head and an InfoNCE matching loss on top of DUSt3R's pointmap regression, with a fast reciprocal matching scheme, yielding correspondences robust to extreme viewpoint change.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "feature-matching",
+        "feature-descriptors",
+        "epipolar-geometry",
+        "pose-estimation",
+        "feed-forward-3d-reconstruction"
+      ],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "loftr",
+          "confidence": "medium",
+          "caution": "MASt3R grounds matching in 3D and wins under extreme viewpoint change; LoFTR is a 2D detector-free matcher."
+        },
+        {
+          "type": "compared_with",
+          "target": "lightglue",
+          "confidence": "medium",
+          "caution": "MASt3R is 3D-grounded and pose-robust; LightGlue is a fast sparse 2D matcher."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "two-view-geometry",
+        "local-descriptors"
+      ],
+      "domain": "geometry",
+      "tasks": [
+        "local-feature-matching"
+      ],
+      "arch_family": "vit",
+      "params": "DUSt3R backbone (ViT-L enc + ViT-B dec) + descriptor head",
+      "sources": {
+        "primary": "leroy2024-mast3r",
+        "references": [
+          "wang2023-dust3r"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/naver/mast3r",
+          "commit": "f5209afc300cec36239a7ac992263f36847bbba0",
+          "framework": "pytorch",
+          "license": "CC-BY-NC-SA-4.0",
+          "weights_license": "CC-BY-NC-SA-4.0"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2024
     }
   },
   {
@@ -2705,6 +3722,369 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "midas",
+    "frontmatter": {
+      "title": "MiDaS",
+      "summary": "A monocular depth network trained for zero-shot cross-dataset transfer by mixing incompatible depth datasets under a scale-and-shift-invariant loss, predicting relative inverse depth up to an unknown global scale and shift.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "pinhole-camera-model"
+      ],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "depth-anything",
+          "confidence": "high"
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "depth",
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "ranftl2019-midas"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/isl-org/MiDaS",
+          "commit": "454597711a62eabcbf7d1e89f3fb9f569051ac9b",
+          "framework": "pytorch",
+          "license": "MIT",
+          "weights_license": "MIT"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2019
+    }
+  },
+  {
+    "slug": "mnasnet",
+    "frontmatter": {
+      "title": "MnasNet",
+      "summary": "Mobile-CPU CNN image classifier discovered by platform-aware neural architecture search: an RNN controller trained with reinforcement learning samples architectures from a factorized hierarchical search space and maximizes a multi-objective reward trading ImageNet top-1 accuracy against latency measured directly on a phone.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "high",
+          "caution": "MobileNetV3 uses MnasNet-style platform-aware NAS and the SE-augmented search space as the basis of its block-level search."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "3.9M (MnasNet-A1)",
+      "flops": "312M MAdds (MnasNet-A1)",
+      "sources": {
+        "primary": "tan2019-mnasnet",
+        "references": [
+          "sandler2018-mobilenetv2",
+          "howard2019-mobilenetv3"
+        ],
+        "notes": "Multi-objective reward (Eq. 2-3): max_m ACC(m)·[LAT(m)/T]^w, w=alpha if LAT<=T else beta;\nalpha=beta=-0.07 (doubling latency trades ~5% relative accuracy). Factorized hierarchical\nsearch space (Sec 4.1, Fig 4): B=7 predefined blocks, each searched for\nConvOp/KernelSize{3,5}/SERatio{0,0.25}/SkipOp/output-filters/layers; ~432^5 ≈ 1e13 vs ~1e39\nflat per-layer. Direct Pixel-1 latency, not FLOPs (proxy fails: MobileNetV1 575M MAdds/113ms\nvs NASNet 564M MAdds/183ms). RNN controller + PPO; ~8K models/search, 4.5 days on 64 TPUv2.\nMnasNet-A1: 75.2% top-1 / 92.5% top-5 / 78ms / 3.9M / 312M MAdds (Table 1); 1.8x faster than\nMobileNetV2, 2.3x faster than NASNet-A. SE ablation (Table 2): A1 75.2% vs B1 74.5%/77ms.\nCOCO SSDLite: 23.0 mAP / 203ms / 4.9M / 0.8B MAdds vs SSD300 23.2 mAP (Table 3).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/tensorflow/tpu",
+          "commit": "6da032f02921a26284d7d95a4f122d41ab927c21",
+          "framework": "tensorflow",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "78839c2b06c83c6cfb5c4da692ffb331bbd4c4cc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause"
+        }
+      ],
+      "date": "2026-05-29",
+      "year": 2019
+    }
+  },
+  {
+    "slug": "mobilenetv2",
+    "frontmatter": {
+      "title": "MobileNetV2",
+      "summary": "Efficient mobile CNN backbone built from inverted-residual blocks with a linear bottleneck — depthwise-separable convolution expanded to a wide interior and projected back to a thin, non-linearity-free bottleneck that the residual connects — for on-device classification, detection (SSDLite), and segmentation (Mobile DeepLabv3).",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "convolution"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mobilenetv3",
+          "confidence": "high",
+          "caution": "MobileNetV3 inherits the inverted-residual + linear-bottleneck block as its core building primitive."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fast-scnn",
+          "confidence": "high",
+          "caution": "Fast-SCNN's Global Feature Extractor is built from MobileNetV2 inverted-residual bottlenecks."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mnasnet",
+          "confidence": "medium",
+          "caution": "MnasNet's MBConv search space is built on MobileNetV2's inverted-residual block."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "cnn",
+      "params": "3.4M (1.0/224)",
+      "flops": "300M MAdds @ 224×224",
+      "sources": {
+        "primary": "sandler2018-mobilenetv2",
+        "references": [
+          "he2016-resnet",
+          "tan2019-mnasnet",
+          "howard2019-mobilenetv3"
+        ],
+        "notes": "Inverted residual + linear bottleneck (Sec 3.2, Table 1): 1×1 expand to t·k channels (ReLU6) →\n3×3 depthwise (ReLU6) → 1×1 linear project to k' channels (NO nonlinearity); residual connects the\nthin bottleneck tensors. Default expansion t=6 (64→384 example). Linear projection motivated by the\nmanifold-of-interest argument: ReLU on a low-dim subspace collapses it; adding ReLU to the projection\ncosts several percent (Fig 6). Depthwise-separable cost reduction vs standard conv = k²·d_j/(k²+d_j)\n(~8–9× at k=3, Eq 1). ImageNet 1.0/224: 72.0% top-1, 300M MAdds, 3.4M params, 75ms Pixel-1 (Table 4);\nvs MobileNetV1 70.6% / 575M / 113ms. 1.4/224: 74.7% / 585M MAdds. SSDLite COCO: 22.1 mAP / 0.8B MAdds /\n4.3M / 200ms vs MobileNetV1+SSDLite 22.2 / 1.3B / 270ms; SSD300 23.2, SSD512 26.8 (Table 6). Mobile\nDeepLabv3 VOC: 75.70% mIOU / 4.52M / 5.8B MAdds, output stride 16 + ASPP (Table 7). Train (Sec 6.1):\nRMSProp 0.9/0.9, lr 0.045 ×0.98/epoch, weight decay 0.00004, batch 96 over 16 GPUs.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/tensorflow/models",
+          "commit": "451906e4e82f19712455066c1b27e2a6ba71b1dd",
+          "framework": "tensorflow",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "78839c2b06c83c6cfb5c4da692ffb331bbd4c4cc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause"
+        }
+      ],
+      "date": "2026-05-29",
+      "year": 2018
+    }
+  },
+  {
+    "slug": "mobilenetv3",
+    "frontmatter": {
+      "title": "MobileNetV3",
+      "summary": "Mobile-CPU-latency-targeted CNN backbone found by combined platform-aware NAS and NetAdapt, built from MobileNetV2 inverted-residual blocks augmented with squeeze-and-excitation and the h-swish nonlinearity, plus a Lite Reduced ASPP segmentation decoder; trained on ImageNet-1k and adapted to detection and segmentation.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "convolution",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "fast-scnn",
+          "confidence": "medium",
+          "caution": "Peer comparison is specific to the real-time Cityscapes segmentation regime."
+        },
+        {
+          "type": "compared_with",
+          "target": "bisenet",
+          "confidence": "medium",
+          "caution": "Peer comparison in the real-time mobile segmentation regime."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification",
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "howard2019-mobilenetv3",
+        "references": [
+          "sandler2018-mobilenetv2",
+          "tan2019-mnasnet",
+          "chen2018-deeplab",
+          "long2015-fcn"
+        ],
+        "notes": "h-swish (§5.2): h-swish[x] = x · ReLU6(x+3)/6; hard-sigmoid = ReLU6(x+3)/6;\nReLU6(x) = min(max(x,0),6). SE bottleneck = 1/4 of expansion-layer channels\n(§5.3). Inverted-residual + linear-bottleneck block inherited from MobileNetV2.\nTwo-stage search: platform-aware NAS reward ACC(m)·[LAT(m)/TAR]^w with\nw=-0.07 (Large) / w=-0.15 (Small) (§4.1), then NetAdapt per-layer filter\ntrim. Expensive-layer redesign (§5.1): last stage moved past global-avg-pool\nsaves 7 ms / 30 M MAdds (11% of runtime); stem 32→16 filters saves 2 ms /\n10 M MAdds. ImageNet float, Pixel 1 (Table 3): V3-Large 1.0 75.2% top-1 @\n51 ms vs V2 1.0 72.0% @ 64 ms (+3.2%, −20%); V3-Small 1.0 67.4% @ 15.8 ms\nvs V2-0.35 60.8% @ 16.6 ms (+6.6%). LR-ASPP (§6.4, Fig. 10): strips DeepLab\nASPP's parallel multi-rate branches, keeps global-avg-pool context + 1×1.\nCityscapes val (Table 7): V3-Large LR-ASPP F=128 72.36% mIOU @ 657 ms vs\nV2 R-ASPP F=256 72.56% @ 793 ms; abstract claims 34% (note records the\nmatched-row comparison gives ~16%).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/tensorflow/models",
+          "commit": "451906e4e82f19712455066c1b27e2a6ba71b1dd",
+          "framework": "tensorflow",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/pytorch/vision",
+          "commit": "78839c2b06c83c6cfb5c4da692ffb331bbd4c4cc",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause"
+        }
+      ],
+      "date": "2026-05-29",
+      "year": 2019
+    }
+  },
+  {
+    "slug": "mobilesam",
+    "frontmatter": {
+      "title": "MobileSAM",
+      "summary": "Lightweight SAM family — replaces SAM's heavy ViT-H image encoder (632M params, ~452 ms on a single GPU) with a distilled TinyViT encoder (5.78M params, ~8 ms), keeping SAM's prompt encoder + mask decoder frozen and unchanged; MobileSAMv2 adds an object-aware prompt sampler (YOLOv8-style detector → bounding-box prompts) that replaces SAM's 32×32 grid-prompt + NMS pipeline for the Segment-Everything task, cutting end-to-end latency from ≈1616 ms to ≈97 ms (>16×) at equivalent mask quality.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "sam",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "focalclick",
+          "confidence": "medium",
+          "caution": "Both target lightweight on-device interactive segmentation but from different lineages — MobileSAM distils SAM's foundation-model encoder into TinyViT (zero-shot, no mask correction); FocalClick is a small specialised two-stage network with native preexisting-mask refinement."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction",
+        "real-time"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "vit",
+      "params": "9.66M (MobileSAM total, vs SAM ViT-H 632M)",
+      "sources": {
+        "primary": "zhang2023-mobilesam",
+        "references": [
+          "zhang2023-mobilesamv2",
+          "kirillov2023-sam"
+        ],
+        "notes": "MobileSAM v1 (zhang2023-mobilesam) — replaces SAM's image encoder only;\nprompt encoder (0.006M) + mask decoder (~4M) kept frozen from SAM\n(Apache-2.0 weights). Total model 9.66M params, ~5MB checkpoint.\nDecoupled distillation: student (TinyViT, 5.78M) learns to produce\nimage embeddings matching the ViT-H teacher's output (MSE loss on\nembeddings: $\\mathcal{L} = \\|z_s - z_t\\|_2^2$). Trained on 1% of\nSA-1B with 1 GPU in <1 day. Encoder latency: SAM ViT-H ~452 ms vs\nMobileSAM ~8 ms (a single A100 GPU); mask decoder ~4 ms. Mask\nquality vs SAM (relative mIoU on SA-1B held-out): 0.71–0.74 across\npoint/box prompts; vs FastSAM (68M params, 64 ms): 0.27–0.41.\nArchitectural detail: TinyViT's final downsampling stride set to 1\n(instead of 2) to preserve 64×64 token-grid output matching SAM's\ninterface.\n\nMobileSAMv2 (zhang2023-mobilesamv2) — object-aware prompt sampler\nfor Segment-Everything. Replaces SAM's 32×32 grid-prompt pipeline +\nNMS deduplication (1024 prompts, slow) with a YOLOv8-style detector\nthat proposes up to 320 object-aware bounding-box prompts directly.\nDecoder speedup ≥16× (the load-bearing claim). Total pipeline\n(encoder + sampler + decoder) latency on V100: SAM-ViT-H grid 1616\nms; MobileSAMv2 with original SAM encoder ~480 ms; MobileSAMv2 with\nEfficientViT-L2 encoder ~97 ms (Table 1). Mask quality: AR@1000\n59.3% vs SAM-grid 59.2% (Table 2); average AR@K 42.5% vs 38.9%\ngrid baseline (Table 3 / Abstract). Encoder-agnostic — the\nobject-aware sampler is compatible with the original SAM encoder,\nthe MobileSAM v1 encoder, or any swap-in encoder (EfficientViT-L2\nused in headline benchmarks, ~20 ms vs ViT-H >400 ms; §5.2).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/ChaoningZhang/MobileSAM",
+          "commit": "f706ad9c4eb7f219c00d9050e46328518ffb65d2",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2023
+    }
+  },
+  {
+    "slug": "patchcore",
+    "frontmatter": {
+      "title": "PatchCore",
+      "summary": "Training-free industrial anomaly detection: a single forward pass over defect-free images builds a coreset-subsampled memory bank of locally aware mid-level CNN patch features, and test images are scored by reweighted nearest-neighbour distance in that feature space.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "efficientad",
+          "confidence": "high",
+          "caution": "Peer choice, not supersession — EfficientAD leads on accuracy and latency, but PatchCore requires no per-scenario training."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "local-descriptors",
+        "dense-prediction"
+      ],
+      "domain": "anomaly-detection",
+      "tasks": [
+        "anomaly-detection",
+        "anomaly-segmentation"
+      ],
+      "arch_family": "cnn",
+      "params": "No trained parameters — frozen ImageNet-pretrained WideResNet-50; memory-bank size scales with the coreset percentage of the training set.",
+      "sources": {
+        "primary": "roth2022-patchcore",
+        "references": [
+          "bergmann2019-mvtec-ad",
+          "bergmann2020-uninformed-students",
+          "batzner2023-efficientad"
+        ],
+        "notes": "This page hosts the `## When to choose PatchCore over EfficientAD`\ncomparison; the older paper hosts, per docs/README.md §4. The\nefficientad page carries only a back-pointer to the anchor\n#when-to-choose-patchcore-over-efficientad.\n\nTwo values the paper never assigns numerically: the reweighting\nneighbourhood size b, and the Johnson-Lindenstrauss target\ndimensionality d*. Both are stated as unspecified rather than guessed.\n\nThe paper is internally inconsistent about one figure: §4.2 prose says\n\"PaDiM\" where Table 1 says \"PaDiM*\" (the backbone-selected variant).\nThe page attributes it as the table does.\n\n\"Nvidia Tesla V4\" in Appendix A is an OCR artifact of the cached PDF\nand is not repeated as fact anywhere on the page.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/amazon-science/patchcore-inspection",
+          "commit": "fcaa92f124fb1ad74a7acf56726decd4b27cbcad",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/open-edge-platform/anomalib",
+          "commit": "091ca6aca92c8d0e416394f79e52f5a3cea3db73",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-08-06",
+      "year": 2022
+    }
+  },
+  {
     "slug": "resnet",
     "frontmatter": {
       "title": "ResNet",
@@ -2742,6 +4122,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "loftr",
           "confidence": "medium",
           "caution": "LoFTR's local-feature CNN is a ResNet-like backbone with FPN structure."
+        },
+        {
+          "type": "feeds_into",
+          "target": "efficientad",
+          "confidence": "medium",
+          "caution": "EfficientAD distils its patch description network from a WideResNet-101 teacher; the wide variant is not this page's subject, hence medium confidence."
         }
       ],
       "tags": [
@@ -2784,6 +4170,309 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-13",
       "year": 2016
+    }
+  },
+  {
+    "slug": "rf-detr",
+    "frontmatter": {
+      "title": "RF-DETR",
+      "summary": "Light-weight specialist real-time detection transformer that discovers an accuracy-latency Pareto frontier for any target dataset from a single training run: a DINOv2-ViT backbone feeds an LW-DETR-style set-prediction decoder, and weight-sharing NAS evaluates thousands of sub-network configurations without retraining. First real-time detector to exceed 60 AP on COCO.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "advanced",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "detection",
+      "arch_family": "hybrid",
+      "params": "30.5M (nano), 126.9M (2x-large)",
+      "sources": {
+        "primary": "robinson2025-rf-detr",
+        "references": [
+          "carion2020-detr",
+          "dosovitskiy2020-vit"
+        ],
+        "notes": "Weight-sharing NAS (OFA-inspired, first end-to-end for detection/segmentation):\none base net trained once on the target dataset; each step samples a random\nsub-net config; after training, 6,468 configs grid-searched on val to trace the\naccuracy-latency Pareto frontier with no retraining. Five tunable knobs: image\nresolution (11 values 320-960), ViT patch size (7 values {8,10,12,16,20,24,32},\nFlexiVIT interpolation), decoder layers (<=6, each supervised independently so\ntruncatable), query tokens ({50,100,200,300}, lowest-confidence dropped), windowed\nattention blocks per encoder layer ({1,2,4}). Backbone: DINOv2 ViT-S/B replacing\nLW-DETR's CAEv2; layer-norm projector (not batch norm) for consumer-GPU training.\nNMS-free set prediction. lr 1e-4 (vs 4e-4 LW-DETR), per-layer backbone decay 0.8,\ngrad clip 0.1, scheduler-free + minimal aug. Results (T4, TensorRT, FP-16): nano\n48.0 AP @ 2.3 ms / 30.5M (+5.3 AP over D-FINE nano @ 2.1 ms); 2x-large 60.1 AP @\n17.2 ms / 126.9M (first real-time >60 AP on COCO); 2XL fine-tuned 63.5 AP on\nRF100-VL vs GroundingDINO tiny +1.2 AP at ~20x lower latency (15.6 vs 309.9 ms).\nFP-16-robust where D-FINE collapses 55.1 -> 0.5 AP. Code Apache-2.0; XL/2XL\nweights PML 1.0.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/roboflow/rf-detr",
+          "commit": "6e1620e751f3c814ead8648cada51ceff9029e5c",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-29",
+      "year": 2025
+    }
+  },
+  {
+    "slug": "ritm-interactive-segmentation",
+    "frontmatter": {
+      "title": "RITM",
+      "summary": "Feedforward click-based interactive segmentation: HRNet+OCR encoder-decoder taking RGB + positive/negative disk-encoded clicks + previous mask, trained with iterative click simulation and Normalized Focal Loss on COCO+LVIS — sets a new state of the art without inference-time backward passes.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "graph-cut-segmentation",
+          "confidence": "medium",
+          "caution": "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
+        },
+        {
+          "type": "extended_by",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "FocalClick adds Focus View + Progressive Merge for CPU-feasible mask correction; RITM remains the foundational feedforward click-based reference."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "encoder-decoder",
+      "params": "10.03M",
+      "flops": "30.80 GFLOPs @ 400×400",
+      "sources": {
+        "primary": "sofiiuk2021-ritm",
+        "references": [
+          "chen2018-deeplab",
+          "sun2019-hrnet"
+        ],
+        "notes": "Inputs (Sec. 3): RGB image + two binary disk-encoded click maps (radius\n5 px, Conv1S scheme) + previous binary mask channel; first interaction\nuses zero mask. Loss is Normalized Focal Loss (NFL, Eq. 2, Sec. 3.4):\nNFL(i,j,M̂) = -[1/P(M̂)] · (1-p_ij)^γ · log p_ij, with P(M̂) = Σ_ij\n(1-p_ij)^γ — divides Focal Loss (Eq. 1) by its total weight so the\naggregate gradient stays bounded. Training: COCO+LVIS (104k images,\n1.6M masks after IoU>80% dedup, Sec. 4.2), Adam β₁=0.9 β₂=0.999, lr\n5×10⁻⁴, 55 epochs, batch 32, crop 320×480, scale 0.75–1.40, N_iters=3\n(Table 6 ablation). HRNet-18+OCR canonical: 10.03M params / 30.80\nGFLOPs (Table 4); HRNet-18s small variant: 4.22M / 17.84 GFLOPs.\nDeepLabV3+-ResNet-34 baseline: 19.17M / 122.28 GFLOPs. Headline\nNoC@90 with HRNet-18 ITER-M (C+L) cited in note: GrabCut 1.54, SBD\n5.43 (Table 7); contrast f-BRS GrabCut 2.50, SBD 8.08. NFL-vs-BCE\nablation NoC@90 on HRNet-18+OCR/COCO+LVIS baseline (Table 2): GrabCut\n1.70/1.82, Berkeley 2.48/3.13, SBD 6.72/7.58, DAVIS 5.90/6.31.\nInference uses ZoomIn crop around predicted bbox after first click +\nhorizontally-flipped average (Sec. 5).\n"
+      },
+      "implementations": [
+        {
+          "role": "community",
+          "repo": "https://github.com/supervisely-ecosystem/ritm-interactive-segmentation",
+          "commit": "55fec41d67770078f78b4f9dff10f19afd07acea",
+          "framework": "pytorch",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2021
+    }
+  },
+  {
+    "slug": "sam",
+    "frontmatter": {
+      "title": "SAM",
+      "summary": "Promptable segmentation foundation model family — SAM (v1, 2023) introduces image-prompt segmentation with a heavy ViT-H encoder and lightweight transformer decoder trained on the 1.1B-mask SA-1B dataset; SAM 2 (2024) extends to video via a streaming memory module on a Hiera hierarchical-ViT encoder; SAM 3 (2025) generalises from single-object prompts to *concept* prompts (free-form noun phrases or visual exemplars) via a presence token, segmenting all matching instances on images and videos.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "grabcut-iterative-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "graph-cut-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "learned_alternative_of",
+          "target": "felzenszwalb-graph-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mask-rcnn",
+          "confidence": "medium",
+          "caution": "Different problem classes — Mask R-CNN is closed-set instance detection with category labels; SAM is class-agnostic promptable segmentation."
+        },
+        {
+          "type": "compared_with",
+          "target": "ritm-interactive-segmentation",
+          "confidence": "medium",
+          "caution": "Both are click-prompted interactive segmenters; different sub-paradigms — SAM is a foundation model with a prompt-conditioned decoder, RITM is iterative-mask refinement on a per-image encoder."
+        },
+        {
+          "type": "compared_with",
+          "target": "focalclick",
+          "confidence": "medium",
+          "caution": "Opposite design points — SAM is a heavy promptable foundation model with zero-shot generalisation but no preexisting-mask refinement; FocalClick is a small specialised network with native mask correction but no zero-shot."
+        },
+        {
+          "type": "extended_by",
+          "target": "mobilesam",
+          "confidence": "high",
+          "caution": "MobileSAM is a lightweight derivative — distils SAM v1's ViT-H image encoder into a 5.78M-param TinyViT (~56× faster) while keeping SAM's prompt encoder + decoder frozen; MobileSAMv2 adds an object-aware prompt sampler for Segment-Everything."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "vit",
+      "sources": {
+        "primary": "kirillov2023-sam",
+        "references": [
+          "ravi2024-sam2",
+          "carion2025-sam3"
+        ],
+        "notes": "SAM v1 (kirillov2023-sam): three-component pipeline — heavy MAE-pretrained\nViT-H image encoder (1024 px longest side, 16 px patches, 64×64 token\ngrid, run once per image); lightweight prompt encoder (positional\nencodings for points/boxes, conv embedding for mask prompts, CLIP text\nencoder for text); fast two-way cross-attention mask decoder producing\n3 candidate masks + IoU scores. Training: focal + dice loss on\nminimum-loss mask of 3 predictions; IoU head trained with MSE; 11\nrounds of random prompt simulation per mask. Dataset: SA-1B — 1.1B\nmasks on 11M images, 400× more masks than Open Images, ~100 masks per\nimage average. Browser-CPU latency ~50 ms for prompt encoder +\ndecoder with precomputed image embedding.\n\nSAM 2 (ravi2024-sam2): four components — (1) MAE-pretrained Hiera\nimage encoder (hierarchical ViT); (2) memory attention stack —\ntransformer blocks performing self-attention on current-frame\nfeatures then cross-attention to a memory bank of past-frame feature\nmaps + object pointer vectors; (3) SAM-v1-compatible prompt encoder +\nmask decoder (minor modifications); (4) memory encoder that converts\npredicted mask + image embedding into a compact spatial memory\nentry. Streaming/causal: frame t uses only frames ≤ t. SA-V dataset\n— 50.9K videos, 642.6K masklets, 35.5M masks (53× scale-up vs prior\nlargest video annotation set). Image-segmentation 6× faster than SAM\nv1: Hiera-B+ 130.1 FPS vs SAM ViT-H 21.7 FPS (Table 15). MOSE J&F\n60.3 vs 47.9 baseline (+12.4).\n\nSAM 3 (carion2025-sam3): introduces **Promptable Concept Segmentation\n(PCS)** — given an image/video and a *concept* (free-form noun\nphrase or visual exemplars), output ALL instances matching the\nconcept. Distinct from v1/v2's single-object-per-prompt paradigm.\nArchitectural novelty: **presence token** — a global learned query\nthat decouples concept recognition $p(\\text{NP is present})$ from\nper-instance localisation, especially effective with hard-negative\ntraining phrases. Dataset: SA-Co — 5.2M images, 4M unique NPs, 52M\nmasks, plus 1.4B synthetic. Built with a 4-phase human+AI-verifier\ndata engine where Llama 3.2 AI verifiers double annotation\nthroughput. LVIS zero-shot mask AP 48.5 vs prior best 38.5;\nSA-Co/Gold cgF1 54.1 — 2× best baseline, 74% of human performance.\nPVS (VOS) also improves over SAM 2.1 L: MOSEv2 J&F 60.3 vs 47.9\n(+12.4).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/segment-anything",
+          "commit": "dca509fe793f601edb92606367a655c15ac00fdf",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/sam2",
+          "commit": "2b90b9f5ceec907a1c18123530e92e794ad901a4",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/sam3",
+          "commit": "8e451d5eb43c817b64ae7577fb7b9ae223db88a9",
+          "framework": "pytorch",
+          "license": "LicenseRef-SAM-License"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2023
+    }
+  },
+  {
+    "slug": "segformer",
+    "frontmatter": {
+      "title": "SegFormer",
+      "summary": "Hierarchical Transformer encoder (MiT) producing multi-scale features at $1/4, 1/8, 1/16, 1/32$ without positional encodings, plus an all-MLP decoder that fuses per-stage features into a per-pixel prediction. Six variants MiT-B0..B5 trade compute for accuracy; B5 reaches 51.8 mIoU on ADE20K and 84.0 mIoU on Cityscapes (Tables 1 and 2).",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "focalclick",
+          "confidence": "high",
+          "caution": "SegFormer-B0 and SegFormer-B3 are explicit Segmentor backbones in FocalClick Table 3; the MiT encoder + all-MLP decoder is reused intact and the decoder logits feed FocalClick's Refiner."
+        },
+        {
+          "type": "compared_with",
+          "target": "fcn-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "deeplab-semantic-segmentation",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "unet-segmentation",
+          "confidence": "medium",
+          "caution": "U-Net is the encoder-decoder ancestor; SegFormer keeps the multi-scale-fuse idea but drops skip connections in favour of MLP-aggregating decoder."
+        },
+        {
+          "type": "compared_with",
+          "target": "hrnet",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mask2former",
+          "confidence": "medium",
+          "caution": "Mask2Former 2022 follows SegFormer 2021 with a mask-classification paradigm; different formulation (set prediction over masks vs per-pixel)."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "vit",
+      "params": "3.8M (B0) — 84.7M (B5)",
+      "flops": "8.4 GFLOPs (B0 @ 512×512) — 183.3 GFLOPs (B5 @ 640×640)",
+      "sources": {
+        "primary": "xie2021-segformer",
+        "references": [
+          "dosovitskiy2020-vit",
+          "long2015-fcn",
+          "chen2018-deeplab"
+        ],
+        "notes": "MiT encoder (Sec. 3.1, Fig. 2): four hierarchical stages with overlapping\npatch merging (kernels $K=7,3,3,3$, strides $S=4,2,2,2$, paddings\n$P=3,1,1,1$). Each stage's Transformer block uses efficient self-attention\nwith sequence-reduction ratio $R$ (Eq. 2): $\\hat{K} = \\text{Reshape}(N/R,\nC \\cdot R)(K)$ then $K = \\text{Linear}(C \\cdot R, C)(\\hat{K})$, reducing\nattention cost from $O(N^2)$ to $O(N^2/R)$. Reduction ratios per stage:\n$[64, 16, 4, 1]$ (Sec. 3.1.2). Mix-FFN (Eq. 3) replaces positional\nencoding: $x_\\text{out} = \\text{MLP}(\\text{GELU}(\\text{Conv}_{3 \\times 3}\n(\\text{MLP}(x_\\text{in})))) + x_\\text{in}$ — the $3 \\times 3$ depthwise\nconv inside the FFN supplies the positional information.\n\nAll-MLP decoder (Sec. 3.2, Eqs. 4a–4d): per-stage MLP projects channel\n$C_i$ to $C$; upsample to $H/4 \\times W/4$; concat; fused MLP to $C$;\nfinal MLP to $N_\\text{cls}$. Decoder channel $C = 256$ (B0–B2) or $C=768$\n(B3–B5).\n\nVariants (Table 7): B0 ($C_1..C_4 = 32,64,160,256$, 3.8M params), B1\n(13.7M), B2 (27.5M), B3 (47.3M), B4 (64.1M), B5 (84.7M).\n\nHeadline numbers — ADE20K val mIoU (Table 1): B0 37.4, B5 51.8 (best\npublished at submission). Cityscapes val mIoU (Table 2): B0 76.2, B5\n84.0. COCO-Stuff test mIoU (Table 3): B5 46.7. Cityscapes-C robustness\n(Table 5, mIoU averaged over 16 corruptions × 5 severities): B5 47.9\nvs DeepLabV3+ R101 27.5 — zero-shot gain of 20.4 mIoU on corrupted data.\n\nTraining (Sec. 4.1): AdamW, lr $6 \\times 10^{-5}$ with poly decay\n(power 1.0), weight decay 0.01, ImageNet-1k pretrained encoder, random\ncrop $512 \\times 512$ (ADE20K) or $1024 \\times 1024$ (Cityscapes),\nhorizontal flip + random scale $[0.5, 2.0]$ + random photometric\ndistortion. 160k iterations on ADE20K, batch size 16.\n\nEffective receptive field analysis (Fig. 3): stage-4 ERF of MiT already\ncovers the whole image, so the lightweight all-MLP decoder suffices —\nmotivation for replacing heavy ASPP / OCR / object-context heads with\nplain MLP fusion.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/NVlabs/SegFormer",
+          "commit": "65fa8cfa9b52b6ee7e8897a98705abf8570f9e32",
+          "framework": "pytorch",
+          "license": "NVIDIA-Source-Code-License",
+          "weights_url": "https://huggingface.co/nvidia/segformer-b0-finetuned-ade-512-512",
+          "weights_license": "NVIDIA-Source-Code-License"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/huggingface/transformers",
+          "commit": "c2820c94916e34baf4486accae74760972183a2f",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/open-mmlab/mmsegmentation",
+          "commit": "c685fe6767c4cadf6b051983ca6208f1b9d1ccb8",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-28",
+      "year": 2021
     }
   },
   {
@@ -3002,6 +4691,52 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "uninformed-students",
+    "frontmatter": {
+      "title": "Uninformed Students",
+      "summary": "Pixel-precise anomaly segmentation from an ensemble of student networks trained only on anomaly-free images to regress a fixed off-domain teacher's dense descriptors, scoring each pixel by regression error against the mixture mean plus the ensemble's predictive variance, across three receptive-field scales.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "visual-anomaly-detection",
+        "convolutional-neural-network"
+      ],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "efficientad",
+          "confidence": "high",
+          "caution": "EfficientAD keeps the student-teacher principle but replaces the pretrained-backbone ensemble with a single distilled patch description network and loss-induced asymmetry."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "probabilistic",
+        "dense-prediction",
+        "multi-scale"
+      ],
+      "domain": "anomaly-detection",
+      "tasks": [
+        "anomaly-detection",
+        "anomaly-segmentation"
+      ],
+      "noPublicImpl": true,
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "bergmann2020-uninformed-students",
+        "references": [
+          "bergmann2019-mvtec-ad",
+          "batzner2023-efficientad"
+        ],
+        "notes": "noPublicImpl is deliberate, not an omission. MVTec released no official\ncode. The most-used third-party reimplementation carries no LICENSE\nfile at all, so its licence field cannot be populated; the only\npermissively licensed alternative is unmaintained and low-traction.\nCiting either would put an unverifiable or dead implementation on a\nreference page.\n\nNot to be confused with anomalib's `stfpm` model, which implements\nWang et al., \"Student-Teacher Feature Pyramid Matching\" (BMVC 2021) —\na descendant of this paper, not an implementation of it.\n\nThis paper never uses the term \"AU-PRO\". It reports \"normalized area\nunder the PRO-curve\" up to a 30% per-pixel false-positive rate. The\npage uses the paper's own wording.\n\nPredictive variance (Eq. 10) is transcribed in the paper's own\nnotation, verified against the ar5iv MathML source. The constant\nper-component covariance s does not appear in Eq. 10 and cancels under\nthe Eq. 11 normalisation.\n"
+      },
+      "date": "2026-08-06",
+      "year": 2020
+    }
+  },
+  {
     "slug": "vgg",
     "frontmatter": {
       "title": "VGG",
@@ -3074,6 +4809,137 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-12",
       "year": 2014
+    }
+  },
+  {
+    "slug": "vggt",
+    "frontmatter": {
+      "title": "VGGT (Visual Geometry Grounded Transformer)",
+      "summary": "A large feed-forward transformer that predicts cameras, depth maps, point maps and 3D point tracks for one to hundreds of views in a single pass, removing the optimization and global-alignment post-processing that pairwise pointmap methods require.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "epipolar-geometry",
+        "pose-estimation",
+        "bundle-adjustment",
+        "vit",
+        "attention-mechanism",
+        "feed-forward-3d-reconstruction"
+      ],
+      "relations": [
+        {
+          "type": "generalized_by",
+          "target": "depth-anything-3",
+          "confidence": "medium",
+          "caution": "DA3 surpasses VGGT on the any-view benchmark (+44% pose, +25% geometry) and adds pose-conditioned input; VGGT remains a strong, widely-used feed-forward baseline."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "two-view-geometry",
+        "pose-estimation"
+      ],
+      "domain": "geometry",
+      "arch_family": "vit",
+      "params": "~1.2B",
+      "sources": {
+        "primary": "wang2025-vggt",
+        "references": [
+          "wang2023-dust3r",
+          "leroy2024-mast3r",
+          "oquab2023-dinov2"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/vggt",
+          "commit": "a288dd0f14786c93483e45524328726ab7b1b4ce",
+          "framework": "pytorch",
+          "license": "VGGT License v1 (non-commercial research)",
+          "weights_license": "VGGT License v1 (non-commercial research)"
+        }
+      ],
+      "date": "2026-06-27",
+      "year": 2025
+    }
+  },
+  {
+    "slug": "vit",
+    "frontmatter": {
+      "title": "ViT",
+      "summary": "Vision Transformer — a pure-transformer image classification backbone that treats an image as a sequence of fixed-size patches: split RGB image into $N = HW/P^2$ patches of $P{\\times}P$ pixels (P=16 for ViT-B/L, P=14 for ViT-H), linearly project to $D$-dim tokens, prepend a learnable [CLS] token, add learned positional embeddings, and feed through a standard transformer encoder; classification head reads the [CLS] token's final-layer output. ViT-B/16 86M params, ViT-L/16 307M, ViT-H/14 632M. With large-scale pretraining (JFT-300M) ViT matches or exceeds ResNet-based BiT-L on ImageNet at lower compute.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "mobilesam",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "medium",
+          "caution": "RF-DETR's backbone is a DINOv2 self-supervised ViT."
+        },
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "ViT vs ResNet (BiT) is the headline classification comparison in the paper. Both coexist as production backbones — ResNet's conv inductive bias dominates in small-data regimes; ViT scales better with large pretraining (JFT-300M)."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "features",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "vit",
+      "params": "86M (ViT-B/16), 307M (ViT-L/16), 632M (ViT-H/14)",
+      "flops": "17.6 GMAC (B/16), 61.6 GMAC (L/16), 167.4 GMAC (H/14) @ 224×224 (Table 6)",
+      "sources": {
+        "primary": "dosovitskiy2020-vit",
+        "references": [
+          "he2016-resnet"
+        ],
+        "notes": "Patch embedding (Eq. 1, §3.1): split $\\mathbf{x} \\in \\mathbb{R}^{H \\times W \\times C}$\ninto $N = HW/P^2$ patches of size $P \\times P$ pixels, flatten each\nto $P^2 \\cdot C$ dims, linearly project to $D$ dims with learned\nmatrix $\\mathbf{E} \\in \\mathbb{R}^{(P^2 \\cdot C) \\times D}$. Prepend\nlearnable $\\mathbf{x}_\\text{class}$ token; add learned 1D positional\nembedding $\\mathbf{E}_\\text{pos} \\in \\mathbb{R}^{(N+1) \\times D}$.\nForward pass (Eqs. 2-3): standard transformer encoder of $L$ blocks\nwith multi-head self-attention + MLP + pre-LayerNorm + residual.\nClassification head reads $\\mathbf{z}_L^0$ (final [CLS]) via single\nlinear layer (pretraining) or MLP-with-one-hidden-layer (fine-tune).\nSelf-attention (Eqs. 5-7): $\\mathbf{A} = \\mathrm{softmax}(\\mathbf{q}\\mathbf{k}^\\top / \\sqrt{D_h})$\non per-head queries/keys/values of dim $D_h = D/H$. MSA (Eq. 8):\nconcatenate $H$ heads → linear projection.\n\nCanonical variants (Table 1, §3.1):\n- ViT-Base (B): L=12, D=768, MLP=3072, H=12. ViT-B/16: 86M params.\n- ViT-Large (L): L=24, D=1024, MLP=4096, H=16. ViT-L/16: 307M params.\n- ViT-Huge (H): L=32, D=1280, MLP=5120, H=16. ViT-H/14: 632M params.\nNaming: ViT-B/16 = base with 16-px patches.\n\nHeadline benchmarks (Table 2, §4.2): JFT-300M-pretrained ViT-H/14\nreaches ImageNet top-1 88.55% (vs BiT-L 87.54%); ViT-L/16 (JFT)\n87.76%. Pretraining compute (TPUv3-core-days): ViT-H/14 2.5k vs\nBiT-L 9.9k — 4× cheaper at higher accuracy. ViT-L/16 self-supervised\n(Masked Patch Prediction) ImageNet top-1: 79.9%, +2% over scratch\nbut -4% under JFT-supervised pretraining (Appendix D, §4).\n\nPretraining-scale crossover (Fig. 3, §4.3): on ImageNet alone ViT\nunderperforms ResNet/BiT; on ImageNet-21k they break even; on\nJFT-300M ViT decisively wins. The crossover is around 100M images.\n\nPositional embedding ablation (Table 7, §4.5 / Appendix D.4): 1D\nlearned vs none = 0.642 vs 0.614 IN-Real linear-eval; 2D learned\nmatches 1D. The paper uses 1D learned for simplicity.\n\nHybrid (ResNet stem + ViT body): improves small/medium models on\nsmall-data regimes but ViT-L/H pure transformer wins at large\npretraining (Fig. 5, §4.4 — hybrid catches ViT at small budget,\nViT pulls ahead at larger budget).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/google-research/vision_transformer",
+          "commit": "0d03f554b83af02550407da1e8c702a7cb75e74b",
+          "framework": "jax",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/huggingface/pytorch-image-models",
+          "commit": "08fa5cd0b35860a4054738c4284a9c80b362cdc1",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-05-27",
+      "year": 2020
     }
   },
   {
@@ -3446,9 +5312,12 @@ export const conceptPages: ConceptIndexEntry[] = [
       "summary": "The intrinsic projective geometry of two views of a scene, encoding the constraint that a point visible in one image must lie on a specific line in the other image determined entirely by the camera positions.",
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 10,
       "access": "public",
       "prerequisites": [
+        "pinhole-camera-model",
+        "homography",
+        "svd-null-space",
         "ransac"
       ],
       "tags": [
@@ -3524,6 +5393,39 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "feed-forward-3d-reconstruction",
+    "frontmatter": {
+      "title": "Feed-Forward 3D Reconstruction",
+      "summary": "Recovering 3D geometry — point maps, depth, and camera poses — directly from images in a single network pass, replacing the detect-match-triangulate-bundle-adjust pipeline of classical structure-from-motion with learned pointmap regression.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 11,
+      "access": "public",
+      "prerequisites": [
+        "epipolar-geometry",
+        "bundle-adjustment",
+        "pose-estimation",
+        "pinhole-camera-model"
+      ],
+      "tags": [
+        "deep-learning",
+        "two-view-geometry",
+        "survey"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "primary": "wang2023-dust3r",
+        "references": [
+          "leroy2024-mast3r",
+          "wang2025-vggt",
+          "lin2025-depth-anything-3"
+        ]
+      },
+      "date": "2026-06-27",
+      "year": 2023
+    }
+  },
+  {
     "slug": "hessian-saddle-response",
     "frontmatter": {
       "title": "Hessian Saddle Response",
@@ -3558,7 +5460,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       "summary": "An invertible projective transformation of the plane, represented by a 3×3 matrix defined up to a non-zero scalar, mapping points between two images of a planar surface or capturing a pure camera rotation.",
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 9,
+      "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [
         "ransac",
@@ -3646,6 +5548,36 @@ export const conceptPages: ConceptIndexEntry[] = [
       },
       "date": "2026-05-16",
       "year": 1984
+    }
+  },
+  {
+    "slug": "monocular-depth-estimation",
+    "frontmatter": {
+      "title": "Monocular Depth Estimation",
+      "summary": "Predicting per-pixel scene depth from a single image — the scale ambiguity that forces relative (affine-invariant) versus metric formulations, the scale-and-shift-invariant training that lets incompatible datasets be mixed, and the foundation-model recipe that scaled it to zero-shot generalization.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 13,
+      "access": "public",
+      "prerequisites": [
+        "pinhole-camera-model"
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction",
+        "survey"
+      ],
+      "domain": "depth",
+      "sources": {
+        "primary": "ranftl2019-midas",
+        "references": [
+          "yang2024-depth-anything",
+          "yang2024-depth-anything-v2",
+          "lin2025-depth-anything-3"
+        ]
+      },
+      "date": "2026-06-27",
+      "year": 2019
     }
   },
   {
@@ -3831,6 +5763,39 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "stereo-rectification",
+    "frontmatter": {
+      "title": "Stereo Rectification",
+      "summary": "Warping a stereo pair so corresponding epipolar lines become collinear image rows, reducing dense correspondence to a scanline search; calibrated Euclidean methods and uncalibrated projective methods solve the same problem under different input assumptions.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 18,
+      "access": "public",
+      "prerequisites": [
+        "epipolar-geometry",
+        "homography",
+        "pinhole-camera-model",
+        "pose-estimation"
+      ],
+      "tags": [
+        "stereo",
+        "two-view-geometry",
+        "survey"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "references": [
+          "hartley1999-projective-rectification",
+          "loop1999-rectifying-homographies",
+          "pollefeys1999-polar-rectification",
+          "fusiello2000-compact-rectification",
+          "hartley1997-eight-point"
+        ]
+      },
+      "date": "2026-07-19"
+    }
+  },
+  {
     "slug": "structure-tensor",
     "frontmatter": {
       "title": "Structure Tensor",
@@ -3900,6 +5865,38 @@ export const conceptPages: ConceptIndexEntry[] = [
         ]
       },
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "visual-anomaly-detection",
+    "frontmatter": {
+      "title": "Visual Anomaly Detection",
+      "summary": "One-class detection and localisation of defects from defect-free training images only, organised by the structural-versus-logical anomaly distinction and surveying the student-teacher, memory-bank, and feature-space-autoencoder method families.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 18,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "tags": [
+        "survey",
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "anomaly-detection",
+      "sources": {
+        "references": [
+          "bergmann2019-mvtec-ad",
+          "bergmann2022-mvtec-loco",
+          "zou2022-visa",
+          "bergmann2020-uninformed-students",
+          "roth2022-patchcore",
+          "batzner2023-efficientad"
+        ],
+        "notes": "Survey concept page per docs/README.md §4: three surveyed methods\n(uninformed-students, patchcore, efficientad), decision table near the\ntop, >=800 words. AST and GCAD appear as context only — neither has a\npage.\n\nMetric attribution is deliberate. AU-PRO is defined in none of the\ncited papers: MVTec AD 2019 never uses the term, MVTec LOCO always\nspells out \"area under the sPRO curve\" and credits plain PRO to prior\nwork, and VisA argues for AU-PR over AU-ROC without using AU-PRO. The\nAU-PRO definition lives in the 2021 IJCV MVTec AD extension, which is\nnot ingested — the page must not attribute it to a source it cites.\n\nLatency figures are not cross-comparable: AST reports student-only\ninference on an RTX 1080 Ti, EfficientAD end-to-end on an RTX A6000,\nPatchCore seconds-per-image on unstated hardware. The decision table\ncarries the measurement basis per row rather than ranking a single\nlatency axis.\n"
+      },
+      "date": "2026-08-06"
     }
   }
 ];

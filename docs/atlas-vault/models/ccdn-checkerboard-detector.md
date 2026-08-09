@@ -12,13 +12,9 @@ Fully convolutional network that regresses a per-pixel checkerboard-corner respo
 
 - [[image-gradient]]
 
-## Related
+## Cross-paradigm
 
-- [[chess-corners]]
-- [[chessboard-x-corner-detection]]
-- [[fast-corner-detector]]
-- [[harris-corner-detector]]
-- [[rochade]]
+- **Learned alternative of** — [[chess-corners]]
 
 ## Sources
 
@@ -27,3 +23,4 @@ Fully convolutional network that regresses a per-pixel checkerboard-corner respo
 - Reference: [[donne2016-mate]]
 - Reference: [[placht2014-rochade]]
 - Reference: [[rufli2008-blurred]]
+- Reference: [[zhang2022-learning-based]]

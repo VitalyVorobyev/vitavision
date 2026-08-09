@@ -11,24 +11,16 @@ Scores each pixel by the Harris response R = det(M) − k·tr(M)², where M is t
 ## Prerequisites
 
 - [[image-gradient]]
+- [[non-maximum-suppression]]
 - [[structure-tensor]]
 
-## Related
+## Practice
 
-- [[chess-corners]]
-- [[duda-radon-corners]]
-- [[fast-corner-detector]]
-- [[laureano-topological-chessboard]]
-- [[puzzleboard]]
-- [[pyramidal-blur-aware-xcorner]]
-- [[shi-tomasi-corner-detector]]
-- [[shu-topological-grid]]
-
-## Compared with
-
-- [[chess-corners]]
-- [[fast-corner-detector]]
-- [[shi-tomasi-corner-detector]]
+- **Compared with** — [[chess-corners]]
+- **Compared with** — [[fast-corner-detector]]
+- **Compared with** — [[shi-tomasi-corner-detector]]
+- **Feeds into** — [[orb]] _(confidence: medium)_
+  > Used only as a corner-strength filter to rank FAST keypoints, not as a detector.
 
 ## Sources
 

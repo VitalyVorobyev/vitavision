@@ -13,16 +13,14 @@ Recover the integer $(i, j)$ grid coordinate of every corner in a checkerboard c
 - [[image-gradient]]
 - [[topological-grid-recovery]]
 
-## Related
+## Lineage
 
-- [[chess-corners]]
-- [[chessboard-x-corner-detection]]
-- [[harris-corner-detector]]
-- [[shi-tomasi-corner-detector]]
+- **Alternative formulation of** — [[geiger-chessboard-detector]] _(confidence: medium)_
+  > Different abstraction layer — topological grid recovery from a candidate corner set vs single-shot detection that integrates corner finding and grid linking. Not superseded by Geiger; both remain in practitioner use.
 
-## Compared with
+## Practice
 
-- [[laureano-topological-chessboard]]
+- **Compared with** — [[laureano-topological-chessboard]]
 
 ## Sources
 

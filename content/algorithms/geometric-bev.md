@@ -175,8 +175,8 @@ The CNN front-end — a standard image-classification trunk followed by the regr
 
 # References
 
-1. S. A. Abbas, A. Zisserman. *A Geometric Approach to Obtain a Bird's Eye View From an Image.* ICCV Workshops, 2019. [arXiv:1905.02231](https://arxiv.org/abs/1905.02231)
-2. K. He, X. Zhang, S. Ren, J. Sun. *Deep Residual Learning for Image Recognition.* CVPR, 2016. [arXiv:1512.03385](https://arxiv.org/abs/1512.03385)
+1. S. A. Abbas, A. Zisserman. *A Geometric Approach to Obtain a Bird's Eye View From an Image.* ICCV Workshops, 2019. [arXiv 1905.02231](https://arxiv.org/abs/1905.02231)
+2. K. He, X. Zhang, S. Ren, J. Sun. *Deep Residual Learning for Image Recognition.* CVPR, 2016. [arXiv 1512.03385](https://arxiv.org/abs/1512.03385)
 3. R. Hartley, A. Zisserman. *Multiple View Geometry in Computer Vision.* 2nd ed., Cambridge University Press, 2003.
 
 ```mermaid

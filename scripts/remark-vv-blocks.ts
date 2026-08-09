@@ -7,6 +7,7 @@
  */
 import type { Plugin } from "unified";
 import type { Root, Parent, PhrasingContent } from "mdast";
+import type { Properties } from "hast";
 import { visit } from "unist-util-visit";
 
 const SUPPORTED_BLOCKS = new Set([
@@ -52,7 +53,7 @@ interface MdastNodeWithHast extends Parent {
     children: Parent["children"];
     data?: {
         hName?: string;
-        hProperties?: Record<string, unknown>;
+        hProperties?: Properties;
     };
 }
 
@@ -71,7 +72,7 @@ function isDirectiveNode(node: unknown): node is DirectiveNode {
  */
 function createHastMappedNode(
     tagName: string,
-    properties: Record<string, unknown>,
+    properties: Properties,
     children: Parent["children"] = [],
 ): MdastNodeWithHast {
     return {
@@ -94,6 +95,31 @@ function createTextDiv(
     return createHastMappedNode("div", { className }, [
         { type: "text", value: text } as PhrasingContent,
     ]);
+}
+
+/** Minimal shape shared by mdast nodes we need to walk for plain-text extraction. */
+interface ValueOrParentNode {
+    value?: string;
+    children?: ValueOrParentNode[];
+}
+
+/**
+ * Recursively concatenate the literal text content of a node list. Nodes with a
+ * literal `value` (text, inlineMath, inlineCode, ...) contribute that value directly;
+ * container nodes (emphasis, strong, links, ...) contribute their children's text.
+ * Used only to detect whether a directive label is non-empty — the actual child
+ * nodes are preserved as-is (not this stringified form) when rendering the label.
+ */
+function getPlainText(nodes: ValueOrParentNode[]): string {
+    let text = "";
+    for (const node of nodes) {
+        if (typeof node.value === "string") {
+            text += node.value;
+        } else if (node.children) {
+            text += getPlainText(node.children);
+        }
+    }
+    return text;
 }
 
 /**
@@ -143,13 +169,14 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             const kind = node.name.toLowerCase();
             if (!SUPPORTED_BLOCKS.has(kind)) return;
 
-            // Extract label from directive [label] syntax
-            const labelChild = (node.children as Array<{ data?: { directiveLabel?: boolean }; children?: Array<{ value?: string }> }>)
+            // Extract label from directive [label] syntax. Preserve the label's child
+            // *nodes* (not a stringified concatenation) so inline formatting — most
+            // importantly remark-math's `inlineMath` nodes — survives into the hast
+            // tree and gets rendered downstream (e.g. by rehype-katex).
+            const labelChild = (node.children as Array<{ data?: { directiveLabel?: boolean }; children?: Parent["children"] }>)
                 .find((c) => c.data?.directiveLabel);
-            const label = labelChild
-                ?.children?.map((c) => c.value ?? "")
-                .join("")
-                .trim() || undefined;
+            const labelChildren = labelChild?.children ?? [];
+            const hasLabel = getPlainText(labelChildren as unknown as ValueOrParentNode[]).trim().length > 0;
 
             // Set up the outer wrapper
             const data = node.data || (node.data = {});
@@ -163,17 +190,19 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             const newChildren: Parent["children"] = [];
 
             // Title div
-            newChildren.push(createTextDiv("vv-block__title", BLOCK_TITLES[kind] ?? kind));
+            newChildren.push(createTextDiv("vv-block__title", BLOCK_TITLES[kind] ?? kind) as unknown as Parent["children"][0]);
 
             // Label div (optional)
-            if (label) {
-                newChildren.push(createTextDiv("vv-block__label", label));
+            if (hasLabel) {
+                newChildren.push(
+                    createHastMappedNode("div", { className: "vv-block__label" }, labelChildren) as unknown as Parent["children"][0],
+                );
             }
 
             // Filter out the label child from body content
             let bodyContent = node.children.filter(
                 (c) => !(c as { data?: { directiveLabel?: boolean } }).data?.directiveLabel,
-            );
+            ) as unknown as Parent["children"];
 
             // For algorithm blocks, extract meta
             if (kind === "algorithm") {
@@ -192,8 +221,8 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
                                 m.children,
                             ) as unknown as PhrasingContent,
                         ]),
-                    );
-                    newChildren.push(createHastMappedNode("div", { className: "vv-block__meta" }, metaItems));
+                    ) as unknown as Parent["children"];
+                    newChildren.push(createHastMappedNode("div", { className: "vv-block__meta" }, metaItems) as unknown as Parent["children"][0]);
                 }
             }
 
@@ -210,10 +239,10 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             }
 
             // Body wrapper
-            newChildren.push(createHastMappedNode("div", { className: "vv-block__body" }, bodyContent));
+            newChildren.push(createHastMappedNode("div", { className: "vv-block__body" }, bodyContent) as unknown as Parent["children"][0]);
 
             // Replace children
-            node.children = newChildren as DirectiveNode["children"];
+            node.children = newChildren as unknown as typeof node.children;
         });
     };
 };

@@ -165,5 +165,5 @@ Original Caffe model files were released by the authors at the Oxford VGG group 
 
 # References
 
-1. Simonyan, Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR 2015 (arXiv 2014). [arXiv:1409.1556](https://arxiv.org/abs/1409.1556)
+1. Simonyan, Zisserman. *Very Deep Convolutional Networks for Large-Scale Image Recognition.* ICLR 2015 (arXiv 2014). [arXiv 1409.1556](https://arxiv.org/abs/1409.1556)
 2. Krizhevsky, Sutskever, Hinton. *ImageNet Classification with Deep Convolutional Neural Networks.* NeurIPS 2012. [paper](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf)

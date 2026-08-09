@@ -106,7 +106,12 @@ function adaptChessCornersResult(
     config: Record<string, unknown>,
     runtimeMs: number,
 ) {
-    const stride = 9; // x, y, response, contrast, fit_rms, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma
+    // chess-corners 1.x narrowed the per-corner stride from 9 to 7: `contrast`
+    // and `fit_rms` were removed along with the response-fit prefilter that
+    // produced them. Nothing in the type-checker sees this — the detector
+    // returns a bare Float32Array — so a stale stride here would silently
+    // reinterpret axis angles as contrast and shear every corner's geometry.
+    const stride = 7; // x, y, response, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma
     if (raw.length % stride !== 0) {
         throw new Error(`chess-corners: unexpected output length ${raw.length} (expected multiple of ${stride})`);
     }
@@ -121,12 +126,10 @@ function adaptChessCornersResult(
         const x = raw[i * stride];
         const y = raw[i * stride + 1];
         const response = raw[i * stride + 2];
-        const contrast = raw[i * stride + 3];
-        const fit_rms = raw[i * stride + 4];
-        const axis0_angle = raw[i * stride + 5];
-        const axis0_sigma = raw[i * stride + 6];
-        const axis1_angle = raw[i * stride + 7];
-        const axis1_sigma = raw[i * stride + 8];
+        const axis0_angle = raw[i * stride + 3];
+        const axis0_sigma = raw[i * stride + 4];
+        const axis1_angle = raw[i * stride + 5];
+        const axis1_sigma = raw[i * stride + 6];
 
         if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(response)) continue;
 
@@ -134,7 +137,7 @@ function adaptChessCornersResult(
         responseMax = Math.max(responseMax, response);
         responseSum += response;
 
-        corners.push({ x, y, response, contrast, fit_rms, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma });
+        corners.push({ x, y, response, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma });
     }
 
     type AxisOut = { angle_rad: number; angle_deg: number; sigma_rad: number; direction: { dx: number; dy: number } };
@@ -159,8 +162,6 @@ function adaptChessCornersResult(
             x_norm: c.x / width,
             y_norm: c.y / height,
             response: c.response,
-            contrast: c.contrast,
-            fit_rms: c.fit_rms,
             axes: [makeAxis(c.axis0_angle, c.axis0_sigma), makeAxis(c.axis1_angle, c.axis1_sigma)] as [AxisOut, AxisOut],
             confidence,
             confidence_level: confidenceLevel,
@@ -185,7 +186,7 @@ function adaptChessCornersResult(
             units: "pixels" as const,
         },
         config: {
-            threshold_rel: (config.thresholdRel as number) ?? 0.2,
+            threshold: (config.threshold as number) ?? 30,
             nms_radius: (config.nmsRadius as number) ?? 2,
             broad_mode: (config.broadMode as boolean) ?? false,
             min_cluster_size: (config.minClusterSize as number) ?? 2,
@@ -276,7 +277,11 @@ function adaptCalibTargetResult(
     // to CalibrationCorner { id, x, y, x_norm, y_norm, score, grid, corner_id, target_position }
     const corners = detection.corners.map((c, idx) => {
         const pos = toPoint(c.position);
-        const grid = c.grid as { i: number; j: number } | null;
+        // calib-targets 0.10.1 renamed the wire grid coordinate from
+        // GridCoords{i,j} to Coord{u,v}; map it back onto the internal {i,j}
+        // shape the rest of the app (overlays, feature meta) still uses.
+        const gridRaw = c.grid as { u: number; v: number } | null;
+        const grid = gridRaw ? { i: gridRaw.u, j: gridRaw.v } : null;
         return {
             id: generateId(),
             x: pos.x,
@@ -284,8 +289,11 @@ function adaptCalibTargetResult(
             x_norm: pos.x / width,
             y_norm: pos.y / height,
             score: (c.score as number) ?? 0,
-            grid: grid ?? null,
-            corner_id: (c.id as number) ?? idx,
+            grid,
+            // 0.10.1 chessboard corners carry `input_index` instead of `id`/
+            // `target_position`; charuco/markerboard corners still carry `id`.
+            // Prefer input_index, then id, then fall back to array position.
+            corner_id: (c.input_index as number) ?? (c.id as number) ?? idx,
             target_position: toPointOrNull(c.target_position),
         };
     });
@@ -295,10 +303,10 @@ function adaptCalibTargetResult(
     if (algorithm === "charuco" && r.markers) {
         const rawMarkers = r.markers as Array<Record<string, unknown>>;
         markers = rawMarkers.map((m) => {
-            const gc = m.gc as { i: number; j: number };
+            const gc = m.gc as { u: number; v: number };
             return {
                 id: m.id as number,
-                grid_cell: { gx: gc.i, gy: gc.j },
+                grid_cell: { gx: gc.u, gy: gc.v },
                 rotation: m.rotation as number,
                 hamming: m.hamming as number,
                 score: m.score as number,
@@ -502,12 +510,16 @@ async function handleRinggrid(
 ) {
     const mod = await getRinggridModule();
 
-    // Start from WASM defaults, override with user-provided fields
+    // Start from WASM defaults, override with user-provided fields.
+    // ringgrid.target.v6 nests layout under lattice/marker/coding, so a
+    // shallow merge would wipe sibling keys (e.g. lattice.kind) whenever the
+    // user overrides only part of a nested block — use the nested-aware
+    // deepMerge (defined below in this file) instead.
     const defaults = JSON.parse(mod.default_board_json()) as Record<string, unknown>;
     const userBoard = config.boardJson
         ? JSON.parse(config.boardJson as string) as Record<string, unknown>
         : {};
-    const merged = { ...defaults, ...userBoard };
+    const merged = deepMerge(defaults, userBoard);
     const boardJson = JSON.stringify(merged);
 
     const detector = new mod.RinggridDetector(boardJson);
@@ -587,6 +599,25 @@ async function handleRadsymHeatmap(
     }
 }
 
+type ChessModule = typeof import("@vitavision/chess-corners");
+
+/**
+ * Map the UI's refiner string to a chess-corners 0.11 `ChessRefiner`.
+ * Mirrors the old `detector.set_refiner(<string>)` switch.
+ */
+function makeChessRefiner(mod: ChessModule, refiner: string) {
+    switch (refiner) {
+        case "forstner":
+            return mod.ChessRefiner.withForstner(new mod.ForstnerConfig());
+        case "saddle_point":
+            return mod.ChessRefiner.withSaddlePoint(new mod.SaddlePointConfig());
+        case "center_of_mass":
+            return mod.ChessRefiner.withCenterOfMass(new mod.CenterOfMassConfig());
+        default:
+            throw new Error(`chess-corners config: unknown refiner "${refiner}"`);
+    }
+}
+
 async function handleChessCorners(
     pixels: Uint8Array,
     width: number,
@@ -594,36 +625,60 @@ async function handleChessCorners(
     config: Record<string, unknown>,
 ) {
     const mod = await getChessModule();
-    const detector = mod.ChessDetector.multiscale();
 
+    // chess-corners 0.11 replaced the flat per-field setters (set_threshold,
+    // set_nms_radius, set_refiner, …) with the typed `DetectorConfig` builder.
+    // Start from the multiscale ChESS preset (library defaults) and overlay only
+    // the user-provided fields onto the shared-cell config tree, preserving the
+    // old behaviour.
+    //
+    // 1.x then dropped the `Threshold` tagged enum: `cfg.threshold` is a plain
+    // f32, an ABSOLUTE floor on the raw ChESS response (preset default 30).
+    // There is no relative mode any more, so `config.threshold` is passed
+    // through unscaled. It also moved the NMS / clustering knobs off
+    // `ChessConfig` onto a shared `cfg.detection` honoured by both the ChESS
+    // and Radon strategies — assigning `cfg.strategy.chess.nmsRadius` now
+    // writes a plain JS property on the wrapper that reads back correctly and
+    // never reaches WASM.
+    //
+    // The field setters (threshold, upscale, refiner) move their
+    // wrapper into the tree, but `ChessDetector.withConfig` only *borrows* `cfg`
+    // — it snapshots the config into the detector without consuming the handle —
+    // so `cfg` must be freed explicitly after the detector is built, otherwise
+    // the WASM-side config allocation leaks on every detection in the live
+    // editor/webcam path.
+    const cfg = mod.DetectorConfig.chessMultiscale();
+
+    if (typeof config.threshold === "number") {
+        cfg.threshold = config.threshold;
+    }
+    if (typeof config.upscaleFactor === "number") {
+        cfg.upscale = config.upscaleFactor >= 2
+            ? mod.UpscaleConfig.fixed(config.upscaleFactor)
+            : mod.UpscaleConfig.disabled();
+    }
+    if (typeof config.pyramidLevels === "number") cfg.multiscale.levels = config.pyramidLevels;
+    if (typeof config.pyramidMinSize === "number") cfg.multiscale.minSize = config.pyramidMinSize;
+
+    if (typeof config.nmsRadius === "number") cfg.detection.nmsRadius = config.nmsRadius;
+    if (typeof config.minClusterSize === "number") cfg.detection.minClusterSize = config.minClusterSize;
+
+    const chess = cfg.strategy.chess;
+    if (typeof config.broadMode === "boolean") {
+        chess.ring = config.broadMode ? mod.ChessRing.Broad : mod.ChessRing.Canonical;
+    }
+    if (typeof config.refiner === "string") {
+        chess.refiner = makeChessRefiner(mod, config.refiner);
+    }
+
+    // `withConfig` validates the config (e.g. upscale factor must be 2/3/4,
+    // pyramid levels ≥ 1) and throws a descriptive Rust error on bad input.
+    const detector = mod.ChessDetector.withConfig(cfg);
+    // `withConfig` borrows the config rather than taking ownership, so release
+    // the cfg handle (and the sub-tree it owns) now that the detector has
+    // snapshotted it — verified safe: detection runs correctly post-free.
+    cfg.free();
     try {
-        if (typeof config.thresholdRel === "number") detector.set_threshold(config.thresholdRel);
-        if (typeof config.nmsRadius === "number") detector.set_nms_radius(config.nmsRadius);
-        if (typeof config.broadMode === "boolean") detector.set_broad_mode(config.broadMode);
-        if (typeof config.minClusterSize === "number") detector.set_min_cluster_size(config.minClusterSize);
-        if (typeof config.pyramidLevels === "number") {
-            try {
-                detector.set_pyramid_levels(config.pyramidLevels);
-            } catch (e) {
-                throw new Error(`chess-corners config: set_pyramid_levels(${config.pyramidLevels}) failed`, { cause: e });
-            }
-        }
-        if (typeof config.pyramidMinSize === "number") detector.set_pyramid_min_size(config.pyramidMinSize);
-        if (typeof config.upscaleFactor === "number") {
-            try {
-                detector.set_upscale_factor(config.upscaleFactor);
-            } catch (e) {
-                throw new Error(`chess-corners config: set_upscale_factor(${config.upscaleFactor}) failed`, { cause: e });
-            }
-        }
-        if (typeof config.refiner === "string") {
-            try {
-                detector.set_refiner(config.refiner);
-            } catch (e) {
-                throw new Error(`chess-corners config: set_refiner("${config.refiner}") failed`, { cause: e });
-            }
-        }
-
         const t0 = performance.now();
         const result = detector.detect_rgba(pixels, width, height);
         const runtimeMs = performance.now() - t0;
@@ -652,6 +707,38 @@ function deepMerge(target: Record<string, unknown>, source: Record<string, unkno
     return out;
 }
 
+/**
+ * Recursively convert a value that may contain nested JS `Map`s into plain
+ * objects/arrays.
+ *
+ * The `detect_*_with_diagnostics` functions in @vitavision/calib-targets
+ * 0.10.1 return payloads that are `instanceof Map` at EVERY object level,
+ * despite the package's `.d.ts` declaring a plain `{ result, diagnostics }`
+ * object — an upstream serde_wasm_bindgen quirk verified empirically against
+ * the real WASM module, not inferred from the (misleading) type declaration.
+ * `Object.fromEntries` only unwraps the outermost Map; nested values (e.g.
+ * `cell`, `expected`, `offset_cells`) remain Maps that `JSON.stringify`
+ * silently renders as `{}`. This helper walks the whole tree so downstream
+ * code can treat the result as ordinary JSON — do not delete it as
+ * "redundant" without re-checking the raw WASM output.
+ */
+function unwrapMaps(value: unknown): unknown {
+    if (value instanceof Map) {
+        const out: Record<string, unknown> = {};
+        for (const [key, v] of value.entries()) out[key] = unwrapMaps(v);
+        return out;
+    }
+    if (Array.isArray(value)) return value.map(unwrapMaps);
+    if (value !== null && typeof value === "object") {
+        const out: Record<string, unknown> = {};
+        for (const key of Object.keys(value as Record<string, unknown>)) {
+            out[key] = unwrapMaps((value as Record<string, unknown>)[key]);
+        }
+        return out;
+    }
+    return value;
+}
+
 async function handleCalibTarget(
     algorithm: "chessboard" | "charuco" | "markerboard",
     pixels: Uint8Array,
@@ -664,9 +751,25 @@ async function handleCalibTarget(
     // Convert RGBA to grayscale
     const gray = mod.rgba_to_gray(pixels, width, height);
 
-    // Start from WASM defaults and merge user overrides
+    // Start from WASM defaults and merge user overrides. `upscale` on
+    // ChessConfig is an internally-tagged Rust enum (exactly one variant key)
+    // — a plain deepMerge would union the default's variant key with the
+    // override's, and the WASM deserializer rejects that ("invalid length 2,
+    // expected 1"). Replace it wholesale when overridden instead of merging.
+    //
+    // `threshold` was such an enum in 0.10.1; 0.11 collapsed it to a plain f32
+    // absolute response floor (default 15). It stays in the wholesale-replace
+    // list because replacing a scalar is what deepMerge would do anyway, and
+    // keeping both fields on the same path means a future re-tagging cannot
+    // reintroduce the union bug silently.
     const chessCfg = config.chessCfg
-        ? deepMerge(mod.default_chess_config(), config.chessCfg as Record<string, unknown>)
+        ? (() => {
+            const overrides = config.chessCfg as Record<string, unknown>;
+            const merged = deepMerge(mod.default_chess_config(), overrides);
+            if (overrides.threshold !== undefined) merged.threshold = overrides.threshold;
+            if (overrides.upscale !== undefined) merged.upscale = overrides.upscale;
+            return merged;
+        })()
         : undefined;
 
     const t0 = performance.now();
@@ -676,17 +779,14 @@ async function handleCalibTarget(
         const defaults = mod.default_chessboard_params() as Record<string, unknown>;
         const userParams = (config.params ?? {}) as Record<string, unknown>;
         const params = deepMerge(defaults, userParams);
-        const raw = mod.detect_chessboard(width, height, gray, chessCfg, params);
-        // 0.7+ returns { target, grid_directions, cell_size, strong_indices }; older
-        // detectors and adaptCalibTargetResult expect the corners under `detection`.
-        // Normalise so downstream consumers stay schema-stable.
-        if (raw && typeof raw === "object") {
-            const r = raw as Record<string, unknown>;
-            if (r.detection === undefined && r.target !== undefined) {
-                r.detection = r.target;
-            }
-        }
-        result = raw;
+        const raw = mod.detect_chessboard(width, height, gray, chessCfg, params) as
+            | { corners: unknown[]; cell_size: number | null }
+            | null;
+        // 0.10.1 flattened ChessboardDetectionResult to { corners, cell_size } —
+        // the `target`/`detection` wrapper is gone entirely. Re-wrap into the
+        // internal { detection: { kind, corners } } shape adaptCalibTargetResult
+        // and the rest of the app expect. `cell_size` has no current consumer.
+        result = raw ? { detection: { kind: "chessboard", corners: raw.corners } } : null;
     } else if (algorithm === "charuco") {
         // Charuco has no dedicated defaults function.
         // Its `chessboard` sub-object uses the same schema as standalone chessboard params —
@@ -696,12 +796,41 @@ async function handleCalibTarget(
         const chessboardDefaults = mod.default_chessboard_params() as Record<string, unknown>;
         const mergedChessboard = deepMerge(chessboardDefaults, userChessboard);
         const params = { ...userParams, chessboard: mergedChessboard };
-        result = mod.detect_charuco(width, height, gray, chessCfg, params);
+        const raw = mod.detect_charuco(width, height, gray, chessCfg, params) as {
+            corners: unknown[];
+            markers: unknown[];
+            alignment: unknown;
+        };
+        // 0.10.1 flattened CharucoDetectionResult to { corners, markers, alignment }.
+        result = {
+            detection: { kind: "charuco", corners: raw.corners },
+            markers: raw.markers,
+            alignment: raw.alignment,
+        };
     } else {
         const defaults = mod.default_marker_board_params() as Record<string, unknown>;
         const userParams = (config.params ?? {}) as Record<string, unknown>;
         const params = deepMerge(defaults, userParams);
-        result = mod.detect_marker_board(width, height, gray, chessCfg, params);
+        // 0.10.1 flattened MarkerBoardDetectionResult to { corners, alignment } and
+        // moved circle_candidates / circle_matches / alignment_inliers into the
+        // diagnostics channel. Call the _with_diagnostics variant and deep-unwrap
+        // its Map-based payload (see unwrapMaps) to keep those fields populated —
+        // the overlay's circle-candidate/match rendering depends on them.
+        const withDiag = unwrapMaps(
+            mod.detect_marker_board_with_diagnostics(width, height, gray, chessCfg, params),
+        ) as {
+            result: { corners: unknown[]; alignment: unknown } | null;
+            diagnostics: { circle_candidates: unknown[]; circle_matches: unknown[]; alignment_inliers: number } | null;
+        };
+        result = withDiag.result === null
+            ? null
+            : {
+                detection: { kind: "checkerboard_marker", corners: withDiag.result.corners },
+                alignment: withDiag.result.alignment,
+                circle_candidates: withDiag.diagnostics?.circle_candidates ?? [],
+                circle_matches: withDiag.diagnostics?.circle_matches ?? [],
+                alignment_inliers: withDiag.diagnostics?.alignment_inliers ?? null,
+            };
     }
 
     const runtimeMs = performance.now() - t0;
@@ -752,7 +881,11 @@ function adaptPuzzleboardResult(
 
     const corners = detection.corners.map((c) => {
         const pos = toPoint(c.position);
-        const grid = c.grid as { i: number; j: number } | null;
+        // calib-targets 0.10.1 renamed the wire grid coordinate from
+        // GridCoords{i,j} to Coord{u,v}; map it back onto the internal {i,j}
+        // shape PuzzleboardOverlay and the rest of the app expect.
+        const gridRaw = c.grid as { u: number; v: number } | null;
+        const grid = gridRaw ? { i: gridRaw.u, j: gridRaw.v } : null;
         const tp = toPointOrNull(c.target_position);
         return {
             id: generateId(),
@@ -760,7 +893,7 @@ function adaptPuzzleboardResult(
             x: pos.x + 0.5,
             y: pos.y + 0.5,
             score: (c.score as number) ?? 0,
-            grid: grid ?? null,
+            grid,
             master_id: (c.id as number) ?? null,
             target_position: tp ? { x: tp.x, y: tp.y } : null,
         };
@@ -833,10 +966,34 @@ async function handlePuzzleboard(
     const merged = deepMerge(defaults, config);
 
     const t0 = performance.now();
-    const result = mod.detect_puzzleboard(width, height, gray, null, merged);
+    // 0.10.1 flattened PuzzleBoardDetectionResult to { corners, alignment, decode }
+    // — the `detection` wrapper is gone, and `observed_edges` (consumed by
+    // PuzzleboardOverlay's edge-bit markers) moved to the `_with_diagnostics`
+    // sibling, which also returns a nested Map (see unwrapMaps).
+    //
+    // The two variants differ on failure: the plain one throws, while
+    // _with_diagnostics resolves `result` to *undefined* (not null) and still
+    // populates diagnostics. We use the diagnostics variant for observed_edges
+    // and re-raise ourselves, so a failed decode stays a surfaced error rather
+    // than a quiet empty-but-successful result.
+    const withDiag = unwrapMaps(
+        mod.detect_puzzleboard_with_diagnostics(width, height, gray, null, merged),
+    ) as {
+        result?: { corners: unknown[]; alignment: unknown; decode: unknown } | null;
+        diagnostics?: { observed_edges?: unknown[] };
+    };
+    if (withDiag?.result == null) {
+        throw new Error("decoding failed: no position match above confidence threshold");
+    }
+    const normalized = {
+        detection: { kind: "puzzleboard", corners: withDiag.result.corners },
+        alignment: withDiag.result.alignment,
+        decode: withDiag.result.decode,
+        observed_edges: withDiag.diagnostics?.observed_edges ?? [],
+    };
     const runtimeMs = performance.now() - t0;
 
-    return adaptPuzzleboardResult(result, runtimeMs, width, height, merged);
+    return adaptPuzzleboardResult(normalized, runtimeMs, width, height, merged);
 }
 
 async function handlePuzzleboardGenPng(

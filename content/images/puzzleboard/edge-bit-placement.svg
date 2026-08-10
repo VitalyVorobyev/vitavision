@@ -1,20 +1,49 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     viewBox="0 0 490 252"
-     role="img"
-     aria-labelledby="title desc"
-     preserveAspectRatio="xMidYMid meet"
-     style="display:block;width:100%;height:auto">
-  <title id="title">PuzzleBoard edge-bit placement</title>
-  <desc id="desc">Two adjacent checkerboard cells. Circular PuzzleBoard bits are centered on cell edges. Black and white circles encode the two bit values. Each circle has diameter L over 3, where L is the grid edge length.</desc>
-
-  <defs>
-    <style>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 490 252"
+   role="img"
+   aria-labelledby="title desc"
+   preserveAspectRatio="xMidYMid meet"
+   style="display:block;width:100%;height:auto"
+   version="1.1"
+   id="svg12"
+   sodipodi:docname="edge-bit-placement.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview12"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.6507936"
+     inkscape:cx="233.52405"
+     inkscape:cy="147.20193"
+     inkscape:window-width="1461"
+     inkscape:window-height="799"
+     inkscape:window-x="0"
+     inkscape:window-y="33"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg12" />
+  <title
+     id="title">PuzzleBoard edge-bit placement</title>
+  <desc
+     id="desc">Two adjacent checkerboard cells. Circular PuzzleBoard bits are centered on cell edges. Black and white circles encode the two bit values. Each circle has diameter L over 3, where L is the grid edge length.</desc>
+  <defs
+     id="defs1">
+    <style
+       id="style1">
       :root { color-scheme: light dark; }
 
       .ui-text {
         fill: #334155;
-        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;
       }
       .ui-stroke { stroke: #64748b; }
       .accent-text { fill: #2563eb; }
@@ -47,62 +76,194 @@
         font-weight: 700;
       }
     </style>
-
-    <marker id="arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5"
-            orient="auto-start-reverse" markerUnits="strokeWidth">
-      <path d="M6.2,1 L1,3.5 L6.2,6"
-            fill="none" class="accent-stroke"
-            stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+    <marker
+       id="arrow"
+       markerWidth="7"
+       markerHeight="7"
+       refX="3.5"
+       refY="3.5"
+       orient="auto-start-reverse"
+       markerUnits="strokeWidth">
+      <path
+         d="M6.2,1 L1,3.5 L6.2,6"
+         fill="none"
+         class="accent-stroke"
+         stroke-width="1.25"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         id="path1" />
     </marker>
   </defs>
-
   <!--
     Geometry fills the canvas deliberately. Blog layout should provide outer margins.
     Black/white are physical PuzzleBoard colors and therefore do not follow the UI theme.
   -->
-
   <!-- Two adjacent grid cells, each with edge length L = 200 in drawing units. -->
-  <g aria-label="checkerboard cells">
-    <rect x="20" y="20" width="200" height="200" fill="#0b0f19"/>
-    <rect x="220" y="20" width="200" height="200" fill="#ffffff"/>
-    <rect x="20" y="20" width="400" height="200" class="outline ui-stroke"/>
-    <line x1="220" y1="20" x2="220" y2="220" class="outline ui-stroke"/>
+  <rect
+     style="display:block;width:100%;height:auto;fill:#e3e3e3;stroke:none;stroke-width:3.77953;stroke-linecap:round;fill-opacity:1"
+     id="rect4"
+     width="487.03845"
+     height="253.21153"
+     x="1.2115384"
+     y="0" />
+  <g
+     aria-label="checkerboard cells"
+     id="g3"
+     transform="matrix(0.92313893,0,0,0.92313893,19.487262,15.521406)">
+    <rect
+       x="20"
+       y="20"
+       width="200"
+       height="200"
+       fill="#0b0f19"
+       id="rect1" />
+    <rect
+       x="220"
+       y="20"
+       width="200"
+       height="200"
+       fill="#ffffff"
+       id="rect2" />
+    <rect
+       x="20"
+       y="20"
+       width="400"
+       height="200"
+       class="outline ui-stroke"
+       id="rect3" />
+    <line
+       x1="220"
+       y1="20"
+       x2="220"
+       y2="220"
+       class="outline ui-stroke"
+       id="line3" />
   </g>
-
   <!-- PuzzleBoard edge bits. Diameter = L/3 = 66.67. -->
-  <g aria-label="PuzzleBoard bit circles" class="outline ui-stroke">
+  <g
+     aria-label="PuzzleBoard bit circles"
+     class="outline ui-stroke"
+     id="g7"
+     transform="matrix(0.92313893,0,0,0.92313893,19.487262,15.521406)">
     <!-- bit 0 examples -->
-    <circle cx="120" cy="20" r="33.333" fill="#0b0f19"/>
-    <circle cx="320" cy="20" r="33.333" fill="#0b0f19"/>
-
+    <circle
+       cx="120"
+       cy="20"
+       r="33.333"
+       fill="#0b0f19"
+       id="circle3" />
+    <circle
+       cx="320"
+       cy="20"
+       r="33.333"
+       fill="#0b0f19"
+       id="circle4" />
     <!-- bit 1 examples -->
-    <circle cx="120" cy="220" r="33.333" fill="#ffffff"/>
-    <circle cx="320" cy="220" r="33.333" fill="#ffffff"/>
-    <circle cx="220" cy="120" r="33.333" fill="#ffffff"/>
+    <circle
+       cx="120"
+       cy="220"
+       r="33.333"
+       fill="#ffffff"
+       id="circle5" />
+    <circle
+       cx="320"
+       cy="220"
+       r="33.333"
+       fill="#ffffff"
+       id="circle6" />
+    <circle
+       cx="220"
+       cy="120"
+       r="33.333"
+       fill="#ffffff"
+       id="circle7" />
   </g>
-
   <!-- Bit labels belong to the circular markers, not to the checkerboard cells. -->
-  <g class="bit-label" aria-label="bit values">
-    <text x="74" y="45" text-anchor="end" fill="#e5e7eb">0</text>
-    <line x1="79" y1="40" x2="91" y2="33" class="leader" stroke="#e5e7eb"/>
-
-    <text x="366" y="198" text-anchor="start" fill="#111827">1</text>
-    <line x1="361" y1="193" x2="349" y2="201" class="leader" stroke="#111827"/>
+  <g
+     class="bit-label"
+     aria-label="bit values"
+     id="g8"
+     transform="matrix(0.92313893,0,0,0.92313893,19.487262,15.521406)">
+    <text
+       x="74"
+       y="45"
+       text-anchor="end"
+       fill="#e5e7eb"
+       id="text7">0</text>
+    <line
+       x1="79"
+       y1="40"
+       x2="91"
+       y2="33"
+       class="leader"
+       stroke="#e5e7eb"
+       id="line7" />
+    <text
+       x="366"
+       y="198"
+       text-anchor="start"
+       fill="#111827"
+       id="text8">1</text>
+    <line
+       x1="361"
+       y1="193"
+       x2="349"
+       y2="201"
+       class="leader"
+       stroke="#111827"
+       id="line8" />
   </g>
-
   <!-- Single diameter annotation on the central bit. -->
-  <g aria-label="bit diameter L over 3">
-    <line x1="186.667" y1="120" x2="253.333" y2="120"
-          class="dimension accent-stroke"
-          marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-    <text x="264" y="126" class="accent-text label">L/3</text>
+  <g
+     aria-label="bit diameter L over 3"
+     id="g9"
+     transform="matrix(0.92313893,0,0,0.92313893,19.487262,15.521406)">
+    <line
+       x1="186.66701"
+       y1="120"
+       x2="253.33299"
+       y2="120"
+       class="dimension accent-stroke"
+       marker-start="url(#arrow)"
+       marker-end="url(#arrow)"
+       id="line9" />
+    <text
+       x="264"
+       y="126"
+       class="accent-text label"
+       id="text9">L/3</text>
   </g>
-
   <!-- Edge-length reference. -->
-  <g aria-label="grid edge length L">
-    <line x1="446" y1="20" x2="446" y2="220" class="dimension ui-stroke"/>
-    <line x1="438" y1="20" x2="454" y2="20" class="tick ui-stroke"/>
-    <line x1="438" y1="220" x2="454" y2="220" class="tick ui-stroke"/>
-    <text x="462" y="126" class="ui-text label">L</text>
+  <g
+     aria-label="grid edge length L"
+     id="g12"
+     transform="matrix(0.92313893,0,0,0.92313893,19.487262,15.521406)">
+    <line
+       x1="446"
+       y1="20"
+       x2="446"
+       y2="220"
+       class="dimension ui-stroke"
+       id="line10" />
+    <line
+       x1="438"
+       y1="20"
+       x2="454"
+       y2="20"
+       class="tick ui-stroke"
+       id="line11" />
+    <line
+       x1="438"
+       y1="220"
+       x2="454"
+       y2="220"
+       class="tick ui-stroke"
+       id="line12" />
+    <text
+       x="462"
+       y="126"
+       class="ui-text label"
+       id="text12"
+       style="fill:#2563eb;fill-opacity:1">L</text>
   </g>
 </svg>

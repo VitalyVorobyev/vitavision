@@ -34,7 +34,7 @@
     "@vitavision/radsym": "^0.4.1",
     "@vitavision/ringgrid": "^0.11.0",
     "d3-delaunay": "^6.0.4",
-    "framer-motion": "^12.43.0",
+    "framer-motion": "^13.0.0",
     "jszip": "^3.10.1",
     "katex": "~0.16.47",
     "konva": "^10.3.0",

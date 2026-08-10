@@ -1,52 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" class="h-auto w-full text-foreground" style="color:#1e293b" width="480" height="320" role="img" aria-label="PuzzleBoard edge-bit placement: a circle of diameter one-third of the edge length at the midpoint of each checkerboard edge, with the middle-third zone highlighted along one shared edge.">
-  <g aria-hidden="true">
-    <rect x="60" y="60" width="180" height="180" fill="#0f172a"/>
-    <rect x="240" y="60" width="180" height="180" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.75"/>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 490 252"
+     role="img"
+     aria-labelledby="title desc"
+     preserveAspectRatio="xMidYMid meet"
+     style="display:block;width:100%;height:auto">
+  <title id="title">PuzzleBoard edge-bit placement</title>
+  <desc id="desc">Two adjacent checkerboard cells. Circular PuzzleBoard bits are centered on cell edges. Black and white circles encode the two bit values. Each circle has diameter L over 3, where L is the grid edge length.</desc>
+
+  <defs>
+    <style>
+      :root { color-scheme: light dark; }
+
+      .ui-text {
+        fill: #334155;
+        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      .ui-stroke { stroke: #64748b; }
+      .accent-text { fill: #2563eb; }
+      .accent-stroke { stroke: #2563eb; }
+
+      @media (prefers-color-scheme: dark) {
+        .ui-text { fill: #e2e8f0; }
+        .ui-stroke { stroke: #94a3b8; }
+        .accent-text { fill: #60a5fa; }
+        .accent-stroke { stroke: #60a5fa; }
+      }
+
+      .outline, .dimension, .tick, .leader {
+        vector-effect: non-scaling-stroke;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .outline { stroke-width: 1.3; }
+      .dimension { stroke-width: 1.5; }
+      .tick { stroke-width: 1.3; }
+      .leader { stroke-width: 1.2; }
+
+      .label {
+        font-size: 16px;
+        font-weight: 650;
+      }
+      .bit-label {
+        font-size: 15px;
+        font-weight: 700;
+      }
+    </style>
+
+    <marker id="arrow" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5"
+            orient="auto-start-reverse" markerUnits="strokeWidth">
+      <path d="M6.2,1 L1,3.5 L6.2,6"
+            fill="none" class="accent-stroke"
+            stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!--
+    Geometry fills the canvas deliberately. Blog layout should provide outer margins.
+    Black/white are physical PuzzleBoard colors and therefore do not follow the UI theme.
+  -->
+
+  <!-- Two adjacent grid cells, each with edge length L = 200 in drawing units. -->
+  <g aria-label="checkerboard cells">
+    <rect x="20" y="20" width="200" height="200" fill="#0b0f19"/>
+    <rect x="220" y="20" width="200" height="200" fill="#ffffff"/>
+    <rect x="20" y="20" width="400" height="200" class="outline ui-stroke"/>
+    <line x1="220" y1="20" x2="220" y2="220" class="outline ui-stroke"/>
   </g>
-  <g>
-    <line x1="240" y1="90" x2="240" y2="210" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" opacity="0.35"/>
-    <line x1="240" y1="60" x2="240" y2="240" stroke="#0f172a" stroke-width="1" opacity="0.6"/>
+
+  <!-- PuzzleBoard edge bits. Diameter = L/3 = 66.67. -->
+  <g aria-label="PuzzleBoard bit circles" class="outline ui-stroke">
+    <!-- bit 0 examples -->
+    <circle cx="120" cy="20" r="33.333" fill="#0b0f19"/>
+    <circle cx="320" cy="20" r="33.333" fill="#0b0f19"/>
+
+    <!-- bit 1 examples -->
+    <circle cx="120" cy="220" r="33.333" fill="#ffffff"/>
+    <circle cx="320" cy="220" r="33.333" fill="#ffffff"/>
+    <circle cx="220" cy="120" r="33.333" fill="#ffffff"/>
   </g>
-  <g stroke="currentColor" stroke-width="1.25" fill="#f8fafc">
-    <circle cx="240" cy="150" r="30"/>
+
+  <!-- Bit labels belong to the circular markers, not to the checkerboard cells. -->
+  <g class="bit-label" aria-label="bit values">
+    <text x="74" y="45" text-anchor="end" fill="#e5e7eb">0</text>
+    <line x1="79" y1="40" x2="91" y2="33" class="leader" stroke="#e5e7eb"/>
+
+    <text x="366" y="198" text-anchor="start" fill="#111827">1</text>
+    <line x1="361" y1="193" x2="349" y2="201" class="leader" stroke="#111827"/>
   </g>
-  <g stroke="currentColor" stroke-width="1.25" fill="#0f172a">
-    <circle cx="150" cy="60" r="30"/>
+
+  <!-- Single diameter annotation on the central bit. -->
+  <g aria-label="bit diameter L over 3">
+    <line x1="186.667" y1="120" x2="253.333" y2="120"
+          class="dimension accent-stroke"
+          marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <text x="264" y="126" class="accent-text label">L/3</text>
   </g>
-  <g stroke="currentColor" stroke-width="1.25" fill="#0f172a">
-    <circle cx="330" cy="60" r="30"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1.25" fill="#f8fafc">
-    <circle cx="150" cy="240" r="30"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1.25" fill="#f8fafc">
-    <circle cx="330" cy="240" r="30"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" fill="none" opacity="0.7">
-    <line x1="240" y1="120" x2="240" y2="180"/>
-  </g>
-  <g stroke="#b45309" stroke-width="1.25" fill="none">
-    <path d="M 260 150 L 290 150 M 260 150 L 265 145 M 260 150 L 265 155 M 290 150 L 285 145 M 290 150 L 285 155"/>
-  </g>
-  <g fill="currentColor" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" text-anchor="start">
-    <text x="296" y="154" fill="#b45309" font-weight="600">diameter = L/3</text>
-  </g>
-  <g stroke="currentColor" stroke-width="1" fill="none">
-    <line x1="60" y1="272" x2="240" y2="272"/>
-    <line x1="60" y1="268" x2="60" y2="276"/>
-    <line x1="240" y1="268" x2="240" y2="276"/>
-  </g>
-  <g fill="currentColor" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" text-anchor="middle">
-    <text x="150" y="288">edge length L</text>
-  </g>
-  <g fill="currentColor" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" text-anchor="start">
-    <text x="14" y="20" font-weight="700">Bit circle at the midpoint of each edge</text>
-    <text x="14" y="36">Middle-third zone (amber) contains the imaged midpoint</text>
-    <text x="14" y="50">under any non-degenerate perspective transform.</text>
-  </g>
-  <g fill="currentColor" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" text-anchor="middle">
-    <text x="150" y="155" fill="#f8fafc">0</text>
-    <text x="330" y="155" fill="#0f172a">1</text>
+
+  <!-- Edge-length reference. -->
+  <g aria-label="grid edge length L">
+    <line x1="446" y1="20" x2="446" y2="220" class="dimension ui-stroke"/>
+    <line x1="438" y1="20" x2="454" y2="20" class="tick ui-stroke"/>
+    <line x1="438" y1="220" x2="454" y2="220" class="tick ui-stroke"/>
+    <text x="462" y="126" class="ui-text label">L</text>
   </g>
 </svg>

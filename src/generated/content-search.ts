@@ -3,7 +3,7 @@
 export interface SearchRecord {
     slug: string;
     path: string;
-    type: "algorithm" | "model" | "concept" | "narrative";
+    type: "algorithm" | "model" | "concept" | "narrative" | "author";
     title: string;
     summary: string;
     tags: string[];
@@ -2949,5 +2949,4496 @@ export const searchRecords: SearchRecord[] = [
       "Three bridges into anomaly detection",
       "The anomaly-detection design space"
     ]
+  },
+  {
+    "slug": "A5060441291",
+    "path": "/authors/A5060441291",
+    "type": "author",
+    "title": "Stuart Bennett",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5019616738",
+    "path": "/authors/A5019616738",
+    "type": "author",
+    "title": "Joan Lasenby",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076168268",
+    "path": "/authors/A5076168268",
+    "type": "author",
+    "title": "Edward Rosten",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5017469047",
+    "path": "/authors/A5017469047",
+    "type": "author",
+    "title": "Tom Drummond",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049156189",
+    "path": "/authors/A5049156189",
+    "type": "author",
+    "title": "Chris Harris",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5082762217",
+    "path": "/authors/A5082762217",
+    "type": "author",
+    "title": "Matthew J. Stephens",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081456949",
+    "path": "/authors/A5081456949",
+    "type": "author",
+    "title": "Jianbo Shi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088492440",
+    "path": "/authors/A5088492440",
+    "type": "author",
+    "title": "Carlo Tomasi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101767301",
+    "path": "/authors/A5101767301",
+    "type": "author",
+    "title": "Chang Shu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5078124597",
+    "path": "/authors/A5078124597",
+    "type": "author",
+    "title": "Alan Brunton",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021003906",
+    "path": "/authors/A5021003906",
+    "type": "author",
+    "title": "Mark A. Fiala",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057113537",
+    "path": "/authors/A5057113537",
+    "type": "author",
+    "title": "Peer Stelldinger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090428190",
+    "path": "/authors/A5090428190",
+    "type": "author",
+    "title": "Nils Schönherr",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006002082",
+    "path": "/authors/A5006002082",
+    "type": "author",
+    "title": "Justus Biermann",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5055539616",
+    "path": "/authors/A5055539616",
+    "type": "author",
+    "title": "Peter Fuersattel",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5112143390",
+    "path": "/authors/A5112143390",
+    "type": "author",
+    "title": "Sergiu Dotenco",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5026038284",
+    "path": "/authors/A5026038284",
+    "type": "author",
+    "title": "Simon Placht",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5012614625",
+    "path": "/authors/A5012614625",
+    "type": "author",
+    "title": "Michael Balda",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101619735",
+    "path": "/authors/A5101619735",
+    "type": "author",
+    "title": "Andreas Maier",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049250339",
+    "path": "/authors/A5049250339",
+    "type": "author",
+    "title": "Christian Rieß",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062717854",
+    "path": "/authors/A5062717854",
+    "type": "author",
+    "title": "Peter Fürsattel",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5056616756",
+    "path": "/authors/A5056616756",
+    "type": "author",
+    "title": "Etienne Assoumou Mengue",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081273414",
+    "path": "/authors/A5081273414",
+    "type": "author",
+    "title": "Hannes Hofmann",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101410135",
+    "path": "/authors/A5101410135",
+    "type": "author",
+    "title": "Christian Schaller",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049805682",
+    "path": "/authors/A5049805682",
+    "type": "author",
+    "title": "Elli Angelopoulou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5009276474",
+    "path": "/authors/A5009276474",
+    "type": "author",
+    "title": "L.P. Cordella",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5082731857",
+    "path": "/authors/A5082731857",
+    "type": "author",
+    "title": "Pasquale Foggia",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090709130",
+    "path": "/authors/A5090709130",
+    "type": "author",
+    "title": "Carlo Sansone",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5110251352",
+    "path": "/authors/A5110251352",
+    "type": "author",
+    "title": "M. Vento",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062693600",
+    "path": "/authors/A5062693600",
+    "type": "author",
+    "title": "L. Lucchese",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065358142",
+    "path": "/authors/A5065358142",
+    "type": "author",
+    "title": "S. Mitra",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5091224826",
+    "path": "/authors/A5091224826",
+    "type": "author",
+    "title": "Dazhi Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100602615",
+    "path": "/authors/A5100602615",
+    "type": "author",
+    "title": "Guangjun Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5066262214",
+    "path": "/authors/A5066262214",
+    "type": "author",
+    "title": "Martin Rufli",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057116316",
+    "path": "/authors/A5057116316",
+    "type": "author",
+    "title": "Davide Scaramuzza",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083003222",
+    "path": "/authors/A5083003222",
+    "type": "author",
+    "title": "Roland Siegwart",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5074516721",
+    "path": "/authors/A5074516721",
+    "type": "author",
+    "title": "Carlton W. Niblack",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5014824446",
+    "path": "/authors/A5014824446",
+    "type": "author",
+    "title": "Phillip B. Gibbons",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5014807583",
+    "path": "/authors/A5014807583",
+    "type": "author",
+    "title": "David W. Capson",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088467090",
+    "path": "/authors/A5088467090",
+    "type": "author",
+    "title": "Peter Abeles",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102020871",
+    "path": "/authors/A5102020871",
+    "type": "author",
+    "title": "Ben Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100770696",
+    "path": "/authors/A5100770696",
+    "type": "author",
+    "title": "Caihua Xiong",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100360386",
+    "path": "/authors/A5100360386",
+    "type": "author",
+    "title": "Qi Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5056175786",
+    "path": "/authors/A5056175786",
+    "type": "author",
+    "title": "Simon Donné",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5056570824",
+    "path": "/authors/A5056570824",
+    "type": "author",
+    "title": "Jonas De Vylder",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101986863",
+    "path": "/authors/A5101986863",
+    "type": "author",
+    "title": "Bart Goossens",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071483672",
+    "path": "/authors/A5071483672",
+    "type": "author",
+    "title": "Wilfried Philips",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5074731322",
+    "path": "/authors/A5074731322",
+    "type": "author",
+    "title": "Guilherme Potje",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5112882128",
+    "path": "/authors/A5112882128",
+    "type": "author",
+    "title": "Felipe Cadar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101666068",
+    "path": "/authors/A5101666068",
+    "type": "author",
+    "title": "André Araujo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103150309",
+    "path": "/authors/A5103150309",
+    "type": "author",
+    "title": "Renato Martins",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002613601",
+    "path": "/authors/A5002613601",
+    "type": "author",
+    "title": "Erickson R. Nascimento",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002090912",
+    "path": "/authors/A5002090912",
+    "type": "author",
+    "title": "Daniel DeTone",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5067498868",
+    "path": "/authors/A5067498868",
+    "type": "author",
+    "title": "Tomasz Malisiewicz",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5026452365",
+    "path": "/authors/A5026452365",
+    "type": "author",
+    "title": "Andrew Rabinovich",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5056480447",
+    "path": "/authors/A5056480447",
+    "type": "author",
+    "title": "Zheng Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113435866",
+    "path": "/authors/A5113435866",
+    "type": "author",
+    "title": "R. Tsai",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102851268",
+    "path": "/authors/A5102851268",
+    "type": "author",
+    "title": "Juyang Weng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108230279",
+    "path": "/authors/A5108230279",
+    "type": "author",
+    "title": "Paul R. Cohen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081818577",
+    "path": "/authors/A5081818577",
+    "type": "author",
+    "title": "M. Herniou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5110192522",
+    "path": "/authors/A5110192522",
+    "type": "author",
+    "title": "R. Lenz",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5030154719",
+    "path": "/authors/A5030154719",
+    "type": "author",
+    "title": "Y.C. Shiu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062061555",
+    "path": "/authors/A5062061555",
+    "type": "author",
+    "title": "S. Ahmad",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5064861062",
+    "path": "/authors/A5064861062",
+    "type": "author",
+    "title": "Konstantinos Daniilidis",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101602756",
+    "path": "/authors/A5101602756",
+    "type": "author",
+    "title": "Avinash Kumar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108521995",
+    "path": "/authors/A5108521995",
+    "type": "author",
+    "title": "Narendra Ahuja",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5052537634",
+    "path": "/authors/A5052537634",
+    "type": "author",
+    "title": "Alexander Duda",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5061113124",
+    "path": "/authors/A5061113124",
+    "type": "author",
+    "title": "Udo Frese",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031990673",
+    "path": "/authors/A5031990673",
+    "type": "author",
+    "title": "Julio H. Zaragoza",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5027317977",
+    "path": "/authors/A5027317977",
+    "type": "author",
+    "title": "Tat-Jun Chin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5106406020",
+    "path": "/authors/A5106406020",
+    "type": "author",
+    "title": "Michael S. Brown",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031492664",
+    "path": "/authors/A5031492664",
+    "type": "author",
+    "title": "David Suter",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5020216442",
+    "path": "/authors/A5020216442",
+    "type": "author",
+    "title": "Richard Hartley",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5037680267",
+    "path": "/authors/A5037680267",
+    "type": "author",
+    "title": "Scott Schaefer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065389320",
+    "path": "/authors/A5065389320",
+    "type": "author",
+    "title": "Travis McPhail",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113597103",
+    "path": "/authors/A5113597103",
+    "type": "author",
+    "title": "Joe Warren",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103211763",
+    "path": "/authors/A5103211763",
+    "type": "author",
+    "title": "Junhong Gao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103036411",
+    "path": "/authors/A5103036411",
+    "type": "author",
+    "title": "Seon Joo Kim",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5075135613",
+    "path": "/authors/A5075135613",
+    "type": "author",
+    "title": "Michael S. Brown",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5068556469",
+    "path": "/authors/A5068556469",
+    "type": "author",
+    "title": "Wen-Yan Lin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100620147",
+    "path": "/authors/A5100620147",
+    "type": "author",
+    "title": "Siying Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5033986386",
+    "path": "/authors/A5033986386",
+    "type": "author",
+    "title": "Yasuyuki Matsushita",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002069408",
+    "path": "/authors/A5002069408",
+    "type": "author",
+    "title": "Tian-Tsong Ng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5030078173",
+    "path": "/authors/A5030078173",
+    "type": "author",
+    "title": "Loong‐Fah Cheong",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102743150",
+    "path": "/authors/A5102743150",
+    "type": "author",
+    "title": "Takeo Igarashi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090522908",
+    "path": "/authors/A5090522908",
+    "type": "author",
+    "title": "Tomer Moscovich",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103642464",
+    "path": "/authors/A5103642464",
+    "type": "author",
+    "title": "John F. Hughes",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5016606943",
+    "path": "/authors/A5016606943",
+    "type": "author",
+    "title": "Andreas Geiger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5079874359",
+    "path": "/authors/A5079874359",
+    "type": "author",
+    "title": "Frank Moosmann",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081434393",
+    "path": "/authors/A5081434393",
+    "type": "author",
+    "title": "Omer Car",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5063602086",
+    "path": "/authors/A5063602086",
+    "type": "author",
+    "title": "Bernhard Schuster",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5047932106",
+    "path": "/authors/A5047932106",
+    "type": "author",
+    "title": "Michaël Hillen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001584002",
+    "path": "/authors/A5001584002",
+    "type": "author",
+    "title": "Ivan De Boi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005825554",
+    "path": "/authors/A5005825554",
+    "type": "author",
+    "title": "Thomas De Kerf",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049403684",
+    "path": "/authors/A5049403684",
+    "type": "author",
+    "title": "Seppe Sels",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001363884",
+    "path": "/authors/A5001363884",
+    "type": "author",
+    "title": "Edgar Cardenas De La Hoz",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5053922584",
+    "path": "/authors/A5053922584",
+    "type": "author",
+    "title": "Jona Gladines",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5009366565",
+    "path": "/authors/A5009366565",
+    "type": "author",
+    "title": "Gunther Steenackers",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001783145",
+    "path": "/authors/A5001783145",
+    "type": "author",
+    "title": "Rudi Penne",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071951202",
+    "path": "/authors/A5071951202",
+    "type": "author",
+    "title": "Steve Vanlanduit",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5016802096",
+    "path": "/authors/A5016802096",
+    "type": "author",
+    "title": "Yesheng Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100440525",
+    "path": "/authors/A5100440525",
+    "type": "author",
+    "title": "Xu Zhao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081179416",
+    "path": "/authors/A5081179416",
+    "type": "author",
+    "title": "Dahong Qian",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021196481",
+    "path": "/authors/A5021196481",
+    "type": "author",
+    "title": "Hao Wu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101985050",
+    "path": "/authors/A5101985050",
+    "type": "author",
+    "title": "Yi Wan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5084041835",
+    "path": "/authors/A5084041835",
+    "type": "author",
+    "title": "Gareth Loy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076609571",
+    "path": "/authors/A5076609571",
+    "type": "author",
+    "title": "Alex Zelinsky",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5013615286",
+    "path": "/authors/A5013615286",
+    "type": "author",
+    "title": "Jie Ni",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062755809",
+    "path": "/authors/A5062755809",
+    "type": "author",
+    "title": "Maneesh Kumar Singh",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032338259",
+    "path": "/authors/A5032338259",
+    "type": "author",
+    "title": "Claus Bahlmann",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065975557",
+    "path": "/authors/A5065975557",
+    "type": "author",
+    "title": "Rahul Raguram",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5019409717",
+    "path": "/authors/A5019409717",
+    "type": "author",
+    "title": "Ondřej Chum",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021908609",
+    "path": "/authors/A5021908609",
+    "type": "author",
+    "title": "Marc Pollefeys",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5007656938",
+    "path": "/authors/A5007656938",
+    "type": "author",
+    "title": "Jiřı́ Matas",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018151384",
+    "path": "/authors/A5018151384",
+    "type": "author",
+    "title": "Jan‐Michael Frahm",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5016636021",
+    "path": "/authors/A5016636021",
+    "type": "author",
+    "title": "Dániel Baráth",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5013005906",
+    "path": "/authors/A5013005906",
+    "type": "author",
+    "title": "Agostino Martinelli",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5055202003",
+    "path": "/authors/A5055202003",
+    "type": "author",
+    "title": "David Lowe",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5089723214",
+    "path": "/authors/A5089723214",
+    "type": "author",
+    "title": "John Canny",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5112002146",
+    "path": "/authors/A5112002146",
+    "type": "author",
+    "title": "Herbert Bay",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5074816094",
+    "path": "/authors/A5074816094",
+    "type": "author",
+    "title": "Tinne Tuytelaars",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001254143",
+    "path": "/authors/A5001254143",
+    "type": "author",
+    "title": "Luc Van Gool",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005568128",
+    "path": "/authors/A5005568128",
+    "type": "author",
+    "title": "Michael Calonder",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5070382607",
+    "path": "/authors/A5070382607",
+    "type": "author",
+    "title": "Vincent Lepetit",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5040251230",
+    "path": "/authors/A5040251230",
+    "type": "author",
+    "title": "Christoph Strecha",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038674741",
+    "path": "/authors/A5038674741",
+    "type": "author",
+    "title": "Pascal Fua",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031632823",
+    "path": "/authors/A5031632823",
+    "type": "author",
+    "title": "Ethan Rublee",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5017786000",
+    "path": "/authors/A5017786000",
+    "type": "author",
+    "title": "Vincent Rabaud",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5020223882",
+    "path": "/authors/A5020223882",
+    "type": "author",
+    "title": "Kurt Konolige",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5035523929",
+    "path": "/authors/A5035523929",
+    "type": "author",
+    "title": "Gary Bradski",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5047661610",
+    "path": "/authors/A5047661610",
+    "type": "author",
+    "title": "Paul-Edouard Sarlin",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5030787679",
+    "path": "/authors/A5030787679",
+    "type": "author",
+    "title": "Jiaming Sun",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5014481904",
+    "path": "/authors/A5014481904",
+    "type": "author",
+    "title": "Zehong Shen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100723101",
+    "path": "/authors/A5100723101",
+    "type": "author",
+    "title": "Yuang Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5059021869",
+    "path": "/authors/A5059021869",
+    "type": "author",
+    "title": "Hujun Bao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101814482",
+    "path": "/authors/A5101814482",
+    "type": "author",
+    "title": "Xiaowei Zhou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5047482262",
+    "path": "/authors/A5047482262",
+    "type": "author",
+    "title": "Philipp Lindenberger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5023765219",
+    "path": "/authors/A5023765219",
+    "type": "author",
+    "title": "Pedro F. Felzenszwalb",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5112446832",
+    "path": "/authors/A5112446832",
+    "type": "author",
+    "title": "Daniel P. Huttenlocher",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028352869",
+    "path": "/authors/A5028352869",
+    "type": "author",
+    "title": "Yuri Boykov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5109251531",
+    "path": "/authors/A5109251531",
+    "type": "author",
+    "title": "Marie‐Pierre Jolly",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004060675",
+    "path": "/authors/A5004060675",
+    "type": "author",
+    "title": "Tianlong Yang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018808803",
+    "path": "/authors/A5018808803",
+    "type": "author",
+    "title": "Qiancheng Zhao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5048916001",
+    "path": "/authors/A5048916001",
+    "type": "author",
+    "title": "Wang Xian",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5087193137",
+    "path": "/authors/A5087193137",
+    "type": "author",
+    "title": "Quan Zhou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113249053",
+    "path": "/authors/A5113249053",
+    "type": "author",
+    "title": "H. C. Longuet–Higgins",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5034290170",
+    "path": "/authors/A5034290170",
+    "type": "author",
+    "title": "Carsten Rother",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021390142",
+    "path": "/authors/A5021390142",
+    "type": "author",
+    "title": "Vladimir Kolmogorov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101657518",
+    "path": "/authors/A5101657518",
+    "type": "author",
+    "title": "Andrew Blake",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032863417",
+    "path": "/authors/A5032863417",
+    "type": "author",
+    "title": "Jonathan Long",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5023786468",
+    "path": "/authors/A5023786468",
+    "type": "author",
+    "title": "Evan Shelhamer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5029105520",
+    "path": "/authors/A5029105520",
+    "type": "author",
+    "title": "Trevor Darrell",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5045981348",
+    "path": "/authors/A5045981348",
+    "type": "author",
+    "title": "Olaf Ronneberger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041583196",
+    "path": "/authors/A5041583196",
+    "type": "author",
+    "title": "Philipp Fischer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5070290355",
+    "path": "/authors/A5070290355",
+    "type": "author",
+    "title": "Thomas Brox",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103273466",
+    "path": "/authors/A5103273466",
+    "type": "author",
+    "title": "Liang-Chieh Chen",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5034294456",
+    "path": "/authors/A5034294456",
+    "type": "author",
+    "title": "George Papandreou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5077035803",
+    "path": "/authors/A5077035803",
+    "type": "author",
+    "title": "Iasonas Kokkinos",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002713363",
+    "path": "/authors/A5002713363",
+    "type": "author",
+    "title": "Kevin Murphy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5086706224",
+    "path": "/authors/A5086706224",
+    "type": "author",
+    "title": "Alan Yuille",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100700361",
+    "path": "/authors/A5100700361",
+    "type": "author",
+    "title": "Kaiming He",
+    "summary": "7 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5014407395",
+    "path": "/authors/A5014407395",
+    "type": "author",
+    "title": "Georgia Gkioxari",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057866698",
+    "path": "/authors/A5057866698",
+    "type": "author",
+    "title": "Piotr Dollár",
+    "summary": "6 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049246408",
+    "path": "/authors/A5049246408",
+    "type": "author",
+    "title": "Ross Girshick",
+    "summary": "9 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5008626158",
+    "path": "/authors/A5008626158",
+    "type": "author",
+    "title": "Alexander M. Kirillov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5042149832",
+    "path": "/authors/A5042149832",
+    "type": "author",
+    "title": "Eric Mintun",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5045356290",
+    "path": "/authors/A5045356290",
+    "type": "author",
+    "title": "Nikhila Ravi",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021948346",
+    "path": "/authors/A5021948346",
+    "type": "author",
+    "title": "Hanzi Mao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5043279771",
+    "path": "/authors/A5043279771",
+    "type": "author",
+    "title": "Chloe Rolland",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5033942765",
+    "path": "/authors/A5033942765",
+    "type": "author",
+    "title": "Laura Gustafson",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041246275",
+    "path": "/authors/A5041246275",
+    "type": "author",
+    "title": "Tete Xiao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076767045",
+    "path": "/authors/A5076767045",
+    "type": "author",
+    "title": "Spencer Whitehead",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5104361813",
+    "path": "/authors/A5104361813",
+    "type": "author",
+    "title": "Alexander C. Berg",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090902802",
+    "path": "/authors/A5090902802",
+    "type": "author",
+    "title": "Wan‐Yen Lo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5042310818",
+    "path": "/authors/A5042310818",
+    "type": "author",
+    "title": "Paul Viola",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5064275902",
+    "path": "/authors/A5064275902",
+    "type": "author",
+    "title": "Michael Jones",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5050292858",
+    "path": "/authors/A5050292858",
+    "type": "author",
+    "title": "Navneet Dalal",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062363302",
+    "path": "/authors/A5062363302",
+    "type": "author",
+    "title": "Bill Triggs",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5033089246",
+    "path": "/authors/A5033089246",
+    "type": "author",
+    "title": "David McAllester",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004353237",
+    "path": "/authors/A5004353237",
+    "type": "author",
+    "title": "Deva Ramanan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031152245",
+    "path": "/authors/A5031152245",
+    "type": "author",
+    "title": "Alex Krizhevsky",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006446297",
+    "path": "/authors/A5006446297",
+    "type": "author",
+    "title": "Ilya Sutskever",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108093963",
+    "path": "/authors/A5108093963",
+    "type": "author",
+    "title": "Geoffrey E. Hinton",
+    "summary": "4 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004625775",
+    "path": "/authors/A5004625775",
+    "type": "author",
+    "title": "Karen Simonyan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057678172",
+    "path": "/authors/A5057678172",
+    "type": "author",
+    "title": "Andrew Zisserman",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002183320",
+    "path": "/authors/A5002183320",
+    "type": "author",
+    "title": "Christian Szegedy",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100641142",
+    "path": "/authors/A5100641142",
+    "type": "author",
+    "title": "Wei Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5110220840",
+    "path": "/authors/A5110220840",
+    "type": "author",
+    "title": "Yangqing Jia",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5066544075",
+    "path": "/authors/A5066544075",
+    "type": "author",
+    "title": "Pierre Sermanet",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5059110895",
+    "path": "/authors/A5059110895",
+    "type": "author",
+    "title": "Scott Reed",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081024054",
+    "path": "/authors/A5081024054",
+    "type": "author",
+    "title": "Dragomir Anguelov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5084125668",
+    "path": "/authors/A5084125668",
+    "type": "author",
+    "title": "Dumitru Erhan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5013813527",
+    "path": "/authors/A5013813527",
+    "type": "author",
+    "title": "Vincent Vanhoucke",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100362465",
+    "path": "/authors/A5100362465",
+    "type": "author",
+    "title": "Xiangyu Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100824251",
+    "path": "/authors/A5100824251",
+    "type": "author",
+    "title": "Shaoqing Ren",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100785015",
+    "path": "/authors/A5100785015",
+    "type": "author",
+    "title": "Jian Sun",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101425421",
+    "path": "/authors/A5101425421",
+    "type": "author",
+    "title": "Jian Sun",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062301070",
+    "path": "/authors/A5062301070",
+    "type": "author",
+    "title": "Joseph Redmon",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5046849436",
+    "path": "/authors/A5046849436",
+    "type": "author",
+    "title": "Santosh Divvala",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101576595",
+    "path": "/authors/A5101576595",
+    "type": "author",
+    "title": "Ali Farhadi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5052768778",
+    "path": "/authors/A5052768778",
+    "type": "author",
+    "title": "Tsung-Yi Lin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5035445731",
+    "path": "/authors/A5035445731",
+    "type": "author",
+    "title": "Priya Goyal",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081691937",
+    "path": "/authors/A5081691937",
+    "type": "author",
+    "title": "Bruce D. Lucas",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057924291",
+    "path": "/authors/A5057924291",
+    "type": "author",
+    "title": "Takeo Kanade",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5079878449",
+    "path": "/authors/A5079878449",
+    "type": "author",
+    "title": "Carlo Tomasi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5080970223",
+    "path": "/authors/A5080970223",
+    "type": "author",
+    "title": "Berthold K. P. Horn",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5008294855",
+    "path": "/authors/A5008294855",
+    "type": "author",
+    "title": "Brian G. Schunck",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065396778",
+    "path": "/authors/A5065396778",
+    "type": "author",
+    "title": "Michael J. Black",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103029420",
+    "path": "/authors/A5103029420",
+    "type": "author",
+    "title": "P. Anandan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5050345889",
+    "path": "/authors/A5050345889",
+    "type": "author",
+    "title": "Franklin C. Crow",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5069384071",
+    "path": "/authors/A5069384071",
+    "type": "author",
+    "title": "Syed Ammar Abbas",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038193389",
+    "path": "/authors/A5038193389",
+    "type": "author",
+    "title": "Konstantin Sofiiuk",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065787419",
+    "path": "/authors/A5065787419",
+    "type": "author",
+    "title": "Anton Konushin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101919615",
+    "path": "/authors/A5101919615",
+    "type": "author",
+    "title": "Ke Sun",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103218891",
+    "path": "/authors/A5103218891",
+    "type": "author",
+    "title": "Bin Xiao",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100407381",
+    "path": "/authors/A5100407381",
+    "type": "author",
+    "title": "Dong Liu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5075880303",
+    "path": "/authors/A5075880303",
+    "type": "author",
+    "title": "Jingdong Wang",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5056718303",
+    "path": "/authors/A5056718303",
+    "type": "author",
+    "title": "Yang Zhao",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5022898952",
+    "path": "/authors/A5022898952",
+    "type": "author",
+    "title": "Borui Jiang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5022657064",
+    "path": "/authors/A5022657064",
+    "type": "author",
+    "title": "Tianheng Cheng",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028877572",
+    "path": "/authors/A5028877572",
+    "type": "author",
+    "title": "Yadong Mu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5037191476",
+    "path": "/authors/A5037191476",
+    "type": "author",
+    "title": "Xinggang Wang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100665053",
+    "path": "/authors/A5100665053",
+    "type": "author",
+    "title": "Wenyu Liu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5027344351",
+    "path": "/authors/A5027344351",
+    "type": "author",
+    "title": "Chaorui Deng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100407437",
+    "path": "/authors/A5100407437",
+    "type": "author",
+    "title": "Dong Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032352025",
+    "path": "/authors/A5032352025",
+    "type": "author",
+    "title": "Mingkui Tan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057230698",
+    "path": "/authors/A5057230698",
+    "type": "author",
+    "title": "Chaoning Zhang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5053457390",
+    "path": "/authors/A5053457390",
+    "type": "author",
+    "title": "Dongshen Han",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100748135",
+    "path": "/authors/A5100748135",
+    "type": "author",
+    "title": "Yu Qiao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5036936141",
+    "path": "/authors/A5036936141",
+    "type": "author",
+    "title": "Jung Uk Kim",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005200603",
+    "path": "/authors/A5005200603",
+    "type": "author",
+    "title": "Sung‐Ho Bae",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101472509",
+    "path": "/authors/A5101472509",
+    "type": "author",
+    "title": "Seungkyu Lee",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5034052371",
+    "path": "/authors/A5034052371",
+    "type": "author",
+    "title": "Choong Seon Hong",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103437194",
+    "path": "/authors/A5103437194",
+    "type": "author",
+    "title": "Sheng Zheng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5042838206",
+    "path": "/authors/A5042838206",
+    "type": "author",
+    "title": "Jinwoo Choi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100452223",
+    "path": "/authors/A5100452223",
+    "type": "author",
+    "title": "Taeho Kim",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001789528",
+    "path": "/authors/A5001789528",
+    "type": "author",
+    "title": "Valentin Gabeur",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5015863645",
+    "path": "/authors/A5015863645",
+    "type": "author",
+    "title": "Yuan-Ting Hu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5072304825",
+    "path": "/authors/A5072304825",
+    "type": "author",
+    "title": "Ronghang Hu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028978530",
+    "path": "/authors/A5028978530",
+    "type": "author",
+    "title": "Chaitanya K. Ryali",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101821970",
+    "path": "/authors/A5101821970",
+    "type": "author",
+    "title": "Tengyu Ma",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090549040",
+    "path": "/authors/A5090549040",
+    "type": "author",
+    "title": "Haitham Khedr",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018955742",
+    "path": "/authors/A5018955742",
+    "type": "author",
+    "title": "Roman Rädle",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088732762",
+    "path": "/authors/A5088732762",
+    "type": "author",
+    "title": "Junting Pan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5078659702",
+    "path": "/authors/A5078659702",
+    "type": "author",
+    "title": "Kalyan Vasudev Alwala",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5029981206",
+    "path": "/authors/A5029981206",
+    "type": "author",
+    "title": "Nicolas Carion",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5023917342",
+    "path": "/authors/A5023917342",
+    "type": "author",
+    "title": "Chao-Yuan Wu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5036069974",
+    "path": "/authors/A5036069974",
+    "type": "author",
+    "title": "Christoph Feichtenhofer",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006168104",
+    "path": "/authors/A5006168104",
+    "type": "author",
+    "title": "Shoubhik Debnath",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120696483",
+    "path": "/authors/A5120696483",
+    "type": "author",
+    "title": "Didac Suris",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103370264",
+    "path": "/authors/A5103370264",
+    "type": "author",
+    "title": "Andrew C. Huang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004558416",
+    "path": "/authors/A5004558416",
+    "type": "author",
+    "title": "Jie Lei",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113082671",
+    "path": "/authors/A5113082671",
+    "type": "author",
+    "title": "Baishan Guo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120717410",
+    "path": "/authors/A5120717410",
+    "type": "author",
+    "title": "Arpit Kalla",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004354796",
+    "path": "/authors/A5004354796",
+    "type": "author",
+    "title": "M. David Marks",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120717411",
+    "path": "/authors/A5120717411",
+    "type": "author",
+    "title": "Joseph Greer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100377135",
+    "path": "/authors/A5100377135",
+    "type": "author",
+    "title": "Meng Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002942097",
+    "path": "/authors/A5002942097",
+    "type": "author",
+    "title": "Peize Sun",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018690028",
+    "path": "/authors/A5018690028",
+    "type": "author",
+    "title": "Triantafyllos Afouras",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120717412",
+    "path": "/authors/A5120717412",
+    "type": "author",
+    "title": "Effrosyni Mavroudi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100440745",
+    "path": "/authors/A5100440745",
+    "type": "author",
+    "title": "Kang Xu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005496541",
+    "path": "/authors/A5005496541",
+    "type": "author",
+    "title": "Tsung‐Han Wu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5027383183",
+    "path": "/authors/A5027383183",
+    "type": "author",
+    "title": "Yu Zhou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5033313836",
+    "path": "/authors/A5033313836",
+    "type": "author",
+    "title": "Liliane Momeni",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5070202776",
+    "path": "/authors/A5070202776",
+    "type": "author",
+    "title": "Rishi Hazra",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5013238521",
+    "path": "/authors/A5013238521",
+    "type": "author",
+    "title": "Shuangrui Ding",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5051831405",
+    "path": "/authors/A5051831405",
+    "type": "author",
+    "title": "Sagar Vaze",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120752431",
+    "path": "/authors/A5120752431",
+    "type": "author",
+    "title": "Francois Porcher",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100744913",
+    "path": "/authors/A5100744913",
+    "type": "author",
+    "title": "Li Feng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100406644",
+    "path": "/authors/A5100406644",
+    "type": "author",
+    "title": "Siyuan Li",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5077791956",
+    "path": "/authors/A5077791956",
+    "type": "author",
+    "title": "Aishwarya Kamath",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002932429",
+    "path": "/authors/A5002932429",
+    "type": "author",
+    "title": "Hao Cheng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5075906727",
+    "path": "/authors/A5075906727",
+    "type": "author",
+    "title": "Kate Saenko",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120752432",
+    "path": "/authors/A5120752432",
+    "type": "author",
+    "title": "Pengchuan Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090113830",
+    "path": "/authors/A5090113830",
+    "type": "author",
+    "title": "Alexey Dosovitskiy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5055629014",
+    "path": "/authors/A5055629014",
+    "type": "author",
+    "title": "Lucas Beyer",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5000026575",
+    "path": "/authors/A5000026575",
+    "type": "author",
+    "title": "Alexander Kolesnikov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038019602",
+    "path": "/authors/A5038019602",
+    "type": "author",
+    "title": "Dirk Weissenborn",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071668416",
+    "path": "/authors/A5071668416",
+    "type": "author",
+    "title": "Xiaohua Zhai",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083016682",
+    "path": "/authors/A5083016682",
+    "type": "author",
+    "title": "Thomas Unterthiner",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102906366",
+    "path": "/authors/A5102906366",
+    "type": "author",
+    "title": "Mostafa Dehghani",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088239541",
+    "path": "/authors/A5088239541",
+    "type": "author",
+    "title": "Matthias Minderer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071956319",
+    "path": "/authors/A5071956319",
+    "type": "author",
+    "title": "Georg Heigold",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041958651",
+    "path": "/authors/A5041958651",
+    "type": "author",
+    "title": "Sylvain Gelly",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5022416424",
+    "path": "/authors/A5022416424",
+    "type": "author",
+    "title": "Jakob Uszkoreit",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5068878643",
+    "path": "/authors/A5068878643",
+    "type": "author",
+    "title": "Neil Houlsby",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032569443",
+    "path": "/authors/A5032569443",
+    "type": "author",
+    "title": "Francisco Massa",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041907084",
+    "path": "/authors/A5041907084",
+    "type": "author",
+    "title": "Gabriel Synnaeve",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5084360449",
+    "path": "/authors/A5084360449",
+    "type": "author",
+    "title": "Nicolas Usunier",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101930471",
+    "path": "/authors/A5101930471",
+    "type": "author",
+    "title": "Alexander Kirillov",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002668762",
+    "path": "/authors/A5002668762",
+    "type": "author",
+    "title": "Sergey Zagoruyko",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101589005",
+    "path": "/authors/A5101589005",
+    "type": "author",
+    "title": "Bowen Cheng",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049638480",
+    "path": "/authors/A5049638480",
+    "type": "author",
+    "title": "Alexander G. Schwing",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5000623592",
+    "path": "/authors/A5000623592",
+    "type": "author",
+    "title": "Ishan Misra",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006312307",
+    "path": "/authors/A5006312307",
+    "type": "author",
+    "title": "Rohit Girdhar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101507596",
+    "path": "/authors/A5101507596",
+    "type": "author",
+    "title": "Xinlei Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102416863",
+    "path": "/authors/A5102416863",
+    "type": "author",
+    "title": "Saining Xie",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5029760000",
+    "path": "/authors/A5029760000",
+    "type": "author",
+    "title": "Yanghao Li",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100329991",
+    "path": "/authors/A5100329991",
+    "type": "author",
+    "title": "Xi Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102204147",
+    "path": "/authors/A5102204147",
+    "type": "author",
+    "title": "Zhiyan Zhao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100694323",
+    "path": "/authors/A5100694323",
+    "type": "author",
+    "title": "Yilei Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5111517850",
+    "path": "/authors/A5111517850",
+    "type": "author",
+    "title": "Manni Duan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5066921930",
+    "path": "/authors/A5066921930",
+    "type": "author",
+    "title": "Donglian Qi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5078109015",
+    "path": "/authors/A5078109015",
+    "type": "author",
+    "title": "Hengshuang Zhao",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041031140",
+    "path": "/authors/A5041031140",
+    "type": "author",
+    "title": "Enze Xie",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101827340",
+    "path": "/authors/A5101827340",
+    "type": "author",
+    "title": "Wenhai Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5054586129",
+    "path": "/authors/A5054586129",
+    "type": "author",
+    "title": "Zhiding Yu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5014498545",
+    "path": "/authors/A5014498545",
+    "type": "author",
+    "title": "Anima Anandkumar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101540588",
+    "path": "/authors/A5101540588",
+    "type": "author",
+    "title": "Jose M. Álvarez",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100752686",
+    "path": "/authors/A5100752686",
+    "type": "author",
+    "title": "Ping Luo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5013651586",
+    "path": "/authors/A5013651586",
+    "type": "author",
+    "title": "Changqian Yu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100456762",
+    "path": "/authors/A5100456762",
+    "type": "author",
+    "title": "Jingbo Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5020100372",
+    "path": "/authors/A5020100372",
+    "type": "author",
+    "title": "Chao Peng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5035295689",
+    "path": "/authors/A5035295689",
+    "type": "author",
+    "title": "Changxin Gao",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5003400275",
+    "path": "/authors/A5003400275",
+    "type": "author",
+    "title": "Gang Yu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100456761",
+    "path": "/authors/A5100456761",
+    "type": "author",
+    "title": "Jingbo Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006294869",
+    "path": "/authors/A5006294869",
+    "type": "author",
+    "title": "Chunhua Shen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021094235",
+    "path": "/authors/A5021094235",
+    "type": "author",
+    "title": "Rudra P. K. Poudel",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031510704",
+    "path": "/authors/A5031510704",
+    "type": "author",
+    "title": "Stephan Liwicki",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018207993",
+    "path": "/authors/A5018207993",
+    "type": "author",
+    "title": "Roberto Cipolla",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5037015491",
+    "path": "/authors/A5037015491",
+    "type": "author",
+    "title": "Andrew Howard",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103186114",
+    "path": "/authors/A5103186114",
+    "type": "author",
+    "title": "Mark Sandler",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100427253",
+    "path": "/authors/A5100427253",
+    "type": "author",
+    "title": "Bo Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100415460",
+    "path": "/authors/A5100415460",
+    "type": "author",
+    "title": "Weijun Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5110774377",
+    "path": "/authors/A5110774377",
+    "type": "author",
+    "title": "Mingxing Tan",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041588414",
+    "path": "/authors/A5041588414",
+    "type": "author",
+    "title": "Grace Chu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004650249",
+    "path": "/authors/A5004650249",
+    "type": "author",
+    "title": "Vijay Vasudevan",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006455453",
+    "path": "/authors/A5006455453",
+    "type": "author",
+    "title": "Yukun Zhu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5112901893",
+    "path": "/authors/A5112901893",
+    "type": "author",
+    "title": "Ruoming Pang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5030402556",
+    "path": "/authors/A5030402556",
+    "type": "author",
+    "title": "Hartwig Adam",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088551093",
+    "path": "/authors/A5088551093",
+    "type": "author",
+    "title": "Quoc V. Le",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004780312",
+    "path": "/authors/A5004780312",
+    "type": "author",
+    "title": "Menglong Zhu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113984302",
+    "path": "/authors/A5113984302",
+    "type": "author",
+    "title": "Andrey Zhmoginov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100427270",
+    "path": "/authors/A5100427270",
+    "type": "author",
+    "title": "Bo Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5033265682",
+    "path": "/authors/A5033265682",
+    "type": "author",
+    "title": "Maxime Oquab",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076163068",
+    "path": "/authors/A5076163068",
+    "type": "author",
+    "title": "Timothée Darcet",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5015776030",
+    "path": "/authors/A5015776030",
+    "type": "author",
+    "title": "Théo Moutakanni",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5060502801",
+    "path": "/authors/A5060502801",
+    "type": "author",
+    "title": "Huy Vo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5072207220",
+    "path": "/authors/A5072207220",
+    "type": "author",
+    "title": "Marc Szafraniec",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5015609539",
+    "path": "/authors/A5015609539",
+    "type": "author",
+    "title": "Vasil Khalidov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088495817",
+    "path": "/authors/A5088495817",
+    "type": "author",
+    "title": "Pierre Fernandez",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5063864170",
+    "path": "/authors/A5063864170",
+    "type": "author",
+    "title": "Daniel Haziza",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083505661",
+    "path": "/authors/A5083505661",
+    "type": "author",
+    "title": "Alaaeldin El-Nouby",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006611401",
+    "path": "/authors/A5006611401",
+    "type": "author",
+    "title": "Mahmoud Assran",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057065873",
+    "path": "/authors/A5057065873",
+    "type": "author",
+    "title": "Nicolas Ballas",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5022540761",
+    "path": "/authors/A5022540761",
+    "type": "author",
+    "title": "Wojciech Galuba",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5017248470",
+    "path": "/authors/A5017248470",
+    "type": "author",
+    "title": "Russell Howes",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5063149046",
+    "path": "/authors/A5063149046",
+    "type": "author",
+    "title": "Po-Yao Huang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5029566548",
+    "path": "/authors/A5029566548",
+    "type": "author",
+    "title": "Shang-Wen Li",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5089819604",
+    "path": "/authors/A5089819604",
+    "type": "author",
+    "title": "Michael Rabbat",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102320649",
+    "path": "/authors/A5102320649",
+    "type": "author",
+    "title": "Vasu Sharma",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101882561",
+    "path": "/authors/A5101882561",
+    "type": "author",
+    "title": "Hu Xu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5111802678",
+    "path": "/authors/A5111802678",
+    "type": "author",
+    "title": "Hervé Jeǵou",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062817741",
+    "path": "/authors/A5062817741",
+    "type": "author",
+    "title": "Julien Mairal",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5067188801",
+    "path": "/authors/A5067188801",
+    "type": "author",
+    "title": "Patrick Labatut",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5107859338",
+    "path": "/authors/A5107859338",
+    "type": "author",
+    "title": "Armand Joulin",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5035420035",
+    "path": "/authors/A5035420035",
+    "type": "author",
+    "title": "Piotr Bojanowski",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076203786",
+    "path": "/authors/A5076203786",
+    "type": "author",
+    "title": "René Ranftl",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5043127213",
+    "path": "/authors/A5043127213",
+    "type": "author",
+    "title": "Katrin Lasinger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100972569",
+    "path": "/authors/A5100972569",
+    "type": "author",
+    "title": "David Hafner",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005404030",
+    "path": "/authors/A5005404030",
+    "type": "author",
+    "title": "Konrad Schindler",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006181255",
+    "path": "/authors/A5006181255",
+    "type": "author",
+    "title": "Vladlen Koltun",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038009961",
+    "path": "/authors/A5038009961",
+    "type": "author",
+    "title": "Lihe Yang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032599820",
+    "path": "/authors/A5032599820",
+    "type": "author",
+    "title": "Bingyi Kang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101358906",
+    "path": "/authors/A5101358906",
+    "type": "author",
+    "title": "Zilong Huang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101477980",
+    "path": "/authors/A5101477980",
+    "type": "author",
+    "title": "Xiaogang Xu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100668696",
+    "path": "/authors/A5100668696",
+    "type": "author",
+    "title": "Jiashi Feng",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5099137433",
+    "path": "/authors/A5099137433",
+    "type": "author",
+    "title": "Zilong Huang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100423046",
+    "path": "/authors/A5100423046",
+    "type": "author",
+    "title": "Zhen Zhao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103227553",
+    "path": "/authors/A5103227553",
+    "type": "author",
+    "title": "Shuzhe Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102005758",
+    "path": "/authors/A5102005758",
+    "type": "author",
+    "title": "Vincent Leroy",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5070076119",
+    "path": "/authors/A5070076119",
+    "type": "author",
+    "title": "Yohann Cabon",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5046897413",
+    "path": "/authors/A5046897413",
+    "type": "author",
+    "title": "Boris Chidlovskii",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065291945",
+    "path": "/authors/A5065291945",
+    "type": "author",
+    "title": "Jérôme Revaud",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102021426",
+    "path": "/authors/A5102021426",
+    "type": "author",
+    "title": "Jianyuan Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100730802",
+    "path": "/authors/A5100730802",
+    "type": "author",
+    "title": "Minghao Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005136810",
+    "path": "/authors/A5005136810",
+    "type": "author",
+    "title": "Nikita Karaev",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5060511349",
+    "path": "/authors/A5060511349",
+    "type": "author",
+    "title": "Andrea Vedaldi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083153177",
+    "path": "/authors/A5083153177",
+    "type": "author",
+    "title": "Christian Rupprecht",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103131633",
+    "path": "/authors/A5103131633",
+    "type": "author",
+    "title": "David Novotný",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5043890037",
+    "path": "/authors/A5043890037",
+    "type": "author",
+    "title": "Charles Loop",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113678278",
+    "path": "/authors/A5113678278",
+    "type": "author",
+    "title": "Zhengyou Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5040944275",
+    "path": "/authors/A5040944275",
+    "type": "author",
+    "title": "Reinhard Koch",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5066624955",
+    "path": "/authors/A5066624955",
+    "type": "author",
+    "title": "Andrea Fusiello",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5048954811",
+    "path": "/authors/A5048954811",
+    "type": "author",
+    "title": "Emanuele Trucco",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5036620304",
+    "path": "/authors/A5036620304",
+    "type": "author",
+    "title": "Alessandro Verri",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5060719444",
+    "path": "/authors/A5060719444",
+    "type": "author",
+    "title": "Kilian Batzner",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5025338546",
+    "path": "/authors/A5025338546",
+    "type": "author",
+    "title": "Lars Heckler",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5104029574",
+    "path": "/authors/A5104029574",
+    "type": "author",
+    "title": "Rebecca König",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5007868194",
+    "path": "/authors/A5007868194",
+    "type": "author",
+    "title": "Paul Bergmann",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5064821404",
+    "path": "/authors/A5064821404",
+    "type": "author",
+    "title": "Michael Fauser",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5059384741",
+    "path": "/authors/A5059384741",
+    "type": "author",
+    "title": "David Sattlegger",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5061476709",
+    "path": "/authors/A5061476709",
+    "type": "author",
+    "title": "Carsten Steger",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103125177",
+    "path": "/authors/A5103125177",
+    "type": "author",
+    "title": "Karsten Roth",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5110775281",
+    "path": "/authors/A5110775281",
+    "type": "author",
+    "title": "Latha Pemula",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5104090766",
+    "path": "/authors/A5104090766",
+    "type": "author",
+    "title": "Joaquin Zepeda",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5044005697",
+    "path": "/authors/A5044005697",
+    "type": "author",
+    "title": "Bernhard Schölkopf",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5055614518",
+    "path": "/authors/A5055614518",
+    "type": "author",
+    "title": "Peter Gehler",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5052140058",
+    "path": "/authors/A5052140058",
+    "type": "author",
+    "title": "Marco Rudolph",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062321523",
+    "path": "/authors/A5062321523",
+    "type": "author",
+    "title": "Tom Wehrbein",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5040412734",
+    "path": "/authors/A5040412734",
+    "type": "author",
+    "title": "Bodo Rosenhahn",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102907822",
+    "path": "/authors/A5102907822",
+    "type": "author",
+    "title": "Bastian Wandt",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102871171",
+    "path": "/authors/A5102871171",
+    "type": "author",
+    "title": "Yang Zou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5045815823",
+    "path": "/authors/A5045815823",
+    "type": "author",
+    "title": "Jongheon Jeong",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5111643862",
+    "path": "/authors/A5111643862",
+    "type": "author",
+    "title": "Dongqing Zhang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5107854671",
+    "path": "/authors/A5107854671",
+    "type": "author",
+    "title": "Onkar Dabeer",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5010465328",
+    "path": "/authors/A5010465328",
+    "type": "author",
+    "title": "Dzmitry Bahdanau",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5091175785",
+    "path": "/authors/A5091175785",
+    "type": "author",
+    "title": "Kyunghyun Cho",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5086198262",
+    "path": "/authors/A5086198262",
+    "type": "author",
+    "title": "Yoshua Bengio",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031829458",
+    "path": "/authors/A5031829458",
+    "type": "author",
+    "title": "Angelos Katharopoulos",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108691882",
+    "path": "/authors/A5108691882",
+    "type": "author",
+    "title": "Apoorv Vyas",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5023518080",
+    "path": "/authors/A5023518080",
+    "type": "author",
+    "title": "Nikolaos Pappas",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076094010",
+    "path": "/authors/A5076094010",
+    "type": "author",
+    "title": "François Fleuret",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032865467",
+    "path": "/authors/A5032865467",
+    "type": "author",
+    "title": "Daniel Y. Fu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5091179481",
+    "path": "/authors/A5091179481",
+    "type": "author",
+    "title": "Stefano Ermon",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001041485",
+    "path": "/authors/A5001041485",
+    "type": "author",
+    "title": "Atri Rudra",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103852640",
+    "path": "/authors/A5103852640",
+    "type": "author",
+    "title": "Christopher Ré",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5078222384",
+    "path": "/authors/A5078222384",
+    "type": "author",
+    "title": "Jianlin Su",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101645258",
+    "path": "/authors/A5101645258",
+    "type": "author",
+    "title": "Yu Lu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049491241",
+    "path": "/authors/A5049491241",
+    "type": "author",
+    "title": "Shengfeng Pan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5024735754",
+    "path": "/authors/A5024735754",
+    "type": "author",
+    "title": "Bo Wen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100357482",
+    "path": "/authors/A5100357482",
+    "type": "author",
+    "title": "Yunfeng Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5072605113",
+    "path": "/authors/A5072605113",
+    "type": "author",
+    "title": "Joshua Ainslie",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018339854",
+    "path": "/authors/A5018339854",
+    "type": "author",
+    "title": "James Lee-Thorp",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021943393",
+    "path": "/authors/A5021943393",
+    "type": "author",
+    "title": "Michiel de Jong",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5036319063",
+    "path": "/authors/A5036319063",
+    "type": "author",
+    "title": "Yury Zemlyanskiy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5092005408",
+    "path": "/authors/A5092005408",
+    "type": "author",
+    "title": "Federico Lebrón",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5012884492",
+    "path": "/authors/A5012884492",
+    "type": "author",
+    "title": "Sumit Sanghai",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032800189",
+    "path": "/authors/A5032800189",
+    "type": "author",
+    "title": "Sergey Ioffe",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5012276327",
+    "path": "/authors/A5012276327",
+    "type": "author",
+    "title": "Jimmy Ba",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065231880",
+    "path": "/authors/A5065231880",
+    "type": "author",
+    "title": "Jamie Kiros",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018369948",
+    "path": "/authors/A5018369948",
+    "type": "author",
+    "title": "Yuxin Wu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071626315",
+    "path": "/authors/A5071626315",
+    "type": "author",
+    "title": "Mathilde Caron",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032644449",
+    "path": "/authors/A5032644449",
+    "type": "author",
+    "title": "Hugo Touvron",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5003562101",
+    "path": "/authors/A5003562101",
+    "type": "author",
+    "title": "Oriol Vinyals",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108118084",
+    "path": "/authors/A5108118084",
+    "type": "author",
+    "title": "Matthieu Cord",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5053822883",
+    "path": "/authors/A5053822883",
+    "type": "author",
+    "title": "Matthijs Douze",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5067991583",
+    "path": "/authors/A5067991583",
+    "type": "author",
+    "title": "Alexandre Sablayrolles",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100349451",
+    "path": "/authors/A5100349451",
+    "type": "author",
+    "title": "Ze Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102798361",
+    "path": "/authors/A5102798361",
+    "type": "author",
+    "title": "Yutong Lin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101593662",
+    "path": "/authors/A5101593662",
+    "type": "author",
+    "title": "Yue Cao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101867078",
+    "path": "/authors/A5101867078",
+    "type": "author",
+    "title": "Han Hu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5009248953",
+    "path": "/authors/A5009248953",
+    "type": "author",
+    "title": "Yixuan Wei",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100459168",
+    "path": "/authors/A5100459168",
+    "type": "author",
+    "title": "Zheng Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5025114648",
+    "path": "/authors/A5025114648",
+    "type": "author",
+    "title": "Stephen Lin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101666011",
+    "path": "/authors/A5101666011",
+    "type": "author",
+    "title": "Baining Guo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100443189",
+    "path": "/authors/A5100443189",
+    "type": "author",
+    "title": "Ting Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5042760897",
+    "path": "/authors/A5042760897",
+    "type": "author",
+    "title": "Simon Kornblith",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103947107",
+    "path": "/authors/A5103947107",
+    "type": "author",
+    "title": "Mohammad Norouzi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5022792966",
+    "path": "/authors/A5022792966",
+    "type": "author",
+    "title": "Haoqi Fan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5052176965",
+    "path": "/authors/A5052176965",
+    "type": "author",
+    "title": "Jean-Bastien Grill",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5024394972",
+    "path": "/authors/A5024394972",
+    "type": "author",
+    "title": "Florian Strub",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5008927786",
+    "path": "/authors/A5008927786",
+    "type": "author",
+    "title": "Florent Altché",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5106745356",
+    "path": "/authors/A5106745356",
+    "type": "author",
+    "title": "Corentin Tallec",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5091349569",
+    "path": "/authors/A5091349569",
+    "type": "author",
+    "title": "Pierre H. Richemond",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032652614",
+    "path": "/authors/A5032652614",
+    "type": "author",
+    "title": "Elena Buchatskaya",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081047759",
+    "path": "/authors/A5081047759",
+    "type": "author",
+    "title": "Carl Doersch",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038039948",
+    "path": "/authors/A5038039948",
+    "type": "author",
+    "title": "Bernardo Ávila Pires",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5089902230",
+    "path": "/authors/A5089902230",
+    "type": "author",
+    "title": "Zhaohan Daniel Guo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5043355670",
+    "path": "/authors/A5043355670",
+    "type": "author",
+    "title": "Mohammad Gheshlaghi Azar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103033215",
+    "path": "/authors/A5103033215",
+    "type": "author",
+    "title": "Bilal Piot",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090341705",
+    "path": "/authors/A5090341705",
+    "type": "author",
+    "title": "Koray Kavukcuoglu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006533777",
+    "path": "/authors/A5006533777",
+    "type": "author",
+    "title": "Rémi Munos",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5106038276",
+    "path": "/authors/A5106038276",
+    "type": "author",
+    "title": "Michal Valko",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5051250767",
+    "path": "/authors/A5051250767",
+    "type": "author",
+    "title": "Alec Radford",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100726106",
+    "path": "/authors/A5100726106",
+    "type": "author",
+    "title": "Jong Wook Kim",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5007406730",
+    "path": "/authors/A5007406730",
+    "type": "author",
+    "title": "Chris Hallacy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101696375",
+    "path": "/authors/A5101696375",
+    "type": "author",
+    "title": "Aditya Ramesh",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108118480",
+    "path": "/authors/A5108118480",
+    "type": "author",
+    "title": "Gabriel Goh",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057289323",
+    "path": "/authors/A5057289323",
+    "type": "author",
+    "title": "Sandhini Agarwal",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5059260582",
+    "path": "/authors/A5059260582",
+    "type": "author",
+    "title": "Girish Sastry",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5030305998",
+    "path": "/authors/A5030305998",
+    "type": "author",
+    "title": "Amanda Askell",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028772381",
+    "path": "/authors/A5028772381",
+    "type": "author",
+    "title": "Pamela Mishkin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031107879",
+    "path": "/authors/A5031107879",
+    "type": "author",
+    "title": "Jack Clark",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5064685592",
+    "path": "/authors/A5064685592",
+    "type": "author",
+    "title": "Gretchen Krueger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088082340",
+    "path": "/authors/A5088082340",
+    "type": "author",
+    "title": "Michael Tschannen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083585691",
+    "path": "/authors/A5083585691",
+    "type": "author",
+    "title": "Alexey A. Gritsenko",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100411538",
+    "path": "/authors/A5100411538",
+    "type": "author",
+    "title": "Xiao Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103091877",
+    "path": "/authors/A5103091877",
+    "type": "author",
+    "title": "Muhammad Ferjad Naeem",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5029133361",
+    "path": "/authors/A5029133361",
+    "type": "author",
+    "title": "Ibrahim Alabdulmohsin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5026731149",
+    "path": "/authors/A5026731149",
+    "type": "author",
+    "title": "Nikhil Parthasarathy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5061487102",
+    "path": "/authors/A5061487102",
+    "type": "author",
+    "title": "Talfan Evans",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5053743638",
+    "path": "/authors/A5053743638",
+    "type": "author",
+    "title": "Ye Xia",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5072796087",
+    "path": "/authors/A5072796087",
+    "type": "author",
+    "title": "Basil Mustafa",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081732358",
+    "path": "/authors/A5081732358",
+    "type": "author",
+    "title": "Olivier J. Hénaff",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5086126388",
+    "path": "/authors/A5086126388",
+    "type": "author",
+    "title": "Jeremiah Harmsen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5053094006",
+    "path": "/authors/A5053094006",
+    "type": "author",
+    "title": "Andreas Steiner",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100749028",
+    "path": "/authors/A5100749028",
+    "type": "author",
+    "title": "Yang Zou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100329542",
+    "path": "/authors/A5100329542",
+    "type": "author",
+    "title": "Taewan Kim",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5010126054",
+    "path": "/authors/A5010126054",
+    "type": "author",
+    "title": "Avinash Ravichandran",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5082733824",
+    "path": "/authors/A5082733824",
+    "type": "author",
+    "title": "Qihang Zhou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5039104219",
+    "path": "/authors/A5039104219",
+    "type": "author",
+    "title": "Guansong Pang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5007352440",
+    "path": "/authors/A5007352440",
+    "type": "author",
+    "title": "Yü Tian",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5068195118",
+    "path": "/authors/A5068195118",
+    "type": "author",
+    "title": "Shibo He",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100726041",
+    "path": "/authors/A5100726041",
+    "type": "author",
+    "title": "Jiming Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5086921146",
+    "path": "/authors/A5086921146",
+    "type": "author",
+    "title": "Zhikang Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100711802",
+    "path": "/authors/A5100711802",
+    "type": "author",
+    "title": "Yiming Zhou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100546557",
+    "path": "/authors/A5100546557",
+    "type": "author",
+    "title": "Yuansheng Xu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100376572",
+    "path": "/authors/A5100376572",
+    "type": "author",
+    "title": "Zilei Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
   }
 ];

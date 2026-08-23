@@ -23,7 +23,7 @@
 |---|---|---|
 | Phase 0 — design mock + this doc | **direction approved** (v3 = chronological layout; awaiting any further user remarks) | — |
 | A — Narratives subsystem | **Phases 3 + 5 merged 2026-08-23** — infra, reader UI, and the first narrative (`foundation-models-for-vision`, 21 stops, 7 chapters) are live | Debt paydown (6 paper-only stops → pages, see table below); second narrative when a track matures |
-| B — Authors subsystem | not started | After Phase 3: fetch-meta extension + backfill dry-run (Phase 6) |
+| B — Authors subsystem | **Phase 6 merged 2026-08-23** — backfill run (135/145 papers, 499 authors), /authors + /authors/:id live, SourceStrip/SourceCard author links | Deferred: affiliations, timelines, co-author graph viz, split-identity dedup (two "Carlo Tomasi" ids) |
 | C — Deep-models review | **Waves 0–2 merged (2026-08-23)** | Wave 3: clip page + ~6 compared_with edges + `quality: canonical` rollout (vit, resnet, sam, attention-mechanism, dinov2) |
 
 **PR policy (user mandate, 2026-08-23):** Claude opens and merges PRs itself, no codex review;
@@ -189,6 +189,24 @@ narrative should get a page — paper-only nodes are debt, not normal.
   0 lens chronology inversions. Narrative prerendered + sitemapped (147 pages).
 - Atlas-page chips and sidebar sections light up automatically via narrative-refs for all 15
   page-backed stops.
+
+## Phase 6 session notes (2026-08-23)
+
+- Backfill: 145 candidates → 74 matched by DOI, 61 by strict normalized title+year, 10 left
+  unlinked (vaswani2017 + simeoni2025-dinov3 OpenAlex record glitches; rf-detr + depth-anything-3
+  works carry zero author records; 6 classical papers with no clean match). 500 authors resolved;
+  2 approved manual fixes applied: "Tomasi" → "Carlo Tomasi", and the misattributed "Jay B. Dean"
+  id dropped from hinton2015-distillation (OpenAlex identity error — not Jeff Dean) → 499 authors.
+- Backfill script gained a block-list `authors:` insertion fix (its own abort+restore sanity check
+  caught the YAML break on first --write; no data was harmed).
+- **Alignment caveat discovered**: `authors[]` and `authorIds[]` are NOT reliably position-aligned —
+  OpenAlex drops authors on 8/135 papers. `src/lib/atlas/authorLinks.ts` aligns by surname (with
+  umlaut transliteration + first-initial disambiguation): 632/640 slots linked, 0 misattributions.
+- fetch-meta now emits `authorIds:` + authors.yaml stanza suggestions for every future ingest.
+- Frontend: /authors (filter, A–Z/by-count), /authors/:id (papers via SourceCard, atlas chips,
+  co-author list), author-name links in SourceStrip/SourceCard (stretched-overlay fix for nested
+  anchors). 647 prerendered pages (+499 authors +1 index). Author search records emitted but inert
+  until a global search palette consumes SearchRecord.path.
 
 ## Decisions log
 

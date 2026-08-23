@@ -12,6 +12,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
 import { PapersProvider } from './lib/atlas/papersIndex.tsx';
+import { AuthorsProvider } from './lib/atlas/authorsIndex.tsx';
 import { StaticContentProvider, type StaticContentContextValue } from './lib/content/ssr-content.tsx';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
@@ -24,6 +25,8 @@ const BlogPost = lazy(() => import('./pages/BlogPost'));
 const AlgorithmIndex = lazy(() => import('./pages/AlgorithmIndex'));
 const AtlasPost = lazy(() => import('./pages/AtlasPost'));
 const NarrativePage = lazy(() => import('./pages/NarrativePage'));
+const AuthorsIndex = lazy(() => import('./pages/AuthorsIndex'));
+const AuthorPage = lazy(() => import('./pages/AuthorPage'));
 const DemoIndex = lazy(() => import('./pages/DemoIndex'));
 const DemoPage = lazy(() => import('./pages/DemoPage'));
 const Editor = lazy(() => import('./pages/Editor'));
@@ -63,6 +66,9 @@ function AppLayout() {
                         {/* Static segment must be matched before the /atlas/:slug catch-all. */}
                         <Route path="/atlas/narratives/:slug" element={<NarrativePage />} />
                         <Route path="/atlas/:slug" element={<AtlasPost />} />
+                        {/* Unlisted author register — reached from source bylines, not the navbar. */}
+                        <Route path="/authors" element={<AuthorsIndex />} />
+                        <Route path="/authors/:id" element={<AuthorPage />} />
                         {/* Legacy redirects — preserve inbound links and old SEO URLs. */}
                         <Route path="/algorithms" element={<Navigate to="/atlas" replace />} />
                         <Route path="/algorithms/models" element={<Navigate to="/atlas?kind=model" replace />} />
@@ -105,9 +111,11 @@ function App({ ssrSnapshot = {} }: { ssrSnapshot?: StaticContentContextValue }) 
                 <StaticContentProvider value={ssrSnapshot}>
                     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                         <PapersProvider>
+                        <AuthorsProvider>
                             <Router>
                                 <AppLayout />
                             </Router>
+                        </AuthorsProvider>
                         </PapersProvider>
                         <Toaster richColors closeButton position="bottom-right" />
                     </ThemeProvider>

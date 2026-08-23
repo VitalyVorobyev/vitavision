@@ -35,6 +35,7 @@
 - id: bennett2013-chess
   title: "ChESS — Quick and Robust Detection of Chess-board Features"
   authors: ["S. Bennett", "J. Lasenby"]
+  authorIds: [A5060441291, A5019616738]
   year: 2013
   venue: arXiv
   url: https://arxiv.org/pdf/1301.5491v1
@@ -45,6 +46,7 @@
 - id: rosten2006-fast
   title: "Machine Learning for High-Speed Corner Detection"
   authors: ["E. Rosten", "T. Drummond"]
+  authorIds: [A5076168268, A5017469047]
   year: 2006
   venue: ECCV
   url: https://www.edwardrosten.com/work/rosten_2006_machine.pdf
@@ -54,6 +56,7 @@
 - id: harris1988-corner
   title: "A Combined Corner and Edge Detector"
   authors: ["C. Harris", "M. J. Stephens"]
+  authorIds: [A5049156189, A5082762217]
   year: 1988
   venue: Alvey Vision Conference
   url: https://bmva-archive.org.uk/bmvc/1988/avc-88-023.pdf
@@ -64,6 +67,7 @@
 - id: shi-tomasi1994-features
   title: "Good Features to Track"
   authors: ["J. Shi", "C. Tomasi"]
+  authorIds: [A5081456949, A5088492440]
   year: 1994
   venue: IEEE CVPR
   url: https://www.ces.clemson.edu/~stb/klt/shi-tomasi-good-features-cvpr1994.pdf
@@ -74,6 +78,7 @@
 - id: shu2009-topological
   title: "A topological approach to finding grids in calibration patterns"
   authors: ["C. Shu", "A. Brunton", "M. A. Fiala"]
+  authorIds: [A5101767301, A5078124597, A5021003906]
   year: 2009
   venue: Machine Vision and Applications
   url: https://people.scs.carleton.ca/~c_shu/Publications/find-grids-MVA2010.pdf
@@ -84,6 +89,7 @@
 - id: stelldinger2024-puzzleboard
   title: "PuzzleBoard: A New Camera Calibration Pattern with Position Encoding"
   authors: ["P. Stelldinger", "N. Schönherr", "J. Biermann"]
+  authorIds: [A5057113537, A5090428190, A5006002082]
   year: 2024
   venue: arXiv
   url: https://arxiv.org/pdf/2409.20127
@@ -104,6 +110,7 @@
 - id: fuersattel2016-ocpad
   title: "OCPAD — Occluded Checkerboard Pattern Detector"
   authors: ["P. Fürsattel", "S. Dotenco", "S. Placht", "M. Balda", "A. Maier", "C. Riess"]
+  authorIds: [A5055539616, A5112143390, A5026038284, A5012614625, A5101619735, A5049250339]
   year: 2016
   venue: IEEE WACV
   url: https://www5.informatik.uni-erlangen.de/Forschung/Publikationen/2016/Fuersattel16-OCP.pdf
@@ -114,6 +121,7 @@
 - id: placht2014-rochade
   title: "ROCHADE: Robust Checkerboard Advanced Detection for Camera Calibration"
   authors: ["S. Placht", "P. Fürsattel", "E. A. Mengue", "H. Hofmann", "C. Schaller", "M. Balda", "E. Angelopoulou"]
+  authorIds: [A5026038284, A5062717854, A5056616756, A5081273414, A5101410135, A5012614625, A5049805682]
   year: 2014
   venue: ECCV
   url: https://www5.informatik.uni-erlangen.de/Forschung/Publikationen/2014/Placht14-RRC.pdf
@@ -124,6 +132,7 @@
 - id: cordella2004-vf2
   title: "A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs"
   authors: ["L. P. Cordella", "P. Foggia", "C. Sansone", "M. Vento"]
+  authorIds: [A5009276474, A5082731857, A5090709130, A5110251352]
   year: 2004
   venue: IEEE TPAMI
   url: https://ieeexplore.ieee.org/document/1323804
@@ -141,6 +150,7 @@
 - id: lucchese2003-saddle
   title: "Using saddle points for subpixel feature detection in camera calibration targets"
   authors: ["L. Lucchese", "S. Mitra"]
+  authorIds: [A5062693600, A5065358142]
   year: 2003
   venue: Asia Pacific Conference on Circuits and Systems
   url: https://ieeexplore.ieee.org/document/1115151
@@ -157,6 +167,7 @@
 - id: chen2005-xcorner
   title: "A New Sub-Pixel Detector for X-Corners in Camera Calibration Targets"
   authors: ["D. Chen", "G. Zhang"]
+  authorIds: [A5091224826, A5100602615]
   year: 2005
   venue: WSCG Short Papers
   url: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.87.5833&rep=rep1&type=pdf
@@ -166,6 +177,7 @@
 - id: rufli2008-blurred
   title: "Automatic detection of checkerboards on blurred and distorted images"
   authors: ["M. Rufli", "D. Scaramuzza", "R. Siegwart"]
+  authorIds: [A5066262214, A5057116316, A5083003222]
   year: 2008
   venue: IEEE/RSJ IROS
   url: https://rpg.ifi.uzh.ch/docs/IROS08_scaramuzza_b.pdf
@@ -176,6 +188,7 @@
 - id: niblack1992-skeleton
   title: "Generating skeletons and centerlines from the distance transform"
   authors: ["C. W. Niblack", "P. B. Gibbons", "D. W. Capson"]
+  authorIds: [A5074516721, A5014824446, A5014807583]
   year: 1992
   venue: CVGIP Graphical Models and Image Processing
   url: https://www.sciencedirect.com/science/article/abs/pii/104996529290026T
@@ -186,6 +199,7 @@
 - id: abeles2021-pyramidal
   title: "Pyramidal Blur Aware X-Corner Chessboard Detector"
   authors: ["P. Abeles"]
+  authorIds: [A5088467090]
   year: 2021
   venue: arXiv (Cornell University)
   url: https://arxiv.org/pdf/2110.13793
@@ -204,6 +218,7 @@
 - id: chen2023-ccdn
   title: "CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration"
   authors: ["B. Chen", "C. Xiong", "Q. Zhang"]
+  authorIds: [A5102020871, A5100770696, A5100360386]
   year: 2023
   venue: arXiv (Cornell University)
   url: https://arxiv.org/pdf/2302.05097
@@ -221,6 +236,7 @@
 - id: donne2016-mate
   title: "MATE: Machine Learning for Adaptive Calibration Template Detection"
   authors: ["S. Donné", "J. De Vylder", "B. Goossens", "W. Philips"]
+  authorIds: [A5056175786, A5056570824, A5101986863, A5071483672]
   year: 2016
   venue: Sensors
   url: https://www.mdpi.com/1424-8220/16/11/1858/pdf
@@ -241,6 +257,7 @@
     - "A. Araujo"
     - "R. Martins"
     - "E. R. Nascimento"
+  authorIds: [A5074731322, A5112882128, A5101666068, A5103150309, A5002613601]
   year: 2024
   venue: CVPR
   url: https://arxiv.org/pdf/2404.19174
@@ -253,6 +270,7 @@
 - id: detone2018-superpoint
   title: "SuperPoint: Self-Supervised Interest Point Detection and Description"
   authors: ["D. DeTone", "T. Malisiewicz", "A. Rabinovich"]
+  authorIds: [A5002090912, A5067498868, A5026452365]
   year: 2018
   venue: CVPR Workshop (Deep Learning for Visual SLAM)
   url: https://arxiv.org/pdf/1712.07629
@@ -265,6 +283,7 @@
 - id: zhang2000-flexible
   title: "A Flexible New Technique for Camera Calibration"
   authors: ["Z. Zhang"]
+  authorIds: [A5056480447]
   year: 2000
   venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
   url: https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr98-71.pdf
@@ -278,6 +297,7 @@
 - id: tsai1987-versatile
   title: "A versatile camera calibration technique for high-accuracy 3D machine vision metrology using off-the-shelf TV cameras and lenses"
   authors: ["R. Y. Tsai"]
+  authorIds: [A5113435866]
   year: 1987
   venue: IEEE Journal on Robotics and Automation
   url: https://cecas.clemson.edu/~stb/ece847/internal/classic_vision_papers/tsai_calibration1987.pdf
@@ -288,6 +308,7 @@
 - id: weng1992-camera
   title: "Camera calibration with distortion models and accuracy evaluation"
   authors: ["J. Weng", "P. Cohen", "M. Herniou"]
+  authorIds: [A5102851268, A5108230279, A5081818577]
   year: 1992
   venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
   url: https://www.cs.auckland.ac.nz/courses/compsci773s1c/lectures/camera%20distortion.pdf
@@ -308,6 +329,7 @@
 - id: tsai1989-handeye
   title: "A new technique for fully autonomous and efficient 3D robotics hand/eye calibration"
   authors: ["R. Y. Tsai", "R. K. Lenz"]
+  authorIds: [A5113435866, A5110192522]
   year: 1989
   venue: IEEE Transactions on Robotics and Automation
   url: https://kmlee.gatech.edu/me6406/handeye.pdf
@@ -320,6 +342,7 @@
 - id: shiu1989-calibration
   title: "Calibration of wrist-mounted robotic sensors by solving homogeneous transform equations of the form AX=XB"
   authors: ["Y. C. Shiu", "S. Ahmad"]
+  authorIds: [A5030154719, A5062061555]
   year: 1989
   venue: IEEE Transactions on Robotics and Automation
   url: https://doi.org/10.1109/70.88014
@@ -343,6 +366,7 @@
 - id: daniilidis1999-hand-eye
   title: "Hand-Eye Calibration Using Dual Quaternions"
   authors: ["K. Daniilidis"]
+  authorIds: [A5064861062]
   year: 1999
   venue: The International Journal of Robotics Research
   url: https://doi.org/10.1177/02783649922066213
@@ -354,6 +378,7 @@
 - id: kumar2014-grac
   title: "Generalized Radial Alignment Constraint for Camera Calibration"
   authors: ["A. Kumar", "N. Ahuja"]
+  authorIds: [A5101602756, A5108521995]
   year: 2014
   venue: International Conference on Pattern Recognition (ICPR)
   url: https://vision.ai.illinois.edu/html-files-to-import/avi_papers/Kumar_GeneralizedRAC_ICPR_2104.pdf
@@ -366,6 +391,7 @@
 - id: duda2018-accurate
   title: "Accurate Detection and Localization of Checkerboard Corners for Calibration"
   authors: ["A. Duda", "U. Frese"]
+  authorIds: [A5052537634, A5061113124]
   year: 2018
   venue: British Machine Vision Conference (BMVC)
   url: https://bmvc2018.org/contents/papers/0508.pdf
@@ -396,6 +422,7 @@
 - id: zaragoza2013-apap
   title: "As-Projective-As-Possible Image Stitching with Moving DLT"
   authors: ["J. Zaragoza", "T.-J. Chin", "M. S. Brown", "D. Suter"]
+  authorIds: [A5031990673, A5027317977, A5106406020, A5031492664]
   year: 2013
   venue: IEEE CVPR
   url: https://www.cv-foundation.org/openaccess/content_cvpr_2013/papers/Zaragoza_As-Projective-As-Possible_Image_Stitching_2013_CVPR_paper.pdf
@@ -406,6 +433,7 @@
 - id: hartley1997-eight-point
   title: "In Defense of the Eight-Point Algorithm"
   authors: ["R. I. Hartley"]
+  authorIds: [A5020216442]
   year: 1997
   venue: IEEE TPAMI
   url: https://users.cecs.anu.edu.au/~hartley/Papers/fundamental/ICCV-final/fundamental.pdf
@@ -416,6 +444,7 @@
 - id: schaefer2006-mls
   title: "Image Deformation Using Moving Least Squares"
   authors: ["S. Schaefer", "T. McPhail", "J. Warren"]
+  authorIds: [A5037680267, A5065389320, A5113597103]
   year: 2006
   venue: ACM SIGGRAPH
   url: https://people.engr.tamu.edu/schaefer/research/mls.pdf
@@ -426,6 +455,7 @@
 - id: gao2011-dual-homography
   title: "Constructing Image Panoramas Using Dual-Homography Warping"
   authors: ["J. Gao", "S. J. Kim", "M. S. Brown"]
+  authorIds: [A5103211763, A5103036411, A5075135613]
   year: 2011
   venue: IEEE CVPR
   url: http://www.cse.yorku.ca/~mbrown/pdf/cvpr_dualhomography2011.pdf
@@ -436,6 +466,7 @@
 - id: lin2011-svastitching
   title: "Smoothly Varying Affine Stitching"
   authors: ["W.-Y. Lin", "S. Liu", "Y. Matsushita", "T.-T. Ng", "L.-F. Cheong"]
+  authorIds: [A5068556469, A5100620147, A5033986386, A5002069408, A5030078173]
   year: 2011
   venue: IEEE CVPR
   url: https://www.ece.nus.edu.sg/stfpage/eleclf/Lin_CVPR11.pdf
@@ -446,6 +477,7 @@
 - id: igarashi2005-arap
   title: "As-Rigid-As-Possible Shape Manipulation"
   authors: ["T. Igarashi", "T. Moscovich", "J. F. Hughes"]
+  authorIds: [A5102743150, A5090522908, A5103642464]
   year: 2005
   venue: ACM SIGGRAPH
   url: https://www.moscovich.net/papers/rigid2005.pdf
@@ -456,6 +488,7 @@
 - id: geiger2012-automatic
   title: "Automatic camera and range sensor calibration using a single shot"
   authors: ["A. Geiger", "F. Moosmann", "O. Car", "B. Schuster"]
+  authorIds: [A5016606943, A5079874359, A5081434393, A5063602086]
   year: 2012
   venue: IEEE ICRA
   url: https://www.cvlibs.net/publications/Geiger2012ICRA.pdf
@@ -479,6 +512,7 @@
 - id: hillen2023-enhanced
   title: "Enhanced Checkerboard Detection Using Gaussian Processes"
   authors: ["M. Hillen", "I. De Boi", "T. De Kerf", "S. Sels", "E. Cardenas De La Hoz", "J. Gladines", "G. Steenackers", "R. Penne", "S. Vanlanduit"]
+  authorIds: [A5047932106, A5001584002, A5005825554, A5049403684, A5001363884, A5053922584, A5009366565, A5001783145, A5071951202]
   year: 2023
   venue: Mathematics (MDPI)
   url: https://www.mdpi.com/2227-7390/11/22/4568
@@ -495,6 +529,7 @@
 - id: zhang2022-learning-based
   title: "Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration"
   authors: ["Y. Zhang", "X. Zhao", "D. Qian"]
+  authorIds: [A5016802096, A5100440525, A5081179416]
   year: 2022
   venue: IEEE Robotics and Automation Letters
   url: https://arxiv.org/pdf/2202.00158
@@ -514,6 +549,7 @@
 - id: wu2021-highly
   title: "A highly accurate and robust deep checkerboard corner detector"
   authors: ["Hao Wu", "Yi Wan"]
+  authorIds: [A5021196481, A5101985050]
   year: 2021
   venue: Electronics Letters
   url: https://onlinelibrary.wiley.com/doi/pdfdirect/10.1049/ell2.12056
@@ -530,6 +566,7 @@
 - id: loy2003-frst
   title: "Fast radial symmetry for detecting points of interest"
   authors: ["Gareth Loy", "Alexander Zelinsky"]
+  authorIds: [A5084041835, A5076609571]
   year: 2003
   venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
   url: https://ieeexplore.ieee.org/document/1217601
@@ -543,6 +580,7 @@
     - Jie Ni
     - Maneesh K. Singh
     - Claus Bahlmann
+  authorIds: [A5013615286, A5062755809, A5032338259]
   year: 2012
   venue: IEEE Conference on Computer Vision and Pattern Recognition (CVPR)
   url: https://ieeexplore.ieee.org/document/6247768/
@@ -564,6 +602,7 @@
 - id: raguram2013-usac
   title: "USAC: A Universal Framework for Random Sample Consensus"
   authors: ["R. Raguram", "O. Chum", "M. Pollefeys", "J. Matas", "J. Frahm"]
+  authorIds: [A5065975557, A5019409717, A5021908609, A5007656938, A5018151384]
   year: 2013
   venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
   url: https://ieeexplore.ieee.org/document/6365642
@@ -575,6 +614,7 @@
 - id: barath2019-magsac
   title: "MAGSAC: marginalizing sample consensus"
   authors: ["D. Barath", "J. Matas", "J. Noskova"]
+  authorIds: [A5016636021, A5007656938]
   year: 2019
   venue: CVPR
   url: https://arxiv.org/abs/1803.07469
@@ -598,6 +638,7 @@
 - id: scaramuzza2006-omni
   title: "A Toolbox for Easily Calibrating Omnidirectional Cameras"
   authors: ["D. Scaramuzza", "A. Martinelli", "R. Siegwart"]
+  authorIds: [A5057116316, A5013005906, A5083003222]
   year: 2006
   venue: IEEE/RSJ IROS
   url: https://rpg.ifi.uzh.ch/docs/IROS06_scaramuzza.pdf
@@ -608,6 +649,7 @@
 - id: lowe2004-sift
   title: "Distinctive Image Features from Scale-Invariant Keypoints"
   authors: ["D. G. Lowe"]
+  authorIds: [A5055202003]
   year: 2004
   venue: International Journal of Computer Vision
   url: https://www.cs.ubc.ca/~lowe/papers/ijcv04.pdf
@@ -618,6 +660,7 @@
 - id: canny1986-edge
   title: "A Computational Approach to Edge Detection"
   authors: ["J. Canny"]
+  authorIds: [A5089723214]
   year: 1986
   venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
   url: https://perso.limsi.fr/vezien/PAPIERS_ACS/canny1986.pdf
@@ -628,6 +671,7 @@
 - id: bay2006-surf
   title: "SURF: Speeded Up Robust Features"
   authors: ["H. Bay", "T. Tuytelaars", "L. V. Gool"]
+  authorIds: [A5112002146, A5074816094, A5001254143]
   year: 2006
   venue: Lecture notes in computer science
   url: https://link.springer.com/content/pdf/10.1007/11744023_32.pdf
@@ -638,6 +682,7 @@
 - id: calonder2010-brief
   title: "BRIEF: Binary Robust Independent Elementary Features"
   authors: ["M. Calonder", "V. Lepetit", "C. Strecha", "P. Fua"]
+  authorIds: [A5005568128, A5070382607, A5040251230, A5038674741]
   year: 2010
   venue: Lecture notes in computer science
   url: https://link.springer.com/content/pdf/10.1007/978-3-642-15561-1_56.pdf
@@ -648,6 +693,7 @@
 - id: rublee2011-orb
   title: "ORB: An efficient alternative to SIFT or SURF"
   authors: ["E. Rublee", "V. Rabaud", "K. Konolige", "G. Bradski"]
+  authorIds: [A5031632823, A5017786000, A5020223882, A5035523929]
   year: 2011
   venue: ICCV
   url: https://doi.org/10.1109/ICCV.2011.6126544
@@ -658,6 +704,7 @@
 - id: sarlin2020-superglue
   title: "SuperGlue: Learning Feature Matching with Graph Neural Networks"
   authors: ["P. Sarlin", "D. DeTone", "T. Malisiewicz", "A. Rabinovich"]
+  authorIds: [A5047661610, A5002090912, A5067498868, A5026452365]
   year: 2020
   venue: CVPR
   url: https://arxiv.org/pdf/1911.11763
@@ -669,6 +716,7 @@
 - id: sun2021-loftr
   title: "LoFTR: Detector-Free Local Feature Matching with Transformers"
   authors: ["J. Sun", "Z. Shen", "Y. Wang", "H. Bao", "X. Zhou"]
+  authorIds: [A5030787679, A5014481904, A5100723101, A5059021869, A5101814482]
   year: 2021
   venue: CVPR
   url: https://arxiv.org/pdf/2104.00680
@@ -680,6 +728,7 @@
 - id: lindenberger2023-lightglue
   title: "LightGlue: Local Feature Matching at Light Speed"
   authors: ["P. Lindenberger", "P. Sarlin", "M. Pollefeys"]
+  authorIds: [A5047482262, A5047661610, A5021908609]
   year: 2023
   venue: ICCV
   url: https://arxiv.org/pdf/2306.13643
@@ -691,6 +740,7 @@
 - id: felzenszwalb2004-graph-segm
   title: "Efficient Graph-Based Image Segmentation"
   authors: ["P. F. Felzenszwalb", "D. P. Huttenlocher"]
+  authorIds: [A5023765219, A5112446832]
   year: 2004
   venue: International Journal of Computer Vision
   url: https://cs.brown.edu/people/pfelzens/papers/seg-ijcv.pdf
@@ -701,6 +751,7 @@
 - id: boykov2001-graph-cut-segmentation
   title: "Interactive Graph Cuts for Optimal Boundary & Region Segmentation of Objects in N-D Images"
   authors: ["Y. Boykov", "M.-P. Jolly"]
+  authorIds: [A5028352869, A5109251531]
   year: 2001
   venue: ICCV
   url: https://www.csd.uwo.ca/~yboykov/Papers/iccv01.pdf
@@ -711,6 +762,7 @@
 - id: yang2018-sub-pixel
   title: "Sub-Pixel Chessboard Corner Localization for Camera Calibration and Pose Estimation"
   authors: ["T. Yang", "Q. Zhao", "W. Xian", "Q. Zhou"]
+  authorIds: [A5004060675, A5018808803, A5048916001, A5087193137]
   year: 2018
   venue: Applied Sciences
   url: https://www.mdpi.com/2076-3417/8/11/2118/pdf
@@ -726,6 +778,7 @@
 - id: longuet-higgins1981-eight-point
   title: "A computer algorithm for reconstructing a scene from two projections"
   authors: ["H. C. Longuet-Higgins"]
+  authorIds: [A5113249053]
   year: 1981
   venue: Nature
   url: https://doi.org/10.1038/293133a0
@@ -736,6 +789,7 @@
 - id: rother2004-grabcut
   title: "GrabCut: Interactive Foreground Extraction using Iterated Graph Cuts"
   authors: ["C. Rother", "V. Kolmogorov", "A. Blake"]
+  authorIds: [A5034290170, A5021390142, A5101657518]
   year: 2004
   venue: ACM Transactions on Graphics (SIGGRAPH)
   url: https://doi.org/10.1145/1015706.1015720
@@ -747,6 +801,7 @@
 - id: long2015-fcn
   title: "Fully Convolutional Networks for Semantic Segmentation"
   authors: ["J. Long", "E. Shelhamer", "T. Darrell"]
+  authorIds: [A5032863417, A5023786468, A5029105520]
   year: 2015
   venue: CVPR
   url: https://arxiv.org/abs/1411.4038
@@ -757,6 +812,7 @@
 - id: ronneberger2015-unet
   title: "U-Net: Convolutional Networks for Biomedical Image Segmentation"
   authors: ["O. Ronneberger", "P. Fischer", "T. Brox"]
+  authorIds: [A5045981348, A5041583196, A5070290355]
   year: 2015
   venue: MICCAI (Lecture Notes in Computer Science)
   url: https://arxiv.org/abs/1505.04597
@@ -768,6 +824,7 @@
 - id: chen2018-deeplab
   title: "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs"
   authors: ["L. Chen", "G. Papandreou", "I. Kokkinos", "K. Murphy", "A. Yuille"]
+  authorIds: [A5103273466, A5034294456, A5077035803, A5002713363, A5086706224]
   year: 2018
   venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
   url: https://arxiv.org/abs/1606.00915
@@ -780,6 +837,7 @@
 - id: he2017-maskrcnn
   title: "Mask R-CNN"
   authors: ["K. He", "G. Gkioxari", "P. Dollár", "R. Girshick"]
+  authorIds: [A5100700361, A5014407395, A5057866698, A5049246408]
   year: 2017
   venue: ICCV
   url: https://arxiv.org/abs/1703.06870
@@ -791,6 +849,7 @@
 - id: kirillov2023-sam
   title: "Segment Anything"
   authors: ["A. Kirillov", "E. Mintun", "N. Ravi", "H. Mao", "C. Rolland", "L. Gustafson", "T. Xiao", "S. Whitehead", "A. C. Berg", "W. Lo", "P. Dollár", "R. Girshick"]
+  authorIds: [A5008626158, A5042149832, A5045356290, A5021948346, A5043279771, A5033942765, A5041246275, A5076767045, A5104361813, A5090902802, A5057866698, A5049246408]
   year: 2023
   venue: ICCV
   url: https://arxiv.org/abs/2304.02643
@@ -806,6 +865,7 @@
 - id: viola2001-detector
   title: "Rapid object detection using a boosted cascade of simple features"
   authors: ["P. Viola", "M. Jones"]
+  authorIds: [A5042310818, A5064275902]
   year: 2001
   venue: CVPR
   url: https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/viola-cvpr-01.pdf
@@ -815,6 +875,7 @@
 - id: dalal2005-hog
   title: "Histograms of Oriented Gradients for Human Detection"
   authors: ["N. Dalal", "B. Triggs"]
+  authorIds: [A5050292858, A5062363302]
   year: 2005
   venue: CVPR
   url: https://inria.hal.science/inria-00548512
@@ -826,6 +887,7 @@
 - id: felzenszwalb2010-detection
   title: "Object Detection with Discriminatively Trained Part-Based Models"
   authors: ["P. F. Felzenszwalb", "R. B. Girshick", "D. McAllester", "D. Ramanan"]
+  authorIds: [A5023765219, A5049246408, A5033089246, A5004353237]
   year: 2010
   venue: IEEE TPAMI
   url: https://cs.brown.edu/people/pfelzens/papers/lsvm-pami.pdf
@@ -839,6 +901,7 @@
 - id: krizhevsky2012-alexnet
   title: "ImageNet Classification with Deep Convolutional Neural Networks"
   authors: ["A. Krizhevsky", "I. Sutskever", "G. E. Hinton"]
+  authorIds: [A5031152245, A5006446297, A5108093963]
   year: 2012
   venue: NeurIPS
   url: https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
@@ -848,6 +911,7 @@
 - id: simonyan2014-vgg
   title: "Very Deep Convolutional Networks for Large-Scale Image Recognition"
   authors: ["K. Simonyan", "A. Zisserman"]
+  authorIds: [A5004625775, A5057678172]
   year: 2014
   venue: ICLR 2015 / arXiv
   url: https://arxiv.org/pdf/1409.1556
@@ -861,6 +925,7 @@
 - id: szegedy2015-inception
   title: "Going deeper with convolutions"
   authors: ["C. Szegedy", "W. Liu", "Y. Jia", "P. Sermanet", "S. Reed", "D. Anguelov", "D. Erhan", "V. Vanhoucke", "A. Rabinovich"]
+  authorIds: [A5002183320, A5100641142, A5110220840, A5066544075, A5059110895, A5081024054, A5084125668, A5013813527, A5026452365]
   year: 2015
   venue: CVPR 2015
   url: https://arxiv.org/pdf/1409.4842
@@ -873,6 +938,7 @@
 - id: he2016-resnet
   title: "Deep Residual Learning for Image Recognition"
   authors: ["K. He", "X. Zhang", "S. Ren", "J. Sun"]
+  authorIds: [A5100700361, A5100362465, A5100824251, A5100785015]
   year: 2016
   venue: CVPR 2016
   url: https://arxiv.org/pdf/1512.03385
@@ -888,6 +954,7 @@
 - id: ren2015-faster
   title: "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks"
   authors: ["S. Ren", "K. He", "R. Girshick", "J. Sun"]
+  authorIds: [A5100824251, A5100700361, A5049246408, A5101425421]
   year: 2015
   venue: NeurIPS 2015
   url: https://arxiv.org/pdf/1506.01497
@@ -901,6 +968,7 @@
 - id: redmon2016-yolo
   title: "You Only Look Once: Unified, Real-Time Object Detection"
   authors: ["J. Redmon", "S. Divvala", "R. Girshick", "A. Farhadi"]
+  authorIds: [A5062301070, A5046849436, A5049246408, A5101576595]
   year: 2016
   venue: CVPR 2016
   url: https://arxiv.org/pdf/1506.02640
@@ -917,6 +985,7 @@
 - id: lin2017-retinanet
   title: "Focal Loss for Dense Object Detection"
   authors: ["T. Lin", "P. Goyal", "R. Girshick", "K. He", "P. Dollár"]
+  authorIds: [A5052768778, A5035445731, A5049246408, A5100700361, A5057866698]
   year: 2017
   venue: ICCV 2017
   url: https://arxiv.org/pdf/1708.02002
@@ -936,6 +1005,7 @@
 - id: lucas1981-lucas-kanade
   title: "An Iterative Image Registration Technique with an Application to Stereo Vision"
   authors: ["B. D. Lucas", "T. Kanade"]
+  authorIds: [A5081691937, A5057924291]
   year: 1981
   venue: IJCAI 1981
   url: https://www.ri.cmu.edu/pub_files/pub3/lucas_bruce_d_1981_2/lucas_bruce_d_1981_2.pdf
@@ -944,6 +1014,7 @@
 - id: tomasi1991-detection-tracking
   title: "Detection and Tracking of Point Features"
   authors: ["C. Tomasi", "T. Kanade"]
+  authorIds: [A5079878449]
   year: 1991
   venue: Carnegie Mellon University Technical Report CMU-CS-91-132
   url: https://kilthub.cmu.edu/articles/journal_contribution/Detection_and_tracking_of_point_features/6603148
@@ -952,6 +1023,7 @@
 - id: horn1981-horn-schunck
   title: "Determining optical flow"
   authors: ["B. K. P. Horn", "B. G. Schunck"]
+  authorIds: [A5080970223, A5008294855]
   year: 1981
   venue: Artificial Intelligence
   url: http://hdl.handle.net/1721.1/6337
@@ -961,6 +1033,7 @@
 - id: black1996-robust
   title: "The Robust Estimation of Multiple Motions: Parametric and Piecewise-Smooth Flow Fields"
   authors: ["M. J. Black", "P. Anandan"]
+  authorIds: [A5065396778, A5103029420]
   year: 1996
   venue: Computer Vision and Image Understanding
   url: https://doi.org/10.1006/cviu.1996.0006
@@ -974,6 +1047,7 @@
 - id: crow1984-summed-area
   title: "Summed-area tables for texture mapping"
   authors: ["F. C. Crow"]
+  authorIds: [A5050345889]
   year: 1984
   venue: ACM SIGGRAPH Computer Graphics
   url: https://doi.org/10.1145/964965.808600
@@ -983,6 +1057,7 @@
 - id: abbas2019-bev
   title: "A Geometric Approach to Obtain a Bird's Eye View From an Image"
   authors: ["S. A. Abbas", "A. Zisserman"]
+  authorIds: [A5069384071, A5057678172]
   year: 2019
   venue: ICCVW 2019
   url: https://arxiv.org/abs/1905.02231
@@ -996,6 +1071,7 @@
 - id: sofiiuk2021-ritm
   title: "Reviving Iterative Training with Mask Guidance for Interactive Segmentation"
   authors: ["K. Sofiiuk", "I. A. Petrov", "A. Konushin"]
+  authorIds: [A5038193389, A5065787419]
   year: 2021
   venue: arXiv (Cornell University)
   url: https://arxiv.org/pdf/2102.06583
@@ -1007,6 +1083,7 @@
 - id: sun2019-hrnet
   title: "Deep High-Resolution Representation Learning for Human Pose Estimation"
   authors: ["K. Sun", "B. Xiao", "D. Liu", "J. Wang"]
+  authorIds: [A5101919615, A5103218891, A5100407381, A5075880303]
   year: 2019
   venue: CVPR 2019
   url: https://arxiv.org/pdf/1902.09212
@@ -1020,6 +1097,7 @@
 - id: sun2019-hrnetv2
   title: "High-Resolution Representations for Labeling Pixels and Regions"
   authors: ["K. Sun", "Y. Zhao", "B. Jiang", "T. Cheng", "B. Xiao", "D. Liu", "Y. Mu", "X. Wang", "W. Liu", "J. Wang"]
+  authorIds: [A5101919615, A5056718303, A5022898952, A5022657064, A5103218891, A5100407381, A5028877572, A5037191476, A5100665053, A5075880303]
   year: 2019
   venue: arXiv (Cornell University)
   url: https://arxiv.org/pdf/1904.04514
@@ -1034,6 +1112,7 @@
 - id: wang2020-hrnet-journal
   title: "Deep High-Resolution Representation Learning for Visual Recognition"
   authors: ["J. Wang", "K. Sun", "T. Cheng", "B. Jiang", "C. Deng", "Y. Zhao", "D. Liu", "Y. Mu", "M. Tan", "X. Wang", "W. Liu", "B. Xiao"]
+  authorIds: [A5075880303, A5101919615, A5022657064, A5022898952, A5027344351, A5056718303, A5100407437, A5028877572, A5032352025, A5037191476, A5100665053, A5103218891]
   year: 2020
   venue: TPAMI 2020 (arXiv 2019)
   url: https://arxiv.org/pdf/1908.07919
@@ -1048,6 +1127,7 @@
 - id: zhang2023-mobilesam
   title: "Faster Segment Anything: Towards Lightweight SAM for Mobile Applications"
   authors: ["C. Zhang", "D. Han", "Y. Qiao", "J. U. Kim", "S. Bae", "S. Lee", "C. S. Hong"]
+  authorIds: [A5057230698, A5053457390, A5100748135, A5036936141, A5005200603, A5101472509, A5034052371]
   year: 2023
   venue: arXiv (Cornell University)
   url: https://arxiv.org/pdf/2306.14289
@@ -1060,6 +1140,7 @@
 - id: zhang2023-mobilesamv2
   title: "MobileSAMv2: Faster Segment Anything to Everything"
   authors: ["C. Zhang", "D. Han", "S. Zheng", "J. Choi", "T. Kim", "C. S. Hong"]
+  authorIds: [A5057230698, A5053457390, A5103437194, A5042838206, A5100452223, A5034052371]
   year: 2023
   venue: arXiv (Cornell University)
   url: https://arxiv.org/pdf/2312.09579
@@ -1073,6 +1154,7 @@
 - id: ravi2024-sam2
   title: "SAM 2: Segment Anything in Images and Videos"
   authors: ["N. Ravi", "V. Gabeur", "Y. Hu", "R. Hu", "C. K. Ryali", "T. Ma", "H. Khedr", "R. Rädle", "C. Rolland", "L. Gustafson", "E. Mintun", "J. Pan", "K. V. Alwala", "N. Carion", "C. Wu", "R. Girshick", "P. Dollár", "C. Feichtenhofer"]
+  authorIds: [A5045356290, A5001789528, A5015863645, A5072304825, A5028978530, A5101821970, A5090549040, A5018955742, A5043279771, A5033942765, A5042149832, A5088732762, A5078659702, A5029981206, A5023917342, A5049246408, A5057866698, A5036069974]
   year: 2024
   venue: arXiv (Cornell University)
   url: https://arxiv.org/pdf/2408.00714
@@ -1085,6 +1167,7 @@
 - id: carion2025-sam3
   title: "SAM 3: Segment Anything with Concepts"
   authors: ["N. Carion", "L. Gustafson", "Y. Hu", "S. Debnath", "R. Hu", "D. Suris", "C. K. Ryali", "K. V. Alwala", "H. Khedr", "A. C. Huang", "J. Lei", "T. Ma", "B. Guo", "A. Kalla", "M. D. Marks", "J. Greer", "M. Wang", "P. Sun", "R. Rädle", "T. Afouras", "E. Mavroudi", "K. Xu", "T. Wu", "Y. Zhou", "L. Momeni", "R. Hazra", "S. Ding", "S. Vaze", "F. Porcher", "L. Feng", "S. Li", "A. Kamath", "H. Cheng", "P. Dollár", "N. Ravi", "K. Saenko", "P. Zhang", "C. Feichtenhofer"]
+  authorIds: [A5029981206, A5033942765, A5015863645, A5006168104, A5072304825, A5120696483, A5028978530, A5078659702, A5090549040, A5103370264, A5004558416, A5101821970, A5113082671, A5120717410, A5004354796, A5120717411, A5100377135, A5002942097, A5018955742, A5018690028, A5120717412, A5100440745, A5005496541, A5027383183, A5033313836, A5070202776, A5013238521, A5051831405, A5120752431, A5100744913, A5100406644, A5077791956, A5002932429, A5057866698, A5045356290, A5075906727, A5120752432, A5036069974]
   year: 2025
   venue: arXiv (Cornell University)
   url: https://arxiv.org/pdf/2511.16719
@@ -1098,6 +1181,7 @@
 - id: dosovitskiy2020-vit
   title: "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"
   authors: ["A. Dosovitskiy", "L. Beyer", "A. Kolesnikov", "D. Weissenborn", "X. Zhai", "T. Unterthiner", "M. Dehghani", "M. Minderer", "G. Heigold", "S. Gelly", "J. Uszkoreit", "N. Houlsby"]
+  authorIds: [A5090113830, A5055629014, A5000026575, A5038019602, A5071668416, A5083016682, A5102906366, A5088239541, A5071956319, A5041958651, A5022416424, A5068878643]
   year: 2020
   venue: ICLR 2021 (arXiv 2020)
   url: https://arxiv.org/pdf/2010.11929
@@ -1109,6 +1193,7 @@
 - id: carion2020-detr
   title: "End-to-End Object Detection with Transformers"
   authors: ["N. Carion", "F. Massa", "G. Synnaeve", "N. Usunier", "A. Kirillov", "S. Zagoruyko"]
+  authorIds: [A5029981206, A5032569443, A5041907084, A5084360449, A5101930471, A5002668762]
   year: 2020
   venue: ECCV 2020
   url: https://arxiv.org/pdf/2005.12872
@@ -1121,6 +1206,7 @@
 - id: cheng2021-maskformer
   title: "Per-Pixel Classification is Not All You Need for Semantic Segmentation"
   authors: ["B. Cheng", "A. G. Schwing", "A. Kirillov"]
+  authorIds: [A5101589005, A5049638480, A5101930471]
   year: 2021
   venue: NeurIPS 2021
   url: https://arxiv.org/pdf/2107.06278
@@ -1134,6 +1220,7 @@
 - id: cheng2022-mask2former
   title: "Masked-attention Mask Transformer for Universal Image Segmentation"
   authors: ["B. Cheng", "I. Misra", "A. G. Schwing", "A. Kirillov", "R. Girdhar"]
+  authorIds: [A5101589005, A5000623592, A5049638480, A5101930471, A5006312307]
   year: 2022
   venue: CVPR 2022 (arXiv 2021)
   url: https://arxiv.org/pdf/2112.01527
@@ -1148,6 +1235,7 @@
 - id: he2021-mae
   title: "Masked Autoencoders Are Scalable Vision Learners"
   authors: ["K. He", "X. Chen", "S. Xie", "Y. Li", "P. Dollár", "R. Girshick"]
+  authorIds: [A5100700361, A5101507596, A5102416863, A5029760000, A5057866698, A5049246408]
   year: 2021
   venue: CVPR 2022 (arXiv 2021)
   url: https://arxiv.org/pdf/2111.06377
@@ -1161,6 +1249,7 @@
 - id: chen2022-focalclick
   title: "FocalClick: Towards Practical Interactive Image Segmentation"
   authors: ["X. Chen", "Z. Zhao", "Y. Zhang", "M. Duan", "D. Qi", "H. Zhao"]
+  authorIds: [A5100329991, A5102204147, A5100694323, A5111517850, A5066921930, A5078109015]
   year: 2022
   venue: CVPR 2022 (arXiv 2022)
   url: https://arxiv.org/pdf/2204.02574
@@ -1172,6 +1261,7 @@
 - id: xie2021-segformer
   title: "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers"
   authors: ["E. Xie", "W. Wang", "Z. Yu", "A. Anandkumar", "J. M. Alvarez", "P. Luo"]
+  authorIds: [A5041031140, A5101827340, A5054586129, A5014498545, A5101540588, A5100752686]
   year: 2021
   venue: NeurIPS 2021 (arXiv 2021)
   url: https://arxiv.org/pdf/2105.15203
@@ -1188,6 +1278,7 @@
 - id: yu2018-bisenet
   title: "BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation"
   authors: ["C. Yu", "J. Wang", "C. Peng", "C. Gao", "G. Yu", "S. Nong"]
+  authorIds: [A5013651586, A5100456762, A5020100372, A5035295689, A5003400275]
   year: 2018
   venue: ECCV 2018 (arXiv 2018)
   url: https://arxiv.org/pdf/1808.00897
@@ -1205,6 +1296,7 @@
 - id: yu2020-bisenet
   title: "BiSeNet V2: Bilateral Network with Guided Aggregation for Real-time Semantic Segmentation"
   authors: ["C. Yu", "C. Gao", "J. Wang", "G. Yu", "C. Shen", "S. Nong"]
+  authorIds: [A5013651586, A5035295689, A5100456761, A5003400275, A5006294869]
   year: 2020
   venue: IJCV 2021 (arXiv 2020)
   url: https://arxiv.org/pdf/2004.02147
@@ -1226,6 +1318,7 @@
 - id: poudel2019-fast-scnn
   title: "Fast-SCNN: Fast Semantic Segmentation Network"
   authors: ["R. P. K. Poudel", "S. Liwicki", "R. Cipolla"]
+  authorIds: [A5021094235, A5031510704, A5018207993]
   year: 2019
   venue: BMVC 2019 (arXiv 2019)
   url: https://arxiv.org/pdf/1902.04502
@@ -1243,6 +1336,7 @@
 - id: howard2019-mobilenetv3
   title: "Searching for MobileNetV3"
   authors: ["A. Howard", "M. Sandler", "G. Chu", "L. Chen", "B. Chen", "M. Tan", "W. Wang", "Y. Zhu", "R. Pang", "V. Vasudevan", "Q. V. Le", "H. Adam"]
+  authorIds: [A5037015491, A5103186114, A5100427253, A5100415460, A5103273466, A5110774377, A5041588414, A5004650249, A5006455453, A5112901893, A5030402556, A5088551093]
   year: 2019
   venue: ICCV 2019 (arXiv 2019)
   url: https://arxiv.org/pdf/1905.02244
@@ -1256,6 +1350,7 @@
 - id: sandler2018-mobilenetv2
   title: "MobileNetV2: Inverted Residuals and Linear Bottlenecks"
   authors: ["M. Sandler", "A. Howard", "M. Zhu", "A. Zhmoginov", "L. Chen"]
+  authorIds: [A5103186114, A5037015491, A5004780312, A5113984302, A5103273466]
   year: 2018
   venue: CVPR 2018 (arXiv 2018)
   url: https://arxiv.org/pdf/1801.04381
@@ -1271,6 +1366,7 @@
 - id: tan2019-mnasnet
   title: "MnasNet: Platform-Aware Neural Architecture Search for Mobile"
   authors: ["M. Tan", "B. Chen", "R. Pang", "V. Vasudevan", "M. Sandler", "A. Howard", "Q. V. Le"]
+  authorIds: [A5110774377, A5100427270, A5112901893, A5004650249, A5103186114, A5037015491, A5088551093]
   year: 2019
   venue: CVPR 2019 (arXiv 2018)
   url: https://arxiv.org/pdf/1807.11626
@@ -1306,6 +1402,7 @@
 - id: oquab2023-dinov2
   title: "DINOv2: Learning Robust Visual Features without Supervision"
   authors: ["M. Oquab", "T. Darcet", "T. Moutakanni", "H. Vo", "M. Szafraniec", "V. Khalidov", "P. Fernandez", "D. Haziza", "F. Massa", "A. El-Nouby", "M. Assran", "N. Ballas", "W. Galuba", "R. Howes", "P. Huang", "S. Li", "I. Misra", "M. Rabbat", "V. Sharma", "G. Synnaeve", "H. Xu", "H. Jegou", "J. Mairal", "P. Labatut", "A. Joulin", "P. Bojanowski"]
+  authorIds: [A5033265682, A5076163068, A5015776030, A5060502801, A5072207220, A5015609539, A5088495817, A5063864170, A5032569443, A5083505661, A5006611401, A5057065873, A5022540761, A5017248470, A5063149046, A5029566548, A5000623592, A5089819604, A5102320649, A5041907084, A5101882561, A5111802678, A5062817741, A5067188801, A5107859338, A5035420035]
   year: 2023
   venue: TMLR 2024 (arXiv 2023)
   url: https://arxiv.org/pdf/2304.07193
@@ -1317,6 +1414,7 @@
 - id: ranftl2019-midas
   title: "Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-shot Cross-dataset Transfer"
   authors: ["R. Ranftl", "K. Lasinger", "D. Hafner", "K. Schindler", "V. Koltun"]
+  authorIds: [A5076203786, A5043127213, A5100972569, A5005404030, A5006181255]
   year: 2019
   venue: TPAMI 2022 (arXiv 2019)
   url: https://arxiv.org/pdf/1907.01341
@@ -1328,6 +1426,7 @@
 - id: yang2024-depth-anything
   title: "Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data"
   authors: ["L. Yang", "B. Kang", "Z. Huang", "X. Xu", "J. Feng", "H. Zhao"]
+  authorIds: [A5038009961, A5032599820, A5101358906, A5101477980, A5100668696, A5078109015]
   year: 2024
   venue: CVPR 2024
   url: https://arxiv.org/pdf/2401.10891
@@ -1339,6 +1438,7 @@
 - id: yang2024-depth-anything-v2
   title: "Depth Anything V2"
   authors: ["L. Yang", "B. Kang", "Z. Huang", "Z. Zhao", "X. Xu", "J. Feng", "H. Zhao"]
+  authorIds: [A5038009961, A5032599820, A5099137433, A5100423046, A5101477980, A5100668696, A5078109015]
   year: 2024
   venue: NeurIPS 2024
   url: https://arxiv.org/pdf/2406.09414
@@ -1350,6 +1450,7 @@
 - id: wang2023-dust3r
   title: "DUSt3R: Geometric 3D Vision Made Easy"
   authors: ["S. Wang", "V. Leroy", "Y. Cabon", "B. Chidlovskii", "J. Revaud"]
+  authorIds: [A5103227553, A5102005758, A5070076119, A5046897413, A5065291945]
   year: 2023
   venue: CVPR 2024 (arXiv 2023)
   url: https://arxiv.org/pdf/2312.14132
@@ -1361,6 +1462,7 @@
 - id: leroy2024-mast3r
   title: "Grounding Image Matching in 3D with MASt3R"
   authors: ["V. Leroy", "Y. Cabon", "J. Revaud"]
+  authorIds: [A5102005758, A5070076119, A5065291945]
   year: 2024
   venue: ECCV 2024
   url: https://arxiv.org/pdf/2406.09756
@@ -1372,6 +1474,7 @@
 - id: wang2025-vggt
   title: "VGGT: Visual Geometry Grounded Transformer"
   authors: ["J. Wang", "M. Chen", "N. Karaev", "A. Vedaldi", "C. Rupprecht", "D. Novotny"]
+  authorIds: [A5102021426, A5100730802, A5005136810, A5060511349, A5083153177, A5103131633]
   year: 2025
   venue: CVPR 2025
   url: https://arxiv.org/pdf/2503.11651
@@ -1383,6 +1486,7 @@
 - id: hartley1999-projective-rectification
   title: "Theory and Practice of Projective Rectification"
   authors: ["R. I. Hartley"]
+  authorIds: [A5020216442]
   year: 1999
   venue: International Journal of Computer Vision
   url: https://users.cecs.anu.edu.au/~hartley/Papers/joint-epipolar/journal/joint3.pdf
@@ -1393,6 +1497,7 @@
 - id: loop1999-rectifying-homographies
   title: "Computing Rectifying Homographies for Stereo Vision"
   authors: ["C. Loop", "Z. Zhang"]
+  authorIds: [A5043890037, A5113678278]
   year: 1999
   venue: IEEE CVPR 1999
   url: https://dev.ipol.im/~morel/Dossier_MVA_2011_Cours_Transparents_Documents/2011_Cours7_Document2_Loop-Zhang-CVPR1999.pdf
@@ -1403,6 +1508,7 @@
 - id: pollefeys1999-polar-rectification
   title: "A Simple and Efficient Rectification Method for General Motion"
   authors: ["M. Pollefeys", "R. Koch", "L. Van Gool"]
+  authorIds: [A5021908609, A5040944275, A5001254143]
   year: 1999
   venue: IEEE ICCV 1999
   url: https://people.inf.ethz.ch/pomarc/pubs/PollefeysICCV99.pdf
@@ -1413,6 +1519,7 @@
 - id: fusiello2000-compact-rectification
   title: "A Compact Algorithm for Rectification of Stereo Pairs"
   authors: ["A. Fusiello", "E. Trucco", "A. Verri"]
+  authorIds: [A5066624955, A5048954811, A5036620304]
   year: 2000
   venue: Machine Vision and Applications
   url: https://fusiello.github.io/papers/mva99.pdf
@@ -1423,6 +1530,7 @@
 - id: batzner2023-efficientad
   title: "EfficientAD: Accurate Visual Anomaly Detection at Millisecond-Level Latencies"
   authors: ["K. Batzner", "L. Heckler", "R. König"]
+  authorIds: [A5060719444, A5025338546, A5104029574]
   year: 2023
   venue: WACV 2024 (arXiv 2023)
   url: https://arxiv.org/pdf/2303.14535
@@ -1434,6 +1542,7 @@
 - id: bergmann2019-mvtec-ad
   title: "MVTec AD — A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection"
   authors: ["P. Bergmann", "M. Fauser", "D. Sattlegger", "C. Steger"]
+  authorIds: [A5007868194, A5064821404, A5059384741, A5061476709]
   year: 2019
   venue: CVPR 2019
   url: https://openaccess.thecvf.com/content_CVPR_2019/papers/Bergmann_MVTec_AD_--_A_Comprehensive_Real-World_Dataset_for_Unsupervised_Anomaly_CVPR_2019_paper.pdf
@@ -1444,6 +1553,7 @@
 - id: bergmann2020-uninformed-students
   title: "Uninformed Students: Student-Teacher Anomaly Detection With Discriminative Latent Embeddings"
   authors: ["P. Bergmann", "M. Fauser", "D. Sattlegger", "C. Steger"]
+  authorIds: [A5007868194, A5064821404, A5059384741, A5061476709]
   year: 2020
   venue: CVPR 2020
   url: https://arxiv.org/pdf/1911.02357
@@ -1455,6 +1565,7 @@
 - id: bergmann2022-mvtec-loco
   title: "Beyond Dents and Scratches: Logical Constraints in Unsupervised Anomaly Detection and Localization"
   authors: ["P. Bergmann", "K. Batzner", "M. Fauser", "D. Sattlegger", "C. Steger"]
+  authorIds: [A5007868194, A5060719444, A5064821404, A5059384741, A5061476709]
   year: 2022
   venue: International Journal of Computer Vision
   url: https://mediatum.ub.tum.de/download/1782820/1782820.pdf
@@ -1465,6 +1576,7 @@
 - id: roth2022-patchcore
   title: "Towards Total Recall in Industrial Anomaly Detection"
   authors: ["K. Roth", "L. Pemula", "J. Zepeda", "B. Schölkopf", "T. Brox", "P. Gehler"]
+  authorIds: [A5103125177, A5110775281, A5104090766, A5044005697, A5070290355, A5055614518]
   year: 2022
   venue: CVPR 2022
   url: https://arxiv.org/pdf/2106.08265
@@ -1476,6 +1588,7 @@
 - id: rudolph2023-ast
   title: "Asymmetric Student-Teacher Networks for Industrial Anomaly Detection"
   authors: ["M. Rudolph", "T. Wehrbein", "B. Rosenhahn", "B. Wandt"]
+  authorIds: [A5052140058, A5062321523, A5040412734, A5102907822]
   year: 2023
   venue: WACV 2023
   url: https://arxiv.org/pdf/2210.07829
@@ -1487,6 +1600,7 @@
 - id: zou2022-visa
   title: "SPot-the-Difference Self-Supervised Pre-training for Anomaly Detection and Segmentation"
   authors: ["Y. Zou", "J. Jeong", "L. Pemula", "D. Zhang", "O. Dabeer"]
+  authorIds: [A5102871171, A5045815823, A5110775281, A5111643862, A5107854671]
   year: 2022
   venue: ECCV 2022
   url: https://arxiv.org/pdf/2207.14315
@@ -1508,6 +1622,7 @@
 - id: bahdanau2014-align
   title: "Neural Machine Translation by Jointly Learning to Align and Translate"
   authors: ["D. Bahdanau", "K. Cho", "Y. Bengio"]
+  authorIds: [A5010465328, A5091175785, A5086198262]
   year: 2014
   venue: ICLR 2015
   url: https://arxiv.org/pdf/1409.0473
@@ -1517,6 +1632,7 @@
 - id: katharopoulos2020-linear-attention
   title: "Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention"
   authors: ["A. Katharopoulos", "A. Vyas", "N. Pappas", "F. Fleuret"]
+  authorIds: [A5031829458, A5108691882, A5023518080, A5076094010]
   year: 2020
   venue: ICML 2020
   url: https://arxiv.org/pdf/2006.16236
@@ -1527,6 +1643,7 @@
 - id: darcet2023-registers
   title: "Vision Transformers Need Registers"
   authors: ["T. Darcet", "M. Oquab", "J. Mairal", "P. Bojanowski"]
+  authorIds: [A5076163068, A5033265682, A5062817741, A5035420035]
   year: 2023
   venue: ICLR 2024
   url: https://arxiv.org/pdf/2309.16588
@@ -1537,6 +1654,7 @@
 - id: dao2022-flashattention
   title: "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness"
   authors: ["T. Dao", "D. Y. Fu", "S. Ermon", "A. Rudra", "C. Ré"]
+  authorIds: [A5032865467, A5091179481, A5001041485, A5103852640]
   year: 2022
   venue: NeurIPS 2022
   url: https://arxiv.org/pdf/2205.14135
@@ -1547,6 +1665,7 @@
 - id: su2021-roformer
   title: "RoFormer: Enhanced Transformer with Rotary Position Embedding"
   authors: ["J. Su", "Y. Lu", "S. Pan", "A. Murtadha", "B. Wen", "Y. Liu"]
+  authorIds: [A5078222384, A5101645258, A5049491241, A5024735754, A5100357482]
   year: 2021
   venue: Neurocomputing 2024
   url: https://arxiv.org/pdf/2104.09864
@@ -1557,6 +1676,7 @@
 - id: ainslie2023-gqa
   title: "GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints"
   authors: ["J. Ainslie", "J. Lee-Thorp", "M. de Jong", "Y. Zemlyanskiy", "F. Lebrón", "S. Sanghai"]
+  authorIds: [A5072605113, A5018339854, A5021943393, A5036319063, A5092005408, A5012884492]
   year: 2023
   venue: EMNLP 2023
   url: https://arxiv.org/pdf/2305.13245
@@ -1567,6 +1687,7 @@
 - id: ioffe2015-batchnorm
   title: "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift"
   authors: ["S. Ioffe", "C. Szegedy"]
+  authorIds: [A5032800189, A5002183320]
   year: 2015
   venue: ICML 2015
   url: https://arxiv.org/pdf/1502.03167
@@ -1576,6 +1697,7 @@
 - id: ba2016-layernorm
   title: "Layer Normalization"
   authors: ["J. L. Ba", "J. R. Kiros", "G. E. Hinton"]
+  authorIds: [A5012276327, A5065231880, A5108093963]
   year: 2016
   venue: arXiv preprint
   url: https://arxiv.org/pdf/1607.06450
@@ -1586,6 +1708,7 @@
 - id: wu2018-groupnorm
   title: "Group Normalization"
   authors: ["Y. Wu", "K. He"]
+  authorIds: [A5018369948, A5100700361]
   year: 2018
   venue: ECCV 2018
   url: https://arxiv.org/pdf/1803.08494
@@ -1596,6 +1719,7 @@
 - id: caron2021-dino
   title: "Emerging Properties in Self-Supervised Vision Transformers"
   authors: ["M. Caron", "H. Touvron", "I. Misra", "H. Jégou", "J. Mairal", "P. Bojanowski", "A. Joulin"]
+  authorIds: [A5071626315, A5032644449, A5000623592, A5111802678, A5062817741, A5035420035, A5107859338]
   year: 2021
   venue: ICCV 2021
   url: https://arxiv.org/pdf/2104.14294
@@ -1618,6 +1742,7 @@
 - id: hinton2015-distillation
   title: "Distilling the Knowledge in a Neural Network"
   authors: ["G. E. Hinton", "O. Vinyals", "J. Dean"]
+  authorIds: [A5108093963, A5003562101]
   year: 2015
   venue: NeurIPS 2014 Deep Learning Workshop (arXiv 2015)
   url: https://arxiv.org/pdf/1503.02531
@@ -1629,6 +1754,7 @@
 - id: touvron2020-deit
   title: "Training data-efficient image transformers & distillation through attention"
   authors: ["H. Touvron", "M. Cord", "M. Douze", "F. Massa", "A. Sablayrolles", "H. Jégou"]
+  authorIds: [A5032644449, A5108118084, A5053822883, A5032569443, A5067991583, A5111802678]
   year: 2020
   venue: ICML 2021 (arXiv 2020)
   url: https://arxiv.org/pdf/2012.12877
@@ -1640,6 +1766,7 @@
 - id: liu2021-swin
   title: "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows"
   authors: ["Z. Liu", "Y. Lin", "Y. Cao", "H. Hu", "Y. Wei", "Z. Zhang", "S. Lin", "B. Guo"]
+  authorIds: [A5100349451, A5102798361, A5101593662, A5101867078, A5009248953, A5100459168, A5025114648, A5101666011]
   year: 2021
   venue: ICCV 2021
   url: https://arxiv.org/pdf/2103.14030
@@ -1651,6 +1778,7 @@
 - id: chen2020-simclr
   title: "A Simple Framework for Contrastive Learning of Visual Representations"
   authors: ["T. Chen", "S. Kornblith", "M. Norouzi", "G. E. Hinton"]
+  authorIds: [A5100443189, A5042760897, A5103947107, A5108093963]
   year: 2020
   venue: ICML 2020
   url: https://arxiv.org/pdf/2002.05709
@@ -1662,6 +1790,7 @@
 - id: he2019-moco
   title: "Momentum Contrast for Unsupervised Visual Representation Learning"
   authors: ["K. He", "H. Fan", "Y. Wu", "S. Xie", "R. Girshick"]
+  authorIds: [A5100700361, A5022792966, A5018369948, A5102416863, A5049246408]
   year: 2019
   venue: CVPR 2020 (arXiv 2019)
   url: https://arxiv.org/pdf/1911.05722
@@ -1673,6 +1802,7 @@
 - id: grill2020-byol
   title: "Bootstrap your own latent: A new approach to self-supervised Learning"
   authors: ["J. Grill", "F. Strub", "F. Altché", "C. Tallec", "P. H. Richemond", "E. Buchatskaya", "C. Doersch", "B. Á. Pires", "Z. D. Guo", "M. G. Azar", "B. Piot", "K. Kavukcuoglu", "R. Munos", "M. Valko"]
+  authorIds: [A5052176965, A5024394972, A5008927786, A5106745356, A5091349569, A5032652614, A5081047759, A5038039948, A5089902230, A5043355670, A5103033215, A5090341705, A5006533777, A5106038276]
   year: 2020
   venue: NeurIPS 2020
   url: https://arxiv.org/pdf/2006.07733
@@ -1684,6 +1814,7 @@
 - id: radford2021-clip
   title: "Learning Transferable Visual Models From Natural Language Supervision"
   authors: ["A. Radford", "J. W. Kim", "C. Hallacy", "A. Ramesh", "G. Goh", "S. Agarwal", "G. Sastry", "A. Askell", "P. Mishkin", "J. Clark", "G. Krueger", "I. Sutskever"]
+  authorIds: [A5051250767, A5100726106, A5007406730, A5101696375, A5108118480, A5057289323, A5059260582, A5030305998, A5028772381, A5031107879, A5064685592, A5006446297]
   year: 2021
   venue: ICML 2021
   url: https://arxiv.org/pdf/2103.00020
@@ -1695,6 +1826,7 @@
 - id: tschannen2025-siglip2
   title: "SigLIP 2: Multilingual Vision-Language Encoders with Improved Semantic Understanding, Localization, and Dense Features"
   authors: ["M. Tschannen", "A. A. Gritsenko", "X. Wang", "M. F. Naeem", "I. Alabdulmohsin", "N. Parthasarathy", "T. Evans", "L. Beyer", "Y. Xia", "B. Mustafa", "O. J. Hénaff", "J. Harmsen", "A. Steiner", "X. Zhai"]
+  authorIds: [A5088082340, A5083585691, A5100411538, A5103091877, A5029133361, A5026731149, A5061487102, A5055629014, A5053743638, A5072796087, A5081732358, A5086126388, A5053094006, A5071668416]
   year: 2025
   venue: arXiv preprint
   url: https://arxiv.org/pdf/2502.14786
@@ -1706,6 +1838,7 @@
 - id: jeong2023-winclip
   title: "WinCLIP: Zero-/Few-Shot Anomaly Classification and Segmentation"
   authors: ["J. Jeong", "Y. Zou", "T. Kim", "D. Zhang", "A. Ravichandran", "O. Dabeer"]
+  authorIds: [A5045815823, A5100749028, A5100329542, A5111643862, A5010126054, A5107854671]
   year: 2023
   venue: CVPR 2023
   url: https://arxiv.org/pdf/2303.14814
@@ -1717,6 +1850,7 @@
 - id: zhou2023-anomalyclip
   title: "AnomalyCLIP: Object-agnostic Prompt Learning for Zero-shot Anomaly Detection"
   authors: ["Q. Zhou", "G. Pang", "Y. Tian", "S. He", "J. Chen"]
+  authorIds: [A5082733824, A5039104219, A5007352440, A5068195118, A5100726041]
   year: 2023
   venue: ICLR 2024 (arXiv 2023)
   url: https://arxiv.org/pdf/2310.18961
@@ -1728,6 +1862,7 @@
 - id: liu2023-simplenet
   title: "SimpleNet: A Simple Network for Image Anomaly Detection and Localization"
   authors: ["Z. Liu", "Y. Zhou", "Y. Xu", "Z. Wang"]
+  authorIds: [A5086921146, A5100711802, A5100546557, A5100376572]
   year: 2023
   venue: CVPR 2023
   url: https://arxiv.org/pdf/2303.15140

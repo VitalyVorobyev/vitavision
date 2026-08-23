@@ -11,6 +11,7 @@ import { narrativeLoaders } from "../src/generated/narrative-loaders.ts";
 import { render } from "../src/entry-server.tsx";
 import type { StaticContentContextValue } from "../src/lib/content/ssr-content.tsx";
 import type { PapersById } from "../src/generated/papers-index.ts";
+import type { AuthorsIndex } from "../src/generated/authors-index.ts";
 import {
     buildAlgorithmJsonLd,
     buildBlogJsonLd,
@@ -74,9 +75,10 @@ function writePage(
     meta: SeoMeta,
     staticContent: StaticContentContextValue,
     papers: PapersById,
+    authors: AuthorsIndex,
     extraHead?: string,
 ): void {
-    const html = render(url, staticContent, papers);
+    const html = render(url, staticContent, papers, authors);
     let page = template.replace(
         '<div id="root"></div>',
         `<div id="root">${html}</div>`,
@@ -140,6 +142,12 @@ async function main(): Promise<void> {
     const papers: PapersById = existsSync(papersJsonPath)
         ? (JSON.parse(readFileSync(papersJsonPath, "utf-8")) as PapersById)
         : {};
+    // Same treatment for the authors index — read once from disk so SSR has
+    // it synchronously on every prerendered page.
+    const authorsJsonPath = join(import.meta.dir, "..", "public", "authors-index.json");
+    const authors: AuthorsIndex = existsSync(authorsJsonPath)
+        ? (JSON.parse(readFileSync(authorsJsonPath, "utf-8")) as AuthorsIndex)
+        : { authors: {}, paperAuthors: {}, pagesByPaper: {} };
     let count = 0;
 
     // Blog index
@@ -147,7 +155,7 @@ async function main(): Promise<void> {
         title: "Blog",
         description:
             "Articles on computer vision algorithms, calibration, and building intelligent systems.",
-    }, staticContent, papers);
+    }, staticContent, papers, authors);
     count++;
 
     // Individual blog posts
@@ -160,7 +168,7 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/blog/${post.slug}`,
-        }, staticContent, papers, jsonLd);
+        }, staticContent, papers, authors, jsonLd);
         count++;
     }
 
@@ -168,7 +176,7 @@ async function main(): Promise<void> {
     writePage(template, "/atlas", "atlas", {
         title: "Atlas",
         description: "Computer vision atlas — algorithms, models, and concepts.",
-    }, staticContent, papers);
+    }, staticContent, papers, authors);
     count++;
 
     // Individual algorithm pages
@@ -181,7 +189,7 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/atlas/${page.slug}`,
-        }, staticContent, papers, jsonLd);
+        }, staticContent, papers, authors, jsonLd);
         count++;
     }
 
@@ -189,7 +197,7 @@ async function main(): Promise<void> {
     writePage(template, "/demos", "demos", {
         title: "Demos",
         description: "Interactive demos of computer vision algorithms.",
-    }, staticContent, papers);
+    }, staticContent, papers, authors);
     count++;
 
     // Individual demo pages
@@ -201,7 +209,7 @@ async function main(): Promise<void> {
             description: frontmatter.summary,
             ogType: "article",
             url: `/demos/${demo.slug}`,
-        }, staticContent, papers, jsonLd);
+        }, staticContent, papers, authors, jsonLd);
         count++;
     }
 
@@ -215,7 +223,7 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/atlas/${model.slug}`,
-        }, staticContent, papers, jsonLd);
+        }, staticContent, papers, authors, jsonLd);
         count++;
     }
 
@@ -229,7 +237,7 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/atlas/${page.slug}`,
-        }, staticContent, papers, jsonLd);
+        }, staticContent, papers, authors, jsonLd);
         count++;
     }
 
@@ -240,7 +248,29 @@ async function main(): Promise<void> {
             description: narrative.summary,
             ogType: "article",
             url: `/atlas/narratives/${narrative.slug}`,
-        }, staticContent, papers);
+        }, staticContent, papers, authors);
+        count++;
+    }
+
+    // Author register — unlisted (not in the navbar) but fully prerendered so
+    // every byline link resolves to static HTML and is crawlable.
+    const authorIds = Object.keys(authors.authors).sort();
+    writePage(template, "/authors", "authors", {
+        title: "Authors",
+        description: "Every researcher credited on a paper cited by the VitaVision computer vision atlas.",
+        url: "/authors",
+    }, staticContent, papers, authors);
+    count++;
+
+    for (const authorId of authorIds) {
+        const author = authors.authors[authorId];
+        const paperWord = author.papers.length === 1 ? "paper" : "papers";
+        writePage(template, `/authors/${authorId}`, `authors/${authorId}`, {
+            title: author.name,
+            description: `${author.name} — ${author.papers.length} ${paperWord} cited by the VitaVision computer vision atlas.`,
+            ogType: "profile",
+            url: `/authors/${authorId}`,
+        }, staticContent, papers, authors);
         count++;
     }
 
@@ -248,7 +278,7 @@ async function main(): Promise<void> {
     writePage(template, "/tools/target-generator", "tools/target-generator", {
         title: "Target Generator",
         description: "Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.",
-    }, staticContent, papers);
+    }, staticContent, papers, authors);
     count++;
 
     // Generate sitemap
@@ -259,6 +289,7 @@ async function main(): Promise<void> {
         ...modelPages.map((m) => `/atlas/${m.slug}`),
         ...conceptPages.map((c) => `/atlas/${c.slug}`),
         ...publishedNarratives.map((n) => `/atlas/narratives/${n.slug}`),
+        "/authors", ...authorIds.map((a) => `/authors/${a}`),
         "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
         "/tools/target-generator",
     ];

@@ -33,14 +33,14 @@ export const blogPosts: BlogIndexEntry[] = [
     "slug": "03-puzzleboard",
     "frontmatter": {
       "title": "PuzzleBoard",
-      "summary": "s",
+      "summary": "De-Bruijn rings for chessboard coordinates localisation",
       "author": "Vitaly Vorobyev",
-      "draft": true,
+      "draft": false,
       "repoLinks": [
         "https://github.com/VitalyVorobyev/calib-targets-rs"
       ],
       "difficulty": "intermediate",
-      "readingTimeMinutes": 1,
+      "readingTimeMinutes": 5,
       "access": "public",
       "tags": [
         "feature-detection",

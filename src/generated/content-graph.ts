@@ -2291,7 +2291,7 @@ export const contentGraph: ContentGraph = {
     "dinov2": {
       "prerequisites": [
         "vit",
-        "mae"
+        "attention-mechanism"
       ],
       "failureModes": [],
       "relations": [
@@ -2313,6 +2313,16 @@ export const contentGraph: ContentGraph = {
         {
           "type": "feeds_into",
           "target": "vggt",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mae",
           "confidence": "high"
         }
       ]
@@ -2646,6 +2656,12 @@ export const contentGraph: ContentGraph = {
           "target": "sam",
           "confidence": "high",
           "caution": "SAM v1's ViT-H image encoder is MAE-pretrained; SAM 2's Hiera (hierarchical ViT) is also MAE-pretrained. MAE is the SSL recipe that makes the SAM-family foundation segmenters' large encoders feasible."
+        },
+        {
+          "type": "compared_with",
+          "target": "dinov2",
+          "confidence": "high",
+          "mirrored": true
         }
       ]
     },
@@ -3233,12 +3249,6 @@ export const contentGraph: ContentGraph = {
           "type": "feeds_into",
           "target": "mobilesam",
           "confidence": "high"
-        },
-        {
-          "type": "feeds_into",
-          "target": "rf-detr",
-          "confidence": "medium",
-          "caution": "RF-DETR's backbone is a DINOv2 self-supervised ViT."
         },
         {
           "type": "compared_with",
@@ -4424,9 +4434,7 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "mae": {
-      "usedBy": [
-        "dinov2"
-      ],
+      "usedBy": [],
       "affects": [],
       "generalises": [],
       "extending": [],
@@ -4593,9 +4601,8 @@ export const contentGraph: ContentGraph = {
           "caution": "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
         },
         {
-          "slug": "vit",
-          "confidence": "medium",
-          "caution": "RF-DETR's backbone is a DINOv2 self-supervised ViT."
+          "slug": "dinov2",
+          "confidence": "high"
         }
       ],
       "hasLearnedAlternative": []
@@ -4759,6 +4766,7 @@ export const contentGraph: ContentGraph = {
       "usedBy": [
         "bisenet",
         "detr",
+        "dinov2",
         "feature-matching",
         "lightglue",
         "loftr",
@@ -5343,7 +5351,6 @@ export const contentGraph: ContentGraph = {
     "depth-anything-3": 4,
     "depth-anything-v2": 3,
     "detr": 2,
-    "mae": 2,
     "dinov2": 3,
     "dust3r": 4,
     "visual-anomaly-detection": 2,
@@ -5356,6 +5363,7 @@ export const contentGraph: ContentGraph = {
     "hrnet": 2,
     "lightglue": 4,
     "loftr": 4,
+    "mae": 2,
     "mask-rcnn": 0,
     "mask2former": 2,
     "mast3r": 4,

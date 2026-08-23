@@ -3,12 +3,12 @@ title: "DINOv2"
 date: 2026-06-27
 summary: "A self-supervised ViT trained on a curated 142M-image dataset that yields general-purpose visual features usable frozen — via kNN or linear probes — for classification, dense depth and segmentation without finetuning."
 tags: ["deep-learning"]
-domain: features
+domain: representation-learning
 author: "Vitaly Vorobyev"
 difficulty: advanced
 arch_family: vit
 params: "ViT-S/B/L/g; ViT-g ~1.1B"
-prerequisites: [vit, mae]
+prerequisites: [vit, attention-mechanism]
 sources:
   primary: oquab2023-dinov2
   references:
@@ -26,6 +26,12 @@ relations:
     confidence: high
   - type: feeds_into
     target: vggt
+    confidence: high
+  - type: feeds_into
+    target: rf-detr
+    confidence: high
+  - type: compared_with
+    target: mae
     confidence: high
 implementations:
   - role: official

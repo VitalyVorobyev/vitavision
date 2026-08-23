@@ -58,6 +58,8 @@ interface IndexEntry {
     kind: SourceKind;
     // paper:
     url?: string;
+    arxiv?: string;
+    doi?: string;
     // repo:
     repo?: string;
     commit?: string;
@@ -98,6 +100,8 @@ function loadSourceIndex(validatorErrors: string[]): Map<string, IndexEntry> {
             id,
             kind,
             url: e.url as string | undefined,
+            arxiv: e.arxiv as string | undefined,
+            doi: e.doi as string | undefined,
             repo: e.repo as string | undefined,
             commit: e.commit as string | undefined,
             license: e.license as string | undefined,
@@ -171,6 +175,81 @@ function loadPaperYears(): Map<string, number> {
         years.set(id, year);
     }
     return years;
+}
+
+// ── Prose reference scanning (arXiv / DOI) ─────────────────────────────────────
+// Warning-only rule: flags links or bare-text citations in a page's markdown
+// body that look like an arXiv or DOI reference but do not resolve to any
+// entry in docs/papers/index.yaml. Never blocks the build — see Rule 10 below.
+
+/** Strip common trailing punctuation picked up when a URL/id is embedded in prose. */
+function stripTrailingPunctuation(s: string): string {
+    return s.replace(/[)\]"'>,.;:]+$/g, "");
+}
+
+/** Normalize an arXiv id: drop "arxiv:" prefix, ".pdf" suffix, and version suffix (v\d+). */
+function normalizeArxivId(id: string): string {
+    return stripTrailingPunctuation(id.trim())
+        .replace(/^arxiv:/i, "")
+        .replace(/\.pdf$/i, "")
+        .replace(/v\d+$/i, "")
+        .toLowerCase();
+}
+
+/** Normalize a DOI: case-insensitive comparison. */
+function normalizeDoi(doi: string): string {
+    return stripTrailingPunctuation(doi.trim()).toLowerCase();
+}
+
+interface ProseRef {
+    /** Human-readable form for the warning message, e.g. "arXiv:1706.03762" or "doi:10.1109/...". */
+    display: string;
+    normalized: string;
+    kind: "arxiv" | "doi";
+}
+
+/**
+ * Scan a page's raw markdown body for arXiv/DOI links or bare-text citations.
+ * Matches (case-insensitive):
+ *   - arxiv.org/abs/<id>
+ *   - arxiv.org/pdf/<id>
+ *   - doi.org/<doi>
+ *   - bare "arXiv:<id>" or "arXiv <id>" text (no URL)
+ * Deduplicates by normalized id within a single page.
+ */
+function scanProseReferences(content: string): ProseRef[] {
+    const refs: ProseRef[] = [];
+    const seen = new Set<string>();
+
+    const pushRef = (rawId: string, kind: "arxiv" | "doi"): void => {
+        const normalized = kind === "arxiv" ? normalizeArxivId(rawId) : normalizeDoi(rawId);
+        const key = `${kind}:${normalized}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        refs.push({
+            display: kind === "arxiv" ? `arXiv:${normalized}` : `doi:${normalized}`,
+            normalized,
+            kind,
+        });
+    };
+
+    const arxivUrlRe = /arxiv\.org\/(?:abs|pdf)\/([^\s)\]"'<>]+)/gi;
+    for (const m of content.matchAll(arxivUrlRe)) {
+        pushRef(stripTrailingPunctuation(m[1]), "arxiv");
+    }
+
+    const doiUrlRe = /doi\.org\/([^\s)\]"'<>]+)/gi;
+    for (const m of content.matchAll(doiUrlRe)) {
+        pushRef(stripTrailingPunctuation(m[1]), "doi");
+    }
+
+    // Bare "arXiv:<id>" or "arXiv <id>" text (not part of a URL already matched above).
+    const bareArxivRe = /\barxiv[:\s]+([0-9]{4}\.[0-9]{4,5}(?:v\d+)?|[a-z-]+\/\d{7})/gi;
+    for (const m of content.matchAll(bareArxivRe)) {
+        pushRef(stripTrailingPunctuation(m[1]), "arxiv");
+    }
+
+    return refs;
 }
 
 // ── Slug helpers ─────────────────────────────────────────────────────────────
@@ -700,6 +779,38 @@ export async function validateContent(options?: ValidateContentOptions): Promise
                 }
             }
         }
+    }
+
+    // ── Rule 10: prose references not in papers index (warning only) ─────────
+    // For every non-draft algorithm/model/concept page, scan the markdown body
+    // for arXiv/DOI links or bare-text citations and flag any that do not
+    // resolve to a docs/papers/index.yaml entry. Never an error — a page may
+    // legitimately cite a paper in prose (e.g. a "# References" list) before
+    // it has been run through paper-ingest.
+    {
+        const knownArxivIds = new Set<string>();
+        const knownDois = new Set<string>();
+        for (const entry of sourceIndex.values()) {
+            if (entry.arxiv) knownArxivIds.add(normalizeArxivId(entry.arxiv));
+            if (entry.doi) knownDois.add(normalizeDoi(entry.doi));
+        }
+
+        function checkProseReferences(e: ParsedEntry, kind: "algorithm" | "model" | "concept"): void {
+            for (const ref of scanProseReferences(e.content)) {
+                const known = ref.kind === "arxiv"
+                    ? knownArxivIds.has(ref.normalized)
+                    : knownDois.has(ref.normalized);
+                if (!known) {
+                    warnings.push(
+                        `[${kind}/${e.slug}] prose reference not in papers index: ${ref.display}`,
+                    );
+                }
+            }
+        }
+
+        for (const e of algoFiltered) checkProseReferences(e, "algorithm");
+        for (const e of modelFiltered) checkProseReferences(e, "model");
+        for (const e of conceptFiltered) checkProseReferences(e, "concept");
     }
 
     // ── Summary ───────────────────────────────────────────────────────────────

@@ -91,6 +91,7 @@ export type BlogFrontmatter = z.infer<typeof blogFrontmatterSchema>;
 export const domainValues = [
     "image-formation",
     "features",
+    "representation-learning",
     "geometry",
     "targets",
     "calibration",

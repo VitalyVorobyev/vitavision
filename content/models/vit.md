@@ -3,7 +3,7 @@ title: "ViT"
 date: 2026-05-27
 summary: "Vision Transformer — a pure-transformer image classification backbone that treats an image as a sequence of fixed-size patches: split RGB image into $N = HW/P^2$ patches of $P{\\times}P$ pixels (P=16 for ViT-B/L, P=14 for ViT-H), linearly project to $D$-dim tokens, prepend a learnable [CLS] token, add learned positional embeddings, and feed through a standard transformer encoder; classification head reads the [CLS] token's final-layer output. ViT-B/16 86M params, ViT-L/16 307M, ViT-H/14 632M. With large-scale pretraining (JFT-300M) ViT matches or exceeds ResNet-based BiT-L on ImageNet at lower compute."
 tags: ["deep-learning"]
-domain: features
+domain: representation-learning
 tasks: [image-classification]
 author: "Vitaly Vorobyev"
 difficulty: intermediate
@@ -19,10 +19,6 @@ relations:
   - type: feeds_into
     target: mobilesam
     confidence: high
-  - type: feeds_into
-    target: rf-detr
-    confidence: medium
-    caution: "RF-DETR's backbone is a DINOv2 self-supervised ViT."
   - type: compared_with
     target: resnet
     confidence: high

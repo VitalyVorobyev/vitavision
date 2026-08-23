@@ -9,7 +9,7 @@ import { join } from "node:path";
 export interface SearchRecord {
     slug: string;
     path: string;
-    type: "algorithm" | "model" | "concept" | "narrative";
+    type: "algorithm" | "model" | "concept" | "narrative" | "author";
     title: string;
     summary: string;
     tags: string[];
@@ -70,6 +70,32 @@ export function buildSearchRecords(entries: SearchEntry[]): SearchRecord[] {
     });
 }
 
+/** Minimal author shape needed for a search record — a subset of `AuthorRef`. */
+export interface AuthorSearchEntry {
+    id: string;
+    name: string;
+    papers: string[];
+}
+
+/**
+ * Build search records for the author register (`/authors/<id>`). Authors have
+ * no body text, so the name goes in `title` alone — repeating it in the
+ * `authors` field would only add bytes, since the client boosts `title` (3)
+ * above `authors` (2.5) anyway. Records are kept deliberately lean: there are
+ * ~500 of them and they ship in the same lazy chunk as the atlas index.
+ */
+export function buildAuthorSearchRecords(authors: AuthorSearchEntry[]): SearchRecord[] {
+    return authors.map((a) => ({
+        slug: a.id,
+        path: `/authors/${a.id}`,
+        type: "author" as const,
+        title: a.name,
+        summary: `${a.papers.length} paper${a.papers.length === 1 ? "" : "s"}`,
+        tags: [],
+        headings: [],
+    }));
+}
+
 /**
  * Write src/generated/content-search.ts as a typed TypeScript literal.
  */
@@ -82,7 +108,7 @@ export function emitContentSearch(records: SearchRecord[], outDir: string): void
         "export interface SearchRecord {",
         "    slug: string;",
         "    path: string;",
-        "    type: \"algorithm\" | \"model\" | \"concept\" | \"narrative\";",
+        "    type: \"algorithm\" | \"model\" | \"concept\" | \"narrative\" | \"author\";",
         "    title: string;",
         "    summary: string;",
         "    tags: string[];",

@@ -7,6 +7,10 @@ import BlogPost from "./pages/BlogPost.tsx";
 import AlgorithmIndex from "./pages/AlgorithmIndex.tsx";
 import AtlasPost from "./pages/AtlasPost.tsx";
 import NarrativePage from "./pages/NarrativePage.tsx";
+// Aliased: the page's default export would otherwise collide with the
+// `AuthorsIndex` data type imported below.
+import AuthorsIndexPage from "./pages/AuthorsIndex.tsx";
+import AuthorPage from "./pages/AuthorPage.tsx";
 import DemoIndex from "./pages/DemoIndex.tsx";
 import DemoPage from "./pages/DemoPage.tsx";
 import Navbar from "./components/layout/Navbar.tsx";
@@ -14,6 +18,8 @@ import Footer from "./components/layout/Footer.tsx";
 import { StaticContentProvider, type StaticContentContextValue } from "./lib/content/ssr-content.tsx";
 import { PapersProvider } from "./lib/atlas/papersIndex.tsx";
 import type { PapersById } from "./generated/papers-index.ts";
+import { AuthorsProvider } from "./lib/atlas/authorsIndex.tsx";
+import type { AuthorsIndex } from "./generated/authors-index.ts";
 
 // In SSR (postbuild), Vite doesn't substitute import.meta.env — read from process.env instead.
 // ClerkProvider is required because Navbar renders <SignedOut>/<SignedIn>.
@@ -23,15 +29,19 @@ import type { PapersById } from "./generated/papers-index.ts";
 const SSR_PUBLISHABLE_KEY =
     process.env.VITE_CLERK_PUBLISHABLE_KEY ?? "pk_test_Y2xlcmsuZXhhbXBsZS5jb20k";
 
+const EMPTY_AUTHORS_INDEX: AuthorsIndex = { authors: {}, paperAuthors: {}, pagesByPaper: {} };
+
 export function render(
     url: string,
     staticContent: StaticContentContextValue | null = null,
     papers: PapersById = {},
+    authors: AuthorsIndex = EMPTY_AUTHORS_INDEX,
 ): string {
     return renderToString(
         <ClerkProvider publishableKey={SSR_PUBLISHABLE_KEY}>
         <StaticContentProvider value={staticContent}>
         <PapersProvider initial={papers}>
+        <AuthorsProvider initial={authors}>
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
                 <MemoryRouter initialEntries={[url]}>
                     <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
@@ -44,6 +54,8 @@ export function render(
                                 {/* Static segment must be matched before the /atlas/:slug catch-all. */}
                                 <Route path="/atlas/narratives/:slug" element={<NarrativePage />} />
                                 <Route path="/atlas/:slug" element={<AtlasPost />} />
+                                <Route path="/authors" element={<AuthorsIndexPage />} />
+                                <Route path="/authors/:id" element={<AuthorPage />} />
                                 <Route path="/demos" element={<DemoIndex />} />
                                 <Route path="/demos/:slug" element={<DemoPage />} />
                                 <Route path="/tools/target-generator" element={
@@ -60,6 +72,7 @@ export function render(
                     </div>
                 </MemoryRouter>
             </ThemeProvider>
+        </AuthorsProvider>
         </PapersProvider>
         </StaticContentProvider>
         </ClerkProvider>,

@@ -1,16 +1,9 @@
 import { usePaperById } from "../../lib/atlas/usePaperById.ts";
+import AuthorByline from "./AuthorByline.tsx";
 
 interface SourceCardProps {
     /** A paper ID, optionally prefixed with `paper:`. Other prefixes (`repo:`, `doc:`) render nothing. */
     primary: string | undefined;
-}
-
-/** First 4 last-names joined by ", " — keeps the byline compact. */
-function formatAuthorsShort(authors: string[]): string {
-    if (authors.length === 0) return "";
-    const lastNames = authors.map((a) => a.trim().split(/\s+/).pop() ?? a);
-    if (lastNames.length <= 4) return lastNames.join(", ");
-    return `${lastNames.slice(0, 4).join(", ")} et al.`;
 }
 
 /**
@@ -24,9 +17,8 @@ export function SourceCard({ primary }: SourceCardProps) {
     if (!paper || !paper.url) return null;
 
     const ctaLabel = paper.arxiv ? "arXiv ↗" : paper.doi ? "DOI ↗" : "Open ↗";
-    const authorsShort = formatAuthorsShort(paper.authors);
+    const hasAuthors = paper.authors.length > 0;
     const venueYear = [paper.venue, paper.year].filter(Boolean).join(" ");
-    const meta = [authorsShort, venueYear].filter(Boolean).join(" · ");
 
     return (
         <div className="rounded-lg border border-border bg-muted/40 p-3 flex flex-col gap-1.5">
@@ -41,9 +33,11 @@ export function SourceCard({ primary }: SourceCardProps) {
             </p>
 
             {/* Authors · Venue Year */}
-            {meta && (
+            {(hasAuthors || venueYear) && (
                 <p className="text-[11px] text-muted-foreground font-mono leading-snug m-0">
-                    {meta}
+                    {hasAuthors && <AuthorByline paperId={paper.id} authors={paper.authors} />}
+                    {hasAuthors && venueYear && " · "}
+                    {venueYear}
                 </p>
             )}
 

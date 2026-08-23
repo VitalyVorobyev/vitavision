@@ -35,7 +35,7 @@ import type { BlogEntry, BlogIndexEntry, AlgorithmEntry, AlgorithmIndexEntry, De
 import type { ZodType } from "zod";
 import { buildContentGraph, emitContentGraph } from "./content-graph.ts";
 import type { ContentEntry } from "./content-graph.ts";
-import { buildSearchRecords, emitContentSearch } from "./content-search.ts";
+import { buildAuthorSearchRecords, buildSearchRecords, emitContentSearch } from "./content-search.ts";
 import type { SearchEntry } from "./content-search.ts";
 import {
     resolveNarrative,
@@ -47,6 +47,8 @@ import {
     emitNarrativeRefs,
 } from "./narrative-build.ts";
 import type { AtlasPageLookup, PaperLookup } from "./narrative-build.ts";
+import { emitAuthorsIndex } from "./authors-build.ts";
+import type { PageSourcesEntry } from "./authors-build.ts";
 
 const CONTENT_DIR = join(import.meta.dir, "..", "content");
 const GENERATED_DIR = join(import.meta.dir, "..", "src", "generated");
@@ -866,6 +868,17 @@ async function main(): Promise<void> {
     for (const e of modelPublished) collectPrimary(e.frontmatter);
     for (const e of conceptPublished) collectPrimary(e.frontmatter);
     emitPapersIndex(papers, usedPrimaryIds);
+
+    // Emit the authors index: author metadata (once docs/papers/authors.yaml
+    // exists) plus a reverse lookup of which published atlas pages cite a
+    // given paper. Empty inputs (no authors.yaml, no authorIds yet) produce
+    // an empty-but-valid index — see scripts/authors-build.ts.
+    const authorsPages: PageSourcesEntry[] = [
+        ...algorithmPublished.map((e) => ({ slug: e.slug, sources: e.frontmatter.sources })),
+        ...modelPublished.map((e) => ({ slug: e.slug, sources: e.frontmatter.sources })),
+        ...conceptPublished.map((e) => ({ slug: e.slug, sources: e.frontmatter.sources })),
+    ];
+    const authorsIndex = emitAuthorsIndex(authorsPages);
     const resolvePrimary = (
         fm: { sources?: { primary?: string } },
     ): { authors?: string[]; venue?: string } | undefined => {
@@ -972,7 +985,16 @@ async function main(): Promise<void> {
             })),
     ];
 
-    const searchRecords = buildSearchRecords(searchEntries);
+    // Author register records live in the same index so a surname query can
+    // resolve to the person's page, not only to the pages citing their work.
+    const authorSearchRecords = buildAuthorSearchRecords(
+        Object.entries(authorsIndex.authors).map(([id, ref]) => ({
+            id,
+            name: ref.name,
+            papers: ref.papers,
+        })),
+    );
+    const searchRecords = [...buildSearchRecords(searchEntries), ...authorSearchRecords];
     emitContentSearch(searchRecords, GENERATED_DIR);
 
     // Run validation after all content is processed.

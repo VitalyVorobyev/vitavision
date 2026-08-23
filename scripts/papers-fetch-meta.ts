@@ -28,7 +28,9 @@ interface OAIds {
 }
 
 interface OAAuthor {
+    id?: string;
     display_name: string;
+    orcid?: string | null;
 }
 
 interface OAAuthorship {
@@ -142,6 +144,24 @@ function extractArxivFromDoi(doi: string): string | undefined {
 
 function oaWorkUrl(workUrl: string): string {
     return workUrl.replace("https://openalex.org/", "");
+}
+
+function bareAuthorId(authorUrl: string): string {
+    return authorUrl.replace(/^https?:\/\/openalex\.org\//i, "");
+}
+
+function bareOrcid(orcidUrl: string): string {
+    return orcidUrl.replace(/^https?:\/\/orcid\.org\//i, "");
+}
+
+const AUTHORS_PATH = join(REPO_ROOT, "docs", "papers", "authors.yaml");
+
+function loadKnownAuthorIds(): Set<string> {
+    if (!existsSync(AUTHORS_PATH)) return new Set();
+    const raw = readFileSync(AUTHORS_PATH, "utf-8");
+    const parsed = parseYaml(raw);
+    const entries = Array.isArray(parsed) ? (parsed as Array<{ id?: string }>) : [];
+    return new Set(entries.map((e) => e.id).filter((id): id is string => !!id));
 }
 
 function matchRef(ref: RefInfo, index: PaperEntry[]): string | null {
@@ -319,6 +339,9 @@ async function main(): Promise<void> {
 
     const candidateId = buildCandidateId(authorships, year, title);
     const formattedAuthors = authorships.map((a) => formatAuthor(a.author.display_name));
+    const authorIds = authorships
+        .map((a) => (a.author.id ? bareAuthorId(a.author.id) : undefined))
+        .filter((id): id is string => !!id);
 
     const index = loadIndex();
     process.stderr.write(`Loaded ${index.length} entries from index.yaml\n`);
@@ -333,6 +356,9 @@ async function main(): Promise<void> {
     lines.push(`- id: ${candidateId}`);
     lines.push(`  title: "${title.replace(/"/g, '\\"')}"`);
     lines.push(`  authors: [${formattedAuthors.map((a) => `"${a}"`).join(", ")}]`);
+    if (authorIds.length > 0) {
+        lines.push(`  authorIds: [${authorIds.join(", ")}]`);
+    }
     lines.push(`  year: ${year}`);
     if (venue) lines.push(`  venue: ${venue}`);
     lines.push(`  url: ${pdfUrl}`);
@@ -348,6 +374,26 @@ async function main(): Promise<void> {
     lines.push("  notes: # TODO: add notes");
 
     process.stdout.write(lines.join("\n") + "\n");
+
+    const knownAuthorIds = loadKnownAuthorIds();
+    const newAuthors = authorships.filter((a) => {
+        if (!a.author.id) return false;
+        return !knownAuthorIds.has(bareAuthorId(a.author.id));
+    });
+    if (newAuthors.length > 0) {
+        const suggestions = newAuthors.map((a) => {
+            const id = bareAuthorId(a.author.id!);
+            const name = a.author.display_name.replace(/"/g, '\\"');
+            const orcidLine = a.author.orcid
+                ? `\n  orcid: "${bareOrcid(a.author.orcid)}"`
+                : "";
+            return `- id: ${id}\n  name: "${name}"${orcidLine}`;
+        });
+        process.stdout.write(
+            "\n# New authors not yet in docs/papers/authors.yaml — suggested stanzas:\n" +
+            suggestions.join("\n") + "\n"
+        );
+    }
 }
 
 main().catch((err) => {

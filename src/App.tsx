@@ -23,6 +23,7 @@ const Blog = lazy(() => import('./pages/Blog'));
 const BlogPost = lazy(() => import('./pages/BlogPost'));
 const AlgorithmIndex = lazy(() => import('./pages/AlgorithmIndex'));
 const AtlasPost = lazy(() => import('./pages/AtlasPost'));
+const NarrativePage = lazy(() => import('./pages/NarrativePage'));
 const DemoIndex = lazy(() => import('./pages/DemoIndex'));
 const DemoPage = lazy(() => import('./pages/DemoPage'));
 const Editor = lazy(() => import('./pages/Editor'));
@@ -59,6 +60,8 @@ function AppLayout() {
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:slug" element={<BlogPost />} />
                         <Route path="/atlas" element={<AlgorithmIndex />} />
+                        {/* Static segment must be matched before the /atlas/:slug catch-all. */}
+                        <Route path="/atlas/narratives/:slug" element={<NarrativePage />} />
                         <Route path="/atlas/:slug" element={<AtlasPost />} />
                         {/* Legacy redirects — preserve inbound links and old SEO URLs. */}
                         <Route path="/algorithms" element={<Navigate to="/atlas" replace />} />

@@ -19,18 +19,21 @@ import {
     algorithmFrontmatterSchema,
     modelFrontmatterSchema,
     conceptFrontmatterSchema,
+    narrativeFrontmatterSchema,
     tagValues,
 } from "../src/lib/content/schema.ts";
 import type { ContentGraph } from "./content-graph.ts";
 import { buildContentGraph, detectPrerequisiteCycles } from "./content-graph.ts";
 import type { ContentEntry } from "./content-graph.ts";
 import { computeReadingTimeMinutes } from "./reading-time.ts";
+import { sliceChapters, violatesEvolutionChronology, findLensOrderInversions } from "./narrative-build.ts";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkDirective from "remark-directive";
 import remarkMath from "remark-math";
 import remarkRehype from "remark-rehype";
+import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 
 const REPO_ROOT = join(import.meta.dir, "..");
@@ -45,6 +48,23 @@ async function renderMarkdownPlain(content: string): Promise<string> {
         .use(remarkDirective)
         .use(remarkMath)
         .use(remarkRehype)
+        .use(rehypeStringify)
+        .process(content);
+    return String(result);
+}
+
+// ── Minimal markdown renderer + rehype-slug, for narrative step-anchor checks ──
+// Same shape as renderMarkdownPlain but with rehype-slug so h2 ids match what
+// the real build pipeline (scripts/content-build.ts) produces — sliceChapters()
+// from narrative-build.ts is reused to turn those ids into the valid-anchor set.
+async function renderNarrativeBodyForAnchors(content: string): Promise<string> {
+    const result = await unified()
+        .use(remarkParse)
+        .use(remarkGfm)
+        .use(remarkDirective)
+        .use(remarkMath)
+        .use(remarkRehype)
+        .use(rehypeSlug)
         .use(rehypeStringify)
         .process(content);
     return String(result);
@@ -262,6 +282,9 @@ function modelSlug(filename: string): string {
 function conceptSlug(filename: string): string {
     return filename.replace(/\.md$/, "");
 }
+function narrativeSlug(filename: string): string {
+    return filename.replace(/\.md$/, "");
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface RawEntry {
@@ -314,6 +337,7 @@ export async function validateContent(options?: ValidateContentOptions): Promise
     const rawAlgoEntries = loadDirectory(join(CONTENT_DIR, "algorithms"), algoSlug);
     const rawModelEntries = loadDirectory(join(CONTENT_DIR, "models"), modelSlug);
     const rawConceptEntries = loadDirectory(join(CONTENT_DIR, "concepts"), conceptSlug);
+    const rawNarrativeEntries = loadDirectory(join(CONTENT_DIR, "narratives"), narrativeSlug);
 
     const sourceIndex = loadSourceIndex(errors);
 
@@ -357,13 +381,19 @@ export async function validateContent(options?: ValidateContentOptions): Promise
         (d) => conceptFrontmatterSchema.parse(d) as Record<string, unknown>,
         "concept",
     );
+    const narrativeEntries = parseEntries(
+        rawNarrativeEntries,
+        (d) => narrativeFrontmatterSchema.parse(d) as Record<string, unknown>,
+        "narrative",
+    );
 
     // Filter based on INCLUDE_DRAFTS — determines which pages are validated
     const algoFiltered = includeDrafts ? algoEntries : algoEntries.filter((e) => !e.isDraft);
     const modelFiltered = includeDrafts ? modelEntries : modelEntries.filter((e) => !e.isDraft);
     const conceptFiltered = includeDrafts ? conceptEntries : conceptEntries.filter((e) => !e.isDraft);
+    const narrativeFiltered = includeDrafts ? narrativeEntries : narrativeEntries.filter((e) => !e.isDraft);
 
-    const totalChecked = algoFiltered.length + modelFiltered.length + conceptFiltered.length;
+    const totalChecked = algoFiltered.length + modelFiltered.length + conceptFiltered.length + narrativeFiltered.length;
 
     // ── Build slug namespace ─────────────────────────────────────────────────
     // The FULL slug namespace (drafts included) is used for slug resolution.
@@ -813,10 +843,205 @@ export async function validateContent(options?: ValidateContentOptions): Promise
         for (const e of conceptFiltered) checkProseReferences(e, "concept");
     }
 
+    // ── Rule 11: Narratives ───────────────────────────────────────────────────
+    // Narratives are NOT content-graph nodes (content-graph.ts is untouched by
+    // this file). Each narrative frontmatter carries its own small graph
+    // (nodes/edges/lenses/steps) whose ids live in a namespace local to that
+    // one narrative — distinct from the global atlas slug namespace that
+    // `page` nodes and the `paper` registry resolve into.
+    {
+        interface AtlasLookup {
+            isDraft: boolean;
+            year?: number;
+        }
+        const paperYears = loadPaperYears();
+        const yearOfPrimary = (fm: Record<string, unknown>): number | undefined => {
+            const src = fm.sources as { primary?: string } | undefined;
+            if (!src?.primary) return undefined;
+            const parsed = parseSourceRef(src.primary);
+            if (!parsed || parsed.kind !== "paper") return undefined;
+            const bareId = parsed.key.slice("paper:".length);
+            return paperYears.get(bareId);
+        };
+        // Full (draft-inclusive) atlas slug map — used both to resolve `page`
+        // nodes and to reject ones that resolve to an unpublished page.
+        const atlasBySlug = new Map<string, AtlasLookup>();
+        for (const e of [...algoEntries, ...modelEntries, ...conceptEntries]) {
+            atlasBySlug.set(e.slug, { isDraft: e.isDraft, year: yearOfPrimary(e.frontmatter) });
+        }
+
+        interface NarrativeNodeShape {
+            id: string;
+            page?: string;
+            paper?: string;
+            area: string;
+            label?: string;
+        }
+        interface NarrativeEdgeShape {
+            from: string;
+            to: string;
+            type: string;
+        }
+        interface NarrativeLensShape {
+            id: string;
+            coords: Record<string, [number, number]>;
+        }
+        interface NarrativeStepShape {
+            title: string;
+            focus: string[];
+            anchor: string;
+        }
+
+        for (const e of narrativeFiltered) {
+            const fm = e.frontmatter as {
+                areas?: { id: string; label: string }[];
+                nodes?: NarrativeNodeShape[];
+                edges?: NarrativeEdgeShape[];
+                lenses?: NarrativeLensShape[];
+                steps?: NarrativeStepShape[];
+            };
+            const areas = fm.areas ?? [];
+            const nodes = fm.nodes ?? [];
+            const edges = fm.edges ?? [];
+            const lenses = fm.lenses ?? [];
+            const steps = fm.steps ?? [];
+            const areaIds = new Set(areas.map((a) => a.id));
+
+            // Node ids (belt-and-braces: exactly-one-of page/paper is also a
+            // zod refine), area membership, page/paper resolution, and the
+            // derived-year map used below for chronology + lens-order checks.
+            const nodeIds = new Set<string>();
+            const nodeYear = new Map<string, number | undefined>();
+            for (const n of nodes) {
+                if (nodeIds.has(n.id)) {
+                    errors.push(`[${e.file}] duplicate narrative node id "${n.id}"`);
+                }
+                nodeIds.add(n.id);
+
+                const hasPage = n.page !== undefined;
+                const hasPaper = n.paper !== undefined;
+                if (hasPage === hasPaper) {
+                    errors.push(`[${e.file}] node "${n.id}" must have exactly one of \`page\` or \`paper\``);
+                }
+
+                if (!areaIds.has(n.area)) {
+                    errors.push(`[${e.file}] node "${n.id}" area "${n.area}" is not a declared area id`);
+                }
+
+                if (hasPage) {
+                    const target = atlasBySlug.get(n.page as string);
+                    if (!target) {
+                        errors.push(`[${e.file}] node "${n.id}" page "${n.page}" does not resolve to a known atlas page`);
+                    } else if (target.isDraft) {
+                        errors.push(
+                            `[${e.file}] node "${n.id}" page "${n.page}" is a draft page; narrative nodes must reference published atlas pages`,
+                        );
+                    } else {
+                        nodeYear.set(n.id, target.year);
+                    }
+                } else if (hasPaper) {
+                    const key = `paper:${n.paper}`;
+                    if (!sourceIndex.has(key)) {
+                        errors.push(`[${e.file}] node "${n.id}" paper "${n.paper}" not found in docs/papers/index.yaml`);
+                    } else {
+                        nodeYear.set(n.id, paperYears.get(n.paper as string));
+                    }
+                    if (!n.label || n.label.trim().length === 0) {
+                        errors.push(`[${e.file}] paper node "${n.id}" (paper: "${n.paper}") requires a label`);
+                    }
+                    warnings.push(
+                        `[${e.file}] page debt: node "${n.id}" cites paper "${n.paper}" with no atlas page yet`,
+                    );
+                }
+
+                if ((hasPage || hasPaper) && nodeYear.get(n.id) === undefined) {
+                    warnings.push(`[${e.file}] node "${n.id}" has no derivable publication year`);
+                }
+            }
+
+            // Edges: reference declared nodes, no self-edges, evolution chronology.
+            for (const edge of edges) {
+                if (edge.from === edge.to) {
+                    errors.push(`[${e.file}] self-edge on node "${edge.from}"`);
+                }
+                const fromKnown = nodeIds.has(edge.from);
+                const toKnown = nodeIds.has(edge.to);
+                if (!fromKnown) {
+                    errors.push(`[${e.file}] edge references unknown node "${edge.from}" (from)`);
+                }
+                if (!toKnown) {
+                    errors.push(`[${e.file}] edge references unknown node "${edge.to}" (to)`);
+                }
+                if (edge.type === "evolution" && fromKnown && toKnown) {
+                    const fromYear = nodeYear.get(edge.from);
+                    const toYear = nodeYear.get(edge.to);
+                    if (violatesEvolutionChronology(fromYear, toYear)) {
+                        errors.push(
+                            `[${e.file}] evolution edge ${edge.from} → ${edge.to} violates chronology (${fromYear} > ${toYear})`,
+                        );
+                    }
+                }
+            }
+
+            // Lenses: coords keys reference declared nodes; `overview` exists and covers all nodes.
+            const overviewLens = lenses.find((l) => l.id === "overview");
+            if (!overviewLens) {
+                errors.push(`[${e.file}] narrative requires a lens with id "overview" covering all nodes`);
+            } else {
+                for (const nodeId of nodeIds) {
+                    if (!(nodeId in overviewLens.coords)) {
+                        errors.push(`[${e.file}] overview lens is missing coords for node "${nodeId}"`);
+                    }
+                }
+            }
+            for (const lens of lenses) {
+                for (const key of Object.keys(lens.coords)) {
+                    if (!nodeIds.has(key)) {
+                        errors.push(`[${e.file}] lens "${lens.id}" coords reference unknown node "${key}"`);
+                    }
+                }
+                // Warning: x-order inversions of >= 2 years between node pairs
+                // (same/adjacent years may reorder freely).
+                const lensNodes = Object.entries(lens.coords)
+                    .filter(([id]) => nodeIds.has(id))
+                    .map(([id, xy]) => ({ id, x: xy[0], year: nodeYear.get(id) }));
+                for (const [a, b] of findLensOrderInversions(lensNodes)) {
+                    warnings.push(
+                        `[${e.file}] lens "${lens.id}" x-order inversion between "${a}" and "${b}" (>= 2 years apart)`,
+                    );
+                }
+            }
+
+            // Steps: >= 2 (belt-and-braces beyond zod), focus ids reference declared
+            // nodes, and every anchor resolves to a "##" heading in the body.
+            if (steps.length < 2) {
+                errors.push(`[${e.file}] narrative requires at least 2 steps`);
+            }
+            for (const step of steps) {
+                for (const focusId of step.focus) {
+                    if (!nodeIds.has(focusId)) {
+                        errors.push(`[${e.file}] step "${step.title}" focus references unknown node "${focusId}"`);
+                    }
+                }
+            }
+            if (steps.length > 0) {
+                const anchorHtml = await renderNarrativeBodyForAnchors(e.content);
+                const chapterIds = new Set(Object.keys(sliceChapters(anchorHtml)));
+                for (const step of steps) {
+                    if (!chapterIds.has(step.anchor)) {
+                        errors.push(
+                            `[${e.file}] step "${step.title}" anchor "${step.anchor}" does not resolve to a "##" heading in the body`,
+                        );
+                    }
+                }
+            }
+        }
+    }
+
     // ── Summary ───────────────────────────────────────────────────────────────
     if (errors.length === 0) {
         console.log(
-            `content:validate — ${totalChecked} page(s) validated (${algoFiltered.length} algo, ${modelFiltered.length} model, ${conceptFiltered.length} concept), no errors`,
+            `content:validate — ${totalChecked} page(s) validated (${algoFiltered.length} algo, ${modelFiltered.length} model, ${conceptFiltered.length} concept, ${narrativeFiltered.length} narrative), no errors`,
         );
     }
     if (warnings.length > 0) {

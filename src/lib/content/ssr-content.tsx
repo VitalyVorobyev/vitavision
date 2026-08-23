@@ -6,6 +6,8 @@ export interface StaticContentContextValue {
     demoHtmlBySlug?: Record<string, string>;
     modelHtmlBySlug?: Record<string, string>;
     conceptHtmlBySlug?: Record<string, string>;
+    /** Narrative essay HTML only — the constellation graph always loads client-side. */
+    narrativeHtmlBySlug?: Record<string, string>;
 }
 
 const StaticContentContext = createContext<StaticContentContextValue | null>(null);

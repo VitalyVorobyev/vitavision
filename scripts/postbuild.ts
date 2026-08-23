@@ -1,12 +1,13 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from "node:fs";
 import { join } from "node:path";
 import { Feed } from "feed";
-import { blogPosts, algorithmPages, demoPages, modelPages, conceptPages } from "../src/generated/content-index.ts";
+import { blogPosts, algorithmPages, demoPages, modelPages, conceptPages, narrativePages } from "../src/generated/content-index.ts";
 import { blogHtmlLoaders } from "../src/generated/blog-loaders.ts";
 import { algorithmHtmlLoaders } from "../src/generated/algorithm-loaders.ts";
 import { demoHtmlLoaders } from "../src/generated/demo-loaders.ts";
 import { modelHtmlLoaders } from "../src/generated/model-loaders.ts";
 import { conceptHtmlLoaders } from "../src/generated/concept-loaders.ts";
+import { narrativeLoaders } from "../src/generated/narrative-loaders.ts";
 import { render } from "../src/entry-server.tsx";
 import type { StaticContentContextValue } from "../src/lib/content/ssr-content.tsx";
 import type { PapersById } from "../src/generated/papers-index.ts";
@@ -117,12 +118,21 @@ function buildSitemap(paths: string[]): string {
 
 async function main(): Promise<void> {
     const template = readTemplate();
+    // Only non-draft narratives are prerendered; drafts (present only when the
+    // content build ran with INCLUDE_DRAFTS) never reach dist/.
+    const publishedNarratives = narrativePages.filter((n) => !n.draft);
+    const publishedNarrativeLoaders = Object.fromEntries(
+        publishedNarratives
+            .filter((n) => n.slug in narrativeLoaders)
+            .map((n) => [n.slug, narrativeLoaders[n.slug]]),
+    );
     const staticContent: StaticContentContextValue = {
         blogHtmlBySlug: await loadHtmlMap(blogHtmlLoaders),
         algorithmHtmlBySlug: await loadHtmlMap(algorithmHtmlLoaders),
         demoHtmlBySlug: await loadHtmlMap(demoHtmlLoaders),
         modelHtmlBySlug: await loadHtmlMap(modelHtmlLoaders),
         conceptHtmlBySlug: await loadHtmlMap(conceptHtmlLoaders),
+        narrativeHtmlBySlug: await loadHtmlMap(publishedNarrativeLoaders),
     };
     // Read the lazily-loaded papers index from disk so SSR can render the
     // SourceStrip on every prerendered page without an HTTP fetch.
@@ -223,6 +233,17 @@ async function main(): Promise<void> {
         count++;
     }
 
+    // Individual narrative pages (no RSS/Atom entry — narratives are not a feed kind)
+    for (const narrative of publishedNarratives) {
+        writePage(template, `/atlas/narratives/${narrative.slug}`, `atlas/narratives/${narrative.slug}`, {
+            title: narrative.title,
+            description: narrative.summary,
+            ogType: "article",
+            url: `/atlas/narratives/${narrative.slug}`,
+        }, staticContent, papers);
+        count++;
+    }
+
     // Target generator
     writePage(template, "/tools/target-generator", "tools/target-generator", {
         title: "Target Generator",
@@ -237,6 +258,7 @@ async function main(): Promise<void> {
         ...algorithmPages.map((p) => `/atlas/${p.slug}`),
         ...modelPages.map((m) => `/atlas/${m.slug}`),
         ...conceptPages.map((c) => `/atlas/${c.slug}`),
+        ...publishedNarratives.map((n) => `/atlas/narratives/${n.slug}`),
         "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
         "/tools/target-generator",
     ];

@@ -19,6 +19,7 @@
     "sources:fetch-doc": "bun run scripts/sources-fetch-doc.ts",
     "sources:fetch-repo": "bun run scripts/sources-fetch-repo.ts",
     "vault:build": "bun run scripts/atlas-vault-build.ts",
+    "narratives:debt": "bun run scripts/narrative-debt.ts",
     "postbuild": "bun run scripts/postbuild.ts",
     "test": "vitest run",
     "test:watch": "vitest"

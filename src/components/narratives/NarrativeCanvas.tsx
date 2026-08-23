@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { NarrativeEdgeType, NarrativeNode, ResolvedNarrative } from "../../lib/content/schema.ts";
 import { buildEdge } from "../../lib/graph/edgeGeometry.ts";
 import { GRAPH_CANVAS_GRADIENT, GRAPH_PILL_BG } from "../../lib/graph/graphTheme.ts";
@@ -158,13 +158,43 @@ export default function NarrativeCanvas({
         planeRef,
         view,
         animate,
+        vp,
         fitView,
+        fitBounds,
         zoomAroundCenter,
         onPointerDown,
         onPointerMove,
         onPointerUp,
         onPointerCancel,
     } = useViewport({ bounds, refitKey: lens?.id ?? "", fitPadding: 48 });
+
+    // Walkthrough camera: frame the active step's focused chips; on leaving the
+    // walkthrough, glide back out to the whole constellation.
+    const hadFocusRef = useRef(false);
+    useEffect(() => {
+        if (vp.w === 0 || vp.h === 0) return;
+        if (focusIds !== null && focusIds.length > 0) {
+            const boxes = focusIds
+                .map((id) => layout.positions[id])
+                .filter((p): p is { x: number; y: number } => p !== undefined)
+                .map(nodeBox);
+            if (boxes.length === 0) return;
+            hadFocusRef.current = true;
+            fitBounds(
+                {
+                    minX: Math.min(...boxes.map((b) => b.x)),
+                    minY: Math.min(...boxes.map((b) => b.y)),
+                    maxX: Math.max(...boxes.map((b) => b.x + b.w)),
+                    maxY: Math.max(...boxes.map((b) => b.y + b.h)),
+                },
+                true,
+                1,
+            );
+        } else if (hadFocusRef.current) {
+            hadFocusRef.current = false;
+            fitView(true);
+        }
+    }, [focusIds, layout, vp.w, vp.h, fitBounds, fitView]);
 
     // Chips slide to their new coordinates on a lens switch; the bezier edges
     // can't tween their `d`, so they fade out and back in around the move

@@ -113,7 +113,7 @@ export const narrative: ResolvedNarrative = {
       "title": "Timeline",
       "coords": {
         "attn": [
-          0.4,
+          4,
           0
         ],
         "chess-paper": [
@@ -121,11 +121,11 @@ export const narrative: ResolvedNarrative = {
           0
         ],
         "vit-node": [
-          0.7,
+          7,
           1
         ],
         "dinov2-node": [
-          1,
+          10,
           1
         ]
       }

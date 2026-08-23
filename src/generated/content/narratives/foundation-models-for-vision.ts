@@ -643,11 +643,11 @@ export const narrative: ResolvedNarrative = {
       "title": "Timeline",
       "coords": {
         "attention": [
-          0.2,
+          2,
           0
         ],
         "transformer": [
-          0.2,
+          2,
           0
         ],
         "kd": [
@@ -655,71 +655,71 @@ export const narrative: ResolvedNarrative = {
           0
         ],
         "vit": [
-          0.5,
+          5,
           1
         ],
         "deit": [
-          0.5,
+          5,
           1
         ],
         "registers": [
-          0.8,
+          8,
           1
         ],
         "ssl": [
-          0.5,
+          5,
           2
         ],
         "mae": [
-          0.6,
+          6,
           2
         ],
         "dino": [
-          0.6,
+          6,
           2
         ],
         "dinov2": [
-          0.8,
+          8,
           2
         ],
         "dinov3": [
-          1,
+          10,
           2
         ],
         "clip": [
-          0.6,
+          6,
           3
         ],
         "siglip2": [
-          1,
+          10,
           3
         ],
         "sam": [
-          0.8,
+          8,
           3
         ],
         "uninformed-students": [
-          0.5,
+          5,
           4
         ],
         "patchcore": [
-          0.7,
+          7,
           4
         ],
         "efficientad": [
-          0.8,
+          8,
           4
         ],
         "winclip": [
-          0.8,
+          8,
           4
         ],
         "anomalyclip": [
-          0.8,
+          8,
           4
         ],
         "simplenet": [
-          0.8,
+          8,
           4
         ]
       }

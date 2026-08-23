@@ -62,6 +62,12 @@ export interface UseViewportResult {
     animate: boolean;
     vp:      { w: number; h: number };
     fitView: (animated: boolean) => void;
+    /**
+     * Animate/jump the viewport to frame an arbitrary sub-box of the content
+     * (e.g. a walkthrough step's focused nodes). `maxScale` caps how far the
+     * camera zooms in on a small box; defaults to `fitScaleMax`.
+     */
+    fitBounds: (b: ViewportBounds, animated: boolean, maxScale?: number) => void;
     zoomAroundCenter: (factor: number) => void;
     onPointerDown:   (e: React.PointerEvent<HTMLDivElement>) => void;
     onPointerMove:   (e: React.PointerEvent<HTMLDivElement>) => void;
@@ -106,21 +112,25 @@ export function useViewport({
 
     // ── fitView ────────────────────────────────────────────────────────────────
 
-    const fitView = useCallback((animated: boolean) => {
-        if (!bounds || vp.w === 0 || vp.h === 0) return;
+    const fitBounds = useCallback((b: ViewportBounds, animated: boolean, maxScale?: number) => {
+        if (vp.w === 0 || vp.h === 0) return;
 
-        let minX = bounds.minX, minY = bounds.minY, maxX = bounds.maxX, maxY = bounds.maxY;
-        minX -= fitPadding; minY -= fitPadding; maxX += fitPadding; maxY += fitPadding;
+        const minX = b.minX - fitPadding, minY = b.minY - fitPadding;
+        const maxX = b.maxX + fitPadding, maxY = b.maxY + fitPadding;
         const bboxW = maxX - minX;
         const bboxH = maxY - minY;
 
-        const scale = clamp(Math.min(vp.w / bboxW, vp.h / bboxH), fitScaleMin, fitScaleMax);
+        const scale = clamp(Math.min(vp.w / bboxW, vp.h / bboxH), fitScaleMin, maxScale ?? fitScaleMax);
         const x = (vp.w - bboxW * scale) / 2 - minX * scale;
         const y = (vp.h - bboxH * scale) / 2 - minY * scale;
 
         setAnimate(animated);
         setView({ x, y, scale });
-    }, [bounds, vp, fitPadding, fitScaleMin, fitScaleMax]);
+    }, [vp, fitPadding, fitScaleMin, fitScaleMax]);
+
+    const fitView = useCallback((animated: boolean) => {
+        if (bounds) fitBounds(bounds, animated);
+    }, [bounds, fitBounds]);
 
     // Auto-fit on refocus / bounds change / viewport resize
     const prevKeyRef = useRef<unknown>(refitKey);
@@ -218,6 +228,7 @@ export function useViewport({
         animate,
         vp,
         fitView,
+        fitBounds,
         zoomAroundCenter,
         onPointerDown,
         onPointerMove,

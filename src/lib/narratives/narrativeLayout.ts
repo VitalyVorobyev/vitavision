@@ -1,10 +1,12 @@
 // Pure layout / theming helpers for the narrative constellation canvas.
 //
-// Narrative lens coordinates are arbitrary authored units (a lens might use
-// `[0,0] … [3,1]`, another `[12,-4] … [90,40]`). This module normalizes them
-// to a unit square and multiplies back out to a pixel extent sized so that
-// adjacent distinct rows/columns clear the node chip, then hands the result
-// to the shared graph machinery (`useViewport`, `buildEdge`).
+// Narrative lens coordinates are authored in grid units: 1.0 on either axis is
+// one chip pitch (chip size + gap), and only differences matter — the layout
+// is translated so the minimum sits at the origin. Fractional values are fine
+// for nudges (`3.6`, `6.5`), but chips whose x-distance within the same row
+// falls under one chip width would overlap, so a per-row collision pass pushes
+// them apart while preserving authored order. The result is handed to the
+// shared graph machinery (`useViewport`, `buildEdge`).
 //
 // No React, no DOM — everything here is unit-testable.
 
@@ -84,13 +86,15 @@ export interface NarrativeLayout {
     height: number;
 }
 
-function distinctCount(values: number[]): number {
-    return new Set(values.map((v) => v.toFixed(6))).size;
-}
+/** Minimum clear space kept between chips in the same row by the collision pass. */
+const MIN_ROW_CLEARANCE = 24;
 
 /**
- * Normalize a lens's arbitrary coordinate space to [0,1], then scale it out to
- * a pixel extent large enough that adjacent distinct rows/columns don't collide.
+ * Scale a lens's grid-unit coordinates to content pixels: one authored unit is
+ * one chip pitch (chip + gap) per axis, translated so the minimum is at the
+ * origin. A per-row collision pass then pushes chips apart left-to-right
+ * wherever fractional authored nudges would make same-row chips overlap —
+ * authored order within a row is always preserved.
  *
  * Degenerate inputs are handled: a lens with no coords, a single node, or all
  * nodes sharing an axis value all collapse that axis to zero extent.
@@ -101,31 +105,46 @@ export function scaleLensCoords(coords: Record<string, [number, number]>): Narra
         return { positions: {}, width: NARRATIVE_NODE_W, height: NARRATIVE_NODE_H };
     }
 
-    const xs = ids.map((id) => coords[id][0]);
-    const ys = ids.map((id) => coords[id][1]);
-
-    const minX = Math.min(...xs), maxX = Math.max(...xs);
-    const minY = Math.min(...ys), maxY = Math.max(...ys);
-
-    const spanX = maxX - minX;
-    const spanY = maxY - minY;
-
-    const extentX = spanX > 0 ? (distinctCount(xs) - 1) * (NARRATIVE_NODE_W + GAP_X) : 0;
-    const extentY = spanY > 0 ? (distinctCount(ys) - 1) * (NARRATIVE_NODE_H + GAP_Y) : 0;
+    const minX = Math.min(...ids.map((id) => coords[id][0]));
+    const minY = Math.min(...ids.map((id) => coords[id][1]));
 
     const positions: Record<string, { x: number; y: number }> = {};
     for (const id of ids) {
         const [x, y] = coords[id];
         positions[id] = {
-            x: spanX > 0 ? ((x - minX) / spanX) * extentX : 0,
-            y: spanY > 0 ? ((y - minY) / spanY) * extentY : 0,
+            x: (x - minX) * (NARRATIVE_NODE_W + GAP_X),
+            y: (y - minY) * (NARRATIVE_NODE_H + GAP_Y),
         };
+    }
+
+    // Group chips into rows (y-distance under one chip height = same row) and
+    // enforce a minimum x pitch within each row, pushing rightwards.
+    const byY = [...ids].sort((a, b) => positions[a].y - positions[b].y || positions[a].x - positions[b].x);
+    const rows: string[][] = [];
+    for (const id of byY) {
+        const row = rows[rows.length - 1];
+        const prev = row?.[row.length - 1];
+        if (prev !== undefined && positions[id].y - positions[prev].y < NARRATIVE_NODE_H) {
+            row.push(id);
+        } else {
+            rows.push([id]);
+        }
+    }
+    const minPitch = NARRATIVE_NODE_W + MIN_ROW_CLEARANCE;
+    for (const row of rows) {
+        row.sort((a, b) => positions[a].x - positions[b].x);
+        for (let i = 1; i < row.length; i++) {
+            const prevX = positions[row[i - 1]].x;
+            if (positions[row[i]].x < prevX + minPitch) {
+                positions[row[i]] = { ...positions[row[i]], x: prevX + minPitch };
+            }
+        }
     }
 
     return {
         positions,
-        width:  extentX + NARRATIVE_NODE_W,
-        height: extentY + NARRATIVE_NODE_H,
+        width:  Math.max(...ids.map((id) => positions[id].x)) + NARRATIVE_NODE_W,
+        height: Math.max(...ids.map((id) => positions[id].y)) + NARRATIVE_NODE_H,
     };
 }
 

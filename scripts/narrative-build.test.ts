@@ -8,19 +8,33 @@ import {
 } from "./narrative-build.ts";
 
 describe("buildTimelineLens", () => {
-    it("scales x linearly over the year range and sets y to the area's lane index", () => {
+    it("gives one grid column per year for short ranges and sets y to the area's lane index", () => {
         const lens = buildTimelineLens(
             [
-                { id: "a", year: 2000, area: "foundations" },
-                { id: "b", year: 2010, area: "architectures" },
-                { id: "c", year: 2020, area: "foundations" },
+                { id: "a", year: 2015, area: "foundations" },
+                { id: "b", year: 2020, area: "architectures" },
+                { id: "c", year: 2025, area: "foundations" },
             ],
             ["foundations", "architectures"],
         );
         expect(lens.id).toBe("timeline");
         expect(lens.coords.a).toEqual([0, 0]);
-        expect(lens.coords.b).toEqual([0.5, 1]);
-        expect(lens.coords.c).toEqual([1, 0]);
+        expect(lens.coords.b).toEqual([5, 1]);
+        expect(lens.coords.c).toEqual([10, 0]);
+    });
+
+    it("compresses ranges wider than 14 years to 14 grid columns, staying linear in the year", () => {
+        const lens = buildTimelineLens(
+            [
+                { id: "a", year: 1990, area: "foundations" },
+                { id: "b", year: 2004, area: "foundations" },
+                { id: "c", year: 2018, area: "foundations" },
+            ],
+            ["foundations"],
+        );
+        expect(lens.coords.a[0]).toBe(0);
+        expect(lens.coords.b[0]).toBeCloseTo(7, 6);
+        expect(lens.coords.c[0]).toBeCloseTo(14, 6);
     });
 
     it("omits nodes with no derivable year", () => {
@@ -34,7 +48,7 @@ describe("buildTimelineLens", () => {
         expect(Object.keys(lens.coords)).toEqual(["a"]);
     });
 
-    it("centers a single-year node at x=0.5 (zero span)", () => {
+    it("collapses a single-year range to x=0 (zero span)", () => {
         const lens = buildTimelineLens(
             [
                 { id: "a", year: 2015, area: "foundations" },
@@ -42,8 +56,8 @@ describe("buildTimelineLens", () => {
             ],
             ["foundations"],
         );
-        expect(lens.coords.a[0]).toBe(0.5);
-        expect(lens.coords.b[0]).toBe(0.5);
+        expect(lens.coords.a[0]).toBe(0);
+        expect(lens.coords.b[0]).toBe(0);
     });
 
     it("returns empty coords when no node has a derivable year", () => {

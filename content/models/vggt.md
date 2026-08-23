@@ -15,6 +15,7 @@ sources:
     - wang2023-dust3r
     - leroy2024-mast3r
     - oquab2023-dinov2
+    - darcet2023-registers
 relations:
   - type: generalized_by
     target: depth-anything-3

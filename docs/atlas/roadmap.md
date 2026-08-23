@@ -21,10 +21,13 @@
 
 | WS | State | Next action |
 |---|---|---|
-| Phase 0 — design mock + this doc | **direction approved** (user liked v1; requested chapter-length prose — incorporated in v2 as the reading panel) | Final look at mock v2 |
+| Phase 0 — design mock + this doc | **direction approved** (v3 = chronological layout; awaiting any further user remarks) | — |
 | A — Narratives subsystem | not started | Schema + build infra (Phase 3) |
 | B — Authors subsystem | not started | After Phase 3: fetch-meta extension + backfill dry-run (Phase 6) |
-| C — Deep-models review | **Wave 0 in progress** | Finish validator warning + frontend quickies; then Wave 1 attention ingest |
+| C — Deep-models review | **Waves 0–1 merged (PRs #125, #126, 2026-08-23)** | Next per phasing: Phase 3 (narratives infra) or Wave 2 (DINO trio). Session paused after Wave-1 merge on user request (token budget). |
+
+**PR policy (user mandate, 2026-08-23):** Claude opens and merges PRs itself, no codex review;
+strictly one PR at a time; PRs must be substantial — every main commit triggers a production deploy.
 
 ## Wave plan (Workstream C)
 
@@ -59,10 +62,10 @@ mask-rcnn, fcn, fast-scnn, ritm, unet ×5); `sam`/`mobilesam` cite SAM's own arX
 
 | Page | Kind | Action | Papers to ingest | Note exists | Status | Session |
 |---|---|---|---|---|---|---|
-| attention-mechanism | concept | **full rewrite**, primary → vaswani2017; fix √d_h error; lineage Bahdanau→Vaswani→efficient/KV; regenerate Where-it-appears (14 dependents) | vaswani2017-attention, bahdanau2014-align, katharopoulos2020-linear-attention, darcet2023-registers; register-only: flashattention, roformer, gqa | no | wave 1 | — |
-| transformer | concept | new | (vaswani + ≥2 from above) | no | wave 1 | — |
-| positional-encoding | concept | new | vaswani, roformer, vit | no | wave 1 | — |
-| normalization | concept | new | ba2016-layernorm, ioffe2015-batchnorm, +1 | no | wave 1 | — |
+| attention-mechanism | concept | **full rewrite**, primary → vaswani2017; fix √d_h error; lineage Bahdanau→Vaswani→efficient/KV; regenerate Where-it-appears (14 dependents) | vaswani2017-attention, bahdanau2014-align, katharopoulos2020-linear-attention, darcet2023-registers; register-only: flashattention (dao2022), gqa (ainslie2023); roformer (su2021) upgraded to full note | yes (all 5) | **done** (PR #126) | 2026-08-23 |
+| transformer | concept | new | vaswani + ba2016-layernorm + vit + katharopoulos | yes | **done** (PR #126) | 2026-08-23 |
+| positional-encoding | concept | new | vaswani, su2021-roformer, vit, lightglue | yes | **done** (PR #126) | 2026-08-23 |
+| normalization | concept | new | ioffe2015-batchnorm, ba2016-layernorm, wu2018-groupnorm (+vaswani) | yes (all 3 new) | **done** (PR #126) | 2026-08-23 |
 | dino | model | new (v1: self-distillation w/o labels, multi-crop, centering+sharpening, emergent segmentation) | caron2021-dino | no | wave 2 | — |
 | dinov2 | model | rewrite (derive v1→v2 delta; land Wave-0 frontmatter fixes; relations `dino —extended_by→ dinov2 —extended_by→ dinov3`) | — | yes | wave 2 | — |
 | dinov3 | model | new (gram anchoring, 7B/1.7B-image scale — verify from note) | dinov3 (arXiv 2508.10104) | no | wave 2 | — |
@@ -89,6 +92,26 @@ narrative should get a page — paper-only nodes are debt, not normal.
 | (simplenet) | simplenet | foundation-models-for-vision | model | anticipated |
 | darcet2023-registers | registers | foundation-models-for-vision | concept or model | anticipated |
 | (ibot) | ibot | foundation-models-for-vision | model (optional node) | anticipated |
+
+## Wave 1 session notes (2026-08-23, PR #126)
+
+- 10 papers registered: vaswani2017-attention, bahdanau2014-align, katharopoulos2020-linear-attention,
+  darcet2023-registers, dao2022-flashattention, su2021-roformer, ainslie2023-gqa,
+  ioffe2015-batchnorm, ba2016-layernorm, wu2018-groupnorm. Notes written for 8 (flashattention +
+  gqa remain register-only). OpenAlex's record for Vaswani 2017 is glitched (year 2025, junk DOI) —
+  stanza hand-authored from ground truth.
+- attention-mechanism rewritten (primary vaswani2017; √d_k per-head scaling fixed to 1/8 consistent
+  with vit.md; Bahdanau origins; Katharopoulos linear attention credited with LoFTR as adopter;
+  register tokens; SuperGlue/LoFTR/LightGlue demoted to applications; domain → representation-learning).
+  Its RoFormer prose warning cleared (28 → 27 validator warnings).
+- New concepts: transformer, positional-encoding, normalization (all domain representation-learning;
+  transformer prerequisites [attention-mechanism, positional-encoding, normalization]).
+- loftr.md: elu+1 kernel credited to Katharopoulos + source ref added. vggt.md: darcet2023-registers
+  ref added (fixed dangling register-token mention).
+- concept-page SKILL.md: phantom `category:` field replaced with `domain:` (same drift as
+  deep-model-page had).
+- Draft QA: all three concept drafts audit-verified against notes (54+50+55+44 entries, zero real
+  misses — only line-wrap artifacts).
 
 ## Decisions log
 

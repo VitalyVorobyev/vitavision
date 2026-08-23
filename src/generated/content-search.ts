@@ -2078,21 +2078,24 @@ export const searchRecords: SearchRecord[] = [
     "tags": [
       "deep-learning"
     ],
-    "domain": "features",
+    "domain": "representation-learning",
     "headings": [
-      "Scaled dot-product attention",
-      "Multi-head attention",
-      "Self-attention and cross-attention",
-      "Positional encoding",
-      "Quadratic cost and the linear approximation"
+      "Origins: additive attention",
+      "Scaled dot-product and multi-head",
+      "Complexity and the efficiency lineage",
+      "Attention in vision"
     ],
     "authors": [
-      "P. Sarlin",
-      "D. DeTone",
-      "T. Malisiewicz",
-      "A. Rabinovich"
+      "A. Vaswani",
+      "N. Shazeer",
+      "N. Parmar",
+      "J. Uszkoreit",
+      "L. Jones",
+      "A. N. Gomez",
+      "Ł. Kaiser",
+      "I. Polosukhin"
     ],
-    "venue": "CVPR"
+    "venue": "NeurIPS 2017"
   },
   {
     "slug": "bundle-adjustment",
@@ -2469,6 +2472,28 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "normalization",
+    "path": "/atlas/normalization",
+    "type": "concept",
+    "title": "Normalization",
+    "summary": "Standardises intermediate activations over a chosen index set, then restores capacity with a learned affine transform; batch, layer, instance, and group normalization differ only in which indices are pooled.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Batch normalization",
+      "Layer normalization",
+      "Group normalization and the unifying view",
+      "Choosing among them"
+    ],
+    "authors": [
+      "S. Ioffe",
+      "C. Szegedy"
+    ],
+    "venue": "ICML 2015"
+  },
+  {
     "slug": "optical-flow",
     "path": "/atlas/optical-flow",
     "type": "concept",
@@ -2536,6 +2561,34 @@ export const searchRecords: SearchRecord[] = [
       "P. Fua"
     ],
     "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "positional-encoding",
+    "path": "/atlas/positional-encoding",
+    "type": "concept",
+    "title": "Positional Encoding",
+    "summary": "Mechanisms that inject token order into permutation-invariant attention: absolute encodings added to embeddings, learned tables, and rotary schemes that rotate queries and keys so position enters the score.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Sinusoidal absolute encodings",
+      "Learned absolute encodings",
+      "Rotary (relative) encodings",
+      "When absolute vs relative matters"
+    ],
+    "authors": [
+      "A. Vaswani",
+      "N. Shazeer",
+      "N. Parmar",
+      "J. Uszkoreit",
+      "L. Jones",
+      "A. N. Gomez",
+      "Ł. Kaiser",
+      "I. Polosukhin"
+    ],
+    "venue": "NeurIPS 2017"
   },
   {
     "slug": "ransac",
@@ -2664,6 +2717,36 @@ export const searchRecords: SearchRecord[] = [
       "Detection–verification decoupling",
       "Comparison summary"
     ]
+  },
+  {
+    "slug": "transformer",
+    "path": "/atlas/transformer",
+    "type": "concept",
+    "title": "Transformer",
+    "summary": "Sequence-to-sequence architecture assembled entirely from attention and position-wise feedforward sublayers, each wrapped in a residual connection and layer normalisation — no recurrence, no convolution.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Encoder and decoder stacks",
+      "Position-wise feedforward network",
+      "Residual connections and normalisation",
+      "Positional information",
+      "Training configuration",
+      "The encoder in vision"
+    ],
+    "authors": [
+      "A. Vaswani",
+      "N. Shazeer",
+      "N. Parmar",
+      "J. Uszkoreit",
+      "L. Jones",
+      "A. N. Gomez",
+      "Ł. Kaiser",
+      "I. Polosukhin"
+    ],
+    "venue": "NeurIPS 2017"
   },
   {
     "slug": "visual-anomaly-detection",

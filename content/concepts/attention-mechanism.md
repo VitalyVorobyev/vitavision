@@ -1,97 +1,166 @@
 ---
 title: "Attention Mechanism"
-date: 2026-05-16
+date: 2026-08-23
 summary: "Computes each output element as a learned, input-dependent weighted average of value vectors, letting every element aggregate information from any other regardless of distance."
 tags: ["deep-learning"]
 author: "Vitaly Vorobyev"
-domain: features
+domain: representation-learning
 difficulty: intermediate
 prerequisites: []
 sources:
-  primary: sarlin2020-superglue
+  primary: vaswani2017-attention
   references:
-    - lindenberger2023-lightglue
+    - bahdanau2014-align
+    - katharopoulos2020-linear-attention
+    - darcet2023-registers
+    - su2021-roformer
+    - dao2022-flashattention
+    - ainslie2023-gqa
+    - sarlin2020-superglue
     - sun2021-loftr
+    - lindenberger2023-lightglue
 ---
 
 # Definition
 
-The attention mechanism computes each output element as a weighted sum of value vectors, where the weights are determined by a learned, input-dependent compatibility function between query and key vectors.
+Attention maps a query and a set of key–value pairs to an output. The output is a weighted average of the value vectors, and the weight on each value is produced by a compatibility function between the query and that value's key. The weights are computed from the input at run time, so the aggregation pattern is input-dependent rather than fixed by the architecture.
 
 :::definition[Scaled dot-product attention]
-Given a query matrix $Q \in \mathbb{R}^{n \times d}$, key matrix $K \in \mathbb{R}^{m \times d}$, and value matrix $V \in \mathbb{R}^{m \times d_v}$, the attended representation is
+Compatibility is the dot product of query and key, divided by the square root of the key dimension, then normalised by a softmax over keys.
 
-$$\mathrm{Attention}(Q, K, V) = \mathrm{Softmax}\!\left(\frac{QK^\top}{\sqrt{d}}\right)V.$$
+$$
+\mathrm{Attention}(Q,K,V) = \mathrm{softmax}(QK^T/\sqrt{d_k})V
+$$
 
-Each output row is a softmax-weighted combination of the rows of $V$, the weights reflecting the dot-product similarity between each query and all keys, scaled by $\sqrt{d}$ to prevent saturation of the softmax. Input: $Q$, $K$, $V$. Output: $O \in \mathbb{R}^{n \times d_v}$, each row aggregating information from all $m$ positions weighted by their compatibility with the corresponding query.
+Queries and keys have dimension $d_k$; values have dimension $d_v$. For query and key components modelled as independent, zero-mean, unit-variance random variables, $q \cdot k$ has variance $d_k$. Unscaled dot products therefore grow in magnitude with $d_k$ and push softmax into small-gradient regions. The factor $1/\sqrt{d_k}$ counteracts that growth.
 :::
 
-The mechanism places no assumption on the positional arrangement of the inputs: every query can attend to every key regardless of distance. This distinguishes attention from convolution and recurrence, which constrain receptive fields by locality or sequential order.
+The operation imposes no locality or ordering constraint. Every query attends to every key in a single step, at any distance.
 
 # Mathematical Description
 
-## Scaled dot-product attention
+## Origins: additive attention
 
-For query $q_i$ and key-value pairs $(k_j, v_j)$, the scalar score is $s_{ij} = q_i^\top k_j / \sqrt{d}$, the weight $\alpha_{ij} = \mathrm{Softmax}_j(s_{ij})$ satisfies $\sum_j \alpha_{ij} = 1$, and the output is $o_i = \sum_j \alpha_{ij} v_j$. In the SuperGlue graph network each layer applies this as a residual update,
+The mechanism was introduced to remove a bottleneck in recurrent encoder–decoder translation. The baseline requires the network "to be able to compress all the necessary information of a source sentence into a fixed-length vector", and its performance "deteriorates rapidly as the length of an input sentence increases". The fix replaces the single terminal state with a distinct context vector per output step.
 
-$$x_i^{(\ell+1)} = x_i^{(\ell)} + \mathrm{MLP}\!\left(x_i^{(\ell)} \,\big\|\, m_{\mathcal{E}\to i}\right), \qquad m_{\mathcal{E}\to i} = \sum_{j:(i,j)\in\mathcal{E}} \alpha_{ij}\, v_j,$$
+A bidirectional encoder produces annotations $h_j = [\overrightarrow{h_j}^\top; \overleftarrow{h_j}^\top]^\top$, one per source position. An alignment model scores each annotation against the previous decoder state:
 
-with $(q_i, k_j, v_j)$ linear projections of $x_i^{(\ell)}$ using independent parameters per layer.
+$$
+e_{ij} = a(s_{i-1}, h_j) = v_a^\top \tanh(W_a s_{i-1} + U_a h_j),
+$$
 
-## Multi-head attention
+with $W_a \in \mathbb{R}^{n\times n}$, $U_a \in \mathbb{R}^{n \times 2n}$, $v_a \in \mathbb{R}^n$. The scores are normalised and used as averaging weights:
 
-Multi-head attention applies $h$ independent attention operations in parallel and concatenates them,
+$$
+\alpha_{ij} = \dfrac{\exp(e_{ij})}{\sum_{k=1}^{T_x}\exp(e_{ik})}, \qquad c_i = \sum_{j=1}^{T_x} \alpha_{ij} h_j.
+$$
 
-$$\mathrm{MultiHead}(Q, K, V) = \mathrm{Concat}(\mathrm{head}_1, \ldots, \mathrm{head}_h)\,W^O,$$
+The context vector is an expected annotation, where the expectation is over possible alignments. In current terminology the query is the decoder hidden state $s_{i-1}$; the keys and values are both the encoder annotations $h_j$. This formulation uses one representation for both roles, unlike later architectures that project separate key and value vectors.
 
-each $\mathrm{head}_r = \mathrm{Attention}(QW_r^Q, KW_r^K, VW_r^V)$ using separate learned projections. SuperGlue, LightGlue, and LoFTR all use $h = 4$ heads with hidden dimension $d = 256$; each head learns a distinct compatibility function and the concatenated output is projected back to dimension $d$.
+The compatibility function is the part that changed. Replacing the single-hidden-layer network with a dot product is "faster and more space-efficient in practice due to optimized matrix multiplication", but requires the $1/\sqrt{d_k}$ scaling to match additive attention's behaviour at large $d_k$.
 
-## Self-attention and cross-attention
+## Scaled dot-product and multi-head
 
-The two attention modes differ in the source of queries, keys, and values. In **self-attention** all three derive from the same set, so each element aggregates context from the other elements of its own set. In **cross-attention** queries come from one set and keys and values from a second, so each element aggregates information from the other set. The matching networks alternate the two: in SuperGlue's attentional graph network, self-attention layers let a keypoint reason about the configuration of all keypoints in its own image, and cross-attention layers let it search for candidate correspondences in the other image. Ablation on the ScanNet benchmark shows that removing cross-attention degrades pose-estimation AUC@20° from 51.84% to 42.57%, and removing positional encoding drops it to 47.12% — both context types are essential.
+Applying one attention function over the full representation averages together information from different representation subspaces. Multi-head attention runs $h$ independently projected copies in parallel and concatenates them:
 
-## Positional encoding
+$$
+\mathrm{MultiHead}(Q,K,V) = \mathrm{Concat}(\mathrm{head}_1,...,\mathrm{head}_h)W^O, \qquad \mathrm{head}_i = \mathrm{Attention}(QW_i^Q, KW_i^K, VW_i^V),
+$$
 
-Attention weights depend only on query and key content, so without positional information the mechanism is permutation-invariant. LoFTR adds a 2-D sinusoidal absolute encoding to its backbone feature maps once, before the attention stack, allowing the transformer to distinguish positions on the $1/8$-resolution grid even in textureless regions. LightGlue instead injects relative geometry at every self-attention layer via a rotary encoding,
+with $W_i^Q, W_i^K \in \mathbb{R}^{d_{model}\times d_k}$, $W_i^V \in \mathbb{R}^{d_{model}\times d_v}$, and $W^O \in \mathbb{R}^{h d_v \times d_{model}}$. Per-head dimensions are set to $d_k = d_v = d_{model}/h$, keeping total cost comparable to single-head attention at full dimensionality.
 
-$$a_{ij} = q_i^\top\, \mathbf{R}(p_j - p_i)\, k_j,$$
+The scale factor uses the **per-head** dimension $d_k$, not $d_{model}$. In the base configuration $d_{model}=512$, $h=8$, $d_k=d_v=64$, so the denominator is $8$. Model pages that report a per-head dimension follow the same rule; see [vit](/atlas/vit), where the scale is $1/\sqrt{D_h}$ with $D_h = D/H$.
 
-where $\mathbf{R}(\cdot)$ is block-diagonal with $2 \times 2$ planar rotation blocks of angle $\theta = b_k^\top(p_j - p_i)$ for a learned basis $b_k$. Keypoint positions must be normalised to $[0,1]^2$; raw pixel coordinates break the encoding.
+Three usage patterns follow from the choice of where $Q$, $K$, and $V$ come from: encoder-decoder attention, encoder self-attention, masked decoder self-attention. Self-attention draws all three from one set, so each element aggregates context from its own set. Cross-attention draws queries from one set and keys and values from another. Causal decoding is enforced by masking out (setting to $-\infty$) all values in the input of the softmax that correspond to illegal connections — the mask is additive and applied before the softmax, not by zeroing weights after it.
 
-## Quadratic cost and the linear approximation
+## Complexity and the efficiency lineage
 
-Full attention forms a dense $n \times m$ score matrix, costing $O(nm)$ time and memory — $O(N^2)$ for LoFTR's dense feature maps where $n = m = N$. LoFTR applies a linear-attention approximation: replacing softmax with a non-negative kernel feature map $\phi(\cdot) = \mathrm{elu}(\cdot) + 1$ and exploiting associativity,
+The argument for replacing recurrence is per-layer cost, parallelism, and the path length signals must travel between distant positions.
 
-$$\mathrm{Attention}_\phi(Q, K, V)_i = \frac{\phi(q_i)^\top \sum_j \phi(k_j)\, v_j^\top}{\phi(q_i)^\top \sum_j \phi(k_j)},$$
+| Layer type | Complexity per layer | Sequential ops | Maximum path length |
+|---|---|---|---|
+| Self-attention | $O(n^2 \cdot d)$ | $O(1)$ | $O(1)$ |
+| Recurrent | $O(n \cdot d^2)$ | $O(n)$ | $O(n)$ |
+| Convolutional | $O(k \cdot n \cdot d^2)$ | $O(1)$ | $O(\log_k(n))$ |
+| Self-attention (restricted) | $O(r \cdot n \cdot d)$ | $O(1)$ | $O(n/r)$ |
 
-reduces the cost to $O(N)$ by computing the key-value aggregate once. The ELU+1 kernel keeps the weights non-negative — required for the factorisation to preserve normalisation — at the cost of a smoother, less peaked attention distribution than softmax.
+Here $n$ is sequence length, $d$ representation dimension, $k$ convolution kernel size, and $r$ the restricted-attention neighbourhood size. Self-attention is cheaper per layer than recurrence only when $n < d$. Beyond that point the $O(n^2 \cdot d)$ term dominates.
+
+Kernelised linear attention removes the quadratic term by changing the compatibility function. Generalised attention is a normalised weighted sum over similarity scores,
+
+$$
+V'_i = \frac{\sum_j \mathrm{sim}(Q_i,K_j)V_j}{\sum_j \mathrm{sim}(Q_i,K_j)},
+$$
+
+with standard attention recovered by $\mathrm{sim}(q,k) = \exp(q^\top k/\sqrt{D})$. Choosing instead a kernel with an explicit finite feature map, $\mathrm{sim}(q,k) = \varphi(q)^\top\varphi(k)$, allows the sums to be re-associated:
+
+$$
+V'_i = \frac{\varphi(Q_i)^\top\left(\sum_j \varphi(K_j)V_j^\top\right)}{\varphi(Q_i)^\top\left(\sum_j \varphi(K_j)\right)},
+$$
+
+vectorised as $\varphi(Q)(\varphi(K)^\top V)$. The inner sums do not depend on the query index, so they are computed once and reused, taking attention from $O(N^2)$ time and memory to $O(N)$. The feature map used is $\varphi(x) = \mathrm{elu}(x) + 1$, chosen over $\mathrm{relu}$ to avoid zero gradients for negative inputs. Exact softmax cannot be linearised this way: the exponential kernel's feature map is infinite-dimensional, which makes the linearisation of exact softmax attention infeasible. Under causal masking the shared sums become cumulative states $S_i = \sum_{j=1}^i \varphi(K_j)V_j^\top$ and $Z_i = \sum_{j=1}^i \varphi(K_j)$, updated in constant time per step.
+
+The substitution is not free. On WSJ speech recognition, softmax attention reaches PER 5.12 at 2711 s/epoch against linear attention's PER 8.08 at 824 s/epoch — faster, but worse at equal epochs. The source paper credits its own kernel as an engineering choice, not a faithful softmax approximation. This formulation is due to Katharopoulos et al. [3]; [loftr](/atlas/loftr) adopts the same $\varphi(x) = \mathrm{elu}(x) + 1$ map in its coarse-level transformer.
+
+Three later lines of work change the cost of attention without changing what it computes, or change only how position enters the score. FlashAttention reorders the computation to be IO-aware, producing exact attention while avoiding materialisation of the full score matrix in high-bandwidth memory [6]. Grouped-query attention shares key and value heads across groups of query heads, shrinking the key–value state read at inference [7]. Rotary position embeddings rotate queries and keys so that each score depends on the relative offset between positions rather than on additive absolute encodings; this is the dominant positional treatment in current transformer implementations [5].
+
+## Attention in vision
+
+The Vision Transformer applies this architecture's encoder to image patches, with each patch a token and every layer a global self-attention over the patch set; [vit](/atlas/vit) carries the architecture details.
+
+Softmax normalisation forces each query's weights to sum to 1 across the sequence, so a query with no genuinely relevant key must still place mass somewhere. In large, sufficiently trained ViTs this surfaces as artifact tokens: roughly 2% of patch tokens acquire an approximately 10x higher norm at output, sitting on low-information background patches. Linear probes show these tokens have discarded local (position and pixel) information in favour of aggregated global information, which corrupts dense-prediction and attention-map readout. The remedy is architectural. A small number of extra learnable register tokens are appended to the sequence after patch embedding, treated like `[CLS]` inside the transformer but discarded at output; $N = 4$ registers is the setting used in every non-ablation experiment of the source paper. Registers do not create the behaviour, they isolate it away from patch tokens.
+
+Cross-attention is the correspondence primitive in learned feature matching. SuperGlue alternates layers of self-attention (intra-image) and cross-attention (inter-image) over keypoint tokens; LoFTR runs interleaved self-attention and cross-attention layers with the linear transformer approximation over dense coarse feature maps; LightGlue keeps the same alternation and injects rotary relative-position encoding at every self-attention layer.
 
 # Numerical Concerns
 
-**The $1/\sqrt{d}$ scaling.** Without it, the dot product $q_i^\top k_j$ has variance proportional to $d$ for unit-variance inputs; large magnitudes push the softmax into saturation where gradients vanish. Dividing by $\sqrt{d}$ restores unit variance of the pre-softmax scores. With $d = 256$ the denominator is $16$.
+**Softmax overflow.** Direct exponentiation of the score row overflows in single precision once scores are large. The stable evaluation subtracts the per-row maximum before exponentiating, which leaves the normalised weights unchanged.
 
-**Softmax stability.** Naive exponentiation overflows in float32 once scores exceed roughly $88$. The stable form subtracts the per-row maximum before exponentiating. SuperGlue's downstream Sinkhorn assignment runs entirely in the log domain to prevent overflow in its augmented score matrix, which is not $\sqrt{d}$-scaled.
+**Scaling is variance control, not cosmetics.** The $1/\sqrt{d_k}$ factor exists to cancel the variance-$d_k$ growth of the raw dot product. Omitting it, or dividing by $\sqrt{d_{model}}$ instead of the per-head $\sqrt{d_k}$, reintroduces the vanishing-softmax-gradient failure directly.
 
-**Quadratic memory.** At $2048$ keypoints per image the cross-attention score matrix holds millions of float32 values per head; with 4 heads and both directions it reaches hundreds of megabytes. LightGlue prunes points classified as unmatchable after each layer, progressively shrinking the effective set size.
+**Reduced-precision accumulation.** The product $QK^T$ is accumulated over $d_k$ terms before the scale factor is applied, so a reduced-precision accumulator sees the unscaled magnitude, whose variance is $d_k$. Accumulate the dot product in higher precision and apply the scale before the softmax.
 
-**Linear-attention trade-off.** The ELU+1 kernel produces smoother weights than softmax — attention collapse onto a single element is less likely, but so is strong selective attention to one dominant match, which slightly raises ambiguity in highly discriminative regions.
+**Masking order.** The causal mask is additive $-\infty$ on the softmax input. Zeroing attention weights after the softmax leaves the normaliser contaminated by illegal positions and does not reproduce the masked distribution.
 
-**Low-precision inference.** FP16 inference is standard; LightGlue's rotary rotation entries are trigonometric and well-conditioned because positions are normalised to $[0,1]^2$. SuperGlue's matching descriptors are deliberately not $L_2$-normalised — their magnitude encodes confidence — so scores are unbounded and 16-bit log-sum-exp precision in the Sinkhorn step matters.
+**Linear-attention denominator.** The feature map guarantees $\varphi(x) > 0$ for all real $x$, since $\mathrm{elu}(x) \in (-1, \infty)$ and therefore $\mathrm{elu}(x)+1 \in (0, \infty)$. This keeps the denominator $\sum_j \varphi(K_j)$ strictly positive and avoids sign cancellation between numerator and denominator that a signed similarity score would allow.
+
+**Artifact-token norms as a diagnostic.** Token-norm histograms are the practical detector for register-style artifacts: in the studied backbone, an average of 2.37% of tokens have norm > 150, read off a clearly bimodal histogram. The cutoff is model-specific and can vary across models, so it must be re-derived per backbone rather than reused.
 
 # Where it appears
 
-Three registered models use the attention mechanism, each in a distinct way:
+Attention is a prerequisite for every transformer-based page in the register, and for two convolutional pages that use channel-gating attention.
 
-- [superglue](/atlas/superglue) — an attentional graph network alternating $L = 9$ self- and cross-attention layers; self-attention builds intra-image keypoint context, cross-attention discovers candidate matches. The attention layers are the context-enrichment stage feeding a Sinkhorn optimal-transport assignment.
-- [lightglue](/atlas/lightglue) — extends the SuperGlue framework with rotary positional encoding and a per-layer confidence head that drives adaptive early exit; easy image pairs exit after an average of 4.7 of 9 layers, hard pairs run all 9, and token pruning reduces the quadratic cost at each layer.
-- [loftr](/atlas/loftr) — applies linear attention in interleaved self- and cross-attention layers over dense coarse feature maps at $1/8$ resolution, attending over all spatial positions so that matches emerge in low-texture regions where no detector fires.
+Backbones and pretraining:
 
-The transformer architecture underlying all three originates outside computer vision, in sequence modelling for natural language processing; the matching networks adapt it to sets of local image features by pairing self-attention for intra-set context with cross-attention for inter-set correspondence search.
+- [vit](/atlas/vit) — global multi-head self-attention over patch tokens from the first layer, with per-head scaling $1/\sqrt{D_h}$.
+- [mae](/atlas/mae) — asymmetric transformer autoencoder; the encoder's self-attention runs only over the visible patch subset, and the decoder attends over visible plus mask tokens.
+- [dinov2](/atlas/dinov2) — self-supervised ViT whose CLS and patch tokens are both read out of the attention stack; the flagship exhibitor of the high-norm artifact tokens registers address.
+
+Detection and segmentation:
+
+- [detr](/atlas/detr) — encoder self-attention over all spatial tokens plus a decoder where learnable object queries cross-attend to encoder tokens and self-attend to each other.
+- [rf-detr](/atlas/rf-detr) — searches the number of windowed attention blocks per encoder layer as an architecture knob over a DINOv2 backbone.
+- [mask2former](/atlas/mask2former) — masked attention, restricting each query's cross-attention to its previously predicted mask foreground.
+- [segformer](/atlas/segformer) — efficient self-attention that reduces the key sequence per stage before scoring.
+- [sam](/atlas/sam) — two-way cross-attention mask decoder; SAM 2 adds a memory attention stack that self-attends on the current frame then cross-attends to past-frame memories.
+- [mobilesam](/atlas/mobilesam) — distils SAM's ViT-H attention encoder into a TinyViT encoder while keeping the attention-based mask decoder frozen.
+- [bisenet](/atlas/bisenet) — SE-style channel attention in the Attention Refinement and Feature Fusion modules, gating channels rather than positions.
+- [mobilenetv3](/atlas/mobilenetv3) — Squeeze-and-Excitation channel gating inside the inverted-residual block; also a channel-attention, not a query–key form.
+
+Matching and 3D:
+
+- [feature-matching](/atlas/feature-matching) — the concept page for the matching stage that the attention-based matchers implement.
+- [superglue](/atlas/superglue) — attentional graph network alternating self-attention within an image and cross-attention between images.
+- [lightglue](/atlas/lightglue) — the same alternation with rotary relative-position encoding at every self-attention layer, plus per-layer pruning that shrinks the score matrix.
+- [loftr](/atlas/loftr) — interleaved self- and cross-attention with the linear kernel over dense coarse feature maps.
+- [vggt](/atlas/vggt) — alternating frame-wise and global self-attention, with camera and register tokens appended per frame.
 
 # References
 
-1. A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, I. Polosukhin. *Attention Is All You Need.* NeurIPS, 2017.
-2. P.-E. Sarlin, D. DeTone, T. Malisiewicz, A. Rabinovich. *SuperGlue: Learning Feature Matching with Graph Neural Networks.* IEEE CVPR, 2020.
-3. P. Lindenberger, P.-E. Sarlin, M. Pollefeys. *LightGlue: Local Feature Matching at Light Speed.* IEEE ICCV, 2023.
-4. J. Sun, Z. Shen, Y. Wang, H. Bao, X. Zhou. *LoFTR: Detector-Free Local Feature Matching with Transformers.* IEEE CVPR, 2021.
-5. J. Su, Y. Lu, S. Pan, A. Murtadha, B. Wen, Y. Liu. *RoFormer: Enhanced Transformer with Rotary Position Embedding.* arXiv 2104.09864, 2021.
+1. A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, I. Polosukhin. *Attention Is All You Need.* NeurIPS, 2017. [arXiv](https://arxiv.org/abs/1706.03762)
+2. D. Bahdanau, K. Cho, Y. Bengio. *Neural Machine Translation by Jointly Learning to Align and Translate.* ICLR, 2015. [arXiv](https://arxiv.org/abs/1409.0473)
+3. A. Katharopoulos, A. Vyas, N. Pappas, F. Fleuret. *Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention.* ICML, 2020. [arXiv](https://arxiv.org/abs/2006.16236)
+4. T. Darcet, M. Oquab, J. Mairal, P. Bojanowski. *Vision Transformers Need Registers.* ICLR, 2024. [arXiv](https://arxiv.org/abs/2309.16588)
+5. J. Su, Y. Lu, S. Pan, A. Murtadha, B. Wen, Y. Liu. *RoFormer: Enhanced Transformer with Rotary Position Embedding.* Neurocomputing, 2024. [arXiv](https://arxiv.org/abs/2104.09864)
+6. T. Dao, D. Y. Fu, S. Ermon, A. Rudra, C. Ré. *FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness.* NeurIPS, 2022. [arXiv](https://arxiv.org/abs/2205.14135)
+7. J. Ainslie, J. Lee-Thorp, M. de Jong, Y. Zemlyanskiy, F. Lebrón, S. Sanghai. *GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints.* EMNLP, 2023. [arXiv](https://arxiv.org/abs/2305.13245)

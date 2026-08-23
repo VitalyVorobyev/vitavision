@@ -1276,7 +1276,7 @@ export const searchRecords: SearchRecord[] = [
     "tags": [
       "deep-learning"
     ],
-    "domain": "features",
+    "domain": "representation-learning",
     "headings": [],
     "authors": [
       "M. Oquab",
@@ -1526,7 +1526,7 @@ export const searchRecords: SearchRecord[] = [
     "tags": [
       "deep-learning"
     ],
-    "domain": "features",
+    "domain": "representation-learning",
     "headings": [],
     "authors": [
       "K. He",
@@ -2009,7 +2009,7 @@ export const searchRecords: SearchRecord[] = [
     "tags": [
       "deep-learning"
     ],
-    "domain": "features",
+    "domain": "representation-learning",
     "headings": [],
     "authors": [
       "A. Dosovitskiy",

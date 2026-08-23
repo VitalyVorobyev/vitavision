@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Foundation Models → Anomaly Detection</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--text:#e6edf3;--muted:#8b949e;--line:#30363d;--soft:#21262d}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;overflow:hidden}
+header{height:54px;display:flex;align-items:center;gap:9px;padding:8px 12px;border-bottom:1px solid var(--line);background:#0d1117}
+h1{font-size:15px;margin:0 10px 0 0;white-space:nowrap} select,input,button{background:var(--soft);color:var(--text);border:1px solid var(--line);border-radius:7px;padding:7px 9px;font:inherit}
+input{width:205px} button{cursor:pointer} .spacer{flex:1} .hint{font-size:11px;color:var(--muted)}
+main{height:calc(100vh - 54px);display:grid;grid-template-columns:minmax(0,1fr) 340px}
+#stageWrap{position:relative;min-width:0;background:radial-gradient(circle at 30% 10%,rgba(88,166,255,.06),transparent 34%)}
+svg{width:100%;height:100%;display:block;cursor:grab} svg.dragging{cursor:grabbing}
+aside{border-left:1px solid var(--line);background:var(--panel);padding:16px;overflow:auto}
+.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)} h2{font-size:20px;margin:3px 0 9px}
+h3{font-size:13px;margin:17px 0 6px} p{margin:6px 0;color:#c9d1d9} .tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:11px;background:#21262d;border:1px solid #30363d;border-radius:99px;padding:2px 7px;color:#c9d1d9}
+.remark{border-left:3px solid #6e7681;padding:8px 10px;background:#0d1117;color:#c9d1d9}
+.relation{padding:6px 0;border-bottom:1px solid #21262d;font-size:12px}
+.edge{fill:none;stroke:#484f58;stroke-width:1.35;opacity:.72} .edge.prerequisite{stroke-dasharray:4 4} .edge.distills{stroke:#b84c8b} .edge.applied{stroke:#c95858} .edge.multimodal{stroke:#b9852b}
+.node{cursor:pointer} .node .body{stroke:#0d1117;stroke-width:2} .halo{fill:none;stroke:#58a6ff;stroke-width:1;stroke-dasharray:3 5;opacity:.35}
+.node-label{fill:#e6edf3;font-size:11.5px;font-weight:650;text-anchor:middle;paint-order:stroke;stroke:#111827;stroke-width:2px;stroke-linejoin:round}
+.node-sub{fill:#8b949e;font-size:9.5px;text-anchor:middle} .node.selected .body{stroke:#f0f6fc;stroke-width:3} .node.searchhit .body{stroke:#f2cc60;stroke-width:3}
+.dimmed{opacity:.10!important} .hidden{display:none}
+.legend{position:absolute;left:12px;bottom:12px;background:rgba(22,27,34,.94);border:1px solid var(--line);border-radius:9px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:9px;max-width:700px}
+.legend span{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px} .dot{width:8px;height:8px;border-radius:50%}
+#story{position:absolute;right:12px;top:12px;width:min(420px,43vw);display:none;background:rgba(22,27,34,.96);border:1px solid var(--line);border-radius:10px;padding:12px}
+#story.visible{display:block} #storyTitle{font-weight:700} #storyText{color:#c9d1d9;margin-top:4px} #storyBtns{display:flex;gap:6px;margin-top:9px}
+#fallback{position:absolute;top:10px;left:10px;background:#8b1e1e;color:white;padding:5px 8px;border-radius:6px;font-size:11px;display:none}
+@media(max-width:900px){main{grid-template-columns:1fr}aside{display:none}header .hint{display:none}input{width:130px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Foundation Models → Anomaly Detection</h1>
+<select id="lens">
+<option value="overview">Overview</option><option value="distill">Distillation</option><option value="multimodal">Multimodal</option><option value="anomaly">Anomaly bridge</option><option value="timeline">Timeline</option>
+</select>
+<input id="search" placeholder="Search paper or idea…">
+<button id="storyToggle">Seminar story</button><button id="fit">Fit</button><div class="spacer"></div><span class="hint">wheel zoom · drag pan · click node</span>
+</header>
+<main>
+<div id="stageWrap">
+<div id="fallback">Static fallback view — scripting is blocked in this preview.</div>
+<svg id="stage" viewBox="0 0 1500 850" aria-label="Interactive reading map">
+<defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#484f58"/></marker></defs>
+<g id="viewport">
+<g id="edgeLayer"><path id="edge-0" data-source="transformer" data-target="vit" data-type="prerequisite" class="edge prerequisite" d="M120,150 C309.0,150 381.0,145 570,145" marker-end="url(#arrow)"/><path id="edge-1" data-source="transformer" data-target="llama3" data-type="prerequisite" class="edge prerequisite" d="M120,150 C187.2,150 212.8,135 280,135" marker-end="url(#arrow)"/><path id="edge-2" data-source="transformer" data-target="gqa" data-type="prerequisite" class="edge prerequisite" d="M120,150 C174.6,150 195.4,290 250,290" marker-end="url(#arrow)"/><path id="edge-3" data-source="gqa" data-target="deepseekv3" data-type="evolution" class="edge evolution" d="M250,290 C329.8,290 360.2,145 440,145" marker-end="url(#arrow)"/><path id="edge-4" data-source="flash" data-target="deepseekv3" data-type="evolution" class="edge evolution" d="M355,250 C390.7,250 404.3,145 440,145" marker-end="url(#arrow)"/><path id="edge-5" data-source="chinchilla" data-target="llama3" data-type="evolution" class="edge evolution" d="M120,300 C187.2,300 212.8,135 280,135" marker-end="url(#arrow)"/><path id="edge-6" data-source="llama3" data-target="deepseekv3" data-type="evolution" class="edge evolution" d="M280,135 C347.2,135 372.8,145 440,145" marker-end="url(#arrow)"/><path id="edge-7" data-source="vit" data-target="mae" data-type="evolution" class="edge evolution" d="M570,145 C593.1,145 601.9,285 625,285" marker-end="url(#arrow)"/><path id="edge-8" data-source="vit" data-target="deit" data-type="evolution" class="edge evolution" d="M570,145 C637.2,145 662.8,250 730,250" marker-end="url(#arrow)"/><path id="edge-9" data-source="vit" data-target="dinov2" data-type="evolution" class="edge evolution" d="M570,145 C649.8,145 680.2,135 760,135" marker-end="url(#arrow)"/><path id="edge-10" data-source="mae" data-target="dinov2" data-type="evolution" class="edge evolution" d="M625,285 C681.7,285 703.3,135 760,135" marker-end="url(#arrow)"/><path id="edge-11" data-source="dinov2" data-target="dinov3" data-type="evolution" class="edge evolution" d="M760,135 C825.1,135 849.9,125 915,125" marker-end="url(#arrow)"/><path id="edge-12" data-source="kd" data-target="minilm" data-type="evolution" class="edge evolution" d="M480,610 C543.0,610 567.0,705 630,705" marker-end="url(#arrow)"/><path id="edge-13" data-source="kd" data-target="deit" data-type="distills" class="edge distills" d="M480,610 C585.0,610 625.0,250 730,250" marker-end="url(#arrow)"/><path id="edge-14" data-source="deit" data-target="dinov2" data-type="distills" class="edge distills" d="M730,250 C742.6,250 747.4,135 760,135" marker-end="url(#arrow)"/><path id="edge-15" data-source="kd" data-target="mobileclip" data-type="distills" class="edge distills" d="M480,610 C624.9,610 680.1,700 825,700" marker-end="url(#arrow)"/><path id="edge-16" data-source="kd" data-target="r1" data-type="distills" class="edge distills" d="M480,610 C702.6,610 787.4,710 1010,710" marker-end="url(#arrow)"/><path id="edge-17" data-source="vit" data-target="clip" data-type="prerequisite" class="edge prerequisite" d="M570,145 C649.8,145 680.2,430 760,430" marker-end="url(#arrow)"/><path id="edge-18" data-source="clip" data-target="siglip2" data-type="evolution" class="edge evolution" d="M760,430 C831.4,430 858.6,405 930,405" marker-end="url(#arrow)"/><path id="edge-19" data-source="dinov2" data-target="siglip2" data-type="evolution" class="edge evolution" d="M760,135 C831.4,135 858.6,405 930,405" marker-end="url(#arrow)"/><path id="edge-20" data-source="clip" data-target="blip2" data-type="multimodal" class="edge multimodal" d="M760,430 C886.0,430 934.0,335 1060,335" marker-end="url(#arrow)"/><path id="edge-21" data-source="blip2" data-target="llava" data-type="multimodal" class="edge multimodal" d="M1060,335 C1114.6,335 1135.4,280 1190,280" marker-end="url(#arrow)"/><path id="edge-22" data-source="llava" data-target="qwen3vl" data-type="multimodal" class="edge multimodal" d="M1190,280 C1253.0,280 1277.0,235 1340,235" marker-end="url(#arrow)"/><path id="edge-23" data-source="dinov2" data-target="ad" data-type="applied" class="edge applied" d="M760,135 C848.2,135 881.8,555 970,555" marker-end="url(#arrow)"/><path id="edge-24" data-source="clip" data-target="ad" data-type="applied" class="edge applied" d="M760,430 C848.2,430 881.8,555 970,555" marker-end="url(#arrow)"/><path id="edge-25" data-source="kd" data-target="ad" data-type="applied" class="edge applied" d="M480,610 C685.8,610 764.2,555 970,555" marker-end="url(#arrow)"/><path id="edge-26" data-source="ad" data-target="patchcore" data-type="evolution" class="edge evolution" d="M970,555 C1045.6,555 1074.4,475 1150,475" marker-end="url(#arrow)"/><path id="edge-27" data-source="ad" data-target="efficientad" data-type="evolution" class="edge evolution" d="M970,555 C1045.6,555 1074.4,570 1150,570" marker-end="url(#arrow)"/><path id="edge-28" data-source="ad" data-target="winclip" data-type="evolution" class="edge evolution" d="M970,555 C1045.6,555 1074.4,675 1150,675" marker-end="url(#arrow)"/><path id="edge-29" data-source="ad" data-target="anomalyclip" data-type="evolution" class="edge evolution" d="M970,555 C1125.4,555 1184.6,650 1340,650" marker-end="url(#arrow)"/><path id="edge-30" data-source="ad" data-target="simplenet" data-type="evolution" class="edge evolution" d="M970,555 C1121.2,555 1178.8,510 1330,510" marker-end="url(#arrow)"/><path id="edge-31" data-source="dinov2" data-target="patchcore" data-type="applied" class="edge applied" d="M760,135 C923.8,135 986.2,475 1150,475" marker-end="url(#arrow)"/><path id="edge-32" data-source="kd" data-target="efficientad" data-type="distills" class="edge distills" d="M480,610 C761.4,610 868.6,570 1150,570" marker-end="url(#arrow)"/><path id="edge-33" data-source="dinov2" data-target="efficientad" data-type="applied" class="edge applied" d="M760,135 C923.8,135 986.2,570 1150,570" marker-end="url(#arrow)"/><path id="edge-34" data-source="clip" data-target="winclip" data-type="applied" class="edge applied" d="M760,430 C923.8,430 986.2,675 1150,675" marker-end="url(#arrow)"/><path id="edge-35" data-source="clip" data-target="anomalyclip" data-type="applied" class="edge applied" d="M760,430 C1003.6,430 1096.4,650 1340,650" marker-end="url(#arrow)"/><path id="edge-36" data-source="siglip2" data-target="anomalyclip" data-type="applied" class="edge applied" d="M930,405 C1102.2,405 1167.8,650 1340,650" marker-end="url(#arrow)"/></g>
+<g id="nodeLayer"><g id="node-transformer" class="node" data-id="transformer" transform="translate(120,150)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#8b5cf6"></circle>
+      <text class="node-label" y="4">Transformer</text>
+      <text class="node-sub" y="49">2017 · substrate</text>
+    </g><g id="node-vit" class="node" data-id="vit" transform="translate(570,145)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#10b981"></circle>
+      <text class="node-label" y="4">ViT</text>
+      <text class="node-sub" y="49">2020 · bridge</text>
+    </g><g id="node-chinchilla" class="node" data-id="chinchilla" transform="translate(120,300)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#3b82f6"></circle>
+      <text class="node-label" y="4">Chinchilla</text>
+      <text class="node-sub" y="49">2022 · scaling</text>
+    </g><g id="node-gqa" class="node" data-id="gqa" transform="translate(250,290)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#3b82f6"></circle>
+      <text class="node-label" y="4">GQA</text>
+      <text class="node-sub" y="49">2023 · inference</text>
+    </g><g id="node-flash" class="node" data-id="flash" transform="translate(355,250)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#3b82f6"></circle>
+      <text class="node-label" y="4">FlashAttention</text>
+      <text class="node-sub" y="49">2022 · systems</text>
+    </g><g id="node-llama3" class="node" data-id="llama3" transform="translate(280,135)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#3b82f6"></circle>
+      <text class="node-label" y="4">Llama 3</text>
+      <text class="node-sub" y="49">2024 · reference</text>
+    </g><g id="node-deepseekv3" class="node" data-id="deepseekv3" transform="translate(440,145)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#3b82f6"></circle>
+      <text class="node-label" y="4">DeepSeek-V3</text>
+      <text class="node-sub" y="49">2024 · frontier</text>
+    </g><g id="node-mae" class="node" data-id="mae" transform="translate(625,285)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#10b981"></circle>
+      <text class="node-label" y="4">MAE</text>
+      <text class="node-sub" y="49">2021 · objective</text>
+    </g><g id="node-deit" class="node" data-id="deit" transform="translate(730,250)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#ec4899"></circle>
+      <text class="node-label" y="4">DeiT</text>
+      <text class="node-sub" y="49">2020 · bridge</text>
+    </g><g id="node-dinov2" class="node" data-id="dinov2" transform="translate(760,135)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#10b981"></circle>
+      <text class="node-label" y="4">DINOv2</text>
+      <text class="node-sub" y="49">2023 · foundation</text>
+    </g><g id="node-dinov3" class="node" data-id="dinov3" transform="translate(915,125)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#10b981"></circle>
+      <text class="node-label" y="4">DINOv3</text>
+      <text class="node-sub" y="49">2025 · foundation</text>
+    </g><g id="node-clip" class="node" data-id="clip" transform="translate(760,430)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#f59e0b"></circle>
+      <text class="node-label" y="4">CLIP</text>
+      <text class="node-sub" y="49">2021 · alignment</text>
+    </g><g id="node-siglip2" class="node" data-id="siglip2" transform="translate(930,405)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#f59e0b"></circle>
+      <text class="node-label" y="4">SigLIP 2</text>
+      <text class="node-sub" y="49">2025 · foundation</text>
+    </g><g id="node-blip2" class="node" data-id="blip2" transform="translate(1060,335)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#f59e0b"></circle>
+      <text class="node-label" y="4">BLIP-2</text>
+      <text class="node-sub" y="49">2023 · connector</text>
+    </g><g id="node-llava" class="node" data-id="llava" transform="translate(1190,280)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#f59e0b"></circle>
+      <text class="node-label" y="4">LLaVA</text>
+      <text class="node-sub" y="49">2023 · connector</text>
+    </g><g id="node-qwen3vl" class="node" data-id="qwen3vl" transform="translate(1340,235)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#f59e0b"></circle>
+      <text class="node-label" y="4">Qwen3-VL</text>
+      <text class="node-sub" y="49">2025 · frontier</text>
+    </g><g id="node-kd" class="node" data-id="kd" transform="translate(480,610)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#ec4899"></circle>
+      <text class="node-label" y="4">Knowledge Distillation</text>
+      <text class="node-sub" y="49">2015 · substrate</text>
+    </g><g id="node-minilm" class="node" data-id="minilm" transform="translate(630,705)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#ec4899"></circle>
+      <text class="node-label" y="4">MiniLM</text>
+      <text class="node-sub" y="49">2020 · internal</text>
+    </g><g id="node-mobileclip" class="node" data-id="mobileclip" transform="translate(825,700)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#ec4899"></circle>
+      <text class="node-label" y="4">MobileCLIP</text>
+      <text class="node-sub" y="49">2023 · multimodal</text>
+    </g><g id="node-r1" class="node" data-id="r1" transform="translate(1010,710)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#ec4899"></circle>
+      <text class="node-label" y="4">DeepSeek-R1</text>
+      <text class="node-sub" y="49">2025 · behavioural</text>
+    </g><g id="node-ad" class="node" data-id="ad" transform="translate(970,555)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#ef4444"></circle>
+      <text class="node-label" y="4">Industrial AD</text>
+      <text class="node-sub" y="49">2020 · application</text>
+    </g><g id="node-patchcore" class="node" data-id="patchcore" transform="translate(1150,475)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#ef4444"></circle>
+      <text class="node-label" y="4">PatchCore</text>
+      <text class="node-sub" y="49">2021 · memory</text>
+    </g><g id="node-efficientad" class="node" data-id="efficientad" transform="translate(1150,570)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#ef4444"></circle>
+      <text class="node-label" y="4">EfficientAD</text>
+      <text class="node-sub" y="49">2023 · student-teacher</text>
+    </g><g id="node-winclip" class="node" data-id="winclip" transform="translate(1150,675)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#ef4444"></circle>
+      <text class="node-label" y="4">WinCLIP</text>
+      <text class="node-sub" y="49">2023 · vlm</text>
+    </g><g id="node-anomalyclip" class="node" data-id="anomalyclip" transform="translate(1340,650)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#ef4444"></circle>
+      <text class="node-label" y="4">AnomalyCLIP</text>
+      <text class="node-sub" y="49">2024 · vlm</text>
+    </g><g id="node-simplenet" class="node" data-id="simplenet" transform="translate(1330,510)" tabindex="0">
+      <circle class="halo" r="42"></circle>
+      <circle class="body" r="31" fill="#ef4444"></circle>
+      <text class="node-label" y="4">SimpleNet</text>
+      <text class="node-sub" y="49">2023 · feature adaptation</text>
+    </g></g>
+</g>
+</svg>
+<div id="story"><div class="eyebrow">Seminar path</div><div id="storyTitle"></div><div id="storyText"></div><div id="storyBtns"><button id="prev">←</button><button id="next">Next →</button><button id="closeStory">Close</button></div></div>
+<div class="legend">
+<span><i class="dot" style="background:#8b5cf6"></i>concept</span><span><i class="dot" style="background:#3b82f6"></i>LLM</span><span><i class="dot" style="background:#10b981"></i>vision</span><span><i class="dot" style="background:#f59e0b"></i>multimodal</span><span><i class="dot" style="background:#ec4899"></i>distillation</span><span><i class="dot" style="background:#ef4444"></i>anomaly detection</span>
+</div>
+</div>
+<aside id="details"><div class="eyebrow">Prototype v2</div><h2>Multi-lens reading graph</h2><p>The graph is pre-rendered, so nodes remain visible even when a preview blocks JavaScript.</p><h3>Try</h3><div class="tags"><span class="tag">Overview</span><span class="tag">Distillation lens</span><span class="tag">Multimodal lens</span><span class="tag">AD bridge</span><span class="tag">Seminar story</span></div><p class="hint">Open in a normal browser for full interaction.</p></aside>
+</main>
+
+<script id="graph-data" type="application/json">{"nodes": [{"id": "transformer", "title": "Transformer", "year": 2017, "area": "concept", "role": "substrate", "takeaway": "Token embeddings, attention, MLPs and residual streams form the common computational substrate.", "remark": "Treat this as the shared vocabulary for everything that follows.", "tags": ["attention", "tokens", "sequence"]}, {"id": "vit", "title": "ViT", "year": 2020, "area": "vision", "role": "bridge", "takeaway": "Images become patch tokens and can use essentially the same Transformer machinery.", "remark": "The cleanest conceptual bridge from language architecture to modern vision.", "tags": ["patch tokens", "vision transformer"]}, {"id": "chinchilla", "title": "Chinchilla", "year": 2022, "area": "llm", "role": "scaling", "takeaway": "Model capability depends on the allocation of parameters, data and compute—not parameter count alone.", "remark": "Architecture must be read together with the training-compute regime.", "tags": ["scaling", "compute", "data"]}, {"id": "gqa", "title": "GQA", "year": 2023, "area": "llm", "role": "inference", "takeaway": "Sharing K/V heads reduces KV-cache and bandwidth costs while retaining many query heads.", "remark": "A good example of deployment pressure shaping architecture.", "tags": ["KV cache", "attention", "inference"]}, {"id": "flash", "title": "FlashAttention", "year": 2022, "area": "llm", "role": "systems", "takeaway": "IO-aware attention algorithms change what attention sizes are practical without changing the basic mathematical operation.", "remark": "Modern architecture and systems design are inseparable.", "tags": ["IO awareness", "kernel", "attention"]}, {"id": "llama3", "title": "Llama 3", "year": 2024, "area": "llm", "role": "reference", "takeaway": "A mature dense decoder-only Transformer recipe.", "remark": "Use this as the conventional baseline before sparse or latent-attention designs.", "tags": ["decoder-only", "dense"]}, {"id": "deepseekv3", "title": "DeepSeek-V3", "year": 2024, "area": "llm", "role": "frontier", "takeaway": "Combines sparse MoE, latent attention and training/inference efficiency choices.", "remark": "Read MLA and MoE as economic design choices, not only accuracy tricks.", "tags": ["MoE", "MLA", "routing"]}, {"id": "mae", "title": "MAE", "year": 2021, "area": "vision", "role": "objective", "takeaway": "Masked reconstruction provides a scalable self-supervised objective for vision.", "remark": "The target shifts from labels toward reusable representations.", "tags": ["masked modeling", "self-supervision"]}, {"id": "deit", "title": "DeiT", "year": 2020, "area": "distill", "role": "bridge", "takeaway": "A ViT can inherit useful teacher behaviour through a dedicated distillation mechanism.", "remark": "A very clean vision ↔ distillation bridge.", "tags": ["distillation token", "ViT"]}, {"id": "dinov2", "title": "DINOv2", "year": 2023, "area": "vision", "role": "foundation", "takeaway": "Strong generic visual representations, including dense features, with large teachers distilled into smaller ViTs.", "remark": "Critical bridge to anomaly detection: the representation becomes the product.", "tags": ["self-supervision", "dense features", "distillation"]}, {"id": "dinov3", "title": "DINOv3", "year": 2025, "area": "vision", "role": "foundation", "takeaway": "Pushes self-supervised visual foundation features further toward general dense representation.", "remark": "Read as the continuation of the DINOv2 representation story.", "tags": ["dense features", "foundation encoder"]}, {"id": "clip", "title": "CLIP", "year": 2021, "area": "multi", "role": "alignment", "takeaway": "Contrastive image–text training creates a shared semantic representation space.", "remark": "This opens the semantic / open-vocabulary route into anomaly detection.", "tags": ["contrastive", "image-text", "zero-shot"]}, {"id": "siglip2", "title": "SigLIP 2", "year": 2025, "area": "multi", "role": "foundation", "takeaway": "Combines image–text alignment with objectives that improve transferable and dense visual features.", "remark": "Notice the convergence of DINO-like and CLIP-like training ideas.", "tags": ["image-text", "dense features", "self-distillation"]}, {"id": "blip2", "title": "BLIP-2", "year": 2023, "area": "multi", "role": "connector", "takeaway": "A small learned Q-Former connects strong frozen vision and language models.", "remark": "Ask how little modality-specific machinery is actually required.", "tags": ["Q-Former", "frozen models"]}, {"id": "llava", "title": "LLaVA", "year": 2023, "area": "multi", "role": "connector", "takeaway": "A simple projector plus strong multimodal instruction data can be surprisingly effective.", "remark": "Useful counterweight to complex multimodal adapters.", "tags": ["projector", "instruction tuning"]}, {"id": "qwen3vl", "title": "Qwen3-VL", "year": 2025, "area": "multi", "role": "frontier", "takeaway": "Representative modern VLM with integrated visual features, long context and video capability.", "remark": "Use as an endpoint for the vision→language integration path.", "tags": ["VLM", "long context", "video"]}, {"id": "kd", "title": "Knowledge Distillation", "year": 2015, "area": "distill", "role": "substrate", "takeaway": "Transfer teacher behaviour, features or internal relationships to a student.", "remark": "Modern distillation is much broader than soft-logit matching.", "tags": ["teacher", "student", "soft targets"]}, {"id": "minilm", "title": "MiniLM", "year": 2020, "area": "distill", "role": "internal", "takeaway": "Distillation can preserve relationships inside attention rather than only final outputs.", "remark": "A stepping stone toward structure- and feature-level distillation.", "tags": ["attention relations", "transformer"]}, {"id": "mobileclip", "title": "MobileCLIP", "year": 2023, "area": "distill", "role": "multimodal", "takeaway": "Expensive teacher knowledge is partly amortized into reusable training data and compact students.", "remark": "Important practical idea: move part of the teacher cost into the dataset.", "tags": ["CLIP", "mobile", "teacher data"]}, {"id": "r1", "title": "DeepSeek-R1", "year": 2025, "area": "distill", "role": "behavioural", "takeaway": "Teacher-generated reasoning behaviour becomes a training distribution for smaller students.", "remark": "This expands distillation into behavioural synthetic-data generation.", "tags": ["reasoning", "synthetic data"]}, {"id": "ad", "title": "Industrial AD", "year": 2020, "area": "ad", "role": "application", "takeaway": "Industrial anomaly detection turns representation quality, locality and deployment cost into operational constraints.", "remark": "Treat AD as a convergence point of foundation representations and distillation.", "tags": ["industrial inspection", "few-shot"]}, {"id": "patchcore", "title": "PatchCore", "year": 2021, "area": "ad", "role": "memory", "takeaway": "Uses pretrained patch representations and a compact memory bank for local anomaly scoring.", "remark": "Conceptually: foundation representation + local nearest-neighbour density.", "tags": ["patch features", "memory bank"]}, {"id": "efficientad", "title": "EfficientAD", "year": 2023, "area": "ad", "role": "student-teacher", "takeaway": "Teacher–student feature imitation designed around fast industrial inference.", "remark": "The most direct bridge from generic distillation to online industrial inspection.", "tags": ["student-teacher", "fast inference"]}, {"id": "winclip", "title": "WinCLIP", "year": 2023, "area": "ad", "role": "vlm", "takeaway": "Uses image–text representations for zero/few-shot anomaly detection.", "remark": "A bridge from semantic alignment into AD.", "tags": ["CLIP", "zero-shot"]}, {"id": "anomalyclip", "title": "AnomalyCLIP", "year": 2024, "area": "ad", "role": "vlm", "takeaway": "Adapts vision-language representations toward object-agnostic anomaly semantics.", "remark": "AD starts borrowing directly from multimodal foundation models.", "tags": ["CLIP", "prompt learning", "zero-shot"]}, {"id": "simplenet", "title": "SimpleNet", "year": 2023, "area": "ad", "role": "feature adaptation", "takeaway": "Adapts pretrained features and learns separation using synthetic anomalies.", "remark": "Counterpoint to pure memory-bank and pure student–teacher approaches.", "tags": ["feature adaptation", "synthetic anomalies"]}], "edges": [{"source": "transformer", "target": "vit", "type": "prerequisite"}, {"source": "transformer", "target": "llama3", "type": "prerequisite"}, {"source": "transformer", "target": "gqa", "type": "prerequisite"}, {"source": "gqa", "target": "deepseekv3", "type": "evolution"}, {"source": "flash", "target": "deepseekv3", "type": "evolution"}, {"source": "chinchilla", "target": "llama3", "type": "evolution"}, {"source": "llama3", "target": "deepseekv3", "type": "evolution"}, {"source": "vit", "target": "mae", "type": "evolution"}, {"source": "vit", "target": "deit", "type": "evolution"}, {"source": "vit", "target": "dinov2", "type": "evolution"}, {"source": "mae", "target": "dinov2", "type": "evolution"}, {"source": "dinov2", "target": "dinov3", "type": "evolution"}, {"source": "kd", "target": "minilm", "type": "evolution"}, {"source": "kd", "target": "deit", "type": "distills"}, {"source": "deit", "target": "dinov2", "type": "distills"}, {"source": "kd", "target": "mobileclip", "type": "distills"}, {"source": "kd", "target": "r1", "type": "distills"}, {"source": "vit", "target": "clip", "type": "prerequisite"}, {"source": "clip", "target": "siglip2", "type": "evolution"}, {"source": "dinov2", "target": "siglip2", "type": "evolution"}, {"source": "clip", "target": "blip2", "type": "multimodal"}, {"source": "blip2", "target": "llava", "type": "multimodal"}, {"source": "llava", "target": "qwen3vl", "type": "multimodal"}, {"source": "dinov2", "target": "ad", "type": "applied"}, {"source": "clip", "target": "ad", "type": "applied"}, {"source": "kd", "target": "ad", "type": "applied"}, {"source": "ad", "target": "patchcore", "type": "evolution"}, {"source": "ad", "target": "efficientad", "type": "evolution"}, {"source": "ad", "target": "winclip", "type": "evolution"}, {"source": "ad", "target": "anomalyclip", "type": "evolution"}, {"source": "ad", "target": "simplenet", "type": "evolution"}, {"source": "dinov2", "target": "patchcore", "type": "applied"}, {"source": "kd", "target": "efficientad", "type": "distills"}, {"source": "dinov2", "target": "efficientad", "type": "applied"}, {"source": "clip", "target": "winclip", "type": "applied"}, {"source": "clip", "target": "anomalyclip", "type": "applied"}, {"source": "siglip2", "target": "anomalyclip", "type": "applied"}], "layouts": {"overview": {"transformer": [120, 150], "chinchilla": [120, 300], "gqa": [250, 290], "flash": [355, 250], "llama3": [280, 135], "deepseekv3": [440, 145], "vit": [570, 145], "mae": [625, 285], "deit": [730, 250], "dinov2": [760, 135], "dinov3": [915, 125], "clip": [760, 430], "siglip2": [930, 405], "blip2": [1060, 335], "llava": [1190, 280], "qwen3vl": [1340, 235], "kd": [480, 610], "minilm": [630, 705], "mobileclip": [825, 700], "r1": [1010, 710], "ad": [970, 555], "patchcore": [1150, 475], "efficientad": [1150, 570], "winclip": [1150, 675], "anomalyclip": [1340, 650], "simplenet": [1330, 510]}, "distill": {"transformer": [180, 120], "vit": [420, 120], "clip": [690, 120], "siglip2": [930, 120], "kd": [240, 430], "minilm": [465, 270], "deit": [465, 395], "dinov2": [700, 380], "mobileclip": [700, 550], "r1": [700, 700], "ad": [935, 430], "efficientad": [1150, 325], "patchcore": [1150, 455], "simplenet": [1325, 450], "winclip": [1150, 590], "anomalyclip": [1340, 590], "deepseekv3": [950, 710], "qwen3vl": [1180, 710]}, "multimodal": {"transformer": [130, 170], "vit": [350, 170], "dinov2": [560, 100], "clip": [560, 330], "siglip2": [780, 250], "blip2": [980, 220], "llava": [1170, 220], "qwen3vl": [1360, 220], "kd": [500, 610], "deit": [300, 610], "mobileclip": [760, 590], "ad": [990, 500], "winclip": [1190, 470], "anomalyclip": [1360, 500], "efficientad": [1190, 650]}, "anomaly": {"vit": [140, 160], "mae": [340, 90], "dinov2": [530, 150], "dinov3": [720, 80], "clip": [470, 390], "siglip2": [700, 365], "kd": [235, 590], "deit": [440, 590], "ad": [865, 345], "patchcore": [1085, 135], "efficientad": [1085, 285], "simplenet": [1085, 440], "winclip": [1085, 600], "anomalyclip": [1320, 600], "mobileclip": [650, 710]}}}</script>
+<script>
+(function(){
+  const D=JSON.parse(document.getElementById('graph-data').textContent);
+  const N=Object.fromEntries(D.nodes.map(n=>[n.id,n]));
+  const svg=document.getElementById('stage'), viewport=document.getElementById('viewport');
+  const details=document.getElementById('details'), search=document.getElementById('search'), lens=document.getElementById('lens');
+  const story=document.getElementById('story');
+  let state={lens:'overview',selected:null,scale:1,tx:0,ty:0,story:false,step:0};
+  const stories=[
+    {focus:['transformer'],title:'1. One substrate',text:'Start from the Transformer as reusable token-processing machinery.'},
+    {focus:['transformer','vit'],title:'2. Images become tokens',text:'ViT makes the language/vision bridge explicit.'},
+    {focus:['vit','mae','dinov2','dinov3'],title:'3. Classifier → representation',text:'Self-supervision turns reusable visual representation into the primary object.'},
+    {focus:['kd','deit','dinov2','mobileclip','r1'],title:'4. Distillation expands',text:'From soft outputs to internal relations, feature teachers, dataset signals and behavioural data.'},
+    {focus:['clip','siglip2','blip2','llava','qwen3vl'],title:'5. Vision meets language',text:'Alignment evolves into connectors and integrated multimodal models.'},
+    {focus:['dinov2','clip','kd','ad'],title:'6. Three bridges to AD',text:'Generic visual features, semantic multimodal features, and teacher–student transfer converge on anomaly detection.'},
+    {focus:['ad','patchcore','efficientad','simplenet','winclip','anomalyclip'],title:'7. AD design space',text:'Memory banks, feature adaptation, student–teacher imitation and VLM semantics become competing choices.'}
+  ];
+
+  function timeline(){
+    const xs={concept:150,llm:400,vision:660,multi:930,distill:1180,ad:1400}, out={};
+    D.nodes.forEach(n=>out[n.id]=[xs[n.area],130+(n.year-2015)/10*650]);
+    return out;
+  }
+  function layout(){ return state.lens==='timeline'?timeline():D.layouts[state.lens]; }
+  function p(id){ return layout()[id]||[-300,-300]; }
+  function path(a,b){
+    const [x1,y1]=p(a),[x2,y2]=p(b),dx=x2-x1;
+    return `M${x1},${y1} C${x1+dx*.42},${y1} ${x2-dx*.42},${y2} ${x2},${y2}`;
+  }
+  function render(){
+    const L=layout(), q=search.value.trim().toLowerCase();
+    const focus=state.story?new Set(stories[state.step].focus):null;
+    D.nodes.forEach(n=>{
+      const el=document.getElementById('node-'+n.id); if(!el)return;
+      const xy=L[n.id]; el.classList.toggle('hidden',!xy);
+      if(xy) el.setAttribute('transform',`translate(${xy[0]},${xy[1]})`);
+      el.classList.toggle('selected',state.selected===n.id);
+      const hit=!q || (n.title+' '+n.tags.join(' ')+' '+n.takeaway).toLowerCase().includes(q);
+      el.classList.toggle('searchhit',!!q&&hit);
+      el.classList.toggle('dimmed',(!hit)||(focus&&!focus.has(n.id)));
+    });
+    D.edges.forEach((e,i)=>{
+      const el=document.getElementById('edge-'+i); if(!el)return;
+      const ok=L[e.source]&&L[e.target]; el.classList.toggle('hidden',!ok);
+      if(ok)el.setAttribute('d',path(e.source,e.target));
+      el.classList.toggle('dimmed',!!focus&&!(focus.has(e.source)&&focus.has(e.target)));
+    });
+  }
+  function inspect(id){
+    state.selected=id; const n=N[id];
+    const rel=D.edges.filter(e=>e.source===id||e.target===id).slice(0,12).map(e=>{
+      const outgoing=e.source===id, other=N[outgoing?e.target:e.source];
+      return `<div class="relation"><b>${outgoing?'→':'←'} ${other.title}</b><br><span class="hint">${e.type}</span></div>`;
+    }).join('');
+    details.innerHTML=`<div class="eyebrow">${n.area} · ${n.role}</div><h2>${n.title}</h2>
+      <p class="hint">${n.year}</p><div class="tags">${n.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <h3>Takeaway</h3><p>${n.takeaway}</p><h3>Remark for a talk</h3><div class="remark">${n.remark}</div>
+      <h3>Typed connections</h3>${rel}`; render();
+  }
+  document.querySelectorAll('.node').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();inspect(el.dataset.id)}));
+  lens.addEventListener('change',()=>{state.lens=lens.value;state.selected=null;render()});
+  search.addEventListener('input',render);
+  document.getElementById('fit').onclick=()=>{state.scale=1;state.tx=0;state.ty=0;viewport.setAttribute('transform','')};
+  function storyUpdate(){
+    const s=stories[state.step]; document.getElementById('storyTitle').textContent=s.title;document.getElementById('storyText').textContent=s.text;render();
+  }
+  document.getElementById('storyToggle').onclick=()=>{state.story=!state.story;story.classList.toggle('visible',state.story);storyUpdate()};
+  document.getElementById('closeStory').onclick=()=>{state.story=false;story.classList.remove('visible');render()};
+  document.getElementById('next').onclick=()=>{state.step=(state.step+1)%stories.length;storyUpdate()};
+  document.getElementById('prev').onclick=()=>{state.step=(state.step-1+stories.length)%stories.length;storyUpdate()};
+
+  let pan=false,last=[0,0];
+  svg.addEventListener('pointerdown',e=>{pan=true;last=[e.clientX,e.clientY];svg.setPointerCapture(e.pointerId);svg.classList.add('dragging')});
+  svg.addEventListener('pointermove',e=>{if(!pan)return;state.tx+=e.clientX-last[0];state.ty+=e.clientY-last[1];last=[e.clientX,e.clientY];viewport.setAttribute('transform',`translate(${state.tx} ${state.ty}) scale(${state.scale})`) });
+  svg.addEventListener('pointerup',()=>{pan=false;svg.classList.remove('dragging')});
+  svg.addEventListener('wheel',e=>{e.preventDefault();state.scale=Math.max(.5,Math.min(2.2,state.scale*(e.deltaY<0?1.08:.93)));viewport.setAttribute('transform',`translate(${state.tx} ${state.ty}) scale(${state.scale})`) },{passive:false});
+  window.addEventListener('keydown',e=>{if(state.story&&e.key==='ArrowRight')document.getElementById('next').click();if(state.story&&e.key==='ArrowLeft')document.getElementById('prev').click()});
+  render();
+})();
+</script>
+<noscript><style>#fallback{display:block!important}</style></noscript>
+</body></html>

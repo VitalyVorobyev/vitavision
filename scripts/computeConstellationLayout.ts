@@ -39,6 +39,11 @@ const CLUSTERS = [
         domains: new Set(["features", "detection"]),
     },
     {
+        id: "representation-learning",
+        title: "Representation learning",
+        domains: new Set(["representation-learning"]),
+    },
+    {
         id: "applications",
         title: "Applications",
         domains: new Set(["calibration", "targets", "stitching", "depth"]),

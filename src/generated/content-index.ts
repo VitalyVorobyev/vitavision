@@ -2753,7 +2753,7 @@ export const modelPages: ModelIndexEntry[] = [
       "access": "public",
       "prerequisites": [
         "vit",
-        "mae"
+        "attention-mechanism"
       ],
       "relations": [
         {
@@ -2775,12 +2775,22 @@ export const modelPages: ModelIndexEntry[] = [
           "type": "feeds_into",
           "target": "vggt",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "rf-detr",
+          "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "mae",
+          "confidence": "high"
         }
       ],
       "tags": [
         "deep-learning"
       ],
-      "domain": "features",
+      "domain": "representation-learning",
       "arch_family": "vit",
       "params": "ViT-S/B/L/g; ViT-g ~1.1B",
       "sources": {
@@ -3477,7 +3487,7 @@ export const modelPages: ModelIndexEntry[] = [
       "tags": [
         "deep-learning"
       ],
-      "domain": "features",
+      "domain": "representation-learning",
       "tasks": [
         "image-classification"
       ],
@@ -4919,12 +4929,6 @@ export const modelPages: ModelIndexEntry[] = [
           "confidence": "high"
         },
         {
-          "type": "feeds_into",
-          "target": "rf-detr",
-          "confidence": "medium",
-          "caution": "RF-DETR's backbone is a DINOv2 self-supervised ViT."
-        },
-        {
           "type": "compared_with",
           "target": "resnet",
           "confidence": "high",
@@ -4934,7 +4938,7 @@ export const modelPages: ModelIndexEntry[] = [
       "tags": [
         "deep-learning"
       ],
-      "domain": "features",
+      "domain": "representation-learning",
       "tasks": [
         "image-classification"
       ],

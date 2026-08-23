@@ -101,7 +101,6 @@ title: "..."                 # Display title (e.g. "ResNet", "SuperPoint")
 date: YYYY-MM-DD
 summary: "..."               # One sentence, index-card length
 tags: [...]                  # At least one; start with "computer-vision" if applicable
-category: ...                # detection | depth-stereo | pose-geometry | segmentation-flow | foundation-ssl | calibration-learning
 author: "Vitaly Vorobyev"
 
 # Required for any non-draft page
@@ -191,8 +190,8 @@ B6. **Ensure the research note exists.** Run `bun ls docs/research/notes/<primar
 
 B7. **Choose the page slug.** Kebab-case, descriptive — the model's common name. `resnet`, not `he2016`. `superpoint`, not `detone2018`. `swin-transformer`, not `swin` (ambiguous) or `swin-v1` (version-chasing).
 
-B8. **Synthesize the frontmatter — sources, category, and header metadata.** No body yet.
-   - `title` (display name, quoted), `date: <today>`, `summary` (one sentence: what the model takes in, produces, and how it is trained), `tags` (at least `computer-vision` + primary task), `category` (one of the six vision-domain values), `difficulty: intermediate` unless clearly another tier, `author: "Vitaly Vorobyev"`.
+B8. **Synthesize the frontmatter — sources and header metadata.** No body yet.
+   - `title` (display name, quoted), `date: <today>`, `summary` (one sentence: what the model takes in, produces, and how it is trained), `tags` (at least `computer-vision` + primary task), `difficulty: intermediate` unless clearly another tier, `author: "Vitaly Vorobyev"`.
    - `sources.primary`, `sources.references` (curated in B4 + cross-link candidates from `bun papers:query pages-using <ref-id>`), `sources.notes` (key equations / losses / table references grounding the page).
    - `arch_family`, `params`, `flops` if the paper reports them. Use the canonical configuration the paper tables compare against.
    - `relations[]` cross-links (e.g. `learned_alternative_of` to the classical algorithm this model replaces) / `relatedPosts` as applicable.
@@ -290,7 +289,6 @@ Run before handing off a draft.
 - [ ] `# Implementations` body is empty or a single sentence. The table is rendered from frontmatter; no hand-written markdown table.
 - [ ] `# Assessment` has three bolded sub-blocks in order: **Novelty.**, **Strengths.**, **Limitations.**. 2–4 bullets each. Each bullet declarative.
 - [ ] `# References` is a numbered list. 1–5 entries. Primary source is entry 1.
-- [ ] Frontmatter: `category` present, valid value.
 - [ ] Frontmatter `sources:` block populated: `primary` set; `references` lists every paper cited in `# References`; `notes` summarizes equations / losses / tables the page references.
 - [ ] Frontmatter `implementations:` has ≥ 1 entry (or the page is `draft: true`). Every entry has `role`, `repo`, `commit` (7–40 hex), `framework`, `license`. Every `weights_url` has a matching `weights_license`.
 - [ ] **Every `license` field has been verified by reading the LICENSE file at the pinned `commit`** via `curl https://raw.githubusercontent.com/<owner>/<repo>/<sha>/LICENSE`. Working notes record the verification.

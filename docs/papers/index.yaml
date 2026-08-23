@@ -1680,3 +1680,58 @@
   doi: "10.48550/arxiv.2006.07733"
   pdf: grill2020-byol.pdf
   cites: [simonyan2014-vgg, ioffe2015-batchnorm, long2015-fcn, he2016-resnet, ren2015-faster]
+
+- id: radford2021-clip
+  title: "Learning Transferable Visual Models From Natural Language Supervision"
+  authors: ["A. Radford", "J. W. Kim", "C. Hallacy", "A. Ramesh", "G. Goh", "S. Agarwal", "G. Sastry", "A. Askell", "P. Mishkin", "J. Clark", "G. Krueger", "I. Sutskever"]
+  year: 2021
+  venue: ICML 2021
+  url: https://arxiv.org/pdf/2103.00020
+  arxiv: "2103.00020"
+  doi: "10.48550/arxiv.2103.00020"
+  pdf: radford2021-clip.pdf
+  cites: [he2016-resnet, dosovitskiy2020-vit, vaswani2017-attention, chen2020-simclr]
+
+- id: tschannen2025-siglip2
+  title: "SigLIP 2: Multilingual Vision-Language Encoders with Improved Semantic Understanding, Localization, and Dense Features"
+  authors: ["M. Tschannen", "A. A. Gritsenko", "X. Wang", "M. F. Naeem", "I. Alabdulmohsin", "N. Parthasarathy", "T. Evans", "L. Beyer", "Y. Xia", "B. Mustafa", "O. J. Hénaff", "J. Harmsen", "A. Steiner", "X. Zhai"]
+  year: 2025
+  venue: arXiv preprint
+  url: https://arxiv.org/pdf/2502.14786
+  arxiv: "2502.14786"
+  doi: "10.48550/arxiv.2502.14786"
+  pdf: tschannen2025-siglip2.pdf
+  cites: [radford2021-clip, dosovitskiy2020-vit]
+
+- id: jeong2023-winclip
+  title: "WinCLIP: Zero-/Few-Shot Anomaly Classification and Segmentation"
+  authors: ["J. Jeong", "Y. Zou", "T. Kim", "D. Zhang", "A. Ravichandran", "O. Dabeer"]
+  year: 2023
+  venue: CVPR 2023
+  url: https://arxiv.org/pdf/2303.14814
+  arxiv: "2303.14814"
+  doi: "10.48550/arxiv.2303.14814"
+  pdf: jeong2023-winclip.pdf
+  cites: [radford2021-clip, roth2022-patchcore]
+
+- id: zhou2023-anomalyclip
+  title: "AnomalyCLIP: Object-agnostic Prompt Learning for Zero-shot Anomaly Detection"
+  authors: ["Q. Zhou", "G. Pang", "Y. Tian", "S. He", "J. Chen"]
+  year: 2023
+  venue: ICLR 2024 (arXiv 2023)
+  url: https://arxiv.org/pdf/2310.18961
+  arxiv: "2310.18961"
+  doi: "10.48550/arxiv.2310.18961"
+  pdf: zhou2023-anomalyclip.pdf
+  cites: [radford2021-clip, jeong2023-winclip]
+
+- id: liu2023-simplenet
+  title: "SimpleNet: A Simple Network for Image Anomaly Detection and Localization"
+  authors: ["Z. Liu", "Y. Zhou", "Y. Xu", "Z. Wang"]
+  year: 2023
+  venue: CVPR 2023
+  url: https://arxiv.org/pdf/2303.15140
+  arxiv: "2303.15140"
+  doi: "10.48550/arxiv.2303.15140"
+  pdf: liu2023-simplenet.pdf
+  cites: [roth2022-patchcore, he2016-resnet]

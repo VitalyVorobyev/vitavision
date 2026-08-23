@@ -2930,5 +2930,24 @@ export const searchRecords: SearchRecord[] = [
       "Autoencoder reconstruction in feature space",
       "Evaluation metrics"
     ]
+  },
+  {
+    "slug": "foundation-models-for-vision",
+    "path": "/atlas/narratives/foundation-models-for-vision",
+    "type": "narrative",
+    "title": "Foundation Models for Vision",
+    "summary": "How attention became a substrate, images became tokens, labels became optional, and one frozen backbone came to power everything from segmentation prompts to industrial anomaly detection.",
+    "tags": [
+      "deep-learning"
+    ],
+    "headings": [
+      "The substrate",
+      "Images become tokens",
+      "From classifier to representation",
+      "Distillation expands",
+      "Vision meets language",
+      "Three bridges into anomaly detection",
+      "The anomaly-detection design space"
+    ]
   }
 ];

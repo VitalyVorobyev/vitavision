@@ -1,4 +1,4 @@
-import { LayoutGrid, List, Network } from "lucide-react";
+import { BookOpen, LayoutGrid, List, Network } from "lucide-react";
 import type { AlgorithmsView } from "../../hooks/useAlgorithmsFilters.ts";
 
 interface AlgorithmsViewToggleProps {
@@ -10,6 +10,7 @@ const BUTTONS: { view: AlgorithmsView; label: string; Icon: typeof LayoutGrid }[
     { view: "grid",  label: "Grid view",  Icon: LayoutGrid },
     { view: "list",  label: "List view",  Icon: List       },
     { view: "graph", label: "Graph view", Icon: Network     },
+    { view: "narratives", label: "Narratives", Icon: BookOpen },
 ];
 
 export default function AlgorithmsViewToggle({ view, onChange }: AlgorithmsViewToggleProps) {

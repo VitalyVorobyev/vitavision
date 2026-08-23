@@ -3,7 +3,7 @@
 export interface SearchRecord {
     slug: string;
     path: string;
-    type: "algorithm" | "model" | "concept";
+    type: "algorithm" | "model" | "concept" | "narrative";
     title: string;
     summary: string;
     tags: string[];

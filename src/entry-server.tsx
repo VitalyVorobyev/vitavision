@@ -6,6 +6,7 @@ import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import AlgorithmIndex from "./pages/AlgorithmIndex.tsx";
 import AtlasPost from "./pages/AtlasPost.tsx";
+import NarrativePage from "./pages/NarrativePage.tsx";
 import DemoIndex from "./pages/DemoIndex.tsx";
 import DemoPage from "./pages/DemoPage.tsx";
 import Navbar from "./components/layout/Navbar.tsx";
@@ -40,6 +41,8 @@ export function render(
                                 <Route path="/blog" element={<Blog />} />
                                 <Route path="/blog/:slug" element={<BlogPost />} />
                                 <Route path="/atlas" element={<AlgorithmIndex />} />
+                                {/* Static segment must be matched before the /atlas/:slug catch-all. */}
+                                <Route path="/atlas/narratives/:slug" element={<NarrativePage />} />
                                 <Route path="/atlas/:slug" element={<AtlasPost />} />
                                 <Route path="/demos" element={<DemoIndex />} />
                                 <Route path="/demos/:slug" element={<DemoPage />} />

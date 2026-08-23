@@ -10,13 +10,13 @@ import { taskOrder } from "../lib/content/taskLabels.ts";
 // ── Public types ────────────────────────────────────────────────────────────
 
 export type AlgorithmsKind = "all" | "algorithm" | "model" | "concept";
-export type AlgorithmsView = "grid" | "list" | "graph";
+export type AlgorithmsView = "grid" | "list" | "graph" | "narratives";
 export type AlgorithmsSort = "az" | "recent";
 
 /** localStorage key the view selection is persisted to. */
 export const ATLAS_VIEW_STORAGE_KEY = "atlas:view";
 
-const VIEW_VALUES: readonly AlgorithmsView[] = ["grid", "list", "graph"];
+const VIEW_VALUES: readonly AlgorithmsView[] = ["grid", "list", "graph", "narratives"];
 
 function isAlgorithmsView(value: string | null): value is AlgorithmsView {
     return value !== null && (VIEW_VALUES as readonly string[]).includes(value);

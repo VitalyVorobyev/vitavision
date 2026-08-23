@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { contentGraph } from "../../generated/content-graph.ts";
 import type { GraphNode, NodeType, RelationType, ReverseRelation, TypedRelation } from "../../generated/content-graph.ts";
 import { blogPosts, demoPages } from "../../generated/content-index.ts";
+import { narrativeRefs } from "../../generated/narrative-refs.ts";
 import { useIsAdmin } from "../../lib/auth/useIsAdmin.ts";
 
 export type { TypedRelation };
@@ -394,7 +395,14 @@ export default function RelationshipPanel({
             : true
     );
 
-    if (!fwd && !rev) return null;
+    // Narratives that feature this page (drafts already excluded by the build).
+    const resolvedNarratives = (narrativeRefs[slug] ?? []).map((ref) => ({
+        slug: ref.slug,
+        title: ref.title,
+        href: `/atlas/narratives/${ref.slug}`,
+    }));
+
+    if (!fwd && !rev && resolvedNarratives.length === 0) return null;
 
     // ── Plain slug lists ───────────────────────────────────────────────────────
     const prerequisites = fwd?.prerequisites ?? [];
@@ -488,12 +496,13 @@ export default function RelationshipPanel({
     }).filter((x): x is { slug: string; title: string; href: string } => x !== null);
 
     if (variant === "sidebar") {
-        const hasAlsoSee = resolvedPosts.length + resolvedDemos.length > 0;
+        const hasAlsoSee = resolvedPosts.length + resolvedDemos.length + resolvedNarratives.length > 0;
         const hasSuccessor = supersededBy !== undefined && contentGraph.nodes[supersededBy] !== undefined;
         if (!hasGraphContent && !hasAlsoSee && !hasSuccessor) return null;
 
         // Determine which "Also see" section renders first (gets the border-top separator)
-        const postsFirst = resolvedPosts.length > 0;
+        const narrativesFirst = resolvedNarratives.length > 0;
+        const postsFirst = !narrativesFirst && resolvedPosts.length > 0;
 
         return (
             <div className="border border-border rounded-[10px] bg-card p-[18px]">
@@ -526,6 +535,13 @@ export default function RelationshipPanel({
                     defaultOpen={sectionsOpen}
                 />
                 <LinkSection
+                    heading="Narratives"
+                    items={resolvedNarratives}
+                    icon="✦"
+                    defaultOpen={sectionsOpen}
+                    borderTop={narrativesFirst}
+                />
+                <LinkSection
                     heading="Blog posts"
                     items={resolvedPosts}
                     icon="📝"
@@ -537,7 +553,7 @@ export default function RelationshipPanel({
                     items={resolvedDemos}
                     icon="▶"
                     defaultOpen={sectionsOpen}
-                    borderTop={!postsFirst && resolvedDemos.length > 0}
+                    borderTop={!narrativesFirst && !postsFirst && resolvedDemos.length > 0}
                 />
             </div>
         );

@@ -22,9 +22,9 @@
 | WS | State | Next action |
 |---|---|---|
 | Phase 0 — design mock + this doc | **direction approved** (v3 = chronological layout; awaiting any further user remarks) | — |
-| A — Narratives subsystem | not started | Schema + build infra (Phase 3) |
+| A — Narratives subsystem | **Phase 3 (infra + frontend) merged 2026-08-23** | Phase 5 (first narrative authoring) after Wave 2 lands the DINO/kd/ssl pages it needs |
 | B — Authors subsystem | not started | After Phase 3: fetch-meta extension + backfill dry-run (Phase 6) |
-| C — Deep-models review | **Waves 0–1 merged (PRs #125, #126, 2026-08-23)** | Next per phasing: Phase 3 (narratives infra) or Wave 2 (DINO trio). Session paused after Wave-1 merge on user request (token budget). |
+| C — Deep-models review | **Waves 0–1 merged (PRs #125, #126, 2026-08-23)** | Wave 2 (DINO trio, kd/ssl concepts, deit, swin) is the next content phase |
 
 **PR policy (user mandate, 2026-08-23):** Claude opens and merges PRs itself, no codex review;
 strictly one PR at a time; PRs must be substantial — every main commit triggers a production deploy.
@@ -112,6 +112,39 @@ narrative should get a page — paper-only nodes are debt, not normal.
   deep-model-page had).
 - Draft QA: all three concept drafts audit-verified against notes (54+50+55+44 entries, zero real
   misses — only line-wrap artifacts).
+
+## Phase 3 session notes (2026-08-23)
+
+- Narratives are now a full content kind: `narrativeFrontmatterSchema` (areas / nodes with
+  page-XOR-paper / typed edges / hand-authored lenses / ≥2 steps anchored to `##` chapters),
+  threaded as the 6th kind through content-build. Per-narrative generated modules export
+  `html` + `chapters` (per-`##` slices) + resolved `narrative` graph + `steps`; plus
+  `narrative-loaders.ts`, `narrative-refs.ts` (reverse index, drafts excluded), slim
+  `NarrativeIndexEntry` (with `draft` flag) in content-index, search records (drafts excluded).
+- Build generates the `timeline` lens (x ∝ derived year, y = area lane); the lens id is
+  reserved. Years derive from papers index / page `sources.primary` — never authored.
+- Validator: narrative error rules (XOR, published-page + registered-paper resolution,
+  overview-lens completeness, step-anchor resolution via a rehype-slug mini-pipeline,
+  evolution chronology) + warnings (page debt, underivable year, lens x-inversions ≥2yr).
+  `bun run narratives:debt` prints the debt table (ignores drafts).
+- GraphExplorer machinery extracted unchanged into `src/lib/graph/{edgeGeometry,useViewport,
+  graphTheme}.ts` + `src/components/atlas/graph/{ZoomControls,NodeFinder}.tsx`
+  (GraphExplorer 1526 → ~1240 lines, behavior identical).
+- Frontend: `/atlas?view=narratives` 4th tab (cards w/ preview thumbnails, drafts
+  admin-only), `/atlas/narratives/:slug` (NarrativeCanvas with lens switcher / story rail
+  reading panel / node inspector / year ruler on timeline lens; MobileNarrativeView =
+  stepped reading list, no canvas; URL state `?lens=&step=&node=`). Atlas pages show
+  "In narrative:" header chip + sidebar Narratives section from narrative-refs.
+  Essay HTML prerenders (SSR snapshot); canvas is client-only. Postbuild prerenders +
+  sitemaps non-draft narratives only.
+- Edge-type → theme tokens: prerequisite→rel-prereq, evolution→rel-extend,
+  bridge→rel-flow (dashed), contrast→rel-compare (dotted) — dash carries the distinction
+  where hues collide. Area colors are positional (`AREA_HUES` in narrativeLayout.ts).
+- `content/narratives/example-draft.md` is a draft build fixture (never publishes);
+  delete or replace when the first real narrative lands (Phase 5).
+- Manual touch-emulation pass (Chrome device toolbar) still worth doing on the first
+  published narrative: pan on background vs chip, tap-select, pinch-zoom, lens switch,
+  mobile card expand, arrow keys vs inputs.
 
 ## Decisions log
 

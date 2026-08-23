@@ -29,13 +29,24 @@ import {
     demoFrontmatterSchema,
     modelFrontmatterSchema,
     conceptFrontmatterSchema,
+    narrativeFrontmatterSchema,
 } from "../src/lib/content/schema.ts";
-import type { BlogEntry, BlogIndexEntry, AlgorithmEntry, AlgorithmIndexEntry, DemoEntry, DemoIndexEntry, ModelEntry, ModelIndexEntry, ConceptEntry, ConceptIndexEntry, ConceptFrontmatterSerialized } from "../src/lib/content/schema.ts";
+import type { BlogEntry, BlogIndexEntry, AlgorithmEntry, AlgorithmIndexEntry, DemoEntry, DemoIndexEntry, ModelEntry, ModelIndexEntry, ConceptEntry, ConceptIndexEntry, ConceptFrontmatterSerialized, NarrativeEntry, NarrativeIndexEntry, NarrativeFrontmatterSerialized } from "../src/lib/content/schema.ts";
 import type { ZodType } from "zod";
 import { buildContentGraph, emitContentGraph } from "./content-graph.ts";
 import type { ContentEntry } from "./content-graph.ts";
 import { buildSearchRecords, emitContentSearch } from "./content-search.ts";
 import type { SearchEntry } from "./content-search.ts";
+import {
+    resolveNarrative,
+    buildNarrativeIndexEntry,
+    buildNarrativeRefs,
+    sliceChapters,
+    emitNarrativeModule,
+    emitNarrativeLoaders,
+    emitNarrativeRefs,
+} from "./narrative-build.ts";
+import type { AtlasPageLookup, PaperLookup } from "./narrative-build.ts";
 
 const CONTENT_DIR = join(import.meta.dir, "..", "content");
 const GENERATED_DIR = join(import.meta.dir, "..", "src", "generated");
@@ -158,6 +169,10 @@ function modelSlug(filename: string): string {
 }
 
 function conceptSlug(filename: string): string {
+    return basename(filename, ".md");
+}
+
+function narrativeSlug(filename: string): string {
     return basename(filename, ".md");
 }
 
@@ -449,6 +464,15 @@ function serializeConceptEntry(entry: { slug: string; frontmatter: Record<string
     };
 }
 
+function serializeNarrativeFrontmatter(frontmatter: Record<string, unknown>): NarrativeFrontmatterSerialized {
+    const { date, updated, ...rest } = frontmatter;
+    return {
+        ...rest,
+        date: serializeDate(date),
+        ...(updated !== undefined ? { updated: serializeDate(updated) } : {}),
+    } as NarrativeFrontmatterSerialized;
+}
+
 function cleanGeneratedHtmlModules(dir: string): void {
     if (!existsSync(dir)) return;
     for (const file of readdirSync(dir)) {
@@ -468,6 +492,8 @@ function generateOutput(
     algorithmPublished: AlgorithmEntry[],
     modelPublished: ModelEntry[],
     conceptPublished: ConceptEntry[],
+    /** Fully resolved narratives (html + chapters + narrative graph). No separate "published" subset — narratives have no `dev` flag. */
+    narrativePages: NarrativeEntry[],
 ): void {
     if (!existsSync(GENERATED_DIR)) mkdirSync(GENERATED_DIR, { recursive: true });
 
@@ -477,16 +503,19 @@ function generateOutput(
     const demoHtmlDir = join(GENERATED_DIR, "content", "demos");
     const modelHtmlDir = join(GENERATED_DIR, "content", "models");
     const conceptHtmlDir = join(GENERATED_DIR, "content", "concepts");
+    const narrativeHtmlDir = join(GENERATED_DIR, "content", "narratives");
     if (!existsSync(blogHtmlDir)) mkdirSync(blogHtmlDir, { recursive: true });
     if (!existsSync(algoHtmlDir)) mkdirSync(algoHtmlDir, { recursive: true });
     if (!existsSync(demoHtmlDir)) mkdirSync(demoHtmlDir, { recursive: true });
     if (!existsSync(modelHtmlDir)) mkdirSync(modelHtmlDir, { recursive: true });
     if (!existsSync(conceptHtmlDir)) mkdirSync(conceptHtmlDir, { recursive: true });
+    if (!existsSync(narrativeHtmlDir)) mkdirSync(narrativeHtmlDir, { recursive: true });
     cleanGeneratedHtmlModules(blogHtmlDir);
     cleanGeneratedHtmlModules(algoHtmlDir);
     cleanGeneratedHtmlModules(demoHtmlDir);
     cleanGeneratedHtmlModules(modelHtmlDir);
     cleanGeneratedHtmlModules(conceptHtmlDir);
+    cleanGeneratedHtmlModules(narrativeHtmlDir);
 
     for (const post of blogPosts) {
         const file = join(blogHtmlDir, `${post.slug}.ts`);
@@ -508,6 +537,9 @@ function generateOutput(
         const file = join(conceptHtmlDir, `${concept.slug}.ts`);
         writeFileSync(file, `// Auto-generated — do not edit manually.\nexport const html = ${JSON.stringify(concept.html)};\n`, "utf-8");
     }
+    for (const narrative of narrativePages) {
+        emitNarrativeModule(narrative, narrativeHtmlDir);
+    }
 
     // 2. Metadata-only index (no html) — dev:true pages excluded from all indexes.
     const blogIndex: BlogIndexEntry[] = blogPosts.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
@@ -515,10 +547,15 @@ function generateOutput(
     const demoIndex: DemoIndexEntry[] = demoPages.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
     const modelIndex: ModelIndexEntry[] = modelPublished.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
     const conceptIndex: ConceptIndexEntry[] = conceptPublished.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
+    // Narratives have no separate {slug, frontmatter} wrapper — the index entry is
+    // a slim, flattened NarrativeIndexEntry (see CLAUDE.md-adjacent design in schema.ts).
+    const narrativeIndex: NarrativeIndexEntry[] = narrativePages.map((e) =>
+        buildNarrativeIndexEntry(e.slug, e.frontmatter, e.narrative, e.frontmatter.steps.length),
+    );
 
     const indexLines = [
         '// Auto-generated by scripts/content-build.ts — do not edit manually.',
-        'import type { BlogIndexEntry, AlgorithmIndexEntry, DemoIndexEntry, ModelIndexEntry, ConceptIndexEntry } from "../lib/content/schema.ts";',
+        'import type { BlogIndexEntry, AlgorithmIndexEntry, DemoIndexEntry, ModelIndexEntry, ConceptIndexEntry, NarrativeIndexEntry } from "../lib/content/schema.ts";',
         "",
         `export const blogPosts: BlogIndexEntry[] = ${JSON.stringify(blogIndex, null, 2)};`,
         "",
@@ -529,6 +566,8 @@ function generateOutput(
         `export const modelPages: ModelIndexEntry[] = ${JSON.stringify(modelIndex, null, 2)};`,
         "",
         `export const conceptPages: ConceptIndexEntry[] = ${JSON.stringify(conceptIndex, null, 2)};`,
+        "",
+        `export const narrativePages: NarrativeIndexEntry[] = ${JSON.stringify(narrativeIndex, null, 2)};`,
         "",
     ];
     const indexFile = join(GENERATED_DIR, "content-index.ts");
@@ -589,6 +628,10 @@ function generateOutput(
         "",
     ];
     writeFileSync(join(GENERATED_DIR, "concept-loaders.ts"), conceptLoaderLines.join("\n"), "utf-8");
+
+    // Narrative loader manifest — richer per-module shape (html + chapters + narrative
+    // graph), so it gets its own interface rather than reusing GeneratedHtmlModule.
+    emitNarrativeLoaders(narrativePages.map(({ slug }) => ({ slug })), GENERATED_DIR);
 }
 
 async function main(): Promise<void> {
@@ -687,6 +730,24 @@ async function main(): Promise<void> {
         (e) => !(e.frontmatter as { dev?: boolean }).dev,
     );
 
+    const rawNarrativePages = await processDirectory(
+        join(CONTENT_DIR, "narratives"),
+        narrativeFrontmatterSchema,
+        narrativeSlug,
+        highlighter,
+    );
+
+    // Serialize + draft-filter now; graph resolution (page/paper lookups, the
+    // generated timeline lens) happens below once atlas years are known.
+    const narrativeFrontmatters = rawNarrativePages
+        .map((e) => ({
+            slug: e.slug,
+            html: e.html,
+            frontmatter: serializeNarrativeFrontmatter(e.frontmatter as Record<string, unknown>),
+        }))
+        .filter((e) => includeDrafts || !e.frontmatter.draft)
+        .sort((a, b) => a.frontmatter.title.localeCompare(b.frontmatter.title));
+
     // Load papers once, early, so we can derive `year` before emitting the index.
     const papers = loadPapersIndex();
     const papersById = new Map(papers.map((p) => [p.id, p]));
@@ -703,6 +764,48 @@ async function main(): Promise<void> {
         if (y !== undefined) (e.frontmatter as { year?: number }).year = y;
     }
 
+    // Resolve narrative graphs now that atlas page years are known. Uses the
+    // full (draft-inclusive under INCLUDE_DRAFTS=true) algorithm/model/concept
+    // sets so a narrative can reference any page; validate-content.ts is the
+    // gate that rejects a `page` node pointing at an unpublished/draft slug.
+    const atlasBySlug = new Map<string, AtlasPageLookup>();
+    for (const e of algorithmPages) {
+        atlasBySlug.set(e.slug, {
+            slug: e.slug,
+            title: e.frontmatter.title,
+            pageKind: "algorithm",
+            year: (e.frontmatter as { year?: number }).year,
+            quality: (e.frontmatter as { quality?: string }).quality,
+        });
+    }
+    for (const e of modelPages) {
+        atlasBySlug.set(e.slug, {
+            slug: e.slug,
+            title: e.frontmatter.title,
+            pageKind: "model",
+            year: (e.frontmatter as { year?: number }).year,
+            quality: (e.frontmatter as { quality?: string }).quality,
+        });
+    }
+    for (const e of conceptPages) {
+        atlasBySlug.set(e.slug, {
+            slug: e.slug,
+            title: e.frontmatter.title,
+            pageKind: "concept",
+            year: (e.frontmatter as { year?: number }).year,
+            quality: (e.frontmatter as { quality?: string }).quality,
+        });
+    }
+    const narrativePapersById = new Map<string, PaperLookup>(
+        papers.map((p) => [p.id, { id: p.id, title: p.title, authors: p.authors, year: p.year, url: p.url }]),
+    );
+
+    const narrativePages: NarrativeEntry[] = narrativeFrontmatters.map((e) => {
+        const chapters = sliceChapters(e.html);
+        const narrative = resolveNarrative(e.frontmatter, atlasBySlug, narrativePapersById);
+        return { slug: e.slug, frontmatter: e.frontmatter, html: e.html, chapters, narrative };
+    });
+
     // ---- Build-time guard -------------------------------------------------------
     // Fail if any rendered page still contains <div></div>: the exact signature of
     // an unclaimed remark-directive node. Legitimate vv-block <div>s always carry
@@ -715,6 +818,7 @@ async function main(): Promise<void> {
         ...rawDemoPages,
         ...rawModelPages,
         ...rawConceptPages,
+        ...rawNarrativePages,
     ]) {
         const count = (html.match(/<div><\/div>/g) ?? []).length;
         if (count > 0) emptyDivViolations.push({ slug, count });
@@ -730,7 +834,21 @@ async function main(): Promise<void> {
     }
     // -----------------------------------------------------------------------------
 
-    generateOutput(blogPosts, algorithmPages, demoPages, modelPages, conceptPages, algorithmPublished, modelPublished, conceptPublished);
+    generateOutput(blogPosts, algorithmPages, demoPages, modelPages, conceptPages, algorithmPublished, modelPublished, conceptPublished, narrativePages);
+
+    // Reverse index: which narratives reference a given atlas page. Small
+    // standalone module — not part of content-graph.ts (narratives are
+    // deliberately not content-graph nodes). Draft narratives are excluded:
+    // the refs carry only {slug, title}, so atlas-page chips could not filter
+    // a draft downstream.
+    emitNarrativeRefs(
+        buildNarrativeRefs(
+            narrativePages
+                .filter((e) => e.frontmatter.draft !== true)
+                .map((e) => ({ slug: e.slug, title: e.frontmatter.title, narrative: e.narrative })),
+        ),
+        GENERATED_DIR,
+    );
 
     // Emit a typed lookup for paper IDs referenced by `sources.primary`.
     // Source-strip rendering (Atlas page redesign) reads this on the client.
@@ -839,6 +957,19 @@ async function main(): Promise<void> {
             html: e.html,
             primary: resolvePrimary(e.frontmatter),
         })),
+        // Draft narratives are excluded here at build time: unlike atlas pages,
+        // narratives are not content-graph nodes, so search consumers have no
+        // downstream draft flag to filter on.
+        ...narrativePages
+            .filter((e) => e.frontmatter.draft !== true)
+            .map((e) => ({
+                slug: e.slug,
+                type: "narrative" as const,
+                title: e.frontmatter.title,
+                summary: e.frontmatter.summary,
+                tags: e.frontmatter.tags,
+                html: e.html,
+            })),
     ];
 
     const searchRecords = buildSearchRecords(searchEntries);
@@ -859,7 +990,7 @@ async function main(): Promise<void> {
     }
 
     console.log(
-        `content:build — ${blogPosts.length} blog post(s), ${algorithmPages.length} algorithm page(s), ${demoPages.length} demo page(s), ${modelPages.length} model page(s), ${conceptPages.length} concept page(s) → ${GENERATED_DIR}`,
+        `content:build — ${blogPosts.length} blog post(s), ${algorithmPages.length} algorithm page(s), ${demoPages.length} demo page(s), ${modelPages.length} model page(s), ${conceptPages.length} concept page(s), ${narrativePages.length} narrative(s) → ${GENERATED_DIR}`,
     );
 
     highlighter.dispose();

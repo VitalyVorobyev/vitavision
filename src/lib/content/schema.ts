@@ -305,6 +305,164 @@ export interface ModelEntry extends ModelIndexEntry {
     html: string;
 }
 
+// ── Narratives ───────────────────────────────────────────────────────────────
+// A narrative is a long-form essay (content/narratives/<slug>.md) whose
+// frontmatter carries a small graph of nodes (atlas pages or bare papers)
+// connected by typed edges, plus hand-authored "lenses" (alternate 2D
+// layouts) and "steps" (a guided walkthrough anchored to body headings).
+// Narratives are deliberately NOT content-graph nodes (see content-graph.ts)
+// and do not carry prerequisites/failureModes/relations.
+
+const narrativeAreaSchema = z.object({
+    id: z.string().min(1),
+    label: z.string().min(1),
+});
+
+const narrativeNodeSchema = z
+    .object({
+        id: z.string().min(1),
+        /** An atlas slug (algorithm/model/concept). Exactly one of page/paper. */
+        page: z.string().min(1).optional(),
+        /** A registered paper id (docs/papers/index.yaml). Exactly one of page/paper. */
+        paper: z.string().min(1).optional(),
+        area: z.string().min(1),
+        role: z.string().min(1).optional(),
+        takeaway: z.string().max(280).optional(),
+        remark: z.string().max(400).optional(),
+        /** Display label. Required for paper nodes — enforced in validate-content.ts. */
+        label: z.string().max(80).optional(),
+    })
+    .refine(
+        (n) => (n.page !== undefined ? 1 : 0) + (n.paper !== undefined ? 1 : 0) === 1,
+        { message: "narrative node must have exactly one of `page` or `paper`" },
+    );
+
+export const narrativeEdgeTypeValues = ["prerequisite", "evolution", "bridge", "contrast"] as const;
+export type NarrativeEdgeType = (typeof narrativeEdgeTypeValues)[number];
+
+const narrativeEdgeSchema = z.object({
+    from: z.string().min(1),
+    to: z.string().min(1),
+    type: z.enum(narrativeEdgeTypeValues),
+    label: z.string().max(24).optional(),
+});
+
+const narrativeLensSchema = z
+    .object({
+        id: z.string().min(1),
+        title: z.string().min(1),
+        coords: z.record(z.string(), z.tuple([z.number(), z.number()])),
+    })
+    .refine((l) => l.id !== "timeline", {
+        message: 'lens id "timeline" is reserved for the build-generated timeline lens',
+    });
+
+const narrativeStepSchema = z.object({
+    focus: z.array(z.string().min(1)).min(1),
+    title: z.string().min(1),
+    /** Must resolve to a `##` heading id (rehype-slug) in the narrative body. */
+    anchor: z.string().min(1),
+});
+
+/** Zod schema for narrative page frontmatter. */
+export const narrativeFrontmatterSchema = publicationFrontmatterBaseObjectSchema
+    .extend({
+        tags: z.array(z.string().min(1)).min(1),
+        areas: z.array(narrativeAreaSchema).min(1),
+        nodes: z.array(narrativeNodeSchema).min(1),
+        edges: z.array(narrativeEdgeSchema).optional(),
+        lenses: z.array(narrativeLensSchema).optional(),
+        steps: z.array(narrativeStepSchema).min(2),
+    })
+    .refine(
+        (fm) => new Set(fm.areas.map((a) => a.id)).size === fm.areas.length,
+        { message: "areas[].id must be unique", path: ["areas"] },
+    );
+
+export type NarrativeFrontmatter = z.infer<typeof narrativeFrontmatterSchema>;
+export type NarrativeFrontmatterSerialized = SerializedFrontmatter<NarrativeFrontmatter>;
+
+/** Build-resolved narrative node referencing an atlas page. */
+export interface NarrativePageNode {
+    id: string;
+    kind: "page";
+    slug: string;
+    title: string;
+    pageKind: "algorithm" | "model" | "concept";
+    year?: number;
+    path: string;
+    quality?: string;
+    area: string;
+    role?: string;
+    takeaway?: string;
+    remark?: string;
+}
+
+/** Build-resolved narrative node referencing a registered paper with no atlas page yet ("page debt"). */
+export interface NarrativePaperNode {
+    id: string;
+    kind: "paper";
+    paperId: string;
+    title: string;
+    authorsShort: string;
+    year: number;
+    url: string;
+    debt: true;
+    area: string;
+    role?: string;
+    takeaway?: string;
+    remark?: string;
+}
+
+export type NarrativeNode = NarrativePageNode | NarrativePaperNode;
+
+export interface NarrativeGraphEdge {
+    from: string;
+    to: string;
+    type: NarrativeEdgeType;
+    label?: string;
+}
+
+export interface NarrativeLens {
+    id: string;
+    title: string;
+    coords: Record<string, [number, number]>;
+}
+
+/** Build-resolved narrative graph — the shape consumed by the reader UI. */
+export interface ResolvedNarrative {
+    areas: { id: string; label: string }[];
+    nodes: NarrativeNode[];
+    edges: NarrativeGraphEdge[];
+    /** Authored lenses plus the build-generated `timeline` lens. */
+    lenses: NarrativeLens[];
+}
+
+/** Full narrative entry including rendered html, per-chapter slices, and the resolved graph. */
+export interface NarrativeEntry {
+    slug: string;
+    frontmatter: NarrativeFrontmatterSerialized;
+    html: string;
+    /** Per-`##`-chapter HTML slices, keyed by the rehype-slug heading id (== step anchor). */
+    chapters: Record<string, string>;
+    narrative: ResolvedNarrative;
+}
+
+/** Slim listing entry for narrative index/cards — no html, no full graph. */
+export interface NarrativeIndexEntry {
+    slug: string;
+    title: string;
+    summary: string;
+    tagline?: string;
+    date: string;
+    /** Present (true) for drafts — emitted under INCLUDE_DRAFTS=true; UI consumers must filter. */
+    draft?: boolean;
+    stats: { nodes: number; steps: number; debt: number };
+    areas: { id: string; label: string }[];
+    /** `overview` lens coords normalized to [0,1] — for card thumbnails. */
+    preview: Record<string, [number, number]>;
+}
+
 /** Zod schema for concept page frontmatter. */
 export const conceptFrontmatterSchema = publicationFrontmatterBaseObjectSchema
     .merge(relationshipFieldsSchema)

@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { BookOpen } from "lucide-react";
 import TagBadge from "../blog/TagBadge.tsx";
 import SourceStrip from "./SourceStrip.tsx";
+import { narrativeRefs } from "../../generated/narrative-refs.ts";
 
 type Difficulty = "beginner" | "intermediate" | "advanced";
 type PageKind = "algorithm" | "model" | "concept";
@@ -129,6 +131,18 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                         </Link>
                     </>
                 )}
+                {slug && (narrativeRefs[slug] ?? []).map((ref) => (
+                    <span key={ref.slug} className="contents">
+                        <span aria-hidden="true">·</span>
+                        <Link
+                            to={`/atlas/narratives/${ref.slug}`}
+                            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                            <BookOpen size={13} aria-hidden="true" />
+                            In narrative: {ref.title}
+                        </Link>
+                    </span>
+                ))}
             </div>
             <SourceStrip primary={frontmatter.sources?.primary} />
             {frontmatter.tags.length > 0 && (

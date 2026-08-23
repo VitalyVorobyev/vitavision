@@ -9,7 +9,7 @@ import { join } from "node:path";
 export interface SearchRecord {
     slug: string;
     path: string;
-    type: "algorithm" | "model" | "concept";
+    type: "algorithm" | "model" | "concept" | "narrative";
     title: string;
     summary: string;
     tags: string[];
@@ -36,7 +36,7 @@ export function extractHeadings(html: string): string[] {
 
 export interface SearchEntry {
     slug: string;
-    type: "algorithm" | "model" | "concept";
+    type: "algorithm" | "model" | "concept" | "narrative";
     title: string;
     summary: string;
     tags: string[];
@@ -50,8 +50,10 @@ export interface SearchEntry {
 /** Build search records from processed entries. Drafts must be pre-filtered by the caller. */
 export function buildSearchRecords(entries: SearchEntry[]): SearchRecord[] {
     return entries.map((e) => {
-        // Single global slug namespace: every atlas page routes through /atlas/<slug>.
-        const path = `/atlas/${e.slug}`;
+        // Single global slug namespace for atlas pages: every algorithm/model/
+        // concept page routes through /atlas/<slug>. Narratives are NOT atlas
+        // pages (see content-graph.ts) and route through /atlas/narratives/<slug>.
+        const path = e.type === "narrative" ? `/atlas/narratives/${e.slug}` : `/atlas/${e.slug}`;
 
         return {
             slug: e.slug,
@@ -80,7 +82,7 @@ export function emitContentSearch(records: SearchRecord[], outDir: string): void
         "export interface SearchRecord {",
         "    slug: string;",
         "    path: string;",
-        "    type: \"algorithm\" | \"model\" | \"concept\";",
+        "    type: \"algorithm\" | \"model\" | \"concept\" | \"narrative\";",
         "    title: string;",
         "    summary: string;",
         "    tags: string[];",

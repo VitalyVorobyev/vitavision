@@ -13,6 +13,10 @@ flops: "17.6 GMAC (B/16), 61.6 GMAC (L/16), 167.4 GMAC (H/14) @ 224×224 (Table 
 prerequisites: [convolutional-neural-network, attention-mechanism]
 failureModes: []
 relations:
+  - type: extended_by
+    target: deit
+    confidence: high
+    caution: "DeiT is architecturally identical to ViT-B; it extends the training recipe (ImageNet-1k only) and adds the distillation token. ViT + large-scale pretraining still reaches higher absolute accuracy."
   - type: feeds_into
     target: sam
     confidence: high

@@ -2536,6 +2536,58 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "deit",
+    "frontmatter": {
+      "title": "DeiT",
+      "summary": "Data-efficient image transformers: ViT's architecture unchanged, made ImageNet-1k-competitive by a heavy augmentation/regularization recipe and distillation through attention — a dedicated distillation token supervised by a convnet teacher's hard decisions.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 9,
+      "access": "public",
+      "prerequisites": [
+        "vit",
+        "knowledge-distillation"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "swin",
+          "confidence": "high",
+          "caution": "Direct head-to-head backbone comparison at matched complexity; Swin reuses DeiT's training recipe but is a different, hierarchical architecture."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "representation-learning",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "vit",
+      "params": "5M (DeiT-Ti), 22M (DeiT-S), 86M (DeiT-B)",
+      "sources": {
+        "primary": "touvron2020-deit",
+        "references": [
+          "dosovitskiy2020-vit",
+          "hinton2015-distillation"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/deit",
+          "commit": "7e160fe43f0252d17191b71cbb5826254114ea5b",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-08-23",
+      "year": 2020
+    }
+  },
+  {
     "slug": "depth-anything",
     "frontmatter": {
       "title": "Depth Anything",
@@ -2743,19 +2795,78 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "dino",
+    "frontmatter": {
+      "title": "DINO",
+      "summary": "Self-distillation with no labels: an EMA teacher, multi-crop training, and centering+sharpening yield ViT features whose frozen k-NN accuracy nearly matches a linear probe and whose attention maps segment objects without supervision.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "vit",
+        "attention-mechanism",
+        "self-supervised-learning",
+        "knowledge-distillation"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "dinov2",
+          "confidence": "high"
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "representation-learning",
+      "arch_family": "vit",
+      "params": "21M (ViT-S), 85M (ViT-B), 23M (ResNet-50)",
+      "sources": {
+        "primary": "caron2021-dino",
+        "references": [
+          "grill2020-byol",
+          "he2019-moco",
+          "chen2020-simclr",
+          "touvron2020-deit"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/dino",
+          "commit": "7c446df5b9f45747937fb0d72314eb9f7b66930a",
+          "framework": "pytorch",
+          "license": "Apache-2.0",
+          "weights_license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-08-23",
+      "year": 2021
+    }
+  },
+  {
     "slug": "dinov2",
     "frontmatter": {
       "title": "DINOv2",
       "summary": "A self-supervised ViT trained on a curated 142M-image dataset that yields general-purpose visual features usable frozen — via kNN or linear probes — for classification, dense depth and segmentation without finetuning.",
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 8,
+      "readingTimeMinutes": 9,
       "access": "public",
       "prerequisites": [
         "vit",
-        "attention-mechanism"
+        "attention-mechanism",
+        "self-supervised-learning",
+        "knowledge-distillation"
       ],
       "relations": [
+        {
+          "type": "extended_by",
+          "target": "dinov3",
+          "confidence": "high"
+        },
         {
           "type": "feeds_into",
           "target": "depth-anything",
@@ -2797,7 +2908,8 @@ export const modelPages: ModelIndexEntry[] = [
         "primary": "oquab2023-dinov2",
         "references": [
           "dosovitskiy2020-vit",
-          "he2021-mae"
+          "he2021-mae",
+          "caron2021-dino"
         ]
       },
       "implementations": [
@@ -2812,6 +2924,47 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-06-27",
       "year": 2023
+    }
+  },
+  {
+    "slug": "dinov3",
+    "frontmatter": {
+      "title": "DINOv3",
+      "summary": "A 6.7B-parameter self-supervised ViT trained on 1.7B curated images, with gram anchoring to stop dense-feature degradation at scale — one frozen backbone whose patch features match or beat specialized fine-tuned pipelines on detection, segmentation, and depth.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 11,
+      "access": "public",
+      "prerequisites": [
+        "dinov2",
+        "knowledge-distillation"
+      ],
+      "failureModes": [],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "representation-learning",
+      "arch_family": "vit",
+      "params": "6.7B teacher; distilled ViT-S/S+/B/L/H+ (21M–0.84B) and ConvNeXt-T/S/B/L (29M–198M)",
+      "sources": {
+        "primary": "simeoni2025-dinov3",
+        "references": [
+          "oquab2023-dinov2",
+          "caron2021-dino"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/dinov3",
+          "commit": "6876159a11b4df116f30f667f8c9888617df0751",
+          "framework": "pytorch",
+          "license": "DINOv3 License (bespoke, non-SPDX)",
+          "weights_license": "DINOv3 License"
+        }
+      ],
+      "date": "2026-08-23",
+      "year": 2025
     }
   },
   {
@@ -4677,6 +4830,59 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "swin",
+    "frontmatter": {
+      "title": "Swin Transformer",
+      "summary": "Hierarchical vision transformer with shifted-window attention: linear complexity in image area, CNN-style multi-scale feature maps, and a drop-in backbone for dense prediction — with relative position bias replacing absolute embeddings.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 10,
+      "access": "public",
+      "prerequisites": [
+        "vit",
+        "attention-mechanism",
+        "transformer"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "Benchmarked as interchangeable backbones inside identical detection/segmentation frameworks at matched FLOPs tiers — a backbone-level practitioner choice across paradigms."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "representation-learning",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "vit",
+      "params": "29M (Swin-T), 50M (Swin-S), 88M (Swin-B)",
+      "sources": {
+        "primary": "liu2021-swin",
+        "references": [
+          "vaswani2017-attention",
+          "touvron2020-deit"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/microsoft/Swin-Transformer",
+          "commit": "f82860bfb5225915aca09c3227159ee9e1df874d",
+          "framework": "pytorch",
+          "license": "MIT",
+          "weights_license": "MIT"
+        }
+      ],
+      "date": "2026-08-23",
+      "year": 2021
+    }
+  },
+  {
     "slug": "unet-segmentation",
     "frontmatter": {
       "title": "U-Net",
@@ -4920,6 +5126,12 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "failureModes": [],
       "relations": [
+        {
+          "type": "extended_by",
+          "target": "deit",
+          "confidence": "high",
+          "caution": "DeiT is architecturally identical to ViT-B; it extends the training recipe (ImageNet-1k only) and adds the distillation token. ViT + large-scale pretraining still reaches higher absolute accuracy."
+        },
         {
           "type": "feeds_into",
           "target": "sam",
@@ -5590,6 +5802,32 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "knowledge-distillation",
+    "frontmatter": {
+      "title": "Knowledge Distillation",
+      "summary": "Training a student network to match a teacher's softened output distribution — the temperature softmax, the T² gradient scaling, hard-label distillation, and self-distillation with a momentum teacher.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 12,
+      "access": "public",
+      "prerequisites": [],
+      "failureModes": [],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "representation-learning",
+      "sources": {
+        "primary": "hinton2015-distillation",
+        "references": [
+          "touvron2020-deit",
+          "caron2021-dino"
+        ]
+      },
+      "date": "2026-08-23",
+      "year": 2015
+    }
+  },
+  {
     "slug": "monocular-depth-estimation",
     "frontmatter": {
       "title": "Monocular Depth Estimation",
@@ -5824,6 +6062,36 @@ export const conceptPages: ConceptIndexEntry[] = [
       ],
       "domain": "image-formation",
       "date": "2026-04-30"
+    }
+  },
+  {
+    "slug": "self-supervised-learning",
+    "frontmatter": {
+      "title": "Self-Supervised Learning",
+      "summary": "Survey of label-free visual representation learning: contrastive objectives (SimCLR, MoCo) and negative-free self-distillation (BYOL, DINO), with a decision table and the collapse mechanics that separate them.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 14,
+      "access": "public",
+      "prerequisites": [
+        "normalization"
+      ],
+      "failureModes": [],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "representation-learning",
+      "sources": {
+        "primary": "chen2020-simclr",
+        "references": [
+          "he2019-moco",
+          "grill2020-byol",
+          "caron2021-dino",
+          "oquab2023-dinov2"
+        ]
+      },
+      "date": "2026-08-23",
+      "year": 2020
     }
   },
   {

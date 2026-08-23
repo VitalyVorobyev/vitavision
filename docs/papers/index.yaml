@@ -1592,3 +1592,91 @@
   arxiv: "1803.08494"
   pdf: wu2018-groupnorm.pdf
   cites: [ioffe2015-batchnorm, ba2016-layernorm]
+
+- id: caron2021-dino
+  title: "Emerging Properties in Self-Supervised Vision Transformers"
+  authors: ["M. Caron", "H. Touvron", "I. Misra", "H. Jégou", "J. Mairal", "P. Bojanowski", "A. Joulin"]
+  year: 2021
+  venue: ICCV 2021
+  url: https://arxiv.org/pdf/2104.14294
+  arxiv: "2104.14294"
+  doi: "10.48550/arxiv.2104.14294"
+  pdf: caron2021-dino.pdf
+  cites: [dosovitskiy2020-vit, touvron2020-deit, chen2020-simclr, he2019-moco, grill2020-byol, he2016-resnet]
+
+- id: simeoni2025-dinov3
+  title: "DINOv3"
+  authors: ["O. Siméoni", "H. V. Vo", "M. Seitzer", "F. Baldassarre", "M. Oquab", "C. Jose", "V. Khalidov", "M. Szafraniec", "S. Yi", "M. Ramamonjisoa", "F. Massa", "D. Haziza", "L. Wehrstedt", "J. Wang", "T. Darcet", "T. Moutakanni", "L. Sentana", "C. Roberts", "A. Vedaldi", "J. Tolan", "J. Brandt", "C. Couprie", "J. Mairal", "H. Jégou", "P. Labatut", "P. Bojanowski"]
+  year: 2025
+  venue: arXiv preprint
+  url: https://arxiv.org/pdf/2508.10104
+  arxiv: "2508.10104"
+  doi: "10.48550/arxiv.2508.10104"
+  pdf: simeoni2025-dinov3.pdf
+  cites: [oquab2023-dinov2, caron2021-dino, dosovitskiy2020-vit]
+
+- id: hinton2015-distillation
+  title: "Distilling the Knowledge in a Neural Network"
+  authors: ["G. E. Hinton", "O. Vinyals", "J. Dean"]
+  year: 2015
+  venue: NeurIPS 2014 Deep Learning Workshop (arXiv 2015)
+  url: https://arxiv.org/pdf/1503.02531
+  arxiv: "1503.02531"
+  doi: "10.48550/arxiv.1503.02531"
+  pdf: hinton2015-distillation.pdf
+  cites: [krizhevsky2012-alexnet]
+
+- id: touvron2020-deit
+  title: "Training data-efficient image transformers & distillation through attention"
+  authors: ["H. Touvron", "M. Cord", "M. Douze", "F. Massa", "A. Sablayrolles", "H. Jégou"]
+  year: 2020
+  venue: ICML 2021 (arXiv 2020)
+  url: https://arxiv.org/pdf/2012.12877
+  arxiv: "2012.12877"
+  doi: "10.48550/arxiv.2012.12877"
+  pdf: touvron2020-deit.pdf
+  cites: [dosovitskiy2020-vit, hinton2015-distillation, he2016-resnet]
+
+- id: liu2021-swin
+  title: "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows"
+  authors: ["Z. Liu", "Y. Lin", "Y. Cao", "H. Hu", "Y. Wei", "Z. Zhang", "S. Lin", "B. Guo"]
+  year: 2021
+  venue: ICCV 2021
+  url: https://arxiv.org/pdf/2103.14030
+  arxiv: "2103.14030"
+  doi: "10.48550/arxiv.2103.14030"
+  pdf: liu2021-swin.pdf
+  cites: [dosovitskiy2020-vit, vaswani2017-attention, touvron2020-deit, he2016-resnet]
+
+- id: chen2020-simclr
+  title: "A Simple Framework for Contrastive Learning of Visual Representations"
+  authors: ["T. Chen", "S. Kornblith", "M. Norouzi", "G. E. Hinton"]
+  year: 2020
+  venue: ICML 2020
+  url: https://arxiv.org/pdf/2002.05709
+  arxiv: "2002.05709"
+  doi: "10.48550/arxiv.2002.05709"
+  pdf: chen2020-simclr.pdf
+  cites: [simonyan2014-vgg, szegedy2015-inception, krizhevsky2012-alexnet, he2016-resnet, ioffe2015-batchnorm]
+
+- id: he2019-moco
+  title: "Momentum Contrast for Unsupervised Visual Representation Learning"
+  authors: ["K. He", "H. Fan", "Y. Wu", "S. Xie", "R. Girshick"]
+  year: 2019
+  venue: CVPR 2020 (arXiv 2019)
+  url: https://arxiv.org/pdf/1911.05722
+  arxiv: "1911.05722"
+  doi: "10.48550/arxiv.1911.05722"
+  pdf: he2019-moco.pdf
+  cites: [ioffe2015-batchnorm, long2015-fcn, he2016-resnet, ren2015-faster, chen2018-deeplab]
+
+- id: grill2020-byol
+  title: "Bootstrap your own latent: A new approach to self-supervised Learning"
+  authors: ["J. Grill", "F. Strub", "F. Altché", "C. Tallec", "P. H. Richemond", "E. Buchatskaya", "C. Doersch", "B. Á. Pires", "Z. D. Guo", "M. G. Azar", "B. Piot", "K. Kavukcuoglu", "R. Munos", "M. Valko"]
+  year: 2020
+  venue: NeurIPS 2020
+  url: https://arxiv.org/pdf/2006.07733
+  arxiv: "2006.07733"
+  doi: "10.48550/arxiv.2006.07733"
+  pdf: grill2020-byol.pdf
+  cites: [simonyan2014-vgg, ioffe2015-batchnorm, long2015-fcn, he2016-resnet, ren2015-faster]

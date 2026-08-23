@@ -47,6 +47,13 @@ Used by `paper-ingest` to turn a cached source into a research note.
 - For arxiv papers, prefer reading `<id>.html` (ar5iv rendering, LaTeX
   preserved) for equation fidelity; fall back to `<id>.txt` (pdftotext) for
   search-and-narrow.
+- For modern papers with an explicit contribution list and Related Work
+  section, fill the template's `# Claimed contributions` (verbatim-anchored)
+  and `# Stated relations` sections. Stated-relations rows are the paper's own
+  positioning claims (quote + location) with a *proposed* `relations[].type`
+  mapped through CLAUDE.md's rules — proposals only; the orchestrator confirms
+  each row with the user before anything is committed. Omit both sections for
+  papers without that structure.
 
 ## Draft contract
 

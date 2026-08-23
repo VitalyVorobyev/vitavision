@@ -24,7 +24,7 @@
 | Phase 0 — design mock + this doc | **direction approved** (v3 = chronological layout; awaiting any further user remarks) | — |
 | A — Narratives subsystem | **Phase 3 (infra + frontend) merged 2026-08-23** | Phase 5 (first narrative authoring) after Wave 2 lands the DINO/kd/ssl pages it needs |
 | B — Authors subsystem | not started | After Phase 3: fetch-meta extension + backfill dry-run (Phase 6) |
-| C — Deep-models review | **Waves 0–1 merged (PRs #125, #126, 2026-08-23)** | Wave 2 (DINO trio, kd/ssl concepts, deit, swin) is the next content phase |
+| C — Deep-models review | **Waves 0–2 merged (2026-08-23)** | Wave 3: clip page + ~6 compared_with edges + `quality: canonical` rollout (vit, resnet, sam, attention-mechanism, dinov2) |
 
 **PR policy (user mandate, 2026-08-23):** Claude opens and merges PRs itself, no codex review;
 strictly one PR at a time; PRs must be substantial — every main commit triggers a production deploy.
@@ -66,13 +66,13 @@ mask-rcnn, fcn, fast-scnn, ritm, unet ×5); `sam`/`mobilesam` cite SAM's own arX
 | transformer | concept | new | vaswani + ba2016-layernorm + vit + katharopoulos | yes | **done** (PR #126) | 2026-08-23 |
 | positional-encoding | concept | new | vaswani, su2021-roformer, vit, lightglue | yes | **done** (PR #126) | 2026-08-23 |
 | normalization | concept | new | ioffe2015-batchnorm, ba2016-layernorm, wu2018-groupnorm (+vaswani) | yes (all 3 new) | **done** (PR #126) | 2026-08-23 |
-| dino | model | new (v1: self-distillation w/o labels, multi-crop, centering+sharpening, emergent segmentation) | caron2021-dino | no | wave 2 | — |
-| dinov2 | model | rewrite (derive v1→v2 delta; land Wave-0 frontmatter fixes; relations `dino —extended_by→ dinov2 —extended_by→ dinov3`) | — | yes | wave 2 | — |
-| dinov3 | model | new (gram anchoring, 7B/1.7B-image scale — verify from note) | dinov3 (arXiv 2508.10104) | no | wave 2 | — |
-| knowledge-distillation | concept | new (load-bearing in 6+ pages) | hinton2015-distillation, +2 | no | wave 2 | — |
-| self-supervised-learning | concept | new (survey-style, decision table) | chen2020-simclr, he2020-moco, grill2020-byol | no | wave 2 | — |
-| deit | model | new | touvron2020-deit | no | wave 2 | — |
-| swin | model | new | liu2021-swin | no | wave 2 | — |
+| dino | model | new (v1: self-distillation w/o labels, multi-crop, centering+sharpening, emergent segmentation) | caron2021-dino | yes | **done** (Wave-2 PR) | 2026-08-23 |
+| dinov2 | model | delta section `## What v2 changed over v1` + relations chain + prerequisites (Wave-0 frontmatter fixes had already landed) | — | yes | **done** (Wave-2 PR) | 2026-08-23 |
+| dinov3 | model | new (gram anchoring verified from note: $\|X_S X_S^\top - X_G X_G^\top\|_F^2$, w=2, from 1M iters, teacher refresh 10k×3) | simeoni2025-dinov3 | yes | **done** (Wave-2 PR) | 2026-08-23 |
+| knowledge-distillation | concept | new | hinton2015-distillation (+deit, dino notes) | yes | **done** (Wave-2 PR) | 2026-08-23 |
+| self-supervised-learning | concept | new (survey, decision table) | chen2020-simclr, he2019-moco, grill2020-byol (+dino) | yes | **done** (Wave-2 PR) | 2026-08-23 |
+| deit | model | new | touvron2020-deit | yes | **done** (Wave-2 PR) | 2026-08-23 |
+| swin | model | new | liu2021-swin | yes | **done** (Wave-2 PR) | 2026-08-23 |
 | clip | model | new (open_clip impls, real licenses; then ~6 `compared_with` edges from pages comparing to CLIP) | radford2021-clip | no | wave 3 | — |
 | vit / resnet / sam / attention-mechanism / dinov2 | — | `quality: canonical` rollout | — | — | wave 3 | — |
 
@@ -146,7 +146,41 @@ narrative should get a page — paper-only nodes are debt, not normal.
   published narrative: pan on background vs chip, tap-select, pinch-zoom, lens switch,
   mobile card expand, arrow keys vs inputs.
 
+## Wave 2 session notes (2026-08-23)
+
+- 8 papers registered (132 → 140): caron2021-dino (OpenAlex 404 — hand-authored like Vaswani),
+  simeoni2025-dinov3 (OpenAlex had family/given names swapped — corrected), hinton2015-distillation,
+  touvron2020-deit, liu2021-swin, chen2020-simclr, he2019-moco (arXiv-year id, not "he2020"),
+  grill2020-byol. All 8 have research notes; the last 4 use the new structured format
+  (`# Claimed contributions` + `# Stated relations`).
+- New pages: knowledge-distillation + self-supervised-learning (survey, decision table) concepts;
+  dino, dinov3, deit, swin models. dinov2 got the `## What v2 changed over v1` section, the
+  `extended_by → dinov3` edge, +[self-supervised-learning, knowledge-distillation] prerequisites,
+  +caron2021-dino ref. vit got `extended_by → deit` (user-confirmed, with caution note).
+- User-confirmed relations (pivot workflow): vit→deit extended_by/high; swin↔vit prerequisite-only
+  (no typed edge); deit↔swin compared_with/high (authored on deit); swin↔resnet compared_with/high
+  (authored on swin); deit↔resnet skipped (prose only). hinton→deit expressed as a
+  knowledge-distillation prerequisite, not a feeds_into. dino→dinov3 direct edge skipped
+  (redundant with the extended_by chain).
+- Draft QA: 474 audit entries across 7 drafts (kd 76, ssl 76, dino 79, dinov3 113, deit 62,
+  swin 68), zero real misses. Flagged-and-kept honesty: Swin's paper-internal 83.5/83.3
+  discrepancy documented on the page; dinov3's unstated w_D/w_DK weights stated as absent.
+- implementations[] pinned: facebookresearch/dino@7c446df (Apache-2.0),
+  facebookresearch/dinov3@6876159 (bespoke "DINOv3 License" — verified from repo LICENSE.md),
+  facebookresearch/deit@7e160fe (Apache-2.0), microsoft/Swin-Transformer@f82860b (MIT).
+- Deferred: registering radosavovic2020-regnet (DeiT's default teacher) for a future
+  feeds_into edge; ibot paper (optional per plan); mae "surveyed-page" prerequisite decision.
+
 ## Decisions log
+
+- 2026-08-23 — **Structured ingestion pivot** (user-approved): for modern papers, the research-note
+  template gains `# Claimed contributions` (verbatim-anchored) and `# Stated relations` (the paper's
+  own Related-Work positioning as a quote-anchored table with *proposed* `relations[].type`).
+  paper-ingest Step 4b becomes proposal-then-confirm: relations are still never auto-committed —
+  the table is evidence, confirmed against the counterpart note + user/plan before any `Relations:`
+  line is recorded. Applied from the Wave-2 BYOL/DeiT/Swin/DINOv3 extracts onward; the 4 earlier
+  Wave-2 notes (distillation, DINO, SimCLR, MoCo) stay on the old format, backfilled only if a
+  page draft needs it.
 
 - 2026-08-23 — Narrative nodes: atlas slug XOR registered paper id; paper-only = tracked debt.
 - 2026-08-23 — Review scope: full fundamental gap-fill, state carried in this doc across sessions.

@@ -6333,5 +6333,125 @@ export const narrativePages: NarrativeIndexEntry[] = [
         1
       ]
     }
+  },
+  {
+    "slug": "foundation-models-for-vision",
+    "title": "Foundation Models for Vision",
+    "summary": "How attention became a substrate, images became tokens, labels became optional, and one frozen backbone came to power everything from segmentation prompts to industrial anomaly detection.",
+    "tagline": "Follow the bottleneck: from Attention Is All You Need to a single frozen encoder that transfers everywhere.",
+    "date": "2026-08-23",
+    "stats": {
+      "nodes": 21,
+      "steps": 7,
+      "debt": 6
+    },
+    "areas": [
+      {
+        "id": "substrate",
+        "label": "Substrate"
+      },
+      {
+        "id": "backbone",
+        "label": "Backbones"
+      },
+      {
+        "id": "representation",
+        "label": "Representation learning"
+      },
+      {
+        "id": "language",
+        "label": "Language & prompts"
+      },
+      {
+        "id": "anomaly",
+        "label": "Anomaly detection"
+      }
+    ],
+    "preview": {
+      "kd": [
+        0,
+        0
+      ],
+      "attention": [
+        0.125,
+        0
+      ],
+      "transformer": [
+        0.2,
+        0
+      ],
+      "vit": [
+        0.375,
+        0.25
+      ],
+      "deit": [
+        0.45,
+        0.25
+      ],
+      "ssl": [
+        0.4125,
+        0.5
+      ],
+      "uninformed-students": [
+        0.425,
+        1
+      ],
+      "dino": [
+        0.5,
+        0.5
+      ],
+      "clip": [
+        0.525,
+        0.75
+      ],
+      "mae": [
+        0.55,
+        0.5
+      ],
+      "patchcore": [
+        0.625,
+        1
+      ],
+      "vad": [
+        0.7,
+        1
+      ],
+      "dinov2": [
+        0.75,
+        0.5
+      ],
+      "winclip": [
+        0.7625,
+        1
+      ],
+      "sam": [
+        0.775,
+        0.75
+      ],
+      "efficientad": [
+        0.7875,
+        1
+      ],
+      "simplenet": [
+        0.8,
+        1
+      ],
+      "registers": [
+        0.8125,
+        0.25
+      ],
+      "anomalyclip": [
+        0.825,
+        1
+      ],
+      "dinov3": [
+        1,
+        0.5
+      ],
+      "siglip2": [
+        1,
+        0.75
+      ]
+    }
   }
 ];

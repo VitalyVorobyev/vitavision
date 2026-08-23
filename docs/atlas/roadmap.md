@@ -22,7 +22,7 @@
 | WS | State | Next action |
 |---|---|---|
 | Phase 0 — design mock + this doc | **direction approved** (v3 = chronological layout; awaiting any further user remarks) | — |
-| A — Narratives subsystem | **Phase 3 (infra + frontend) merged 2026-08-23** | Phase 5 (first narrative authoring) after Wave 2 lands the DINO/kd/ssl pages it needs |
+| A — Narratives subsystem | **Phases 3 + 5 merged 2026-08-23** — infra, reader UI, and the first narrative (`foundation-models-for-vision`, 21 stops, 7 chapters) are live | Debt paydown (6 paper-only stops → pages, see table below); second narrative when a track matures |
 | B — Authors subsystem | not started | After Phase 3: fetch-meta extension + backfill dry-run (Phase 6) |
 | C — Deep-models review | **Waves 0–2 merged (2026-08-23)** | Wave 3: clip page + ~6 compared_with edges + `quality: canonical` rollout (vit, resnet, sam, attention-mechanism, dinov2) |
 
@@ -86,12 +86,13 @@ narrative should get a page — paper-only nodes are debt, not normal.
 
 | Paper | Node | Narrative(s) | Suggested kind | Status |
 |---|---|---|---|---|
-| (siglip2) | siglip2 | foundation-models-for-vision | model | anticipated |
-| (winclip) | winclip | foundation-models-for-vision | model | anticipated |
-| (anomalyclip) | anomalyclip | foundation-models-for-vision | model | anticipated |
-| (simplenet) | simplenet | foundation-models-for-vision | model | anticipated |
-| darcet2023-registers | registers | foundation-models-for-vision | concept or model | anticipated |
-| (ibot) | ibot | foundation-models-for-vision | model (optional node) | anticipated |
+| radford2021-clip | clip | foundation-models-for-vision | model | **debt** (Wave 3 authors the page; node flips paper→page) |
+| tschannen2025-siglip2 | siglip2 | foundation-models-for-vision | model | debt |
+| jeong2023-winclip | winclip | foundation-models-for-vision | model | debt |
+| zhou2023-anomalyclip | anomalyclip | foundation-models-for-vision | model | debt |
+| liu2023-simplenet | simplenet | foundation-models-for-vision | model | debt |
+| darcet2023-registers | registers | foundation-models-for-vision | concept or model | debt (note exists) |
+| (ibot) | — | — | model | dropped from narrative (optional per plan) |
 
 ## Wave 1 session notes (2026-08-23, PR #126)
 
@@ -170,6 +171,24 @@ narrative should get a page — paper-only nodes are debt, not normal.
   facebookresearch/deit@7e160fe (Apache-2.0), microsoft/Swin-Transformer@f82860b (MIT).
 - Deferred: registering radosavovic2020-regnet (DeiT's default teacher) for a future
   feeds_into edge; ibot paper (optional per plan); mae "surveyed-page" prerequisite decision.
+
+## Phase 5 session notes (2026-08-23)
+
+- First narrative authored by the main agent: `content/narratives/foundation-models-for-vision.md` —
+  21 nodes (15 page-backed + 6 paper-debt), 22 edges, 4 hand-authored lenses (overview,
+  ssl-lineage, distillation, anomaly-bridge) + generated timeline, 7 chapter-anchored steps
+  following the plan's arc (substrate → images-as-tokens → classifier-to-representation →
+  distillation-expands → vision-meets-language → three-bridges → AD design space).
+- `clip` is a paper-debt node (radford2021-clip) until Wave 3 authors the page — the plan's
+  "page-backed after waves 1–2" list assumed clip early; the debt mechanism resolves the
+  phasing contradiction cleanly. ibot dropped (optional per plan).
+- 5 papers registered (140 → 145), register-only, no notes yet: radford2021-clip,
+  tschannen2025-siglip2, jeong2023-winclip, zhou2023-anomalyclip, liu2023-simplenet.
+  Notes get written at page-authoring (debt-paydown) time.
+- Validator footprint exactly as designed: 0 errors, 6 page-debt warnings + 1 no-year (vad),
+  0 lens chronology inversions. Narrative prerendered + sitemapped (147 pages).
+- Atlas-page chips and sidebar sections light up automatically via narrative-refs for all 15
+  page-backed stops.
 
 ## Decisions log
 

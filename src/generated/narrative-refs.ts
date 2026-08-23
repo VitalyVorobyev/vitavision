@@ -62,6 +62,12 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
       "title": "Foundation Models for Vision"
     }
   ],
+  "clip": [
+    {
+      "slug": "foundation-models-for-vision",
+      "title": "Foundation Models for Vision"
+    }
+  ],
   "sam": [
     {
       "slug": "foundation-models-for-vision",

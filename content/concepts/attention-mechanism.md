@@ -4,6 +4,7 @@ date: 2026-08-23
 summary: "Computes each output element as a learned, input-dependent weighted average of value vectors, letting every element aggregate information from any other regardless of distance."
 tags: ["deep-learning"]
 author: "Vitaly Vorobyev"
+quality: canonical
 domain: representation-learning
 difficulty: intermediate
 prerequisites: []

@@ -6,6 +6,7 @@ export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>
   "bisenet": () => import("./content/models/bisenet.ts"),
   "ccdn-checkerboard-detector": () => import("./content/models/ccdn-checkerboard-detector.ts"),
   "ccs-camera-calibration": () => import("./content/models/ccs-camera-calibration.ts"),
+  "clip": () => import("./content/models/clip.ts"),
   "deeplab-semantic-segmentation": () => import("./content/models/deeplab-semantic-segmentation.ts"),
   "deit": () => import("./content/models/deit.ts"),
   "depth-anything": () => import("./content/models/depth-anything.ts"),

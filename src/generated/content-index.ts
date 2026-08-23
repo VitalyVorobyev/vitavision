@@ -2472,6 +2472,74 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "clip",
+    "frontmatter": {
+      "title": "CLIP",
+      "summary": "Contrastive image–text pretraining on 400M web pairs: dual encoders in one embedding space make natural language the classifier — zero-shot ImageNet at 76.2% via prompts, with unmatched robustness under distribution shift.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 12,
+      "access": "public",
+      "prerequisites": [
+        "transformer",
+        "attention-mechanism",
+        "self-supervised-learning"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "medium",
+          "caution": "SAM's prompt encoder uses a frozen CLIP text encoder for free-form text prompts — a proof-of-concept path in SAM v1, not its primary interface."
+        },
+        {
+          "type": "compared_with",
+          "target": "dinov2",
+          "confidence": "high",
+          "caution": "Opposite supervision sources: text-supervised vs image-only self-distillation. They converge on image-level benchmarks; DINOv2 leads on dense/retrieval tasks, CLIP alone offers text-conditioned inference."
+        }
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "representation-learning",
+      "tasks": [
+        "image-classification"
+      ],
+      "arch_family": "vit",
+      "params": "Text encoder 63M; image encoders RN50–RN50x64 and ViT-B/32–ViT-L/14@336px (default)",
+      "sources": {
+        "primary": "radford2021-clip",
+        "references": [
+          "dosovitskiy2020-vit",
+          "chen2020-simclr",
+          "oquab2023-dinov2"
+        ]
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/openai/CLIP",
+          "commit": "d05afc436d78f1c48dc0dbf8e5980a9d471f35f6",
+          "framework": "pytorch",
+          "license": "MIT",
+          "weights_license": "MIT"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/mlfoundations/open_clip",
+          "commit": "602d4af74f86df6f2ff81ba0f0a847b0b70ad2e5",
+          "framework": "pytorch",
+          "license": "MIT (custom copyright notice)",
+          "weights_license": "varies by checkpoint (see model cards)"
+        }
+      ],
+      "date": "2026-08-23",
+      "year": 2021
+    }
+  },
+  {
     "slug": "deeplab-semantic-segmentation",
     "frontmatter": {
       "title": "DeepLab",
@@ -2861,6 +2929,7 @@ export const modelPages: ModelIndexEntry[] = [
         "self-supervised-learning",
         "knowledge-distillation"
       ],
+      "quality": "canonical",
       "relations": [
         {
           "type": "extended_by",
@@ -4288,7 +4357,13 @@ export const modelPages: ModelIndexEntry[] = [
         "convolutional-neural-network"
       ],
       "failureModes": [],
+      "quality": "canonical",
       "relations": [
+        {
+          "type": "feeds_into",
+          "target": "clip",
+          "confidence": "high"
+        },
         {
           "type": "compared_with",
           "target": "googlenet",
@@ -4481,6 +4556,7 @@ export const modelPages: ModelIndexEntry[] = [
         "attention-mechanism"
       ],
       "failureModes": [],
+      "quality": "canonical",
       "relations": [
         {
           "type": "learned_alternative_of",
@@ -5125,12 +5201,18 @@ export const modelPages: ModelIndexEntry[] = [
         "attention-mechanism"
       ],
       "failureModes": [],
+      "quality": "canonical",
       "relations": [
         {
           "type": "extended_by",
           "target": "deit",
           "confidence": "high",
           "caution": "DeiT is architecturally identical to ViT-B; it extends the training recipe (ImageNet-1k only) and adds the distillation token. ViT + large-scale pretraining still reaches higher absolute accuracy."
+        },
+        {
+          "type": "feeds_into",
+          "target": "clip",
+          "confidence": "high"
         },
         {
           "type": "feeds_into",
@@ -5337,6 +5419,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       "readingTimeMinutes": 13,
       "access": "public",
       "prerequisites": [],
+      "quality": "canonical",
       "tags": [
         "deep-learning"
       ],
@@ -6343,7 +6426,7 @@ export const narrativePages: NarrativeIndexEntry[] = [
     "stats": {
       "nodes": 21,
       "steps": 7,
-      "debt": 6
+      "debt": 5
     },
     "areas": [
       {

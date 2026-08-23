@@ -75,12 +75,10 @@ nodes:
     role: "frontier"
     takeaway: "7B teacher, 1.7B images, and gram anchoring to stop patch features degrading over long schedules. One frozen backbone now rivals specialized fine-tuned pipelines."
   - id: clip
-    paper: radford2021-clip
+    page: clip
     area: language
-    label: "CLIP"
     role: "milestone"
     takeaway: "Contrastive image–text pretraining on 400M pairs makes natural language the interface to visual representations: classification by prompt, not by taxonomy."
-    remark: "An atlas page for CLIP is planned (Wave 3); this stop is currently backed by the registered paper."
   - id: siglip2
     paper: tschannen2025-siglip2
     area: language

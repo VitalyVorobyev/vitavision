@@ -401,63 +401,68 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 89.901048,
     "cluster": "representation-learning"
   },
+  "clip": {
+    "x": 678.1237848,
+    "y": 98.54464800000001,
+    "cluster": "representation-learning"
+  },
   "deit": {
-    "x": 676.374132,
+    "x": 748.614132,
     "y": 96.103272,
     "cluster": "representation-learning"
   },
   "dino": {
-    "x": 736.7154816,
-    "y": 114.78050400000001,
+    "x": 592.2354816,
+    "y": 215.580504,
     "cluster": "representation-learning"
   },
   "dinov2": {
-    "x": 604.0178256,
+    "x": 676.2578256,
     "y": 196.740984,
     "cluster": "representation-learning"
   },
   "dinov3": {
-    "x": 680.8670988,
+    "x": 753.1070988,
     "y": 184.692864,
     "cluster": "representation-learning"
   },
   "knowledge-distillation": {
-    "x": 738.3816972,
-    "y": 199.425792,
+    "x": 593.9016972,
+    "y": 300.225792,
     "cluster": "representation-learning"
   },
   "mae": {
-    "x": 599.0697468,
+    "x": 671.3097468,
     "y": 307.437024,
     "cluster": "representation-learning"
   },
   "normalization": {
-    "x": 678.7938108,
+    "x": 751.0338108,
     "y": 282.599904,
     "cluster": "representation-learning"
   },
   "positional-encoding": {
-    "x": 752.3763912000001,
-    "y": 302.952936,
+    "x": 607.8963912,
+    "y": 403.752936,
     "cluster": "representation-learning"
   },
   "self-supervised-learning": {
-    "x": 593.8738848,
+    "x": 666.1138848,
     "y": 384.18664799999993,
     "cluster": "representation-learning"
   },
   "swin": {
-    "x": 675.4816068,
+    "x": 747.7216068,
     "y": 414.05822399999994,
     "cluster": "representation-learning"
   },
   "transformer": {
-    "x": 738.7710708,
-    "y": 401.569104,
+    "x": 594.2910707999999,
+    "y": 502.36910400000005,
     "cluster": "representation-learning"
   },
   "vit": {
-    "x": 598.205034,
+    "x": 670.445034,
     "y": 507.83044800000005,
     "cluster": "representation-learning"
   },

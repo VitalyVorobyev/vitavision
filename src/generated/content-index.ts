@@ -3442,7 +3442,8 @@ export const modelPages: ModelIndexEntry[] = [
           "detone2018-superpoint",
           "potje2024-xfeat",
           "lindenberger2023-lightglue",
-          "he2016-resnet"
+          "he2016-resnet",
+          "katharopoulos2020-linear-attention"
         ],
         "notes": "§3 four sub-modules: (1) FPN-ResNet backbone → coarse maps at 1/8,\nfine maps at 1/2; (2) Local Feature Transformer with $N_c$ interleaved\nself/cross attention layers, ELU+1 Linear Transformer kernel\n$\\phi(x) = \\text{elu}(x) + 1$ for $O(N)$ complexity; (3) coarse\nmatching via dual-softmax (LoFTR-DS) or Sinkhorn (LoFTR-OT, 3 iters)\n+ MNN + confidence threshold; (4) fine refinement: $w \\times w$\ncorrelation window → sub-pixel expectation. §3.5 score matrix\n$\\mathcal{S}(i,j) = (1/\\tau) \\langle \\tilde{F}^A_{tr}(i),\n\\tilde{F}^B_{tr}(j) \\rangle$. §4.1 HPatches homography SOTA AUC@3px\n/5px/10px. §4.2 ScanNet pose AUC@10° improves SuperGlue by 13%, DRC\nby 61%. §4.4 runtime 116 ms (DS) / 130 ms (OT) per 640×480 pair on\nRTX 2080Ti. §B training: 64 GTX 1080Ti GPUs, ~24 h indoor; ScanNet\n640×480, MegaDepth 840 long-side training / 1200 long-side eval.\n"
       },
@@ -4885,7 +4886,8 @@ export const modelPages: ModelIndexEntry[] = [
         "references": [
           "wang2023-dust3r",
           "leroy2024-mast3r",
-          "oquab2023-dinov2"
+          "oquab2023-dinov2",
+          "darcet2023-registers"
         ]
       },
       "implementations": [
@@ -5120,22 +5122,29 @@ export const conceptPages: ConceptIndexEntry[] = [
       "summary": "Computes each output element as a learned, input-dependent weighted average of value vectors, letting every element aggregate information from any other regardless of distance.",
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 8,
+      "readingTimeMinutes": 13,
       "access": "public",
       "prerequisites": [],
       "tags": [
         "deep-learning"
       ],
-      "domain": "features",
+      "domain": "representation-learning",
       "sources": {
-        "primary": "sarlin2020-superglue",
+        "primary": "vaswani2017-attention",
         "references": [
-          "lindenberger2023-lightglue",
-          "sun2021-loftr"
+          "bahdanau2014-align",
+          "katharopoulos2020-linear-attention",
+          "darcet2023-registers",
+          "su2021-roformer",
+          "dao2022-flashattention",
+          "ainslie2023-gqa",
+          "sarlin2020-superglue",
+          "sun2021-loftr",
+          "lindenberger2023-lightglue"
         ]
       },
-      "date": "2026-05-16",
-      "year": 2020
+      "date": "2026-08-23",
+      "year": 2017
     }
   },
   {
@@ -5638,6 +5647,32 @@ export const conceptPages: ConceptIndexEntry[] = [
     }
   },
   {
+    "slug": "normalization",
+    "frontmatter": {
+      "title": "Normalization",
+      "summary": "Standardises intermediate activations over a chosen index set, then restores capacity with a learned affine transform; batch, layer, instance, and group normalization differ only in which indices are pooled.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 12,
+      "access": "public",
+      "prerequisites": [],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "representation-learning",
+      "sources": {
+        "primary": "ioffe2015-batchnorm",
+        "references": [
+          "ba2016-layernorm",
+          "wu2018-groupnorm",
+          "vaswani2017-attention"
+        ]
+      },
+      "date": "2026-08-23",
+      "year": 2015
+    }
+  },
+  {
     "slug": "optical-flow",
     "frontmatter": {
       "title": "Optical Flow",
@@ -5718,6 +5753,34 @@ export const conceptPages: ConceptIndexEntry[] = [
       },
       "date": "2026-05-16",
       "year": 2009
+    }
+  },
+  {
+    "slug": "positional-encoding",
+    "frontmatter": {
+      "title": "Positional Encoding",
+      "summary": "Mechanisms that inject token order into permutation-invariant attention: absolute encodings added to embeddings, learned tables, and rotary schemes that rotate queries and keys so position enters the score.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 11,
+      "access": "public",
+      "prerequisites": [
+        "attention-mechanism"
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "representation-learning",
+      "sources": {
+        "primary": "vaswani2017-attention",
+        "references": [
+          "su2021-roformer",
+          "dosovitskiy2020-vit",
+          "lindenberger2023-lightglue"
+        ]
+      },
+      "date": "2026-08-23",
+      "year": 2017
     }
   },
   {
@@ -5895,6 +5958,36 @@ export const conceptPages: ConceptIndexEntry[] = [
         ]
       },
       "date": "2026-05-02"
+    }
+  },
+  {
+    "slug": "transformer",
+    "frontmatter": {
+      "title": "Transformer",
+      "summary": "Sequence-to-sequence architecture assembled entirely from attention and position-wise feedforward sublayers, each wrapped in a residual connection and layer normalisation — no recurrence, no convolution.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 11,
+      "access": "public",
+      "prerequisites": [
+        "attention-mechanism",
+        "positional-encoding",
+        "normalization"
+      ],
+      "tags": [
+        "deep-learning"
+      ],
+      "domain": "representation-learning",
+      "sources": {
+        "primary": "vaswani2017-attention",
+        "references": [
+          "ba2016-layernorm",
+          "dosovitskiy2020-vit",
+          "katharopoulos2020-linear-attention"
+        ]
+      },
+      "date": "2026-08-23",
+      "year": 2017
     }
   },
   {

@@ -156,264 +156,279 @@ export const atlasLayout: Record<string, AtlasLayoutNode> = {
     "y": 95.10406400000001,
     "cluster": "detectors"
   },
-  "attention-mechanism": {
-    "x": 463.8446024,
-    "y": 94.62268800000001,
-    "cluster": "detectors"
-  },
   "black-anandan-robust-flow": {
-    "x": 498.0303764,
+    "x": 461.9103764,
     "y": 92.22364800000001,
     "cluster": "detectors"
   },
   "brief": {
-    "x": 533.3109476,
+    "x": 497.1909476,
     "y": 91.182496,
     "cluster": "detectors"
   },
   "canny-edge-detector": {
-    "x": 567.6307268,
+    "x": 531.5107268,
     "y": 104.629664,
     "cluster": "detectors"
   },
   "chess-corners": {
-    "x": 422.4415106,
-    "y": 140.336832,
+    "x": 566.9215106,
+    "y": 95.536832,
     "cluster": "detectors"
   },
   "chessboard-x-corner-detection": {
-    "x": 461.2264442,
+    "x": 425.1064442,
     "y": 143.64217599999998,
     "cluster": "detectors"
   },
   "convolutional-neural-network": {
-    "x": 504.1389908,
+    "x": 468.0189908,
     "y": 144.600224,
     "cluster": "detectors"
   },
   "detr": {
-    "x": 541.6078922,
+    "x": 505.4878922,
     "y": 138.060096,
     "cluster": "detectors"
   },
   "duda-radon-corners": {
-    "x": 577.7873096,
+    "x": 541.6673096,
     "y": 146.34697599999998,
     "cluster": "detectors"
   },
   "fast-corner-detector": {
-    "x": 421.9307738,
-    "y": 184.50336000000001,
+    "x": 566.4107738,
+    "y": 139.70336,
     "cluster": "detectors"
   },
   "faster-rcnn": {
-    "x": 468.4323842,
+    "x": 432.3123842,
     "y": 181.699776,
     "cluster": "detectors"
   },
   "feature-descriptors": {
-    "x": 505.1819558,
+    "x": 469.0619558,
     "y": 182.48064,
     "cluster": "detectors"
   },
   "feature-matching": {
-    "x": 536.2641188,
+    "x": 500.1441188,
     "y": 184.445344,
     "cluster": "detectors"
   },
   "felzenszwalb-deformable-parts": {
-    "x": 566.2502204,
+    "x": 530.1302204,
     "y": 192.517408,
     "cluster": "detectors"
   },
   "geiger-chessboard-detector": {
-    "x": 431.8446302,
-    "y": 225.919616,
+    "x": 576.3246302,
+    "y": 181.119616,
     "cluster": "detectors"
   },
   "googlenet": {
-    "x": 462.3477896,
+    "x": 426.2277896,
     "y": 227.16617599999998,
     "cluster": "detectors"
   },
   "harris-corner-detector": {
-    "x": 497.876144,
+    "x": 461.756144,
     "y": 226.43235199999998,
     "cluster": "detectors"
   },
   "hessian-saddle-response": {
-    "x": 533.9367266,
+    "x": 497.8167266,
     "y": 233.825472,
     "cluster": "detectors"
   },
   "hog-descriptor": {
-    "x": 574.3790264,
+    "x": 538.2590264,
     "y": 231.71964799999998,
     "cluster": "detectors"
   },
   "horn-schunck": {
-    "x": 432.0924134,
-    "y": 271.026944,
+    "x": 576.5724134,
+    "y": 226.22694399999997,
     "cluster": "detectors"
   },
   "hrnet": {
-    "x": 460.409771,
+    "x": 424.289771,
     "y": 277.029248,
     "cluster": "detectors"
   },
   "image-gradient": {
-    "x": 494.0026352,
+    "x": 457.8826352,
     "y": 282.108,
     "cluster": "detectors"
   },
   "integral-image": {
-    "x": 530.3350208,
+    "x": 494.2150208,
     "y": 282.37142400000005,
     "cluster": "detectors"
   },
   "lightglue": {
-    "x": 575.8594046000001,
+    "x": 539.7394046000001,
     "y": 270.14259200000004,
     "cluster": "detectors"
   },
   "loftr": {
-    "x": 424.909229,
-    "y": 322.59756799999997,
+    "x": 569.389229,
+    "y": 277.797568,
     "cluster": "detectors"
   },
   "loy-fast-radial-symmetry": {
-    "x": 462.7472768,
+    "x": 426.6272768,
     "y": 317.261664,
     "cluster": "detectors"
   },
   "lucas-kanade": {
-    "x": 498.8078594,
+    "x": 462.6878594,
     "y": 324.65478399999995,
     "cluster": "detectors"
   },
   "mnasnet": {
-    "x": 536.1149432,
+    "x": 499.9949432,
     "y": 318.66031999999996,
     "cluster": "detectors"
   },
   "mobilenetv2": {
-    "x": 574.3120238,
+    "x": 538.1920238,
     "y": 328.70336,
     "cluster": "detectors"
   },
   "mobilenetv3": {
-    "x": 431.06714719999997,
-    "y": 367.5684799999999,
+    "x": 575.5471472,
+    "y": 322.76847999999995,
     "cluster": "detectors"
   },
   "ni-generalized-fast-radial-symmetry": {
-    "x": 464.5121,
+    "x": 428.39209999999997,
     "y": 364.2505919999999,
     "cluster": "detectors"
   },
   "non-maximum-suppression": {
-    "x": 505.1478224,
+    "x": 469.0278224,
     "y": 369.8514879999999,
     "cluster": "detectors"
   },
   "optical-flow": {
-    "x": 539.4410534,
+    "x": 503.3210534,
     "y": 359.37254399999995,
     "cluster": "detectors"
   },
   "orb": {
-    "x": 573.4017998,
+    "x": 537.2817998,
     "y": 372.3743999999999,
     "cluster": "detectors"
   },
   "pyramidal-blur-aware-xcorner": {
-    "x": 429.5880332,
-    "y": 410.53392,
+    "x": 574.0680332000001,
+    "y": 365.73391999999996,
     "cluster": "detectors"
   },
   "resnet": {
-    "x": 458.9761682,
+    "x": 422.8561682,
     "y": 409.651136,
     "cluster": "detectors"
   },
   "rf-detr": {
-    "x": 499.3072184,
+    "x": 463.1872184,
     "y": 407.407328,
     "cluster": "detectors"
   },
   "shi-tomasi-corner-detector": {
-    "x": 536.8545002,
+    "x": 500.7345002,
     "y": 416.644416,
     "cluster": "detectors"
   },
   "sift": {
-    "x": 572.9251964,
+    "x": 536.8051964,
     "y": 409.116448,
     "cluster": "detectors"
   },
   "structure-tensor": {
-    "x": 433.429937,
-    "y": 451.88588799999997,
+    "x": 577.909937,
+    "y": 407.085888,
     "cluster": "detectors"
   },
   "superglue": {
-    "x": 467.0708408,
+    "x": 430.9508408,
     "y": 457.02422399999995,
     "cluster": "detectors"
   },
   "superpoint": {
-    "x": 497.5107902,
+    "x": 461.39079019999997,
     "y": 457.44601599999993,
     "cluster": "detectors"
   },
   "surf": {
-    "x": 530.68394,
+    "x": 494.56394,
     "y": 462.00419199999993,
     "cluster": "detectors"
   },
   "topological-grid-recovery": {
-    "x": 570.0756896,
+    "x": 533.9556896,
     "y": 450.38217599999996,
     "cluster": "detectors"
   },
   "vgg": {
-    "x": 433.233986,
-    "y": 504.65603200000004,
+    "x": 577.713986,
+    "y": 459.85603199999997,
     "cluster": "detectors"
   },
   "viola-jones-detector": {
-    "x": 465.6094256,
+    "x": 429.4894256,
     "y": 500.011616,
     "cluster": "detectors"
   },
   "xfeat": {
-    "x": 505.9392116,
+    "x": 469.8192116,
     "y": 505.23305600000003,
     "cluster": "detectors"
   },
   "yang-sub-pixel-corner-fit": {
-    "x": 532.5941462,
+    "x": 496.4741462,
     "y": 500.960256,
     "cluster": "detectors"
   },
   "yolo-v1": {
-    "x": 577.6343414,
+    "x": 541.5143414,
     "y": 496.344064,
     "cluster": "detectors"
   },
+  "attention-mechanism": {
+    "x": 599.6184096,
+    "y": 87.068064,
+    "cluster": "representation-learning"
+  },
   "dinov2": {
-    "x": 608.2756512,
-    "y": 88.56393600000001,
+    "x": 752.7556512,
+    "y": 95.121312,
     "cluster": "representation-learning"
   },
   "mae": {
-    "x": 742.8594936000001,
-    "y": 128.148096,
+    "x": 598.3794936,
+    "y": 242.716032,
+    "cluster": "representation-learning"
+  },
+  "normalization": {
+    "x": 757.8276216,
+    "y": 209.599872,
+    "cluster": "representation-learning"
+  },
+  "positional-encoding": {
+    "x": 616.0327824,
+    "y": 371.13724800000006,
+    "cluster": "representation-learning"
+  },
+  "transformer": {
+    "x": 733.3021416,
+    "y": 368.225472,
     "cluster": "representation-learning"
   },
   "vit": {
     "x": 596.650068,
-    "y": 526.521792,
+    "y": 509.907264,
     "cluster": "representation-learning"
   },
   "apap-image-stitching": {

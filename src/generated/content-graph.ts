@@ -979,6 +979,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/non-maximum-suppression",
       "draft": false
     },
+    "normalization": {
+      "slug": "normalization",
+      "type": "concept",
+      "title": "Normalization",
+      "summary": "Standardises intermediate activations over a chosen index set, then restores capacity with a learned affine transform; batch, layer, instance, and group normalization differ only in which indices are pooled.",
+      "path": "/atlas/normalization",
+      "draft": false
+    },
     "optical-flow": {
       "slug": "optical-flow",
       "type": "concept",
@@ -1001,6 +1009,14 @@ export const contentGraph: ContentGraph = {
       "title": "Pose Estimation",
       "summary": "Recovery of the 6-DOF rigid transformation — rotation and translation — relating a camera to a scene, an object, or a second camera.",
       "path": "/atlas/pose-estimation",
+      "draft": false
+    },
+    "positional-encoding": {
+      "slug": "positional-encoding",
+      "type": "concept",
+      "title": "Positional Encoding",
+      "summary": "Mechanisms that inject token order into permutation-invariant attention: absolute encodings added to embeddings, learned tables, and rotary schemes that rotate queries and keys so position enters the score.",
+      "path": "/atlas/positional-encoding",
       "draft": false
     },
     "ransac": {
@@ -1057,6 +1073,14 @@ export const contentGraph: ContentGraph = {
       "title": "Topological Grid Recovery",
       "summary": "Verify candidate calibration-pattern corners by constructing a graph over them (Delaunay triangulation, k-nearest-neighbours, or proximity) and accepting only configurations that match the expected chessboard topology — false positives are eliminated by structural rules rather than per-pixel response thresholds.",
       "path": "/atlas/topological-grid-recovery",
+      "draft": false
+    },
+    "transformer": {
+      "slug": "transformer",
+      "type": "concept",
+      "title": "Transformer",
+      "summary": "Sequence-to-sequence architecture assembled entirely from attention and position-wise feedforward sublayers, each wrapped in a residual connection and layer normalisation — no recurrence, no convolution.",
+      "path": "/atlas/transformer",
       "draft": false
     },
     "visual-anomaly-detection": {
@@ -3451,6 +3475,11 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": []
     },
+    "normalization": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
     "optical-flow": {
       "prerequisites": [
         "image-gradient",
@@ -3467,6 +3496,13 @@ export const contentGraph: ContentGraph = {
     "pose-estimation": {
       "prerequisites": [
         "pinhole-camera-model"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "positional-encoding": {
+      "prerequisites": [
+        "attention-mechanism"
       ],
       "failureModes": [],
       "relations": []
@@ -3515,6 +3551,15 @@ export const contentGraph: ContentGraph = {
     },
     "topological-grid-recovery": {
       "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
+    "transformer": {
+      "prerequisites": [
+        "attention-mechanism",
+        "positional-encoding",
+        "normalization"
+      ],
       "failureModes": [],
       "relations": []
     },
@@ -4774,10 +4819,12 @@ export const contentGraph: ContentGraph = {
         "mask2former",
         "mobilenetv3",
         "mobilesam",
+        "positional-encoding",
         "rf-detr",
         "sam",
         "segformer",
         "superglue",
+        "transformer",
         "vggt",
         "vit"
       ],
@@ -5088,6 +5135,16 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "normalization": {
+      "usedBy": [
+        "transformer"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "optical-flow": {
       "usedBy": [
         "black-anandan-robust-flow",
@@ -5137,6 +5194,16 @@ export const contentGraph: ContentGraph = {
         "mast3r",
         "stereo-rectification",
         "vggt"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "positional-encoding": {
+      "usedBy": [
+        "transformer"
       ],
       "affects": [],
       "generalises": [],
@@ -5241,6 +5308,14 @@ export const contentGraph: ContentGraph = {
         "puzzleboard",
         "shu-topological-grid"
       ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "transformer": {
+      "usedBy": [],
       "affects": [],
       "generalises": [],
       "extending": [],
@@ -5386,6 +5461,9 @@ export const contentGraph: ContentGraph = {
     "vgg": 2,
     "vggt": 4,
     "xfeat": 2,
-    "yolo-v1": 0
+    "yolo-v1": 0,
+    "normalization": 0,
+    "positional-encoding": 1,
+    "transformer": 2
   }
 };

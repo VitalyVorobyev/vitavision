@@ -82,7 +82,7 @@ date: YYYY-MM-DD
 summary: "..."           # One sentence, index-card length
 tags: [...]              # At least one
 author: "Vitaly Vorobyev"
-category: ...            # image-formation | geometry | feature-theory | calibration-theory
+domain: ...              # optional; one of domainValues in src/lib/content/schema.ts (e.g. features, representation-learning, geometry)
 
 # Optional relationship fields
 prerequisites: []        # concept slugs this concept depends on (often empty for primitives)
@@ -107,7 +107,7 @@ sources:
 
 **Source kinds.** `sources.primary` and `sources.references[]` accept `<bare-id>` (defaults to `paper`), `paper:<id>`, `repo:<url>@<sha>`, or `doc:<repo-relative-path>`. Concepts most often cite `paper:` and occasionally `doc:` (a textbook chapter, a foundational design doc); `repo:` is rare for concepts but accepted when the canonical reference for the concept is a repo (e.g. an algorithm whose only specification is a reference implementation).
 
-`category` is required. `prerequisites` (this concept's own dependencies) is often empty for primitive concepts (`image-gradient`, `homography`) but populated for derived ones. A concept page does not author outgoing links to the algorithm/model pages that use it — those pages list this concept's slug in *their own* `prerequisites`, and the build derives the reverse `usedBy` edge on this page automatically. `relations[]` is for concept-to-concept lineage only (e.g. two alternative formulations of the same idea), not for linking out to dependents.
+`domain` is optional (there is no `category` field in the schema). `prerequisites` (this concept's own dependencies) is often empty for primitive concepts (`image-gradient`, `homography`) but populated for derived ones. A concept page does not author outgoing links to the algorithm/model pages that use it — those pages list this concept's slug in *their own* `prerequisites`, and the build derives the reverse `usedBy` edge on this page automatically. `relations[]` is for concept-to-concept lineage only (e.g. two alternative formulations of the same idea), not for linking out to dependents.
 
 **Do not write `usedBy:` or any reverse field.** Reverse edges are derived by the build.
 
@@ -198,7 +198,7 @@ Run before handing off a draft.
 - [ ] `# Numerical Concerns` covers at least floating-point behavior and scale sensitivity (when applicable).
 - [ ] `# Where it appears` names specific registered page slugs.
 - [ ] `# References` is a numbered list, 1–5 entries.
-- [ ] Frontmatter: `category` present and valid. `prerequisites` reflects this concept's own dependencies (often empty for primitives); no forward link authored to dependent algorithm/model pages.
+- [ ] Frontmatter: `domain` (if present) is a valid `domainValues` entry. `prerequisites` reflects this concept's own dependencies (often empty for primitives); no forward link authored to dependent algorithm/model pages.
 - [ ] At least 3 of the 5 sections draw from ≥2 distinct sources.
 - [ ] No first-person pronouns anywhere on the page.
 - [ ] No `usedBy:` or any reverse field in frontmatter.

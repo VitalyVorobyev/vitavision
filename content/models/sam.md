@@ -6,6 +6,7 @@ tags: ["deep-learning", "dense-prediction"]
 domain: segmentation
 tasks: [image-segmentation]
 author: "Vitaly Vorobyev"
+quality: canonical
 difficulty: intermediate
 arch_family: vit
 prerequisites: [convolutional-neural-network, attention-mechanism]

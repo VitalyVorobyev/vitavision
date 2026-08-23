@@ -46,6 +46,7 @@ export const narrative: ResolvedNarrative = {
       "path": "/atlas/attention-mechanism",
       "area": "substrate",
       "year": 2017,
+      "quality": "canonical",
       "role": "origin",
       "takeaway": "Differentiable soft lookup over a set of values. Born as a translation alignment fix, it became the universal communication fabric of modern networks."
     },
@@ -83,6 +84,7 @@ export const narrative: ResolvedNarrative = {
       "path": "/atlas/vit",
       "area": "backbone",
       "year": 2020,
+      "quality": "canonical",
       "role": "milestone",
       "takeaway": "Cut the image into 16×16 patches, embed them as tokens, and run the standard transformer encoder. CNN inductive bias traded for data scale."
     },
@@ -156,6 +158,7 @@ export const narrative: ResolvedNarrative = {
       "path": "/atlas/dinov2",
       "area": "representation",
       "year": 2023,
+      "quality": "canonical",
       "role": "milestone",
       "takeaway": "DINO plus iBOT at 142M curated images: the first self-supervised features that beat text-supervised rivals on dense tasks while staying frozen."
     },
@@ -173,17 +176,15 @@ export const narrative: ResolvedNarrative = {
     },
     {
       "id": "clip",
-      "kind": "paper",
-      "paperId": "radford2021-clip",
+      "kind": "page",
+      "slug": "clip",
       "title": "CLIP",
-      "authorsShort": "A. Radford et al.",
-      "year": 2021,
-      "url": "https://arxiv.org/pdf/2103.00020",
-      "debt": true,
+      "pageKind": "model",
+      "path": "/atlas/clip",
       "area": "language",
+      "year": 2021,
       "role": "milestone",
-      "takeaway": "Contrastive image–text pretraining on 400M pairs makes natural language the interface to visual representations: classification by prompt, not by taxonomy.",
-      "remark": "An atlas page for CLIP is planned (Wave 3); this stop is currently backed by the registered paper."
+      "takeaway": "Contrastive image–text pretraining on 400M pairs makes natural language the interface to visual representations: classification by prompt, not by taxonomy."
     },
     {
       "id": "siglip2",
@@ -207,6 +208,7 @@ export const narrative: ResolvedNarrative = {
       "path": "/atlas/sam",
       "area": "language",
       "year": 2023,
+      "quality": "canonical",
       "role": "milestone",
       "takeaway": "Segmentation reframed as a promptable interface over an MAE-pretrained encoder and a billion masks. A mature supervised task becomes a foundation interface."
     },

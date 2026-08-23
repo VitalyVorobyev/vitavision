@@ -1156,6 +1156,36 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Robotics and Automation Letters"
   },
   {
+    "slug": "clip",
+    "path": "/atlas/clip",
+    "type": "model",
+    "title": "CLIP",
+    "summary": "Contrastive image–text pretraining on 400M web pairs: dual encoders in one embedding space make natural language the classifier — zero-shot ImageNet at 76.2% via prompts, with unmatched robustness under distribution shift.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Zero-shot mechanics",
+      "What CLIP introduced"
+    ],
+    "authors": [
+      "A. Radford",
+      "J. W. Kim",
+      "C. Hallacy",
+      "A. Ramesh",
+      "G. Goh",
+      "S. Agarwal",
+      "G. Sastry",
+      "A. Askell",
+      "P. Mishkin",
+      "J. Clark",
+      "G. Krueger",
+      "I. Sutskever"
+    ],
+    "venue": "ICML 2021"
+  },
+  {
     "slug": "deeplab-semantic-segmentation",
     "path": "/atlas/deeplab-semantic-segmentation",
     "type": "model",

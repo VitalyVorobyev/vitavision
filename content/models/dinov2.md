@@ -5,6 +5,7 @@ summary: "A self-supervised ViT trained on a curated 142M-image dataset that yie
 tags: ["deep-learning"]
 domain: representation-learning
 author: "Vitaly Vorobyev"
+quality: canonical
 difficulty: advanced
 arch_family: vit
 params: "ViT-S/B/L/g; ViT-g ~1.1B"

@@ -559,15 +559,22 @@ export async function validateContent(options?: ValidateContentOptions): Promise
             }
         }
 
-        // Must have at least one of prerequisites / relations[]
+        // Must be connected: at least one of prerequisites / relations[], or —
+        // for concepts only — derived incoming connectivity (a root concept like
+        // attention-mechanism authors no outgoing edges by design; its dependents
+        // list it in their own prerequisites and the build derives usedBy).
         const prereqs = e.frontmatter.prerequisites as string[] | undefined;
         const relations = e.frontmatter.relations as Array<unknown> | undefined;
+        const isConcept = conceptFiltered.some((c) => c.slug === e.slug);
+        const hasDerivedIncoming = isConcept &&
+            allGraphEntries.some((g) => g.prerequisites?.includes(e.slug));
         const hasRelationship =
             (prereqs && prereqs.length > 0) ||
-            (relations && relations.length > 0);
+            (relations && relations.length > 0) ||
+            hasDerivedIncoming;
         if (!hasRelationship) {
             errors.push(
-                `[${e.file}] quality: "canonical" requires at least one of prerequisites or relations[]`,
+                `[${e.file}] quality: "canonical" requires prerequisites, relations[], or (for concepts) at least one page listing it as a prerequisite`,
             );
         }
 

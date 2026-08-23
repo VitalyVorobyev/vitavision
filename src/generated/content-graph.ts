@@ -499,6 +499,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/ccs-camera-calibration",
       "draft": false
     },
+    "clip": {
+      "slug": "clip",
+      "type": "model",
+      "title": "CLIP",
+      "summary": "Contrastive image–text pretraining on 400M web pairs: dual encoders in one embedding space make natural language the classifier — zero-shot ImageNet at 76.2% via prompts, with unmatched robustness under distribution shift.",
+      "path": "/atlas/clip",
+      "draft": false
+    },
     "deeplab-semantic-segmentation": {
       "slug": "deeplab-semantic-segmentation",
       "type": "model",
@@ -2257,6 +2265,28 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "clip": {
+      "prerequisites": [
+        "transformer",
+        "attention-mechanism",
+        "self-supervised-learning"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "sam",
+          "confidence": "medium",
+          "caution": "SAM's prompt encoder uses a frozen CLIP text encoder for free-form text prompts — a proof-of-concept path in SAM v1, not its primary interface."
+        },
+        {
+          "type": "compared_with",
+          "target": "dinov2",
+          "confidence": "high",
+          "caution": "Opposite supervision sources: text-supervised vs image-only self-distillation. They converge on image-level benchmarks; DINOv2 leads on dense/retrieval tasks, CLIP alone offers text-conditioned inference."
+        }
+      ]
+    },
     "deeplab-semantic-segmentation": {
       "prerequisites": [],
       "failureModes": [],
@@ -2434,6 +2464,13 @@ export const contentGraph: ContentGraph = {
           "type": "compared_with",
           "target": "mae",
           "confidence": "high"
+        },
+        {
+          "type": "compared_with",
+          "target": "clip",
+          "confidence": "high",
+          "caution": "Opposite supervision sources: text-supervised vs image-only self-distillation. They converge on image-level benchmarks; DINOv2 leads on dense/retrieval tasks, CLIP alone offers text-conditioned inference.",
+          "mirrored": true
         }
       ]
     },
@@ -2999,6 +3036,11 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": [
         {
+          "type": "feeds_into",
+          "target": "clip",
+          "confidence": "high"
+        },
+        {
           "type": "compared_with",
           "target": "googlenet",
           "confidence": "high",
@@ -3393,6 +3435,11 @@ export const contentGraph: ContentGraph = {
           "target": "deit",
           "confidence": "high",
           "caution": "DeiT is architecturally identical to ViT-B; it extends the training recipe (ImageNet-1k only) and adds the distillation token. ViT + large-scale pretraining still reaches higher absolute accuracy."
+        },
+        {
+          "type": "feeds_into",
+          "target": "clip",
+          "confidence": "high"
         },
         {
           "type": "feeds_into",
@@ -4366,6 +4413,23 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "clip": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "high"
+        },
+        {
+          "slug": "vit",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "deeplab-semantic-segmentation": {
       "usedBy": [],
       "affects": [],
@@ -4858,6 +4922,11 @@ export const contentGraph: ContentGraph = {
       "extending": [],
       "fedBy": [
         {
+          "slug": "clip",
+          "confidence": "medium",
+          "caution": "SAM's prompt encoder uses a frozen CLIP text encoder for free-form text prompts — a proof-of-concept path in SAM v1, not its primary interface."
+        },
+        {
           "slug": "detr",
           "confidence": "high",
           "caution": "SAM's mask decoder two-way cross-attention is inspired by DETR's transformer decoder; SAM 3's concept detector is explicitly DETR-based."
@@ -5005,6 +5074,7 @@ export const contentGraph: ContentGraph = {
     "attention-mechanism": {
       "usedBy": [
         "bisenet",
+        "clip",
         "detr",
         "dino",
         "dinov2",
@@ -5461,6 +5531,7 @@ export const contentGraph: ContentGraph = {
     },
     "self-supervised-learning": {
       "usedBy": [
+        "clip",
         "dino",
         "dinov2"
       ],
@@ -5538,6 +5609,7 @@ export const contentGraph: ContentGraph = {
     },
     "transformer": {
       "usedBy": [
+        "clip",
         "swin"
       ],
       "affects": [],
@@ -5642,6 +5714,11 @@ export const contentGraph: ContentGraph = {
     "ccdn-checkerboard-detector": 2,
     "chessboard-x-corner-detection": 2,
     "ccs-camera-calibration": 3,
+    "positional-encoding": 1,
+    "normalization": 0,
+    "transformer": 2,
+    "self-supervised-learning": 1,
+    "clip": 3,
     "deeplab-semantic-segmentation": 0,
     "vit": 2,
     "knowledge-distillation": 0,
@@ -5652,8 +5729,6 @@ export const contentGraph: ContentGraph = {
     "depth-anything-3": 4,
     "depth-anything-v2": 3,
     "detr": 2,
-    "normalization": 0,
-    "self-supervised-learning": 1,
     "dino": 3,
     "dinov2": 3,
     "dinov3": 4,
@@ -5686,8 +5761,6 @@ export const contentGraph: ContentGraph = {
     "segformer": 2,
     "superglue": 4,
     "superpoint": 2,
-    "positional-encoding": 1,
-    "transformer": 2,
     "swin": 3,
     "unet-segmentation": 0,
     "uninformed-students": 3,

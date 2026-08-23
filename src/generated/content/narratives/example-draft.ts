@@ -29,6 +29,7 @@ export const narrative: ResolvedNarrative = {
       "path": "/atlas/attention-mechanism",
       "area": "foundations",
       "year": 2017,
+      "quality": "canonical",
       "role": "prerequisite",
       "takeaway": "Attention lets every token weigh every other token before the transformer block mixes them."
     },
@@ -53,6 +54,7 @@ export const narrative: ResolvedNarrative = {
       "path": "/atlas/vit",
       "area": "architectures",
       "year": 2020,
+      "quality": "canonical",
       "role": "milestone",
       "takeaway": "Treats an image as a sequence of patches and feeds them through a standard transformer encoder."
     },
@@ -65,6 +67,7 @@ export const narrative: ResolvedNarrative = {
       "path": "/atlas/dinov2",
       "area": "architectures",
       "year": 2023,
+      "quality": "canonical",
       "role": "milestone",
       "takeaway": "Self-supervised ViT features that transfer without fine-tuning."
     }

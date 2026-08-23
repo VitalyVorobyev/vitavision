@@ -6,6 +6,7 @@ tags: ["deep-learning"]
 domain: representation-learning
 tasks: [image-classification]
 author: "Vitaly Vorobyev"
+quality: canonical
 difficulty: intermediate
 arch_family: vit
 params: "86M (ViT-B/16), 307M (ViT-L/16), 632M (ViT-H/14)"
@@ -17,6 +18,9 @@ relations:
     target: deit
     confidence: high
     caution: "DeiT is architecturally identical to ViT-B; it extends the training recipe (ImageNet-1k only) and adds the distillation token. ViT + large-scale pretraining still reaches higher absolute accuracy."
+  - type: feeds_into
+    target: clip
+    confidence: high
   - type: feeds_into
     target: sam
     confidence: high

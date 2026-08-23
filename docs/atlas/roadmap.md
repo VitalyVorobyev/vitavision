@@ -24,7 +24,7 @@
 | Phase 0 — design mock + this doc | **direction approved** (v3 = chronological layout; awaiting any further user remarks) | — |
 | A — Narratives subsystem | **Phases 3 + 5 merged 2026-08-23** — infra, reader UI, and the first narrative (`foundation-models-for-vision`, 21 stops, 7 chapters) are live | Debt paydown (6 paper-only stops → pages, see table below); second narrative when a track matures |
 | B — Authors subsystem | **Phase 6 merged 2026-08-23** — backfill run (135/145 papers, 499 authors), /authors + /authors/:id live, SourceStrip/SourceCard author links | Deferred: affiliations, timelines, co-author graph viz, split-identity dedup (two "Carlo Tomasi" ids) |
-| C — Deep-models review | **Waves 0–2 merged (2026-08-23)** | Wave 3: clip page + ~6 compared_with edges + `quality: canonical` rollout (vit, resnet, sam, attention-mechanism, dinov2) |
+| C — Deep-models review | **Waves 0–3 merged (2026-08-23) — the plan's full content program is complete** | Ongoing: debt paydown (5 remaining paper-only narrative stops), 27-warning prose-reference triage, notes-without-page backlog |
 
 **PR policy (user mandate, 2026-08-23):** Claude opens and merges PRs itself, no codex review;
 strictly one PR at a time; PRs must be substantial — every main commit triggers a production deploy.
@@ -73,8 +73,8 @@ mask-rcnn, fcn, fast-scnn, ritm, unet ×5); `sam`/`mobilesam` cite SAM's own arX
 | self-supervised-learning | concept | new (survey, decision table) | chen2020-simclr, he2019-moco, grill2020-byol (+dino) | yes | **done** (Wave-2 PR) | 2026-08-23 |
 | deit | model | new | touvron2020-deit | yes | **done** (Wave-2 PR) | 2026-08-23 |
 | swin | model | new | liu2021-swin | yes | **done** (Wave-2 PR) | 2026-08-23 |
-| clip | model | new (open_clip impls, real licenses; then ~6 `compared_with` edges from pages comparing to CLIP) | radford2021-clip | no | wave 3 | — |
-| vit / resnet / sam / attention-mechanism / dinov2 | — | `quality: canonical` rollout | — | — | wave 3 | — |
+| clip | model | new — openai/CLIP (MIT) + mlfoundations/open_clip (community) impls; narrative stop flipped paper→page | radford2021-clip | yes | **done** (Wave-3 PR) | 2026-08-23 |
+| vit / resnet / sam / attention-mechanism / dinov2 | — | `quality: canonical` rollout — done; canonical gate extended: a concept passes via derived incoming prerequisites (root-concept case) | — | — | **done** (Wave-3 PR) | 2026-08-23 |
 
 Ordering constraints: attention rewrite before `transformer` cross-links; `dino` before `dinov2`
 rewrite; kd concept before deit/dinov2 prose; both notes before any comparison prose.
@@ -207,6 +207,23 @@ narrative should get a page — paper-only nodes are debt, not normal.
   co-author list), author-name links in SourceStrip/SourceCard (stretched-overlay fix for nested
   anchors). 647 prerendered pages (+499 authors +1 index). Author search records emitted but inert
   until a global search palette consumes SearchRecord.path.
+
+## Wave 3 session notes (2026-08-23)
+
+- clip page authored (structured note radford2021-clip: 125 audit entries, 0 misses; 7-row
+  Stated-relations table). Edges user-confirmed via pivot workflow: vit→clip and resnet→clip
+  feeds_into/high (encoder families as named components); clip→sam feeds_into/medium+caution
+  (frozen text encoder, PoC-only); clip↔dinov2 compared_with/high (authored on clip).
+  Transformer/attention lineage carried by clip's prerequisites per the swin precedent.
+  The plan's "~6 compared_with edges" estimate was stale — 4 real edges existed.
+- Narrative stop `clip` flipped paper→page in foundation-models-for-vision (debt 6 → 5).
+- `quality: canonical` live on vit, resnet, sam, attention-mechanism, dinov2. Validator's
+  canonical connectivity gate extended for concepts: derived incoming prerequisites count
+  (root concepts like attention-mechanism author no outgoing edges by design).
+- implementations[].role enum is `official | community | port` — "reproduction" is invalid
+  (caught by zod at build; open_clip recorded as `community`).
+- ConVIRT flagged in the clip note as the highest-priority future ingest (CLIP's stated
+  "simplified version of ConVIRT" ancestry); registering radosavovic2020-regnet still parked.
 
 ## Decisions log
 

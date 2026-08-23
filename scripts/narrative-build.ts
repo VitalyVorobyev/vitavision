@@ -120,10 +120,15 @@ export interface TimelineNodeInput {
     area: string;
 }
 
+/** Widest year range rendered at one grid column per year; wider ranges compress linearly. */
+const TIMELINE_MAX_COLUMNS = 14;
+
 /**
- * Generate the build-only "timeline" lens: x is a linear [0,1] scale over
- * the derived-year range, y is the index of the node's area in `areaOrder`
- * (its lane). Nodes with no derivable year are omitted.
+ * Generate the build-only "timeline" lens in the renderer's grid units
+ * (1.0 = one chip pitch): x is linear in the derived year — one column per
+ * year, compressed once the range exceeds TIMELINE_MAX_COLUMNS — and y is the
+ * index of the node's area in `areaOrder` (its lane). Nodes with no derivable
+ * year are omitted.
  */
 export function buildTimelineLens(nodes: TimelineNodeInput[], areaOrder: string[]): NarrativeLens {
     const withYear = nodes.filter(
@@ -135,8 +140,9 @@ export function buildTimelineLens(nodes: TimelineNodeInput[], areaOrder: string[
         const minYear = Math.min(...years);
         const maxYear = Math.max(...years);
         const span = maxYear - minYear;
+        const unitsPerYear = span > TIMELINE_MAX_COLUMNS ? TIMELINE_MAX_COLUMNS / span : 1;
         for (const n of withYear) {
-            const x = span === 0 ? 0.5 : (n.year - minYear) / span;
+            const x = (n.year - minYear) * unitsPerYear;
             const laneIndex = areaOrder.indexOf(n.area);
             coords[n.id] = [x, laneIndex >= 0 ? laneIndex : 0];
         }

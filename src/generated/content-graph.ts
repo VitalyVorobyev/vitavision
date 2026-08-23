@@ -507,6 +507,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/deeplab-semantic-segmentation",
       "draft": false
     },
+    "deit": {
+      "slug": "deit",
+      "type": "model",
+      "title": "DeiT",
+      "summary": "Data-efficient image transformers: ViT's architecture unchanged, made ImageNet-1k-competitive by a heavy augmentation/regularization recipe and distillation through attention — a dedicated distillation token supervised by a convnet teacher's hard decisions.",
+      "path": "/atlas/deit",
+      "draft": false
+    },
     "depth-anything": {
       "slug": "depth-anything",
       "type": "model",
@@ -539,12 +547,28 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/detr",
       "draft": false
     },
+    "dino": {
+      "slug": "dino",
+      "type": "model",
+      "title": "DINO",
+      "summary": "Self-distillation with no labels: an EMA teacher, multi-crop training, and centering+sharpening yield ViT features whose frozen k-NN accuracy nearly matches a linear probe and whose attention maps segment objects without supervision.",
+      "path": "/atlas/dino",
+      "draft": false
+    },
     "dinov2": {
       "slug": "dinov2",
       "type": "model",
       "title": "DINOv2",
       "summary": "A self-supervised ViT trained on a curated 142M-image dataset that yields general-purpose visual features usable frozen — via kNN or linear probes — for classification, dense depth and segmentation without finetuning.",
       "path": "/atlas/dinov2",
+      "draft": false
+    },
+    "dinov3": {
+      "slug": "dinov3",
+      "type": "model",
+      "title": "DINOv3",
+      "summary": "A 6.7B-parameter self-supervised ViT trained on 1.7B curated images, with gram anchoring to stop dense-feature degradation at scale — one frozen backbone whose patch features match or beat specialized fine-tuned pipelines on detection, segmentation, and depth.",
+      "path": "/atlas/dinov3",
       "draft": false
     },
     "dust3r": {
@@ -771,6 +795,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/superpoint",
       "draft": false
     },
+    "swin": {
+      "slug": "swin",
+      "type": "model",
+      "title": "Swin Transformer",
+      "summary": "Hierarchical vision transformer with shifted-window attention: linear complexity in image area, CNN-style multi-scale feature maps, and a drop-in backbone for dense prediction — with relative position bias replacing absolute embeddings.",
+      "path": "/atlas/swin",
+      "draft": false
+    },
     "unet-segmentation": {
       "slug": "unet-segmentation",
       "type": "model",
@@ -963,6 +995,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/integral-image",
       "draft": false
     },
+    "knowledge-distillation": {
+      "slug": "knowledge-distillation",
+      "type": "concept",
+      "title": "Knowledge Distillation",
+      "summary": "Training a student network to match a teacher's softened output distribution — the temperature softmax, the T² gradient scaling, hard-label distillation, and self-distillation with a momentum teacher.",
+      "path": "/atlas/knowledge-distillation",
+      "draft": false
+    },
     "monocular-depth-estimation": {
       "slug": "monocular-depth-estimation",
       "type": "concept",
@@ -1033,6 +1073,14 @@ export const contentGraph: ContentGraph = {
       "title": "Scale Space",
       "summary": "A one-parameter family of images obtained by progressively blurring an input image with Gaussians of increasing standard deviation, providing a principled multi-scale representation for detecting and describing image features.",
       "path": "/atlas/scale-space",
+      "draft": false
+    },
+    "self-supervised-learning": {
+      "slug": "self-supervised-learning",
+      "type": "concept",
+      "title": "Self-Supervised Learning",
+      "summary": "Survey of label-free visual representation learning: contrastive objectives (SimCLR, MoCo) and negative-free self-distillation (BYOL, DINO), with a decision table and the collapse mechanics that separate them.",
+      "path": "/atlas/self-supervised-learning",
       "draft": false
     },
     "spatially-varying-image-stitching": {
@@ -2245,6 +2293,21 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "deit": {
+      "prerequisites": [
+        "vit",
+        "knowledge-distillation"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "swin",
+          "confidence": "high",
+          "caution": "Direct head-to-head backbone comparison at matched complexity; Swin reuses DeiT's training recipe but is a different, hierarchical architecture."
+        }
+      ]
+    },
     "depth-anything": {
       "prerequisites": [
         "monocular-depth-estimation",
@@ -2312,13 +2375,36 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
-    "dinov2": {
+    "dino": {
       "prerequisites": [
         "vit",
-        "attention-mechanism"
+        "attention-mechanism",
+        "self-supervised-learning",
+        "knowledge-distillation"
       ],
       "failureModes": [],
       "relations": [
+        {
+          "type": "extended_by",
+          "target": "dinov2",
+          "confidence": "high"
+        }
+      ]
+    },
+    "dinov2": {
+      "prerequisites": [
+        "vit",
+        "attention-mechanism",
+        "self-supervised-learning",
+        "knowledge-distillation"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "extended_by",
+          "target": "dinov3",
+          "confidence": "high"
+        },
         {
           "type": "feeds_into",
           "target": "depth-anything",
@@ -2350,6 +2436,14 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         }
       ]
+    },
+    "dinov3": {
+      "prerequisites": [
+        "dinov2",
+        "knowledge-distillation"
+      ],
+      "failureModes": [],
+      "relations": []
     },
     "dust3r": {
       "prerequisites": [
@@ -2943,6 +3037,13 @@ export const contentGraph: ContentGraph = {
         },
         {
           "type": "compared_with",
+          "target": "swin",
+          "confidence": "high",
+          "caution": "Benchmarked as interchangeable backbones inside identical detection/segmentation frameworks at matched FLOPs tiers — a backbone-level practitioner choice across paradigms.",
+          "mirrored": true
+        },
+        {
+          "type": "compared_with",
           "target": "vit",
           "confidence": "high",
           "caution": "ViT vs ResNet (BiT) is the headline classification comparison in the paper. Both coexist as production backbones — ResNet's conv inductive bias dominates in small-data regimes; ViT scales better with large pretraining (JFT-300M).",
@@ -3170,6 +3271,29 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "swin": {
+      "prerequisites": [
+        "vit",
+        "attention-mechanism",
+        "transformer"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "resnet",
+          "confidence": "high",
+          "caution": "Benchmarked as interchangeable backbones inside identical detection/segmentation frameworks at matched FLOPs tiers — a backbone-level practitioner choice across paradigms."
+        },
+        {
+          "type": "compared_with",
+          "target": "deit",
+          "confidence": "high",
+          "caution": "Direct head-to-head backbone comparison at matched complexity; Swin reuses DeiT's training recipe but is a different, hierarchical architecture.",
+          "mirrored": true
+        }
+      ]
+    },
     "unet-segmentation": {
       "prerequisites": [],
       "failureModes": [],
@@ -3264,6 +3388,12 @@ export const contentGraph: ContentGraph = {
       ],
       "failureModes": [],
       "relations": [
+        {
+          "type": "extended_by",
+          "target": "deit",
+          "confidence": "high",
+          "caution": "DeiT is architecturally identical to ViT-B; it extends the training recipe (ImageNet-1k only) and adds the distillation token. ViT + large-scale pretraining still reaches higher absolute accuracy."
+        },
         {
           "type": "feeds_into",
           "target": "sam",
@@ -3463,6 +3593,11 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": []
     },
+    "knowledge-distillation": {
+      "prerequisites": [],
+      "failureModes": [],
+      "relations": []
+    },
     "monocular-depth-estimation": {
       "prerequisites": [
         "pinhole-camera-model"
@@ -3515,6 +3650,13 @@ export const contentGraph: ContentGraph = {
     "scale-space": {
       "prerequisites": [
         "convolution"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
+    "self-supervised-learning": {
+      "prerequisites": [
+        "normalization"
       ],
       "failureModes": [],
       "relations": []
@@ -4249,6 +4391,20 @@ export const contentGraph: ContentGraph = {
       ],
       "hasLearnedAlternative": []
     },
+    "deit": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "vit",
+          "confidence": "high",
+          "caution": "DeiT is architecturally identical to ViT-B; it extends the training recipe (ImageNet-1k only) and adds the distillation token. ViT + large-scale pretraining still reaches higher absolute accuracy."
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "depth-anything": {
       "usedBy": [],
       "affects": [],
@@ -4321,11 +4477,39 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
-    "dinov2": {
+    "dino": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "dinov2": {
+      "usedBy": [
+        "dinov3"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "dino",
+          "confidence": "high"
+        }
+      ],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "dinov3": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "dinov2",
+          "confidence": "high"
+        }
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -4725,6 +4909,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "swin": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "unet-segmentation": {
       "usedBy": [],
       "affects": [],
@@ -4780,9 +4972,12 @@ export const contentGraph: ContentGraph = {
     },
     "vit": {
       "usedBy": [
+        "deit",
         "depth-anything",
         "depth-anything-v2",
+        "dino",
         "dinov2",
+        "swin",
         "vggt"
       ],
       "affects": [],
@@ -4811,6 +5006,7 @@ export const contentGraph: ContentGraph = {
       "usedBy": [
         "bisenet",
         "detr",
+        "dino",
         "dinov2",
         "feature-matching",
         "lightglue",
@@ -4824,6 +5020,7 @@ export const contentGraph: ContentGraph = {
         "sam",
         "segformer",
         "superglue",
+        "swin",
         "transformer",
         "vggt",
         "vit"
@@ -5109,6 +5306,19 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "knowledge-distillation": {
+      "usedBy": [
+        "deit",
+        "dino",
+        "dinov2",
+        "dinov3"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "monocular-depth-estimation": {
       "usedBy": [
         "depth-anything",
@@ -5137,6 +5347,7 @@ export const contentGraph: ContentGraph = {
     },
     "normalization": {
       "usedBy": [
+        "self-supervised-learning",
         "transformer"
       ],
       "affects": [],
@@ -5248,6 +5459,17 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "self-supervised-learning": {
+      "usedBy": [
+        "dino",
+        "dinov2"
+      ],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "spatially-varying-image-stitching": {
       "usedBy": [
         "apap-image-stitching",
@@ -5315,7 +5537,9 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": []
     },
     "transformer": {
-      "usedBy": [],
+      "usedBy": [
+        "swin"
+      ],
       "affects": [],
       "generalises": [],
       "extending": [],
@@ -5419,14 +5643,20 @@ export const contentGraph: ContentGraph = {
     "chessboard-x-corner-detection": 2,
     "ccs-camera-calibration": 3,
     "deeplab-semantic-segmentation": 0,
-    "monocular-depth-estimation": 1,
     "vit": 2,
+    "knowledge-distillation": 0,
+    "deit": 3,
+    "monocular-depth-estimation": 1,
     "depth-anything": 3,
     "feed-forward-3d-reconstruction": 3,
     "depth-anything-3": 4,
     "depth-anything-v2": 3,
     "detr": 2,
+    "normalization": 0,
+    "self-supervised-learning": 1,
+    "dino": 3,
     "dinov2": 3,
+    "dinov3": 4,
     "dust3r": 4,
     "visual-anomaly-detection": 2,
     "efficientad": 3,
@@ -5456,14 +5686,14 @@ export const contentGraph: ContentGraph = {
     "segformer": 2,
     "superglue": 4,
     "superpoint": 2,
+    "positional-encoding": 1,
+    "transformer": 2,
+    "swin": 3,
     "unet-segmentation": 0,
     "uninformed-students": 3,
     "vgg": 2,
     "vggt": 4,
     "xfeat": 2,
-    "yolo-v1": 0,
-    "normalization": 0,
-    "positional-encoding": 1,
-    "transformer": 2
+    "yolo-v1": 0
   }
 };

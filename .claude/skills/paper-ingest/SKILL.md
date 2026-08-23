@@ -85,7 +85,11 @@ The orchestrator confirms the candidate list with the user before proceeding: "I
 
 ### Step 4b — Typed-relations check
 
-Before deciding the paper's role, the orchestrator surfaces the typed-relations question to the user **verbatim** (no auto-detection from title heuristics or year delta):
+Typed relations are never auto-committed. How the question is grounded depends on the paper:
+
+**Modern papers with an explicit Related Work / contributions structure (the common case for deep-learning papers):** defer this step until after Step 6. The Extract subagent fills the note's `# Claimed contributions` and `# Stated relations` sections (see `docs/research/templates/source-note.md`) — the paper's own positioning statements, each with a quote + location and a *proposed* `relations[].type` mapped through the CLAUDE.md rules (Rule A supersession≠comparison, Rule B cross-domain→no edge, `feeds_into`≠data-flow). The orchestrator then presents that table to the user for confirmation, row by row, instead of the abstract vocabulary question below. Papers position themselves promotionally — "unlike X, we…" claims may be unfair to X — so a row is confirmed only against the counterpart's note (when it exists) and the user's or the approved plan's decision. Rows the user rejects or defers are left in the table unconfirmed; only confirmed rows become `Relations:` lines (recording format below).
+
+**Papers without such structure (most classical papers), or when the Stated-relations table came back empty:** surface the typed-relations question to the user **verbatim** (no auto-detection from title heuristics or year delta):
 
 > "For each candidate slug above, is there a typed relationship between **this** paper and that page? The vocabulary is fixed (see CLAUDE.md → Relations field), in three categories:
 >
@@ -104,7 +108,7 @@ Before deciding the paper's role, the orchestrator surfaces the typed-relations 
 >
 > For each relation, give: `(type, target-slug, confidence: high|medium|low, optional caution: <one line>)`. If any relation is `generalized_by` with `confidence: high` AND you intend the older page to render as preserved-for-lineage-only, also flag it as `quality: historical`. If unsure on any of these, answer 'no relation' — we can revisit at page-authoring time."
 
-The user's answer is recorded in the note's update plan:
+In both flows, the confirmed decisions are recorded in the note's update plan:
 
 - In an existing-page `## UPDATE: <slug>` block: append a `Relations:` block listing each relation as one line — `{ type: <type>, target: <slug>, confidence: <high|medium|low>, caution: <text or omit> }`. If the user also flagged the page historical, append `Quality: historical` on its own line.
 - In a `## NEW: <suggested-slug>` block: same shape, applied to the new page being authored.
@@ -190,7 +194,7 @@ The distinction matters because primary-update notes are applied to a single pag
 - **Never write `usedBy:` (or any reverse edge) anywhere.** Reverse edges are computed by the build from `src/generated/content-graph.ts`.
 - **Never overwrite an existing research note.** Step 0 enforces this. To re-author, delete the note first.
 - **Never read the cache `.txt` / `.html` directly in the orchestrator.** Cache reads happen inside the delegated Extract contract; the orchestrator only sees Sonnet's reply.
-- **Never auto-detect typed relations or historical status from title heuristics, year delta, or any other signal.** Always ask the user (Step 4b). Even when the answer seems obvious — a paper from 1987 about a method later replaced by a 2000 paper that is already on the site — the orchestrator surfaces the question and records the user's answer verbatim, including the confidence level and any caution. The cost of one short question is far smaller than the cost of silently mislabelling a relation type or marking a page historical.
+- **Never auto-commit typed relations or historical status.** The Extract subagent may *propose* relations in the note's `# Stated relations` table — but only from the paper's own positioning statements, each anchored to a quote + location, never from title heuristics or year delta. Committing any relation (recording a `Relations:` line, marking a page historical) always requires the user's or the approved plan's explicit confirmation (Step 4b). Even when the answer seems obvious, the orchestrator surfaces the proposal and records the confirmed answer, including confidence and any caution. The cost of one short question is far smaller than the cost of silently mislabelling a relation type or marking a page historical.
 
 ## References
 

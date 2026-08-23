@@ -1177,6 +1177,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
   },
   {
+    "slug": "deit",
+    "path": "/atlas/deit",
+    "type": "model",
+    "title": "DeiT",
+    "summary": "Data-efficient image transformers: ViT's architecture unchanged, made ImageNet-1k-competitive by a heavy augmentation/regularization recipe and distillation through attention — a dedicated distillation token supervised by a convnet teacher's hard decisions.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "What DeiT introduced"
+    ],
+    "authors": [
+      "H. Touvron",
+      "M. Cord",
+      "M. Douze",
+      "F. Massa",
+      "A. Sablayrolles",
+      "H. Jégou"
+    ],
+    "venue": "ICML 2021 (arXiv 2020)"
+  },
+  {
     "slug": "depth-anything",
     "path": "/atlas/depth-anything",
     "type": "model",
@@ -1268,6 +1291,30 @@ export const searchRecords: SearchRecord[] = [
     "venue": "ECCV 2020"
   },
   {
+    "slug": "dino",
+    "path": "/atlas/dino",
+    "type": "model",
+    "title": "DINO",
+    "summary": "Self-distillation with no labels: an EMA teacher, multi-crop training, and centering+sharpening yield ViT features whose frozen k-NN accuracy nearly matches a linear probe and whose attention maps segment objects without supervision.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "What v1 introduced"
+    ],
+    "authors": [
+      "M. Caron",
+      "H. Touvron",
+      "I. Misra",
+      "H. Jégou",
+      "J. Mairal",
+      "P. Bojanowski",
+      "A. Joulin"
+    ],
+    "venue": "ICCV 2021"
+  },
+  {
     "slug": "dinov2",
     "path": "/atlas/dinov2",
     "type": "model",
@@ -1277,7 +1324,9 @@ export const searchRecords: SearchRecord[] = [
       "deep-learning"
     ],
     "domain": "representation-learning",
-    "headings": [],
+    "headings": [
+      "What v2 changed over v1"
+    ],
     "authors": [
       "M. Oquab",
       "T. Darcet",
@@ -1307,6 +1356,49 @@ export const searchRecords: SearchRecord[] = [
       "P. Bojanowski"
     ],
     "venue": "TMLR 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "dinov3",
+    "path": "/atlas/dinov3",
+    "type": "model",
+    "title": "DINOv3",
+    "summary": "A 6.7B-parameter self-supervised ViT trained on 1.7B curated images, with gram anchoring to stop dense-feature degradation at scale — one frozen backbone whose patch features match or beat specialized fine-tuned pipelines on detection, segmentation, and depth.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "What v3 introduced"
+    ],
+    "authors": [
+      "O. Siméoni",
+      "H. V. Vo",
+      "M. Seitzer",
+      "F. Baldassarre",
+      "M. Oquab",
+      "C. Jose",
+      "V. Khalidov",
+      "M. Szafraniec",
+      "S. Yi",
+      "M. Ramamonjisoa",
+      "F. Massa",
+      "D. Haziza",
+      "L. Wehrstedt",
+      "J. Wang",
+      "T. Darcet",
+      "T. Moutakanni",
+      "L. Sentana",
+      "C. Roberts",
+      "A. Vedaldi",
+      "J. Tolan",
+      "J. Brandt",
+      "C. Couprie",
+      "J. Mairal",
+      "H. Jégou",
+      "P. Labatut",
+      "P. Bojanowski"
+    ],
+    "venue": "arXiv preprint"
   },
   {
     "slug": "dust3r",
@@ -1916,6 +2008,31 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR Workshop (Deep Learning for Visual SLAM)"
   },
   {
+    "slug": "swin",
+    "path": "/atlas/swin",
+    "type": "model",
+    "title": "Swin Transformer",
+    "summary": "Hierarchical vision transformer with shifted-window attention: linear complexity in image area, CNN-style multi-scale feature maps, and a drop-in backbone for dense prediction — with relative position bias replacing absolute embeddings.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "What Swin introduced"
+    ],
+    "authors": [
+      "Z. Liu",
+      "Y. Lin",
+      "Y. Cao",
+      "H. Hu",
+      "Y. Wei",
+      "Z. Zhang",
+      "S. Lin",
+      "B. Guo"
+    ],
+    "venue": "ICCV 2021"
+  },
+  {
     "slug": "unet-segmentation",
     "path": "/atlas/unet-segmentation",
     "type": "model",
@@ -2426,6 +2543,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "ACM SIGGRAPH Computer Graphics"
   },
   {
+    "slug": "knowledge-distillation",
+    "path": "/atlas/knowledge-distillation",
+    "type": "concept",
+    "title": "Knowledge Distillation",
+    "summary": "Training a student network to match a teacher's softened output distribution — the temperature softmax, the T² gradient scaling, hard-label distillation, and self-distillation with a momentum teacher.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Soft targets and temperature",
+      "The high-temperature limit",
+      "Hard-label distillation",
+      "Self-distillation with a momentum teacher"
+    ],
+    "authors": [
+      "G. E. Hinton",
+      "O. Vinyals",
+      "J. Dean"
+    ],
+    "venue": "NeurIPS 2014 Deep Learning Workshop (arXiv 2015)"
+  },
+  {
     "slug": "monocular-depth-estimation",
     "path": "/atlas/monocular-depth-estimation",
     "type": "concept",
@@ -2624,6 +2764,30 @@ export const searchRecords: SearchRecord[] = [
       "Discrete scale-space pyramids",
       "Characteristic scale"
     ]
+  },
+  {
+    "slug": "self-supervised-learning",
+    "path": "/atlas/self-supervised-learning",
+    "type": "concept",
+    "title": "Self-Supervised Learning",
+    "summary": "Survey of label-free visual representation learning: contrastive objectives (SimCLR, MoCo) and negative-free self-distillation (BYOL, DINO), with a decision table and the collapse mechanics that separate them.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Contrastive objectives with in-batch negatives",
+      "The dictionary perspective",
+      "Negative-free self-distillation",
+      "Cross-entropy self-distillation"
+    ],
+    "authors": [
+      "T. Chen",
+      "S. Kornblith",
+      "M. Norouzi",
+      "G. E. Hinton"
+    ],
+    "venue": "ICML 2020"
   },
   {
     "slug": "spatially-varying-image-stitching",

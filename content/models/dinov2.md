@@ -8,13 +8,17 @@ author: "Vitaly Vorobyev"
 difficulty: advanced
 arch_family: vit
 params: "ViT-S/B/L/g; ViT-g ~1.1B"
-prerequisites: [vit, attention-mechanism]
+prerequisites: [vit, attention-mechanism, self-supervised-learning, knowledge-distillation]
 sources:
   primary: oquab2023-dinov2
   references:
     - dosovitskiy2020-vit
     - he2021-mae
+    - caron2021-dino
 relations:
+  - type: extended_by
+    target: dinov3
+    confidence: high
   - type: feeds_into
     target: depth-anything
     confidence: high
@@ -104,6 +108,16 @@ Note that ViT-B/14 uses 18 blocks, not the standard 12, so its parameter count i
 Official PyTorch release from Facebook AI Research; ships training code, model configs, and pretrained checkpoints for all four sizes under Apache-2.0.
 
 # Assessment
+
+## What v2 changed over v1
+
+Relative to [dino](/atlas/dino), which trains on ImageNet-1k (~1.28M images) with ViT-S/B backbones up to 21M/85M parameters, DINOv2 changes five things:
+
+- **A second, patch-level loss.** DINO's image-level self-distillation cross-entropy is kept as one of *two* objectives; the iBOT masked-image-modeling loss on patch tokens is added for dense-task quality.
+- **Centering mechanism.** DINO's EMA centering is replaced by 3 iterations of Sinkhorn-Knopp normalization on the teacher branch, for stability at production scale — consistent with DINO's own ablation showing SK barely changes small-scale results (72.2/76.0 vs 72.8/76.1 k-NN/linear).
+- **Teacher momentum schedule.** Cosine 0.996 → 1 in DINO becomes 0.994 → 1.0 over 625k iterations.
+- **Scale and distillation.** LVD-142M curated images and backbones up to ViT-g/14 at 1.1B parameters; the smaller S/B/L variants are distilled from the frozen ViT-g teacher rather than trained from scratch (see [knowledge-distillation](/atlas/knowledge-distillation)).
+- **A new regularizer and a fixed patch size.** The KoLeo entropy term (weight 0.1) is absent from v1; patch size standardizes on 14 where DINO explored 16 and 8.
 
 **Novelty.**
 

@@ -32,7 +32,10 @@ export interface MarkerBoardConfig {
     innerCols: number;
     squareSizeMm: number;
     circleDiameterRel: number;
-    circles: CircleSpec[];
+    // Both the Rust printable spec and the detector spec declare this as a
+    // fixed-size array ([MarkerCircleSpec; 3]) — the count of three circles
+    // is fixed by the library, not a UI choice.
+    circles: [CircleSpec, CircleSpec, CircleSpec];
     innerSquareRel: number;
 }
 

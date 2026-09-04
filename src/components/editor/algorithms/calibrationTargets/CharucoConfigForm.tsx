@@ -19,7 +19,7 @@ export interface CharucoConfig {
     graphMaxSpacingPix: number;
     graphKNeighbors: number;
     graphOrientationToleranceDeg: number;
-    scanBorderBits: number;
+    borderBits: number;
     scanInsetFrac: number;
     scanMinBorderScore: number;
     scanDedupById: boolean;
@@ -97,6 +97,16 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     onChange={(v) => set("dictionary", v)}
                     disabled={disabled}
                     options={DICTIONARY_OPTIONS}
+                />
+                <NumberField
+                    label="Border bits"
+                    tooltip="ArUco quiet-zone width in marker bits, as printed on the physical board. This describes the board, not a scan-time tuning knob — the detector derives its scan border width from this value. WASM default: 1."
+                    value={config.borderBits}
+                    onChange={(v) => set("borderBits", v ?? 1)}
+                    disabled={disabled}
+                    min={1}
+                    max={4}
+                    step={1}
                 />
             </Section>
             <CollapsibleSection title="Marker decoding">
@@ -191,16 +201,6 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                 />
             </CollapsibleSection>
             <CollapsibleSection title="Advanced" columns={modal ? 2 : undefined}>
-                <NumberField
-                    label="Scan: border bits"
-                    tooltip="ArUco quiet-zone width in marker bits. Bigger → stricter border test. WASM default: 1."
-                    value={config.scanBorderBits}
-                    onChange={(v) => set("scanBorderBits", v ?? 1)}
-                    disabled={disabled}
-                    min={0}
-                    max={4}
-                    step={1}
-                />
                 <NumberField
                     label="Scan: inset fraction"
                     tooltip="Fraction of the cell inset before sampling marker pixels. Higher → safer sampling, less likely to overlap chessboard ink. WASM default: 0.06."

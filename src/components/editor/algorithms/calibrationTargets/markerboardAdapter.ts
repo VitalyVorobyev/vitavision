@@ -38,7 +38,22 @@ const initialConfig: MarkerBoardConfig = {
 
 const presets: AlgorithmPreset[] = [
     { label: "22×22 default", description: "Standard marker board with centered triangle", config: { ...initialConfig } },
-    { label: "10×14 compact", description: "Smaller board", config: { ...initialConfig, boardRows: 10, boardCols: 14, expectedRows: 10, expectedCols: 14, circles: [{ i: 5, j: 7, polarity: "white" as const }, { i: 6, j: 7, polarity: "white" as const }, { i: 6, j: 8, polarity: "white" as const }] } },
+    {
+        label: "10×14 compact",
+        description: "Smaller board",
+        config: {
+            ...initialConfig,
+            boardRows: 10,
+            boardCols: 14,
+            expectedRows: 10,
+            expectedCols: 14,
+            circles: [
+                { i: 5, j: 7, polarity: "white" as const },
+                { i: 6, j: 7, polarity: "white" as const },
+                { i: 6, j: 8, polarity: "white" as const },
+            ] as MarkerBoardConfig["circles"],
+        },
+    },
 ];
 
 const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
@@ -85,7 +100,14 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
             // "invalid type: JsValue(Object(...)), expected f32" at detect time.
             chessCfg: { threshold: c.minCornerStrength },
             params: {
-                layout: {
+                // The schema key is `board`, not `layout`. Marker-board params
+                // carry no `layout` field, and the WASM boundary silently drops
+                // unknown keys — so every detection ran against the library's
+                // default 6x8 board and its default circle cells, regardless of
+                // what the user configured. Verified against 0.14.0: an invalid
+                // payload under `board` throws, the same payload under `layout`
+                // is accepted exactly like a made-up key.
+                board: {
                     rows: c.boardRows,
                     cols: c.boardCols,
                     circles: c.circles.map((circle) => ({

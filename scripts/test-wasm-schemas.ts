@@ -296,9 +296,37 @@ const gray = new Uint8Array(32 * 32).fill(128);
 // "chessboard schema" test above for why this can't be a plain deepMerge.
 const chessCfg = { ...mod.default_chess_config(), threshold: 15 };
 const cbDefaults = mod.default_chessboard_params();
+
+// calib-targets 0.14 added border_bits to CharucoBoardSpec and
+// CharucoDetector::new now derives scan.border_bits from the board on every
+// construction path — the adapter must send it under board, not scan. This is
+// the 0.14 contract the app's charucoAdapter.ts migration depends on; if a
+// later release moves the field again, this assertion is what catches it.
+const defaultCharucoParams = mod.default_charuco_params(5, 7, 0.75, 'DICT_4X4_50');
+if (!defaultCharucoParams || !defaultCharucoParams.board || !('border_bits' in defaultCharucoParams.board))
+    throw new Error('default_charuco_params().board has no border_bits key — has the 0.14 contract moved again?');
+console.log('PASS: default_charuco_params().board.border_bits = ' + defaultCharucoParams.board.border_bits);
+
+// 0.14 rejects border_bits = 0 ("a marker with no ring cannot be told from the
+// white square under it"), which is why the CharucoConfigForm field is min=1.
+let rejectedZeroBorder = false;
+try {
+    const p0 = mod.default_charuco_params(5, 7, 0.75, 'DICT_4X4_50');
+    p0.board.border_bits = 0;
+    mod.detect_charuco(32, 32, gray, chessCfg, p0);
+} catch(e) {
+    if (String(e).includes('border_bits')) rejectedZeroBorder = true; else throw e;
+}
+if (!rejectedZeroBorder)
+    throw new Error('expected board.border_bits = 0 to be rejected; the form min=1 depends on it');
+console.log('PASS: board.border_bits = 0 is rejected (form min=1 is justified)');
+
 const params = {
     px_per_square: 40,
-    board: { rows: 22, cols: 22, cell_size: 4.8, marker_size_rel: 0.75, dictionary: 'DICT_4X4_1000', marker_layout: 'opencv_charuco' },
+    board: {
+        rows: 22, cols: 22, cell_size: 4.8, marker_size_rel: 0.75, dictionary: 'DICT_4X4_1000',
+        marker_layout: 'opencv_charuco', border_bits: 1,
+    },
     chessboard: deepMerge(cbDefaults, {
         min_corner_strength: 15, expected_rows: 22, expected_cols: 22,
         completeness_threshold: 0.05,
@@ -307,7 +335,7 @@ const params = {
 };
 try {
     mod.detect_charuco(32, 32, gray, chessCfg, params);
-    console.log('PASS: detect_charuco accepts merged params');
+    console.log('PASS: detect_charuco accepts merged params with board.border_bits');
 } catch(e) {
     // "chessboard not detected" is expected on a blank image — that's a detection
     // failure, not a schema error. Schema was parsed successfully.
@@ -339,13 +367,95 @@ const gray = new Uint8Array(32 * 32).fill(128);
 // threshold is a plain f32 absolute response floor as of 0.11 — see the
 // "chessboard schema" test above for why this can't be a plain deepMerge.
 const chessCfg = { ...mod.default_chess_config(), threshold: 15 };
+// The board block MUST be sent under "board". markerboardAdapter.ts sent it
+// under "layout" until this change; the struct has no such field, and the WASM
+// boundary drops unknown keys silently, so the user's rows/cols/circles never
+// reached the detector at all -- every run used the library default 6x8 board.
+// The guard below pins that: an invalid payload under "board" must throw, and
+// the very same payload under "layout" must be accepted exactly like a
+// made-up key. If a future release adds a real "layout" field, this fails.
+const badBoard = { rows: 'not-a-number', cols: 8 };
+let boardKeyIsLive = false;
+try {
+    const p = mod.default_marker_board_params();
+    p.board = { ...p.board, ...badBoard };
+    mod.detect_marker_board(32, 32, gray, chessCfg, p);
+} catch(e) {
+    if (String(e).includes('expected u32')) boardKeyIsLive = true; else throw e;
+}
+if (!boardKeyIsLive)
+    throw new Error('expected an invalid board.rows to be rejected -- is "board" still the schema key?');
+const pLayout = mod.default_marker_board_params();
+pLayout.layout = badBoard;
+pLayout.totally_made_up_key = badBoard;
+mod.detect_marker_board(32, 32, gray, chessCfg, pLayout);
+console.log('PASS: "board" is the live schema key; "layout" is dropped like any unknown key');
+
 const params = deepMerge(mod.default_marker_board_params(), {
-    layout: { rows: 22, cols: 22, circles: [{ cell: { i: 11, j: 11 }, polarity: 'black' }, { cell: { i: 12, j: 11 }, polarity: 'white' }, { cell: { i: 12, j: 12 }, polarity: 'white' }] },
+    board: { rows: 22, cols: 22, circles: [{ cell: { i: 11, j: 11 }, polarity: 'black' }, { cell: { i: 12, j: 11 }, polarity: 'white' }, { cell: { i: 12, j: 12 }, polarity: 'white' }] },
     chessboard: { min_corner_strength: 15, expected_rows: 22, expected_cols: 22, completeness_threshold: 0.05, graph: { min_spacing_pix: 20, max_spacing_pix: 160 } },
     circle_score: { patch_size: 64, min_contrast: 10 },
 });
 mod.detect_marker_board(32, 32, gray, chessCfg, params);
-console.log('PASS: detect_marker_board accepts merged params');
+console.log('PASS: detect_marker_board accepts merged params under board (3 circles)');
+
+// Probe the array-length contract on MarkerBoardSpec.circles directly.
+//
+// Measured directly against 0.14.0: fewer than 3 circles is rejected with a
+// serde "invalid length" error. MORE than 3 is, surprisingly, NOT rejected —
+// serde's generated Deserialize for a fixed-size array only checks that at
+// least N elements are present; trailing elements beyond the third are
+// silently dropped rather than erroring. So the runtime contract is "at
+// least 3, extras silently ignored", not "exactly 3, else reject" — the app
+// still constrains the UI/types to exactly 3 because a silently-truncated
+// 4th circle is a worse footgun than an outright error, not because the
+// library itself throws on it. Assert both halves of the real contract so a
+// future @vitavision/calib-targets release that tightens this (or loosens
+// the lower bound) is caught here.
+function circlesOfLength(n) {
+    const pool = [
+        { cell: { i: 11, j: 11 }, polarity: 'black' },
+        { cell: { i: 12, j: 11 }, polarity: 'white' },
+        { cell: { i: 12, j: 12 }, polarity: 'white' },
+        { cell: { i: 13, j: 12 }, polarity: 'black' },
+        { cell: { i: 14, j: 12 }, polarity: 'white' },
+    ];
+    return pool.slice(0, n);
+}
+function detectWithCircleCount(n) {
+    const p = mod.default_marker_board_params();
+    p.board.circles = circlesOfLength(n);
+    return mod.detect_marker_board(32, 32, gray, chessCfg, p);
+}
+
+let rejectedTwoCircles = false;
+try {
+    detectWithCircleCount(2);
+} catch(e) {
+    if (String(e).includes('invalid length 2') && String(e).includes('length 3')) {
+        rejectedTwoCircles = true;
+    } else {
+        throw e;
+    }
+}
+if (!rejectedTwoCircles)
+    throw new Error('expected detect_marker_board to reject board.circles with 2 elements as a schema error, but it did not throw');
+console.log('PASS: detect_marker_board rejects board.circles with fewer than 3 elements');
+
+// board.circles with exactly 3 elements (the realistic, app-enforced case).
+detectWithCircleCount(3);
+console.log('PASS: detect_marker_board accepts board.circles with exactly 3 elements');
+
+// board.circles with 4 elements must NOT throw (documented quirk above) —
+// assert this explicitly so the test fails loudly if a future release starts
+// rejecting it (in which case the app's runtime validation message can be
+// relaxed) or, worse, silently starts accepting a 4th circle's data.
+try {
+    detectWithCircleCount(4);
+} catch(e) {
+    throw new Error('expected detect_marker_board to silently accept 4 circles (extras ignored per the 0.14.0 array-deserialization quirk), but it threw: ' + String(e));
+}
+console.log('PASS: detect_marker_board silently ignores a 4th circle rather than rejecting it (matches measured 0.14.0 behavior — see comment above)');
 
 // The worker calls diagnose_marker_board (renamed from
 // detect_marker_board_with_diagnostics in 0.13) and must survive a MISS.

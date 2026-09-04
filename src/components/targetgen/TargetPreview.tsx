@@ -138,7 +138,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
         return new DOMPoint(clientX, clientY).matrixTransform(ctm.inverse());
     }, []);
 
-    const toggleMarkerboardCircle = useCallback((clientX: number, clientY: number) => {
+    const moveMarkerboardCircle = useCallback((clientX: number, clientY: number) => {
         if (state.target.targetType !== "markerboard") {
             return;
         }
@@ -166,10 +166,30 @@ export default function TargetPreview({ state, dispatch }: Props) {
 
         const col = Math.floor(bx / squareSize);
         const row = Math.floor(by / squareSize);
-        const existing = config.circles.findIndex((circle) => circle.cell.i === row && circle.cell.j === col);
-        const circles = existing >= 0
-            ? config.circles.filter((_, index) => index !== existing)
-            : [...config.circles, { cell: { i: row, j: col } }];
+
+        // Already occupied — nothing to move.
+        if (config.circles.some((circle) => circle.cell.i === row && circle.cell.j === col)) {
+            return;
+        }
+
+        // Move the nearest existing circle (smallest squared distance in
+        // (i, j) cell space) to the clicked cell — the library fixes the
+        // circle count at exactly three, so clicks relocate rather than add/remove.
+        let nearestIdx = 0;
+        let nearestDist = Infinity;
+        config.circles.forEach((circle, idx) => {
+            const di = circle.cell.i - row;
+            const dj = circle.cell.j - col;
+            const dist = di * di + dj * dj;
+            if (dist < nearestDist) {
+                nearestDist = dist;
+                nearestIdx = idx;
+            }
+        });
+
+        const circles = config.circles.map((circle, idx) =>
+            idx === nearestIdx ? { cell: { i: row, j: col } } : circle,
+        ) as typeof config.circles;
 
         dispatch({ type: "UPDATE_CONFIG", partial: { circles } });
     }, [dims.page, dispatch, getSvgPoint, state.target]);
@@ -203,8 +223,8 @@ export default function TargetPreview({ state, dispatch }: Props) {
         if (isTouchPrimary || isPreviewOverlayTarget(event.target)) {
             return;
         }
-        toggleMarkerboardCircle(event.clientX, event.clientY);
-    }, [isTouchPrimary, toggleMarkerboardCircle]);
+        moveMarkerboardCircle(event.clientX, event.clientY);
+    }, [isTouchPrimary, moveMarkerboardCircle]);
 
     const handleTouchStart = useCallback((event: React.TouchEvent) => {
         if (!isTouchPrimary) {
@@ -318,7 +338,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
             && !touchGesture.current.moved
             && touchGesture.current.lastTouchPoint
         ) {
-            toggleMarkerboardCircle(touchGesture.current.lastTouchPoint.x, touchGesture.current.lastTouchPoint.y);
+            moveMarkerboardCircle(touchGesture.current.lastTouchPoint.x, touchGesture.current.lastTouchPoint.y);
         }
 
         touchGesture.current = {
@@ -327,17 +347,17 @@ export default function TargetPreview({ state, dispatch }: Props) {
             moved: false,
             lastTouchPoint: null,
         };
-    }, [isTouchPrimary, toggleMarkerboardCircle]);
+    }, [isTouchPrimary, moveMarkerboardCircle]);
 
     const isMarkerboard = state.target.targetType === "markerboard";
     const controlHints = isTouchPrimary
         ? [
-            ...(isMarkerboard ? ["Tap toggles circles"] : []),
+            ...(isMarkerboard ? ["Tap moves nearest circle"] : []),
             "Drag pans",
             "Pinch zooms",
         ]
         : [
-            ...(isMarkerboard ? ["Left click toggles circles"] : []),
+            ...(isMarkerboard ? ["Left click moves nearest circle"] : []),
             "Right drag pans",
             "Wheel zooms",
         ];

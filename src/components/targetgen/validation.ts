@@ -63,7 +63,15 @@ export function validateConfig(
             boardH = totalRows * c.squareSizeMm;
             if (c.squareSizeMm < 5) smallFeatureWarning = true;
 
-            // Validate circles
+            // Validate circles. The type declares a 3-tuple, but a config can
+            // also arrive via JSON import (see TargetTypeSelector's handleImport),
+            // which bypasses the type checker at runtime.
+            if (c.circles.length !== 3) {
+                errors.push(
+                    `Marker board requires exactly 3 circles, got ${c.circles.length}. ` +
+                    `The @vitavision/calib-targets library fixes this count (MarkerCircleSpec is a [T; 3] array).`,
+                );
+            }
             const seen = new Set<string>();
             for (const circ of c.circles) {
                 const { i, j } = circ.cell;

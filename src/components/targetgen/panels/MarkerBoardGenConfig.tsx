@@ -1,4 +1,3 @@
-import { Plus, Trash2 } from "lucide-react";
 import { Section, NumberField } from "../../editor/algorithms/formFields";
 import type { MarkerBoardConfig, CircleSpec, TargetGeneratorAction } from "../types";
 import { defaultCircles } from "../reducer";
@@ -18,32 +17,8 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
     const updateCircleCell = (idx: number, field: "i" | "j", value: number) => {
         const next = config.circles.map((c, n) =>
             n === idx ? { cell: { ...c.cell, [field]: value } } : c,
-        );
+        ) as [CircleSpec, CircleSpec, CircleSpec];
         update({ circles: next });
-    };
-
-    const removeCircle = (idx: number) => {
-        update({ circles: config.circles.filter((_, i) => i !== idx) });
-    };
-
-    const addCircle = () => {
-        const occupied = new Set(config.circles.map((c) => `${c.cell.i},${c.cell.j}`));
-        const ci = Math.floor(totalRows / 2);
-        const cj = Math.floor(totalCols / 2);
-        for (let d = 0; d < Math.max(totalRows, totalCols); d++) {
-            for (let di = -d; di <= d; di++) {
-                for (let dj = -d; dj <= d; dj++) {
-                    const ni = ci + di;
-                    const nj = cj + dj;
-                    if (ni >= 0 && ni < totalRows && nj >= 0 && nj < totalCols) {
-                        if (!occupied.has(`${ni},${nj}`)) {
-                            update({ circles: [...config.circles, { cell: { i: ni, j: nj } }] });
-                            return;
-                        }
-                    }
-                }
-            }
-        }
     };
 
     const resetCircles = () => {
@@ -102,11 +77,8 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
             <Section title="Circle Markers">
                 <div className="col-span-full space-y-2">
                     <p className="text-[10px] text-muted-foreground">
-                        Click squares on the preview to place/remove circles. Polarity is automatic (contrasts with square color).
+                        Click a square on the preview to move the nearest circle there. Polarity is automatic (contrasts with square color).
                     </p>
-                    {config.circles.length === 0 && (
-                        <p className="text-xs text-muted-foreground">No circles defined.</p>
-                    )}
                     {config.circles.map((circ, idx) => (
                         <div key={idx} className="flex items-center gap-2">
                             <NumberField
@@ -130,25 +102,9 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
                             <span className="mt-5 text-[10px] text-muted-foreground w-10 shrink-0">
                                 {polarityLabel(circ)}
                             </span>
-                            <button
-                                type="button"
-                                className="mt-5 p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                                onClick={() => removeCircle(idx)}
-                                title="Remove circle"
-                            >
-                                <Trash2 size={14} />
-                            </button>
                         </div>
                     ))}
                     <div className="flex gap-2">
-                        <button
-                            type="button"
-                            className="flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs font-medium hover:bg-muted transition-colors"
-                            onClick={addCircle}
-                        >
-                            <Plus size={12} />
-                            Add circle
-                        </button>
                         <button
                             type="button"
                             className="rounded-md border border-border px-2 py-1 text-xs font-medium hover:bg-muted transition-colors text-muted-foreground"

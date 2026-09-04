@@ -109,9 +109,14 @@ describe("generateDxf", () => {
                     innerCols: 1,
                     squareSizeMm: 20,
                     circleDiameterRel: 0.5,
+                    // The library fixes the circle count at exactly three
+                    // (MarkerCircleSpec is a [T; 3] array) — the third circle
+                    // sits on the other black cell (1,1), duplicating the
+                    // hole-polarity case without changing the white-circle count.
                     circles: [
                         { cell: { i: 0, j: 0 } },
                         { cell: { i: 0, j: 1 } },
+                        { cell: { i: 1, j: 1 } },
                     ],
                     innerSquareRel: 0,
                 },
@@ -120,7 +125,7 @@ describe("generateDxf", () => {
         );
 
         expect(count(dxf, "\n0\nHATCH\n")).toBe(3);
-        expect(count(dxf, "\n92\n16\n")).toBe(1);
+        expect(count(dxf, "\n92\n16\n")).toBe(2);
         expect(count(dxf, "\n92\n1\n")).toBe(1);
     });
 

@@ -346,6 +346,27 @@ const params = deepMerge(mod.default_marker_board_params(), {
 });
 mod.detect_marker_board(32, 32, gray, chessCfg, params);
 console.log('PASS: detect_marker_board accepts merged params');
+
+// The worker calls diagnose_marker_board (renamed from
+// detect_marker_board_with_diagnostics in 0.13) and must survive a MISS.
+// serde-wasm-bindgen serialises Rust None as *undefined*, not null, so the
+// key is present with an undefined value: a strict "=== null" check falls
+// through to the success branch and throws TypeError on result.corners.
+// That is invisible to tsc because the module is any-typed, so assert the
+// actual value here.
+function unwrapMaps(v) {
+    if (v instanceof Map) { const o = {}; for (const [k, x] of v.entries()) o[k] = unwrapMaps(x); return o; }
+    if (Array.isArray(v)) return v.map(unwrapMaps);
+    if (v !== null && typeof v === 'object') { const o = {}; for (const k of Object.keys(v)) o[k] = unwrapMaps(v[k]); return o; }
+    return v;
+}
+const miss = unwrapMaps(mod.diagnose_marker_board(32, 32, gray, chessCfg, params));
+if (!('result' in miss))
+    throw new Error('diagnose_marker_board payload has no result key: ' + JSON.stringify(Object.keys(miss)));
+if (miss.result != null)
+    throw new Error('expected a miss on a blank image, got a detection: ' + JSON.stringify(miss.result));
+console.log('PASS: diagnose_marker_board returns a nullish result on a miss (value is '
+    + (miss.result === null ? 'null' : 'undefined') + ', so the worker must use loose == null)');
 process.exit(0);
 `,
     },
@@ -427,7 +448,7 @@ if (!c.grid || typeof c.grid.u !== 'number' || typeof c.grid.v !== 'number')
 console.log('PASS: corner has [x,y] position and {u,v} grid index');
 
 // Real-photo decode, via the exact path the worker uses. The plain
-// detect_puzzleboard throws on failure, but _with_diagnostics resolves
+// detect_puzzleboard throws on failure, but diagnose_puzzleboard resolves
 // \`result\` to *undefined* and still returns diagnostics — so the worker calls
 // the diagnostics variant (for observed_edges) and re-raises itself. Both
 // halves of that contract are asserted here.
@@ -441,7 +462,7 @@ const photoGray = mod.rgba_to_gray(new Uint8Array(photo.data), photo.width, phot
 const unwrap = (v) => v instanceof Map
     ? Object.fromEntries([...v].map(([k, x]) => [k, unwrap(x)]))
     : Array.isArray(v) ? v.map(unwrap) : v;
-const diag = unwrap(mod.detect_puzzleboard_with_diagnostics(photo.width, photo.height, photoGray, null, params));
+const diag = unwrap(mod.diagnose_puzzleboard(photo.width, photo.height, photoGray, null, params));
 if (diag?.result == null)
     throw new Error('public/author_like_oblique.png failed to decode (result is ' + diag?.result + ')');
 if (diag.result.corners.length !== 361)

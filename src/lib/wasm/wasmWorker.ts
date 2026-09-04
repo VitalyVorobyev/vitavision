@@ -711,8 +711,9 @@ function deepMerge(target: Record<string, unknown>, source: Record<string, unkno
  * Recursively convert a value that may contain nested JS `Map`s into plain
  * objects/arrays.
  *
- * The `detect_*_with_diagnostics` functions in @vitavision/calib-targets
- * 0.10.1 return payloads that are `instanceof Map` at EVERY object level,
+ * The `diagnose_*` functions in @vitavision/calib-targets (named
+ * `detect_*_with_diagnostics` before 0.13) return payloads that are
+ * `instanceof Map` at EVERY object level,
  * despite the package's `.d.ts` declaring a plain `{ result, diagnostics }`
  * object — an upstream serde_wasm_bindgen quirk verified empirically against
  * the real WASM module, not inferred from the (misleading) type declaration.
@@ -813,16 +814,22 @@ async function handleCalibTarget(
         const params = deepMerge(defaults, userParams);
         // 0.10.1 flattened MarkerBoardDetectionResult to { corners, alignment } and
         // moved circle_candidates / circle_matches / alignment_inliers into the
-        // diagnostics channel. Call the _with_diagnostics variant and deep-unwrap
+        // diagnostics channel. Call the diagnose_* variant and deep-unwrap
         // its Map-based payload (see unwrapMaps) to keep those fields populated —
         // the overlay's circle-candidate/match rendering depends on them.
         const withDiag = unwrapMaps(
-            mod.detect_marker_board_with_diagnostics(width, height, gray, chessCfg, params),
+            mod.diagnose_marker_board(width, height, gray, chessCfg, params),
         ) as {
-            result: { corners: unknown[]; alignment: unknown } | null;
+            result?: { corners: unknown[]; alignment: unknown } | null;
             diagnostics: { circle_candidates: unknown[]; circle_matches: unknown[]; alignment_inliers: number } | null;
         };
-        result = withDiag.result === null
+        // `== null`, not `=== null`: serde-wasm-bindgen serialises Rust `None` as
+        // *undefined*, so the key is present with an undefined value and a strict
+        // null check never matches. Verified against the real module — a failed
+        // detection under a strict check reached `withDiag.result.corners` and
+        // threw `TypeError: undefined is not an object`. The puzzleboard branch
+        // below has always used the loose check for this same reason.
+        result = withDiag.result == null
             ? null
             : {
                 detection: { kind: "checkerboard_marker", corners: withDiag.result.corners },
@@ -968,16 +975,16 @@ async function handlePuzzleboard(
     const t0 = performance.now();
     // 0.10.1 flattened PuzzleBoardDetectionResult to { corners, alignment, decode }
     // — the `detection` wrapper is gone, and `observed_edges` (consumed by
-    // PuzzleboardOverlay's edge-bit markers) moved to the `_with_diagnostics`
+    // PuzzleboardOverlay's edge-bit markers) moved to the `diagnose_*`
     // sibling, which also returns a nested Map (see unwrapMaps).
     //
     // The two variants differ on failure: the plain one throws, while
-    // _with_diagnostics resolves `result` to *undefined* (not null) and still
+    // diagnose_puzzleboard resolves `result` to *undefined* (not null) and still
     // populates diagnostics. We use the diagnostics variant for observed_edges
     // and re-raise ourselves, so a failed decode stays a surfaced error rather
     // than a quiet empty-but-successful result.
     const withDiag = unwrapMaps(
-        mod.detect_puzzleboard_with_diagnostics(width, height, gray, null, merged),
+        mod.diagnose_puzzleboard(width, height, gray, null, merged),
     ) as {
         result?: { corners: unknown[]; alignment: unknown; decode: unknown } | null;
         diagnostics?: { observed_edges?: unknown[] };

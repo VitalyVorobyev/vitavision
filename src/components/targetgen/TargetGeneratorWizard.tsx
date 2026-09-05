@@ -6,6 +6,9 @@ import TargetConfigPanel from "./panels/TargetConfigPanel";
 import TargetPreview from "./TargetPreview";
 import type { TargetGeneratorAction, TargetGeneratorState, TargetType } from "./types";
 import { presetsForType } from "./presets";
+// Imported here, not in DownloadBar/TargetConfigPanel: both of those are synced
+// to the design system and must not reach the WASM worker proxy at runtime.
+import { generateDxf } from "./dxf";
 
 export type TargetGeneratorStep = "target" | "pattern" | "page" | "export";
 
@@ -238,6 +241,7 @@ export default function TargetGeneratorWizard({
                                 state={state}
                                 dispatch={dispatch}
                                 sections={["validation", "downloads"]}
+                                generateDxf={generateDxf}
                             />
                         </WizardStepCard>
                     )}

@@ -31,7 +31,7 @@ export type AlgorithmType =
     | "radsym"
     | "puzzleboard";
 
-export type WorkerCommand = "detect" | "radsym-heatmap" | "puzzleboard-gen-png";
+export type WorkerCommand = "detect" | "radsym-heatmap" | "puzzleboard-gen-png" | "render-target-bundle";
 
 export interface WorkerRequest {
     id: number;
@@ -1014,6 +1014,30 @@ async function handlePuzzleboardGenPng(
     return { png, mimeType: "image/png" };
 }
 
+/**
+ * Render a `PrintableTargetDocument` (see
+ * `src/components/targetgen/printableDocument.ts`) via the library's own
+ * renderer, returning the full JSON/SVG/PNG/DXF bundle.
+ *
+ * `render_target_bundle_json` returns a `GeneratedTargetBundle` JS object
+ * with fields `{ json_text, svg_text, png_bytes, dxf_text }` — verified
+ * against the real WASM module (see `printableDocument.ts`'s header comment
+ * for the verification method), not inferred from the `.d.ts`'s `any`
+ * return type.
+ */
+async function handleRenderTargetBundle(
+    doc: unknown,
+): Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }> {
+    const mod = await getCalibModule();
+    const bundle = mod.render_target_bundle_json(doc) as {
+        json_text: string;
+        svg_text: string;
+        png_bytes: Uint8Array;
+        dxf_text: string;
+    };
+    return { svg: bundle.svg_text, dxf: bundle.dxf_text, json: bundle.json_text, png: bundle.png_bytes };
+}
+
 // ── Message handler ──────────────────────────────────────────────────────────
 
 self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
@@ -1041,6 +1065,15 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
             (self as unknown as Worker).postMessage(
                 { id, result: genResult } satisfies WorkerResponse,
                 [genResult.png.buffer],
+            );
+            return;
+        }
+
+        if (command === "render-target-bundle") {
+            const bundleResult = await handleRenderTargetBundle(config);
+            (self as unknown as Worker).postMessage(
+                { id, result: bundleResult } satisfies WorkerResponse,
+                [bundleResult.png.buffer],
             );
             return;
         }

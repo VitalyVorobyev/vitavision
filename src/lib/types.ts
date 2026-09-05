@@ -101,9 +101,39 @@ export interface FramePoint {
     y: number;
 }
 
+/**
+ * A marker-board circle in **library** coordinates, as sent to and returned by
+ * `@vitavision/calib-targets`.
+ *
+ * Per the calib-targets workspace convention ("i right, j down"), `i` is the
+ * COLUMN and `j` is the ROW — the transpose of how this app talks about board
+ * cells everywhere a user can see them. Config that a user types lives in
+ * `MarkerCircleCell` below and is transposed at the library boundary; this
+ * type is only for payloads crossing that boundary.
+ */
 export interface MarkerCircleSpec {
+    /** Column index (x), counting from the left. */
     i: number;
+    /** Row index (y), counting from the top. */
     j: number;
+    polarity: "white" | "black";
+}
+
+/**
+ * A marker-board circle in **app** coordinates: plain row and column, matching
+ * the "Row"/"Col" fields the target generator has always shown.
+ *
+ * Both the generator and the detector express user-entered cells this way, so
+ * the same three cells typed into either form mean the same three squares.
+ * They did not before: the detector form exposed the library's raw `i`/`j`
+ * while the generator wrote row/col, so identical input described cells
+ * mirrored about the diagonal. The detector absorbed that silently — a clean
+ * 3-of-3 circle match with a grid alignment matrix of [[0,1],[1,0]] instead of
+ * the identity, i.e. a board frame reflected about the diagonal.
+ */
+export interface MarkerCircleCell {
+    row: number;
+    col: number;
     polarity: "white" | "black";
 }
 

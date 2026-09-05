@@ -5,7 +5,7 @@ import MarkerBoardGenConfig from "./MarkerBoardGenConfig";
 import RingGridGenConfig from "./RingGridGenConfig";
 import PuzzleboardGenConfig from "./PuzzleboardGenConfig";
 import PaperConfig from "./PaperConfig";
-import DownloadBar from "./DownloadBar";
+import DownloadBar, { type DxfGenerator } from "./DownloadBar";
 import type { TargetGeneratorState, TargetGeneratorAction } from "../types";
 
 export type TargetConfigSection = "pattern" | "page" | "validation" | "downloads";
@@ -14,11 +14,13 @@ interface Props {
     state: TargetGeneratorState;
     dispatch: React.Dispatch<TargetGeneratorAction>;
     sections?: TargetConfigSection[];
+    /** Forwarded to DownloadBar; see DxfGenerator for why it is injected. */
+    generateDxf?: DxfGenerator;
 }
 
 const ALL_SECTIONS: TargetConfigSection[] = ["pattern", "page", "validation", "downloads"];
 
-export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECTIONS }: Props) {
+export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECTIONS, generateDxf }: Props) {
     const { target, validation } = state;
     const visibleSections = new Set(sections);
 
@@ -70,7 +72,7 @@ export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECT
 
             {/* Download bar */}
             {visibleSections.has("downloads") && (
-                <DownloadBar state={state} />
+                <DownloadBar state={state} generateDxf={generateDxf} />
             )}
         </div>
     );

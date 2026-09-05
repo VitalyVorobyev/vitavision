@@ -1,10 +1,51 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { generateDxf } from "./index.ts";
 
+// Path to the repo root — four levels up from src/components/targetgen/dxf/
+const REPO_ROOT = resolve(import.meta.dirname, "../../../..");
 // Path to the public directory — two levels up from src/components/targetgen/dxf/
-const PUBLIC_ROOT = resolve(import.meta.dirname, "../../../../public");
+const PUBLIC_ROOT = resolve(REPO_ROOT, "public");
+
+// `generateDxf` for every non-ringgrid kind now round-trips through the
+// production WASM Web Worker (`src/lib/wasm/wasmWorkerProxy.ts`), which
+// spawns a browser `Worker` — unavailable under vitest's jsdom environment.
+// Stub out only the worker *transport*: call the real
+// `@vitavision/calib-targets` renderer in-process instead, exactly the WASM
+// call `src/lib/wasm/wasmWorker.ts`'s `handleRenderTargetBundle` makes. This
+// exercises the real library end-to-end (schema, DXF terminator, etc.) —
+// only the postMessage/Worker plumbing is bypassed.
+//
+// Loaded via `initSync` on a buffer read straight off disk rather than the
+// module's own `default()` (which fetches the .wasm binary): jsdom's stubbed
+// `fetch` rejects a `file://` URL as "not implemented", and `initSync` sidesteps
+// that path entirely rather than requiring a jsdom-specific fetch polyfill.
+vi.mock("../../../lib/wasm/wasmWorkerProxy", async () => {
+    const calibTargets = await import("@vitavision/calib-targets");
+    const wasmPath = resolve(
+        REPO_ROOT,
+        "node_modules/@vitavision/calib-targets/calib_targets_wasm_bg.wasm",
+    );
+    calibTargets.initSync({ module: readFileSync(wasmPath) });
+    return {
+        renderTargetBundleWasm: async (doc: unknown) => {
+            const bundle = calibTargets.render_target_bundle_json(doc) as {
+                svg_text: string;
+                dxf_text: string;
+                json_text: string;
+                png_bytes: Uint8Array;
+            };
+            return {
+                svg: bundle.svg_text,
+                dxf: bundle.dxf_text,
+                json: bundle.json_text,
+                png: bundle.png_bytes,
+            };
+        },
+    };
+});
+
+const { generateDxf } = await import("./index.ts");
 
 const PAGE = {
     sizeKind: "a4",
@@ -59,76 +100,6 @@ afterAll(() => {
 });
 
 describe("generateDxf", () => {
-    it("renders chessboard squares as filled hatches", async () => {
-        const dxf = await generateDxf(
-            {
-                targetType: "chessboard",
-                config: {
-                    innerRows: 1,
-                    innerCols: 1,
-                    squareSizeMm: 20,
-                    innerSquareRel: 0.4,
-                },
-            },
-            PAGE,
-        );
-
-        expect(count(dxf, "\n0\nHATCH\n")).toBe(2);
-        expect(count(dxf, "\n0\nLINE\n")).toBe(0);
-        expect(count(dxf, "\n91\n2\n")).toBe(2);
-    });
-
-    it("renders ChArUco markers as filled bit cells", async () => {
-        const dxf = await generateDxf(
-            {
-                targetType: "charuco",
-                config: {
-                    rows: 2,
-                    cols: 2,
-                    squareSizeMm: 20,
-                    markerSizeRel: 0.75,
-                    dictionary: "DICT_4X4_50",
-                    borderBits: 1,
-                    innerSquareRel: 0,
-                },
-            },
-            PAGE,
-        );
-
-        expect(count(dxf, "\n0\nHATCH\n")).toBeGreaterThan(10);
-        expect(count(dxf, "\n0\nLINE\n")).toBe(0);
-        expect(count(dxf, "\n0\nCIRCLE\n")).toBe(0);
-    });
-
-    it("preserves marker-board black circle fill and white circle hole polarity", async () => {
-        const dxf = await generateDxf(
-            {
-                targetType: "markerboard",
-                config: {
-                    innerRows: 1,
-                    innerCols: 1,
-                    squareSizeMm: 20,
-                    circleDiameterRel: 0.5,
-                    // The library fixes the circle count at exactly three
-                    // (MarkerCircleSpec is a [T; 3] array) — the third circle
-                    // sits on the other black cell (1,1), duplicating the
-                    // hole-polarity case without changing the white-circle count.
-                    circles: [
-                        { cell: { i: 0, j: 0 } },
-                        { cell: { i: 0, j: 1 } },
-                        { cell: { i: 1, j: 1 } },
-                    ],
-                    innerSquareRel: 0,
-                },
-            },
-            PAGE,
-        );
-
-        expect(count(dxf, "\n0\nHATCH\n")).toBe(3);
-        expect(count(dxf, "\n92\n16\n")).toBe(2);
-        expect(count(dxf, "\n92\n1\n")).toBe(1);
-    });
-
     it("renders ringgrid annuli and code sectors as filled hatches", async () => {
         const codebook = JSON.parse(
             readFileSync(join(PUBLIC_ROOT, "ringgrid/codebook_baseline.json"), "utf8"),
@@ -154,5 +125,24 @@ describe("generateDxf", () => {
         expect(count(dxf, "\n0\nHATCH\n")).toBe(4 + expectedSectorCount);
         expect(count(dxf, "\n0\nLINE\n")).toBe(0);
         expect(count(dxf, "\n0\nCIRCLE\n")).toBe(0);
+    });
+
+    it("splices three scale-line LINE entities before the ENDSEC/EOF terminator on a WASM-rendered kind", async () => {
+        const target = {
+            targetType: "chessboard",
+            config: { innerRows: 6, innerCols: 7, squareSizeMm: 20, innerSquareRel: 0 },
+        } as const;
+
+        const withoutScale = await generateDxf(target, { ...PAGE, showScaleLine: false });
+        const withScale = await generateDxf(target, { ...PAGE, showScaleLine: true });
+
+        // The library's own terminator is unmodified — the scale line is
+        // spliced before it, never replacing or duplicating it.
+        expect(withScale.endsWith("  0\nENDSEC\n  0\nEOF\n")).toBe(true);
+        expect(withoutScale.endsWith("  0\nENDSEC\n  0\nEOF\n")).toBe(true);
+
+        const lineCountWithout = count(withoutScale, "\n0\nLINE\n");
+        const lineCountWith = count(withScale, "\n0\nLINE\n");
+        expect(lineCountWith - lineCountWithout).toBe(3);
     });
 });

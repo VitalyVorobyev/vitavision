@@ -57,6 +57,13 @@ export default function DownloadBar({ state }: Props) {
         );
     };
 
+    // Deliberately rasterizes the app's own preview SVG (which already has
+    // the scale line spliced in when enabled) rather than the WASM bundle's
+    // `png_bytes`. The library's PNG carries a correct `pHYs` print-scale
+    // chunk, but it is rendered from the library's SVG before the app-side
+    // scale line overlay exists, so using it here would silently drop the
+    // scale line from PNG exports. Switching to `png_bytes` is a possible
+    // future optimisation, not something overlooked.
     const handlePng = async () => {
         if (!svg) return;
         const blob = await rasterizeSvgToPng(svg, state.page.pngDpi);

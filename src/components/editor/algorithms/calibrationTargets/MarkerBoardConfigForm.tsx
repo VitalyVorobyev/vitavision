@@ -1,6 +1,6 @@
 import { CollapsibleSection, NumberField, Section } from "../formFields";
 import type { AlgorithmConfigFormProps } from "../types";
-import type { MarkerCircleSpec } from "../../../../lib/types";
+import type { MarkerCircleCell } from "../../../../lib/types";
 
 export interface MarkerBoardConfig {
     boardRows: number;
@@ -8,7 +8,11 @@ export interface MarkerBoardConfig {
     // The Rust printable spec and the detector spec both declare this as a
     // fixed-size array ([MarkerCircleSpec; 3]) — the count of three circles
     // is fixed by the library, not a UI choice.
-    circles: [MarkerCircleSpec, MarkerCircleSpec, MarkerCircleSpec];
+    //
+    // Held in app coordinates (row/col), the same way the target generator
+    // holds them, and transposed to the library's i=col/j=row convention in
+    // markerboardAdapter.ts. See MarkerCircleCell's doc comment.
+    circles: [MarkerCircleCell, MarkerCircleCell, MarkerCircleCell];
     expectedRows: number;
     expectedCols: number;
     minCornerStrength: number;
@@ -37,7 +41,7 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
     const set = <K extends keyof MarkerBoardConfig>(key: K, value: MarkerBoardConfig[K]) =>
         onChange({ ...config, [key]: value });
 
-    const updateCircle = (index: number, partial: Partial<MarkerCircleSpec>) => {
+    const updateCircle = (index: number, partial: Partial<MarkerCircleCell>) => {
         const circles = config.circles.map((c, idx) => (idx === index ? { ...c, ...partial } : c)) as MarkerBoardConfig["circles"];
         onChange({ ...config, circles });
     };
@@ -66,25 +70,32 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
             </Section>
             <Section title="Expected circles">
                 <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                        <span className="w-12">Row</span>
+                        <span className="w-12">Col</span>
+                        <span>Polarity</span>
+                    </div>
                     {config.circles.map((c, idx) => (
                         <div key={idx} className="flex items-center gap-1.5 text-xs">
                             <input
                                 type="number"
-                                value={c.i}
-                                onChange={(e) => updateCircle(idx, { i: Number(e.target.value) })}
+                                value={c.row}
+                                onChange={(e) => updateCircle(idx, { row: Number(e.target.value) })}
                                 disabled={disabled}
                                 className="w-12 rounded border border-border bg-background px-1.5 py-0.5 text-xs"
-                                placeholder="i"
+                                placeholder="row"
                                 min={0}
+                                aria-label={`Circle ${idx + 1} row`}
                             />
                             <input
                                 type="number"
-                                value={c.j}
-                                onChange={(e) => updateCircle(idx, { j: Number(e.target.value) })}
+                                value={c.col}
+                                onChange={(e) => updateCircle(idx, { col: Number(e.target.value) })}
                                 disabled={disabled}
                                 className="w-12 rounded border border-border bg-background px-1.5 py-0.5 text-xs"
-                                placeholder="j"
+                                placeholder="col"
                                 min={0}
+                                aria-label={`Circle ${idx + 1} column`}
                             />
                             <select
                                 value={c.polarity}

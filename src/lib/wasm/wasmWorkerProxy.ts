@@ -139,6 +139,22 @@ export async function generatePuzzleboardPngWasm(
     ) as Promise<{ png: Uint8Array; mimeType: string }>;
 }
 
+export async function renderTargetBundleWasm(
+    doc: unknown,
+): Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }> {
+    return postDetection(
+        // Dead field for this command: the worker dispatches on `command`,
+        // not `algorithm`, before ever reading it (mirrors
+        // generatePuzzleboardPngWasm's `"puzzleboard"` placeholder above).
+        "chessboard",
+        new Uint8Array(0),
+        0,
+        0,
+        doc,
+        "render-target-bundle",
+    ) as Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }>;
+}
+
 export async function generateRadsymHeatmap(
     pixels: Uint8Array,
     width: number,

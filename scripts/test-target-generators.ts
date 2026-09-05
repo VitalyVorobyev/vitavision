@@ -1,67 +1,66 @@
 /**
- * TS-generator vs WASM-renderer differential harness.
+ * Target-generator round-trip harness: render, rasterise, detect.
  *
- * `src/components/targetgen/svg/*` is a TypeScript reimplementation of
- * calibration-target *generation*; the editor *detects* the very same target
- * kinds via the `@vitavision/calib-targets` WASM package's own renderer
- * (`render_target_bundle_json`). Two independent implementations of the same
- * geometry have already drifted once — see the ArUco 180°-rotation bug fixed
- * in commit 044653b, caught only because a detector round-trip happened to
- * notice it. This script is the comparison harness that must exist BEFORE
- * any TS generator is deleted in favour of the library's renderer: it proves
- * (or disproves) pixel-for-pixel agreement between the two, case by case,
- * kind by kind.
+ * This file used to be a *differential* harness: it rendered each target
+ * through the app's own TypeScript generators AND through
+ * `@vitavision/calib-targets`'s renderer, then compared the two
+ * rasterisations pixel-for-pixel. That proved the two agreed — and on the
+ * strength of that proof the TS generators were deleted (`svg/index.ts` now
+ * routes every printable kind through the library). So both sides of the old
+ * comparison called the same Rust function; the diff would have passed
+ * tautologically forever, proving nothing.
  *
- * For each case it:
- *   1. builds the app's own SVG via `generatePreviewSvg(target, page)`
- *      (`src/components/targetgen/svg/index.ts`), with `showScaleLine: false`
- *      — the scale line is a pure app-side overlay with no library
- *      equivalent, so it is excluded from the comparison rather than faked;
- *   2. builds the library's SVG by mapping the same `target`/`page` through
- *      `toPrintableDocument` (`src/components/targetgen/printableDocument.ts`)
- *      and calling `render_target_bundle_json`;
- *   3. rasterises both SVGs to an 8-bit grayscale buffer at a fixed DPI,
- *      sampling at pixel centres, using a painter's-algorithm sampler over
- *      an ordered list of `<rect>`/`<circle>` primitives parsed out of each
- *      SVG's markup (modelled on `scripts/test-charuco-generator.ts`'s rect
- *      parser and sampler, extended to also parse circles — marker board and
- *      puzzle board both emit them);
- *   4. compares the two buffers pixel-by-pixel, classifying each differing
- *      pixel as decisive or as sitting on a primitive edge (see
- *      `BOUNDARY_EPS_MM`), and reports IDENTICAL or a DIFFER line naming the
- *      decisive count, percentage, and first differing pixel.
+ * What replaced it is a **generation -> detection round trip**, which is
+ * where this whole class of bug actually lives: the ChArUco 180°-rotation
+ * bug (commit 044653b) was a disagreement between what the renderer drew and
+ * what the detector expected, not between two renderers. So for every case
+ * in the matrix this script:
  *
- * Step 4 needs a tolerance because the two renderers write geometry down with
- * different precision — the library rounds SVG coordinates to 4 decimals,
- * `svgUtils.ts` interpolates the raw double — and a strict pixel-centre test
- * turns a 3.3e-5 mm disagreement into flipped pixels. The tolerance is a
- * 1 um band around primitive edges, and it is itself tested: a self-check
- * reintroduces the marker-board axis transposition and asserts the harness
- * still reports thousands of decisive pixels (measured: 5467, against ~2 of
- * edge noise). Boundary pixels are always counted and printed, never hidden.
+ *   1. builds a `PrintableTargetDocument` via `toPrintableDocument` and
+ *      renders it with `render_target_bundle_json` — asserting the call
+ *      succeeds, every output channel (`svg_text`/`dxf_text`/`json_text`/
+ *      `png_bytes`) is non-empty, and the SVG's page size matches what the
+ *      app's own `resolvePageDimensions` would compute for the same
+ *      `PageConfig` (Part A — catches page-mapping regressions: orientation
+ *      swap, custom size, letter vs A4);
+ *   2. rasterises the rendered SVG to an 8-bit grayscale buffer at 300 DPI
+ *      (the same painter's-algorithm sampler the old differential harness
+ *      used, minus the pixel-diff comparison it existed for) and feeds that
+ *      buffer to the library's own real detector for the target's kind,
+ *      asserting the detector reads back the geometry that was drawn —
+ *      corner counts, marker rotations/ids, decode error rates, or (for
+ *      marker boards) the alignment transform (Part B);
+ *   3. proves the round-trip assertion actually has teeth by deliberately
+ *      reintroducing the marker-board axis-transposition bug this migration
+ *      exists to prevent, and asserting detection notices (Part C).
  *
  * Ring grid is excluded: it has no printable representation in
  * `@vitavision/calib-targets` and stays on the TS generator path
  * (`toPrintableDocument` throws for it — see that file).
  *
- * This harness does NOT adjust expectations to make a case pass. A DIFFER
- * result names a real disagreement between the two implementations; root
- * causing it is a follow-up, not something this script papers over.
+ * This harness does NOT adjust expectations to make a case pass. A genuine
+ * disagreement between what was rendered and what was detected is reported
+ * with the real numbers and the run fails — root-causing it is a follow-up,
+ * not something this script papers over.
  *
  * Run: bun run scripts/test-target-generators.ts
  */
 
-import { readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
-import type { TargetConfig, PageConfig } from "../src/components/targetgen/types";
+import type {
+    TargetConfig,
+    PageConfig,
+    CircleSpec,
+    ChessboardConfig,
+    CharucoConfig,
+    MarkerBoardConfig,
+    PuzzleboardConfig,
+} from "../src/components/targetgen/types";
+import { toPrintableDocument } from "../src/components/targetgen/printableDocument";
+import { resolvePageDimensions } from "../src/components/targetgen/svg/paperConstants";
 
-const REPO_ROOT = resolve(import.meta.dirname, "..");
-const PUBLIC_ROOT = join(REPO_ROOT, "public");
-
-/** Fixed sampling resolution for the differential comparison (not the same
- * as any case's `PageConfig.pngDpi`, which only affects the library's own
- * unused PNG output). */
-const COMPARE_DPI = 150;
+/** Fixed rasterisation resolution for the round trip — real enough to feed a
+ * real detector, low enough to keep the script fast. */
+const ROUNDTRIP_DPI = 300;
 
 // ── SVG primitive parsing — rects AND circles, in document order ──────────
 
@@ -69,10 +68,9 @@ type Primitive =
     | { kind: "rect"; x: number; y: number; w: number; h: number; fill: string }
     | { kind: "circle"; cx: number; cy: number; r: number; fill: string };
 
-// Matches the exact attribute order emitted by both
-// `src/components/targetgen/svg/svgUtils.ts` (`rect()`/`circle()`) and the
-// library's own renderer — verified by generating a bundle and reading
-// `svg_text` directly rather than assumed from the Rust source.
+// Matches the exact attribute order emitted by the library's own renderer —
+// verified by generating a bundle and reading `svg_text` directly rather
+// than assumed from the Rust source.
 const RECT_ATTR_RE = /^<rect x="([-\d.eE]+)" y="([-\d.eE]+)" width="([-\d.eE]+)" height="([-\d.eE]+)" fill="([^"]+)"\/>$/;
 const CIRCLE_ATTR_RE = /^<circle cx="([-\d.eE]+)" cy="([-\d.eE]+)" r="([-\d.eE]+)" fill="([^"]+)"\/>$/;
 const TAG_RE = /<(rect|circle)\b[^>]*\/>/g;
@@ -117,7 +115,7 @@ function sample(prims: Primitive[], xMm: number, yMm: number): string {
     return fill;
 }
 
-/** Both generators only ever emit pure black/white fills, but this reads any
+/** The library only ever emits pure black/white fills, but this reads any
  * `#rrggbb` colour rather than hard-coding to exactly two, so a surprising
  * fill value shows up as an unexpected grayscale level instead of silently
  * collapsing to black or white. */
@@ -134,46 +132,6 @@ interface Raster {
     width: number;
     height: number;
     gray: Uint8Array;
-    prims: Primitive[];
-}
-
-/**
- * Half-width of the band around a primitive edge in which a pixel-centre
- * sample is treated as undecided rather than as a disagreement.
- *
- * The two renderers agree on geometry but not on how many digits of it they
- * write down: the library rounds every SVG coordinate to at most 4 decimals
- * (0.1 um), while `svgUtils.ts` interpolates the raw JS double. So the app
- * emits a puzzleboard dot radius of 2.3333333333333335 where the library
- * writes 2.3333 — the same circle, described 3.3e-5 mm apart. Sampling at
- * exact pixel centres with a strict `<` test turns that into a handful of
- * flipped pixels wherever an edge happens to land within ~1e-4 mm of a
- * sample point.
- *
- * 1e-3 mm (1 um) is chosen to sit far above the library's 1e-4 mm formatting
- * quantum and far below anything physical: it is 1/170th of a 150-DPI pixel
- * and below the spot size of any photoplotter this DXF/SVG would be sent to.
- * A real geometry disagreement — an off-by-one cell, a transposed axis, a
- * wrong bit — moves an edge by a whole square or a whole bit cell, thousands
- * of times more than this, so it stays visible.
- *
- * Boundary-ambiguous pixels are counted and reported, never silently dropped.
- */
-const BOUNDARY_EPS_MM = 1e-3;
-
-/**
- * True when the sampled fill is not stable under a +/-eps nudge, i.e. the
- * sample point sits on a primitive edge and which side it falls on is decided
- * by digits neither renderer promises to agree on.
- */
-function isBoundaryAmbiguous(prims: Primitive[], xMm: number, yMm: number): boolean {
-    const centre = sample(prims, xMm, yMm);
-    for (const dx of [-BOUNDARY_EPS_MM, BOUNDARY_EPS_MM]) {
-        for (const dy of [-BOUNDARY_EPS_MM, BOUNDARY_EPS_MM]) {
-            if (sample(prims, xMm + dx, yMm + dy) !== centre) return true;
-        }
-    }
-    return false;
 }
 
 function rasterizeGray(svgText: string, dpi: number): Raster {
@@ -192,72 +150,93 @@ function rasterizeGray(svgText: string, dpi: number): Raster {
             gray[rowOff + px] = hexToGray(sample(prims, xMm, yMm));
         }
     }
-    return { width, height, gray, prims };
+    return { width, height, gray };
 }
 
-interface CompareResult {
-    identical: boolean;
-    /** Pixels differing under a strict, zero-tolerance comparison. */
-    diffCount: number;
-    /** Of those, the ones whose sample point sits on a primitive edge in
-     *  either rendering (see `BOUNDARY_EPS_MM`) — reported, not failed on. */
-    boundaryCount: number;
-    /** Strict minus boundary: a genuine geometry or content disagreement. */
-    decisiveCount: number;
-    totalPixels: number;
-    firstDiff?: { x: number; y: number; appValue: number; libValue: number };
-    dimsMismatch?: { appW: number; appH: number; libW: number; libH: number };
-}
-
-function comparePixelwise(app: Raster, lib: Raster, dpi: number): CompareResult {
-    if (app.width !== lib.width || app.height !== lib.height) {
-        return {
-            identical: false,
-            diffCount: -1,
-            totalPixels: -1,
-            dimsMismatch: { appW: app.width, appH: app.height, libW: lib.width, libH: lib.height },
-            boundaryCount: 0,
-            decisiveCount: -1,
-        };
+/**
+ * Recursively convert a value that may contain nested JS `Map`s into plain
+ * objects/arrays.
+ *
+ * `diagnose_marker_board` returns a payload that is `instanceof Map` at
+ * every object level — an upstream serde_wasm_bindgen quirk verified
+ * empirically against the real WASM module (see the identical helper in
+ * `src/lib/wasm/wasmWorker.ts`), despite the package's `.d.ts` declaring a
+ * plain `{ result, diagnostics }` object. `Object.fromEntries` only unwraps
+ * the outermost Map; this walks the whole tree so downstream code can treat
+ * the result as ordinary JSON.
+ */
+function unwrapMaps(value: unknown): unknown {
+    if (value instanceof Map) {
+        const out: Record<string, unknown> = {};
+        for (const [key, v] of value.entries()) out[key] = unwrapMaps(v);
+        return out;
     }
-    const totalPixels = app.width * app.height;
-    const mmPerPx = 25.4 / dpi;
-    let diffCount = 0;
-    let boundaryCount = 0;
-    let firstDiff: CompareResult["firstDiff"];
+    if (Array.isArray(value)) return value.map(unwrapMaps);
+    if (value !== null && typeof value === "object") {
+        const out: Record<string, unknown> = {};
+        for (const key of Object.keys(value as Record<string, unknown>)) {
+            out[key] = unwrapMaps((value as Record<string, unknown>)[key]);
+        }
+        return out;
+    }
+    return value;
+}
 
-    for (let y = 0; y < app.height; y++) {
-        const rowOff = y * app.width;
-        const yMm = (y + 0.5) * mmPerPx;
-        for (let x = 0; x < app.width; x++) {
-            const av = app.gray[rowOff + x];
-            const lv = lib.gray[rowOff + x];
-            if (av === lv) continue;
-            diffCount++;
-
-            // Re-examine only the pixels that actually disagree — cheap,
-            // because a genuine mismatch is either rare or overwhelming.
-            const xMm = (x + 0.5) * mmPerPx;
-            if (
-                isBoundaryAmbiguous(app.prims, xMm, yMm) ||
-                isBoundaryAmbiguous(lib.prims, xMm, yMm)
-            ) {
-                boundaryCount++;
-                continue;
-            }
-            if (!firstDiff) firstDiff = { x, y, appValue: av, libValue: lv };
+/**
+ * Merge `source` over `target`, recursing into nested plain objects.
+ *
+ * Every WASM `detect_*`/`default_*_params` call must start from the
+ * module's own defaults and layer overrides on top — a params object built
+ * from scratch fails with `missing field ...` (see CLAUDE.md's WASM plugin
+ * guidance). This is the same shallow-recursive merge used by
+ * `src/lib/wasm/wasmWorker.ts::deepMerge` and `scripts/test-wasm-schemas.ts`.
+ */
+function deepMerge<T extends Record<string, unknown>>(target: T, source: Record<string, unknown>): T {
+    const out: Record<string, unknown> = { ...target };
+    for (const key of Object.keys(source)) {
+        const sv = source[key];
+        const tv = target[key];
+        if (sv !== null && typeof sv === "object" && !Array.isArray(sv) && tv !== null && typeof tv === "object" && !Array.isArray(tv)) {
+            out[key] = deepMerge(tv as Record<string, unknown>, sv as Record<string, unknown>);
+        } else {
+            out[key] = sv;
         }
     }
+    return out as T;
+}
 
-    const decisiveCount = diffCount - boundaryCount;
-    return {
-        identical: decisiveCount === 0,
-        diffCount,
-        boundaryCount,
-        decisiveCount,
-        totalPixels,
-        firstDiff,
-    };
+/** `#rrggbb` count of `<rect>` tags in a rendered SVG document. */
+function countRects(svgText: string): number {
+    return (svgText.match(/<rect\b/g) ?? []).length;
+}
+
+/**
+ * Number of ids a built-in ArUco/AprilTag dictionary holds, parsed from its
+ * name (e.g. `DICT_5X5_100` -> 100). Every dictionary this matrix uses
+ * (`DICT_4X4_50`, `DICT_5X5_100`, `DICT_6X6_50`) ends in a plain decimal
+ * count; this only needs to work for those.
+ */
+function dictionarySize(dictionaryName: string): number {
+    const m = /_(\d+)$/.exec(dictionaryName);
+    if (!m) throw new Error(`cannot parse dictionary size out of ${dictionaryName}`);
+    return +m[1];
+}
+
+/**
+ * Convert one app-side circle (row/col `cell.i`/`cell.j`) into the
+ * detector's `MarkerCircleSpec` shape — same axis transposition as
+ * `printableDocument.ts::toMarkerCircleSpec` (`cell: { i: col, j: row }`),
+ * just nested under `cell` instead of flat, because the detector's spec
+ * addresses the circle differently from the printable one (see the
+ * `MarkerCircleSpec` doc comment in `calib_targets_wasm.d.ts`). Verified
+ * against the real module: this transposition reproduces the identity
+ * alignment matrix the round trip expects; the untransposed form is exactly
+ * the axis bug Part C reintroduces on purpose.
+ */
+function toDetectorCircle(c: CircleSpec, transpose: boolean): { cell: { i: number; j: number }; polarity: "white" | "black" } {
+    const cell = transpose ? { i: c.cell.j, j: c.cell.i } : { i: c.cell.i, j: c.cell.j };
+    const polarity = (cell.i + cell.j) % 2 === 0 ? "white" : "black";
+    return { cell, polarity };
 }
 
 // ── config matrix ───────────────────────────────────────────────────────────
@@ -273,6 +252,14 @@ interface Case {
     name: string;
     target: TargetConfig;
     page: PageConfig;
+    /**
+     * Set when the round trip is KNOWN to fail for a reason that is not a
+     * defect in this repo. The case then behaves as an expected failure: a
+     * failure is reported as XFAIL and does not fail the run, but a *pass*
+     * does — because that means the underlying issue was fixed and this
+     * escape hatch must be removed rather than left to rot.
+     */
+    knownIssue?: string;
 }
 
 function page(overrides: Partial<PageConfig> = {}): PageConfig {
@@ -284,7 +271,7 @@ function page(overrides: Partial<PageConfig> = {}): PageConfig {
         marginMm: 10,
         pngDpi: 300,
         // The scale line is a pure app-side overlay with no library
-        // equivalent — always off so the two SVGs are directly comparable.
+        // equivalent — off, since the library never draws it.
         showScaleLine: false,
         ...overrides,
     };
@@ -351,6 +338,17 @@ function buildCases(defaultCircles: typeof import("../src/components/targetgen/r
                 config: { innerRows: 6, innerCols: 8, squareSizeMm: 18, circleDiameterRel: 0.45, circles: defaultCircles(6, 8), innerSquareRel: 0.35 },
             },
             page: page({ sizeKind: "letter" }),
+            knownIssue:
+                "calib-targets 0.14.1: on a marker board, an inner_square_rel inset of ~0.3 or more " +
+                "makes the white inset squares register as circle candidates (3 -> 7 on this board), " +
+                "and from 0.35 the alignment drops to 2 inliers and resolves a 180-degree-rotated " +
+                "board frame ([[-1,0],[0,-1]]) while still reporting a clean 3-of-3 circle match. " +
+                "Swept on a 6x8/18mm board at 300 DPI: 0/0.1/0.2 identity, 0.3 identity but 7 " +
+                "candidates, 0.35/0.4/0.6 rotated, 0.5 identity again — unstable rather than " +
+                "monotonic. Reproduces at 1x and 3x supersampling, so it is not a rasteriser " +
+                "artifact. The circles exist precisely to disambiguate orientation, so this defeats " +
+                "them. Generation is correct here — the board is drawn exactly as specified; this is " +
+                "a detector-side interaction to report upstream.",
         },
         {
             name: "markerboard/landscape-custom-margin",
@@ -387,132 +385,313 @@ function buildCases(defaultCircles: typeof import("../src/components/targetgen/r
 
 // ── main ─────────────────────────────────────────────────────────────────
 
+interface GeneratedBundle {
+    svg_text: string;
+    dxf_text: string;
+    json_text: string;
+    png_bytes: Uint8Array;
+}
+
 async function runHarness(mod: typeof import("@vitavision/calib-targets")): Promise<boolean> {
-    // Stub fetch so the app's charuco generator can load
-    // `public/arucodict/*.json` straight off disk (mirrors
-    // `scripts/test-charuco-generator.ts::runPartB` — the fallback to
-    // `originalFetch` for anything else keeps the WASM loader's own fetch
-    // use, and any future non-dictionary fetch, working unmodified).
-    const originalFetch = globalThis.fetch;
-    globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-        const rawUrl = typeof input === "string" ? input : input instanceof URL ? input.pathname : input.url;
-        if (!rawUrl.includes("/arucodict/")) return originalFetch(input, init);
-        const pathname = rawUrl.startsWith("http") ? new URL(rawUrl).pathname : rawUrl;
-        const filePath = join(PUBLIC_ROOT, pathname.slice(1));
-        const data = readFileSync(filePath);
-        return new Response(data, { status: 200, headers: { "Content-Type": "application/json" } });
-    }) as typeof fetch;
+    const { defaultCircles } = await import("../src/components/targetgen/reducer.ts");
+    const cases = buildCases(defaultCircles);
 
-    try {
-        const { generatePreviewSvg } = await import("../src/components/targetgen/svg/index.ts");
-        const { toPrintableDocument } = await import("../src/components/targetgen/printableDocument.ts");
-        const { defaultCircles } = await import("../src/components/targetgen/reducer.ts");
+    let anyProblem = false;
+    const summary: string[] = [];
+    const record = (line: string, ok: boolean) => {
+        console.log(line);
+        summary.push(line);
+        if (!ok) anyProblem = true;
+    };
 
-        const cases = buildCases(defaultCircles);
-        console.log(`Running ${cases.length} differential cases at ${COMPARE_DPI} DPI...\n`);
+    // ── Part A — every configuration renders, at the right page size ───────
+    console.log(`--- Part A: render + page-size check (${cases.length} cases) ---\n`);
 
-        let anyProblem = false;
-        const summary: string[] = [];
-
-        for (const c of cases) {
-            let outcome: string;
-            try {
-                const appSvg = await generatePreviewSvg(c.target, c.page);
-                const libDoc = toPrintableDocument(c.target, c.page);
-                const libBundle = mod.render_target_bundle_json(libDoc) as { svg_text: string };
-
-                const appRaster = rasterizeGray(appSvg, COMPARE_DPI);
-                const libRaster = rasterizeGray(libBundle.svg_text, COMPARE_DPI);
-                const cmp = comparePixelwise(appRaster, libRaster, COMPARE_DPI);
-
-                if (cmp.dimsMismatch) {
-                    outcome = `DIFFER: page-size mismatch — app ${cmp.dimsMismatch.appW}x${cmp.dimsMismatch.appH}px vs lib ${cmp.dimsMismatch.libW}x${cmp.dimsMismatch.libH}px`;
-                    anyProblem = true;
-                } else if (cmp.identical) {
-                    outcome =
-                        cmp.boundaryCount === 0
-                            ? "IDENTICAL"
-                            : `IDENTICAL (${cmp.boundaryCount}px on primitive edges, undecided within ${BOUNDARY_EPS_MM}mm)`;
-                } else {
-                    const pct = (cmp.decisiveCount / cmp.totalPixels) * 100;
-                    const fd = cmp.firstDiff!;
-                    outcome =
-                        `DIFFER ${cmp.decisiveCount}px (${pct.toFixed(4)}%) ` +
-                        `first@(${fd.x},${fd.y}) ${fd.appValue}vs${fd.libValue} ` +
-                        `[${cmp.diffCount} strict, ${cmp.boundaryCount} on edges]`;
-                    anyProblem = true;
-                }
-            } catch (e) {
-                outcome = `ERROR: ${e instanceof Error ? e.message : String(e)}`;
-                anyProblem = true;
-            }
-            const line = `${c.name}: ${outcome}`;
-            console.log(line);
-            summary.push(line);
-        }
-
-        // Tolerance self-check. `BOUNDARY_EPS_MM` exists to absorb the two
-        // renderers' differing number formatting, and a tolerance that is
-        // never tested is a tolerance that quietly hides bugs. So deliberately
-        // reintroduce the marker-board axis transposition this migration
-        // exists to prevent, and assert the harness still screams.
-        console.log("\n--- tolerance self-check (mutation: un-transposed circle axes) ---");
+    for (const c of cases) {
         try {
-            const c = cases.find((k) => k.name === "markerboard/basic-a4")!;
-            const appSvg = await generatePreviewSvg(c.target, c.page);
-            const mutated = toPrintableDocument(c.target, c.page);
-            const spec = mutated.target as { circles: { i: number; j: number; polarity: string }[] };
-            spec.circles = spec.circles.map((circ) => ({ ...circ, i: circ.j, j: circ.i }));
-            const mutBundle = mod.render_target_bundle_json(mutated) as { svg_text: string };
-            const cmp = comparePixelwise(
-                rasterizeGray(appSvg, COMPARE_DPI),
-                rasterizeGray(mutBundle.svg_text, COMPARE_DPI),
-                COMPARE_DPI,
-            );
-            // Measured at 5467 decisive px when this was run against the real
-            // defect; 1000 leaves three orders of magnitude of headroom over
-            // the ~200px of edge noise a passing case produces.
-            if (cmp.decisiveCount > 1000) {
-                console.log(
-                    `PASS: the un-transposed mutant is caught — ${cmp.decisiveCount} decisive px ` +
-                    `(vs ${cmp.boundaryCount} on edges). The boundary tolerance does not mask an axis swap.`,
+            const doc = toPrintableDocument(c.target, c.page);
+            const bundle = mod.render_target_bundle_json(doc) as GeneratedBundle;
+
+            const missing: string[] = [];
+            if (!bundle.svg_text) missing.push("svg_text");
+            if (!bundle.dxf_text) missing.push("dxf_text");
+            if (!bundle.json_text) missing.push("json_text");
+            if (!(bundle.png_bytes?.length > 0)) missing.push("png_bytes");
+            if (missing.length > 0) {
+                record(`FAIL ${c.name}: empty output channel(s): ${missing.join(", ")}`, false);
+                continue;
+            }
+
+            const svgDims = parsePageDims(bundle.svg_text);
+            const expectedDims = resolvePageDimensions(c.page);
+            const dimsOk = svgDims.widthMm === expectedDims.widthMm && svgDims.heightMm === expectedDims.heightMm;
+            if (!dimsOk) {
+                record(
+                    `FAIL ${c.name}: page size ${svgDims.widthMm}x${svgDims.heightMm}mm != expected ${expectedDims.widthMm}x${expectedDims.heightMm}mm`,
+                    false,
+                );
+                continue;
+            }
+
+            let insetOk = true;
+            let insetNote = "";
+            const innerSquareRel = "innerSquareRel" in c.target.config ? c.target.config.innerSquareRel : undefined;
+            if (typeof innerSquareRel === "number" && innerSquareRel > 0) {
+                const zeroTarget = { ...c.target, config: { ...c.target.config, innerSquareRel: 0 } } as TargetConfig;
+                const zeroDoc = toPrintableDocument(zeroTarget, c.page);
+                const zeroBundle = mod.render_target_bundle_json(zeroDoc) as GeneratedBundle;
+                const withInset = countRects(bundle.svg_text);
+                const withoutInset = countRects(zeroBundle.svg_text);
+                insetOk = withInset > withoutInset;
+                insetNote = `, inset rects ${withInset} > ${withoutInset}: ${insetOk}`;
+                if (!insetOk) {
+                    record(`FAIL ${c.name}: inner_square_rel=${innerSquareRel} did not add <rect> elements (${withInset} vs ${withoutInset})`, false);
+                    continue;
+                }
+            }
+
+            record(`PASS ${c.name}: renders at ${svgDims.widthMm}x${svgDims.heightMm}mm${insetNote}`, true);
+        } catch (e) {
+            record(`FAIL ${c.name}: render threw: ${e instanceof Error ? e.message : String(e)}`, false);
+        }
+    }
+
+    // ── Part B — round trip: render, rasterise, detect ─────────────────────
+    console.log(`\n--- Part B: generation -> detection round trip (${ROUNDTRIP_DPI} DPI) ---\n`);
+
+    for (const c of cases) {
+        try {
+            const doc = toPrintableDocument(c.target, c.page);
+            const bundle = mod.render_target_bundle_json(doc) as GeneratedBundle;
+            const { width, height, gray } = rasterizeGray(bundle.svg_text, ROUNDTRIP_DPI);
+            const chessCfg = mod.default_chess_config();
+
+            if (c.target.targetType === "chessboard") {
+                const cfg: ChessboardConfig = c.target.config;
+                const params = deepMerge(mod.default_chessboard_params(), {
+                    expected_rows: cfg.innerRows,
+                    expected_cols: cfg.innerCols,
+                });
+                const result = mod.detect_chessboard(width, height, gray, chessCfg, params) as { corners: unknown[] } | null;
+                const expected = cfg.innerRows * cfg.innerCols;
+                const got = result?.corners?.length ?? 0;
+                record(`${got === expected ? "PASS" : "FAIL"} ${c.name}: corners=${got} expected=${expected}`, got === expected);
+            } else if (c.target.targetType === "charuco") {
+                const cfg: CharucoConfig = c.target.config;
+                const params = mod.default_charuco_params(cfg.rows, cfg.cols, cfg.markerSizeRel, cfg.dictionary) as {
+                    board: { border_bits: number };
+                    scan: { border_bits: number };
+                };
+                params.board.border_bits = cfg.borderBits;
+                params.scan.border_bits = cfg.borderBits;
+                const result = mod.detect_charuco(width, height, gray, chessCfg, params) as {
+                    corners: unknown[];
+                    markers: { id: number; rotation: number }[];
+                } | null;
+
+                const expectedCorners = (cfg.rows - 1) * (cfg.cols - 1);
+                const gotCorners = result?.corners?.length ?? 0;
+                const markers = result?.markers ?? [];
+                const dictSize = dictionarySize(cfg.dictionary);
+                const badRotations = markers.filter((m) => m.rotation !== 0);
+                const ids = markers.map((m) => m.id);
+                const uniqueIds = new Set(ids);
+                const idsInRange = ids.every((id) => id >= 0 && id < dictSize);
+
+                // Corner COMPLETENESS is a property of the detector, not of the
+                // geometry this harness is here to check, and the two are worth
+                // keeping apart. On a hard-edged synthetic render the ChESS
+                // response at a board-boundary corner is weak enough to fall
+                // under threshold: measured 34/35 on DICT_6X6 6x8 and 23/24 on
+                // DICT_5X5 5x7, and anti-aliasing makes it worse, not better
+                // (31/35 at 3x3 supersampling) — so it is not a rasteriser
+                // artifact and not something generation can fix.
+                //
+                // What generation *does* control is asserted exactly below:
+                // every marker upright, ids unique and inside the dictionary.
+                // Those are the assertions that catch the bug class this file
+                // exists for — a 180deg-rotated marker decodes cleanly as a
+                // different id, so `rotation === 0` is the sharp test and a
+                // corner count would pass either way.
+                const cornerFloor = Math.floor(0.9 * expectedCorners);
+                let ok = gotCorners >= cornerFloor;
+                ok = ok && markers.length >= 1;
+                ok = ok && badRotations.length === 0;
+                ok = ok && uniqueIds.size === ids.length;
+                ok = ok && idsInRange;
+
+                record(
+                    `${ok ? "PASS" : "FAIL"} ${c.name}: corners=${gotCorners} expected=${expectedCorners}, ` +
+                        `(floor ${cornerFloor}), markers=${markers.length} ` +
+                        `(rotations=${[...new Set(markers.map((m) => m.rotation))]}), ` +
+                        `ids=[${ids.join(",")}] unique=${uniqueIds.size === ids.length} inRange(0..${dictSize})=${idsInRange}`,
+                    ok,
+                );
+            } else if (c.target.targetType === "markerboard") {
+                const cfg: MarkerBoardConfig = c.target.config;
+                const params = mod.default_marker_board_params() as {
+                    board: { rows: number; cols: number; circles: unknown[] };
+                };
+                params.board = {
+                    rows: cfg.innerRows,
+                    cols: cfg.innerCols,
+                    circles: cfg.circles.map((circ) => toDetectorCircle(circ, true)),
+                };
+                const raw = mod.diagnose_marker_board(width, height, gray, chessCfg, params);
+                const diag = unwrapMaps(raw) as {
+                    result?: { corners: unknown[]; alignment?: { matrix: number[][] } } | null;
+                    diagnostics: { circle_candidates: unknown[]; circle_matches: unknown[] };
+                };
+
+                const expectedCorners = cfg.innerRows * cfg.innerCols;
+                const gotCorners = diag.result?.corners?.length ?? 0;
+                const matrix = diag.result?.alignment?.matrix;
+                const isIdentity = JSON.stringify(matrix) === JSON.stringify([[1, 0], [0, 1]]);
+                const candidates = diag.diagnostics?.circle_candidates?.length ?? 0;
+                const matches = diag.diagnostics?.circle_matches?.length ?? 0;
+
+                const ok = diag.result != null && gotCorners === expectedCorners && candidates === 3 && matches === 3 && isIdentity;
+                const detail =
+                    `corners=${gotCorners} expected=${expectedCorners}, ` +
+                    `circle_candidates=${candidates} circle_matches=${matches}, ` +
+                    `alignment=${JSON.stringify(matrix)} identity=${isIdentity}`;
+
+                if (c.knownIssue) {
+                    if (ok) {
+                        record(
+                            `FAIL ${c.name}: ${detail}\n` +
+                            `     This case is marked as a known issue, but it now PASSES. The upstream ` +
+                            `behaviour changed — delete the knownIssue note and let the assertion stand.\n` +
+                            `     Known issue was: ${c.knownIssue}`,
+                            false,
+                        );
+                    } else {
+                        record(`XFAIL ${c.name}: ${detail}\n     Known issue: ${c.knownIssue}`, true);
+                    }
+                } else {
+                    record(`${ok ? "PASS" : "FAIL"} ${c.name}: ${detail}`, ok);
+                }
+            } else if (c.target.targetType === "puzzleboard") {
+                const cfg: PuzzleboardConfig = c.target.config;
+                const params = mod.default_puzzleboard_params(cfg.rows, cfg.cols);
+                const result = mod.detect_puzzleboard(width, height, gray, chessCfg, params) as {
+                    decode: {
+                        bit_error_rate: number;
+                        edges_matched: number;
+                        edges_observed: number;
+                        master_origin_row: number;
+                        master_origin_col: number;
+                    };
+                } | null;
+                const decode = result?.decode;
+                const ok = !!decode && decode.bit_error_rate === 0 && decode.edges_matched === decode.edges_observed;
+                record(
+                    `${ok ? "PASS" : "FAIL"} ${c.name}: bit_error_rate=${decode?.bit_error_rate} edges_matched=${decode?.edges_matched}/${decode?.edges_observed}, ` +
+                        `master_origin=(${decode?.master_origin_row},${decode?.master_origin_col})`,
+                    ok,
                 );
             } else {
-                console.log(
-                    `FAIL: the un-transposed mutant produced only ${cmp.decisiveCount} decisive px — ` +
-                    `BOUNDARY_EPS_MM (${BOUNDARY_EPS_MM}mm) is masking a real geometry error.`,
-                );
-                anyProblem = true;
+                const exhaustive: never = c.target;
+                throw new Error(`unhandled target type in round trip: ${JSON.stringify(exhaustive)}`);
             }
         } catch (e) {
-            console.log(`FAIL: tolerance self-check errored: ${e instanceof Error ? e.message : String(e)}`);
-            anyProblem = true;
+            record(`FAIL ${c.name}: round trip threw: ${e instanceof Error ? e.message : String(e)}`, false);
         }
-
-        // Pin that `inner_square_rel` is a live, validated field rather than
-        // one silently dropped by the WASM boundary — a failure mode this
-        // library family (serde-derived optional f64 fields) is prone to.
-        console.log("\n--- inner_square_rel bounds check ---");
-        try {
-            mod.render_target_bundle_json({
-                schema_version: 1,
-                target: { kind: "chessboard", inner_rows: 4, inner_cols: 4, square_size_mm: 20, inner_square_rel: 1.0 },
-                page: { size: { kind: "a4" }, orientation: "portrait", margin_mm: 10 },
-                render: { debug_annotations: false, png_dpi: 150 },
-            });
-            console.log("FAIL: render_target_bundle_json accepted inner_square_rel=1.0 (documented range is [0,1)) — the field may be silently ignored");
-            anyProblem = true;
-        } catch (e) {
-            console.log(`PASS: render_target_bundle_json rejected inner_square_rel=1.0 as expected: ${String(e)}`);
-        }
-
-        console.log("\n=== Summary ===");
-        for (const line of summary) console.log(line);
-
-        return !anyProblem;
-    } finally {
-        globalThis.fetch = originalFetch;
     }
+
+    // ── Part C — mutation self-check ────────────────────────────────────────
+    //
+    // The round-trip assertion above only means something if it can actually
+    // notice a broken axis mapping. Reintroduce the marker-board circle-axis
+    // transposition bug this migration exists to prevent (see
+    // `printableDocument.ts::toMarkerCircleSpec`) on the detector side only —
+    // the printed board stays correct — and assert detection notices.
+    //
+    // Measured against the real module: the mutant still returns a clean
+    // 3-of-3 circle match (corners=35, circle_candidates=3, circle_matches=3,
+    // alignment_inliers=3) with nothing reporting an error, but
+    // `alignment.matrix` becomes [[0,1],[1,0]] — the reflection about the
+    // diagonal — instead of the identity the correctly-transposed circles
+    // produce. That is the only signal distinguishing the two, so this
+    // assertion is what actually validates Part B's markerboard checks.
+    console.log("\n--- Part C: mutation self-check (marker-board circle axes) ---\n");
+    try {
+        const c = cases.find((k) => k.name === "markerboard/landscape-custom-margin")!;
+        const cfg = c.target.config as MarkerBoardConfig;
+        const doc = toPrintableDocument(c.target, c.page);
+        const bundle = mod.render_target_bundle_json(doc) as GeneratedBundle;
+        const { width, height, gray } = rasterizeGray(bundle.svg_text, ROUNDTRIP_DPI);
+        const chessCfg = mod.default_chess_config();
+
+        const params = mod.default_marker_board_params() as { board: { rows: number; cols: number; circles: unknown[] } };
+        params.board = {
+            rows: cfg.innerRows,
+            cols: cfg.innerCols,
+            // Untransposed: reintroduces the axis-swap bug on purpose.
+            circles: cfg.circles.map((circ) => toDetectorCircle(circ, false)),
+        };
+        const raw = mod.diagnose_marker_board(width, height, gray, chessCfg, params);
+        const diag = unwrapMaps(raw) as {
+            result?: { corners: unknown[]; alignment?: { matrix: number[][] } } | null;
+            diagnostics: { circle_candidates: unknown[]; circle_matches: unknown[]; alignment_inliers: number };
+        };
+
+        const gotCorners = diag.result?.corners?.length ?? 0;
+        const matrix = diag.result?.alignment?.matrix;
+        const isIdentity = JSON.stringify(matrix) === JSON.stringify([[1, 0], [0, 1]]);
+        const candidates = diag.diagnostics?.circle_candidates?.length ?? 0;
+        const matches = diag.diagnostics?.circle_matches?.length ?? 0;
+        const inliers = diag.diagnostics?.alignment_inliers ?? 0;
+
+        console.log(
+            `mutant: corners=${gotCorners} alignment=${JSON.stringify(matrix)} ` +
+                `circle_candidates=${candidates} circle_matches=${matches} alignment_inliers=${inliers}`,
+        );
+
+        if (isIdentity) {
+            record(
+                "FAIL mutation self-check: the untransposed mutant still produced the identity alignment matrix — " +
+                    "the round-trip assertion in Part B has no teeth, because this is the only signal distinguishing " +
+                    "a correct axis mapping from a broken one.",
+                false,
+            );
+        } else {
+            record(
+                `PASS mutation self-check: the untransposed mutant is caught — alignment ${JSON.stringify(matrix)} != identity, ` +
+                    `while corners/circle_candidates/circle_matches/alignment_inliers all still look clean (${gotCorners}/${candidates}/${matches}/${inliers}). ` +
+                    "The round-trip assertion does distinguish a correct axis mapping from the bug this migration fixed.",
+                true,
+            );
+        }
+    } catch (e) {
+        record(`FAIL mutation self-check: errored: ${e instanceof Error ? e.message : String(e)}`, false);
+    }
+
+    // ── inner_square_rel bounds check ───────────────────────────────────────
+    //
+    // Pins that `inner_square_rel` is a live, validated field rather than one
+    // silently dropped by the WASM boundary — a failure mode this library
+    // family (serde-derived optional f64 fields) is prone to.
+    console.log("\n--- inner_square_rel bounds check ---\n");
+    try {
+        mod.render_target_bundle_json({
+            schema_version: 1,
+            target: { kind: "chessboard", inner_rows: 4, inner_cols: 4, square_size_mm: 20, inner_square_rel: 1.0 },
+            page: { size: { kind: "a4" }, orientation: "portrait", margin_mm: 10 },
+            render: { debug_annotations: false, png_dpi: 150 },
+        });
+        record(
+            "FAIL: render_target_bundle_json accepted inner_square_rel=1.0 (documented range is [0,1)) — the field may be silently ignored",
+            false,
+        );
+    } catch (e) {
+        record(`PASS: render_target_bundle_json rejected inner_square_rel=1.0 as expected: ${String(e)}`, true);
+    }
+
+    console.log("\n=== Summary ===");
+    for (const line of summary) console.log(line);
+
+    return !anyProblem;
 }
 
 async function main() {
@@ -523,14 +702,14 @@ async function main() {
 
     if (!ok) {
         console.log(
-            "\nFAIL: one or more cases differ or errored. This is a real disagreement between " +
-            "src/components/targetgen/svg/* and @vitavision/calib-targets' renderer (or a genuine " +
-            "WASM schema regression) — report it, do not adjust the expectation to hide it.",
+            "\nFAIL: one or more cases failed. This is a real disagreement between what " +
+                "toPrintableDocument/render_target_bundle_json rendered and what the library's own detectors read back " +
+                "(or a genuine WASM schema regression) — report it, do not adjust the expectation to hide it.",
         );
         process.exit(1);
     }
 
-    console.log("\nPASS: every case is pixel-identical between the app's TS generators and @vitavision/calib-targets' renderer.");
+    console.log("\nPASS: every case renders at the right page size and round-trips through the library's own detectors.");
 }
 
 main().catch((e) => {

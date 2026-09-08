@@ -11,7 +11,7 @@ import type {
 } from "./types";
 
 /** Compute default circle triangle centered on the board. */
-export function defaultCircles(innerRows: number, innerCols: number): CircleSpec[] {
+export function defaultCircles(innerRows: number, innerCols: number): [CircleSpec, CircleSpec, CircleSpec] {
     const totalRows = innerRows + 1;
     const totalCols = innerCols + 1;
     const ci = Math.floor((totalRows - 1) / 2);

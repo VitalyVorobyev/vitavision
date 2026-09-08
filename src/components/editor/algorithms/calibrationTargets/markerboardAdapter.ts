@@ -12,10 +12,13 @@ import MarkerboardOverlay from "../../canvas/overlays/MarkerboardOverlay";
 const initialConfig: MarkerBoardConfig = {
     boardRows: 22,
     boardCols: 22,
+    // App coordinates (row, col). These are the same three physical squares the
+    // previous i/j values named — (row, col) = (j, i) — so detection behaviour
+    // is unchanged; only the axis names the user sees are.
     circles: [
-        { i: 11, j: 11, polarity: "black" },
-        { i: 12, j: 11, polarity: "white" },
-        { i: 12, j: 12, polarity: "white" },
+        { row: 11, col: 11, polarity: "black" },
+        { row: 11, col: 12, polarity: "white" },
+        { row: 12, col: 12, polarity: "white" },
     ],
     expectedRows: 22,
     expectedCols: 22,
@@ -38,7 +41,22 @@ const initialConfig: MarkerBoardConfig = {
 
 const presets: AlgorithmPreset[] = [
     { label: "22×22 default", description: "Standard marker board with centered triangle", config: { ...initialConfig } },
-    { label: "10×14 compact", description: "Smaller board", config: { ...initialConfig, boardRows: 10, boardCols: 14, expectedRows: 10, expectedCols: 14, circles: [{ i: 5, j: 7, polarity: "white" as const }, { i: 6, j: 7, polarity: "white" as const }, { i: 6, j: 8, polarity: "white" as const }] } },
+    {
+        label: "10×14 compact",
+        description: "Smaller board",
+        config: {
+            ...initialConfig,
+            boardRows: 10,
+            boardCols: 14,
+            expectedRows: 10,
+            expectedCols: 14,
+            circles: [
+                { row: 7, col: 5, polarity: "white" as const },
+                { row: 7, col: 6, polarity: "white" as const },
+                { row: 8, col: 6, polarity: "white" as const },
+            ] as MarkerBoardConfig["circles"],
+        },
+    },
 ];
 
 const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
@@ -85,11 +103,31 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
             // "invalid type: JsValue(Object(...)), expected f32" at detect time.
             chessCfg: { threshold: c.minCornerStrength },
             params: {
-                layout: {
+                // The schema key is `board`, not `layout`. Marker-board params
+                // carry no `layout` field, and the WASM boundary silently drops
+                // unknown keys — so every detection ran against the library's
+                // default 6x8 board and its default circle cells, regardless of
+                // what the user configured. Verified against 0.14.0: an invalid
+                // payload under `board` throws, the same payload under `layout`
+                // is accepted exactly like a made-up key.
+                board: {
                     rows: c.boardRows,
                     cols: c.boardCols,
+                    // Transpose into the library's convention. calib-targets
+                    // uses "i right, j down", so its `i` is the COLUMN and its
+                    // `j` is the ROW — the opposite of how this app names board
+                    // cells in both the detector form above and the target
+                    // generator. The same swap happens on the generation side
+                    // in targetgen/printableDocument.ts; the two must agree or
+                    // a board printed from cells (r, c) is looked for at (c, r).
+                    //
+                    // Passing app coordinates straight through was the previous
+                    // behaviour, and it failed silently: the detector still
+                    // reported a 3-of-3 circle match, but resolved the board
+                    // frame with an alignment matrix of [[0,1],[1,0]] instead of
+                    // the identity — a grid mirrored about the diagonal.
                     circles: c.circles.map((circle) => ({
-                        cell: { i: circle.i, j: circle.j },
+                        cell: { i: circle.col, j: circle.row },
                         polarity: circle.polarity,
                     })),
                 },

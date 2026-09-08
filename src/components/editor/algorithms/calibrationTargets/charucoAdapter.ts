@@ -20,7 +20,7 @@ const initialConfig: CharucoConfig = {
     graphMaxSpacingPix: 160,
     graphKNeighbors: 8,
     graphOrientationToleranceDeg: 12.5,
-    scanBorderBits: 1,
+    borderBits: 1,
     scanInsetFrac: 0.06,
     scanMinBorderScore: 0.75,
     scanDedupById: true,
@@ -86,6 +86,12 @@ export const charucoAlgorithm: AlgorithmDefinition = {
                     marker_size_rel: c.markerSizeRel,
                     dictionary: c.dictionary,
                     marker_layout: "opencv_charuco",
+                    // calib-targets 0.14 added `border_bits` to CharucoBoardSpec, and
+                    // CharucoDetector::new now overwrites params.scan.border_bits with
+                    // the board's value on every construction path — setting it under
+                    // `scan` (as before 0.14) is silently ignored. See calib-targets
+                    // docs/migrations/0.14.0.md.
+                    border_bits: c.borderBits,
                 },
                 chessboard: {
                     min_corner_strength: c.chessMinCornerStrength,
@@ -100,7 +106,6 @@ export const charucoAlgorithm: AlgorithmDefinition = {
                     },
                 },
                 scan: {
-                    border_bits: c.scanBorderBits,
                     inset_frac: c.scanInsetFrac,
                     min_border_score: c.scanMinBorderScore,
                     dedup_by_id: c.scanDedupById,

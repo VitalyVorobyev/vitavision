@@ -1,13 +1,18 @@
-import { useState } from "react";
-import { X, Plus } from "lucide-react";
 import { CollapsibleSection, NumberField, Section } from "../formFields";
 import type { AlgorithmConfigFormProps } from "../types";
-import type { MarkerCircleSpec } from "../../../../lib/types";
+import type { MarkerCircleCell } from "../../../../lib/types";
 
 export interface MarkerBoardConfig {
     boardRows: number;
     boardCols: number;
-    circles: MarkerCircleSpec[];
+    // The Rust printable spec and the detector spec both declare this as a
+    // fixed-size array ([MarkerCircleSpec; 3]) — the count of three circles
+    // is fixed by the library, not a UI choice.
+    //
+    // Held in app coordinates (row/col), the same way the target generator
+    // holds them, and transposed to the library's i=col/j=row convention in
+    // markerboardAdapter.ts. See MarkerCircleCell's doc comment.
+    circles: [MarkerCircleCell, MarkerCircleCell, MarkerCircleCell];
     expectedRows: number;
     expectedCols: number;
     minCornerStrength: number;
@@ -32,20 +37,13 @@ export interface MarkerBoardConfig {
 const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig>) => {
     const { config, onChange, disabled, modal } = props;
     const cols = modal ? 2 : undefined;
-    const [newI, setNewI] = useState(0);
-    const [newJ, setNewJ] = useState(0);
-    const [newPolarity, setNewPolarity] = useState<"white" | "black">("white");
 
     const set = <K extends keyof MarkerBoardConfig>(key: K, value: MarkerBoardConfig[K]) =>
         onChange({ ...config, [key]: value });
 
-    const removeCircle = (index: number) =>
-        onChange({ ...config, circles: config.circles.filter((_, idx) => idx !== index) });
-
-    const addCircle = () => {
-        const exists = config.circles.some((c) => c.i === newI && c.j === newJ);
-        if (exists) return;
-        onChange({ ...config, circles: [...config.circles, { i: newI, j: newJ, polarity: newPolarity }] });
+    const updateCircle = (index: number, partial: Partial<MarkerCircleCell>) => {
+        const circles = config.circles.map((c, idx) => (idx === index ? { ...c, ...partial } : c)) as MarkerBoardConfig["circles"];
+        onChange({ ...config, circles });
     };
 
     return (
@@ -72,64 +70,44 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
             </Section>
             <Section title="Expected circles">
                 <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                        <span className="w-12">Row</span>
+                        <span className="w-12">Col</span>
+                        <span>Polarity</span>
+                    </div>
                     {config.circles.map((c, idx) => (
-                        <div key={`${c.i}-${c.j}`} className="flex items-center gap-2 text-xs">
-                            <span className="font-mono text-muted-foreground">
-                                ({c.i}, {c.j})
-                            </span>
-                            <span className="text-muted-foreground">{c.polarity}</span>
-                            <button
-                                type="button"
-                                onClick={() => removeCircle(idx)}
+                        <div key={idx} className="flex items-center gap-1.5 text-xs">
+                            <input
+                                type="number"
+                                value={c.row}
+                                onChange={(e) => updateCircle(idx, { row: Number(e.target.value) })}
                                 disabled={disabled}
-                                className="ml-auto p-0.5 text-muted-foreground hover:text-destructive transition-colors"
-                                title="Remove circle"
+                                className="w-12 rounded border border-border bg-background px-1.5 py-0.5 text-xs"
+                                placeholder="row"
+                                min={0}
+                                aria-label={`Circle ${idx + 1} row`}
+                            />
+                            <input
+                                type="number"
+                                value={c.col}
+                                onChange={(e) => updateCircle(idx, { col: Number(e.target.value) })}
+                                disabled={disabled}
+                                className="w-12 rounded border border-border bg-background px-1.5 py-0.5 text-xs"
+                                placeholder="col"
+                                min={0}
+                                aria-label={`Circle ${idx + 1} column`}
+                            />
+                            <select
+                                value={c.polarity}
+                                onChange={(e) => updateCircle(idx, { polarity: e.target.value as "white" | "black" })}
+                                disabled={disabled}
+                                className="rounded border border-border bg-background px-1 py-0.5 text-xs"
                             >
-                                <X size={12} />
-                            </button>
+                                <option value="white">white</option>
+                                <option value="black">black</option>
+                            </select>
                         </div>
                     ))}
-                    {config.circles.length === 0 && (
-                        <p className="text-[11px] text-muted-foreground italic">No circles defined</p>
-                    )}
-                </div>
-                <div className="flex items-center gap-1.5 mt-2">
-                    <input
-                        type="number"
-                        value={newI}
-                        onChange={(e) => setNewI(Number(e.target.value))}
-                        disabled={disabled}
-                        className="w-12 rounded border border-border bg-background px-1.5 py-0.5 text-xs"
-                        placeholder="i"
-                        min={0}
-                    />
-                    <input
-                        type="number"
-                        value={newJ}
-                        onChange={(e) => setNewJ(Number(e.target.value))}
-                        disabled={disabled}
-                        className="w-12 rounded border border-border bg-background px-1.5 py-0.5 text-xs"
-                        placeholder="j"
-                        min={0}
-                    />
-                    <select
-                        value={newPolarity}
-                        onChange={(e) => setNewPolarity(e.target.value as "white" | "black")}
-                        disabled={disabled}
-                        className="rounded border border-border bg-background px-1 py-0.5 text-xs"
-                    >
-                        <option value="white">white</option>
-                        <option value="black">black</option>
-                    </select>
-                    <button
-                        type="button"
-                        onClick={addCircle}
-                        disabled={disabled}
-                        className="p-0.5 text-muted-foreground hover:text-foreground transition-colors"
-                        title="Add circle"
-                    >
-                        <Plus size={14} />
-                    </button>
                 </div>
             </Section>
             <CollapsibleSection title="Chessboard detector" columns={cols}>

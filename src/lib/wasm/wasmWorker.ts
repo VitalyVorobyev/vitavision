@@ -31,7 +31,13 @@ export type AlgorithmType =
     | "radsym"
     | "puzzleboard";
 
-export type WorkerCommand = "detect" | "radsym-heatmap" | "puzzleboard-gen-png" | "render-target-bundle";
+export type WorkerCommand =
+    | "detect"
+    | "radsym-heatmap"
+    | "puzzleboard-gen-png"
+    | "render-target-bundle"
+    | "render-ringgrid-bundle"
+    | "ringgrid-page-size";
 
 export interface WorkerRequest {
     id: number;
@@ -1038,6 +1044,42 @@ async function handleRenderTargetBundle(
     return { svg: bundle.svg_text, dxf: bundle.dxf_text, json: bundle.json_text, png: bundle.png_bytes };
 }
 
+/**
+ * Render a `ringgrid.target.v6` target (see
+ * `src/components/targetgen/ringgridTarget.ts`) via `@vitavision/ringgrid`'s
+ * own renderer, returning the full JSON/SVG/PNG/DXF bundle.
+ *
+ * Unlike `handleRenderTargetBundle` (calib-targets), `render_target_bundle_json`
+ * here takes TWO JSON STRING arguments and runs through the ringgrid WASM
+ * module (`getRinggridModule()`) — verified against the real 0.13.0 module,
+ * see `ringgridTarget.ts`'s header comment for the verification method.
+ */
+async function handleRenderRinggridBundle(
+    targetJson: string,
+    optionsJson: string,
+): Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }> {
+    const mod = await getRinggridModule();
+    const bundle = mod.render_target_bundle_json(targetJson, optionsJson) as {
+        json_text: string;
+        svg_text: string;
+        png_bytes: Uint8Array;
+        dxf_text: string;
+    };
+    return { svg: bundle.svg_text, dxf: bundle.dxf_text, json: bundle.json_text, png: bundle.png_bytes };
+}
+
+/**
+ * The printed page size a ring-grid target would occupy for the given render
+ * options, as `[width_mm, height_mm]`. Companion to
+ * `handleRenderRinggridBundle` for a "will this fit?" check without paying
+ * for a full render — used by the board-dimension validation/preview path.
+ */
+async function handleRinggridPageSize(targetJson: string, optionsJson: string): Promise<[number, number]> {
+    const mod = await getRinggridModule();
+    const sizeJson = mod.target_page_size_mm(targetJson, optionsJson);
+    return JSON.parse(sizeJson) as [number, number];
+}
+
 // ── Message handler ──────────────────────────────────────────────────────────
 
 self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
@@ -1075,6 +1117,23 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
                 { id, result: bundleResult } satisfies WorkerResponse,
                 [bundleResult.png.buffer],
             );
+            return;
+        }
+
+        if (command === "render-ringgrid-bundle") {
+            const { targetJson, optionsJson } = typedConfig as { targetJson: string; optionsJson: string };
+            const bundleResult = await handleRenderRinggridBundle(targetJson, optionsJson);
+            (self as unknown as Worker).postMessage(
+                { id, result: bundleResult } satisfies WorkerResponse,
+                [bundleResult.png.buffer],
+            );
+            return;
+        }
+
+        if (command === "ringgrid-page-size") {
+            const { targetJson, optionsJson } = typedConfig as { targetJson: string; optionsJson: string };
+            const sizeResult = await handleRinggridPageSize(targetJson, optionsJson);
+            (self as unknown as Worker).postMessage({ id, result: sizeResult } satisfies WorkerResponse);
             return;
         }
 

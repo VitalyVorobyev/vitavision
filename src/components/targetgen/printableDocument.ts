@@ -265,8 +265,9 @@ function toPuzzleBoardSpec(cfg: PuzzleboardConfig): PrintablePuzzleBoardSpec {
  * `PrintableTargetDocument` JSON that `render_target_bundle_json` expects.
  *
  * Throws for `targetType === "ringgrid"` — ring grid is not a printable kind
- * in `@vitavision/calib-targets` and stays on the TS generator path
- * (`svg/ringgridSvg.ts`) for now.
+ * in `@vitavision/calib-targets`. It renders via `@vitavision/ringgrid`'s own
+ * renderer instead (`ringgridTarget.ts`); this function is unreachable from
+ * the render path for that kind.
  */
 export function toPrintableDocument(target: TargetConfig, page: PageConfig): PrintableTargetDocument {
     let spec: PrintableTargetSpec;
@@ -286,7 +287,7 @@ export function toPrintableDocument(target: TargetConfig, page: PageConfig): Pri
         case "ringgrid":
             throw new Error(
                 "toPrintableDocument: ring grid is not a printable kind in @vitavision/calib-targets " +
-                "— it stays on the TS generator path (svg/ringgridSvg.ts) for now.",
+                "— it renders via @vitavision/ringgrid's own renderer instead (see ringgridTarget.ts).",
             );
         default: {
             const exhaustive: never = target;

@@ -155,6 +155,37 @@ export async function renderTargetBundleWasm(
     ) as Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }>;
 }
 
+export async function renderRinggridBundleWasm(
+    targetJson: string,
+    optionsJson: string,
+): Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }> {
+    return postDetection(
+        // Dead field for this command: the worker dispatches on `command`,
+        // not `algorithm`, before ever reading it (mirrors
+        // renderTargetBundleWasm's placeholder above).
+        "chessboard",
+        new Uint8Array(0),
+        0,
+        0,
+        { targetJson, optionsJson },
+        "render-ringgrid-bundle",
+    ) as Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }>;
+}
+
+export async function ringgridBoardSizeMmWasm(
+    targetJson: string,
+    optionsJson: string,
+): Promise<[number, number]> {
+    return postDetection(
+        "chessboard",
+        new Uint8Array(0),
+        0,
+        0,
+        { targetJson, optionsJson },
+        "ringgrid-page-size",
+    ) as Promise<[number, number]>;
+}
+
 export async function generateRadsymHeatmap(
     pixels: Uint8Array,
     width: number,

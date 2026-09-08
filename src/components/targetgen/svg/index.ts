@@ -1,18 +1,22 @@
 import type { TargetConfig, PageConfig } from "../types";
 import { resolvePageDimensions } from "./paperConstants";
-import { ringgridSvg } from "./ringgridSvg";
 import { renderScaleLine } from "./scaleLine";
 import { renderTargetViaWasm } from "../renderViaWasm";
+import { toRinggridTarget, toRinggridRenderOptions } from "../ringgridTarget";
+import { renderRinggridBundleWasm } from "../../../lib/wasm/wasmWorkerProxy";
 
 export async function generatePreviewSvg(target: TargetConfig, page: PageConfig): Promise<string> {
     const dims = resolvePageDimensions(page);
 
-    // Ring grid has no printable representation in @vitavision/calib-targets
-    // and stays on the TS generator path (see renderViaWasm.ts). Every other
-    // kind is rendered by the library via the WASM worker.
+    // Ring grid renders via @vitavision/ringgrid's own WASM renderer
+    // (ringgridTarget.ts); every other kind goes through
+    // @vitavision/calib-targets via renderViaWasm.ts.
     let svg: string;
     if (target.targetType === "ringgrid") {
-        svg = await ringgridSvg(target.config, dims);
+        const targetJson = JSON.stringify(toRinggridTarget(target.config));
+        const optionsJson = JSON.stringify(toRinggridRenderOptions(page));
+        const bundle = await renderRinggridBundleWasm(targetJson, optionsJson);
+        svg = bundle.svg;
     } else {
         const bundle = await renderTargetViaWasm(target, page);
         svg = bundle.svg;

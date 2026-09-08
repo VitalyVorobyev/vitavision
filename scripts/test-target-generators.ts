@@ -34,9 +34,13 @@
  *      reintroducing the marker-board axis-transposition bug this migration
  *      exists to prevent, and asserting detection notices (Part C).
  *
- * Ring grid is excluded: it has no printable representation in
- * `@vitavision/calib-targets` and stays on the TS generator path
- * (`toPrintableDocument` throws for it — see that file).
+ * Ring grid is a separate case (Part D, below Part C): it has no printable
+ * representation in `@vitavision/calib-targets` — it renders through
+ * `@vitavision/ringgrid`'s own WASM renderer instead (`ringgridTarget.ts`),
+ * a different module with a different target schema, so it gets its own
+ * render -> rasterise(PNG) -> detect round trip rather than joining the
+ * `Case` matrix above (which is calib-targets-specific: `toPrintableDocument`
+ * still throws for `targetType === "ringgrid"`, by design).
  *
  * This harness does NOT adjust expectations to make a case pass. A genuine
  * disagreement between what was rendered and what was detected is reported
@@ -57,6 +61,8 @@ import type {
 } from "../src/components/targetgen/types";
 import { toPrintableDocument } from "../src/components/targetgen/printableDocument";
 import { resolvePageDimensions } from "../src/components/targetgen/svg/paperConstants";
+import { toRinggridTarget } from "../src/components/targetgen/ringgridTarget";
+import { PNG } from "pngjs";
 
 /** Fixed rasterisation resolution for the round trip — real enough to feed a
  * real detector, low enough to keep the script fast. */
@@ -392,7 +398,10 @@ interface GeneratedBundle {
     png_bytes: Uint8Array;
 }
 
-async function runHarness(mod: typeof import("@vitavision/calib-targets")): Promise<boolean> {
+async function runHarness(
+    mod: typeof import("@vitavision/calib-targets"),
+    ringgridMod: typeof import("@vitavision/ringgrid"),
+): Promise<boolean> {
     const { defaultCircles } = await import("../src/components/targetgen/reducer.ts");
     const cases = buildCases(defaultCircles);
 
@@ -688,6 +697,108 @@ async function runHarness(mod: typeof import("@vitavision/calib-targets")): Prom
         record(`PASS: render_target_bundle_json rejected inner_square_rel=1.0 as expected: ${String(e)}`, true);
     }
 
+    // ── Part D — ring grid: render -> rasterise(PNG) -> detect round trip ──
+    //
+    // Ring grid renders through @vitavision/ringgrid, a different WASM
+    // module with a different target schema than calib-targets — it has no
+    // `PrintableTargetDocument` representation, so it can't join the `Case`
+    // matrix above. This exercises the real render -> real detect round trip
+    // the same way Part B does for the other four kinds, just through
+    // ringgrid's own SVG/PNG/detector triplet instead of calib-targets'.
+    console.log("\n--- Part D: ring grid generation -> detection round trip ---\n");
+    try {
+        const { DEFAULT_RINGGRID } = await import("../src/components/targetgen/reducer.ts");
+        const targetSpec = toRinggridTarget(DEFAULT_RINGGRID);
+        const targetJson = JSON.stringify(targetSpec);
+
+        // `fit_content` with a real margin (not the 0-margin board-size-only
+        // query `ringgridTarget.ts::toRinggridBoardSizeOptions` uses):
+        // verified empirically that a 0mm margin clips the outer ring of
+        // every edge-column marker exactly at the page boundary (their draw
+        // circle is tangent to the page edge), costing 16/203 markers on
+        // this board regardless of detector marker_scale — a real
+        // rasterisation-edge effect, not a detection-sensitivity one. A
+        // margin_mm of 2 or more was sufficient in that sweep; 10 is used
+        // here to match the margin the app's own default `PageConfig` uses
+        // (`reducer.ts::INITIAL_STATE.page.marginMm`).
+        const optionsJson = JSON.stringify({
+            page: { size: { kind: "fit_content" }, orientation: "portrait", margin_mm: 10 },
+            include_scale_bar: false,
+            png_dpi: 300,
+        });
+
+        const bundle = ringgridMod.render_target_bundle_json(targetJson, optionsJson) as {
+            json_text: string;
+            svg_text: string;
+            png_bytes: Uint8Array;
+            dxf_text: string;
+        };
+
+        const missingChannels: string[] = [];
+        if (!bundle.svg_text) missingChannels.push("svg_text");
+        if (!bundle.dxf_text) missingChannels.push("dxf_text");
+        if (!bundle.json_text) missingChannels.push("json_text");
+        if (!(bundle.png_bytes?.length > 0)) missingChannels.push("png_bytes");
+        if (missingChannels.length > 0) {
+            throw new Error(`empty output channel(s): ${missingChannels.join(", ")}`);
+        }
+
+        // Every marker id the renderer actually drew, read straight off the
+        // SVG's own `data-id="N"` attributes rather than assumed from the
+        // lattice math — the ground truth this round trip checks the
+        // detector against.
+        const drawnIds = [...bundle.svg_text.matchAll(/data-id="(\d+)"/g)].map((m) => Number(m[1]));
+        if (drawnIds.length === 0) {
+            throw new Error("no data-id markers found in rendered SVG — nothing to round-trip against");
+        }
+
+        const png = PNG.sync.read(Buffer.from(bundle.png_bytes));
+
+        const detector = new ringgridMod.RinggridDetector(targetJson);
+        try {
+            // The default detector `marker_scale` (14-66 px diameter) is
+            // tuned for images at a much lower render DPI than this
+            // harness's 300 — at 300 dpi this board's marker diameter is
+            // ~142 px, well outside that window, so completeness is
+            // artificially poor (82/203 measured) with the default config.
+            // Widening the scale window to bracket the actual render size
+            // fixes it (203/203, 0 spurious, measured on this exact board
+            // and options). This is NOT loosening the assertion below to
+            // make it pass — `diameter_min_px`/`diameter_max_px` is a
+            // detector *input*, chosen to match the image being fed to it,
+            // the same way a real caller would size it to their capture
+            // setup. Do not "fix" a future regression here by widening this
+            // further or dropping the exact-match assertion instead.
+            detector.update_config(JSON.stringify({ marker_scale: { diameter_min_px: 60, diameter_max_px: 180 } }));
+
+            const resultJson = detector.detect_adaptive_rgba(
+                new Uint8Array(png.data),
+                png.width,
+                png.height,
+            );
+            const result = JSON.parse(resultJson) as { detected_markers?: { id: number }[] };
+            const detectedIds = (result.detected_markers ?? []).map((m) => m.id);
+
+            const drawnSet = new Set(drawnIds);
+            const detectedSet = new Set(detectedIds);
+            const missing = drawnIds.filter((id) => !detectedSet.has(id));
+            const extra = detectedIds.filter((id) => !drawnSet.has(id));
+            const duplicates = detectedIds.length - detectedSet.size;
+
+            const ok = missing.length === 0 && extra.length === 0 && duplicates === 0;
+            record(
+                `${ok ? "PASS" : "FAIL"} ringgrid/default-15x14-hex: drawn=${drawnIds.length} detected=${detectedIds.length} ` +
+                    `missing=${missing.length}${missing.length ? ` [${missing.join(",")}]` : ""} ` +
+                    `extra=${extra.length}${extra.length ? ` [${extra.join(",")}]` : ""} duplicates=${duplicates}`,
+                ok,
+            );
+        } finally {
+            detector.free();
+        }
+    } catch (e) {
+        record(`FAIL ringgrid/default-15x14-hex: round trip threw: ${e instanceof Error ? e.message : String(e)}`, false);
+    }
+
     console.log("\n=== Summary ===");
     for (const line of summary) console.log(line);
 
@@ -698,7 +809,10 @@ async function main() {
     const mod = await import("@vitavision/calib-targets");
     await mod.default();
 
-    const ok = await runHarness(mod);
+    const ringgridMod = await import("@vitavision/ringgrid");
+    await ringgridMod.default();
+
+    const ok = await runHarness(mod, ringgridMod);
 
     if (!ok) {
         console.log(

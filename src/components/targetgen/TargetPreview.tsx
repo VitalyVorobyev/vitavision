@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import type { TargetGeneratorState, TargetGeneratorAction } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
-import { generateMarkers, markerOuterDrawRadius, markerBounds } from "./ringgrid/layout";
 import { PUZZLEBOARD_QUIET_ZONE_MM } from "./puzzleboard/constants";
 import { isPreviewOverlayTarget } from "./previewInteractions";
 import ZoomControls from "../shared/ZoomControls";
@@ -29,12 +28,18 @@ function computeBoardDims(state: TargetGeneratorState) {
                 h: target.config.rows * target.config.squareSizeMm,
             };
         case "ringgrid": {
-            const markers = generateMarkers(target.config.rows, target.config.longRowCols, target.config.pitchMm);
-            const drawRadius = markerOuterDrawRadius(target.config.markerOuterRadiusMm, target.config.markerRingWidthMm);
-            const [minX, minY, maxX, maxY] = markerBounds(markers);
+            // Ring grid's true printed footprint (a square = max(boardW,
+            // boardH), per the library's `fit_content` page sizing) is only
+            // knowable via an async WASM round trip, so it can't be computed
+            // synchronously in this render path. `validateConfig` already
+            // makes that round trip on every config/page change (see
+            // `useTargetGenerator.ts`) and stores the result on
+            // `state.validation` — read it from there instead of calling
+            // WASM again here. Falls back to 0x0 before the first
+            // validation pass resolves (previewSvg is empty then too).
             return {
-                w: (maxX - minX) + 2 * drawRadius,
-                h: (maxY - minY) + 2 * drawRadius,
+                w: state.validation.boardWidthMm ?? 0,
+                h: state.validation.boardHeightMm ?? 0,
             };
         }
         case "puzzleboard": {

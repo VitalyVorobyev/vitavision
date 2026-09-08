@@ -5,7 +5,7 @@
 source_id: doc-<basename>                # convention: doc-<basename> (basename without .md)
 kind: doc
 title: "<doc title>"
-path: <repo-relative path>               # e.g. docs/atlas-design.md
+path: <repo-relative path>               # e.g. docs/README.md
 created: YYYY-MM-DD
 relevant_atlas_pages: [<slug>, <slug>]
 ---

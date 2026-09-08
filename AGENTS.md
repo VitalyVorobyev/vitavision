@@ -1,6 +1,10 @@
 # AGENTS.md — Atlas authoring operating guide
 
-This file is consumed by Claude instances working on vitavision. It covers the atlas content rules. For broader project context see CLAUDE.md.
+This file is consumed by any agent runtime working on vitavision (Claude Code and Codex both). It covers the atlas content rules. For broader project context see `.claude/CLAUDE.md`.
+
+## Skills
+
+Reusable task skills live at `.claude/skills/<name>/SKILL.md`. This is the single canonical location regardless of which agent runtime is reading. Available skills: `algo-page`, `authorial-technical-editor`, `concept-page`, `deep-model-page`, `impl`, `paper-ingest`, `tech-writer`.
 
 ## Private research workflow
 

@@ -234,7 +234,5 @@ The vault is a derived artifact: never edit it by hand, never author from it. It
 - `.claude/skills/deep-model-page/SKILL.md` — model page rules.
 - `.claude/skills/concept-page/SKILL.md` — concept page rules.
 - `.claude/CLAUDE.md` — atlas authoring policy (machine-readable for Claude).
-- `.claude/AGENTS.md` — concise operating guide for agent sessions.
+- `AGENTS.md` — concise operating guide for agent sessions.
 - `~/.claude/plans/i-want-to-brainstorm-splendid-scott.md` — the original implementation plan, useful as historical context.
-
-`docs/practical-computer-vision-atlas-spec.md` is the **original spec from the brainstorming phase**, kept for posterity. The actual implementation diverged significantly through grilling — read this `README.md` and the skill SKILL.md files for what was built.

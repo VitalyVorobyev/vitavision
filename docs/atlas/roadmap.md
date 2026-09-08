@@ -253,7 +253,7 @@ narrative should get a page — paper-only nodes are debt, not normal.
   hand-authored lens, x preserves publication order — same-year and adjacent-year stops may reorder
   freely; inversions of ≥2 years draw a validator **warning**. Thematic clustering moves to y-lanes.
   A subtle year ruler renders along the canvas top. The generated Timeline lens is the exact view
-  (x∝year, y=area lane — horizontal time, not the preview.html vertical variant). Corollary for
+  (x∝year, y=area lane — horizontal time, not the earlier vertical variant). Corollary for
   content: bridge edges should target the stops that actually postdate the source (DINOv2 → 
   EfficientAD 2023, not PatchCore 2022); "foundation features retrofit an older method" nuance
   belongs in chapter prose, not in an anachronistic edge.

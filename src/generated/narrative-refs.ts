@@ -12,6 +12,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "calibration-changed-the-target",
       "title": "Calibration Changed the Target"
+    },
+    {
+      "slug": "one-homography-is-not-enough",
+      "title": "One Homography Is Not Enough"
     }
   ],
   "camera-distortion-models": [
@@ -478,6 +482,30 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "local-versus-global-motion",
       "title": "Local Versus Global Motion"
+    }
+  ],
+  "spatially-varying-image-stitching": [
+    {
+      "slug": "one-homography-is-not-enough",
+      "title": "One Homography Is Not Enough"
+    }
+  ],
+  "gao-dual-homography-stitching": [
+    {
+      "slug": "one-homography-is-not-enough",
+      "title": "One Homography Is Not Enough"
+    }
+  ],
+  "lin-sva-stitching": [
+    {
+      "slug": "one-homography-is-not-enough",
+      "title": "One Homography Is Not Enough"
+    }
+  ],
+  "apap-image-stitching": [
+    {
+      "slug": "one-homography-is-not-enough",
+      "title": "One Homography Is Not Enough"
     }
   ],
   "energy-minimization": [

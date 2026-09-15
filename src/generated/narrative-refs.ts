@@ -2,6 +2,108 @@
 // Reverse index: which narratives reference a given atlas (algorithm/model/concept) page.
 
 export const narrativeRefs: Record<string, { slug: string; title: string }[]> = {
+  "harris-corner-detector": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "hessian-saddle-response": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "topological-grid-recovery": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "chessboard-x-corner-detection": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "geiger-chessboard-detector": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "chess-corners": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "duda-radon-corners": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "pyramidal-blur-aware-xcorner": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "gp-checkerboard-enhancement": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "shu-topological-grid": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "laureano-topological-chessboard": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "rochade": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "ocpad": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "mate-checkerboard-detector": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "ccdn-checkerboard-detector": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "ccs-camera-calibration": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
+  "puzzleboard": [
+    {
+      "slug": "finding-a-chessboard",
+      "title": "Finding a Chessboard"
+    }
+  ],
   "attention-mechanism": [
     {
       "slug": "foundation-models-for-vision",

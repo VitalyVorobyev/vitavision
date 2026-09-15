@@ -2962,6 +2962,26 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "finding-a-chessboard",
+    "path": "/atlas/narratives/finding-a-chessboard",
+    "type": "narrative",
+    "title": "Finding a Chessboard",
+    "summary": "How chessboard detection moved its decisive evidence from the per-pixel X-corner response to grid topology, then to learned detectors, and finally into a target that identifies itself.",
+    "tags": [
+      "calibration",
+      "classical"
+    ],
+    "headings": [
+      "The X-corner is not a generic corner",
+      "Hand-crafted responses compete on speed and blur",
+      "When the response is not enough, ask topology",
+      "Occlusion breaks the grid, not the corner",
+      "Detectors that learn the response",
+      "The target identifies itself",
+      "What remains for the detector to be robust to"
+    ]
+  },
+  {
     "slug": "foundation-models-for-vision",
     "path": "/atlas/narratives/foundation-models-for-vision",
     "type": "narrative",

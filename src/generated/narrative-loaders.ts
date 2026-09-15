@@ -11,5 +11,6 @@ export interface GeneratedNarrativeModule {
 
 export const narrativeLoaders: Record<string, () => Promise<GeneratedNarrativeModule>> = {
   "example-draft": () => import("./content/narratives/example-draft.ts"),
+  "finding-a-chessboard": () => import("./content/narratives/finding-a-chessboard.ts"),
   "foundation-models-for-vision": () => import("./content/narratives/foundation-models-for-vision.ts"),
 };

@@ -24,6 +24,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "calibration-changed-the-target",
       "title": "Calibration Changed the Target"
+    },
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
     }
   ],
   "tsai-versatile-calibration": [
@@ -162,6 +166,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "forty-years-against-outliers",
       "title": "Forty Years Against Outliers"
+    },
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
     }
   ],
   "svd-null-space": [
@@ -192,6 +200,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "forty-years-against-outliers",
       "title": "Forty Years Against Outliers"
+    },
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
     }
   ],
   "fischler-bolles-ransac": [
@@ -312,6 +324,96 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "foundation-models-for-vision",
       "title": "Foundation Models for Vision"
+    }
+  ],
+  "feature-matching": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "pose-estimation": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "colmap": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "sift": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "orb": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "superpoint": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "xfeat": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "superglue": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "loftr": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "lightglue": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "dust3r": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "mast3r": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "vggt": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "depth-anything-3": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "feed-forward-3d-reconstruction": [
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
     }
   ]
 };

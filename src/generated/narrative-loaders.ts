@@ -15,4 +15,5 @@ export const narrativeLoaders: Record<string, () => Promise<GeneratedNarrativeMo
   "finding-a-chessboard": () => import("./content/narratives/finding-a-chessboard.ts"),
   "forty-years-against-outliers": () => import("./content/narratives/forty-years-against-outliers.ts"),
   "foundation-models-for-vision": () => import("./content/narratives/foundation-models-for-vision.ts"),
+  "the-geometry-pipeline-collapses": () => import("./content/narratives/the-geometry-pipeline-collapses.ts"),
 };

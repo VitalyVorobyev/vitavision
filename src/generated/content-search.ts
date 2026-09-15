@@ -3258,6 +3258,28 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "vision-under-a-latency-budget",
+    "path": "/atlas/narratives/vision-under-a-latency-budget",
+    "type": "narrative",
+    "title": "Vision Under a Latency Budget",
+    "summary": "A parallel history of computer vision driven by compute budgets rather than accuracy, from the integral image and binary descriptors to searched mobile backbones, two-branch segmentation, and distilled or searched foundation-era models, where the recurring move is a structural trick that removes work.",
+    "tags": [
+      "efficiency",
+      "real-time",
+      "mobile",
+      "classical",
+      "deep-learning"
+    ],
+    "headings": [
+      "The Primitive That Pays for Itself",
+      "Cheap Tests Replace Expensive Ones",
+      "The Backbone Becomes a Budgeted Object",
+      "The Same Trick for Dense Prediction",
+      "Distillation and Search as the New Discipline",
+      "Who Pays for Cheap"
+    ]
+  },
+  {
     "slug": "where-did-the-inductive-bias-go",
     "path": "/atlas/narratives/where-did-the-inductive-bias-go",
     "type": "narrative",

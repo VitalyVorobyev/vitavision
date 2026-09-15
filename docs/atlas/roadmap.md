@@ -24,9 +24,9 @@
 |---|---|---|
 | A — Narratives infra v2 | **done** (PR-1) — `question` nodes, step `claim`, `walkthrough: reveal`, edge-vs-relations validator warning, orphan layout generator removed | — |
 | B — Authors: identity, edges, ego graph | **done** (PR-2) | run `author-identity` Workflow B on the remaining `authors:dupes` candidates (Dong Liu ×2 HRNet, Yang Zou ×2 WinCLIP/VisA look like real splits); re-run backfill — the dry-run now matches 4 of the 10 unlinked papers by DOI |
-| C — Narratives program (13 stories) | N9 live (PR-3) | N7, N8, N3 next, after the source-injection pages land |
+| C — Narratives program (13 stories) | N9 live (PR-3) | N7, N8, N3 next (their new-page deps landed in PR-4) |
 | D — Page-quality audit | skill + seeded backlog **done** (PR-1) | first `atlas-audit` run over the BL-001 zero-relation pages after the N9 pilot |
-| E — Source injections (RAFT, COLMAP, Kannala–Brandt, LO-RANSAC) | planned | after N9/N7/N8/N3 need them |
+| E — Source injections (RAFT, COLMAP, Kannala–Brandt, LO-RANSAC) | **done** (PR-4) — 4 notes, 4 pages, 8 page updates, relations confirmed | — |
 
 **PR policy (user mandate, 2026-08-23):** Claude opens and merges PRs itself, no codex review;
 strictly one PR at a time; PRs must be substantial — every main commit triggers a production deploy.
@@ -64,12 +64,12 @@ N9 → N7, N8, N3 (after source injections) → N4, N5, N2, N6 → N10, N11, N12
 
 ## Sources to inject
 
-| Source | Paper id | Page | Kind | Narrative |
-|---|---|---|---|---|
-| Teed & Deng, RAFT, ECCV 2020 | `teed2020-raft` | `raft` | model (`deep-model-page`) | N10 |
-| Schönberger & Frahm, SfM Revisited, CVPR 2016 | `schonberger2016-colmap` | `colmap` | algorithm (`algo-page`) | N3 |
-| Kannala & Brandt, generic camera model, TPAMI 2006 | `kannala2006-generic` | `kannala-brandt-model` | algorithm (`algo-page`) | N8 |
-| Chum, Matas & Kittler, LO-RANSAC, DAGM 2003 | `chum2003-lo-ransac` | `lo-ransac` | algorithm (`algo-page`) | N7 |
+| Source | Paper id | Page | Kind | Narrative | Status |
+|---|---|---|---|---|---|
+| Teed & Deng, RAFT, ECCV 2020 | `teed2020-raft` | `raft` | model (`deep-model-page`) | N10 | live (PR-4) |
+| Schönberger & Frahm, SfM Revisited, CVPR 2016 | `schonberger2016-colmap` | `colmap` | algorithm (`algo-page`) | N3 | live (PR-4) |
+| Kannala & Brandt, generic camera model, TPAMI 2006 | `kannala2006-generic` | `kannala-brandt-model` | algorithm (`algo-page`) | N8 | live (PR-4) |
+| Chum, Matas & Kittler, LO-RANSAC, DAGM 2003 | `chum2003-lo-ransac` | `lo-ransac` | algorithm (`algo-page`) | N7 | live (PR-4) |
 
 ## Page-debt from narratives
 
@@ -120,6 +120,12 @@ narrative should get a page — paper-only nodes are debt, not normal.
   orchestrator reconciliation (two survey "unifying" bridges dropped as meta-edges) → Sonnet draft with 49-entry AUDIT
   (0 misses) → Playwright desktop/touch pass. Lesson: extract the drafter's reply from its transcript by script — the
   hand-back summary does not carry the body; strip any leading agent chatter before assembly.
+- 2026-09-15 — Source injections authored (PR-4). Relations decided from the notes: raft `learned_alternative_of`
+  horn-schunck (medium); fischler-bolles-ransac `extended_by` lo-ransac (high); lo-ransac `feeds_into` raguram-usac
+  (high — USAC's stage 4) and `compared_with` barath-magsac (medium, LO-RANSAC hosts); zhang-planar-calibration
+  `feeds_into` kannala-brandt-model (high); kannala-brandt-model `compared_with` scaramuzza-omni-calibration (medium,
+  same year → the more general model hosts); colmap carries prerequisites only (concept targets, Rule B for
+  feed-forward 3D).
 - 2026-09-15 — Author identity fixes, all from OpenAlex `authors/<id>` evidence: Tomasi `A5088492440`→`A5079878449`,
   Michael S. Brown `A5075135613`→`A5106406020` (more works; both stitching papers are his), Jian Sun
   `A5100785015`→`A5101425421` (Microsoft affiliation) merged; `kirillov2023-sam` re-pointed

@@ -143,6 +143,25 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IPCV (WorldComp)"
   },
   {
+    "slug": "colmap",
+    "path": "/atlas/colmap",
+    "type": "algorithm",
+    "title": "COLMAP",
+    "summary": "Incremental structure-from-motion pipeline for unordered, uncalibrated image collections, replacing four stages of the classical incremental pipeline — scene-graph verification, next-best-view selection, multi-view triangulation, and bundle adjustment — with more robust and efficient variants.",
+    "tags": [
+      "classical",
+      "optimization",
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "J. L. Schönberger",
+      "J. Frahm"
+    ],
+    "venue": "CVPR 2016"
+  },
+  {
     "slug": "daniilidis-dual-quaternion-handeye",
     "path": "/atlas/daniilidis-dual-quaternion-handeye",
     "type": "algorithm",
@@ -548,6 +567,25 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Artificial Intelligence"
   },
   {
+    "slug": "kannala-brandt-model",
+    "path": "/atlas/kannala-brandt-model",
+    "type": "algorithm",
+    "title": "Kannala–Brandt Generic Camera Model",
+    "summary": "Single projection and planar-pattern calibration model spanning conventional, wide-angle, and fish-eye lenses, built on an odd-power polynomial in the incidence angle that stays finite as the field of view approaches and exceeds 180 degrees.",
+    "tags": [
+      "camera-model"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "When to choose Kannala–Brandt over Scaramuzza"
+    ],
+    "authors": [
+      "J. Kannala",
+      "S. S. Brandt"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "kumar-generalized-rac",
     "path": "/atlas/kumar-generalized-rac",
     "type": "algorithm",
@@ -604,6 +642,27 @@ export const searchRecords: SearchRecord[] = [
       "U. Frese"
     ],
     "venue": "British Machine Vision Conference (BMVC)"
+  },
+  {
+    "slug": "lo-ransac",
+    "path": "/atlas/lo-ransac",
+    "type": "algorithm",
+    "title": "Locally Optimized RANSAC (LO-RANSAC)",
+    "summary": "RANSAC extension that corrects the false assumption that a minimal-sample model is consistent with all inliers, by running a local optimization step on every new best hypothesis — reaching the same termination guarantee in two to three times fewer samples.",
+    "tags": [
+      "robust-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure",
+      "When to choose LO-RANSAC over MAGSAC"
+    ],
+    "authors": [
+      "O. Chum",
+      "J. Matas",
+      "J. Kittler"
+    ],
+    "venue": "DAGM 2003 (Lecture Notes in Computer Science)"
   },
   {
     "slug": "longuet-higgins-eight-point",
@@ -1886,6 +1945,25 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR 2022"
   },
   {
+    "slug": "raft",
+    "path": "/atlas/raft",
+    "type": "model",
+    "title": "RAFT",
+    "summary": "Recurrent all-pairs field transform for dense two-frame optical flow: an all-pairs 4D correlation volume queried by a weight-tied convolutional-GRU update operator, refining a single fixed-resolution flow field instead of a coarse-to-fine cascade.",
+    "tags": [
+      "deep-learning",
+      "optical-flow",
+      "dense-prediction"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "Z. Teed",
+      "J. Deng"
+    ],
+    "venue": "ECCV 2020"
+  },
+  {
     "slug": "resnet",
     "path": "/atlas/resnet",
     "type": "model",
@@ -2280,6 +2358,7 @@ export const searchRecords: SearchRecord[] = [
       "Tsai 1987 — one term, radial only",
       "Weng 1992 — full Brown-Conrady with tangential",
       "Zhang 2000 — two-term radial, no tangential",
+      "Kannala-Brandt 2006 — odd-power polynomial in incidence angle",
       "CCS 2022 — learned correction decoupled from intrinsic estimation",
       "Kumar gRAC 2014 — radial generalised to non-frontal sensors",
       "Inverse distortion (rectification)",
@@ -3995,7 +4074,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5019409717",
     "type": "author",
     "title": "Ondřej Chum",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -4013,7 +4092,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5007656938",
     "type": "author",
     "title": "Jiřı́ Matas",
-    "summary": "2 papers",
+    "summary": "3 papers",
     "tags": [],
     "headings": []
   },
@@ -4022,7 +4101,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5018151384",
     "type": "author",
     "title": "Jan‐Michael Frahm",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -7433,6 +7512,60 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5100376572",
     "type": "author",
     "title": "Zilei Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018873548",
+    "path": "/authors/A5018873548",
+    "type": "author",
+    "title": "Zachary Teed",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101542158",
+    "path": "/authors/A5101542158",
+    "type": "author",
+    "title": "Jia Deng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071944294",
+    "path": "/authors/A5071944294",
+    "type": "author",
+    "title": "Johannes L. Schönberger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057931031",
+    "path": "/authors/A5057931031",
+    "type": "author",
+    "title": "Juho Kannala",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083670972",
+    "path": "/authors/A5083670972",
+    "type": "author",
+    "title": "Sami S. Brandt",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028209738",
+    "path": "/authors/A5028209738",
+    "type": "author",
+    "title": "Josef Kittler",
     "summary": "1 paper",
     "tags": [],
     "headings": []

@@ -37,6 +37,7 @@ export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>
   "mobilenetv3": () => import("./content/models/mobilenetv3.ts"),
   "mobilesam": () => import("./content/models/mobilesam.ts"),
   "patchcore": () => import("./content/models/patchcore.ts"),
+  "raft": () => import("./content/models/raft.ts"),
   "resnet": () => import("./content/models/resnet.ts"),
   "rf-detr": () => import("./content/models/rf-detr.ts"),
   "ritm-interactive-segmentation": () => import("./content/models/ritm-interactive-segmentation.ts"),

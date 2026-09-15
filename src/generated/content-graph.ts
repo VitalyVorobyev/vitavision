@@ -107,6 +107,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/laureano-topological-chessboard",
       "draft": false
     },
+    "colmap": {
+      "slug": "colmap",
+      "type": "algorithm",
+      "title": "COLMAP",
+      "summary": "Incremental structure-from-motion pipeline for unordered, uncalibrated image collections, replacing four stages of the classical incremental pipeline — scene-graph verification, next-best-view selection, multi-view triangulation, and bundle adjustment — with more robust and efficient variants.",
+      "path": "/atlas/colmap",
+      "draft": false
+    },
     "daniilidis-dual-quaternion-handeye": {
       "slug": "daniilidis-dual-quaternion-handeye",
       "type": "algorithm",
@@ -259,6 +267,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/horn-schunck",
       "draft": false
     },
+    "kannala-brandt-model": {
+      "slug": "kannala-brandt-model",
+      "type": "algorithm",
+      "title": "Kannala–Brandt Generic Camera Model",
+      "summary": "Single projection and planar-pattern calibration model spanning conventional, wide-angle, and fish-eye lenses, built on an odd-power polynomial in the incidence angle that stays finite as the field of view approaches and exceeds 180 degrees.",
+      "path": "/atlas/kannala-brandt-model",
+      "draft": false
+    },
     "kumar-generalized-rac": {
       "slug": "kumar-generalized-rac",
       "type": "algorithm",
@@ -281,6 +297,14 @@ export const contentGraph: ContentGraph = {
       "title": "Localized Radon Checkerboard Corners",
       "summary": "Detect checkerboard X-junctions by approximating a localized Radon transform with 1-D box filters on rotated copies of the image; the per-pixel response is the squared difference between the maximum and minimum directional line integrals over four discrete angles.",
       "path": "/atlas/duda-radon-corners",
+      "draft": false
+    },
+    "lo-ransac": {
+      "slug": "lo-ransac",
+      "type": "algorithm",
+      "title": "Locally Optimized RANSAC (LO-RANSAC)",
+      "summary": "RANSAC extension that corrects the false assumption that a minimal-sample model is consistent with all inliers, by running a local optimization step on every new best hypothesis — reaching the same termination guarantee in two to three times fewer samples.",
+      "path": "/atlas/lo-ransac",
       "draft": false
     },
     "longuet-higgins-eight-point": {
@@ -745,6 +769,14 @@ export const contentGraph: ContentGraph = {
       "title": "PatchCore",
       "summary": "Training-free industrial anomaly detection: a single forward pass over defect-free images builds a coreset-subsampled memory bank of locally aware mid-level CNN patch features, and test images are scored by reweighted nearest-neighbour distance in that feature space.",
       "path": "/atlas/patchcore",
+      "draft": false
+    },
+    "raft": {
+      "slug": "raft",
+      "type": "model",
+      "title": "RAFT",
+      "summary": "Recurrent all-pairs field transform for dense two-frame optical flow: an all-pairs 4D correlation volume queried by a weight-tied convolutional-GRU update operator, refining a single fixed-resolution flow field instead of a coarse-to-fine cascade.",
+      "path": "/atlas/raft",
       "draft": false
     },
     "resnet": {
@@ -1261,6 +1293,17 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "colmap": {
+      "prerequisites": [
+        "feature-matching",
+        "epipolar-geometry",
+        "pose-estimation",
+        "bundle-adjustment",
+        "ransac"
+      ],
+      "failureModes": [],
+      "relations": []
+    },
     "daniilidis-dual-quaternion-handeye": {
       "prerequisites": [],
       "failureModes": [],
@@ -1368,6 +1411,11 @@ export const contentGraph: ContentGraph = {
           "target": "barath-magsac",
           "confidence": "high",
           "caution": "MAGSAC marginalises the inlier threshold rather than fixing it — orthogonal axis to USAC's framework refactor"
+        },
+        {
+          "type": "extended_by",
+          "target": "lo-ransac",
+          "confidence": "high"
         }
       ]
     },
@@ -1601,6 +1649,22 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "kannala-brandt-model": {
+      "prerequisites": [
+        "pinhole-camera-model",
+        "camera-distortion-models",
+        "homography"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "scaramuzza-omni-calibration",
+          "confidence": "medium",
+          "caution": "Same year, different fit: polynomial in incidence angle vs Taylor polynomial in image radius."
+        }
+      ]
+    },
     "kumar-generalized-rac": {
       "prerequisites": [
         "camera-distortion-models"
@@ -1641,6 +1705,25 @@ export const contentGraph: ContentGraph = {
           "target": "yang-sub-pixel-corner-fit",
           "confidence": "medium",
           "mirrored": true
+        }
+      ]
+    },
+    "lo-ransac": {
+      "prerequisites": [
+        "ransac"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "raguram-usac",
+          "confidence": "high",
+          "caution": "USAC's stage 4 is LO-RANSAC's local optimisation as a pluggable component."
+        },
+        {
+          "type": "compared_with",
+          "target": "barath-magsac",
+          "confidence": "medium"
         }
       ]
     },
@@ -1717,6 +1800,12 @@ export const contentGraph: ContentGraph = {
       ],
       "failureModes": [],
       "relations": [
+        {
+          "type": "compared_with",
+          "target": "lo-ransac",
+          "confidence": "medium",
+          "mirrored": true
+        },
         {
           "type": "compared_with",
           "target": "raguram-usac",
@@ -1882,7 +1971,15 @@ export const contentGraph: ContentGraph = {
         "bundle-adjustment"
       ],
       "failureModes": [],
-      "relations": []
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "kannala-brandt-model",
+          "confidence": "medium",
+          "caution": "Same year, different fit: polynomial in incidence angle vs Taylor polynomial in image radius.",
+          "mirrored": true
+        }
+      ]
     },
     "shi-tomasi-corner-detector": {
       "prerequisites": [
@@ -2149,6 +2246,12 @@ export const contentGraph: ContentGraph = {
           "target": "sturm-plane-based-calibration",
           "confidence": "high",
           "caution": "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis."
+        },
+        {
+          "type": "feeds_into",
+          "target": "kannala-brandt-model",
+          "confidence": "high",
+          "caution": "Kannala–Brandt reuses Zhang's homography-initialise-then-refine calibration structure with a spherical back-projection."
         }
       ]
     },
@@ -3029,6 +3132,21 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "raft": {
+      "prerequisites": [
+        "optical-flow",
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "horn-schunck",
+          "confidence": "medium",
+          "caution": "Keeps the single-field iterative-refinement structure of variational flow; data term and update operator are learned."
+        }
+      ]
+    },
     "resnet": {
       "prerequisites": [
         "convolutional-neural-network"
@@ -3855,6 +3973,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "colmap": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "daniilidis-dual-quaternion-handeye": {
       "usedBy": [],
       "affects": [],
@@ -4071,6 +4197,26 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [],
       "fedBy": [],
+      "hasLearnedAlternative": [
+        {
+          "slug": "raft",
+          "confidence": "medium",
+          "caution": "Keeps the single-field iterative-refinement structure of variational flow; data term and update operator are learned."
+        }
+      ]
+    },
+    "kannala-brandt-model": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "zhang-planar-calibration",
+          "confidence": "high",
+          "caution": "Kannala–Brandt reuses Zhang's homography-initialise-then-refine calibration structure with a spherical back-projection."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "kumar-generalized-rac": {
@@ -4094,6 +4240,19 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
+    "lo-ransac": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [
+        {
+          "slug": "fischler-bolles-ransac",
+          "confidence": "high"
+        }
+      ],
       "fedBy": [],
       "hasLearnedAlternative": []
     },
@@ -4337,7 +4496,13 @@ export const contentGraph: ContentGraph = {
           "caution": "USAC is a unifying engineering framework, not a single new technique"
         }
       ],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "lo-ransac",
+          "confidence": "high",
+          "caution": "USAC's stage 4 is LO-RANSAC's local optimisation as a pluggable component."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "viola-jones-detector": {
@@ -4868,6 +5033,14 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "raft": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [],
+      "hasLearnedAlternative": []
+    },
     "resnet": {
       "usedBy": [],
       "affects": [],
@@ -5103,6 +5276,7 @@ export const contentGraph: ContentGraph = {
     },
     "bundle-adjustment": {
       "usedBy": [
+        "colmap",
         "dust3r",
         "feed-forward-3d-reconstruction",
         "scaramuzza-omni-calibration",
@@ -5119,6 +5293,7 @@ export const contentGraph: ContentGraph = {
     "camera-distortion-models": {
       "usedBy": [
         "ccs-camera-calibration",
+        "kannala-brandt-model",
         "kumar-generalized-rac",
         "scaramuzza-omni-calibration",
         "tsai-versatile-calibration",
@@ -5171,6 +5346,7 @@ export const contentGraph: ContentGraph = {
         "mobilenetv2",
         "mobilenetv3",
         "patchcore",
+        "raft",
         "resnet",
         "rf-detr",
         "sam",
@@ -5212,6 +5388,7 @@ export const contentGraph: ContentGraph = {
     },
     "epipolar-geometry": {
       "usedBy": [
+        "colmap",
         "depth-anything-3",
         "dust3r",
         "feed-forward-3d-reconstruction",
@@ -5248,6 +5425,7 @@ export const contentGraph: ContentGraph = {
     },
     "feature-matching": {
       "usedBy": [
+        "colmap",
         "lightglue",
         "loftr",
         "mast3r",
@@ -5293,6 +5471,7 @@ export const contentGraph: ContentGraph = {
         "gao-dual-homography-stitching",
         "geometric-bev",
         "hartley-projective-rectification",
+        "kannala-brandt-model",
         "lin-sva-stitching",
         "loop-zhang-rectification",
         "spatially-varying-image-stitching",
@@ -5430,7 +5609,8 @@ export const contentGraph: ContentGraph = {
       "usedBy": [
         "black-anandan-robust-flow",
         "horn-schunck",
-        "lucas-kanade"
+        "lucas-kanade",
+        "raft"
       ],
       "affects": [],
       "generalises": [],
@@ -5449,6 +5629,7 @@ export const contentGraph: ContentGraph = {
         "feed-forward-3d-reconstruction",
         "fusiello-compact-rectification",
         "geometric-bev",
+        "kannala-brandt-model",
         "midas",
         "monocular-depth-estimation",
         "pose-estimation",
@@ -5466,6 +5647,7 @@ export const contentGraph: ContentGraph = {
     },
     "pose-estimation": {
       "usedBy": [
+        "colmap",
         "depth-anything-3",
         "dust3r",
         "epnp",
@@ -5497,6 +5679,7 @@ export const contentGraph: ContentGraph = {
         "apap-image-stitching",
         "barath-magsac",
         "ccs-camera-calibration",
+        "colmap",
         "dlt-normalisation",
         "epipolar-geometry",
         "epnp",
@@ -5505,6 +5688,7 @@ export const contentGraph: ContentGraph = {
         "gao-dual-homography-stitching",
         "homography",
         "lin-sva-stitching",
+        "lo-ransac",
         "raguram-usac",
         "spatially-varying-image-stitching",
         "zhang-planar-calibration"
@@ -5653,17 +5837,21 @@ export const contentGraph: ContentGraph = {
     "hessian-saddle-response": 2,
     "topological-grid-recovery": 0,
     "laureano-topological-chessboard": 3,
+    "attention-mechanism": 0,
+    "feature-matching": 3,
+    "pinhole-camera-model": 0,
+    "epipolar-geometry": 2,
+    "pose-estimation": 1,
+    "bundle-adjustment": 1,
+    "colmap": 4,
     "daniilidis-dual-quaternion-handeye": 0,
     "felzenszwalb-deformable-parts": 2,
-    "pinhole-camera-model": 0,
-    "pose-estimation": 1,
     "epnp": 2,
     "fast-corner-detector": 2,
     "loy-fast-radial-symmetry": 2,
     "energy-minimization": 0,
     "felzenszwalb-graph-segmentation": 1,
     "fischler-bolles-ransac": 1,
-    "epipolar-geometry": 2,
     "stereo-rectification": 3,
     "fusiello-compact-rectification": 4,
     "gao-dual-homography-stitching": 3,
@@ -5679,9 +5867,11 @@ export const contentGraph: ContentGraph = {
     "hog-descriptor": 3,
     "horn-schunck": 4,
     "camera-distortion-models": 1,
+    "kannala-brandt-model": 2,
     "kumar-generalized-rac": 2,
     "lin-sva-stitching": 3,
     "duda-radon-corners": 2,
+    "lo-ransac": 1,
     "longuet-higgins-eight-point": 3,
     "loop-zhang-rectification": 4,
     "lucas-kanade": 4,
@@ -5694,11 +5884,8 @@ export const contentGraph: ContentGraph = {
     "puzzleboard": 3,
     "pyramidal-blur-aware-xcorner": 2,
     "rochade": 3,
-    "bundle-adjustment": 1,
     "scaramuzza-omni-calibration": 2,
     "shi-tomasi-corner-detector": 3,
-    "attention-mechanism": 0,
-    "feature-matching": 3,
     "sift": 4,
     "sturm-plane-based-calibration": 2,
     "surf": 2,
@@ -5755,6 +5942,7 @@ export const contentGraph: ContentGraph = {
     "sam": 2,
     "mobilesam": 3,
     "patchcore": 3,
+    "raft": 4,
     "resnet": 2,
     "rf-detr": 2,
     "ritm-interactive-segmentation": 0,

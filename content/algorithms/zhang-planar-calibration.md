@@ -14,6 +14,10 @@ relations:
     target: sturm-plane-based-calibration
     confidence: high
     caution: "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis."
+  - type: feeds_into
+    target: kannala-brandt-model
+    confidence: high
+    caution: "Kannala–Brandt reuses Zhang's homography-initialise-then-refine calibration structure with a spherical back-projection."
 sources:
   primary: zhang2000-flexible
   references:
@@ -206,6 +210,7 @@ Nonlinear refinement of $(A, k_1, k_2, \{R_i, t_i\})$ over the total reprojectio
 - Compared with Tsai 1987: see [When to choose Tsai over Zhang](/atlas/tsai-versatile-calibration#when-to-choose-tsai-over-zhang) on the Tsai page, which hosts the comparison per the older-paper-hosts rule.
 - Image-level RANSAC extension: [CCS](/atlas/ccs-camera-calibration) (Zhang et al., RA-L 2022) augments the LM stage with a view-selection RANSAC — randomly sample a subset of views, estimate intrinsics via the linear + LM steps above, score by reprojection error on all views, retain views below an inlier threshold, repeat until inlier count is sufficient (§III-C). View-level (rather than corner-level) RANSAC suffices because the upstream UNet detector already rejects per-corner outliers via the heatmap variance $\sigma$.
 - The CCS RANSAC extension reduces real-data reprojection error from 0.45 px (STD 0.10) for a Matlab Zhang implementation to 0.37 px (STD 0.02) on a HIKROBOT 1440×1080 sensor (Table II) — a five-fold reduction in run-to-run standard deviation attributed to the view-selection step.
+- [Kannala–Brandt](/atlas/kannala-brandt-model) reuses this page's homography-based initialise-then-refine calibration structure — linear homography estimation, SVD-orthogonalised extrinsics, nonlinear refinement — adapted to a spherical back-projection and a polynomial radial model in place of the pinhole homography, to extend calibration to wide-angle and fish-eye lenses.
 
 ## When to choose Zhang over Sturm-Maybank
 

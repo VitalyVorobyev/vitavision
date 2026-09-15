@@ -2,6 +2,60 @@
 // Reverse index: which narratives reference a given atlas (algorithm/model/concept) page.
 
 export const narrativeRefs: Record<string, { slug: string; title: string }[]> = {
+  "pinhole-camera-model": [
+    {
+      "slug": "calibration-changed-the-target",
+      "title": "Calibration Changed the Target"
+    }
+  ],
+  "homography": [
+    {
+      "slug": "calibration-changed-the-target",
+      "title": "Calibration Changed the Target"
+    }
+  ],
+  "camera-distortion-models": [
+    {
+      "slug": "calibration-changed-the-target",
+      "title": "Calibration Changed the Target"
+    }
+  ],
+  "bundle-adjustment": [
+    {
+      "slug": "calibration-changed-the-target",
+      "title": "Calibration Changed the Target"
+    }
+  ],
+  "tsai-versatile-calibration": [
+    {
+      "slug": "calibration-changed-the-target",
+      "title": "Calibration Changed the Target"
+    }
+  ],
+  "sturm-plane-based-calibration": [
+    {
+      "slug": "calibration-changed-the-target",
+      "title": "Calibration Changed the Target"
+    }
+  ],
+  "zhang-planar-calibration": [
+    {
+      "slug": "calibration-changed-the-target",
+      "title": "Calibration Changed the Target"
+    }
+  ],
+  "scaramuzza-omni-calibration": [
+    {
+      "slug": "calibration-changed-the-target",
+      "title": "Calibration Changed the Target"
+    }
+  ],
+  "kannala-brandt-model": [
+    {
+      "slug": "calibration-changed-the-target",
+      "title": "Calibration Changed the Target"
+    }
+  ],
   "harris-corner-detector": [
     {
       "slug": "finding-a-chessboard",
@@ -102,6 +156,66 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "finding-a-chessboard",
       "title": "Finding a Chessboard"
+    }
+  ],
+  "epipolar-geometry": [
+    {
+      "slug": "forty-years-against-outliers",
+      "title": "Forty Years Against Outliers"
+    }
+  ],
+  "svd-null-space": [
+    {
+      "slug": "forty-years-against-outliers",
+      "title": "Forty Years Against Outliers"
+    }
+  ],
+  "longuet-higgins-eight-point": [
+    {
+      "slug": "forty-years-against-outliers",
+      "title": "Forty Years Against Outliers"
+    }
+  ],
+  "dlt-normalisation": [
+    {
+      "slug": "forty-years-against-outliers",
+      "title": "Forty Years Against Outliers"
+    }
+  ],
+  "fundamental-matrix-eight-point": [
+    {
+      "slug": "forty-years-against-outliers",
+      "title": "Forty Years Against Outliers"
+    }
+  ],
+  "ransac": [
+    {
+      "slug": "forty-years-against-outliers",
+      "title": "Forty Years Against Outliers"
+    }
+  ],
+  "fischler-bolles-ransac": [
+    {
+      "slug": "forty-years-against-outliers",
+      "title": "Forty Years Against Outliers"
+    }
+  ],
+  "lo-ransac": [
+    {
+      "slug": "forty-years-against-outliers",
+      "title": "Forty Years Against Outliers"
+    }
+  ],
+  "raguram-usac": [
+    {
+      "slug": "forty-years-against-outliers",
+      "title": "Forty Years Against Outliers"
+    }
+  ],
+  "barath-magsac": [
+    {
+      "slug": "forty-years-against-outliers",
+      "title": "Forty Years Against Outliers"
     }
   ],
   "attention-mechanism": [

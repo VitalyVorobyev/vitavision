@@ -3041,6 +3041,25 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "calibration-changed-the-target",
+    "path": "/atlas/narratives/calibration-changed-the-target",
+    "type": "narrative",
+    "title": "Calibration Changed the Target",
+    "summary": "How camera calibration became practical by changing the target, from a precision 3-D fixture to a printed plane in free poses, and then by letting the camera model reach past the pinhole.",
+    "tags": [
+      "calibration",
+      "classical"
+    ],
+    "headings": [
+      "The pinhole needs a precision target",
+      "The target becomes a printed plane",
+      "A concurrent derivation, and where it diverges",
+      "The distortion model is a choice bounded by its era",
+      "Two answers to the same wide-angle problem, the same year",
+      "What a printed plane and a polynomial still cannot buy"
+    ]
+  },
+  {
     "slug": "finding-a-chessboard",
     "path": "/atlas/narratives/finding-a-chessboard",
     "type": "narrative",
@@ -3058,6 +3077,25 @@ export const searchRecords: SearchRecord[] = [
       "Detectors that learn the response",
       "The target identifies itself",
       "What remains for the detector to be robust to"
+    ]
+  },
+  {
+    "slug": "forty-years-against-outliers",
+    "path": "/atlas/narratives/forty-years-against-outliers",
+    "type": "narrative",
+    "title": "Forty Years Against Outliers",
+    "summary": "How robust two-view geometry advanced by changing what the estimator distrusts: the algebra, then the numerics, then gross outliers, and finally the fixed inlier threshold itself.",
+    "tags": [
+      "geometry",
+      "classical"
+    ],
+    "headings": [
+      "The Algebra of Two Views",
+      "Numerics Catch Up",
+      "Gross Outliers Enter",
+      "Correcting the Minimal Sample",
+      "One Engine, Many Parts",
+      "Marginalising the Threshold"
     ]
   },
   {

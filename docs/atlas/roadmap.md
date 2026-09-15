@@ -24,7 +24,7 @@
 |---|---|---|
 | A — Narratives infra v2 | **done** (PR-1) — `question` nodes, step `claim`, `walkthrough: reveal`, edge-vs-relations validator warning, orphan layout generator removed | — |
 | B — Authors: identity, edges, ego graph | **done** (PR-2) | run `author-identity` Workflow B on the remaining `authors:dupes` candidates (Dong Liu ×2 HRNet, Yang Zou ×2 WinCLIP/VisA look like real splits); re-run backfill — the dry-run now matches 4 of the 10 unlinked papers by DOI |
-| C — Narratives program (13 stories) | N9 live (PR-3) | N7, N8, N3 next (their new-page deps landed in PR-4) |
+| C — Narratives program (13 stories) | N9, N7, N8 live (PR-3, PR-6) | N3 next, then N4, N5, N2, N6 |
 | D — Page-quality audit | first audit run done (PR-5): 10 pages / 14 findings, 3 blockers + 5 majors fixed | next `atlas-audit` batch over the remaining unaudited BL-001 zero-relation pages |
 | E — Source injections (RAFT, COLMAP, Kannala–Brandt, LO-RANSAC) | **done** (PR-4) — 4 notes, 4 pages, 8 page updates, relations confirmed | — |
 
@@ -44,8 +44,8 @@ N9 → N7, N8, N3 (after source injections) → N4, N5, N2, N6 → N10, N11, N12
 | N4 | `segmentation-from-energy-to-prompt` | Prior moves from energy function to pretrained model | 14 | — | dense-prediction, interactive | planned | — |
 | N5 | `detection-removing-the-machinery` | Sliding windows → proposals → regression → set prediction | 8 | — | overview, timeline | planned | — |
 | N6 | `depth-becomes-general-geometry` | Training signal, not architecture, is the story | 7 | — | overview, timeline | planned | — |
-| N7 | `forty-years-against-outliers` | Algebra → numerics → outliers → adaptive thresholds | 8 | lo-ransac | overview, timeline | planned | — |
-| N8 | `calibration-changed-the-target` | Usability came from the planar target, not new math | 8 | kannala-brandt-model | overview, timeline | planned | — |
+| N7 | `forty-years-against-outliers` | Algebra → numerics → outliers → adaptive thresholds | 10 + question | lo-ransac | overview, solver-line, estimator-line, timeline | **live** | PR-6 |
+| N8 | `calibration-changed-the-target` | Usability came from the planar target, not new math | 9 + question | kannala-brandt-model | overview, target-line, model-line, timeline | **live** | PR-6 |
 | N9 | `finding-a-chessboard` | Local evidence isn't enough; topology, learning, self-identifying targets | 17 + question | — | overview, local-response, topology-beats-appearance, timeline | **live** (pilot) | PR-3 |
 | N10 | `local-versus-global-motion` | Three answers, then learned iteration | 4 + question | raft | overview, timeline | planned | — |
 | N11 | `one-homography-is-not-enough` | Parallax breaks the global model | 5 | — | overview, timeline | planned | — |

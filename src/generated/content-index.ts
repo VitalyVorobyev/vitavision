@@ -6564,6 +6564,78 @@ export const conceptPages: ConceptIndexEntry[] = [
 
 export const narrativePages: NarrativeIndexEntry[] = [
   {
+    "slug": "calibration-changed-the-target",
+    "title": "Calibration Changed the Target",
+    "summary": "How camera calibration became practical by changing the target, from a precision 3-D fixture to a printed plane in free poses, and then by letting the camera model reach past the pinhole.",
+    "tagline": "The mathematics barely changed. The target did.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 10,
+      "steps": 6,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "model",
+        "label": "Camera model"
+      },
+      {
+        "id": "target",
+        "label": "Calibration target"
+      },
+      {
+        "id": "fit",
+        "label": "Estimation and refinement"
+      },
+      {
+        "id": "beyond",
+        "label": "Beyond the pinhole"
+      }
+    ],
+    "preview": {
+      "tsai-versatile-calibration": [
+        0,
+        0.3333333333333333
+      ],
+      "pinhole-camera-model": [
+        0.3114754098360656,
+        0
+      ],
+      "sturm-plane-based-calibration": [
+        0.4098360655737705,
+        0.3333333333333333
+      ],
+      "homography": [
+        0.4098360655737705,
+        0
+      ],
+      "zhang-planar-calibration": [
+        0.5081967213114754,
+        0.3333333333333333
+      ],
+      "bundle-adjustment": [
+        0.5081967213114754,
+        0.6666666666666666
+      ],
+      "camera-distortion-models": [
+        0.5409836065573771,
+        0
+      ],
+      "scaramuzza-omni-calibration": [
+        0.7704918032786886,
+        1
+      ],
+      "kannala-brandt-model": [
+        0.8688524590163935,
+        1
+      ],
+      "q-pinhole-prior": [
+        1,
+        1
+      ]
+    }
+  },
+  {
     "slug": "example-draft",
     "title": "Example Narrative (draft fixture)",
     "summary": "A minimal draft fixture exercising the narrative content kind's parse and validation paths — not intended for publication.",
@@ -6711,6 +6783,86 @@ export const narrativePages: NarrativeIndexEntry[] = [
         1
       ],
       "q-target-robustness": [
+        1,
+        1
+      ]
+    }
+  },
+  {
+    "slug": "forty-years-against-outliers",
+    "title": "Forty Years Against Outliers",
+    "summary": "How robust two-view geometry advanced by changing what the estimator distrusts: the algebra, then the numerics, then gross outliers, and finally the fixed inlier threshold itself.",
+    "tagline": "Four decades of deciding which correspondences to believe.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 11,
+      "steps": 6,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "geometry",
+        "label": "Epipolar geometry"
+      },
+      {
+        "id": "algebra",
+        "label": "Linear solvers"
+      },
+      {
+        "id": "numerics",
+        "label": "Conditioning"
+      },
+      {
+        "id": "robust",
+        "label": "Robust estimation"
+      },
+      {
+        "id": "thresholds",
+        "label": "Thresholds and beyond"
+      }
+    ],
+    "preview": {
+      "epipolar-geometry": [
+        0,
+        0
+      ],
+      "svd-null-space": [
+        0.031578947368421054,
+        0.25
+      ],
+      "longuet-higgins-eight-point": [
+        0.10526315789473684,
+        0.25
+      ],
+      "dlt-normalisation": [
+        0.29473684210526313,
+        0.5
+      ],
+      "fundamental-matrix-eight-point": [
+        0.3684210526315789,
+        0.5
+      ],
+      "ransac": [
+        0.031578947368421054,
+        0.75
+      ],
+      "fischler-bolles-ransac": [
+        0.10526315789473684,
+        0.75
+      ],
+      "lo-ransac": [
+        0.47368421052631576,
+        0.75
+      ],
+      "raguram-usac": [
+        0.6842105263157895,
+        0.75
+      ],
+      "barath-magsac": [
+        0.8421052631578947,
+        1
+      ],
+      "inlier-threshold-question": [
         1,
         1
       ]

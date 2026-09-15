@@ -4,7 +4,7 @@ This file is consumed by any agent runtime working on vitavision (Claude Code an
 
 ## Skills
 
-Reusable task skills live at `.claude/skills/<name>/SKILL.md`. This is the single canonical location regardless of which agent runtime is reading. Available skills: `algo-page`, `authorial-technical-editor`, `concept-page`, `deep-model-page`, `impl`, `paper-ingest`, `tech-writer`.
+Reusable task skills live at `.claude/skills/<name>/SKILL.md`. This is the single canonical location regardless of which agent runtime is reading. Available skills: `algo-page`, `atlas-audit`, `authorial-technical-editor`, `concept-page`, `deep-model-page`, `impl`, `narrative-page`, `paper-ingest`, `tech-writer`.
 
 ## Private research workflow
 
@@ -72,6 +72,21 @@ Do not add `status:` or `review:` fields — these are not in the schema.
 
 `draft: true` is the publication gate. A draft page is excluded from the atlas index and validation (unless `INCLUDE_DRAFTS=true`).
 
+## Narratives
+
+`content/narratives/*.md` — a curated argument told by moving through the atlas graph. Nodes are
+an atlas slug XOR a registered paper XOR a `question` (no year, no link); paper-only nodes are
+tracked debt (`bun run narratives:debt` lists them). Edges use their own story vocabulary —
+`prerequisite | evolution | bridge | contrast` — distinct from `relations[]`, and must not
+contradict the pages' authored Atlas relations (validator warns on contradiction). Author or
+update via the `narrative-page` skill.
+
+## Authors registry
+
+Author identities are keyed by OpenAlex ids in `docs/papers/authors.yaml`; papers carry
+`authorIds` in `docs/papers/index.yaml`. Never hand-invent an id. Duplicate identities are merged
+via `mergedInto` (coming in the authors PR) — never delete an author row to fix a split identity.
+
 ## Source IDs
 
 Every `sources.primary` and entry in `sources.references` must exist as a key in `docs/papers/index.yaml`. Do not invent IDs. Concept pages may omit `sources:` entirely if no canonical paper exists.
@@ -89,4 +104,9 @@ CI's `validate-content` job runs it too, as a step named "Validate content (Atla
 
 ## No parallel atlas tree
 
-There is no `/content/atlas/` directory, no Obsidian vault, no export pipeline. The atlas is a navigation and relationship layer over `content/algorithms/`, `content/models/`, and `content/concepts/`. The atlas is served at `/algorithms` (with tabs for algorithms, models, concepts). Do not create parallel namespaces.
+There is no `content/atlas/` directory and no export pipeline. The atlas is a navigation and
+relationship layer over `content/algorithms/`, `content/models/`, `content/concepts/`, and
+`content/narratives/`, served at `/atlas` (tabs for grid, list, graph, and narratives). There is
+a generated Obsidian vault at `docs/atlas-vault/` (`bun run vault:build`) — it is a derived,
+never-authored projection for exploring the graph in Obsidian, not a parallel content tree; never
+edit it by hand or author from it. Do not create other parallel namespaces.

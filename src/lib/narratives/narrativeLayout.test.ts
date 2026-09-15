@@ -136,6 +136,13 @@ describe("narrativeYearRange", () => {
         expect(narrativeYearRange([page("x", 2017), page("y"), page("z", 2023)]))
             .toEqual({ min: 2017, max: 2023 });
     });
+
+    it("ignores question nodes, which carry no year", () => {
+        const question: NarrativeNode = { id: "q", kind: "question", title: "Q?", area: "a" };
+        expect(narrativeYearRange([page("x", 2017), question, page("z", 2023)]))
+            .toEqual({ min: 2017, max: 2023 });
+        expect(narrativeYearRange([question])).toBeNull();
+    });
 });
 
 describe("areaColor", () => {

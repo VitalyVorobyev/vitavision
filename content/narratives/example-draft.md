@@ -6,6 +6,7 @@ tagline: "Backend test fixture"
 tags: ["test-fixture"]
 author: "Vitaly Vorobyev"
 draft: true
+walkthrough: reveal
 areas:
   - id: foundations
     label: "Foundations"
@@ -32,6 +33,10 @@ nodes:
     area: architectures
     role: "milestone"
     takeaway: "Self-supervised ViT features that transfer without fine-tuning."
+  - id: open-question
+    question: "Does patch-level pretraining still need a convolutional prior?"
+    area: architectures
+    takeaway: "DINOv2 suggests no, but the picture is not fully settled — included only to exercise the `question` node kind in this fixture."
 edges:
   - from: attn
     to: vit-node
@@ -48,21 +53,26 @@ lenses:
       attn: [1, 0]
       vit-node: [2, 1]
       dinov2-node: [3, 1]
+      open-question: [4, 1]
 steps:
   - focus: [attn, vit-node]
     title: "Attention to ViT"
     anchor: attention-to-vit
-  - focus: [vit-node, dinov2-node]
+    claim: "Attention was already the general mechanism; ViT's contribution was refusing to specialize it for images."
+  - focus: [vit-node, dinov2-node, open-question]
     title: "ViT to DINOv2"
     anchor: vit-to-dinov2
 ---
 
 This is a minimal draft fixture for the narrative content kind. It exists to
 exercise the parse and validation paths end to end — a mix of atlas-page
-nodes (`vit`, `dinov2`, `attention-mechanism`) and a paper-only "page debt"
-node (`bennett2013-chess`), one `prerequisite` edge and one `evolution` edge,
-an `overview` lens covering every node, and two guided steps anchored to the
-`##` headings below. `draft: true` keeps it out of every published listing.
+nodes (`vit`, `dinov2`, `attention-mechanism`), a paper-only "page debt" node
+(`bennett2013-chess`), and an open `question` node (`open-question`); one
+`prerequisite` edge and one `evolution` edge; an `overview` lens covering
+every node; `walkthrough: reveal` so the second step reveals a node the first
+step never showed; and two guided steps anchored to the `##` headings below,
+the first carrying a `claim`. `draft: true` keeps it out of every published
+listing.
 
 ## Attention to ViT
 

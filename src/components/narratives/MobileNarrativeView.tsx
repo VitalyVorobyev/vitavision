@@ -21,11 +21,17 @@ export default function MobileNarrativeView({ narrative, steps, chapters }: Mobi
     const nodesById = new Map(narrative.nodes.map((n) => [n.id, n]));
     const areaIds = narrative.areas.map((a) => a.id);
     const edgeTypes = [...new Set(narrative.edges.map((e) => e.type))];
+    const hasQuestionNodes = narrative.nodes.some((n) => n.kind === "question");
 
     return (
         <div className="flex flex-col">
             <div className="rounded-lg border border-border bg-surface px-3 py-2.5">
-                <NarrativeLegend edgeTypes={edgeTypes} areas={narrative.areas} variant="block" />
+                <NarrativeLegend
+                    edgeTypes={edgeTypes}
+                    areas={narrative.areas}
+                    variant="block"
+                    hasQuestionNodes={hasQuestionNodes}
+                />
             </div>
 
             <p className="mt-3 px-1 text-[10.5px] leading-snug text-muted-foreground">
@@ -43,6 +49,10 @@ export default function MobileNarrativeView({ narrative, steps, chapters }: Mobi
                             {step.title}
                         </h2>
                     </div>
+
+                    {step.claim && (
+                        <p className="mt-1.5 px-1 text-[14px] leading-[1.5] text-muted-foreground">{step.claim}</p>
+                    )}
 
                     {chapters[step.anchor] && (
                         <div
@@ -71,12 +81,16 @@ function MobileNodeCard({ node, areaIds }: { node: NarrativeNode; areaIds: strin
     const meta =
         node.kind === "paper"
             ? [node.authorsShort, String(node.year)].filter(Boolean).join(" · ")
-            : [node.pageKind, node.year != null ? String(node.year) : ""].filter(Boolean).join(" · ");
+            : node.kind === "question"
+              ? "question"
+              : [node.pageKind, node.year != null ? String(node.year) : ""].filter(Boolean).join(" · ");
 
     return (
         <div
             className={`relative overflow-hidden rounded-lg bg-surface ${
-                node.kind === "paper" ? "border border-dashed border-border" : "border border-border"
+                node.kind === "paper" || node.kind === "question"
+                    ? "border border-dashed border-border"
+                    : "border border-border"
             }`}
         >
             <span aria-hidden="true" className="absolute inset-y-0 left-0 w-[3px]" style={{ background: accent }} />
@@ -87,7 +101,10 @@ function MobileNodeCard({ node, areaIds }: { node: NarrativeNode; areaIds: strin
                 className="flex w-full items-center gap-2 px-3 py-2.5 text-left"
             >
                 <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13px] font-semibold text-foreground">{node.title}</span>
+                    <span className="block truncate text-[13px] font-semibold text-foreground">
+                        {node.kind === "question" && <span aria-hidden="true">? </span>}
+                        {node.title}
+                    </span>
                     <span className="block truncate text-[10px] text-muted-foreground">{meta}</span>
                 </span>
                 <span
@@ -108,14 +125,15 @@ function MobileNodeCard({ node, areaIds }: { node: NarrativeNode; areaIds: strin
                             {node.remark}
                         </p>
                     )}
-                    {node.kind === "page" ? (
+                    {node.kind === "page" && (
                         <Link
                             to={node.path}
                             className="mt-2.5 flex h-9 items-center justify-center rounded-md bg-primary text-[13px] font-medium text-primary-foreground no-underline active:opacity-90"
                         >
                             Open page →
                         </Link>
-                    ) : (
+                    )}
+                    {node.kind === "paper" && (
                         <a
                             href={node.url}
                             target="_blank"
@@ -125,6 +143,7 @@ function MobileNodeCard({ node, areaIds }: { node: NarrativeNode; areaIds: strin
                             Read the paper ↗
                         </a>
                     )}
+                    {/* question nodes: no link — there is nothing to open. */}
                 </div>
             )}
         </div>

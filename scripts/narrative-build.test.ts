@@ -5,7 +5,12 @@ import {
     sliceChapters,
     violatesEvolutionChronology,
     findLensOrderInversions,
+    resolveNode,
+    resolveNarrative,
+    buildNarrativeIndexEntry,
 } from "./narrative-build.ts";
+import type { AtlasPageLookup, PaperLookup } from "./narrative-build.ts";
+import type { NarrativeFrontmatter, ResolvedNarrative } from "../src/lib/content/schema.ts";
 
 describe("buildTimelineLens", () => {
     it("gives one grid column per year for short ranges and sets y to the area's lane index", () => {
@@ -126,6 +131,88 @@ describe("violatesEvolutionChronology", () => {
         expect(violatesEvolutionChronology(undefined, 2020)).toBe(false);
         expect(violatesEvolutionChronology(2020, undefined)).toBe(false);
         expect(violatesEvolutionChronology(undefined, undefined)).toBe(false);
+    });
+});
+
+describe("resolveNode", () => {
+    const emptyAtlas = new Map<string, AtlasPageLookup>();
+    const emptyPapers = new Map<string, PaperLookup>();
+
+    it("resolves a question node with the question text as title and no year", () => {
+        const out = resolveNode(
+            { id: "q1", question: "Is X still needed?", area: "foundations" },
+            emptyAtlas,
+            emptyPapers,
+        );
+        expect(out).toEqual({
+            id: "q1",
+            kind: "question",
+            title: "Is X still needed?",
+            area: "foundations",
+        });
+        expect(out).not.toHaveProperty("year");
+        expect(out).not.toHaveProperty("page");
+        expect(out).not.toHaveProperty("paper");
+    });
+
+    it("carries optional role/takeaway/remark through for a question node", () => {
+        const out = resolveNode(
+            {
+                id: "q1",
+                question: "Is X still needed?",
+                area: "foundations",
+                role: "open",
+                takeaway: "takeaway text",
+                remark: "remark text",
+            },
+            emptyAtlas,
+            emptyPapers,
+        );
+        expect(out).toMatchObject({ role: "open", takeaway: "takeaway text", remark: "remark text" });
+    });
+});
+
+describe("resolveNarrative", () => {
+    it("omits question nodes from the generated timeline lens", () => {
+        const fm: Pick<NarrativeFrontmatter, "areas" | "nodes" | "edges" | "lenses"> = {
+            areas: [{ id: "a", label: "A" }],
+            nodes: [
+                { id: "p1", page: "some-page", area: "a" },
+                { id: "q1", question: "Open question?", area: "a" },
+            ],
+            edges: [],
+            lenses: [],
+        };
+        const atlasBySlug = new Map<string, AtlasPageLookup>([
+            ["some-page", { slug: "some-page", title: "Some Page", pageKind: "concept", year: 2020 }],
+        ]);
+        const resolved = resolveNarrative(fm, atlasBySlug, new Map<string, PaperLookup>());
+        const timeline = resolved.lenses.find((l) => l.id === "timeline");
+        expect(timeline).toBeDefined();
+        expect(Object.keys(timeline!.coords)).toEqual(["p1"]);
+    });
+});
+
+describe("buildNarrativeIndexEntry", () => {
+    it("excludes question nodes from the debt count but includes them in the node count", () => {
+        const resolved: ResolvedNarrative = {
+            areas: [{ id: "a", label: "A" }],
+            nodes: [
+                { id: "pg", kind: "page", slug: "pg", title: "Pg", pageKind: "concept", path: "/atlas/pg", area: "a" },
+                { id: "pp", kind: "paper", paperId: "pp", title: "Pp", authorsShort: "", year: 2020, url: "", debt: true, area: "a" },
+                { id: "q", kind: "question", title: "Open question?", area: "a" },
+            ],
+            edges: [],
+            lenses: [{ id: "overview", title: "Overview", coords: { pg: [0, 0], pp: [1, 0], q: [2, 0] } }],
+        };
+        const entry = buildNarrativeIndexEntry(
+            "slug",
+            { title: "T", summary: "S", date: "2024-01-01" },
+            resolved,
+            2,
+        );
+        expect(entry.stats.debt).toBe(1);
+        expect(entry.stats.nodes).toBe(3);
     });
 });
 

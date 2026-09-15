@@ -123,7 +123,7 @@ The orchestrator does not edit any `content/**` file — `algo-page` reads the r
 
 **New page candidate** — neither of the above applies. Evaluate against the page-creation criterion:
 - Algorithm page: clear novel method with at least one substantive technical contribution not already described on an existing page.
-- Concept page: would be referenced by 3+ existing or planned public pages AND can support ≥500 words of substantive standalone content.
+- Concept page: a genuinely fundamental, cross-cutting CV concept that can support ≥500 words of substantive standalone content, synthesised from ≥3 distinct sources — referencing-page count is not a gate (see `docs/README.md` §2).
 
 If the criterion is met, write bullets under `## NEW: <suggested-slug>`. If not, still create the research note (preserves provenance), but leave the Atlas update plan section empty with a one-sentence explanation of why no page is warranted.
 

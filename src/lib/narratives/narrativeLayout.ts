@@ -175,7 +175,9 @@ export function yearRulerTicks(minYear: number, maxYear: number, maxTicks = 8): 
 
 /** Year range across every node that carries one, or null when none do. */
 export function narrativeYearRange(nodes: readonly NarrativeNode[]): { min: number; max: number } | null {
-    const years = nodes.map((n) => n.year).filter((y): y is number => typeof y === "number");
+    const years = nodes
+        .map((n) => ("year" in n ? n.year : undefined))
+        .filter((y): y is number => typeof y === "number");
     if (years.length === 0) return null;
     return { min: Math.min(...years), max: Math.max(...years) };
 }

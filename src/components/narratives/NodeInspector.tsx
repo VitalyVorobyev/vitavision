@@ -37,8 +37,8 @@ export default function NodeInspector({ node, areas, onClose }: NodeInspectorPro
                 />
                 <span className="truncate">{areaLabel}</span>
                 <span aria-hidden="true" className="text-muted-foreground/60">·</span>
-                <span>{node.kind === "paper" ? "Paper" : node.pageKind}</span>
-                {node.year != null && (
+                <span>{node.kind === "paper" ? "Paper" : node.kind === "question" ? "Question" : node.pageKind}</span>
+                {"year" in node && node.year != null && (
                     <>
                         <span aria-hidden="true" className="text-muted-foreground/60">·</span>
                         <span className="font-mono normal-case tracking-normal">{node.year}</span>
@@ -70,14 +70,15 @@ export default function NodeInspector({ node, areas, onClose }: NodeInspectorPro
                 <p className="m-0 mt-2 text-[11.5px] italic leading-snug text-muted-foreground">{node.remark}</p>
             )}
 
-            {node.kind === "page" ? (
+            {node.kind === "page" && (
                 <Link
                     to={node.path}
                     className="mt-3 inline-flex h-8 items-center justify-center rounded-md border border-border bg-muted px-3 text-[12px] font-medium text-foreground no-underline transition-colors hover:bg-surface"
                 >
                     Open page →
                 </Link>
-            ) : (
+            )}
+            {node.kind === "paper" && (
                 <a
                     href={node.url}
                     target="_blank"
@@ -87,6 +88,7 @@ export default function NodeInspector({ node, areas, onClose }: NodeInspectorPro
                     Read the paper ↗
                 </a>
             )}
+            {/* question nodes: no link/button — there is nothing to open. */}
         </div>
     );
 }

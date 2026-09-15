@@ -50,7 +50,7 @@ describe("NarrativePage", () => {
         expect(
             screen.getByRole("heading", { name: /Example Narrative \(draft fixture\)/ }),
         ).toBeInTheDocument();
-        expect(screen.getByText("4 stops · 2 chapters")).toBeInTheDocument();
+        expect(screen.getByText("5 stops · 2 chapters")).toBeInTheDocument();
 
         // Node chips come from the async narrative module.
         expect(await screen.findByRole("button", { name: /ViT/ })).toBeInTheDocument();
@@ -87,5 +87,47 @@ describe("NarrativePage", () => {
     it("renders NotFound for an unknown slug", () => {
         renderAt("/atlas/narratives/does-not-exist");
         expect(screen.queryByText(/Example Narrative/)).toBeNull();
+    });
+
+    it("renders the question chip with the '?' glyph and opens the inspector with no link", async () => {
+        renderAt("/atlas/narratives/example-draft?node=open-question");
+
+        const chip = await screen.findByRole("button", {
+            name: /Does patch-level pretraining still need a convolutional prior\?/,
+        });
+        expect(chip).toBeInTheDocument();
+
+        // Inspector shows the "Question" kind label, the takeaway, and NO link/button.
+        expect(await screen.findByText("Question")).toBeInTheDocument();
+        expect(
+            screen.getByText(/DINOv2 suggests no, but the picture is not fully settled/),
+        ).toBeInTheDocument();
+        expect(screen.queryByRole("link", { name: /Open page/ })).toBeNull();
+        expect(screen.queryByRole("link", { name: /Read the paper/ })).toBeNull();
+    });
+
+    it("shows the step's claim as a lede in the rail", async () => {
+        renderAt("/atlas/narratives/example-draft?step=1");
+
+        expect(await screen.findByText("Step 1/2")).toBeInTheDocument();
+        expect(
+            screen.getByText(/Attention was already the general mechanism/),
+        ).toBeInTheDocument();
+    });
+
+    it("hides the not-yet-revealed question node in reveal mode at step 1", async () => {
+        renderAt("/atlas/narratives/example-draft?step=1");
+
+        await screen.findByText("Step 1/2");
+        const chip = document.querySelector<HTMLElement>('[data-narrative-node="open-question"]');
+        expect(chip?.style.opacity).toBe("0");
+    });
+
+    it("reveals the question node once step 2 first focuses it", async () => {
+        renderAt("/atlas/narratives/example-draft?step=2");
+
+        await screen.findByText("Step 2/2");
+        const chip = document.querySelector<HTMLElement>('[data-narrative-node="open-question"]');
+        expect(chip?.style.opacity).toBe("1");
     });
 });

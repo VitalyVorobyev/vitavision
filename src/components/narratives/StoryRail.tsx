@@ -103,6 +103,10 @@ export default function StoryRail({
                     {step.title}
                 </h2>
 
+                {step.claim && (
+                    <p className="m-0 mt-1.5 text-[14px] leading-[1.5] text-muted-foreground">{step.claim}</p>
+                )}
+
                 {chapter ? (
                     // The chapter slice repeats its own <h2>; the rail's heading above
                     // is the navigational one, so the slice's is hidden here.
@@ -139,7 +143,7 @@ export default function StoryRail({
                                     {node.title}
                                 </span>
                                 <span className="shrink-0 font-mono text-[9.5px] tabular-nums text-muted-foreground">
-                                    {node.year ?? ""}
+                                    {("year" in node ? node.year : undefined) ?? ""}
                                 </span>
                             </button>
                         );

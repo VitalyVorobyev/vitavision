@@ -192,7 +192,7 @@ When introducing a new `editorAlgorithmId` value:
 
 1. Confirm the adapter is registered in `src/components/editor/algorithms/registry.ts` and its id appears in the sample-id mapping in `AlgorithmPost.tsx`. If missing, add the entry so the CTA preloads an image.
 2. If the algorithm needs a new sample image not yet in `galleryImages` (`src/store/editor/useEditorStore.ts`), add it there with a `sampleId` and add the `sampleId` to `VALID_SAMPLE_IDS` in `src/hooks/useEditorDeepLink.ts`.
-3. Smoke-test: visit `/algorithms/<slug>`, click "Try in the editor", confirm the image loads and the algorithm is preselected before touching anything.
+3. Smoke-test: visit `/atlas/<slug>`, click "Try in the editor", confirm the image loads and the algorithm is preselected before touching anything.
 
 A deep-link that leaves the user in gallery mode with no image is worse than no link — they don't know what to do next.
 

@@ -321,10 +321,12 @@ const narrativeAreaSchema = z.object({
 const narrativeNodeSchema = z
     .object({
         id: z.string().min(1),
-        /** An atlas slug (algorithm/model/concept). Exactly one of page/paper. */
+        /** An atlas slug (algorithm/model/concept). Exactly one of page/paper/question. */
         page: z.string().min(1).optional(),
-        /** A registered paper id (docs/papers/index.yaml). Exactly one of page/paper. */
+        /** A registered paper id (docs/papers/index.yaml). Exactly one of page/paper/question. */
         paper: z.string().min(1).optional(),
+        /** An open question the narrative raises — no atlas page, no paper. Exactly one of page/paper/question. */
+        question: z.string().min(1).max(200).optional(),
         area: z.string().min(1),
         role: z.string().min(1).optional(),
         takeaway: z.string().max(280).optional(),
@@ -333,8 +335,12 @@ const narrativeNodeSchema = z
         label: z.string().max(80).optional(),
     })
     .refine(
-        (n) => (n.page !== undefined ? 1 : 0) + (n.paper !== undefined ? 1 : 0) === 1,
-        { message: "narrative node must have exactly one of `page` or `paper`" },
+        (n) =>
+            (n.page !== undefined ? 1 : 0) +
+                (n.paper !== undefined ? 1 : 0) +
+                (n.question !== undefined ? 1 : 0) ===
+            1,
+        { message: "narrative node must have exactly one of `page`, `paper`, or `question`" },
     );
 
 export const narrativeEdgeTypeValues = ["prerequisite", "evolution", "bridge", "contrast"] as const;
@@ -362,7 +368,12 @@ const narrativeStepSchema = z.object({
     title: z.string().min(1),
     /** Must resolve to a `##` heading id (rehype-slug) in the narrative body. */
     anchor: z.string().min(1),
+    /** Short headline claim for the step, rendered above the chapter prose. */
+    claim: z.string().max(360).optional(),
 });
+
+export const narrativeWalkthroughValues = ["focus", "reveal"] as const;
+export type NarrativeWalkthrough = (typeof narrativeWalkthroughValues)[number];
 
 /** Zod schema for narrative page frontmatter. */
 export const narrativeFrontmatterSchema = publicationFrontmatterBaseObjectSchema
@@ -373,6 +384,13 @@ export const narrativeFrontmatterSchema = publicationFrontmatterBaseObjectSchema
         edges: z.array(narrativeEdgeSchema).optional(),
         lenses: z.array(narrativeLensSchema).optional(),
         steps: z.array(narrativeStepSchema).min(2),
+        /**
+         * Guided-walkthrough reveal mode. "focus" (the default when omitted)
+         * dims nodes/edges outside the active step's focus set; "reveal"
+         * additionally hides (not just dims) anything not yet reached by the
+         * walkthrough. Consumers must treat a missing value as "focus".
+         */
+        walkthrough: z.enum(narrativeWalkthroughValues).optional(),
     })
     .refine(
         (fm) => new Set(fm.areas.map((a) => a.id)).size === fm.areas.length,
@@ -414,7 +432,19 @@ export interface NarrativePaperNode {
     remark?: string;
 }
 
-export type NarrativeNode = NarrativePageNode | NarrativePaperNode;
+/** Build-resolved narrative node representing an open question the essay raises — no atlas page, no paper. */
+export interface NarrativeQuestionNode {
+    id: string;
+    kind: "question";
+    /** The question text itself — also used as the display title. */
+    title: string;
+    area: string;
+    role?: string;
+    takeaway?: string;
+    remark?: string;
+}
+
+export type NarrativeNode = NarrativePageNode | NarrativePaperNode | NarrativeQuestionNode;
 
 export interface NarrativeGraphEdge {
     from: string;

@@ -28,6 +28,10 @@ interface NarrativeCanvasProps {
     focusIds: string[] | null;
     selectedId: string | null;
     onSelect: (id: string | null) => void;
+    /** Reveal mode: default "focus" — pass the narrative's authored mode. */
+    walkthrough?: "focus" | "reveal";
+    /** Union of every focus set from step 0 through the active step; `null` when not stepping. */
+    revealedIds?: string[] | null;
 }
 
 // ── Node chip ───────────────────────────────────────────────────────────────
@@ -37,16 +41,19 @@ interface NodeChipProps {
     pos: { x: number; y: number };
     areaIds: string[];
     dimmed: boolean;
+    hidden: boolean;
     selected: boolean;
     onSelect: (id: string | null) => void;
 }
 
-function NodeChip({ node, pos, areaIds, dimmed, selected, onSelect }: NodeChipProps) {
+function NodeChip({ node, pos, areaIds, dimmed, hidden, selected, onSelect }: NodeChipProps) {
     const accent = areaColor(areaIds, node.area);
     const meta =
         node.kind === "paper"
             ? [node.authorsShort, String(node.year)].filter(Boolean).join(" · ")
-            : [node.pageKind, node.year != null ? String(node.year) : ""].filter(Boolean).join(" · ");
+            : node.kind === "question"
+              ? "question"
+              : [node.pageKind, node.year != null ? String(node.year) : ""].filter(Boolean).join(" · ");
 
     return (
         <button
@@ -55,19 +62,21 @@ function NodeChip({ node, pos, areaIds, dimmed, selected, onSelect }: NodeChipPr
             data-narrative-node={node.id}
             onClick={() => onSelect(selected ? null : node.id)}
             className={`absolute left-0 top-0 flex flex-col justify-center gap-0.5 overflow-hidden rounded-lg bg-surface px-2.5 py-1.5 text-left shadow-sm ${
-                node.kind === "paper" ? "border border-dashed" : "border"
+                node.kind === "paper" || node.kind === "question" ? "border border-dashed" : "border"
             } ${selected ? "border-border-strong ring-2 ring-brand/50" : "border-border hover:border-border-strong"}`}
             style={{
                 width:       NARRATIVE_NODE_W,
                 height:      NARRATIVE_NODE_H,
                 transform:   `translate3d(${pos.x}px, ${pos.y + NARRATIVE_TOP_PAD}px, 0)`,
                 transition:  `transform ${LENS_TRANSITION_MS}ms cubic-bezier(0.4, 0, 0.2, 1), opacity 220ms ease`,
-                opacity:     dimmed ? 0.26 : 1,
+                opacity:     hidden ? 0 : dimmed ? 0.26 : 1,
+                pointerEvents: hidden ? "none" : undefined,
                 touchAction: "none",
             }}
         >
             <span aria-hidden="true" className="absolute inset-y-0 left-0 w-[3px]" style={{ background: accent }} />
             <span className="text-[12px] font-semibold leading-tight text-foreground line-clamp-2 -tracking-[0.1px]">
+                {node.kind === "question" && <span aria-hidden="true">? </span>}
                 {node.title}
             </span>
             <span className="flex items-center gap-1.5 text-[9.5px] text-muted-foreground truncate">
@@ -130,6 +139,8 @@ export default function NarrativeCanvas({
     focusIds,
     selectedId,
     onSelect,
+    walkthrough = "focus",
+    revealedIds = null,
 }: NarrativeCanvasProps) {
     const lens = useMemo(
         () => narrative.lenses.find((l) => l.id === lensId) ?? narrative.lenses[0],
@@ -144,6 +155,11 @@ export default function NarrativeCanvas({
     );
 
     const areaIds = useMemo(() => narrative.areas.map((a) => a.id), [narrative.areas]);
+
+    const hasQuestionNodes = useMemo(
+        () => narrative.nodes.some((n) => n.kind === "question"),
+        [narrative.nodes],
+    );
 
     const contentW = layout.width;
     const contentH = layout.height + NARRATIVE_TOP_PAD;
@@ -230,6 +246,8 @@ export default function NarrativeCanvas({
     }
 
     const isDimmed = (id: string) => focusIds !== null && !focusIds.includes(id);
+    const isHidden = (id: string) =>
+        walkthrough === "reveal" && focusIds !== null && !(revealedIds ?? []).includes(id);
 
     return (
         <div
@@ -284,8 +302,9 @@ export default function NarrativeCanvas({
                         const from = layout.positions[edge.from];
                         const to   = layout.positions[edge.to];
                         if (!from || !to) return null;
-                        const geom = buildEdge(nodeBox(from), nodeBox(to));
-                        const dim  = isDimmed(edge.from) || isDimmed(edge.to);
+                        const geom   = buildEdge(nodeBox(from), nodeBox(to));
+                        const dim    = isDimmed(edge.from) || isDimmed(edge.to);
+                        const hidden = isHidden(edge.from) || isHidden(edge.to);
                         return (
                             <path
                                 key={`e-${i}`}
@@ -294,7 +313,8 @@ export default function NarrativeCanvas({
                                 stroke={narrativeEdgeColor(edge.type)}
                                 strokeWidth="1.3"
                                 strokeDasharray={NARRATIVE_EDGE_DASH[edge.type]}
-                                opacity={dim ? 0.14 : 0.65}
+                                opacity={hidden ? 0 : dim ? 0.14 : 0.65}
+                                style={hidden ? { pointerEvents: "none" } : undefined}
                                 markerEnd={`url(#narr-arr-${edge.type})`}
                             />
                         );
@@ -306,15 +326,17 @@ export default function NarrativeCanvas({
                         const from = layout.positions[edge.from];
                         const to   = layout.positions[edge.to];
                         if (!from || !to) return null;
-                        const geom  = buildEdge(nodeBox(from), nodeBox(to));
-                        const color = narrativeEdgeColor(edge.type);
-                        const dim   = isDimmed(edge.from) || isDimmed(edge.to);
-                        const w     = edge.label.length * 5.6 + 10;
+                        const geom   = buildEdge(nodeBox(from), nodeBox(to));
+                        const color  = narrativeEdgeColor(edge.type);
+                        const dim    = isDimmed(edge.from) || isDimmed(edge.to);
+                        const hidden = isHidden(edge.from) || isHidden(edge.to);
+                        const w      = edge.label.length * 5.6 + 10;
                         return (
                             <g
                                 key={`lbl-${i}`}
                                 transform={`translate(${geom.labelX} ${geom.labelY})`}
-                                opacity={dim ? 0.15 : 0.95}
+                                opacity={hidden ? 0 : dim ? 0.15 : 0.95}
+                                style={hidden ? { pointerEvents: "none" } : undefined}
                             >
                                 <rect
                                     x={-w / 2} y={-7} width={w} height={14} rx={3}
@@ -346,6 +368,7 @@ export default function NarrativeCanvas({
                         pos={layout.positions[node.id]}
                         areaIds={areaIds}
                         dimmed={isDimmed(node.id)}
+                        hidden={isHidden(node.id)}
                         selected={selectedId === node.id}
                         onSelect={onSelect}
                     />
@@ -353,7 +376,7 @@ export default function NarrativeCanvas({
             </div>
 
             {/* Viewport overlays — not scaled or translated */}
-            <NarrativeLegend edgeTypes={edgeTypes} areas={narrative.areas} />
+            <NarrativeLegend edgeTypes={edgeTypes} areas={narrative.areas} hasQuestionNodes={hasQuestionNodes} />
             <ZoomControls
                 onZoomIn={() => zoomAroundCenter(1.25)}
                 onZoomOut={() => zoomAroundCenter(1 / 1.25)}

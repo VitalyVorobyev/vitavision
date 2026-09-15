@@ -3176,6 +3176,25 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "one-homography-is-not-enough",
+    "path": "/atlas/narratives/one-homography-is-not-enough",
+    "type": "narrative",
+    "title": "One Homography Is Not Enough",
+    "summary": "Parallax breaks the single-homography stitching model, and the fixes loosen it in sequence: two homographies for two planes, a smoothly varying affine warp, and a field of local homographies that is projective where there is data and global where there is none.",
+    "tags": [
+      "stitching",
+      "homography",
+      "classical",
+      "geometry"
+    ],
+    "headings": [
+      "One Warp, Two Conditions",
+      "Two Planes, One Blend",
+      "Smooth Affine Field",
+      "As Projective As Possible"
+    ]
+  },
+  {
     "slug": "segmentation-from-energy-to-prompt",
     "path": "/atlas/narratives/segmentation-from-energy-to-prompt",
     "type": "narrative",

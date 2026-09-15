@@ -7165,6 +7165,58 @@ export const narrativePages: NarrativeIndexEntry[] = [
     }
   },
   {
+    "slug": "one-homography-is-not-enough",
+    "title": "One Homography Is Not Enough",
+    "summary": "Parallax breaks the single-homography stitching model, and the fixes loosen it in sequence: two homographies for two planes, a smoothly varying affine warp, and a field of local homographies that is projective where there is data and global where there is none.",
+    "tagline": "Every extra parameter buys alignment and costs extrapolation.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 6,
+      "steps": 4,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "the-model",
+        "label": "The model"
+      },
+      {
+        "id": "two-planes-and-smooth-warps",
+        "label": "Two planes and smooth warps"
+      },
+      {
+        "id": "a-field-of-warps",
+        "label": "A field of warps"
+      }
+    ],
+    "preview": {
+      "homography": [
+        0,
+        0
+      ],
+      "spatially-varying-image-stitching": [
+        0.18918918918918917,
+        0
+      ],
+      "gao-dual-homography-stitching": [
+        0.37837837837837834,
+        0.5
+      ],
+      "lin-sva-stitching": [
+        0.5945945945945946,
+        0.5
+      ],
+      "apap-image-stitching": [
+        0.8108108108108107,
+        1
+      ],
+      "q-warp-vs-correspondence": [
+        1,
+        1
+      ]
+    }
+  },
+  {
     "slug": "segmentation-from-energy-to-prompt",
     "title": "Segmentation, from Energy to Prompt",
     "summary": "How image segmentation kept the same task for twenty years while its prior moved from a hand-written energy function to a trained dense predictor to a promptable pretrained model, and what the practitioner stopped having to supply at each move.",

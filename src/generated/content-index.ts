@@ -6636,6 +6636,70 @@ export const narrativePages: NarrativeIndexEntry[] = [
     }
   },
   {
+    "slug": "detection-removing-the-machinery",
+    "title": "Detection, Removing the Machinery",
+    "summary": "How object detection shed its hand-built machinery one component at a time: the enumerated window, the feature pyramid, the proposal stage, the anchors, and non-maximum suppression, until what remains is a classifier reading the image once.",
+    "tagline": "Every step deleted something a human had designed.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 9,
+      "steps": 5,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "window-machinery",
+        "label": "Window machinery"
+      },
+      {
+        "id": "proposals-regression",
+        "label": "Proposals and regression"
+      },
+      {
+        "id": "set-prediction",
+        "label": "Set prediction"
+      }
+    ],
+    "preview": {
+      "integral-image": [
+        0,
+        0
+      ],
+      "viola-jones-detector": [
+        0.15384615384615385,
+        0
+      ],
+      "hog-descriptor": [
+        0.2846153846153846,
+        0
+      ],
+      "felzenszwalb-deformable-parts": [
+        0.4076923076923077,
+        0
+      ],
+      "faster-rcnn": [
+        0.5384615384615384,
+        0.5
+      ],
+      "yolo-v1": [
+        0.6538461538461539,
+        0.5
+      ],
+      "detr": [
+        0.7692307692307693,
+        1
+      ],
+      "rf-detr": [
+        0.8846153846153846,
+        1
+      ],
+      "q-nms-training": [
+        1,
+        1
+      ]
+    }
+  },
+  {
     "slug": "example-draft",
     "title": "Example Narrative (draft fixture)",
     "summary": "A minimal draft fixture exercising the narrative content kind's parse and validation paths — not intended for publication.",

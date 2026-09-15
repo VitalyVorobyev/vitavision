@@ -23,7 +23,7 @@
 | WS | State | Next action |
 |---|---|---|
 | A — Narratives infra v2 | **done** (PR-1) — `question` nodes, step `claim`, `walkthrough: reveal`, edge-vs-relations validator warning, orphan layout generator removed | — |
-| B — Authors: identity, edges, ego graph | planned (PR-2) | alias mechanism, 4 data fixes, `authors:dupes`, backfill merge fix, co-author edges, ego graph |
+| B — Authors: identity, edges, ego graph | **done** (PR-2) | run `author-identity` Workflow B on the remaining `authors:dupes` candidates (Dong Liu ×2 HRNet, Yang Zou ×2 WinCLIP/VisA look like real splits); re-run backfill — the dry-run now matches 4 of the 10 unlinked papers by DOI |
 | C — Narratives program (13 stories) | planned | N9 pilot via `narrative-page` (PR-3) |
 | D — Page-quality audit | skill + seeded backlog **done** (PR-1) | first `atlas-audit` run over the BL-001 zero-relation pages after the N9 pilot |
 | E — Source injections (RAFT, COLMAP, Kannala–Brandt, LO-RANSAC) | planned | after N9/N7/N8/N3 need them |
@@ -54,13 +54,13 @@ N9 → N7, N8, N3 (after source injections) → N4, N5, N2, N6 → N10, N11, N12
 
 ## Authors program
 
-- [ ] Alias mechanism: `mergedInto` on `authors.yaml` rows, resolved in `buildAuthorsIndex`, `AuthorPage` redirects alias → canonical.
-- [ ] Data fixes: merge Kirillov (`A5101930471`/`A5008626158`), Tomasi (`A5079878449`/`A5088492440`), Zilong Huang (`A5101358906`/`A5099137433`); re-point `zhang2000-flexible` → `A5113678278` (Zhengyou Zhang); spot-check Michael S. Brown and Jian Sun pairs.
-- [ ] `scripts/authors-dupes.ts` (`bun run authors:dupes`, planned PR-2) — candidate-split report.
-- [ ] Backfill merge fix (`--write` merges into existing `authors.yaml` instead of overwriting) + `--only <paper-id>` flag (`bun run papers:backfill-authors`, planned PR-2).
-- [ ] Weighted co-author edges (`AuthorsIndex.coauthors`) at build time.
-- [ ] Static ego graph on `AuthorPage` (top collaborators, ring layout, click-through).
-- [ ] `author-identity` skill.
+- [x] Alias mechanism: `mergedInto` on `authors.yaml` rows, resolved in `buildAuthorsIndex`, `AuthorPage` redirects alias → canonical.
+- [x] Data fixes (OpenAlex-verified, see `author-identity` worked cases): Tomasi, Michael S. Brown, Jian Sun merged via `mergedInto`; Kirillov (SAM) and Zilong Huang (Depth Anything) were misattributions to a crystallographer and a microbiologist — re-pointed; `zhang2000-flexible` re-pointed to Zhengyou Zhang `A5113678278`.
+- [x] `scripts/authors-dupes.ts` (`bun run authors:dupes`) — candidate-split report.
+- [x] Backfill merge fix (`--write` merges into existing `authors.yaml` instead of overwriting) + `--only <paper-id>` flag (`bun run papers:backfill-authors`).
+- [x] Weighted co-author edges (`AuthorsIndex.coauthors`) at build time.
+- [x] Static ego graph on `AuthorPage` (top collaborators, ring layout, click-through).
+- [x] `author-identity` skill.
 
 ## Sources to inject
 
@@ -114,8 +114,15 @@ narrative should get a page — paper-only nodes are debt, not normal.
 - 2026-09-15 — Narrative edges must not contradict Atlas `relations[]` (validator warns, does not error).
 - 2026-09-15 — Orphaned constellation layout generator deleted (`scripts/computeConstellationLayout.ts`,
   `src/generated/atlas-graph-layout.ts`, the `atlas:layout` build step) — nothing imported it.
-- 2026-09-15 — Authors: `mergedInto` alias mechanism and the Zhang 2000 re-attribution decided;
-  execution lands in PR-2.
+- 2026-09-15 — Authors: `mergedInto` alias mechanism (build-resolved, cycle-safe, old ids redirect);
+  weighted co-author edges precomputed at build; static ego graph on author pages.
+- 2026-09-15 — Author identity fixes, all from OpenAlex `authors/<id>` evidence: Tomasi `A5088492440`→`A5079878449`,
+  Michael S. Brown `A5075135613`→`A5106406020` (more works; both stitching papers are his), Jian Sun
+  `A5100785015`→`A5101425421` (Microsoft affiliation) merged; `kirillov2023-sam` re-pointed
+  `A5008626158` (a crystallographer) → `A5101930471`; `yang2024-depth-anything` re-pointed `A5101358906`
+  (a microbiologist) → `A5099137433`; `zhang2000-flexible` re-pointed `A5056480447` → `A5113678278`.
+  Lesson: name+initial similarity produced two false merges in the original plan — always check
+  affiliations/topics before merging.
 
 ## Deferred / parked
 

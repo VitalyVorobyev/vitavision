@@ -78,24 +78,38 @@ export interface CoAuthor {
     name: string;
     /** Papers this co-author shares with the subject author. */
     shared: number;
+    /** Sorted atlas slugs citing any paper the two authors share. */
+    sharedPages: string[];
+}
+
+/** Paper ids in `paperAuthors` whose author list includes both `a` and `b`. */
+function papersSharedBy(a: string, b: string, paperAuthors: Record<string, string[]>): string[] {
+    const ids: string[] = [];
+    for (const [paperId, authorIds] of Object.entries(paperAuthors)) {
+        if (authorIds.includes(a) && authorIds.includes(b)) ids.push(paperId);
+    }
+    return ids;
 }
 
 /**
  * Every other author sharing at least one paper with `authorId`, with the
- * shared-paper count. Ordered by shared count desc, then A–Z by surname.
+ * shared-paper count and the atlas pages citing a shared paper. Reads the
+ * build-time `AuthorsIndex.coauthors` edge table rather than recomputing
+ * counts. Ordered by shared count desc, then A–Z by surname.
  */
 export function coAuthorsOf(authorId: string, index: AuthorsIndex): CoAuthor[] {
-    const ref = index.authors[authorId];
-    if (!ref) return [];
-    const counts = new Map<string, number>();
-    for (const paperId of ref.papers) {
-        for (const other of index.paperAuthors[paperId] ?? []) {
-            if (other === authorId) continue;
-            counts.set(other, (counts.get(other) ?? 0) + 1);
-        }
-    }
-    return [...counts.entries()]
-        .map(([id, shared]) => ({ id, name: index.authors[id]?.name ?? id, shared }))
+    const row = index.coauthors[authorId];
+    if (!row) return [];
+    return Object.entries(row)
+        .map(([id, shared]) => ({
+            id,
+            name: index.authors[id]?.name ?? id,
+            shared,
+            sharedPages: atlasSlugsForPapers(
+                papersSharedBy(authorId, id, index.paperAuthors),
+                index.pagesByPaper,
+            ),
+        }))
         .sort(
             (a, b) =>
                 b.shared - a.shared ||

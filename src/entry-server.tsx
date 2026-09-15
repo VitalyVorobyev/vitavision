@@ -19,6 +19,7 @@ import { StaticContentProvider, type StaticContentContextValue } from "./lib/con
 import { PapersProvider } from "./lib/atlas/papersIndex.tsx";
 import type { PapersById } from "./generated/papers-index.ts";
 import { AuthorsProvider } from "./lib/atlas/authorsIndex.tsx";
+import { EMPTY_AUTHORS_INDEX } from "./lib/atlas/authorsContext.ts";
 import type { AuthorsIndex } from "./generated/authors-index.ts";
 
 // In SSR (postbuild), Vite doesn't substitute import.meta.env — read from process.env instead.
@@ -28,8 +29,6 @@ import type { AuthorsIndex } from "./generated/authors-index.ts";
 // a `.`-containing hostname ending in `$`). `clerk.example.com$` encoded → pk_test_Y2xlcmsuZXhhbXBsZS5jb20k.
 const SSR_PUBLISHABLE_KEY =
     process.env.VITE_CLERK_PUBLISHABLE_KEY ?? "pk_test_Y2xlcmsuZXhhbXBsZS5jb20k";
-
-const EMPTY_AUTHORS_INDEX: AuthorsIndex = { authors: {}, paperAuthors: {}, pagesByPaper: {} };
 
 export function render(
     url: string,

@@ -18,6 +18,9 @@ export interface AuthorRecord {
     id: string;
     name: string;
     orcid?: string;
+    /** When set, this id is a duplicate identity merged into the canonical
+     *  author id `mergedInto`. Merged rows never appear in `AuthorsIndex.authors`. */
+    mergedInto?: string;
 }
 
 /** A single paper entry from docs/papers/index.yaml, narrowed to the fields
@@ -51,6 +54,10 @@ export interface AuthorsIndex {
     authors: Record<string, AuthorRef>;
     paperAuthors: Record<string, string[]>;
     pagesByPaper: Record<string, string[]>;
+    /** Alias id → canonical id, flattened to the final canonical id (cycle-safe). */
+    aliases: Record<string, string>;
+    /** Symmetric co-author counts over unordered pairs of alias-resolved, per-paper-deduped author ids. */
+    coauthors: Record<string, Record<string, number>>;
 }
 
 /** Reads docs/papers/authors.yaml. Tolerates absence or a malformed/non-list
@@ -70,6 +77,7 @@ export function loadAuthorsYaml(): AuthorRecord[] {
             id: entry.id,
             name: entry.name,
             ...(entry.orcid ? { orcid: entry.orcid } : {}),
+            ...(entry.mergedInto ? { mergedInto: entry.mergedInto } : {}),
         });
     }
     return records;
@@ -134,12 +142,107 @@ export function buildPagesByPaper(pages: PageSourcesEntry[]): Record<string, str
     return out;
 }
 
-/** Pure assembly of the authors index from already-loaded inputs. */
+/** Builds a cycle-safe id → canonical-id resolver from `mergedInto` rows, plus
+ *  the flattened alias map (old id → final canonical id) for every id that
+ *  resolves to something other than itself.
+ *
+ *  A normal chain (A→B→C, C has no `mergedInto`) resolves every id in it to
+ *  the terminal id C. A cycle (A→B→A) has no terminal id, so every id in the
+ *  cycle instead resolves to the lexicographically smallest id in that cycle
+ *  — deterministic and stable regardless of which id is resolved first, so
+ *  two ids that merge into each other never resolve to two different
+ *  "canonical" ids. */
+function buildAliasResolver(authorRecords: AuthorRecord[]): {
+    resolve: (id: string) => string;
+    aliases: Record<string, string>;
+} {
+    const mergedInto = new Map<string, string>();
+    for (const r of authorRecords) {
+        if (r.mergedInto) mergedInto.set(r.id, r.mergedInto);
+    }
+    const canonical = new Map<string, string>();
+    const resolve = (id: string): string => {
+        const cached = canonical.get(id);
+        if (cached) return cached;
+        const path: string[] = [];
+        let current = id;
+        for (;;) {
+            const already = canonical.get(current);
+            if (already) {
+                for (const p of path) canonical.set(p, already);
+                return already;
+            }
+            const cycleStart = path.indexOf(current);
+            if (cycleStart !== -1) {
+                const cycle = path.slice(cycleStart);
+                const cycleCanonical = [...cycle].sort()[0];
+                for (const c of path) canonical.set(c, cycleCanonical);
+                return cycleCanonical;
+            }
+            path.push(current);
+            const next = mergedInto.get(current);
+            if (!next) {
+                for (const p of path) canonical.set(p, current);
+                return current;
+            }
+            current = next;
+        }
+    };
+    const aliases: Record<string, string> = {};
+    for (const id of mergedInto.keys()) {
+        const canonicalId = resolve(id);
+        if (canonicalId !== id) aliases[id] = canonicalId;
+    }
+    return { resolve, aliases };
+}
+
+/** Symmetric co-author counts over unordered pairs within each paper's
+ *  author-id list. Callers must pass already alias-resolved, per-paper-deduped
+ *  ids (as `paperAuthors` in `buildAuthorsIndex` does) — this function does not
+ *  resolve or dedupe on its own. A paper with 0 or 1 authors contributes no
+ *  pairs. */
+export function buildCoauthors(
+    paperAuthorIds: { paperId: string; authorIds: string[] }[],
+): Record<string, Record<string, number>> {
+    const coauthors: Record<string, Record<string, number>> = {};
+    const bump = (a: string, b: string) => {
+        const row = (coauthors[a] ??= {});
+        row[b] = (row[b] ?? 0) + 1;
+    };
+    for (const { authorIds } of paperAuthorIds) {
+        for (let i = 0; i < authorIds.length; i++) {
+            for (let j = i + 1; j < authorIds.length; j++) {
+                bump(authorIds[i], authorIds[j]);
+                bump(authorIds[j], authorIds[i]);
+            }
+        }
+    }
+    return coauthors;
+}
+
+/** Pure assembly of the authors index from already-loaded inputs. Every
+ *  `authorIds` list is rewritten through the alias resolver and deduped per
+ *  paper before `authors`/`paperAuthors`/`coauthors` are built, so merged rows
+ *  never appear in the output — only their canonical id does. */
 export function buildAuthorsIndex(
     authorRecords: AuthorRecord[],
-    paperAuthorIds: { paperId: string; authorIds: string[] }[],
+    rawPaperAuthorIds: { paperId: string; authorIds: string[] }[],
     pagesByPaper: Record<string, string[]>,
 ): AuthorsIndex {
+    const { resolve, aliases } = buildAliasResolver(authorRecords);
+
+    const paperAuthorIds = rawPaperAuthorIds.map(({ paperId, authorIds }) => {
+        const resolvedIds: string[] = [];
+        const seen = new Set<string>();
+        for (const rawId of authorIds) {
+            const id = resolve(rawId);
+            if (seen.has(id)) continue;
+            seen.add(id);
+            resolvedIds.push(id);
+        }
+        return { paperId, authorIds: resolvedIds };
+    });
+
     const authorsById = new Map(authorRecords.map((a) => [a.id, a]));
     const authors: Record<string, AuthorRef> = {};
     const paperAuthors: Record<string, string[]> = {};
@@ -164,7 +267,9 @@ export function buildAuthorsIndex(
         ref.papers.sort();
     }
 
-    return { authors, paperAuthors, pagesByPaper };
+    const coauthors = buildCoauthors(paperAuthorIds);
+
+    return { authors, paperAuthors, pagesByPaper, aliases, coauthors };
 }
 
 /** Writes public/authors-index.json (data) and src/generated/authors-index.ts
@@ -187,6 +292,8 @@ export function writeAuthorsIndexFiles(index: AuthorsIndex): void {
         "    authors: Record<string, AuthorRef>;",
         "    paperAuthors: Record<string, string[]>;",
         "    pagesByPaper: Record<string, string[]>;",
+        "    aliases: Record<string, string>;",
+        "    coauthors: Record<string, Record<string, number>>;",
         "}",
         "",
         "/** Public URL of the JSON asset emitted by content:build / authors:build. */",

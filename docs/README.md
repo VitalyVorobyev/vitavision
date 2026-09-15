@@ -92,6 +92,7 @@ For surveys: at least 3 of the surveyed methods' primary papers must have resear
 | `deep-model-page` | Author or update a deep-learning model page. Family pages vs single-paper pages. | `content/models/<slug>.md`, `docs/papers/index.yaml`. |
 | `concept-page` | Author or update a concept page. Enforces the ≥500-words substance + ≥3-source-diversity criterion. Reads multiple research notes when synthesizing. | `content/concepts/<slug>.md`. |
 | `narrative-page` | Author or update a narrative. Enforces node existence/publication, lens/step completeness, and edge-vs-Atlas-relations sanity. | `content/narratives/<slug>.md`, `docs/atlas/roadmap.md`. |
+| `author-identity` | Maintain the authors registry: link a newly ingested paper's OpenAlex author ids, detect and merge split identities (`mergedInto`), fix misattributions. | `docs/papers/authors.yaml`, `authorIds` in `docs/papers/index.yaml`. |
 | `atlas-audit` | Page-quality audit: research-note fidelity, voice, section structure, relations completeness, validator warnings, figure placeholders, dead links. Produces findings only, no page edits. | `docs/atlas/backlog.md` only. |
 
 These skills cover every authoring path. There is **no separate `atlas-update` skill** — page skills handle both create-from-scratch and apply-update-plan.

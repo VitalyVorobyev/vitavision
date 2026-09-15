@@ -12,15 +12,30 @@ interface NarrativeLegendProps {
     areas: { id: string; label: string }[];
     /** `overlay` floats over the canvas; `block` sits in normal flow (mobile). */
     variant?: "overlay" | "block";
+    /** Shows the "Open question" entry — only when the narrative has `question` nodes. */
+    hasQuestionNodes?: boolean;
 }
 
-export default function NarrativeLegend({ edgeTypes, areas, variant = "overlay" }: NarrativeLegendProps) {
-    if (edgeTypes.length === 0 && areas.length === 0) return null;
+export default function NarrativeLegend({ edgeTypes, areas, variant = "overlay", hasQuestionNodes = false }: NarrativeLegendProps) {
+    if (edgeTypes.length === 0 && areas.length === 0 && !hasQuestionNodes) return null;
 
     const areaIds = areas.map((a) => a.id);
 
     const body = (
         <>
+            {hasQuestionNodes && (
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <span className="inline-flex items-center gap-1.5">
+                        <span
+                            aria-hidden="true"
+                            className="grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border border-dashed border-muted-foreground text-[9px] font-semibold leading-none text-muted-foreground"
+                        >
+                            ?
+                        </span>
+                        <span className="text-[10.5px] text-muted-foreground">Open question</span>
+                    </span>
+                </div>
+            )}
             {edgeTypes.length > 0 && (
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
                     {edgeTypes.map((t) => (

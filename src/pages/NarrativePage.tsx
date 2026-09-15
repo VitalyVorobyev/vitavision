@@ -141,6 +141,11 @@ export default function NarrativePage() {
 
     const focusIds = stepIndex === null ? null : steps[stepIndex]?.focus ?? null;
     const selectedNode = selectedId ? nodesById.get(selectedId) ?? null : null;
+    const walkthrough = mod?.walkthrough ?? "focus";
+    const revealedIds = useMemo(
+        () => (stepIndex === null ? null : steps.slice(0, stepIndex + 1).flatMap((s) => s.focus)),
+        [stepIndex, steps],
+    );
 
     if (!entry || isDraftBlocked) return <NotFound />;
 
@@ -225,6 +230,8 @@ export default function NarrativePage() {
                                 focusIds={focusIds}
                                 selectedId={selectedId}
                                 onSelect={setSelected}
+                                walkthrough={walkthrough}
+                                revealedIds={revealedIds}
                             />
                         </div>
                         <aside className="flex flex-col gap-3">

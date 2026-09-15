@@ -98,6 +98,171 @@ page body.
   by hand) and retry.
 - Voice and structure must match the page-template skeleton.
 
+## Narrative outline contract
+
+Used by `narrative-page` Step 1 to turn a candidate node list into a proposed
+graph, lens coordinates, and step/chapter outline.
+
+**Inputs (provided by orchestrator):**
+- Candidate node list: for each, `{ kind: "page" | "paper" | "question", ref:
+  <atlas-slug> | <paper-id> | <question text> }`.
+- For `page` nodes: the page's frontmatter + `summary` + `# Remarks` (algo/model)
+  or `# Assessment`/`# Where it appears` (concept) section — paths, not whole
+  pages read wholesale beyond what's needed.
+- For `paper` nodes: the paper's title/year/url looked up from
+  `docs/papers/index.yaml` — the paper itself (cache) is NOT read.
+- For any candidate with an existing research note: the note's `Connections`
+  and `Stated relations` sections only.
+- Thesis (one sentence) and any lens ideas from Gate 0. Target slug.
+
+**Output (reply):** a single JSON object. No file writes.
+
+```json
+{
+  "areas": [{ "id": "substrate", "label": "Substrate" }],
+  "nodes": [
+    {
+      "id": "vit",
+      "kind": "page",
+      "ref": "vit",
+      "area": "backbone",
+      "role": "milestone",
+      "takeaway": "<= 280 chars",
+      "remark": "<= 400 chars, optional",
+      "label": "<= 80 chars, required only when kind is \"paper\""
+    },
+    { "id": "q1", "kind": "question", "ref": "<= 200 chars, the question text itself", "area": "backbone" }
+  ],
+  "edges": [
+    {
+      "from": "vit",
+      "to": "deit",
+      "type": "prerequisite | evolution | bridge | contrast",
+      "label": "<= 24 chars, optional",
+      "justification": "one line naming the specific Atlas relations[] entry (type + target) or note Connections line this edge compresses"
+    }
+  ],
+  "lenses": {
+    "overview": { "vit": [3, 1], "deit": [3.6, 1] }
+  },
+  "steps": [
+    { "title": "...", "anchor": "kebab-case-slug", "claim": "<= 360 chars", "focus": ["vit", "deit"] }
+  ],
+  "chapters": [
+    { "anchor": "kebab-case-slug", "bullets": ["2-5 short outline bullets, not prose"] }
+  ]
+}
+```
+
+**Hard rules:**
+- Read only the paths given. Never `docs/papers/.cache/**` or
+  `docs/sources/.cache/**`.
+- Enforce the length caps before returning: `takeaway` ≤280, `remark` ≤400,
+  paper-node `label` ≤80, edge `label` ≤24, step `claim` ≤360, question `ref`
+  ≤200.
+- Every edge's `justification` must name a specific Atlas `relations[]` entry
+  (type + target slug) or a specific note `Connections`/`Stated relations`
+  line — never propose an edge with no cited source. This is what lets the
+  orchestrator's Step 2 reconciliation check the edge against
+  `src/generated/content-graph.ts` mechanically.
+- `lenses.overview` coordinates must include every node id, in grid units
+  (1.0 = one chip pitch). Keep x loosely chronological — do not compute exact
+  years; the build derives the generated `timeline` lens from years itself.
+- A question node's `ref` is the question text; it carries no `takeaway`,
+  `label`, or year.
+- If a candidate node lacks enough source material (no summary/Remarks
+  section, no note) to write a grounded `takeaway`, return exactly
+  `blocked: missing summary for <node-id>` and stop.
+
+## Narrative draft contract
+
+Used by `narrative-page` Step 3 to write the essay body from the outline the
+orchestrator reconciled in Step 2.
+
+**Inputs (provided by orchestrator):**
+- The reconciled outline JSON (areas, nodes, edges, steps, chapters) from the
+  Narrative outline contract, post Step-2 corrections.
+- Page paths (for `page` nodes) and research note paths (for any node or
+  edge justification that cites a note) — never cache files.
+- `.claude/skills/_shared/voice-rules.md` plus the narrative-specific voice
+  rules below.
+
+**Output (reply):**
+- The full essay body as a markdown string, not wrapped in fences: exactly
+  one `##` heading per step, each heading's rehype-slug id equal to that
+  step's `anchor`; 1-3 paragraphs of chapter prose under each heading.
+- A `<<<AUDIT>>>{json}<<<END>>>` block:
+  `[{ "claim": "<number/date/mechanism/attribution as it appears in the body>", "source": "page:<slug>" | "note:<paper-id>.md", "quote": "<verbatim text from that source>" }]`.
+
+**Hard rules:**
+- Every number, date, named mechanism, and attributed claim in the body must
+  have a matching AUDIT entry pointing at a provided page or note.
+- Link atlas pages as `/atlas/<slug>`. Paper-only (debt) nodes link to the
+  paper's `url` from `docs/papers/index.yaml`, never to `/atlas/<paper-id>`.
+- Voice: essay register — third person, present tense, concrete mechanisms;
+  no first person, no hype adjectives, no "in this narrative we". Each
+  chapter ends on the constraint the next chapter removes. The final chapter
+  ends on the thesis restated as a consequence, or on the question node's
+  question.
+- Chapter headings must slugify to exactly `steps[].anchor` — check by hand
+  (rehype-slug lowercases, strips punctuation, hyphenates spaces) before
+  returning.
+- Read only the provided page/note paths. Never
+  `docs/papers/.cache/**` or `docs/sources/.cache/**`.
+- If a claim a chapter needs isn't in any given page or note, return exactly
+  `blocked: missing <claim> for <node-id>` and stop. Do not improvise.
+- No file writes. The orchestrator assembles `--- frontmatter --- \n <body>`
+  and calls `Write` once.
+
+## Audit contract
+
+Used by `atlas-audit` Step 2 for the fidelity + voice pass over already
+published pages.
+
+**Inputs (provided by orchestrator):**
+- The page path (e.g. `content/algorithms/<slug>.md`).
+- Research note paths for `sources.primary` and every `sources.references[]`
+  entry.
+- A small JSON slice of the page's forward + reverse edges from
+  `src/generated/content-graph.ts` (`forward[slug]`, `reverse[slug]`) — not
+  the whole generated file.
+- Page kind (`algorithm` | `model` | `concept`), which fixes the expected
+  section list.
+
+**Output (reply):** a JSON array. No file writes.
+
+```json
+[
+  {
+    "slug": "harris-corner-detector",
+    "severity": "blocker" | "major" | "minor",
+    "category": "fidelity" | "voice" | "structure" | "relations" | "comparison-discipline",
+    "line": "<line number or heading text the finding is anchored to>",
+    "finding": "<one sentence>",
+    "fix_skill": "algo-page" | "deep-model-page" | "concept-page",
+    "proposal": { "type": "<relations vocabulary>", "target": "<slug>", "confidence": "high" | "medium" | "low" }
+  }
+]
+```
+
+`proposal` is present only on `category: "relations"` findings and is always
+a proposal — the audit never marks a relation confirmed.
+
+**Hard rules:**
+- Read only the page, the listed notes, and the content-graph slice. Never
+  `docs/papers/.cache/**` or `docs/sources/.cache/**`, and never rely on
+  memory of the cited paper.
+- Every `fidelity` finding must quote the page line and either the
+  supporting note text (a MISS: not found) or state the note lacks it.
+- Section-structure checks are exact: algorithm pages need
+  Goal/Algorithm/Implementation/Remarks/References (or the historical trim);
+  model pages follow `deep-model-page`'s section list; concept pages follow
+  `concept-page`'s five sections.
+- `comparison-discipline` findings name the violated CLAUDE.md rule (Rule A,
+  B, or C) in the finding text.
+- Do not propose a relation that already exists in either direction — check
+  `forward[slug].relations` and `reverse[slug]` first.
+
 ## Verification recipe (run by Opus after Draft contract returns)
 
 For each entry in the AUDIT JSON, verify the value appears verbatim in the

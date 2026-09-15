@@ -6384,7 +6384,7 @@ export const narrativePages: NarrativeIndexEntry[] = [
     "date": "2026-08-23",
     "draft": true,
     "stats": {
-      "nodes": 4,
+      "nodes": 5,
       "steps": 2,
       "debt": 1
     },
@@ -6404,14 +6404,18 @@ export const narrativePages: NarrativeIndexEntry[] = [
         0
       ],
       "attn": [
-        0.3333333333333333,
+        0.25,
         0
       ],
       "vit-node": [
-        0.6666666666666666,
+        0.5,
         1
       ],
       "dinov2-node": [
+        0.75,
+        1
+      ],
+      "open-question": [
         1,
         1
       ]

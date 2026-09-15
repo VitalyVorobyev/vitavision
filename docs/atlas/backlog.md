@@ -1,0 +1,33 @@
+# Atlas backlog
+
+Known page-quality and tech-debt issues. Rows are appended by the `atlas-audit` skill (or by a
+session that runs it manually); one row per issue. When an issue is fixed, **delete its row** —
+do not strike it through.
+
+| ID | Scope | Severity | Category | Issue | Fix path | Status |
+|---|---|---|---|---|---|---|
+| BL-001 | 63 non-draft algorithm/model/concept pages | minor | relations | Zero `relations[]`: apap-image-stitching, attention-mechanism, barath-magsac, black-anandan-robust-flow, bundle-adjustment, camera-distortion-models, canny-edge-detector, chessboard-x-corner-detection, convolution, convolutional-neural-network, daniilidis-dual-quaternion-handeye, depth-anything-3, dinov3, dlt-normalisation, duda-radon-corners, efficientad, energy-minimization, epipolar-geometry, epnp, feature-descriptors, feature-matching, feed-forward-3d-reconstruction, felzenszwalb-graph-segmentation, fundamental-matrix-eight-point, geometric-bev, grabcut-iterative-segmentation, hessian-saddle-response, homography, image-gradient, image-pyramid, integral-image, knowledge-distillation, kumar-generalized-rac, lightglue, monocular-depth-estimation, ni-generalized-fast-radial-symmetry, non-maximum-suppression, normalization, ocpad, optical-flow, orb, pinhole-camera-model, pollefeys-polar-rectification, pose-estimation, positional-encoding, puzzleboard, pyramidal-blur-aware-xcorner, ransac, rf-detr, scale-space, scaramuzza-omni-calibration, self-supervised-learning, shi-tomasi-corner-detector, spatially-varying-image-stitching, stereo-rectification, structure-tensor, sturm-plane-based-calibration, svd-null-space, topological-grid-recovery, transformer, unet-segmentation, viola-jones-detector, visual-anomaly-detection | `atlas-audit` → page skills | open |
+| BL-002 | `content/models/mate-checkerboard-detector.md` | major | quality | Still `quality: stub` | `deep-model-page` | open |
+| BL-003 | `content/algorithms/felzenszwalb-graph-segmentation.md` | minor | figures | Figure placeholders at lines 224 (`τ(C)` curves) and 226 (grid vs feature-space graph schematic) | `algo-page` (generated SVG per `content/blog` pipeline pattern) | open |
+| BL-004 | `content/algorithms/geometric-bev.md` | minor | figures | Figure placeholder at line 189 (perspective→rectified overhead geometric scheme) | `algo-page` | open |
+| BL-005 | `content/algorithms/rochade.md` | minor | sources | Prose reference not in papers index: `doi:10.1016/1049-9652%2892%2990026-t` | `paper-ingest` register-or-reword | open |
+| BL-006 | `content/algorithms/barath-magsac.md` | minor | sources | Prose reference not in papers index: `arXiv:1803.07469` | `paper-ingest` register-or-reword | open |
+| BL-007 | `content/models/bisenet.md` | minor | sources | Prose reference not in papers index: `arXiv:1411.4038` | `paper-ingest` register-or-reword | open |
+| BL-008 | `content/models/deeplab-semantic-segmentation.md` | minor | sources | Prose references not in papers index: `arXiv:1606.00915`, `arXiv:1411.4038`, `arXiv:1505.04597` | `paper-ingest` register-or-reword | open |
+| BL-009 | `content/models/alexnet.md` | minor | sources | Prose reference not in papers index: `arXiv:1207.0580` | `paper-ingest` register-or-reword | open |
+| BL-010 | `content/models/segformer.md` | minor | sources | Prose references not in papers index: `arXiv:1411.4038`, `arXiv:1706.05587` | `paper-ingest` register-or-reword | open |
+| BL-011 | `content/models/mask-rcnn.md` | minor | sources | Prose references not in papers index: `arXiv:1703.06870`, `arXiv:1612.03144`, `arXiv:1411.4038` | `paper-ingest` register-or-reword | open |
+| BL-012 | `content/models/sam.md` | minor | sources | Prose reference not in papers index: `arXiv:2304.02643` | `paper-ingest` register-or-reword | open |
+| BL-013 | `content/models/fcn-semantic-segmentation.md` | minor | sources | Prose references not in papers index: `arXiv:1411.4038`, `arXiv:1605.06211`, `arXiv:1505.04597`, `arXiv:1412.7062` | `paper-ingest` register-or-reword | open |
+| BL-014 | `content/models/mobilesam.md` | minor | sources | Prose reference not in papers index: `arXiv:2304.02643` | `paper-ingest` register-or-reword | open |
+| BL-015 | `content/models/fast-scnn.md` | minor | sources | Prose reference not in papers index: `arXiv:1411.4038` | `paper-ingest` register-or-reword | open |
+| BL-016 | `content/models/ritm-interactive-segmentation.md` | minor | sources | Prose reference not in papers index: `arXiv:1802.02611` | `paper-ingest` register-or-reword | open |
+| BL-017 | `content/models/unet-segmentation.md` | minor | sources | Prose references not in papers index: `arXiv:1505.04597`, `arXiv:1411.4038`, `arXiv:1502.01852`, `arXiv:1606.06650`, `doi:10.1038/s41592-020-01008-z` | `paper-ingest` register-or-reword | open |
+| BL-018 | `content/models/midas.md` | minor | sources | Prose reference not in papers index: `arXiv:1810.04650` | `paper-ingest` register-or-reword | open |
+| BL-019 | `content/concepts/ransac.md` | minor | sources | Prose reference not in papers index: `arXiv:1803.07469` | `paper-ingest` register-or-reword | open |
+| BL-020 | `content/narratives/foundation-models-for-vision.md` | minor | narrative | Node "vad" has no derivable publication year (validator warning) | `narrative-page` (add explicit year or map to a dated node) | open |
+| BL-021 | `docs/research/notes/{cheng2021-maskformer,ravi2024-sam2,carion2025-sam3,lin2017-retinanet,rudolph2023-ast,bergmann2019-mvtec-ad,bergmann2022-mvtec-loco,zhang2023-mobilesamv2,sun2019-hrnetv2}.md` | minor | coverage | Research notes exist with no dedicated atlas page (maskformer, sam2, sam3, retinanet, ast, mvtec datasets, mobilesamv2, hrnetv2 — each currently only cited from another page's `sources.references`) | `deep-model-page` / `algo-page` | open |
+| BL-022 | Global search | minor | frontend | Author search records are emitted but stay inert until a global search palette consumes `SearchRecord.path` | frontend feature work (search palette) | open |
+| BL-023 | Build output | minor | frontend | Shared Atlas chunk (content-graph + content-index + content-search) is ~236 KB; needs a `manualChunks` split | frontend/tooling (Vite config) | open |
+| BL-024 | Atlas pages | minor | frontend | No prev/next narrative reading-position strip on Atlas pages when arriving via `?narrative=` context | frontend feature work | open |
+| BL-025 | `docs/atlas-vault/` | minor | tooling | No projection of narratives into the generated Obsidian vault (`scripts/atlas-vault-build.ts` covers algorithms/models/concepts/papers only) | tooling (`atlas-vault-build.ts`) | open |

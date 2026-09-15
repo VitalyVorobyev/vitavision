@@ -799,3 +799,5 @@ export const steps: NarrativeFrontmatter["steps"] = [
     "anchor": "the-anomaly-detection-design-space"
   }
 ];
+
+export const walkthrough: "focus" | "reveal" = "focus";

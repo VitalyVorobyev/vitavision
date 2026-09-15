@@ -133,10 +133,32 @@ Each registered source has a corresponding research note at `docs/research/notes
 
 Concept pages may omit `sources:` if no canonical source exists.
 
+### Narratives
+
+`content/narratives/<slug>.md` — a curated argument told by moving through the atlas graph, not
+an encyclopedic page. Node kinds are XOR: an atlas slug (published, non-draft), a registered
+paper id, or a `question` (free-text, ≤200 chars, no year, no link, not counted as debt). Paper
+nodes are tracked page debt — `bun run narratives:debt` lists them; anything contributing to a
+narrative should eventually get a page. Edges use their own vocabulary
+(`prerequisite | evolution | bridge | contrast`), deliberately distinct from `relations[]` —
+narrative edges compress the graph at story altitude and must not contradict the pages' authored
+Atlas relations (the validator warns, does not error, on contradiction). Steps carry an optional
+`claim` (≤360 chars, the step headline) plus chapter-length prose in the body; `walkthrough:
+reveal` (narrative-level, default `focus`) hides not-yet-focused nodes/edges instead of dimming
+them. Author or update via the `narrative-page` skill.
+
+### Authors registry
+
+`docs/papers/authors.yaml` holds author identities keyed by OpenAlex id; `docs/papers/index.yaml`
+papers carry `authorIds`. Never hand-invent an id — resolve via OpenAlex. Duplicate identities
+merge via `mergedInto` (planned PR-2); never delete a row to fix a split identity. Maintain via
+the `author-identity` skill once it lands.
+
 ### Validation
 Run `bun run scripts/validate-content.ts` **by path** before opening a PR. It checks slug
-resolution (including `relations[].target`), prerequisite cycles, source-id existence, and
-canonical-quality gates.
+resolution (including `relations[].target`), prerequisite cycles, source-id existence,
+canonical-quality gates, and narrative rules (node XOR, page/paper resolution, lens/step
+completeness, edge-vs-Atlas-relations warnings) in the same run.
 
 CI's `validate-content` job runs both scripts: `bun run content:validate` →
 `scripts/content-validate.ts` (narrower — blog/algorithm internal links and

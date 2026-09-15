@@ -6,6 +6,7 @@ export interface GeneratedNarrativeModule {
   chapters: Record<string, string>;
   narrative: ResolvedNarrative;
   steps: NarrativeFrontmatter["steps"];
+  walkthrough: "focus" | "reveal";
 }
 
 export const narrativeLoaders: Record<string, () => Promise<GeneratedNarrativeModule>> = {

@@ -860,6 +860,7 @@ export async function validateContent(options?: ValidateContentOptions): Promise
         interface AtlasLookup {
             isDraft: boolean;
             year?: number;
+            relations: TypedRelation[];
         }
         const paperYears = loadPaperYears();
         const yearOfPrimary = (fm: Record<string, unknown>): number | undefined => {
@@ -871,16 +872,23 @@ export async function validateContent(options?: ValidateContentOptions): Promise
             return paperYears.get(bareId);
         };
         // Full (draft-inclusive) atlas slug map — used both to resolve `page`
-        // nodes and to reject ones that resolve to an unpublished page.
+        // nodes and to reject ones that resolve to an unpublished page. Also
+        // carries each page's forward relations[], reused (never re-parsed)
+        // by the edge-vs-Atlas-relations consistency check below.
         const atlasBySlug = new Map<string, AtlasLookup>();
         for (const e of [...algoEntries, ...modelEntries, ...conceptEntries]) {
-            atlasBySlug.set(e.slug, { isDraft: e.isDraft, year: yearOfPrimary(e.frontmatter) });
+            atlasBySlug.set(e.slug, {
+                isDraft: e.isDraft,
+                year: yearOfPrimary(e.frontmatter),
+                relations: (e.frontmatter.relations as TypedRelation[] | undefined) ?? [],
+            });
         }
 
         interface NarrativeNodeShape {
             id: string;
             page?: string;
             paper?: string;
+            question?: string;
             area: string;
             label?: string;
         }
@@ -914,11 +922,14 @@ export async function validateContent(options?: ValidateContentOptions): Promise
             const steps = fm.steps ?? [];
             const areaIds = new Set(areas.map((a) => a.id));
 
-            // Node ids (belt-and-braces: exactly-one-of page/paper is also a
-            // zod refine), area membership, page/paper resolution, and the
-            // derived-year map used below for chronology + lens-order checks.
+            // Node ids (belt-and-braces: exactly-one-of page/paper/question is
+            // also a zod refine), area membership, page/paper resolution, and
+            // the derived-year map used below for chronology + lens-order
+            // checks. `nodeSlug` records the atlas slug for `page` nodes only
+            // — reused by the edge-vs-Atlas-relations consistency check.
             const nodeIds = new Set<string>();
             const nodeYear = new Map<string, number | undefined>();
+            const nodeSlug = new Map<string, string>();
             for (const n of nodes) {
                 if (nodeIds.has(n.id)) {
                     errors.push(`[${e.file}] duplicate narrative node id "${n.id}"`);
@@ -927,8 +938,9 @@ export async function validateContent(options?: ValidateContentOptions): Promise
 
                 const hasPage = n.page !== undefined;
                 const hasPaper = n.paper !== undefined;
-                if (hasPage === hasPaper) {
-                    errors.push(`[${e.file}] node "${n.id}" must have exactly one of \`page\` or \`paper\``);
+                const hasQuestion = n.question !== undefined;
+                if ((hasPage ? 1 : 0) + (hasPaper ? 1 : 0) + (hasQuestion ? 1 : 0) !== 1) {
+                    errors.push(`[${e.file}] node "${n.id}" must have exactly one of \`page\`, \`paper\`, or \`question\``);
                 }
 
                 if (!areaIds.has(n.area)) {
@@ -945,6 +957,7 @@ export async function validateContent(options?: ValidateContentOptions): Promise
                         );
                     } else {
                         nodeYear.set(n.id, target.year);
+                        nodeSlug.set(n.id, n.page as string);
                     }
                 } else if (hasPaper) {
                     const key = `paper:${n.paper}`;
@@ -959,6 +972,10 @@ export async function validateContent(options?: ValidateContentOptions): Promise
                     warnings.push(
                         `[${e.file}] page debt: node "${n.id}" cites paper "${n.paper}" with no atlas page yet`,
                     );
+                } else if (hasQuestion) {
+                    // Question nodes carry no year, no page/paper resolution, no
+                    // label requirement, and no debt — they are exempt from every
+                    // check below that only applies to page/paper nodes.
                 }
 
                 if ((hasPage || hasPaper) && nodeYear.get(n.id) === undefined) {
@@ -986,6 +1003,44 @@ export async function validateContent(options?: ValidateContentOptions): Promise
                         errors.push(
                             `[${e.file}] evolution edge ${edge.from} → ${edge.to} violates chronology (${fromYear} > ${toYear})`,
                         );
+                    }
+                }
+
+                // Warning-only: does this edge's simplified story-altitude type
+                // contradict the Atlas relations[] between the two pages? Only
+                // checked when both endpoints are `page` nodes (nodeSlug is
+                // populated for those only) — narratives may legitimately
+                // simplify, so this never errors.
+                if (fromKnown && toKnown) {
+                    const fromSlug = nodeSlug.get(edge.from);
+                    const toSlug = nodeSlug.get(edge.to);
+                    if (fromSlug && toSlug) {
+                        const fromRelations = atlasBySlug.get(fromSlug)?.relations ?? [];
+                        const toRelations = atlasBySlug.get(toSlug)?.relations ?? [];
+                        const isLineageType = (t: string) => t === "generalized_by" || t === "extended_by";
+
+                        if (edge.type === "contrast") {
+                            const forward = fromRelations.find((r) => r.target === toSlug && isLineageType(r.type));
+                            const backward = toRelations.find((r) => r.target === fromSlug && isLineageType(r.type));
+                            const lineage = forward ?? backward;
+                            if (lineage) {
+                                const [lFrom, lTo] = forward ? [fromSlug, toSlug] : [toSlug, fromSlug];
+                                warnings.push(
+                                    `[${e.file}] contrast edge ${edge.from} → ${edge.to} over a lineage relation (Atlas: "${lFrom}" ${lineage.type} "${lTo}")`,
+                                );
+                            }
+                        }
+
+                        if (edge.type === "evolution") {
+                            const reverse = toRelations.find(
+                                (r) => r.target === fromSlug && (isLineageType(r.type) || r.type === "feeds_into"),
+                            );
+                            if (reverse) {
+                                warnings.push(
+                                    `[${e.file}] evolution edge ${edge.from} → ${edge.to} runs against Atlas lineage direction (Atlas: "${toSlug}" ${reverse.type} "${fromSlug}")`,
+                                );
+                            }
+                        }
                     }
                 }
             }

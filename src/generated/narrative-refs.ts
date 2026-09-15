@@ -286,6 +286,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
       "title": "Forty Years Against Outliers"
     },
     {
+      "slug": "four-answers-to-rectification",
+      "title": "Four Answers to Rectification"
+    },
+    {
       "slug": "the-geometry-pipeline-collapses",
       "title": "The Geometry Pipeline Collapses"
     }
@@ -452,6 +456,36 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "foundation-models-for-vision",
       "title": "Foundation Models for Vision"
+    }
+  ],
+  "stereo-rectification": [
+    {
+      "slug": "four-answers-to-rectification",
+      "title": "Four Answers to Rectification"
+    }
+  ],
+  "hartley-projective-rectification": [
+    {
+      "slug": "four-answers-to-rectification",
+      "title": "Four Answers to Rectification"
+    }
+  ],
+  "loop-zhang-rectification": [
+    {
+      "slug": "four-answers-to-rectification",
+      "title": "Four Answers to Rectification"
+    }
+  ],
+  "pollefeys-polar-rectification": [
+    {
+      "slug": "four-answers-to-rectification",
+      "title": "Four Answers to Rectification"
+    }
+  ],
+  "fusiello-compact-rectification": [
+    {
+      "slug": "four-answers-to-rectification",
+      "title": "Four Answers to Rectification"
     }
   ],
   "optical-flow": [

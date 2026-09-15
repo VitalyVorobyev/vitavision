@@ -7477,6 +7477,98 @@ export const narrativePages: NarrativeIndexEntry[] = [
     }
   },
   {
+    "slug": "vision-under-a-latency-budget",
+    "title": "Vision Under a Latency Budget",
+    "summary": "A parallel history of computer vision driven by compute budgets rather than accuracy, from the integral image and binary descriptors to searched mobile backbones, two-branch segmentation, and distilled or searched foundation-era models, where the recurring move is a structural trick that removes work.",
+    "tagline": "Never a smaller model. Always a trick that removes work.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 15,
+      "steps": 6,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "cheap-scans-features",
+        "label": "Cheap scans and features"
+      },
+      {
+        "id": "budgeted-backbones",
+        "label": "Budgeted backbones"
+      },
+      {
+        "id": "budgeted-dense-prediction",
+        "label": "Budgeted dense prediction"
+      },
+      {
+        "id": "foundation-era-budget",
+        "label": "Budget in the foundation era"
+      }
+    ],
+    "preview": {
+      "integral-image": [
+        0,
+        0
+      ],
+      "viola-jones-detector": [
+        0.08875739644970415,
+        0
+      ],
+      "fast-corner-detector": [
+        0.1775147928994083,
+        0
+      ],
+      "brief": [
+        0.26627218934911245,
+        0
+      ],
+      "orb": [
+        0.3550295857988166,
+        0
+      ],
+      "mobilenetv2": [
+        0.44378698224852076,
+        0.3333333333333333
+      ],
+      "mnasnet": [
+        0.5325443786982249,
+        0.3333333333333333
+      ],
+      "mobilenetv3": [
+        0.6213017751479291,
+        0.3333333333333333
+      ],
+      "bisenet": [
+        0.44378698224852076,
+        0.6666666666666666
+      ],
+      "fast-scnn": [
+        0.5443786982248521,
+        0.6666666666666666
+      ],
+      "mobilesam": [
+        0.668639053254438,
+        1
+      ],
+      "efficientad": [
+        0.7514792899408285,
+        1
+      ],
+      "xfeat": [
+        0.834319526627219,
+        1
+      ],
+      "rf-detr": [
+        0.9171597633136096,
+        1
+      ],
+      "q-borrowed-compute": [
+        1,
+        1
+      ]
+    }
+  },
+  {
     "slug": "where-did-the-inductive-bias-go",
     "title": "Where Did the Inductive Bias Go?",
     "summary": "How the assumptions that make vision work migrated from the algorithm (Canny, SIFT, HOG) into the architecture (the convolutional network and its scaling lineage) and then into the data and the training objective (ViT, MAE, DINOv2), and why it matters who now gets to change them.",

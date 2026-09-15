@@ -130,12 +130,20 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "detection-removing-the-machinery",
       "title": "Detection, Removing the Machinery"
+    },
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
     }
   ],
   "viola-jones-detector": [
     {
       "slug": "detection-removing-the-machinery",
       "title": "Detection, Removing the Machinery"
+    },
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
     }
   ],
   "hog-descriptor": [
@@ -176,6 +184,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "detection-removing-the-machinery",
       "title": "Detection, Removing the Machinery"
+    },
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
     }
   ],
   "harris-corner-detector": [
@@ -456,6 +468,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "foundation-models-for-vision",
       "title": "Foundation Models for Vision"
+    },
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
     }
   ],
   "stereo-rectification": [
@@ -618,6 +634,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "segmentation-from-energy-to-prompt",
       "title": "Segmentation, from Energy to Prompt"
+    },
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
     }
   ],
   "feature-matching": [
@@ -652,6 +672,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "the-geometry-pipeline-collapses",
       "title": "The Geometry Pipeline Collapses"
+    },
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
     }
   ],
   "superpoint": [
@@ -664,6 +688,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "the-geometry-pipeline-collapses",
       "title": "The Geometry Pipeline Collapses"
+    },
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
     }
   ],
   "superglue": [
@@ -700,6 +728,48 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "the-geometry-pipeline-collapses",
       "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "fast-corner-detector": [
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
+    }
+  ],
+  "brief": [
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
+    }
+  ],
+  "mobilenetv2": [
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
+    }
+  ],
+  "mnasnet": [
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
+    }
+  ],
+  "mobilenetv3": [
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
+    }
+  ],
+  "bisenet": [
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
+    }
+  ],
+  "fast-scnn": [
+    {
+      "slug": "vision-under-a-latency-budget",
+      "title": "Vision Under a Latency Budget"
     }
   ],
   "canny-edge-detector": [

@@ -50,7 +50,7 @@ N9 → N7, N8, N3 (after source injections) → N4, N5, N2, N6 → N10, N11, N12
 | N10 | `local-versus-global-motion` | Three answers, then learned iteration | 5 + question | raft | overview, timeline | **live** | PR-12 |
 | N11 | `one-homography-is-not-enough` | Parallax breaks the global model | 5 + question | — | overview, timeline | **live** | PR-13 |
 | N12 | `four-answers-to-rectification` | One goal, four assumption sets | 6 | — | overview, assumptions (2×2), timeline | **live** | PR-14 |
-| N13 | `vision-under-a-latency-budget` | History of compute constraints, not accuracy | 14 | — | overview, timeline | planned | — |
+| N13 | `vision-under-a-latency-budget` | History of compute constraints, not accuracy | 15 (14 pages + 1 question) | — | overview, timeline | **live** | PR-15 |
 
 ## Authors program
 

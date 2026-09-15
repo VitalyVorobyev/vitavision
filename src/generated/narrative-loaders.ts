@@ -22,5 +22,6 @@ export const narrativeLoaders: Record<string, () => Promise<GeneratedNarrativeMo
   "one-homography-is-not-enough": () => import("./content/narratives/one-homography-is-not-enough.ts"),
   "segmentation-from-energy-to-prompt": () => import("./content/narratives/segmentation-from-energy-to-prompt.ts"),
   "the-geometry-pipeline-collapses": () => import("./content/narratives/the-geometry-pipeline-collapses.ts"),
+  "vision-under-a-latency-budget": () => import("./content/narratives/vision-under-a-latency-budget.ts"),
   "where-did-the-inductive-bias-go": () => import("./content/narratives/where-did-the-inductive-bias-go.ts"),
 };

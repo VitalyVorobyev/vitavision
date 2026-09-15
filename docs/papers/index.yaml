@@ -1870,3 +1870,64 @@
   doi: "10.48550/arxiv.2303.15140"
   pdf: liu2023-simplenet.pdf
   cites: [roth2022-patchcore, he2016-resnet]
+
+- id: teed2020-raft
+  title: "RAFT: Recurrent All-Pairs Field Transforms for Optical Flow"
+  authors: ["Z. Teed", "J. Deng"]
+  authorIds: [A5018873548, A5101542158]
+  year: 2020
+  venue: ECCV 2020
+  url: https://arxiv.org/pdf/2003.12039
+  arxiv: "2003.12039"
+  doi: "10.48550/arxiv.2003.12039"
+  pdf: teed2020-raft.pdf
+  cites: [horn1981-horn-schunck]
+
+- id: schonberger2016-colmap
+  title: "Structure-from-Motion Revisited"
+  authors: ["J. L. Schönberger", "J. Frahm"]
+  authorIds: [A5071944294, A5018151384]
+  year: 2016
+  venue: CVPR 2016
+  url: https://demuc.de/papers/schoenberger2016sfm.pdf
+  doi: "10.1109/cvpr.2016.445"
+  pdf: schonberger2016-colmap.pdf
+  cites: [lepetit2009-epnp, fischler1981-ransac, lowe2004-sift]
+
+- id: kannala2006-generic
+  title: "A Generic Camera Model and Calibration Method for Conventional, Wide-Angle, and Fish-Eye Lenses"
+  authors: ["J. Kannala", "S. S. Brandt"]
+  authorIds: [A5057931031, A5083670972]
+  year: 2006
+  venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
+  url: https://web.archive.org/web/2018id_/http://www.ee.oulu.fi/~jkannala/calibration/Kannala_Brandt_calibration.pdf
+  doi: "10.1109/tpami.2006.153"
+  pdf: kannala2006-generic.pdf
+  cites: [zhang2000-flexible]
+
+- id: chum2003-lo-ransac
+  title: "Locally Optimized RANSAC"
+  authors: ["O. Chum", "J. Matas", "J. Kittler"]
+  authorIds: [A5019409717, A5007656938, A5028209738]
+  year: 2003
+  venue: DAGM 2003 (Lecture Notes in Computer Science)
+  url: https://cmp.felk.cvut.cz/~matas/papers/chum-dagm03.pdf
+  doi: "10.1007/978-3-540-45243-0_31"
+  pdf: chum2003-lo-ransac.pdf
+  cites: [fischler1981-ransac]
+
+- id: repo-princeton-vl-raft
+  kind: repo
+  title: "RAFT (official implementation)"
+  repo: https://github.com/princeton-vl/RAFT
+  commit: 2888e15a51fa41140771d3f498ed8023cff098d1
+  license: BSD-3-Clause
+  description: "Official PyTorch implementation of RAFT: Recurrent All-Pairs Field Transforms for Optical Flow."
+
+- id: repo-colmap-colmap
+  kind: repo
+  title: "COLMAP"
+  repo: https://github.com/colmap/colmap
+  commit: be5e29168d4aff238409d60424812df66aac919f
+  license: BSD-3-Clause
+  description: "Open-source structure-from-motion and multi-view stereo pipeline; reference implementation for Schönberger & Frahm's incremental SfM improvements."

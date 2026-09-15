@@ -155,6 +155,7 @@ The intrinsic stage stacks $2KL$ rows from equations (10.1) and (10.2) into $\Ph
 - The central-projection assumption ($a_1 = 0$, single effective viewpoint) is a hard constraint. Non-central catadioptric systems with significant misalignment between mirror focus and camera optical centre violate it and produce irreducible systematic residuals that the Levenberg–Marquardt stage cannot eliminate.
 - Near-coplanar viewing geometries make $M_i$ ill-conditioned: the per-view SVD approaches rank deficiency when corner configurations across views span a low-dimensional subspace.
 - The algorithm does not recover pixel skew or non-unit aspect ratio in the linear phase — $A$ is initialised to the identity and refined only by Levenberg–Marquardt. Sensors with strong axis misalignment or large aspect ratio degrade the linear initialisation.
+- Compared with Kannala–Brandt: see [When to choose Kannala–Brandt over Scaramuzza](/atlas/kannala-brandt-model#when-to-choose-kannala-brandt-over-scaramuzza) on the Kannala–Brandt page, which hosts the comparison per the same-year, broader-scope tiebreaker.
 
 # References
 

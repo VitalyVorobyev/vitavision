@@ -14,6 +14,7 @@ sources:
     - zhang2000-flexible
     - kumar2014-grac
     - zhang2022-learning-based
+    - kannala2006-generic
 ---
 
 # Definition
@@ -67,6 +68,16 @@ This is the model adopted by OpenCV, MATLAB Camera Calibration Toolbox (Bouguet)
 ## Zhang 2000 — two-term radial, no tangential
 
 [Zhang's planar calibration](/atlas/zhang-planar-calibration) adopts **two radial terms** $(k_1, k_2)$ and excludes tangential. The authoritative MSR-TR-98-71 paper does not cite Brown directly but matches the Brown radial form with a 2-coefficient truncation. The exclusion of tangential is consistent with most checkerboard-target use cases on standard machine-vision lenses; it is the default in MATLAB's `cameraCalibrator` "Standard" option (vs "Three Coefficients" which adds $k_3$).
+
+## Kannala-Brandt 2006 — odd-power polynomial in incidence angle
+
+[Kannala–Brandt](/atlas/kannala-brandt-model) departs from the additive-distortion framing above entirely: instead of a correction added to a pinhole projection, the model is a single odd-power polynomial in the incidence angle $\theta$ (the angle between the principal axis and the incoming ray),
+
+$$
+r(\theta) = k_1\theta + k_2\theta^3 + k_3\theta^5 + k_4\theta^7 + k_5\theta^9,
+$$
+
+generalising the pinhole projection $r=f\tan\theta$ and the classical fish-eye projections (stereographic, equidistant, equisolid-angle, orthogonal) as special cases. This is the structural fix for the divergence that all additive-distortion models above share: the pinhole projection $r=f\tan\theta$ goes to infinity as $\theta \to \pi/2$, so no finite additive correction term can represent a lens whose field of view approaches or exceeds 180°. An optional 14-parameter asymmetric term (separable in $\theta$ and azimuth $\phi$) captures decentering and tilt beyond radial symmetry.
 
 ## CCS 2022 — learned correction decoupled from intrinsic estimation
 
@@ -122,6 +133,7 @@ Distortion coefficients are estimated jointly with intrinsics and per-view extri
 - [Zhang's planar calibration](/atlas/zhang-planar-calibration) — uses two-term radial; the most widely deployed model for chessboard-based calibration.
 - [Kumar gRAC](/atlas/kumar-generalized-rac) — one-term radial in the lens frame; reduces to Tsai when sensor-lens tilt is zero.
 - [CCS](/atlas/ccs-camera-calibration) — CNN-regressed radial correction model applied as a preprocessing warp before corner detection; decouples distortion from intrinsic estimation.
+- [Kannala–Brandt](/atlas/kannala-brandt-model) — odd-power polynomial in incidence angle, not image radius; the only model here that stays finite for fields of view at and beyond 180°.
 - The Brown-Conrady model from Weng 1992 is not currently a standalone atlas page but is described here as the canonical full-polynomial reference. When a future page needs it (e.g., a fisheye or wide-angle calibration page), this concept is the citation target.
 
 # References

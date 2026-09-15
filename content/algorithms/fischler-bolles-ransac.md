@@ -17,6 +17,9 @@ relations:
     target: barath-magsac
     confidence: high
     caution: "MAGSAC marginalises the inlier threshold rather than fixing it — orthogonal axis to USAC's framework refactor"
+  - type: extended_by
+    target: lo-ransac
+    confidence: high
 sources:
   primary: fischler1981-ransac
   notes: |
@@ -134,6 +137,7 @@ pub fn ransac<M: RansacModel>(
 - Fat-tailed convergence: $\mathrm{SD}(k) \approx E[k]$ for small $w^s$ (§II.B), so $k = E[k]$ yields only ~63% success probability. Production budgets $3$–$5\times E[k]$ trials.
 - Founding application — the Location Determination Problem (§IV.B–E): camera pose from aerial-image landmark correspondences, $w \in \{0.8, 0.6\}$, achieved accuracy X: 0.1 ft, Y: 6.4 ft, Z: 2.1 ft, Heading: 0.01°, Pitch: 0.10°, Roll: 0.12° on a 4000 ft real-image benchmark.
 - See [`ransac`](/atlas/ransac) for the four design axes — sampling, verification, local optimisation, threshold treatment — that organise the modern RANSAC family.
+- [LO-RANSAC](/atlas/lo-ransac) adds a local-optimization step whenever a new best hypothesis is found, correcting the implicit assumption that a minimal-sample model already matches all inliers; it makes no new assumptions about the data and reaches the same termination guarantee in roughly two to three times fewer samples.
 
 # References
 

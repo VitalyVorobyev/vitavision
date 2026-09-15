@@ -12,6 +12,7 @@ sources:
     - fischler1981-ransac
     - raguram2013-usac
     - barath2019-magsac
+    - chum2003-lo-ransac
 ---
 
 # Definition
@@ -75,7 +76,7 @@ $$
 
 where $H_g$ is the hypothesis that the current model is correct (inlier probability $\approx \varepsilon$) and $H_b$ is the hypothesis that it is not (inlier probability $\delta$). When $\Lambda_j$ exceeds a decision threshold $A$ derived from the acceptable type-I error $\alpha$ and type-II error $\beta$, the model is rejected early without evaluating the remaining points. SPRT achieves a 2–9× runtime improvement over standard verification on homography and fundamental-matrix benchmarks. USAC-1.0 reuses SPRT; MAGSAC also reuses it as a pre-screen.
 
-**Local optimisation.** The founding paper optionally re-fits the model by least squares on the accepted consensus set; the quality of the re-fit depends on the consensus set size. LO-RANSAC applies inner-RANSAC within each accepted hypothesis: nonminimal samples are drawn from the current inlier set, each candidate is refined by iteratively reweighted least squares, and the best result is retained. USAC-1.0 implements local optimisation as an outer-stage block, running 10–20 inner iterations with an early exit when the inlier set overlaps the previous best by ≥95%. Local optimisation reduces the number of required outer iterations by a factor of 2–3.
+**Local optimisation.** The founding paper optionally re-fits the model by least squares on the accepted consensus set; the quality of the re-fit depends on the consensus set size. [LO-RANSAC](/atlas/lo-ransac) is the earliest widely-cited fix: it identifies that the standard termination criterion implicitly assumes a minimal-sample model already matches every inlier — an assumption that "rarely holds in practice" — and corrects it by running a local-optimisation step whenever a new best hypothesis is found, reaching the same termination guarantee in roughly two to three times fewer samples with only $O(\log k)$ extra refinement steps per run. Of its five compared variants, inner-RANSAC-with-iteration draws nonminimal samples from the current inlier set and refines each by iteratively reweighted least squares. USAC-1.0 implements local optimisation as an outer-stage block built on this method, running 10–20 inner iterations with an early exit when the inlier set overlaps the previous best by ≥95%. Local optimisation reduces the number of required outer iterations by a factor of 2–3.
 
 **Inlier-threshold treatment.** The founding paper uses a fixed scalar $\varepsilon$: each point is classified as inlier if its residual $\mathrm{dist}(p, M) \leq \varepsilon$ and outlier otherwise. This hard boundary is sensitive to threshold calibration and to scene-to-scene variation in noise scale $\sigma$. MAGSAC eliminates the fixed threshold by treating $\sigma$ as a random variable with a uniform prior on $[0, \sigma_\mathrm{max}]$ and marginalising the RANSAC quality function over it:
 
@@ -121,3 +122,4 @@ The decision table at the top of this page summarises their per-axis choices; th
 1. M. A. Fischler, R. C. Bolles. *Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and Automated Cartography.* Communications of the ACM, 1981. [dl.acm.org](https://dl.acm.org/doi/pdf/10.1145/358669.358692)
 2. R. Raguram, O. Chum, M. Pollefeys, J. Matas, J.-M. Frahm. *USAC: A Universal Framework for Random Sample Consensus.* IEEE TPAMI, 2013. [ieeexplore.ieee.org](https://ieeexplore.ieee.org/document/6365642)
 3. D. Barath, J. Matas, J. Noskova. *MAGSAC: Marginalizing Sample Consensus.* CVPR, 2019. [arxiv.org](https://arxiv.org/abs/1803.07469)
+4. O. Chum, J. Matas, J. Kittler. *Locally Optimized RANSAC.* DAGM 2003. [PDF](https://cmp.felk.cvut.cz/~matas/papers/chum-dagm03.pdf)

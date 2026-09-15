@@ -381,6 +381,45 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
     }
   },
   {
+    "slug": "colmap",
+    "frontmatter": {
+      "title": "COLMAP",
+      "summary": "Incremental structure-from-motion pipeline for unordered, uncalibrated image collections, replacing four stages of the classical incremental pipeline — scene-graph verification, next-best-view selection, multi-view triangulation, and bundle adjustment — with more robust and efficient variants.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 5,
+      "access": "public",
+      "prerequisites": [
+        "feature-matching",
+        "epipolar-geometry",
+        "pose-estimation",
+        "bundle-adjustment",
+        "ransac"
+      ],
+      "failureModes": [],
+      "tags": [
+        "classical",
+        "optimization",
+        "pose-estimation"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "primary": "schonberger2016-colmap",
+        "impl": {
+          "repo": "https://github.com/colmap/colmap",
+          "commit": "be5e29168d4aff238409d60424812df66aac919f",
+          "files": [
+            "src/colmap/controllers/incremental_pipeline.h",
+            "src/colmap/controllers/incremental_pipeline.cc"
+          ]
+        },
+        "notes": "§4.1 scene-graph augmentation: homography-inlier ratio $N_H/N_F < H_F$\nflags a general (non-planar, non-panoramic) scene; essential-matrix\ninlier ratio $N_E/N_F > E_F$ flags a calibrated pair, in which case the\nmedian triangulation angle $\\alpha_m$ distinguishes panoramic (pure\nrotation) from planar-scene pairs; watermark/timestamp/frame pairs are\ndropped when $N_S/N_F > S_F \\lor N_S/N_E > S_E$. §4.2 next-best-view\nscore: image discretised into a $K_l \\times K_l$ grid per pyramid level\n$l$, $K_l = 2^l$, each newly-covered cell adds weight $w_l = K_l^2$.\n§4.3 recursive RANSAC triangulation over a feature track with unknown\ninlier ratio $\\varepsilon$: two-view DLT triangulation (Eq. 2),\ntriangulation-angle acceptance $\\cos\\alpha$ (Eq. 3), cheirality test\n(Eq. 4), reprojection-error threshold (Eq. 5); consensus set removed\nand procedure recurses, stopping once the residual track has fewer than\n3 elements. §4.4-4.5 bundle adjustment: reprojection-error objective\nwith Cauchy loss (Eq. 1); local BA after each registration plus\nperiodic global BA; iterative BA/re-triangulation/filtering loop;\nredundant-view mining groups highly overlapping images by\nvisibility-vector Jaccard similarity (Eq. 6) into a single group-local\npose, grouped-BA cost (Eq. 7). Table 1 (17 datasets, 144,953 images):\naverage reprojection error 0.68 px (Alamo) vs 1.47 (Theia), 2.29\n(Bundler), 0.70 (VisualSFM); more than 50x faster than Bundler, slightly\nslower than VisualSFM. Quad ground-truth pose accuracy: 0.85 m (Ours)\nvs 1.16 m (DISCO), 1.01 m (Bundler), 0.89 m (VisualSFM). Redundant-view\nmining trade-off: reprojection error 0.26→0.27→0.28→0.29 px as the\noverlap threshold $V$ drops 1.0→0.6→0.3→0.1, with 5%/14%/32% runtime\nsavings.\n"
+      },
+      "date": "2026-09-15",
+      "year": 2016
+    }
+  },
+  {
     "slug": "daniilidis-dual-quaternion-handeye",
     "frontmatter": {
       "title": "Daniilidis Dual-Quaternion Hand-Eye Calibration",
@@ -607,6 +646,11 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "barath-magsac",
           "confidence": "high",
           "caution": "MAGSAC marginalises the inlier threshold rather than fixing it — orthogonal axis to USAC's framework refactor"
+        },
+        {
+          "type": "extended_by",
+          "target": "lo-ransac",
+          "confidence": "high"
         }
       ],
       "tags": [
@@ -1090,7 +1134,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "summary": "Dense optical flow recovered by minimising a variational energy that combines the brightness-constancy constraint with a global smoothness prior on the velocity field, solved by per-pixel Gauss-Seidel relaxation.",
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 4,
+      "readingTimeMinutes": 5,
       "access": "public",
       "prerequisites": [
         "image-gradient",
@@ -1125,6 +1169,48 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       },
       "date": "2026-05-13",
       "year": 1981
+    }
+  },
+  {
+    "slug": "kannala-brandt-model",
+    "frontmatter": {
+      "title": "Kannala–Brandt Generic Camera Model",
+      "summary": "Single projection and planar-pattern calibration model spanning conventional, wide-angle, and fish-eye lenses, built on an odd-power polynomial in the incidence angle that stays finite as the field of view approaches and exceeds 180 degrees.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "advanced",
+      "readingTimeMinutes": 8,
+      "access": "public",
+      "prerequisites": [
+        "pinhole-camera-model",
+        "camera-distortion-models",
+        "homography"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "compared_with",
+          "target": "scaramuzza-omni-calibration",
+          "confidence": "medium",
+          "caution": "Same year, different fit: polynomial in incidence angle vs Taylor polynomial in image radius."
+        }
+      ],
+      "tags": [
+        "camera-model"
+      ],
+      "domain": "calibration",
+      "tasks": [
+        "camera-calibration"
+      ],
+      "sources": {
+        "primary": "kannala2006-generic",
+        "references": [
+          "zhang2000-flexible",
+          "scaramuzza2006-omni"
+        ],
+        "notes": "§II-A pinhole model $r=f\\tan\\theta$ (Eq. 1) diverges as $\\theta\\to\\pi/2$;\nclassical fish-eye projections stereographic $r=2f\\tan(\\theta/2)$\n(Eq. 2), equidistant $r=f\\theta$ (Eq. 3), equisolid-angle\n$r=2f\\sin(\\theta/2)$ (Eq. 4), orthogonal $r=f\\sin\\theta$ (Eq. 5) are all\ngeneralised by the odd-power polynomial $r(\\theta)=k_1\\theta+k_2\\theta^3\n+\\dots+k_5\\theta^9$ (Eq. 6), truncated to 5 terms. §II-B full model\n$P_c$ (Eq. 12): radially symmetric mapping $F$ (Eq. 7) plus asymmetric\nradial/tangential distortion $\\Delta_r,\\Delta_t$ (Eqs. 8-9, 7 free\nparams each) plus affine pixel map $A$ (Eq. 11) — 23 parameters total\n($p_{23}$); reduced variants $p_9$ (radial+affine, 9 params) and $p_6$\n(2-term radial+affine, 6 params). §II-C backward model $D^{-1}$ via\nfirst-order Taylor approximation (Eqs. 14-16). §IV-A 4-step Zhang-style\ncalibration: (1) initialise $k_1,k_2$ and affine params; (2) per-view\nhomography from sphere back-projection; (3) SVD-orthogonalised\nextrinsics; (4) Levenberg-Marquardt joint refinement (Eq. 18). §IV-B\ncentroid-correction integral (Eq. 19) for circular control points.\nTable I: Mičušík $M1$/$M2$ two-parameter fish-eye models reach 69-90px\nand 9.7px approximation error vs 0.1px/0.0px for the 9-parameter\npolynomial. Table II/III RMS residuals across Cosmicar/Sony/Watec/\nORIFL190-3 lenses for $p_6$/$p_9$/$p_{23}$ vs Heikkilä's $\\delta_8$.\n§V-C centroid-correction bias 0.45px without correction; backward-model\nerror $10^{-3}$-$10^{-5}$ px, several orders below the forward residual.\n"
+      },
+      "date": "2026-09-15",
+      "year": 2006
     }
   },
   {
@@ -1234,6 +1320,49 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       },
       "date": "2026-04-23",
       "year": 2018
+    }
+  },
+  {
+    "slug": "lo-ransac",
+    "frontmatter": {
+      "title": "Locally Optimized RANSAC (LO-RANSAC)",
+      "summary": "RANSAC extension that corrects the false assumption that a minimal-sample model is consistent with all inliers, by running a local optimization step on every new best hypothesis — reaching the same termination guarantee in two to three times fewer samples.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "ransac"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "raguram-usac",
+          "confidence": "high",
+          "caution": "USAC's stage 4 is LO-RANSAC's local optimisation as a pluggable component."
+        },
+        {
+          "type": "compared_with",
+          "target": "barath-magsac",
+          "confidence": "medium"
+        }
+      ],
+      "tags": [
+        "robust-estimation"
+      ],
+      "domain": "geometry",
+      "sources": {
+        "primary": "chum2003-lo-ransac",
+        "references": [
+          "fischler1981-ransac",
+          "raguram2013-usac",
+          "barath2019-magsac"
+        ],
+        "notes": "§1-2 standard termination $\\eta=(1-P_I)^k$ (Eq. 1) with $P_I\\approx\n\\varepsilon^m$ (Eq. 2) assumes a single uncontaminated minimal sample\nmatches all $I$ inliers — false in practice because minimal-sample\nmodel estimates are themselves noisy. Local optimization runs whenever\na new best inlier count $I_k$ is found; expected invocation count is\nbounded by $\\sum_{i=1}^k 1/i \\le \\log k + 1$ (§2). §3 five compared\nvariants: Standard (no LO), Simple (single re-fit on $<\\theta$\npoints), Iterative (re-fit on $<K\\theta$, shrink threshold toward\n$\\theta$), Inner RANSAC (fresh RANSAC on inlier set, non-minimal\nsample $\\min(I_k/2,14)$ epipolar / $\\min(I_k/2,12)$ homography, 10\nrepetitions), Inner RANSAC with iteration (method 4 + method 3's\nthreshold shrink). §4 experiments A-E: standard RANSAC's\nactual/expected sample ratio (\"eff\") ranges 2.63-3.35; method 5's eff\nis close to 1.0 (e.g. 1.01 on experiment A, 1.16 on experiment B).\nTable 2: experiment B inlier count 23.3→25.7, samples 90,816→39,886,\ntime 3.911s→1.731s (standard→method 5). Table 3 confirms the\n$O(\\log k)$ invocation bound empirically (e.g. experiment C: 6.5\naverage invocations vs a $\\log(\\text{avg. samples})=9.2$ bound).\nAbstract: \"two to three fold\" speed-up, \"10-20%\" more inliers.\n"
+      },
+      "date": "2026-09-15",
+      "year": 2003
     }
   },
   {
@@ -2126,7 +2255,7 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
       "summary": "Recover camera intrinsics, radial distortion, and per-view extrinsics from at least three images of a planar pattern at different orientations.",
       "author": "Vitaly Vorobyev",
       "difficulty": "advanced",
-      "readingTimeMinutes": 10,
+      "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [
         "pinhole-camera-model",
@@ -2142,6 +2271,12 @@ export const algorithmPages: AlgorithmIndexEntry[] = [
           "target": "sturm-plane-based-calibration",
           "confidence": "high",
           "caution": "Zhang became the practical industry standard; Sturm-Maybank remains theoretically broader on singularity analysis."
+        },
+        {
+          "type": "feeds_into",
+          "target": "kannala-brandt-model",
+          "confidence": "high",
+          "caution": "Kannala–Brandt reuses Zhang's homography-initialise-then-refine calibration structure with a spherical back-projection."
         }
       ],
       "tags": [
@@ -4344,6 +4479,56 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "raft",
+    "frontmatter": {
+      "title": "RAFT",
+      "summary": "Recurrent all-pairs field transform for dense two-frame optical flow: an all-pairs 4D correlation volume queried by a weight-tied convolutional-GRU update operator, refining a single fixed-resolution flow field instead of a coarse-to-fine cascade.",
+      "author": "Vitaly Vorobyev",
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "optical-flow",
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "learned_alternative_of",
+          "target": "horn-schunck",
+          "confidence": "medium",
+          "caution": "Keeps the single-field iterative-refinement structure of variational flow; data term and update operator are learned."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "optical-flow",
+        "dense-prediction"
+      ],
+      "domain": "features",
+      "arch_family": "hybrid",
+      "params": "4.8M total; 2.7M in the tied update operator (Table 2, 'Tying' ablation)",
+      "sources": {
+        "primary": "teed2020-raft",
+        "references": [
+          "horn1981-horn-schunck"
+        ],
+        "notes": "§3.1 feature encoder $g_\\theta: \\mathbb{R}^{H\\times W\\times 3} \\to\n\\mathbb{R}^{H/8\\times W/8\\times D}$, $D=256$, plus an identical context\nencoder $h_\\theta$ applied only to $I_1$. §3.2 all-pairs 4D correlation\nvolume $C_{ijkl}=\\sum_h g_\\theta(I_1)_{ijh}g_\\theta(I_2)_{klh}$ (Eq. 1),\ncomputed once as a matrix multiply; 4-level pooled pyramid (kernels\n1,2,4,8); local lookup grid $N(x')_r$ (Eq. 2) indexes every level via\nbilinear sampling. §3.3 ConvGRU update operator (Eqs. 3-6), update\n$f_{k+1}=\\Delta f+f_k$, gradient stopped through the $f_k$ branch;\nlearned convex upsampling via `unfold` to full resolution. §3.4 $L1$\nloss over the unrolled sequence with exponential weight $\\gamma=0.8$\n(Eq. 7). Training: FlyingChairs → FlyingThings3D, optional Sintel /\nKITTI-2015 / HD1K finetuning; AdamW, gradient clip $[-1,1]$; unroll\ndepth 12 at training. Headline results (Abstract, Table 1): KITTI\nF1-all 5.10% (16% reduction from 6.10%); Sintel-final EPE 2.855 px\n(30% reduction from 4.098 px); synthetic-only KITTI EPE 5.04 vs\nVCN's 8.36 (Table 1, C+T row). Ablations (Table 2): lookup radius\n$r=0$ degrades Sintel-clean EPE 3.41 vs 1.63 at $r=4$; untied update\nweights raise parameter count 7x (32.5M vs 4.8M) and hurt accuracy;\ninference-time iteration count 1-200 improves monotonically without\ndivergence (4.04 → 1.40 EPE, Table 2 'Inference Updates').\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/princeton-vl/RAFT",
+          "commit": "2888e15a51fa41140771d3f498ed8023cff098d1",
+          "framework": "pytorch",
+          "license": "BSD-3-Clause"
+        }
+      ],
+      "date": "2026-09-15",
+      "year": 2020
+    }
+  },
+  {
     "slug": "resnet",
     "frontmatter": {
       "title": "ResNet",
@@ -5462,7 +5647,8 @@ export const conceptPages: ConceptIndexEntry[] = [
         "primary": "zhang2000-flexible",
         "references": [
           "tsai1987-versatile",
-          "weng1992-camera"
+          "weng1992-camera",
+          "schonberger2016-colmap"
         ]
       },
       "date": "2026-05-16",
@@ -5476,7 +5662,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       "summary": "Mathematical models for departures from the ideal pinhole projection — radial barrel/pincushion, tangential decentering, thin-prism — and the historical lineage from Brown's photogrammetric polynomial through Tsai's one-term radial, Weng's full Brown-Conrady, and Zhang's two-term planar formulation.",
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 11,
+      "readingTimeMinutes": 13,
       "access": "public",
       "prerequisites": [
         "pinhole-camera-model"
@@ -5491,7 +5677,8 @@ export const conceptPages: ConceptIndexEntry[] = [
           "weng1992-camera",
           "zhang2000-flexible",
           "kumar2014-grac",
-          "zhang2022-learning-based"
+          "zhang2022-learning-based",
+          "kannala2006-generic"
         ]
       },
       "date": "2026-05-02"
@@ -6016,7 +6203,8 @@ export const conceptPages: ConceptIndexEntry[] = [
         "references": [
           "lucas1981-lucas-kanade",
           "black1996-robust",
-          "tomasi1991-detection-tracking"
+          "tomasi1991-detection-tracking",
+          "teed2020-raft"
         ]
       },
       "date": "2026-05-16",
@@ -6111,7 +6299,7 @@ export const conceptPages: ConceptIndexEntry[] = [
       "summary": "Random sample consensus — a paradigm for fitting a parametric model to data containing an unknown fraction of gross outliers, by drawing minimal random subsets, instantiating candidate models, and selecting the one with the largest globally consistent inlier set.",
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 13,
+      "readingTimeMinutes": 14,
       "access": "public",
       "prerequisites": [],
       "tags": [
@@ -6122,7 +6310,8 @@ export const conceptPages: ConceptIndexEntry[] = [
         "references": [
           "fischler1981-ransac",
           "raguram2013-usac",
-          "barath2019-magsac"
+          "barath2019-magsac",
+          "chum2003-lo-ransac"
         ]
       },
       "date": "2026-05-03"

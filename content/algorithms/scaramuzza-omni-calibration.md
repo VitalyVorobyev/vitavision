@@ -100,13 +100,7 @@ where $m_{ij}$ is the observed pixel coordinate and $\hat{m}$ is the reprojectio
 5. Minimise $E$ by Levenberg–Marquardt, initialised from the linear result with $A = I$. Solve in two sequential sub-steps: extrinsics first, then intrinsics.
 :::
 
-```mermaid
-flowchart LR
-  A["Per-view linear extrinsics<br/>SVD on cross-product"] --> B["Global Taylor coefficients<br/>Pseudoinverse over views"]
-  B --> C["Two-pass linear refinement<br/>extrinsics ↔ intrinsics"]
-  C --> D["Image-center search<br/>iterative SSRE minimum"]
-  D --> E["Levenberg–Marquardt MLE<br/>final refinement"]
-```
+![scaramuzza-omni-calibration pipeline: 5-stage flow from per-view linear extrinsics via SVD on the cross-product constraint, through global Taylor-coefficient recovery by pseudoinverse, two-pass linear refinement alternating extrinsics and intrinsics, an iterative image-center search, to final Levenberg-Marquardt refinement.](./images/scaramuzza-omni-calibration/pipeline.svg)
 
 # Implementation
 

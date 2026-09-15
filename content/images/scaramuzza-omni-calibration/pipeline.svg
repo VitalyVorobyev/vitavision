@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="473.133375pt" height="180.612pt" viewBox="0 0 473.133375 180.612" xmlns="http://www.w3.org/2000/svg" version="1.1" role="img" aria-labelledby="title desc"><title id="title">Scaramuzza omnidirectional calibration pipeline</title><desc id="desc">5-stage pipeline from per-view linear extrinsics via SVD on the cross-product constraint, through global Taylor-coefficient recovery by pseudoinverse, two-pass linear refinement alternating extrinsics and intrinsics, an iterative image-center search, to final Levenberg-Marquardt refinement.</desc>
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.8, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 180.612 
+L 473.133375 180.612 
+L 473.133375 0 
+L 0 0 
+z
+" style="fill: #f8fafc"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 20.976263 16.2396 
+L 142.281862 16.2396 
+Q 146.947462 16.2396 146.947462 20.9052 
+L 146.947462 69.3108 
+Q 146.947462 73.9764 142.281862 73.9764 
+L 20.976263 73.9764 
+Q 16.310663 73.9764 16.310663 69.3108 
+L 16.310663 20.9052 
+Q 16.310663 16.2396 20.976263 16.2396 
+z
+" clip-path="url(#p5efccb3a16)" style="fill: #e2e8f0; stroke: #475569; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 172.608262 16.2396 
+L 293.913862 16.2396 
+Q 298.579462 16.2396 298.579462 20.9052 
+L 298.579462 69.3108 
+Q 298.579462 73.9764 293.913862 73.9764 
+L 172.608262 73.9764 
+Q 167.942662 73.9764 167.942662 69.3108 
+L 167.942662 20.9052 
+Q 167.942662 16.2396 172.608262 16.2396 
+z
+" clip-path="url(#p5efccb3a16)" style="fill: #e2e8f0; stroke: #475569; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 324.240263 16.2396 
+L 445.545862 16.2396 
+Q 450.211463 16.2396 450.211463 20.9052 
+L 450.211463 69.3108 
+Q 450.211463 73.9764 445.545862 73.9764 
+L 324.240263 73.9764 
+Q 319.574662 73.9764 319.574662 69.3108 
+L 319.574662 20.9052 
+Q 319.574662 16.2396 324.240263 16.2396 
+z
+" clip-path="url(#p5efccb3a16)" style="fill: #e2e8f0; stroke: #475569; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 324.240263 106.6356 
+L 445.545862 106.6356 
+Q 450.211463 106.6356 450.211463 111.3012 
+L 450.211463 159.7068 
+Q 450.211463 164.3724 445.545862 164.3724 
+L 324.240263 164.3724 
+Q 319.574662 164.3724 319.574662 159.7068 
+L 319.574662 111.3012 
+Q 319.574662 106.6356 324.240263 106.6356 
+z
+" clip-path="url(#p5efccb3a16)" style="fill: #e2e8f0; stroke: #475569; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 172.608262 106.6356 
+L 293.913862 106.6356 
+Q 298.579462 106.6356 298.579462 111.3012 
+L 298.579462 159.7068 
+Q 298.579462 164.3724 293.913862 164.3724 
+L 172.608262 164.3724 
+Q 167.942662 164.3724 167.942662 159.7068 
+L 167.942662 111.3012 
+Q 167.942662 106.6356 172.608262 106.6356 
+z
+" clip-path="url(#p5efccb3a16)" style="fill: #e2e8f0; stroke: #475569; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 147.782965 45.108 
+Q 157.445051 45.108 165.989104 45.108 
+" clip-path="url(#p5efccb3a16)" style="fill: none; stroke: #475569; stroke-linecap: round"/>
+    <path d="M 161.589104 42.908 
+L 165.989104 45.108 
+L 161.589104 47.308 
+z
+" clip-path="url(#p5efccb3a16)" style="fill: #475569; stroke: #475569; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 299.414965 45.108 
+Q 309.077051 45.108 317.621104 45.108 
+" clip-path="url(#p5efccb3a16)" style="fill: none; stroke: #475569; stroke-linecap: round"/>
+    <path d="M 313.221104 42.908 
+L 317.621104 45.108 
+L 313.221104 47.308 
+z
+" clip-path="url(#p5efccb3a16)" style="fill: #475569; stroke: #475569; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 384.893062 74.813326 
+Q 384.893062 90.306969 384.893062 104.682578 
+" clip-path="url(#p5efccb3a16)" style="fill: none; stroke: #475569; stroke-linecap: round"/>
+    <path d="M 387.093062 100.282578 
+L 384.893062 104.682578 
+L 382.693062 100.282578 
+z
+" clip-path="url(#p5efccb3a16)" style="fill: #475569; stroke: #475569; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 318.73916 135.504 
+Q 309.077074 135.504 300.533021 135.504 
+" clip-path="url(#p5efccb3a16)" style="fill: none; stroke: #475569; stroke-linecap: round"/>
+    <path d="M 304.933021 137.704 
+L 300.533021 135.504 
+L 304.933021 133.304 
+z
+" clip-path="url(#p5efccb3a16)" style="fill: #475569; stroke: #475569; stroke-linecap: round"/>
+   </g>
+   <g id="text_1">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(7.2 41.472609)">Per-view linear extrinsics</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(17.015625 55.365891)">SVD on cross-product</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(158.10825 41.472609)">Global Taylor coefficients</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(155.514187 55.365891)">Pseudoinverse over views</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(303.85275 41.472609)">Two-pass linear refinement</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(320.433375 55.365891)">extrinsics ↔ intrinsics</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(322.79775 131.868609)">Image-center search</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(311.912438 145.761891)">iterative SSRE minimum</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(153.369187 131.868609)">Levenberg–Marquardt MLE</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; fill: #111827" transform="translate(185.441062 145.761891)">final refinement</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p5efccb3a16">
+   <rect x="7.271063" y="7.2" width="451.98" height="166.212"/>
+  </clipPath>
+ </defs>
+</svg>

@@ -25,7 +25,7 @@
 | A — Narratives infra v2 | **done** (PR-1) — `question` nodes, step `claim`, `walkthrough: reveal`, edge-vs-relations validator warning, orphan layout generator removed | — |
 | B — Authors: identity, edges, ego graph | **done** (PR-2) | run `author-identity` Workflow B on the remaining `authors:dupes` candidates (Dong Liu ×2 HRNet, Yang Zou ×2 WinCLIP/VisA look like real splits); re-run backfill — the dry-run now matches 4 of the 10 unlinked papers by DOI |
 | C — Narratives program (13 stories) | N9 live (PR-3) | N7, N8, N3 next (their new-page deps landed in PR-4) |
-| D — Page-quality audit | skill + seeded backlog **done** (PR-1) | first `atlas-audit` run over the BL-001 zero-relation pages after the N9 pilot |
+| D — Page-quality audit | first audit run done (PR-5): 10 pages / 14 findings, 3 blockers + 5 majors fixed | next `atlas-audit` batch over the remaining unaudited BL-001 zero-relation pages |
 | E — Source injections (RAFT, COLMAP, Kannala–Brandt, LO-RANSAC) | **done** (PR-4) — 4 notes, 4 pages, 8 page updates, relations confirmed | — |
 
 **PR policy (user mandate, 2026-08-23):** Claude opens and merges PRs itself, no codex review;
@@ -109,6 +109,16 @@ narrative should get a page — paper-only nodes are debt, not normal.
 - 2026-09-15 — `claim` field added to narrative steps (≤360 chars, rendered as step headline)
   while chapters remain the reading body.
 - 2026-09-15 — `question` node kind added: no year, no link, not counted as page debt.
+- 2026-09-15 — First `atlas-audit` run triaged 10 pages (14 findings). 7 of the 10 "zero-relation"
+  candidate pages turned out to already be reverse-linked via `src/generated/content-graph.ts`
+  (mirrored symmetric relations or typed reverse buckets) once checked directly, rather than
+  genuinely isolated — BL-001's audit
+  metric (raw `relations[]` frontmatter emptiness) undercounts connectivity for pages that are only
+  targets of another page's authored relation. The real defects this batch surfaced were fidelity
+  (an internally inconsistent Geman-McClure formula), comparison-hosting discipline (two stale
+  Remarks bullets asserting comparisons CLAUDE.md's Rules A/B forbid), broken relative page links,
+  a missing `# Implementation` section, and two `flowchart LR` pipelines that should have been
+  generated SVGs — not missing relations.
 - 2026-09-15 — `walkthrough: reveal` mode added (default stays `focus`): hides not-yet-focused
   nodes/edges instead of dimming them.
 - 2026-09-15 — Narrative edges must not contradict Atlas `relations[]` (validator warns, does not error).

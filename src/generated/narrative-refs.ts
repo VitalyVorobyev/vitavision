@@ -60,6 +60,68 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
       "title": "Calibration Changed the Target"
     }
   ],
+  "monocular-depth-estimation": [
+    {
+      "slug": "depth-becomes-general-geometry",
+      "title": "Depth Becomes General Geometry"
+    }
+  ],
+  "midas": [
+    {
+      "slug": "depth-becomes-general-geometry",
+      "title": "Depth Becomes General Geometry"
+    }
+  ],
+  "dinov2": [
+    {
+      "slug": "depth-becomes-general-geometry",
+      "title": "Depth Becomes General Geometry"
+    },
+    {
+      "slug": "foundation-models-for-vision",
+      "title": "Foundation Models for Vision"
+    },
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
+    }
+  ],
+  "depth-anything": [
+    {
+      "slug": "depth-becomes-general-geometry",
+      "title": "Depth Becomes General Geometry"
+    }
+  ],
+  "depth-anything-v2": [
+    {
+      "slug": "depth-becomes-general-geometry",
+      "title": "Depth Becomes General Geometry"
+    }
+  ],
+  "vggt": [
+    {
+      "slug": "depth-becomes-general-geometry",
+      "title": "Depth Becomes General Geometry"
+    },
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    },
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
+    }
+  ],
+  "depth-anything-3": [
+    {
+      "slug": "depth-becomes-general-geometry",
+      "title": "Depth Becomes General Geometry"
+    },
+    {
+      "slug": "the-geometry-pipeline-collapses",
+      "title": "The Geometry Pipeline Collapses"
+    }
+  ],
   "integral-image": [
     {
       "slug": "detection-removing-the-machinery",
@@ -338,16 +400,6 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
       "title": "Foundation Models for Vision"
     }
   ],
-  "dinov2": [
-    {
-      "slug": "foundation-models-for-vision",
-      "title": "Foundation Models for Vision"
-    },
-    {
-      "slug": "where-did-the-inductive-bias-go",
-      "title": "Where Did the Inductive Bias Go?"
-    }
-  ],
   "dinov3": [
     {
       "slug": "foundation-models-for-vision",
@@ -547,22 +599,6 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     }
   ],
   "mast3r": [
-    {
-      "slug": "the-geometry-pipeline-collapses",
-      "title": "The Geometry Pipeline Collapses"
-    }
-  ],
-  "vggt": [
-    {
-      "slug": "the-geometry-pipeline-collapses",
-      "title": "The Geometry Pipeline Collapses"
-    },
-    {
-      "slug": "where-did-the-inductive-bias-go",
-      "title": "Where Did the Inductive Bias Go?"
-    }
-  ],
-  "depth-anything-3": [
     {
       "slug": "the-geometry-pipeline-collapses",
       "title": "The Geometry Pipeline Collapses"

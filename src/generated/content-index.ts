@@ -6636,6 +6636,66 @@ export const narrativePages: NarrativeIndexEntry[] = [
     }
   },
   {
+    "slug": "depth-becomes-general-geometry",
+    "title": "Depth Becomes General Geometry",
+    "summary": "How monocular depth estimation stopped improving through architecture and started improving through the training signal: a scale-invariant loss, pseudo-labelled unlabelled images, synthetic labels with a large teacher, and finally a depth-and-ray target that any number of views can share.",
+    "tagline": "The network barely changed. The signal did.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 8,
+      "steps": 5,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "task-and-loss",
+        "label": "Task and loss"
+      },
+      {
+        "id": "features",
+        "label": "Features"
+      },
+      {
+        "id": "scaling-the-signal",
+        "label": "Scaling the signal"
+      }
+    ],
+    "preview": {
+      "monocular-depth-estimation": [
+        0,
+        0
+      ],
+      "midas": [
+        0.14035087719298245,
+        0
+      ],
+      "dinov2": [
+        0.3508771929824561,
+        0.5
+      ],
+      "depth-anything": [
+        0.49122807017543857,
+        1
+      ],
+      "depth-anything-v2": [
+        0.631578947368421,
+        1
+      ],
+      "vggt": [
+        0.7543859649122806,
+        1
+      ],
+      "depth-anything-3": [
+        0.8771929824561403,
+        1
+      ],
+      "q-ground-truth": [
+        1,
+        1
+      ]
+    }
+  },
+  {
     "slug": "detection-removing-the-machinery",
     "title": "Detection, Removing the Machinery",
     "summary": "How object detection shed its hand-built machinery one component at a time: the enumerated window, the feature pyramid, the proposal stage, the anchors, and non-maximum suppression, until what remains is a classifier reading the image once.",

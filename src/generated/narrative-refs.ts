@@ -450,6 +450,36 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
       "title": "Foundation Models for Vision"
     }
   ],
+  "optical-flow": [
+    {
+      "slug": "local-versus-global-motion",
+      "title": "Local Versus Global Motion"
+    }
+  ],
+  "lucas-kanade": [
+    {
+      "slug": "local-versus-global-motion",
+      "title": "Local Versus Global Motion"
+    }
+  ],
+  "horn-schunck": [
+    {
+      "slug": "local-versus-global-motion",
+      "title": "Local Versus Global Motion"
+    }
+  ],
+  "black-anandan-robust-flow": [
+    {
+      "slug": "local-versus-global-motion",
+      "title": "Local Versus Global Motion"
+    }
+  ],
+  "raft": [
+    {
+      "slug": "local-versus-global-motion",
+      "title": "Local Versus Global Motion"
+    }
+  ],
   "energy-minimization": [
     {
       "slug": "segmentation-from-energy-to-prompt",

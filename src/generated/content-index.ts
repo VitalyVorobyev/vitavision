@@ -7113,6 +7113,58 @@ export const narrativePages: NarrativeIndexEntry[] = [
     }
   },
   {
+    "slug": "local-versus-global-motion",
+    "title": "Local Versus Global Motion",
+    "summary": "Brightness constancy leaves optical flow underdetermined at every pixel, so each method is a choice of where the missing constraint comes from: a local window, a global smoothness prior, a robust version of both, and finally a learned update operator that may or may not still be imposing a prior at all.",
+    "tagline": "One equation, two unknowns, four ways to borrow the rest.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 6,
+      "steps": 4,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "constraint",
+        "label": "Constraint"
+      },
+      {
+        "id": "hand-written",
+        "label": "Hand-written prior"
+      },
+      {
+        "id": "learned",
+        "label": "Learned update"
+      }
+    ],
+    "preview": {
+      "optical-flow": [
+        0,
+        0
+      ],
+      "lucas-kanade": [
+        0.19480519480519481,
+        0.5
+      ],
+      "horn-schunck": [
+        0.38961038961038963,
+        0.5
+      ],
+      "black-anandan-robust-flow": [
+        0.5974025974025974,
+        0.5
+      ],
+      "raft": [
+        0.8051948051948052,
+        1
+      ],
+      "q-smoothness-prior": [
+        1,
+        1
+      ]
+    }
+  },
+  {
     "slug": "segmentation-from-energy-to-prompt",
     "title": "Segmentation, from Energy to Prompt",
     "summary": "How image segmentation kept the same task for twenty years while its prior moved from a hand-written energy function to a trained dense predictor to a promptable pretrained model, and what the practitioner stopped having to supply at each move.",

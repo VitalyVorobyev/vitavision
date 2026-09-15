@@ -43,7 +43,7 @@ N9 → N7, N8, N3 (after source injections) → N4, N5, N2, N6 → N10, N11, N12
 | N3 | `the-geometry-pipeline-collapses` | Learned geometry absorbs pipeline stages | 18 + question | colmap | overview, features, pipeline, timeline | **live** | PR-7 |
 | N4 | `segmentation-from-energy-to-prompt` | Prior moves from energy function to pretrained model | 14 + question | — | overview, dense-prediction, interactive, timeline | **live** | PR-8 |
 | N5 | `detection-removing-the-machinery` | Sliding windows → proposals → regression → set prediction | 8 + question | — | overview, timeline | **live** | PR-9 |
-| N6 | `depth-becomes-general-geometry` | Training signal, not architecture, is the story | 7 | — | overview, timeline | planned | — |
+| N6 | `depth-becomes-general-geometry` | Training signal, not architecture, is the story | 7 + question | — | overview, timeline | **live** | PR-11 |
 | N7 | `forty-years-against-outliers` | Algebra → numerics → outliers → adaptive thresholds | 10 + question | lo-ransac | overview, solver-line, estimator-line, timeline | **live** | PR-6 |
 | N8 | `calibration-changed-the-target` | Usability came from the planar target, not new math | 9 + question | kannala-brandt-model | overview, target-line, model-line, timeline | **live** | PR-6 |
 | N9 | `finding-a-chessboard` | Local evidence isn't enough; topology, learning, self-identifying targets | 17 + question | — | overview, local-response, topology-beats-appearance, timeline | **live** (pilot) | PR-3 |

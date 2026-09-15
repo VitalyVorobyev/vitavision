@@ -11,6 +11,7 @@ export interface GeneratedNarrativeModule {
 
 export const narrativeLoaders: Record<string, () => Promise<GeneratedNarrativeModule>> = {
   "calibration-changed-the-target": () => import("./content/narratives/calibration-changed-the-target.ts"),
+  "depth-becomes-general-geometry": () => import("./content/narratives/depth-becomes-general-geometry.ts"),
   "detection-removing-the-machinery": () => import("./content/narratives/detection-removing-the-machinery.ts"),
   "example-draft": () => import("./content/narratives/example-draft.ts"),
   "finding-a-chessboard": () => import("./content/narratives/finding-a-chessboard.ts"),

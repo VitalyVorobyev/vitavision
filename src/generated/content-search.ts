@@ -3060,6 +3060,26 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "depth-becomes-general-geometry",
+    "path": "/atlas/narratives/depth-becomes-general-geometry",
+    "type": "narrative",
+    "title": "Depth Becomes General Geometry",
+    "summary": "How monocular depth estimation stopped improving through architecture and started improving through the training signal: a scale-invariant loss, pseudo-labelled unlabelled images, synthetic labels with a large teacher, and finally a depth-and-ray target that any number of views can share.",
+    "tags": [
+      "depth",
+      "3d-reconstruction",
+      "deep-learning",
+      "foundation-models"
+    ],
+    "headings": [
+      "The Ambiguity That Never Left",
+      "Borrowed Features",
+      "Data Breadth as Signal",
+      "Synthetic Teachers",
+      "Geometry Converges"
+    ]
+  },
+  {
     "slug": "detection-removing-the-machinery",
     "path": "/atlas/narratives/detection-removing-the-machinery",
     "type": "narrative",

@@ -6989,6 +6989,102 @@ export const narrativePages: NarrativeIndexEntry[] = [
     }
   },
   {
+    "slug": "segmentation-from-energy-to-prompt",
+    "title": "Segmentation, from Energy to Prompt",
+    "summary": "How image segmentation kept the same task for twenty years while its prior moved from a hand-written energy function to a trained dense predictor to a promptable pretrained model, and what the practitioner stopped having to supply at each move.",
+    "tagline": "Same masks. The prior moved house three times.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 15,
+      "steps": 6,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "energy-based",
+        "label": "Energy-based"
+      },
+      {
+        "id": "dense-prediction",
+        "label": "Dense prediction"
+      },
+      {
+        "id": "instance-query",
+        "label": "Instance and query"
+      },
+      {
+        "id": "interactive",
+        "label": "Interactive"
+      },
+      {
+        "id": "promptable",
+        "label": "Promptable"
+      }
+    ],
+    "preview": {
+      "energy-minimization": [
+        0,
+        0
+      ],
+      "graph-cut-segmentation": [
+        0.08928571428571429,
+        0
+      ],
+      "grabcut-iterative-segmentation": [
+        0.20833333333333331,
+        0
+      ],
+      "felzenszwalb-graph-segmentation": [
+        0.2976190476190476,
+        0
+      ],
+      "fcn-semantic-segmentation": [
+        0.35714285714285715,
+        0.25
+      ],
+      "unet-segmentation": [
+        0.44047619047619047,
+        0.25
+      ],
+      "mask-rcnn": [
+        0.4464285714285714,
+        0.5
+      ],
+      "deeplab-semantic-segmentation": [
+        0.5238095238095238,
+        0.25
+      ],
+      "segformer": [
+        0.6309523809523809,
+        0.25
+      ],
+      "ritm-interactive-segmentation": [
+        0.6309523809523809,
+        0.75
+      ],
+      "mask2former": [
+        0.7261904761904762,
+        0.5
+      ],
+      "focalclick": [
+        0.7261904761904762,
+        0.75
+      ],
+      "sam": [
+        0.8214285714285714,
+        1
+      ],
+      "mobilesam": [
+        0.9107142857142857,
+        1
+      ],
+      "q-click-meaning": [
+        1,
+        1
+      ]
+    }
+  },
+  {
     "slug": "the-geometry-pipeline-collapses",
     "title": "The Geometry Pipeline Collapses",
     "summary": "How learned geometry absorbed the classical structure-from-motion pipeline one stage boundary at a time, from the detector and the matcher to the whole chain, and what geometric constraint survives each collapse.",

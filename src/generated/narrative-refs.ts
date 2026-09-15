@@ -300,6 +300,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "foundation-models-for-vision",
       "title": "Foundation Models for Vision"
+    },
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
     }
   ],
   "visual-anomaly-detection": [
@@ -324,6 +328,84 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "foundation-models-for-vision",
       "title": "Foundation Models for Vision"
+    }
+  ],
+  "energy-minimization": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "graph-cut-segmentation": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "grabcut-iterative-segmentation": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "felzenszwalb-graph-segmentation": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "fcn-semantic-segmentation": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "unet-segmentation": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "deeplab-semantic-segmentation": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "mask-rcnn": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "segformer": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "mask2former": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "ritm-interactive-segmentation": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "focalclick": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
+    }
+  ],
+  "mobilesam": [
+    {
+      "slug": "segmentation-from-energy-to-prompt",
+      "title": "Segmentation, from Energy to Prompt"
     }
   ],
   "feature-matching": [

@@ -24,7 +24,7 @@
 |---|---|---|
 | A — Narratives infra v2 | **done** (PR-1) — `question` nodes, step `claim`, `walkthrough: reveal`, edge-vs-relations validator warning, orphan layout generator removed | — |
 | B — Authors: identity, edges, ego graph | **done** (PR-2) | run `author-identity` Workflow B on the remaining `authors:dupes` candidates (Dong Liu ×2 HRNet, Yang Zou ×2 WinCLIP/VisA look like real splits); re-run backfill — the dry-run now matches 4 of the 10 unlinked papers by DOI |
-| C — Narratives program (13 stories) | planned | N9 pilot via `narrative-page` (PR-3) |
+| C — Narratives program (13 stories) | N9 live (PR-3) | N7, N8, N3 next, after the source-injection pages land |
 | D — Page-quality audit | skill + seeded backlog **done** (PR-1) | first `atlas-audit` run over the BL-001 zero-relation pages after the N9 pilot |
 | E — Source injections (RAFT, COLMAP, Kannala–Brandt, LO-RANSAC) | planned | after N9/N7/N8/N3 need them |
 
@@ -46,7 +46,7 @@ N9 → N7, N8, N3 (after source injections) → N4, N5, N2, N6 → N10, N11, N12
 | N6 | `depth-becomes-general-geometry` | Training signal, not architecture, is the story | 7 | — | overview, timeline | planned | — |
 | N7 | `forty-years-against-outliers` | Algebra → numerics → outliers → adaptive thresholds | 8 | lo-ransac | overview, timeline | planned | — |
 | N8 | `calibration-changed-the-target` | Usability came from the planar target, not new math | 8 | kannala-brandt-model | overview, timeline | planned | — |
-| N9 | `finding-a-chessboard` | Local evidence isn't enough; topology, learning, self-identifying targets | 15 | — | local-response, topology-beats-appearance, timeline | planned (pilot) | — |
+| N9 | `finding-a-chessboard` | Local evidence isn't enough; topology, learning, self-identifying targets | 17 + question | — | overview, local-response, topology-beats-appearance, timeline | **live** (pilot) | PR-3 |
 | N10 | `local-versus-global-motion` | Three answers, then learned iteration | 4 + question | raft | overview, timeline | planned | — |
 | N11 | `one-homography-is-not-enough` | Parallax breaks the global model | 5 | — | overview, timeline | planned | — |
 | N12 | `four-answers-to-rectification` | One goal, four assumption sets | 6 | — | assumptions (2×2 grid), timeline | planned | — |
@@ -116,6 +116,10 @@ narrative should get a page — paper-only nodes are debt, not normal.
   `src/generated/atlas-graph-layout.ts`, the `atlas:layout` build step) — nothing imported it.
 - 2026-09-15 — Authors: `mergedInto` alias mechanism (build-resolved, cycle-safe, old ids redirect);
   weighted co-author edges precomputed at build; static ego graph on author pages.
+- 2026-09-15 — Pilot narrative `finding-a-chessboard` authored end-to-end through `narrative-page`: Sonnet outline →
+  orchestrator reconciliation (two survey "unifying" bridges dropped as meta-edges) → Sonnet draft with 49-entry AUDIT
+  (0 misses) → Playwright desktop/touch pass. Lesson: extract the drafter's reply from its transcript by script — the
+  hand-back summary does not carry the body; strip any leading agent chatter before assembly.
 - 2026-09-15 — Author identity fixes, all from OpenAlex `authors/<id>` evidence: Tomasi `A5088492440`→`A5079878449`,
   Michael S. Brown `A5075135613`→`A5106406020` (more works; both stitching papers are his), Jian Sun
   `A5100785015`→`A5101425421` (Microsoft affiliation) merged; `kirillov2023-sam` re-pointed

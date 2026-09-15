@@ -6422,6 +6422,114 @@ export const narrativePages: NarrativeIndexEntry[] = [
     }
   },
   {
+    "slug": "finding-a-chessboard",
+    "title": "Finding a Chessboard",
+    "summary": "How chessboard detection moved its decisive evidence from the per-pixel X-corner response to grid topology, then to learned detectors, and finally into a target that identifies itself.",
+    "tagline": "Local evidence was never enough: follow the evidence as it leaves the pixel.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 18,
+      "steps": 7,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "foundations",
+        "label": "Foundations"
+      },
+      {
+        "id": "response",
+        "label": "Local corner response"
+      },
+      {
+        "id": "topology",
+        "label": "Grid topology"
+      },
+      {
+        "id": "learned",
+        "label": "Learned detectors"
+      },
+      {
+        "id": "targets",
+        "label": "Target design"
+      }
+    ],
+    "preview": {
+      "harris-corner-detector": [
+        0,
+        0
+      ],
+      "topological-grid-recovery": [
+        0.21951219512195125,
+        0
+      ],
+      "hessian-saddle-response": [
+        0.41463414634146345,
+        0
+      ],
+      "chessboard-x-corner-detection": [
+        0.926829268292683,
+        0
+      ],
+      "geiger-chessboard-detector": [
+        0.3170731707317074,
+        0.25
+      ],
+      "chess-corners": [
+        0.39024390243902446,
+        0.25
+      ],
+      "duda-radon-corners": [
+        0.6097560975609757,
+        0.25
+      ],
+      "pyramidal-blur-aware-xcorner": [
+        0.6829268292682927,
+        0.25
+      ],
+      "gp-checkerboard-enhancement": [
+        0.8292682926829269,
+        0.25
+      ],
+      "shu-topological-grid": [
+        0.19512195121951223,
+        0.5
+      ],
+      "laureano-topological-chessboard": [
+        0.4024390243902439,
+        0.5
+      ],
+      "rochade": [
+        0.475609756097561,
+        0.5
+      ],
+      "ocpad": [
+        0.5487804878048781,
+        0.5
+      ],
+      "mate-checkerboard-detector": [
+        0.5609756097560976,
+        0.75
+      ],
+      "ccs-camera-calibration": [
+        0.7560975609756099,
+        0.75
+      ],
+      "ccdn-checkerboard-detector": [
+        0.8414634146341464,
+        0.75
+      ],
+      "puzzleboard": [
+        0.902439024390244,
+        1
+      ],
+      "q-target-robustness": [
+        1,
+        1
+      ]
+    }
+  },
+  {
     "slug": "foundation-models-for-vision",
     "title": "Foundation Models for Vision",
     "summary": "How attention became a substrate, images became tokens, labels became optional, and one frozen backbone came to power everything from segmentation prompts to industrial anomaly detection.",

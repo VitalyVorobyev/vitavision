@@ -60,6 +60,54 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
       "title": "Calibration Changed the Target"
     }
   ],
+  "integral-image": [
+    {
+      "slug": "detection-removing-the-machinery",
+      "title": "Detection, Removing the Machinery"
+    }
+  ],
+  "viola-jones-detector": [
+    {
+      "slug": "detection-removing-the-machinery",
+      "title": "Detection, Removing the Machinery"
+    }
+  ],
+  "hog-descriptor": [
+    {
+      "slug": "detection-removing-the-machinery",
+      "title": "Detection, Removing the Machinery"
+    }
+  ],
+  "felzenszwalb-deformable-parts": [
+    {
+      "slug": "detection-removing-the-machinery",
+      "title": "Detection, Removing the Machinery"
+    }
+  ],
+  "faster-rcnn": [
+    {
+      "slug": "detection-removing-the-machinery",
+      "title": "Detection, Removing the Machinery"
+    }
+  ],
+  "yolo-v1": [
+    {
+      "slug": "detection-removing-the-machinery",
+      "title": "Detection, Removing the Machinery"
+    }
+  ],
+  "detr": [
+    {
+      "slug": "detection-removing-the-machinery",
+      "title": "Detection, Removing the Machinery"
+    }
+  ],
+  "rf-detr": [
+    {
+      "slug": "detection-removing-the-machinery",
+      "title": "Detection, Removing the Machinery"
+    }
+  ],
   "harris-corner-detector": [
     {
       "slug": "finding-a-chessboard",

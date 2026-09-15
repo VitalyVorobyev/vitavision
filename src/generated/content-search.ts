@@ -3060,6 +3060,25 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "detection-removing-the-machinery",
+    "path": "/atlas/narratives/detection-removing-the-machinery",
+    "type": "narrative",
+    "title": "Detection, Removing the Machinery",
+    "summary": "How object detection shed its hand-built machinery one component at a time: the enumerated window, the feature pyramid, the proposal stage, the anchors, and non-maximum suppression, until what remains is a classifier reading the image once.",
+    "tags": [
+      "detection",
+      "deep-learning",
+      "classical"
+    ],
+    "headings": [
+      "Table Makes Exhaustive Search Cheap",
+      "Better Templates, Same Window",
+      "Window Learns Fewer Places",
+      "One Pass, Then No Proposals",
+      "Where Machinery Actually Went"
+    ]
+  },
+  {
     "slug": "finding-a-chessboard",
     "path": "/atlas/narratives/finding-a-chessboard",
     "type": "narrative",

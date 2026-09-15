@@ -3118,6 +3118,27 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "segmentation-from-energy-to-prompt",
+    "path": "/atlas/narratives/segmentation-from-energy-to-prompt",
+    "type": "narrative",
+    "title": "Segmentation, from Energy to Prompt",
+    "summary": "How image segmentation kept the same task for twenty years while its prior moved from a hand-written energy function to a trained dense predictor to a promptable pretrained model, and what the practitioner stopped having to supply at each move.",
+    "tags": [
+      "segmentation",
+      "interactive",
+      "deep-learning",
+      "classical"
+    ],
+    "headings": [
+      "Energy as Objective",
+      "Coordinate Descent Priors",
+      "Dense Prediction Takes Over",
+      "Instance and Token Mixing",
+      "Interactive Goes Feedforward",
+      "Prompt Conditions a Decoder"
+    ]
+  },
+  {
     "slug": "the-geometry-pipeline-collapses",
     "path": "/atlas/narratives/the-geometry-pipeline-collapses",
     "type": "narrative",

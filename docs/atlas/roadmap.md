@@ -41,7 +41,7 @@ N9 → N7, N8, N3 (after source injections) → N4, N5, N2, N6 → N10, N11, N12
 | N1 | `foundation-models-for-vision` | Extend: "what is normal" lens; question node | 21 existing + 5 debt | winclip, anomalyclip, simplenet, siglip2, register-tokens pages | overview, ssl-lineage, distillation, anomaly-bridge, +what-is-normal | live, extension planned | — |
 | N2 | `where-did-the-inductive-bias-go` | Assumptions migrate algorithm → architecture → data+objective | 12 | — | classifier-lineage, bias-migration, timeline | planned | — |
 | N3 | `the-geometry-pipeline-collapses` | Learned geometry absorbs pipeline stages | 18 + question | colmap | overview, features, pipeline, timeline | **live** | PR-7 |
-| N4 | `segmentation-from-energy-to-prompt` | Prior moves from energy function to pretrained model | 14 | — | dense-prediction, interactive | planned | — |
+| N4 | `segmentation-from-energy-to-prompt` | Prior moves from energy function to pretrained model | 14 + question | — | overview, dense-prediction, interactive, timeline | **live** | PR-8 |
 | N5 | `detection-removing-the-machinery` | Sliding windows → proposals → regression → set prediction | 8 | — | overview, timeline | planned | — |
 | N6 | `depth-becomes-general-geometry` | Training signal, not architecture, is the story | 7 | — | overview, timeline | planned | — |
 | N7 | `forty-years-against-outliers` | Algebra → numerics → outliers → adaptive thresholds | 10 + question | lo-ransac | overview, solver-line, estimator-line, timeline | **live** | PR-6 |

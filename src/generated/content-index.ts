@@ -7113,6 +7113,58 @@ export const narrativePages: NarrativeIndexEntry[] = [
     }
   },
   {
+    "slug": "four-answers-to-rectification",
+    "title": "Four Answers to Rectification",
+    "summary": "Stereo rectification has one goal, corresponding points on the same scanline, and four coexisting answers that differ only in what they assume: Hartley's minimal-distortion projective map, Loop and Zhang's decomposed criteria, Pollefeys' polar reparametrisation around the epipole, and Fusiello's compact calibrated form.",
+    "tagline": "Same goal, four assumption sets, no winner.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 6,
+      "steps": 5,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "constraint",
+        "label": "Constraint"
+      },
+      {
+        "id": "uncalibrated",
+        "label": "Uncalibrated (Projective)"
+      },
+      {
+        "id": "calibrated-polar",
+        "label": "Calibrated / Polar"
+      }
+    ],
+    "preview": {
+      "epipolar-geometry": [
+        0,
+        0
+      ],
+      "stereo-rectification": [
+        0.3409090909090909,
+        0
+      ],
+      "hartley-projective-rectification": [
+        0.6818181818181818,
+        0.5
+      ],
+      "loop-zhang-rectification": [
+        1,
+        0.5
+      ],
+      "pollefeys-polar-rectification": [
+        0.6818181818181818,
+        1
+      ],
+      "fusiello-compact-rectification": [
+        1,
+        1
+      ]
+    }
+  },
+  {
     "slug": "local-versus-global-motion",
     "title": "Local Versus Global Motion",
     "summary": "Brightness constancy leaves optical flow underdetermined at every pixel, so each method is a choice of where the missing constraint comes from: a local window, a global smoothness prior, a robust version of both, and finally a learned update operator that may or may not still be imposing a prior at all.",

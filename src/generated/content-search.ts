@@ -3157,6 +3157,26 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "four-answers-to-rectification",
+    "path": "/atlas/narratives/four-answers-to-rectification",
+    "type": "narrative",
+    "title": "Four Answers to Rectification",
+    "summary": "Stereo rectification has one goal, corresponding points on the same scanline, and four coexisting answers that differ only in what they assume: Hartley's minimal-distortion projective map, Loop and Zhang's decomposed criteria, Pollefeys' polar reparametrisation around the epipole, and Fusiello's compact calibrated form.",
+    "tags": [
+      "stereo",
+      "rectification",
+      "geometry",
+      "classical"
+    ],
+    "headings": [
+      "One Constraint, Four Answers",
+      "Hartley: Least Disparity",
+      "Loop-Zhang: Least Distortion",
+      "Pollefeys: Polar Reparametrisation",
+      "Fusiello: Compact Closed Form"
+    ]
+  },
+  {
     "slug": "local-versus-global-motion",
     "path": "/atlas/narratives/local-versus-global-motion",
     "type": "narrative",

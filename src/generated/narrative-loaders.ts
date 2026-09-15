@@ -17,6 +17,7 @@ export const narrativeLoaders: Record<string, () => Promise<GeneratedNarrativeMo
   "finding-a-chessboard": () => import("./content/narratives/finding-a-chessboard.ts"),
   "forty-years-against-outliers": () => import("./content/narratives/forty-years-against-outliers.ts"),
   "foundation-models-for-vision": () => import("./content/narratives/foundation-models-for-vision.ts"),
+  "four-answers-to-rectification": () => import("./content/narratives/four-answers-to-rectification.ts"),
   "local-versus-global-motion": () => import("./content/narratives/local-versus-global-motion.ts"),
   "one-homography-is-not-enough": () => import("./content/narratives/one-homography-is-not-enough.ts"),
   "segmentation-from-energy-to-prompt": () => import("./content/narratives/segmentation-from-energy-to-prompt.ts"),

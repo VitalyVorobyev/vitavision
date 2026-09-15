@@ -6987,5 +6987,117 @@ export const narrativePages: NarrativeIndexEntry[] = [
         0.75
       ]
     }
+  },
+  {
+    "slug": "the-geometry-pipeline-collapses",
+    "title": "The Geometry Pipeline Collapses",
+    "summary": "How learned geometry absorbed the classical structure-from-motion pipeline one stage boundary at a time, from the detector and the matcher to the whole chain, and what geometric constraint survives each collapse.",
+    "tagline": "The modules dissolve. The constraints remain.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 19,
+      "steps": 7,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "pipeline",
+        "label": "Classical pipeline"
+      },
+      {
+        "id": "classical-features",
+        "label": "Classical features"
+      },
+      {
+        "id": "learned-features",
+        "label": "Learned features"
+      },
+      {
+        "id": "learned-matching",
+        "label": "Learned matching"
+      },
+      {
+        "id": "feed-forward",
+        "label": "Feed-forward geometry"
+      }
+    ],
+    "preview": {
+      "ransac": [
+        0.07200000000000001,
+        0
+      ],
+      "sift": [
+        0.192,
+        0.25
+      ],
+      "colmap": [
+        0.384,
+        0
+      ],
+      "feed-forward-3d-reconstruction": [
+        0.64,
+        1
+      ],
+      "lightglue": [
+        0.656,
+        0.75
+      ],
+      "pose-estimation": [
+        0.28800000000000003,
+        0
+      ],
+      "depth-anything-3": [
+        0.9279999999999999,
+        1
+      ],
+      "superglue": [
+        0.512,
+        0.75
+      ],
+      "loftr": [
+        0.584,
+        0.75
+      ],
+      "feature-matching": [
+        0.216,
+        0
+      ],
+      "vggt": [
+        0.856,
+        1
+      ],
+      "superpoint": [
+        0.448,
+        0.5
+      ],
+      "mast3r": [
+        0.7839999999999999,
+        1
+      ],
+      "epipolar-geometry": [
+        0.14400000000000002,
+        0
+      ],
+      "dust3r": [
+        0.712,
+        1
+      ],
+      "xfeat": [
+        0.704,
+        0.5
+      ],
+      "orb": [
+        0.32,
+        0.25
+      ],
+      "q-bundle-adjustment": [
+        1,
+        1
+      ],
+      "bundle-adjustment": [
+        0,
+        0
+      ]
+    }
   }
 ];

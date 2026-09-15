@@ -1,0 +1,435 @@
+---
+title: The Geometry Pipeline Collapses
+date: 2026-09-15
+summary: How learned geometry absorbed the classical structure-from-motion pipeline one stage boundary at a time, from the detector and the matcher to the whole chain, and what geometric constraint survives each collapse.
+tagline: The modules dissolve. The constraints remain.
+tags:
+  - geometry
+  - feature-matching
+  - 3d-reconstruction
+  - deep-learning
+author: Vitaly Vorobyev
+walkthrough: focus
+areas:
+  - id: pipeline
+    label: Classical pipeline
+  - id: classical-features
+    label: Classical features
+  - id: learned-features
+    label: Learned features
+  - id: learned-matching
+    label: Learned matching
+  - id: feed-forward
+    label: Feed-forward geometry
+nodes:
+  - id: feature-matching
+    page: feature-matching
+    area: pipeline
+    role: origin
+    takeaway: "The shared middle-end between keypoint front-ends and geometric back-ends: compare descriptors, then resolve correspondences into a consistent partial assignment, from Lowe's ratio test to Sinkhorn optimal transport to detector-free dense matching."
+    remark: SuperGlue, LightGlue and LoFTR are three successive answers to this middle-end problem; DUSt3R later removes the stage entirely by matching implicitly in pointmap space.
+  - id: epipolar-geometry
+    page: epipolar-geometry
+    area: pipeline
+    role: origin
+    takeaway: The projective constraint that a point seen in one image lies on a specific line in the other view, fixed entirely by the two camera positions. Reduces stereo search from 2-D to 1-D and is the relation every two-view pipeline recovers or absorbs.
+  - id: ransac
+    page: ransac
+    area: pipeline
+    role: origin
+    takeaway: "Fits a parametric model to correspondences containing an unknown fraction of outliers by sampling minimal subsets, instantiating candidates, and keeping the one with the largest consistent inlier set: the robust-estimation backbone under every classical stage here."
+  - id: pose-estimation
+    page: pose-estimation
+    area: pipeline
+    role: origin
+    takeaway: "Recovering the 6-DOF rigid transform relating a camera to a scene or to a second camera, via PnP from 2-D/3-D correspondences or the essential matrix from calibrated 2-D/2-D correspondences: the geometric output every stage in this narrative competes to produce."
+  - id: bundle-adjustment
+    page: bundle-adjustment
+    area: pipeline
+    role: origin
+    takeaway: "Joint nonlinear least-squares refinement of every camera parameter, and in SfM every 3-D point, minimising total 2-D reprojection error: the final, most accurate stage of every classical calibration pipeline, and the stage DUSt3R explicitly proposes to replace."
+    remark: DUSt3R's global alignment substitutes gradient descent on 3-D projection error, runs in seconds rather than minutes, and needs no known camera intrinsics as input.
+  - id: colmap
+    page: colmap
+    area: pipeline
+    role: milestone
+    takeaway: "Incremental SfM for unordered, uncalibrated image collections: replaces scene-graph verification, next-best-view selection, multi-view triangulation and bundle adjustment with more robust variants, over 50x faster than Bundler at sub-pixel reprojection error."
+    remark: "COLMAP consumes feature matching, pose estimation and bundle adjustment as unmodified upstream components rather than extending any of them: it is the mature assembly of the classical stages, not a new stage."
+  - id: sift
+    page: sift
+    area: classical-features
+    role: origin
+    takeaway: "Detects scale-space extrema in a Difference-of-Gaussian pyramid, refines to sub-pixel by quadratic interpolation, and emits a 128-D gradient-histogram descriptor invariant to scale, rotation and moderate affine change: the hand-crafted target every learned successor replaces."
+  - id: orb
+    page: orb
+    area: classical-features
+    role: milestone
+    takeaway: "Couples FAST-9 keypoints ranked by Harris cornerness with a greedily-learned, steered 256-bit rBRIEF binary descriptor matched by Hamming distance: roughly two orders of magnitude faster than SIFT at 640x480, trading descriptor capacity for real-time compute."
+  - id: superpoint
+    page: superpoint
+    area: learned-features
+    role: milestone
+    takeaway: "First fully-convolutional network to jointly detect keypoints and compute descriptors in one forward pass with no human annotation, trained via Homographic Adaptation: the first stage boundary the learned pipeline absorbs, feeding both SuperGlue and LightGlue."
+    remark: No sub-pixel localisation (MLE 1.158 px vs SIFT's 0.833 px) and not rotation-invariant beyond its training homographies; the classical stage it replaces handled both natively.
+  - id: xfeat
+    page: xfeat
+    area: learned-features
+    role: milestone
+    takeaway: "A featherweight CNN inheriting SuperPoint's shared-encoder two-head design but decoupling the keypoint head onto raw 8x8 pixel blocks, reaching roughly 9x SuperPoint's throughput on CPU: the detector/descriptor stage pushed to hardware-constrained deployment."
+  - id: superglue
+    page: superglue
+    area: learned-matching
+    role: milestone
+    takeaway: "A graph neural network that replaces hand-crafted matching heuristics (ratio test, mutual nearest-neighbour) with a Sinkhorn optimal-transport assignment trained end-to-end over SuperPoint keypoints: the second stage boundary absorbed, matching itself becomes learned."
+  - id: loftr
+    page: loftr
+    area: learned-matching
+    role: bridge
+    takeaway: "Removes the keypoint detector altogether: a shared CNN backbone and Linear-Transformer attention establish confidence-thresholded correspondences directly on dense feature maps, refined to sub-pixel accuracy. Matching goes dense and detector-free."
+  - id: lightglue
+    page: lightglue
+    area: learned-matching
+    role: milestone
+    takeaway: "An adaptive-depth Transformer matcher that swaps SuperGlue's Sinkhorn solver for dual-softmax times matchability and exits early on easy pairs: over 2x faster than SuperGlue at equal or better pose accuracy, the practical default for new sparse pipelines."
+  - id: dust3r
+    page: dust3r
+    area: feed-forward
+    role: milestone
+    takeaway: "Regresses two dense pointmaps in a shared frame from an uncalibrated, unposed image pair in one feed-forward pass, jointly recovering correspondence, relative pose, intrinsics and depth: matching, epipolar geometry, triangulation and bundle adjustment collapse into one network."
+    remark: "Two classical stages dissolve at once: global alignment on pointmaps replaces reprojection-error bundle adjustment, and implicit nearest-neighbour search in pointmap space replaces explicit keypoint matching."
+  - id: mast3r
+    page: mast3r
+    area: feed-forward
+    role: bridge
+    takeaway: "Adds a dense local-descriptor head and InfoNCE matching loss on top of DUSt3R's pointmap regression, making its 3-D-grounded representations directly matchable at pixel accuracy: explicit correspondence returns, now grounded in learned 3-D geometry, not 2-D appearance."
+  - id: vggt
+    page: vggt
+    area: feed-forward
+    role: milestone
+    takeaway: "A single feed-forward transformer predicting cameras, depth, point maps and tracks for one to hundreds of views at once, removing the pairwise-plus-global-alignment post-processing DUSt3R and MASt3R still require: the whole classical chain now fits in one forward pass."
+  - id: depth-anything-3
+    page: depth-anything-3
+    area: feed-forward
+    role: frontier
+    takeaway: "A plain DINOv2 transformer with a unified depth-ray target, no separate pose head and no explicit point-map regression, surpassing VGGT by roughly 44% in pose accuracy and 25% in geometric accuracy: the constraint keeps surviving as the machinery enforcing it keeps shrinking."
+  - id: feed-forward-3d-reconstruction
+    page: feed-forward-3d-reconstruction
+    area: feed-forward
+    role: bridge
+    takeaway: "Recovering point maps, depth and camera poses directly from images in a single network pass, replacing the detect-match-triangulate-bundle-adjust pipeline with learned pointmap regression: the paradigm DUSt3R founds and MASt3R, VGGT and Depth Anything 3 each generalise."
+  - id: q-bundle-adjustment
+    question: Which parts of bundle adjustment are fundamental, and which are artefacts of the old decomposition into matching, pose and refinement?
+    area: feed-forward
+edges:
+  - from: sift
+    to: superpoint
+    type: evolution
+    label: learned replacement
+  - from: orb
+    to: xfeat
+    type: evolution
+    label: learned replacement
+  - from: superpoint
+    to: superglue
+    type: evolution
+    label: feeds
+  - from: superpoint
+    to: lightglue
+    type: evolution
+    label: feeds
+  - from: superglue
+    to: lightglue
+    type: evolution
+    label: extends
+  - from: dust3r
+    to: mast3r
+    type: evolution
+    label: extends
+  - from: dust3r
+    to: vggt
+    type: evolution
+    label: feeds
+  - from: dust3r
+    to: depth-anything-3
+    type: evolution
+    label: feeds
+  - from: vggt
+    to: depth-anything-3
+    type: evolution
+    label: generalised by
+  - from: sift
+    to: orb
+    type: contrast
+    label: vs
+  - from: superpoint
+    to: xfeat
+    type: contrast
+    label: vs
+  - from: superglue
+    to: loftr
+    type: contrast
+    label: vs
+  - from: loftr
+    to: lightglue
+    type: contrast
+    label: vs
+  - from: loftr
+    to: xfeat
+    type: contrast
+    label: vs
+  - from: bundle-adjustment
+    to: dust3r
+    type: bridge
+    label: absorbed
+  - from: feature-matching
+    to: dust3r
+    type: bridge
+    label: bypassed
+  - from: ransac
+    to: colmap
+    type: bridge
+    label: embedded
+  - from: mast3r
+    to: vggt
+    type: bridge
+    label: informs
+  - from: feature-matching
+    to: sift
+    type: prerequisite
+  - from: ransac
+    to: epipolar-geometry
+    type: prerequisite
+  - from: epipolar-geometry
+    to: colmap
+    type: prerequisite
+  - from: epipolar-geometry
+    to: dust3r
+    type: prerequisite
+  - from: feed-forward-3d-reconstruction
+    to: dust3r
+    type: prerequisite
+  - from: pose-estimation
+    to: dust3r
+    type: prerequisite
+lenses:
+  - id: overview
+    title: Overview
+    coords:
+      ransac:
+        - 1.35
+        - 0
+      sift:
+        - 3.6
+        - 1
+      colmap:
+        - 7.2
+        - 0
+      feed-forward-3d-reconstruction:
+        - 12
+        - 4
+      lightglue:
+        - 12.3
+        - 3
+      pose-estimation:
+        - 5.4
+        - 0
+      depth-anything-3:
+        - 17.4
+        - 4
+      superglue:
+        - 9.6
+        - 3
+      loftr:
+        - 10.95
+        - 3
+      feature-matching:
+        - 4.05
+        - 0
+      vggt:
+        - 16.05
+        - 4
+      superpoint:
+        - 8.4
+        - 2
+      mast3r:
+        - 14.7
+        - 4
+      epipolar-geometry:
+        - 2.7
+        - 0
+      dust3r:
+        - 13.35
+        - 4
+      xfeat:
+        - 13.2
+        - 2
+      orb:
+        - 6
+        - 1
+      q-bundle-adjustment:
+        - 18.75
+        - 4
+      bundle-adjustment:
+        - 0
+        - 0
+  - id: features
+    title: "Features: detect, describe, match"
+    coords:
+      sift:
+        - 3.6
+        - 1
+      orb:
+        - 6
+        - 1
+      superpoint:
+        - 8.4
+        - 2
+      xfeat:
+        - 13.2
+        - 2
+      superglue:
+        - 9.6
+        - 3
+      loftr:
+        - 10.95
+        - 3
+      lightglue:
+        - 12.3
+        - 3
+      feature-matching:
+        - 3.6
+        - 0
+      mast3r:
+        - 13.8
+        - 4
+  - id: pipeline
+    title: "Pipeline: from stages to one network"
+    coords:
+      feature-matching:
+        - 4.05
+        - 0
+      epipolar-geometry:
+        - 2.7
+        - 0
+      ransac:
+        - 1.35
+        - 0
+      pose-estimation:
+        - 5.4
+        - 0
+      bundle-adjustment:
+        - 0
+        - 0
+      colmap:
+        - 7.2
+        - 0
+      dust3r:
+        - 13.35
+        - 4
+      mast3r:
+        - 14.7
+        - 4
+      vggt:
+        - 16.05
+        - 4
+      depth-anything-3:
+        - 17.4
+        - 4
+      feed-forward-3d-reconstruction:
+        - 12
+        - 4
+      q-bundle-adjustment:
+        - 18.75
+        - 4
+steps:
+  - title: The shared substrate
+    anchor: the-shared-substrate
+    claim: "Every method in this narrative ultimately produces or consumes one of five quantities: correspondences, the epipolar constraint, an outlier-free inlier set, a camera pose, or a jointly-refined reprojection-error minimum, regardless of whether a human derived the estimator or a network learned it."
+    focus:
+      - feature-matching
+      - epipolar-geometry
+      - ransac
+      - pose-estimation
+      - bundle-adjustment
+  - title: Detectors and descriptors, by hand
+    anchor: detectors-and-descriptors-by-hand
+    claim: SIFT (2004) costs roughly 5.2 s per frame on CPU and ORB (2011) roughly 15 ms for the same task; ORB is about two orders of magnitude faster by trading a 512-byte float descriptor for a 32-byte binary one, but neither method's detector or descriptor is learned from data.
+    focus:
+      - sift
+      - orb
+  - title: The first stage falls to learning
+    anchor: the-first-stage-falls-to-learning
+    claim: SuperPoint (2018) collapses hand-crafted detection and description into one convolutional forward pass trained without human keypoint labels; XFeat (2024) then decouples the keypoint head from the descriptor encoder to reach roughly 9x SuperPoint's throughput on CPU. The first stage boundary is gone.
+    focus:
+      - superpoint
+      - xfeat
+  - title: Matching becomes a learned assignment
+    anchor: matching-becomes-a-learned-assignment
+    claim: SuperGlue (2020) replaces the ratio test with a Sinkhorn optimal-transport assignment trained end-to-end on SuperPoint keypoints; LightGlue (2023) swaps Sinkhorn for dual-softmax-times-matchability and exits early on easy pairs, matching SuperGlue's accuracy at less than half the latency.
+    focus:
+      - superglue
+      - lightglue
+  - title: Matching goes dense and detector-free
+    anchor: matching-goes-dense-and-detector-free
+    claim: LoFTR (2021) removes the keypoint detector entirely, matching dense transformer-enriched feature maps directly. MASt3R (2024) later reuses this dense paradigm, but grounds its descriptor head in DUSt3R's learned 3-D pointmaps rather than in 2-D appearance alone.
+    focus:
+      - loftr
+      - mast3r
+  - title: The whole chain becomes one network
+    anchor: the-whole-chain-becomes-one-network
+    claim: "COLMAP (2016) is the mature classical endpoint: four separately-optimised stages, scene-graph verification, next-best-view selection, triangulation, bundle adjustment. DUSt3R (2023) and VGGT (2025) instead regress cameras and point maps for up to hundreds of views in one feed-forward pass, seconds instead of minutes."
+    focus:
+      - colmap
+      - dust3r
+      - vggt
+  - title: What survives collapse
+    anchor: what-survives-collapse
+    claim: "Depth Anything 3 (2025) needs no bespoke multi-transformer stack, no explicit pose head, and no point-map regression: a plain DINOv2 backbone with a unified depth-ray target beats VGGT by roughly 44% in pose accuracy. If a generic transformer recovers what bundle adjustment used to compute, what in bundle adjustment was ever essential?"
+    focus:
+      - depth-anything-3
+      - feed-forward-3d-reconstruction
+      - bundle-adjustment
+      - q-bundle-adjustment
+---
+
+## The Shared Substrate
+
+Every method that follows in this account produces or consumes one of five quantities. [Feature matching](/atlas/feature-matching) turns two sets of descriptors into a consistent partial assignment of correspondences. [Epipolar geometry](/atlas/epipolar-geometry) constrains a point seen in one image to a specific line in the other, fixed entirely by the two camera positions, reducing a two-dimensional correspondence search to a one-dimensional one. [RANSAC](/atlas/ransac) draws minimal random subsets, instantiates a candidate model from each, and keeps the one whose consensus set of inliers is largest, underwriting every stage that follows it. [Pose estimation](/atlas/pose-estimation) recovers the six degrees of freedom relating a camera to a scene or to a second camera, either from 2-D/3-D correspondences by the Perspective-n-Point problem or from calibrated 2-D/2-D correspondences via the essential matrix. [Bundle adjustment](/atlas/bundle-adjustment) refines every camera parameter, and every 3-D point, by minimising the total reprojection error across every observation.
+
+Whether a human derived the estimator that produces these quantities or a network learned it does not change what the quantity is. What changes over the following two decades is who computes the first of them. Until 2018, correspondences come from a detector and a descriptor built entirely by hand.
+
+## Detectors and Descriptors, by Hand
+
+[SIFT](/atlas/sift) detects keypoints as extrema of a Difference-of-Gaussian pyramid, refines their location to sub-pixel accuracy by quadratic interpolation, and describes each with a 128-dimensional gradient-histogram vector invariant to scale and rotation. On CPU the full pipeline costs roughly 5.2 seconds per frame. [ORB](/atlas/orb) instead runs FAST-9 across a five-level pyramid, ranks candidates by Harris cornerness, and packs a 256-bit binary descriptor from greedily selected, rotation-steered pixel-pair tests, matched by Hamming distance rather than Euclidean distance. The same frame that costs SIFT 5.2 seconds costs ORB roughly 15 milliseconds, about two orders of magnitude faster, bought by trading SIFT's 512-byte float descriptor for ORB's 32-byte binary one.
+
+Both detectors are the product of hand-engineered choices: the Difference-of-Gaussian scale ratio, the Harris response threshold, the correlation cutoff that selects ORB's 256 test pairs. Nothing in either pipeline is fit to data. The parameters are set once, by a person, and never revisited during training.
+
+## The First Stage Falls to Learning
+
+[SuperPoint](/atlas/superpoint) collapses detection and description into a single fully-convolutional forward pass, trained without any human keypoint annotations through Homographic Adaptation: detections are aggregated across many random warps of the same image until only the repeatable ones survive. SuperPoint keypoints and descriptors are the front end both [SuperGlue](/atlas/superglue) and [LightGlue](/atlas/lightglue) typically consume. [XFeat](/atlas/xfeat) keeps SuperPoint's shared-encoder, two-head design but decouples the keypoint head onto unfolded 8x8 raw-pixel blocks rather than the deep encoder output, reaching roughly nine times SuperPoint's throughput on the same CPU.
+
+The first stage boundary in the classical pipeline, the line between a hand-designed detector and a hand-designed descriptor, is gone: one learned encoder now produces both, and the data that shapes it is unlabelled images rather than a closed-form rule. What is still hand-designed is the second stage. Turning two sets of descriptors into a consistent set of correspondences is still the nearest-neighbour ratio test.
+
+## Matching Becomes a Learned Assignment
+
+[SuperGlue](/atlas/superglue) replaces the ratio test with a graph neural network trained end to end: nine alternating layers of self- and cross-attention enrich each keypoint's descriptor with context from both images, and a Sinkhorn optimal-transport solver turns the resulting score matrix into a soft partial assignment, with a learned dustbin absorbing points that have no counterpart. [LightGlue](/atlas/lightglue) keeps the attention framework but replaces the Sinkhorn solver with a dual-softmax assignment gated by a per-point matchability score, and adds a confidence head that lets the network exit early once enough points are certain. On MegaDepth the adaptive variant matches SuperGlue's pose accuracy at 31.4 milliseconds against SuperGlue's 70.0, less than half the latency for an equivalent result.
+
+The second stage boundary is now absorbed: matching itself is a differentiable, trained assignment rather than a fixed heuristic. What both matchers still assume is that a detector has already reduced each image to a sparse set of keypoints before matching begins.
+
+## Matching Goes Dense and Detector-Free
+
+[LoFTR](/atlas/loftr) removes the keypoint detector from the pipeline entirely. A shared CNN backbone produces coarse and fine feature maps for both images, an attention-based transformer enriches the coarse maps with global context, and a confidence threshold combined with mutual-nearest-neighbour selection establishes correspondences directly on the dense maps, later refined to sub-pixel accuracy by a local correlation window. Because no detector fires first, LoFTR finds matches in low-texture regions where a keypoint detector would find no repeatable interest points at all. [MASt3R](/atlas/mast3r) reuses this dense, detector-free paradigm but grounds it differently: it extends [DUSt3R](/atlas/dust3r)'s pointmap regression with a dense descriptor head trained by an InfoNCE contrastive loss, so correspondences are pixels observing the same physical 3-D point rather than pixels with similar 2-D appearance.
+
+Matching survives as a stage in both cases, but its substrate has shifted, from a fixed descriptor comparison to a dense attention map, and now to a 3-D point shared between two views. What has not yet changed is that matching still hands its output to a separate epipolar-geometry, pose, and bundle-adjustment chain downstream.
+
+## The Whole Chain Becomes One Network
+
+[COLMAP](/atlas/colmap) is the mature classical endpoint. It keeps the standard incremental structure-from-motion pipeline and replaces four of its stages with more robust variants: scene-graph verification after matching, next-best-view selection, recursive RANSAC triangulation, and an iterative bundle-adjustment loop with redundant-view mining. It consumes pose estimation and bundle adjustment as unmodified components: it assembles the classical stages more robustly rather than replacing any of them. [DUSt3R](/atlas/dust3r) collapses the entire downstream chain, matching, epipolar geometry, triangulation, and bundle adjustment, into one feed-forward pass: a shared-frame pointmap regression that jointly encodes correspondence, relative pose and depth for an uncalibrated, unposed image pair. Its global-alignment step for more than two views minimises 3-D projection error rather than 2-D reprojection error, and is faster, seconds rather than minutes. [VGGT](/atlas/vggt) removes the remaining seam: a single alternating-attention transformer processes one to hundreds of views in one pass, predicting cameras and point maps jointly, with no pairwise-plus-global-alignment post-processing left to run.
+
+What has not yet been questioned is the architecture doing the collapsing. DUSt3R and VGGT are both bespoke, multi-headed transformer stacks purpose-built for this one task.
+
+## What Survives Collapse
+
+[Depth Anything 3](/atlas/depth-anything-3) needs none of that bespoke machinery. It is a plain DINOv2 vision transformer, architecturally identical to the standard backbone, with no separate pose head and no explicit point-map regression. Instead of a pointmap it predicts a depth map and a per-pixel ray map, a single unified target from which camera pose and 3-D position follow by direct combination. On the same any-view geometry benchmark, this plain backbone surpasses VGGT by roughly 44% in camera pose accuracy and 25% in geometric accuracy. [Feed-forward 3-D reconstruction](/atlas/feed-forward-3d-reconstruction) is the paradigm DUSt3R founded and MASt3R, VGGT and Depth Anything 3 each generalise, and at every step the module doing the enforcing has shrunk: a hand-built detector, then a learned matcher, then a purpose-built multi-headed transformer, and now a generic backbone with one prediction target.
+
+[Bundle adjustment](/atlas/bundle-adjustment) is the stage this trend converges on. It was the classical pipeline's final, most accurate refinement, the joint minimisation of reprojection error over every camera and every point. If a generic transformer with no explicit reprojection term recovers what that refinement used to compute, one question remains: Which parts of bundle adjustment are fundamental, and which are artefacts of the old decomposition into matching, pose and refinement?

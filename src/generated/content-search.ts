@@ -3118,6 +3118,28 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "the-geometry-pipeline-collapses",
+    "path": "/atlas/narratives/the-geometry-pipeline-collapses",
+    "type": "narrative",
+    "title": "The Geometry Pipeline Collapses",
+    "summary": "How learned geometry absorbed the classical structure-from-motion pipeline one stage boundary at a time, from the detector and the matcher to the whole chain, and what geometric constraint survives each collapse.",
+    "tags": [
+      "geometry",
+      "feature-matching",
+      "3d-reconstruction",
+      "deep-learning"
+    ],
+    "headings": [
+      "The Shared Substrate",
+      "Detectors and Descriptors, by Hand",
+      "The First Stage Falls to Learning",
+      "Matching Becomes a Learned Assignment",
+      "Matching Goes Dense and Detector-Free",
+      "The Whole Chain Becomes One Network",
+      "What Survives Collapse"
+    ]
+  },
+  {
     "slug": "A5060441291",
     "path": "/authors/A5060441291",
     "type": "author",

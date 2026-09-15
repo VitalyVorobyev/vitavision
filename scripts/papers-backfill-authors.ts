@@ -11,14 +11,24 @@
 // Reuses the auth/UA/batching patterns from scripts/papers-fetch-meta.ts.
 
 import { readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
+import { loadAuthorsYaml } from "./authors-build.ts";
+import type { AuthorRecord } from "./authors-build.ts";
 
-const REPO_ROOT = join(import.meta.dir, "..");
+// `fileURLToPath(import.meta.url)` (rather than Bun's `import.meta.dir`) so this
+// module's path constants resolve under both `bun run` and vitest/Node — the
+// latter is how scripts/papers-backfill-authors.test.ts exercises the pure
+// functions below without triggering the network-calling `main()`.
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = join(SCRIPT_DIR, "..");
 const INDEX_PATH = join(REPO_ROOT, "docs", "papers", "index.yaml");
 const AUTHORS_PATH = join(REPO_ROOT, "docs", "papers", "authors.yaml");
-const SCRATCHPAD_DIFF_PATH =
-    "/private/tmp/claude-501/-Users-vitalyvorobyev-vitavision/0d93d848-543b-4501-9e97-21300eb3b4eb/scratchpad/authors-backfill-dryrun.txt";
+// A plain OS temp path (never repo-relative) so a dry-run preview never risks
+// being picked up as a tracked file, and works the same for any contributor.
+const SCRATCHPAD_DIFF_PATH = join(tmpdir(), "vitavision-authors-backfill-dryrun.txt");
 
 const OPENALEX_BASE = "https://api.openalex.org";
 const DOI_BATCH = 50;
@@ -155,10 +165,18 @@ async function fetchByTitleYear(title: string, year: number | undefined, ua: str
     return data.results?.[0] ?? null;
 }
 
-function parseArgs(): "dry-run" | "write" {
-    const args = process.argv.slice(2);
-    const dryRun = args.includes("--dry-run");
-    const write = args.includes("--write");
+export interface ParsedArgs {
+    mode: "dry-run" | "write";
+    /** When set, restrict candidates to this single docs/papers/index.yaml entry id. */
+    only?: string;
+}
+
+/** Parses argv (excluding the `node`/script entries) into a mode + optional
+ *  `--only <paper-id>` filter. Exits the process on invalid combinations —
+ *  callers that need to test the success path should pass a valid argv. */
+export function parseArgs(argv: string[]): ParsedArgs {
+    const dryRun = argv.includes("--dry-run");
+    const write = argv.includes("--write");
     if (dryRun && write) {
         process.stderr.write("papers:backfill-authors — pass exactly one of --dry-run or --write, not both.\n");
         process.exit(1);
@@ -166,12 +184,21 @@ function parseArgs(): "dry-run" | "write" {
     if (!dryRun && !write) {
         process.stderr.write(
             "papers:backfill-authors — refusing to run without --dry-run or --write.\n" +
-            "Usage: bun run scripts/papers-backfill-authors.ts --dry-run\n" +
-            "       bun run scripts/papers-backfill-authors.ts --write\n"
+            "Usage: bun run scripts/papers-backfill-authors.ts --dry-run [--only <paper-id>]\n" +
+            "       bun run scripts/papers-backfill-authors.ts --write [--only <paper-id>]\n"
         );
         process.exit(1);
     }
-    return dryRun ? "dry-run" : "write";
+    const onlyIndex = argv.indexOf("--only");
+    let only: string | undefined;
+    if (onlyIndex !== -1) {
+        only = argv[onlyIndex + 1];
+        if (!only || only.startsWith("--")) {
+            process.stderr.write("papers:backfill-authors — --only requires a paper id argument.\n");
+            process.exit(1);
+        }
+    }
+    return { mode: dryRun ? "dry-run" : "write", only };
 }
 
 // Locates, for a given entry id, the 0-based line index of that entry's
@@ -194,21 +221,42 @@ function findAuthorsLineIndex(lines: string[], entryId: string): number | null {
     return null;
 }
 
-function formatAuthorsYaml(identities: Map<string, AuthorIdentity>): string {
+/**
+ * Merges freshly-resolved OpenAlex identities into the existing
+ * docs/papers/authors.yaml rows. Existing rows always win on `name`/`orcid`
+ * (hand corrections must never be clobbered by a re-run) and keep their
+ * `mergedInto`; ids not already on file are appended. Sorted by name, same
+ * as the original from-scratch formatter.
+ */
+export function mergeAuthorIdentities(
+    existing: AuthorRecord[],
+    incoming: Map<string, AuthorIdentity>,
+): AuthorRecord[] {
+    const byId = new Map(existing.map((r) => [r.id, r]));
+    for (const [id, identity] of incoming) {
+        if (byId.has(id)) continue; // existing row wins — do not overwrite name/orcid/mergedInto
+        byId.set(id, { id, name: identity.name, ...(identity.orcid ? { orcid: identity.orcid } : {}) });
+    }
+    return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function formatAuthorsYaml(records: AuthorRecord[]): string {
     const header = [
         "# docs/papers/authors.yaml — registry of author identities (OpenAlex ids).",
         "#",
         "# Generated by scripts/papers-backfill-authors.ts. Referenced from paper",
         "# entries in docs/papers/index.yaml via their `authorIds:` field.",
-        "# Hand-edit for corrections (mangled display names, missing/wrong orcid).",
+        "# Hand-edit for corrections (mangled display names, missing/wrong orcid,",
+        "# merged duplicate identities via `mergedInto`).",
         "",
     ].join("\n");
 
-    const sorted = [...identities.entries()].sort((a, b) => a[1].name.localeCompare(b[1].name));
-    const stanzas = sorted.map(([id, identity]) => {
-        const nameEsc = identity.name.replace(/"/g, '\\"');
-        const lines = [`- id: ${id}`, `  name: "${nameEsc}"`];
-        if (identity.orcid) lines.push(`  orcid: "${identity.orcid}"`);
+    const sorted = [...records].sort((a, b) => a.name.localeCompare(b.name));
+    const stanzas = sorted.map((record) => {
+        const nameEsc = record.name.replace(/"/g, '\\"');
+        const lines = [`- id: ${record.id}`, `  name: "${nameEsc}"`];
+        if (record.orcid) lines.push(`  orcid: "${record.orcid}"`);
+        if (record.mergedInto) lines.push(`  mergedInto: ${record.mergedInto}`);
         return lines.join("\n");
     });
 
@@ -228,15 +276,21 @@ function formatDiffHunk(entry: PaperEntry, authorsLineIndex: number, lines: stri
 }
 
 async function main(): Promise<void> {
-    const mode = parseArgs();
+    const { mode, only } = parseArgs(process.argv.slice(2));
     const ua = userAgent();
     const { raw, entries } = loadIndex();
 
-    const candidates = entries.filter(
-        (e) => e.kind !== "repo" && e.kind !== "doc" && !(e.authorIds && e.authorIds.length > 0)
-    );
+    const candidates = entries
+        .filter((e) => e.kind !== "repo" && e.kind !== "doc" && !(e.authorIds && e.authorIds.length > 0))
+        .filter((e) => !only || e.id === only);
+    if (only && candidates.length === 0) {
+        process.stderr.write(
+            `papers:backfill-authors — --only ${only} matched no candidate (already has authorIds, is a repo/doc entry, or does not exist).\n`
+        );
+    }
     process.stderr.write(
-        `Loaded ${entries.length} index entries; ${candidates.length} candidates for author backfill.\n`
+        `Loaded ${entries.length} index entries; ${candidates.length} candidates for author backfill` +
+        `${only ? ` (--only ${only})` : ""}.\n`
     );
 
     const identities = new Map<string, AuthorIdentity>();
@@ -318,6 +372,12 @@ async function main(): Promise<void> {
         `Distinct authors found:   ${identities.size}`,
     ].join("\n");
 
+    // authors.yaml is always merged onto the existing file, never regenerated
+    // from just this run's identities — hand edits (corrections, mergedInto)
+    // must survive a re-run.
+    const existingAuthors = loadAuthorsYaml();
+    const mergedAuthors = mergeAuthorIdentities(existingAuthors, identities);
+
     if (mode === "dry-run") {
         const lines = raw.split("\n");
         const hunks: string[] = [];
@@ -330,7 +390,7 @@ async function main(): Promise<void> {
             hunks.push(formatDiffHunk(r.entry, idx, lines));
         }
 
-        const authorsYaml = formatAuthorsYaml(identities);
+        const authorsYaml = formatAuthorsYaml(mergedAuthors);
 
         const output = [
             "=== docs/papers/index.yaml — proposed authorIds insertions ===",
@@ -409,16 +469,19 @@ async function main(): Promise<void> {
     }
 
     writeFileSync(INDEX_PATH, newRaw, "utf-8");
-    writeFileSync(AUTHORS_PATH, formatAuthorsYaml(identities), "utf-8");
+    writeFileSync(AUTHORS_PATH, formatAuthorsYaml(mergedAuthors), "utf-8");
 
     process.stderr.write(
         `Wrote ${insertions.length} authorIds insertions to ${INDEX_PATH}\n` +
-        `Wrote ${identities.size} author identities to ${AUTHORS_PATH}\n`
+        `Wrote ${mergedAuthors.length} author identities to ${AUTHORS_PATH} ` +
+        `(${existingAuthors.length} existing + ${mergedAuthors.length - existingAuthors.length} new)\n`
     );
     process.stdout.write(summary + "\n");
 }
 
-main().catch((err) => {
-    process.stderr.write(`papers:backfill-authors error: ${err}\n`);
-    process.exit(1);
-});
+if (import.meta.main) {
+    main().catch((err) => {
+        process.stderr.write(`papers:backfill-authors error: ${err}\n`);
+        process.exit(1);
+    });
+}

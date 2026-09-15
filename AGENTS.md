@@ -4,7 +4,7 @@ This file is consumed by any agent runtime working on vitavision (Claude Code an
 
 ## Skills
 
-Reusable task skills live at `.claude/skills/<name>/SKILL.md`. This is the single canonical location regardless of which agent runtime is reading. Available skills: `algo-page`, `atlas-audit`, `authorial-technical-editor`, `concept-page`, `deep-model-page`, `impl`, `narrative-page`, `paper-ingest`, `tech-writer`.
+Reusable task skills live at `.claude/skills/<name>/SKILL.md`. This is the single canonical location regardless of which agent runtime is reading. Available skills: `algo-page`, `atlas-audit`, `author-identity`, `authorial-technical-editor`, `concept-page`, `deep-model-page`, `impl`, `narrative-page`, `paper-ingest`, `tech-writer`.
 
 ## Private research workflow
 
@@ -85,7 +85,7 @@ update via the `narrative-page` skill.
 
 Author identities are keyed by OpenAlex ids in `docs/papers/authors.yaml`; papers carry
 `authorIds` in `docs/papers/index.yaml`. Never hand-invent an id. Duplicate identities are merged
-via `mergedInto` (coming in the authors PR) — never delete an author row to fix a split identity.
+via `mergedInto` (build-resolved; old ids redirect; use the `author-identity` skill) — never delete an author row to fix a split identity.
 
 ## Source IDs
 

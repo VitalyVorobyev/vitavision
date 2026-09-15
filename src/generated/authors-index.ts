@@ -11,6 +11,8 @@ export interface AuthorsIndex {
     authors: Record<string, AuthorRef>;
     paperAuthors: Record<string, string[]>;
     pagesByPaper: Record<string, string[]>;
+    aliases: Record<string, string>;
+    coauthors: Record<string, Record<string, number>>;
 }
 
 /** Public URL of the JSON asset emitted by content:build / authors:build. */

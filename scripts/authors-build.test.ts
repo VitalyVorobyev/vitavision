@@ -3,6 +3,7 @@ import {
     normalizeSourceId,
     buildPagesByPaper,
     buildAuthorsIndex,
+    buildCoauthors,
 } from "./authors-build.ts";
 import type { PageSourcesEntry, AuthorRecord } from "./authors-build.ts";
 
@@ -78,7 +79,13 @@ describe("buildPagesByPaper", () => {
 describe("buildAuthorsIndex", () => {
     it("returns an all-empty index when there is no authors.yaml and no authorIds", () => {
         const index = buildAuthorsIndex([], [], {});
-        expect(index).toEqual({ authors: {}, paperAuthors: {}, pagesByPaper: {} });
+        expect(index).toEqual({
+            authors: {},
+            paperAuthors: {},
+            pagesByPaper: {},
+            aliases: {},
+            coauthors: {},
+        });
     });
 
     it("assembles authors, paperAuthors, and passes pagesByPaper through unchanged", () => {
@@ -129,5 +136,113 @@ describe("buildAuthorsIndex", () => {
             {},
         );
         expect(index.authors.A1).not.toHaveProperty("orcid");
+    });
+
+    it("resolves a mergedInto alias in both paperAuthors and authors", () => {
+        const authorRecords: AuthorRecord[] = [
+            { id: "A-old", name: "Old Name", mergedInto: "A-canon" },
+            { id: "A-canon", name: "Canonical Name", orcid: "0000-0001-0000-0002" },
+        ];
+        const index = buildAuthorsIndex(
+            authorRecords,
+            [{ paperId: "p1", authorIds: ["A-old"] }],
+            {},
+        );
+        expect(index.paperAuthors.p1).toEqual(["A-canon"]);
+        expect(index.authors).not.toHaveProperty("A-old");
+        expect(index.authors["A-canon"]).toEqual({
+            name: "Canonical Name",
+            orcid: "0000-0001-0000-0002",
+            papers: ["p1"],
+        });
+        expect(index.aliases).toEqual({ "A-old": "A-canon" });
+    });
+
+    it("dedupes two aliases of the same canonical id within one paper", () => {
+        const authorRecords: AuthorRecord[] = [
+            { id: "A-old1", name: "Old One", mergedInto: "A-canon" },
+            { id: "A-old2", name: "Old Two", mergedInto: "A-canon" },
+            { id: "A-canon", name: "Canonical" },
+        ];
+        const index = buildAuthorsIndex(
+            authorRecords,
+            [{ paperId: "p1", authorIds: ["A-old1", "A-old2", "A-canon"] }],
+            {},
+        );
+        expect(index.paperAuthors.p1).toEqual(["A-canon"]);
+        expect(index.authors["A-canon"].papers).toEqual(["p1"]);
+        expect(Object.keys(index.authors)).toEqual(["A-canon"]);
+    });
+
+    it("uses the canonical record's name/orcid even when the paper only lists the alias id", () => {
+        const authorRecords: AuthorRecord[] = [
+            { id: "A-old", name: "Stale Name", mergedInto: "A-canon" },
+            { id: "A-canon", name: "Fresh Name", orcid: "0000-0001-0000-0003" },
+        ];
+        const index = buildAuthorsIndex(
+            authorRecords,
+            [{ paperId: "p1", authorIds: ["A-old"] }],
+            {},
+        );
+        expect(index.authors["A-canon"].name).toBe("Fresh Name");
+        expect(index.authors["A-canon"].orcid).toBe("0000-0001-0000-0003");
+    });
+
+    it("flattens a chain of aliases to the final canonical id", () => {
+        const authorRecords: AuthorRecord[] = [
+            { id: "A-a", name: "A", mergedInto: "A-b" },
+            { id: "A-b", name: "B", mergedInto: "A-c" },
+            { id: "A-c", name: "C" },
+        ];
+        const index = buildAuthorsIndex(
+            authorRecords,
+            [{ paperId: "p1", authorIds: ["A-a"] }],
+            {},
+        );
+        expect(index.aliases).toEqual({ "A-a": "A-c", "A-b": "A-c" });
+        expect(index.paperAuthors.p1).toEqual(["A-c"]);
+    });
+
+    it("terminates on a cyclic mergedInto chain instead of looping forever", () => {
+        const authorRecords: AuthorRecord[] = [
+            { id: "A-x", name: "X", mergedInto: "A-y" },
+            { id: "A-y", name: "Y", mergedInto: "A-x" },
+        ];
+        const index = buildAuthorsIndex(
+            authorRecords,
+            [{ paperId: "p1", authorIds: ["A-x", "A-y"] }],
+            {},
+        );
+        // Cycle detected — resolution stops rather than hanging; the exact
+        // landing id is an implementation detail, but it must be stable and
+        // every paper author id must resolve to a single canonical id.
+        expect(index.paperAuthors.p1).toHaveLength(1);
+    });
+});
+
+describe("buildCoauthors", () => {
+    it("produces symmetric counts for every pair on a 3-author paper", () => {
+        const coauthors = buildCoauthors([{ paperId: "p1", authorIds: ["A1", "A2", "A3"] }]);
+        expect(coauthors).toEqual({
+            A1: { A2: 1, A3: 1 },
+            A2: { A1: 1, A3: 1 },
+            A3: { A1: 1, A2: 1 },
+        });
+    });
+
+    it("accumulates counts across multiple shared papers", () => {
+        const coauthors = buildCoauthors([
+            { paperId: "p1", authorIds: ["A1", "A2"] },
+            { paperId: "p2", authorIds: ["A1", "A2"] },
+        ]);
+        expect(coauthors).toEqual({
+            A1: { A2: 2 },
+            A2: { A1: 2 },
+        });
+    });
+
+    it("contributes no pairs for a solo-authored paper", () => {
+        const coauthors = buildCoauthors([{ paperId: "p1", authorIds: ["A1"] }]);
+        expect(coauthors).toEqual({});
     });
 });

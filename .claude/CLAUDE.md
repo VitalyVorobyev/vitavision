@@ -151,8 +151,9 @@ them. Author or update via the `narrative-page` skill.
 
 `docs/papers/authors.yaml` holds author identities keyed by OpenAlex id; `docs/papers/index.yaml`
 papers carry `authorIds`. Never hand-invent an id — resolve via OpenAlex. Duplicate identities
-merge via `mergedInto` (planned PR-2); never delete a row to fix a split identity. Maintain via
-the `author-identity` skill once it lands.
+merge via `mergedInto` (the build resolves aliases; `/authors/<old-id>` redirects); never delete a row
+to fix a split identity. Maintain via the `author-identity` skill: `bun run papers:backfill-authors --only <id>`
+after each ingest, `bun run authors:dupes` to find candidate splits, OpenAlex evidence before any merge.
 
 ### Validation
 Run `bun run scripts/validate-content.ts` **by path** before opening a PR. It checks slug

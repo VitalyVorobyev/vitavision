@@ -59,6 +59,8 @@ Check whether the paper's id already exists in `docs/papers/index.yaml`. If not,
 
 Append the stanza to the end of `docs/papers/index.yaml`. Preserve inline `# <title>` comments on existing `<name><year>-???` lines. Show the user the diff.
 
+Then link the paper's authors: `bun run papers:backfill-authors --dry-run --only <id>`, review, `--write --only <id>`, and run `bun run authors:dupes` — if a new id collides with an existing identity, hand off to the `author-identity` skill (Workflow B/C) before continuing.
+
 ### Step 3 — Choose the `paper-id`
 
 Use the `id` from Step 2 (or the existing id if the paper was already registered). The convention is `firstauthor<year>-shortname`. The file will be written to `docs/research/notes/<paper-id>.md`.

@@ -12,6 +12,7 @@ import { render } from "../src/entry-server.tsx";
 import type { StaticContentContextValue } from "../src/lib/content/ssr-content.tsx";
 import type { PapersById } from "../src/generated/papers-index.ts";
 import type { AuthorsIndex } from "../src/generated/authors-index.ts";
+import { EMPTY_AUTHORS_INDEX } from "../src/lib/atlas/authorsContext.ts";
 import {
     buildAlgorithmJsonLd,
     buildBlogJsonLd,
@@ -147,7 +148,7 @@ async function main(): Promise<void> {
     const authorsJsonPath = join(import.meta.dir, "..", "public", "authors-index.json");
     const authors: AuthorsIndex = existsSync(authorsJsonPath)
         ? (JSON.parse(readFileSync(authorsJsonPath, "utf-8")) as AuthorsIndex)
-        : { authors: {}, paperAuthors: {}, pagesByPaper: {} };
+        : EMPTY_AUTHORS_INDEX;
     let count = 0;
 
     // Blog index

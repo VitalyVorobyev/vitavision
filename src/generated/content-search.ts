@@ -3044,11 +3044,11 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
-    "slug": "A5088492440",
-    "path": "/authors/A5088492440",
+    "slug": "A5079878449",
+    "path": "/authors/A5079878449",
     "type": "author",
     "title": "Carlo Tomasi",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -3476,11 +3476,11 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
-    "slug": "A5056480447",
-    "path": "/authors/A5056480447",
+    "slug": "A5113678278",
+    "path": "/authors/A5113678278",
     "type": "author",
-    "title": "Zheng Zhang",
-    "summary": "1 paper",
+    "title": "Zhengyou Zhang",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -3615,7 +3615,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5106406020",
     "type": "author",
     "title": "Michael S. Brown",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -3678,15 +3678,6 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5103036411",
     "type": "author",
     "title": "Seon Joo Kim",
-    "summary": "1 paper",
-    "tags": [],
-    "headings": []
-  },
-  {
-    "slug": "A5075135613",
-    "path": "/authors/A5075135613",
-    "type": "author",
-    "title": "Michael S. Brown",
     "summary": "1 paper",
     "tags": [],
     "headings": []
@@ -4457,11 +4448,11 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
-    "slug": "A5008626158",
-    "path": "/authors/A5008626158",
+    "slug": "A5101930471",
+    "path": "/authors/A5101930471",
     "type": "author",
-    "title": "Alexander M. Kirillov",
-    "summary": "1 paper",
+    "title": "Alexander Kirillov",
+    "summary": "4 papers",
     "tags": [],
     "headings": []
   },
@@ -4736,20 +4727,11 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
-    "slug": "A5100785015",
-    "path": "/authors/A5100785015",
-    "type": "author",
-    "title": "Jian Sun",
-    "summary": "1 paper",
-    "tags": [],
-    "headings": []
-  },
-  {
     "slug": "A5101425421",
     "path": "/authors/A5101425421",
     "type": "author",
     "title": "Jian Sun",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -4812,15 +4794,6 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5057924291",
     "type": "author",
     "title": "Takeo Kanade",
-    "summary": "1 paper",
-    "tags": [],
-    "headings": []
-  },
-  {
-    "slug": "A5079878449",
-    "path": "/authors/A5079878449",
-    "type": "author",
-    "title": "Carlo Tomasi",
     "summary": "1 paper",
     "tags": [],
     "headings": []
@@ -5582,15 +5555,6 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
-    "slug": "A5101930471",
-    "path": "/authors/A5101930471",
-    "type": "author",
-    "title": "Alexander Kirillov",
-    "summary": "3 papers",
-    "tags": [],
-    "headings": []
-  },
-  {
     "slug": "A5002668762",
     "path": "/authors/A5002668762",
     "type": "author",
@@ -6257,11 +6221,11 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
-    "slug": "A5101358906",
-    "path": "/authors/A5101358906",
+    "slug": "A5099137433",
+    "path": "/authors/A5099137433",
     "type": "author",
     "title": "Zilong Huang",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -6280,15 +6244,6 @@ export const searchRecords: SearchRecord[] = [
     "type": "author",
     "title": "Jiashi Feng",
     "summary": "2 papers",
-    "tags": [],
-    "headings": []
-  },
-  {
-    "slug": "A5099137433",
-    "path": "/authors/A5099137433",
-    "type": "author",
-    "title": "Zilong Huang",
-    "summary": "1 paper",
     "tags": [],
     "headings": []
   },
@@ -6405,15 +6360,6 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5043890037",
     "type": "author",
     "title": "Charles Loop",
-    "summary": "1 paper",
-    "tags": [],
-    "headings": []
-  },
-  {
-    "slug": "A5113678278",
-    "path": "/authors/A5113678278",
-    "type": "author",
-    "title": "Zhengyou Zhang",
     "summary": "1 paper",
     "tags": [],
     "headings": []

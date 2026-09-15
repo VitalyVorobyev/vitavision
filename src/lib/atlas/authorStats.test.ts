@@ -25,6 +25,13 @@ const index: AuthorsIndex = {
     },
     // p1 and p2 are both cited by `resnet`, so the union must dedupe.
     pagesByPaper: { p1: ["resnet"], p2: ["resnet", "faster-rcnn"], p3: [] },
+    aliases: {},
+    coauthors: {
+        A1: { A2: 2, A4: 1 },
+        A2: { A1: 2, A3: 1, A4: 1 },
+        A3: { A2: 1 },
+        A4: { A1: 1, A2: 1 },
+    },
 };
 
 describe("authorSortKey", () => {
@@ -92,8 +99,8 @@ describe("compareByPaperCount", () => {
 describe("coAuthorsOf", () => {
     it("aggregates shared-paper counts and excludes the author themselves", () => {
         expect(coAuthorsOf("A1", index)).toEqual([
-            { id: "A2", name: "Jian Sun", shared: 2 },
-            { id: "A4", name: "Мария Иванова", shared: 1 },
+            { id: "A2", name: "Jian Sun", shared: 2, sharedPages: ["faster-rcnn", "resnet"] },
+            { id: "A4", name: "Мария Иванова", shared: 1, sharedPages: ["faster-rcnn", "resnet"] },
         ]);
     });
 

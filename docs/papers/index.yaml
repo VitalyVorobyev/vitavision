@@ -283,7 +283,7 @@
 - id: zhang2000-flexible
   title: "A Flexible New Technique for Camera Calibration"
   authors: ["Z. Zhang"]
-  authorIds: [A5056480447]
+  authorIds: [A5113678278]
   year: 2000
   venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
   url: https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr98-71.pdf
@@ -849,7 +849,7 @@
 - id: kirillov2023-sam
   title: "Segment Anything"
   authors: ["A. Kirillov", "E. Mintun", "N. Ravi", "H. Mao", "C. Rolland", "L. Gustafson", "T. Xiao", "S. Whitehead", "A. C. Berg", "W. Lo", "P. Dollár", "R. Girshick"]
-  authorIds: [A5008626158, A5042149832, A5045356290, A5021948346, A5043279771, A5033942765, A5041246275, A5076767045, A5104361813, A5090902802, A5057866698, A5049246408]
+  authorIds: [A5101930471, A5042149832, A5045356290, A5021948346, A5043279771, A5033942765, A5041246275, A5076767045, A5104361813, A5090902802, A5057866698, A5049246408]
   year: 2023
   venue: ICCV
   url: https://arxiv.org/abs/2304.02643
@@ -1426,7 +1426,7 @@
 - id: yang2024-depth-anything
   title: "Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data"
   authors: ["L. Yang", "B. Kang", "Z. Huang", "X. Xu", "J. Feng", "H. Zhao"]
-  authorIds: [A5038009961, A5032599820, A5101358906, A5101477980, A5100668696, A5078109015]
+  authorIds: [A5038009961, A5032599820, A5099137433, A5101477980, A5100668696, A5078109015]
   year: 2024
   venue: CVPR 2024
   url: https://arxiv.org/pdf/2401.10891

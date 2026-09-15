@@ -1,8 +1,9 @@
 import { useMemo, type ReactNode } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import OrcidLink from "../components/atlas/OrcidLink.tsx";
 import { SourceCard } from "../components/atlas/SourceCard.tsx";
+import { CoauthorEgoGraph } from "../components/atlas/CoauthorEgoGraph.tsx";
 import { contentGraph } from "../generated/content-graph.ts";
 import { useAuthorsIndex } from "../lib/atlas/useAuthorsIndex.ts";
 import { atlasSlugsForPapers, coAuthorsOf } from "../lib/atlas/authorStats.ts";
@@ -42,6 +43,8 @@ export default function AuthorPage() {
                 </div>
             );
         }
+        const canonicalId = id ? index.aliases[id] : undefined;
+        if (canonicalId) return <Navigate to={`/authors/${canonicalId}`} replace />;
         return <NotFound />;
     }
 
@@ -118,6 +121,7 @@ export default function AuthorPage() {
 
             {coAuthors.length > 0 && (
                 <Section title={`Co-authors (${coAuthors.length})`}>
+                    <CoauthorEgoGraph subjectName={author.name} coAuthors={coAuthors} />
                     <ul className="list-none p-0 m-0">
                         {coAuthors.map((co) => (
                             <li
@@ -131,6 +135,11 @@ export default function AuthorPage() {
                                     {co.name}
                                 </Link>
                                 <span className="flex-1" />
+                                {co.sharedPages.length > 0 && (
+                                    <span className="text-[11.5px] font-mono text-muted-foreground whitespace-nowrap">
+                                        {co.sharedPages.length} atlas page{co.sharedPages.length === 1 ? "" : "s"}
+                                    </span>
+                                )}
                                 <span className="text-[11.5px] font-mono text-muted-foreground whitespace-nowrap tabular-nums">
                                     {co.shared} shared {co.shared === 1 ? "paper" : "papers"}
                                 </span>

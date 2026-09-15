@@ -55,10 +55,6 @@
 - id: A5000026575
   name: "Alexander Kolesnikov"
 
-- id: A5008626158
-  name: "Alexander M. Kirillov"
-  orcid: "0000-0002-2052-5280"
-
 - id: A5067991583
   name: "Alexandre Sablayrolles"
 
@@ -683,6 +679,7 @@
 - id: A5100785015
   name: "Jian Sun"
   orcid: "0000-0002-6178-4166"
+  mergedInto: A5101425421
 
 - id: A5101425421
   name: "Jian Sun"
@@ -1022,6 +1019,7 @@
 - id: A5075135613
   name: "Michael S. Brown"
   orcid: "0000-0002-6357-2562"
+  mergedInto: A5106406020
 
 - id: A5088082340
   name: "Michael Tschannen"
@@ -1522,6 +1520,7 @@
 
 - id: A5088492440
   name: "Carlo Tomasi"
+  mergedInto: A5079878449
 
 - id: A5067498868
   name: "Tomasz Malisiewicz"
@@ -1790,10 +1789,6 @@
   name: "Zheng Zhang"
   orcid: "0000-0003-1470-6998"
 
-- id: A5056480447
-  name: "Zheng Zhang"
-  orcid: "0009-0003-2344-8158"
-
 - id: A5113678278
   name: "Zhengyou Zhang"
   orcid: "0009-0004-6952-6905"
@@ -1812,9 +1807,6 @@
 - id: A5100376572
   name: "Zilei Wang"
   orcid: "0000-0003-1822-3731"
-
-- id: A5101358906
-  name: "Zilong Huang"
 
 - id: A5099137433
   name: "Zilong Huang"

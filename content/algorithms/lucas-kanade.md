@@ -157,7 +157,7 @@ The accumulators `a11, a12, a22` form the $2 \times 2$ structure tensor; `b1, b2
 - Brightness consistency between $F$ and $G$ is assumed; an explicit linear photometric correction can be absorbed into the same quadratic form when exposure or gain differs between the images.
 - The translation, affine, and photometric variants share one derivation: linearise the residual, differentiate the squared error, solve the resulting normal equation, iterate.
 - The method is the basis of sparse optical-flow trackers and the gradient-based stage of many direct visual-odometry frontends; the dense variant is Horn-Schunck rather than Lucas-Kanade.
-- Replacing the squared photometric residual with a redescending M-estimator (Lorentzian or Geman-McClure) and solving by IRLS within a graduated non-convexity schedule yields a robust parametric-motion variant that handles multiple motions and outliers within $R$; see [black-anandan-robust-flow](../algorithms/black-anandan-robust-flow). The same machinery extends to the piecewise-smooth dense flow case.
+- Replacing the squared photometric residual with a redescending M-estimator (Lorentzian or Geman-McClure) and solving by IRLS within a graduated non-convexity schedule yields a robust parametric-motion variant that handles multiple motions and outliers within $R$; see [black-anandan-robust-flow](/atlas/black-anandan-robust-flow). The same machinery extends to the piecewise-smooth dense flow case.
 
 # References
 

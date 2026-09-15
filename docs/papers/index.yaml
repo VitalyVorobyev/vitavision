@@ -618,6 +618,7 @@
   year: 2019
   venue: CVPR
   url: https://arxiv.org/abs/1803.07469
+  arxiv: "1803.07469"
   doi: "10.1109/CVPR.2019.01044"
   pdf: barath2019-magsac.pdf
   cites:
@@ -805,6 +806,7 @@
   year: 2015
   venue: CVPR
   url: https://arxiv.org/abs/1411.4038
+  arxiv: "1411.4038"
   doi: "10.1109/cvpr.2015.7298965"
   pdf: long2015-fcn.pdf
   cites: []
@@ -816,6 +818,7 @@
   year: 2015
   venue: MICCAI (Lecture Notes in Computer Science)
   url: https://arxiv.org/abs/1505.04597
+  arxiv: "1505.04597"
   doi: "10.1007/978-3-319-24574-4_28"
   pdf: ronneberger2015-unet.pdf
   cites:
@@ -828,6 +831,7 @@
   year: 2018
   venue: IEEE Transactions on Pattern Analysis and Machine Intelligence
   url: https://arxiv.org/abs/1606.00915
+  arxiv: "1606.00915"
   doi: "10.1109/tpami.2017.2699184"
   pdf: chen2018-deeplab.pdf
   cites:
@@ -841,6 +845,7 @@
   year: 2017
   venue: ICCV
   url: https://arxiv.org/abs/1703.06870
+  arxiv: "1703.06870"
   doi: "10.1109/iccv.2017.322"
   pdf: he2017-maskrcnn.pdf
   cites:
@@ -853,6 +858,7 @@
   year: 2023
   venue: ICCV
   url: https://arxiv.org/abs/2304.02643
+  arxiv: "2304.02643"
   doi: "10.1109/iccv51070.2023.00371"
   pdf: kirillov2023-sam.pdf
   cites:

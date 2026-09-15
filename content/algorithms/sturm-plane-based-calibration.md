@@ -63,6 +63,55 @@ For a zooming camera where focal length (or focal length plus principal point) v
 6. **Recover per-view extrinsics** from each $H_i$ as in Zhang's algorithm (Step 5 of [Zhang's procedure](/atlas/zhang-planar-calibration)): $r_1, r_2$ from $K^{-1} h_1, K^{-1} h_2$; $r_3 = r_1 \times r_2$; project to $SO(3)$ if needed.
 :::
 
+# Implementation
+
+Constraint stacking (Eq. 4), column rescaling (§4.3), and the SVD solve for the IAC 5-vector, in Rust:
+
+```rust
+use nalgebra::{Matrix3, Vector3, DMatrix};
+
+/// One occurrence of the bilinear form $h_i^T \omega h_j$, linear in
+/// $x = [\omega_{11}, \omega_{22}, \omega_{13}, \omega_{23}, \omega_{33}]$.
+fn omega_row(hi: &Vector3<f64>, hj: &Vector3<f64>) -> [f64; 5] {
+    [
+        hi[0] * hj[0],
+        hi[1] * hj[1],
+        hi[0] * hj[2] + hi[2] * hj[0],
+        hi[1] * hj[2] + hi[2] * hj[1],
+        hi[2] * hj[2],
+    ]
+}
+
+/// Builds A from Eq. 4 and returns the IAC 5-vector as the smallest
+/// right singular vector.
+fn iac_from_homographies(hs: &[Matrix3<f64>]) -> [f64; 5] {
+    let mut a = DMatrix::<f64>::zeros(2 * hs.len(), 5);
+    for (i, h) in hs.iter().enumerate() {
+        let (h1, h2) = (h.column(0).into_owned(), h.column(1).into_owned());
+        let (r11, r22, r12) = (omega_row(&h1, &h1), omega_row(&h2, &h2), omega_row(&h1, &h2));
+        for k in 0..5 {
+            a[(2 * i, k)] = r11[k] - r22[k]; // h1^T w h1 - h2^T w h2 = 0
+            a[(2 * i + 1, k)] = r12[k];      // h1^T w h2 = 0
+        }
+    }
+    // Column rescaling: "proved to be crucial" for a reliable solve (§4.3).
+    for k in 0..5 {
+        let scale = (0..a.nrows()).map(|r| a[(r, k)].powi(2)).sum::<f64>().sqrt();
+        if scale > 0.0 {
+            for r in 0..a.nrows() {
+                a[(r, k)] /= scale;
+            }
+        }
+    }
+    let svd = a.svd(false, true);
+    let vt = svd.v_t.expect("right singular vectors");
+    let x = vt.row(vt.nrows() - 1);
+    [x[0], x[1], x[2], x[3], x[4]]
+}
+```
+
+The returned 5-vector is $[\omega_{11}, \omega_{22}, \omega_{13}, \omega_{23}, \omega_{33}]$; $K$ follows from the closed form in Eq. 5 above. Even rows of $A$ are the first constraint of Eq. 4, odd rows the second.
+
 # Remarks
 
 - **Singularity catalogue.** Tables 1 and 2 of the paper enumerate every plane-orientation configuration that renders one or more intrinsic parameters unrecoverable. Selected key cases:

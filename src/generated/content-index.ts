@@ -7259,5 +7259,89 @@ export const narrativePages: NarrativeIndexEntry[] = [
         0
       ]
     }
+  },
+  {
+    "slug": "where-did-the-inductive-bias-go",
+    "title": "Where Did the Inductive Bias Go?",
+    "summary": "How the assumptions that make vision work migrated from the algorithm (Canny, SIFT, HOG) into the architecture (the convolutional network and its scaling lineage) and then into the data and the training objective (ViT, MAE, DINOv2), and why it matters who now gets to change them.",
+    "tagline": "The assumptions never left. They moved.",
+    "date": "2026-09-15",
+    "stats": {
+      "nodes": 13,
+      "steps": 6,
+      "debt": 0
+    },
+    "areas": [
+      {
+        "id": "algorithm",
+        "label": "Bias in the Algorithm"
+      },
+      {
+        "id": "architecture",
+        "label": "Bias in the Architecture"
+      },
+      {
+        "id": "objective",
+        "label": "Bias in the Objective"
+      },
+      {
+        "id": "tasks",
+        "label": "Task Systems"
+      }
+    ],
+    "preview": {
+      "canny-edge-detector": [
+        0,
+        0
+      ],
+      "sift": [
+        0.136986301369863,
+        0
+      ],
+      "hog-descriptor": [
+        0.2328767123287671,
+        0
+      ],
+      "convolutional-neural-network": [
+        0.30136986301369867,
+        0.3333333333333333
+      ],
+      "alexnet": [
+        0.3972602739726027,
+        0.3333333333333333
+      ],
+      "vgg": [
+        0.4931506849315069,
+        0.3333333333333333
+      ],
+      "resnet": [
+        0.589041095890411,
+        0.3333333333333333
+      ],
+      "vit": [
+        0.7123287671232877,
+        0.3333333333333333
+      ],
+      "mae": [
+        0.7808219178082192,
+        0.6666666666666666
+      ],
+      "dinov2": [
+        0.8767123287671234,
+        0.6666666666666666
+      ],
+      "sam": [
+        0.8082191780821919,
+        1
+      ],
+      "vggt": [
+        0.9041095890410958,
+        1
+      ],
+      "q-who-chooses-bias": [
+        1,
+        1
+      ]
+    }
   }
 ];

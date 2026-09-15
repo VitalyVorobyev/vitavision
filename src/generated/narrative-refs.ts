@@ -76,6 +76,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "detection-removing-the-machinery",
       "title": "Detection, Removing the Machinery"
+    },
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
     }
   ],
   "felzenszwalb-deformable-parts": [
@@ -300,6 +304,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "foundation-models-for-vision",
       "title": "Foundation Models for Vision"
+    },
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
     }
   ],
   "deit": [
@@ -318,6 +326,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "foundation-models-for-vision",
       "title": "Foundation Models for Vision"
+    },
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
     }
   ],
   "dino": [
@@ -330,6 +342,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "foundation-models-for-vision",
       "title": "Foundation Models for Vision"
+    },
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
     }
   ],
   "dinov3": [
@@ -352,6 +368,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "segmentation-from-energy-to-prompt",
       "title": "Segmentation, from Energy to Prompt"
+    },
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
     }
   ],
   "visual-anomaly-detection": [
@@ -478,6 +498,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "the-geometry-pipeline-collapses",
       "title": "The Geometry Pipeline Collapses"
+    },
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
     }
   ],
   "orb": [
@@ -532,6 +556,10 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "the-geometry-pipeline-collapses",
       "title": "The Geometry Pipeline Collapses"
+    },
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
     }
   ],
   "depth-anything-3": [
@@ -544,6 +572,36 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     {
       "slug": "the-geometry-pipeline-collapses",
       "title": "The Geometry Pipeline Collapses"
+    }
+  ],
+  "canny-edge-detector": [
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
+    }
+  ],
+  "convolutional-neural-network": [
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
+    }
+  ],
+  "alexnet": [
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
+    }
+  ],
+  "vgg": [
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
+    }
+  ],
+  "resnet": [
+    {
+      "slug": "where-did-the-inductive-bias-go",
+      "title": "Where Did the Inductive Bias Go?"
     }
   ]
 };

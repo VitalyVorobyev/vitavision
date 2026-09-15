@@ -3180,6 +3180,27 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "where-did-the-inductive-bias-go",
+    "path": "/atlas/narratives/where-did-the-inductive-bias-go",
+    "type": "narrative",
+    "title": "Where Did the Inductive Bias Go?",
+    "summary": "How the assumptions that make vision work migrated from the algorithm (Canny, SIFT, HOG) into the architecture (the convolutional network and its scaling lineage) and then into the data and the training objective (ViT, MAE, DINOv2), and why it matters who now gets to change them.",
+    "tags": [
+      "deep-learning",
+      "classical",
+      "foundation-models",
+      "representation"
+    ],
+    "headings": [
+      "Bias in the Filter",
+      "Bias in the Descriptor",
+      "Bias Becomes Architecture",
+      "Scaling One Prior",
+      "Prior Moves to Objective",
+      "Task Systems Inherit"
+    ]
+  },
+  {
     "slug": "A5060441291",
     "path": "/authors/A5060441291",
     "type": "author",

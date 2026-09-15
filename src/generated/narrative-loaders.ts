@@ -18,4 +18,5 @@ export const narrativeLoaders: Record<string, () => Promise<GeneratedNarrativeMo
   "foundation-models-for-vision": () => import("./content/narratives/foundation-models-for-vision.ts"),
   "segmentation-from-energy-to-prompt": () => import("./content/narratives/segmentation-from-energy-to-prompt.ts"),
   "the-geometry-pipeline-collapses": () => import("./content/narratives/the-geometry-pipeline-collapses.ts"),
+  "where-did-the-inductive-bias-go": () => import("./content/narratives/where-did-the-inductive-bias-go.ts"),
 };

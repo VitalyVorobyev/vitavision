@@ -3157,6 +3157,25 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "local-versus-global-motion",
+    "path": "/atlas/narratives/local-versus-global-motion",
+    "type": "narrative",
+    "title": "Local Versus Global Motion",
+    "summary": "Brightness constancy leaves optical flow underdetermined at every pixel, so each method is a choice of where the missing constraint comes from: a local window, a global smoothness prior, a robust version of both, and finally a learned update operator that may or may not still be imposing a prior at all.",
+    "tags": [
+      "optical-flow",
+      "motion",
+      "classical",
+      "deep-learning"
+    ],
+    "headings": [
+      "One Equation, Two Unknowns",
+      "Two 1981 Answers",
+      "Making the Prior Robust",
+      "The Prior Becomes Learned"
+    ]
+  },
+  {
     "slug": "segmentation-from-energy-to-prompt",
     "path": "/atlas/narratives/segmentation-from-energy-to-prompt",
     "type": "narrative",

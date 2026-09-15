@@ -47,7 +47,7 @@ N9 → N7, N8, N3 (after source injections) → N4, N5, N2, N6 → N10, N11, N12
 | N7 | `forty-years-against-outliers` | Algebra → numerics → outliers → adaptive thresholds | 10 + question | lo-ransac | overview, solver-line, estimator-line, timeline | **live** | PR-6 |
 | N8 | `calibration-changed-the-target` | Usability came from the planar target, not new math | 9 + question | kannala-brandt-model | overview, target-line, model-line, timeline | **live** | PR-6 |
 | N9 | `finding-a-chessboard` | Local evidence isn't enough; topology, learning, self-identifying targets | 17 + question | — | overview, local-response, topology-beats-appearance, timeline | **live** (pilot) | PR-3 |
-| N10 | `local-versus-global-motion` | Three answers, then learned iteration | 4 + question | raft | overview, timeline | planned | — |
+| N10 | `local-versus-global-motion` | Three answers, then learned iteration | 5 + question | raft | overview, timeline | **live** | PR-12 |
 | N11 | `one-homography-is-not-enough` | Parallax breaks the global model | 5 | — | overview, timeline | planned | — |
 | N12 | `four-answers-to-rectification` | One goal, four assumption sets | 6 | — | assumptions (2×2 grid), timeline | planned | — |
 | N13 | `vision-under-a-latency-budget` | History of compute constraints, not accuracy | 14 | — | overview, timeline | planned | — |

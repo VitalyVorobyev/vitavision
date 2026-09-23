@@ -28,6 +28,8 @@ import type {
     ConceptEntry,
     NarrativeEntry,
     NarrativeFrontmatterSerialized,
+    NarrativePageNode,
+    NarrativePaperNode,
 } from "../src/lib/content/schema.ts";
 
 import { processDirectory, createShikiHighlighter } from "./build/render.ts";
@@ -41,6 +43,8 @@ import {
     buildAtlasAuthorPages,
 } from "./build/atlas-entries.ts";
 import { makePrimaryYearResolver, makePrimaryDisplayResolver, collectUsedPrimaryIds } from "./build/primary-source.ts";
+import { buildScholarlyIndex, emitScholarlyIndex } from "./build/scholarly.ts";
+import type { ScholarlyPageInput, ScholarlyPaperInput, ScholarlyNarrativeInput } from "./build/scholarly.ts";
 
 import { buildContentGraph, emitContentGraph } from "./content-graph.ts";
 import { buildAuthorSearchRecords, buildSearchRecords, emitContentSearch } from "./content-search.ts";
@@ -55,11 +59,14 @@ import type { PaperLookup } from "./narrative-build.ts";
 import { emitAuthorsIndex } from "./authors-build.ts";
 
 import { CONTENT_DIR, GENERATED_DIR, PAPERS_INDEX_PATH } from "./lib/paths.ts";
-import { loadIndexEntries, paperRefRecords } from "./lib/papers-index.ts";
+import { loadIndexEntries, paperRefRecords, paperCites } from "./lib/papers-index.ts";
 import type { PaperRefRecord } from "./lib/papers-index.ts";
 import { algoSlug, modelSlug, conceptSlug, narrativeSlug, demoSlug, blogSlug } from "./lib/content-kinds.ts";
 
-function loadPapersIndex(): PaperRefRecord[] {
+/** Loads docs/papers/index.yaml once and projects it into both shapes
+ *  content-build.ts needs: the display records for papers-index.json, and the
+ *  raw `cites:` lists (unresolved ids) for the scholarly index. */
+function loadPapersRegistry(): { papers: PaperRefRecord[]; citesById: Map<string, string[]> } {
     const entries = loadIndexEntries(PAPERS_INDEX_PATH, {
         onMissing: () => {
             console.warn("content:build — docs/papers/index.yaml not found; papers-index will be empty");
@@ -70,7 +77,7 @@ function loadPapersIndex(): PaperRefRecord[] {
             return [];
         },
     });
-    return paperRefRecords(entries);
+    return { papers: paperRefRecords(entries), citesById: paperCites(entries) };
 }
 
 async function main(): Promise<void> {
@@ -116,7 +123,7 @@ async function main(): Promise<void> {
         .sort(byTitleAsc);
 
     // Load papers once, early, so we can derive `year` before emitting the index.
-    const papers = loadPapersIndex();
+    const { papers, citesById } = loadPapersRegistry();
     const papersById = new Map(papers.map((p) => [p.id, p]));
     const resolvePrimaryYear = makePrimaryYearResolver(papersById);
     for (const e of [...algorithmPages, ...modelPages, ...conceptPages]) {
@@ -205,6 +212,50 @@ async function main(): Promise<void> {
     // an empty-but-valid index — see scripts/authors-build.ts.
     const authorsIndex = emitAuthorsIndex(buildAtlasAuthorPages(algorithmPublished, modelPublished, conceptPublished));
     const resolvePrimary = makePrimaryDisplayResolver(papersById);
+
+    // Emit the scholarly index: derived people/papers/narratives relationships
+    // consumed lazily by the paper page, author page, and People/Papers Atlas
+    // views. Pure builder over published-only inputs — see scripts/build/scholarly.ts.
+    const toScholarlyPageInput = (
+        entries: { slug: string; frontmatter: { title: string; domain?: string; sources?: { primary?: string; references?: string[] } } }[],
+        kind: "algorithm" | "model" | "concept",
+    ): ScholarlyPageInput[] =>
+        entries.map((e) => ({
+            slug: e.slug,
+            title: e.frontmatter.title,
+            kind,
+            domain: e.frontmatter.domain,
+            sources: e.frontmatter.sources,
+        }));
+
+    const scholarlyPages: ScholarlyPageInput[] = [
+        ...toScholarlyPageInput(algorithmPublished, "algorithm"),
+        ...toScholarlyPageInput(modelPublished, "model"),
+        ...toScholarlyPageInput(conceptPublished, "concept"),
+    ];
+    const scholarlyPapers: ScholarlyPaperInput[] = papers.map((p) => ({
+        id: p.id,
+        year: p.year,
+        cites: citesById.get(p.id) ?? [],
+    }));
+    const scholarlyNarratives: ScholarlyNarrativeInput[] = publishedNarratives.map((e) => ({
+        slug: e.slug,
+        title: e.frontmatter.title,
+        pageSlugs: e.narrative.nodes
+            .filter((n): n is NarrativePageNode => n.kind === "page")
+            .map((n) => n.slug),
+        paperIds: e.narrative.nodes
+            .filter((n): n is NarrativePaperNode => n.kind === "paper")
+            .map((n) => n.paperId),
+    }));
+    emitScholarlyIndex(
+        buildScholarlyIndex({
+            pages: scholarlyPages,
+            papers: scholarlyPapers,
+            authorsIndex,
+            narratives: scholarlyNarratives,
+        }),
+    );
 
     emitContentGraph(contentGraph, GENERATED_DIR);
 

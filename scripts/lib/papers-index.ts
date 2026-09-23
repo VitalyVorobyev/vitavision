@@ -93,6 +93,21 @@ export function paperYears(entries: RawIndexEntry[]): Map<string, number> {
     return years;
 }
 
+/** Map<paperId, cites> — raw `cites:` list (unfiltered/unresolved ids, defaulting
+ *  to `[]` when absent) for entries with kind "paper" (or absent). Callers that
+ *  need only registry-resolved ids (e.g. scripts/build/scholarly.ts) filter
+ *  against the known id set themselves. */
+export function paperCites(entries: RawIndexEntry[]): Map<string, string[]> {
+    const cites = new Map<string, string[]>();
+    for (const e of entries) {
+        if (!e.id) continue;
+        const kind = e.kind ?? "paper";
+        if (kind !== "paper") continue;
+        cites.set(e.id, e.cites ?? []);
+    }
+    return cites;
+}
+
 /** Map<paperId, title> (falling back to id) — kind "paper" (or absent) only. */
 export function paperTitles(entries: RawIndexEntry[]): Map<string, string> {
     const titles = new Map<string, string>();

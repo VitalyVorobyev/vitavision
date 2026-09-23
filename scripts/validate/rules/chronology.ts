@@ -24,7 +24,7 @@ export function chronologyRule(ctx: ValidationContext): Diagnostic[] {
             continue;
         }
         const parsed = parseSourceRef(primaryRef);
-        if (parsed?.kind === "paper") {
+        if (parsed.kind === "paper") {
             // Strip "paper:" prefix to get bare id.
             const bareId = parsed.key.startsWith("paper:") ? parsed.key.slice("paper:".length) : parsed.key;
             slugYear.set(e.slug, ctx.paperYears.get(bareId));

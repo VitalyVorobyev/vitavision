@@ -9,7 +9,7 @@ import type { SourceKind } from "./papers-index.ts";
 /** Parse a source-ref string into a `{ kind, key }` pair. A bare id (no
  *  recognized prefix) is treated as a paper reference for backward
  *  compatibility. */
-export function parseSourceRef(s: string): { kind: SourceKind; key: string } | null {
+export function parseSourceRef(s: string): { kind: SourceKind; key: string } {
     if (s.startsWith("paper:")) {
         return { kind: "paper", key: s };
     }

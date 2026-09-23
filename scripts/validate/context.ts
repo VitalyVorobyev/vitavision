@@ -107,7 +107,7 @@ function yearOfPrimary(fm: Record<string, unknown>, paperYears: Map<string, numb
     const src = fm.sources as { primary?: string } | undefined;
     if (!src?.primary) return undefined;
     const parsed = parseSourceRef(src.primary);
-    if (!parsed || parsed.kind !== "paper") return undefined;
+    if (parsed.kind !== "paper") return undefined;
     const bareId = parsed.key.slice("paper:".length);
     return paperYears.get(bareId);
 }

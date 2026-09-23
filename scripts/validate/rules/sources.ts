@@ -21,16 +21,7 @@ function checkSingleSourceRef(
     field: string,
     value: string,
 ): void {
-    const parsed = parseSourceRef(value);
-    if (!parsed) {
-        diagnostics.push({
-            level: "error",
-            message: `[${file}] ${field} "${value}" malformed (expected paper:<id> | repo:<url>@<7-40 hex> | doc:<path>)`,
-        });
-        return;
-    }
-
-    const { kind, key } = parsed;
+    const { kind, key } = parseSourceRef(value);
 
     if (kind === "paper") {
         if (!ctx.sourceIndex.has(key)) {

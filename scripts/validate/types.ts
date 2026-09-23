@@ -9,6 +9,7 @@
 import type { ContentGraph, ContentEntry } from "../content-graph.ts";
 import type { RawIndexEntry } from "../lib/papers-index.ts";
 import type { MarkdownDirEntry } from "../lib/content-kinds.ts";
+import type { AuthorRecord } from "../lib/authors.ts";
 
 export type IndexEntry = RawIndexEntry;
 
@@ -131,6 +132,10 @@ export interface ValidationContext {
      *  ids — a merged id's page still exists as a redirect, so both resolve
      *  as valid `/authors/<id>` link targets). */
     authorIds: Set<string>;
+
+    /** Raw docs/papers/authors.yaml rows (id, name, optional orcid/mergedInto)
+     *  — used by rules/authors.ts for mergedInto target/cycle checks. */
+    authorRecords: AuthorRecord[];
 
     /** Diagnostics produced while building the context itself — index.yaml
      *  loader errors (reserved-prefix ids, malformed repo/doc entries) and

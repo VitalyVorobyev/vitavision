@@ -28,6 +28,7 @@ import { schemasRule } from "./rules/schemas.ts";
 import { imagesRule } from "./rules/images.ts";
 import { linksRule } from "./rules/links.ts";
 import { crossRefsRule } from "./rules/cross-refs.ts";
+import { authorsRule } from "./rules/authors.ts";
 
 export type { ValidateContentOptions };
 
@@ -55,6 +56,7 @@ export async function validateContent(options?: ValidateContentOptions): Promise
     all.push(...imagesRule(ctx));                 // Rule 13: image references (all kinds)
     all.push(...linksRule(ctx));                  // Rule 14: internal links (all kinds)
     all.push(...crossRefsRule(ctx));              // Rule 15: relatedPosts/relatedDemos/relatedAlgorithms
+    all.push(...authorsRule(ctx));                // Rule 16: author registry integrity
 
     const errors = all.filter((d) => d.level === "error").map((d) => d.message);
     const warnings = all.filter((d) => d.level === "warning").map((d) => d.message);

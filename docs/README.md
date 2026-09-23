@@ -199,6 +199,10 @@ in `scripts/validate/**`). What it catches:
   across every content kind — unresolved fragment anchors and legacy-redirect links (`/algorithms/...`,
   `/concepts/...`) are warnings, not errors.
 - Broken `relatedPosts` / `relatedDemos` references.
+- Author registry integrity: every paper's `authorIds` entries resolve in
+  `docs/papers/authors.yaml` (error if not); a paper with no `authorIds` warns; an
+  `authorIds`/`authors` length mismatch warns (names both counts); a `mergedInto` target
+  must exist and must not form a cycle (errors).
 
 Narrative-specific rules (same script):
 - Errors: every node is exactly one of page / paper / question (XOR); `page` nodes resolve to a

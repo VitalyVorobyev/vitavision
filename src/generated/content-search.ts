@@ -3905,6 +3905,24 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
+    "slug": "A5111417803",
+    "path": "/authors/A5111417803",
+    "type": "author",
+    "title": "Peter F. Sturm",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5078239319",
+    "path": "/authors/A5078239319",
+    "type": "author",
+    "title": "Stephen J. Maybank",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
     "slug": "A5110192522",
     "path": "/authors/A5110192522",
     "type": "author",
@@ -3972,6 +3990,15 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5061113124",
     "type": "author",
     "title": "Udo Frese",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5064473511",
+    "path": "/authors/A5064473511",
+    "type": "author",
+    "title": "Eric D. Sinzinger",
     "summary": "1 paper",
     "tags": [],
     "headings": []
@@ -4175,6 +4202,24 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
+    "slug": "A5108711177",
+    "path": "/authors/A5108711177",
+    "type": "author",
+    "title": "Carl Edward Rasmussen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5080713659",
+    "path": "/authors/A5080713659",
+    "type": "author",
+    "title": "Christopher K. I. Williams",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
     "slug": "A5047932106",
     "path": "/authors/A5047932106",
     "type": "author",
@@ -4346,6 +4391,24 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
+    "slug": "A5062440435",
+    "path": "/authors/A5062440435",
+    "type": "author",
+    "title": "Martin A. Fischler",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5019197436",
+    "path": "/authors/A5019197436",
+    "type": "author",
+    "title": "Robert C. Bolles",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
     "slug": "A5065975557",
     "path": "/authors/A5065975557",
     "type": "author",
@@ -4376,7 +4439,7 @@ export const searchRecords: SearchRecord[] = [
     "slug": "A5007656938",
     "path": "/authors/A5007656938",
     "type": "author",
-    "title": "Jiřı́ Matas",
+    "title": "Jiří Matas",
     "summary": "3 papers",
     "tags": [],
     "headings": []
@@ -4396,6 +4459,42 @@ export const searchRecords: SearchRecord[] = [
     "type": "author",
     "title": "Dániel Baráth",
     "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5010104340",
+    "path": "/authors/A5010104340",
+    "type": "author",
+    "title": "Jana Nosková",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5070382607",
+    "path": "/authors/A5070382607",
+    "type": "author",
+    "title": "Vincent Lepetit",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5106691454",
+    "path": "/authors/A5106691454",
+    "type": "author",
+    "title": "Francesc Moreno-Noguer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038674741",
+    "path": "/authors/A5038674741",
+    "type": "author",
+    "title": "Pascal Fua",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -4463,28 +4562,10 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
-    "slug": "A5070382607",
-    "path": "/authors/A5070382607",
-    "type": "author",
-    "title": "Vincent Lepetit",
-    "summary": "1 paper",
-    "tags": [],
-    "headings": []
-  },
-  {
     "slug": "A5040251230",
     "path": "/authors/A5040251230",
     "type": "author",
     "title": "Christoph Strecha",
-    "summary": "1 paper",
-    "tags": [],
-    "headings": []
-  },
-  {
-    "slug": "A5038674741",
-    "path": "/authors/A5038674741",
-    "type": "author",
-    "title": "Pascal Fua",
     "summary": "1 paper",
     "tags": [],
     "headings": []
@@ -5178,7 +5259,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5057924291",
     "type": "author",
     "title": "Takeo Kanade",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -5241,6 +5322,15 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5038193389",
     "type": "author",
     "title": "Konstantin Sofiiuk",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102779220",
+    "path": "/authors/A5102779220",
+    "type": "author",
+    "title": "Ilya A. Petrov",
     "summary": "1 paper",
     "tags": [],
     "headings": []
@@ -5898,7 +5988,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5022416424",
     "type": "author",
     "title": "Jakob Uszkoreit",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -6132,7 +6222,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5100456762",
     "type": "author",
     "title": "Jingbo Wang",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -6164,11 +6254,11 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
-    "slug": "A5100456761",
-    "path": "/authors/A5100456761",
+    "slug": "A5013734579",
+    "path": "/authors/A5013734579",
     "type": "author",
-    "title": "Jingbo Wang",
-    "summary": "1 paper",
+    "title": "Nong Sang",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -6500,7 +6590,7 @@ export const searchRecords: SearchRecord[] = [
     "slug": "A5111802678",
     "path": "/authors/A5111802678",
     "type": "author",
-    "title": "Hervé Jeǵou",
+    "title": "Hervé Jégou",
     "summary": "3 papers",
     "tags": [],
     "headings": []
@@ -6965,6 +7055,69 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
+    "slug": "A5103024730",
+    "path": "/authors/A5103024730",
+    "type": "author",
+    "title": "Ashish Vaswani",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021878400",
+    "path": "/authors/A5021878400",
+    "type": "author",
+    "title": "Noam Shazeer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005777963",
+    "path": "/authors/A5005777963",
+    "type": "author",
+    "title": "Niki Jitendra Parmar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5023448834",
+    "path": "/authors/A5023448834",
+    "type": "author",
+    "title": "Llion Jones",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5079288315",
+    "path": "/authors/A5079288315",
+    "type": "author",
+    "title": "Aidan N. Gomez",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031789995",
+    "path": "/authors/A5031789995",
+    "type": "author",
+    "title": "Łukasz Kaiser",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5045719436",
+    "path": "/authors/A5045719436",
+    "type": "author",
+    "title": "Illia Polosukhin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
     "slug": "A5010465328",
     "path": "/authors/A5010465328",
     "type": "author",
@@ -7023,6 +7176,15 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5076094010",
     "type": "author",
     "title": "François Fleuret",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5127845778",
+    "path": "/authors/A5127845778",
+    "type": "author",
+    "title": "Tri Dao",
     "summary": "1 paper",
     "tags": [],
     "headings": []
@@ -7091,8 +7253,17 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
-    "slug": "A5024735754",
-    "path": "/authors/A5024735754",
+    "slug": "A5087283637",
+    "path": "/authors/A5087283637",
+    "type": "author",
+    "title": "Murtadha Ahmed",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102000858",
+    "path": "/authors/A5102000858",
     "type": "author",
     "title": "Bo Wen",
     "summary": "1 paper",

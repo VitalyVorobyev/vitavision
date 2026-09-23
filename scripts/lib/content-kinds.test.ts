@@ -7,6 +7,7 @@ import {
     narrativeSlug,
     demoSlug,
     blogSlug,
+    HTML_LOADER_KIND_DESCRIPTORS,
 } from "./content-kinds.ts";
 
 describe("slugFromFile", () => {
@@ -37,5 +38,31 @@ describe("per-kind convenience wrappers", () => {
         expect(narrativeSlug("some-narrative.md")).toBe("some-narrative");
         expect(demoSlug("some-demo.md")).toBe("some-demo");
         expect(blogSlug("2026-01-15-some-post.md")).toBe("some-post");
+    });
+});
+
+describe("HTML_LOADER_KIND_DESCRIPTORS", () => {
+    const kinds = ["blog", "algorithm", "demo", "model", "concept"] as const;
+
+    it("has exactly one descriptor per non-narrative content kind", () => {
+        expect(Object.keys(HTML_LOADER_KIND_DESCRIPTORS).sort()).toEqual([...kinds].sort());
+    });
+
+    it("keys each descriptor under its own kind", () => {
+        for (const kind of kinds) {
+            expect(HTML_LOADER_KIND_DESCRIPTORS[kind].kind).toBe(kind);
+        }
+    });
+
+    it("gives every descriptor distinct, non-empty dir/file/export names", () => {
+        const descriptors = Object.values(HTML_LOADER_KIND_DESCRIPTORS);
+        for (const d of descriptors) {
+            expect(d.htmlDirName.length).toBeGreaterThan(0);
+            expect(d.loaderFileName.endsWith("-loaders.ts")).toBe(true);
+            expect(d.loaderExportName.endsWith("HtmlLoaders")).toBe(true);
+        }
+        expect(new Set(descriptors.map((d) => d.htmlDirName)).size).toBe(descriptors.length);
+        expect(new Set(descriptors.map((d) => d.loaderFileName)).size).toBe(descriptors.length);
+        expect(new Set(descriptors.map((d) => d.loaderExportName)).size).toBe(descriptors.length);
     });
 });

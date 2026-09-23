@@ -13,6 +13,10 @@
   name: "Agostino Martinelli"
   orcid: "0000-0001-8474-9884"
 
+- id: A5079288315
+  name: "Aidan N. Gomez"
+  orcid: "0000-0001-5601-5437"
+
 - id: A5077791956
   name: "Aishwarya Kamath"
 
@@ -62,6 +66,10 @@
 - id: A5083585691
   name: "Alexey A. Gritsenko"
   orcid: "0000-0003-1799-2301"
+
+- id: A5028179581
+  name: "Alexey Bochkovskiy"
+  orcid: "0000-0003-1805-1909"
 
 - id: A5090113830
   name: "Alexey Dosovitskiy"
@@ -139,6 +147,10 @@
 - id: A5120717410
   name: "Arpit Kalla"
 
+- id: A5103024730
+  name: "Ashish Vaswani"
+  orcid: "0000-0002-7794-2085"
+
 - id: A5001041485
   name: "Atri Rudra"
   orcid: "0000-0003-4136-4719"
@@ -184,6 +196,10 @@
 - id: A5080970223
   name: "Berthold K. P. Horn"
 
+- id: A5101647390
+  name: "Bharath Hariharan"
+  orcid: "0000-0002-2309-4703"
+
 - id: A5103033215
   name: "Bilal Piot"
   orcid: "0000-0003-3906-950X"
@@ -208,9 +224,9 @@
   name: "Bo Chen"
   orcid: "0000-0001-7495-8885"
 
-- id: A5024735754
+- id: A5102000858
   name: "Bo Wen"
-  orcid: "0000-0002-5738-4450"
+  orcid: "0009-0002-3320-7190"
 
 - id: A5040412734
   name: "Bodo Rosenhahn"
@@ -240,6 +256,10 @@
 
 - id: A5081047759
   name: "Carl Doersch"
+
+- id: A5108711177
+  name: "Carl Edward Rasmussen"
+  orcid: "0000-0001-8899-7850"
 
 - id: A5090709130
   name: "Carlo Sansone"
@@ -334,6 +354,10 @@
 
 - id: A5040251230
   name: "Christoph Strecha"
+
+- id: A5080713659
+  name: "Christopher K. I. Williams"
+  orcid: "0000-0002-6270-4703"
 
 - id: A5103852640
   name: "Christopher Ré"
@@ -469,6 +493,9 @@
   name: "Enze Xie"
   orcid: "0000-0001-6890-1049"
 
+- id: A5064473511
+  name: "Eric D. Sinzinger"
+
 - id: A5042149832
   name: "Eric Mintun"
 
@@ -499,6 +526,10 @@
 - id: A5024394972
   name: "Florian Strub"
   orcid: "0000-0001-7271-5345"
+
+- id: A5106691454
+  name: "Francesc Moreno-Noguer"
+  orcid: "0000-0002-8640-684X"
 
 - id: A5032569443
   name: "Francisco Massa"
@@ -613,7 +644,7 @@
   name: "Herbert Bay"
 
 - id: A5111802678
-  name: "Hervé Jeǵou"
+  name: "Hervé Jégou"
 
 - id: A5101882561
   name: "Hu Xu"
@@ -639,6 +670,13 @@
   name: "Ibrahim Alabdulmohsin"
   orcid: "0000-0002-9387-5820"
 
+- id: A5045719436
+  name: "Illia Polosukhin"
+
+- id: A5102779220
+  name: "Ilya A. Petrov"
+  orcid: "0000-0002-8900-1071"
+
 - id: A5006446297
   name: "Ilya Sutskever"
 
@@ -663,6 +701,9 @@
 
 - id: A5065231880
   name: "Jamie Kiros"
+
+- id: A5010104340
+  name: "Jana Nosková"
 
 - id: A5018151384
   name: "Jan‐Michael Frahm"
@@ -729,10 +770,6 @@
   name: "Jingbo Wang"
   orcid: "0000-0001-9700-6262"
 
-- id: A5100456761
-  name: "Jingbo Wang"
-  orcid: "0000-0001-7544-0084"
-
 - id: A5075880303
   name: "Jingdong Wang"
   orcid: "0000-0002-4888-4445"
@@ -742,7 +779,7 @@
   orcid: "0000-0003-2363-501X"
 
 - id: A5007656938
-  name: "Jiřı́ Matas"
+  name: "Jiří Matas"
   orcid: "0000-0003-0863-4844"
 
 - id: A5019616738
@@ -917,6 +954,10 @@
 - id: A5033313836
   name: "Liliane Momeni"
 
+- id: A5023448834
+  name: "Llion Jones"
+  orcid: "0009-0001-7710-6474"
+
 - id: A5030078173
   name: "Loong‐Fah Cheong"
   orcid: "0000-0001-5259-9113"
@@ -928,6 +969,10 @@
 - id: A5055629014
   name: "Lucas Beyer"
   orcid: "0000-0002-0460-0607"
+
+- id: A5031789995
+  name: "Łukasz Kaiser"
+  orcid: "0000-0003-1092-6010"
 
 - id: A5004354796
   name: "M. David Marks"
@@ -971,6 +1016,9 @@
 - id: A5103186114
   name: "Mark Sandler"
   orcid: "0000-0003-0352-6051"
+
+- id: A5062440435
+  name: "Martin A. Fischler"
 
 - id: A5066262214
   name: "Martin Rufli"
@@ -1077,6 +1125,10 @@
   name: "Muhammad Ferjad Naeem"
   orcid: "0000-0001-7455-7280"
 
+- id: A5087283637
+  name: "Murtadha Ahmed"
+  orcid: "0000-0002-0741-0710"
+
 - id: A5108521995
   name: "Narendra Ahuja"
 
@@ -1104,6 +1156,9 @@
   name: "Nikhila Ravi"
   orcid: "0000-0003-0097-5222"
 
+- id: A5005777963
+  name: "Niki Jitendra Parmar"
+
 - id: A5005136810
   name: "Nikita Karaev"
 
@@ -1113,6 +1168,13 @@
 
 - id: A5090428190
   name: "Nils Schönherr"
+
+- id: A5021878400
+  name: "Noam Shazeer"
+
+- id: A5013734579
+  name: "Nong Sang"
+  orcid: "0000-0002-9167-1496"
 
 - id: A5045981348
   name: "Olaf Ronneberger"
@@ -1183,6 +1245,9 @@
 
 - id: A5088467090
   name: "Peter Abeles"
+
+- id: A5111417803
+  name: "Peter F. Sturm"
 
 - id: A5055539616
   name: "Peter Fuersattel"
@@ -1290,6 +1355,9 @@
   name: "Rishi Hazra"
   orcid: "0000-0003-3422-2085"
 
+- id: A5019197436
+  name: "Robert C. Bolles"
+
 - id: A5018207993
   name: "Roberto Cipolla"
   orcid: "0000-0002-8999-2151"
@@ -1365,6 +1433,10 @@
   name: "Seppe Sels"
   orcid: "0000-0002-0590-2770"
 
+- id: A5018609918
+  name: "Serge Belongie"
+  orcid: "0000-0002-0388-5217"
+
 - id: A5032800189
   name: "Sergey Ioffe"
 
@@ -1437,6 +1509,10 @@
 - id: A5031510704
   name: "Stephan Liwicki"
   orcid: "0000-0002-2002-3627"
+
+- id: A5078239319
+  name: "Stephen J. Maybank"
+  orcid: "0000-0003-2113-9119"
 
 - id: A5025114648
   name: "Stephen Lin"
@@ -1540,6 +1616,9 @@
 
 - id: A5062321523
   name: "Tom Wehrbein"
+
+- id: A5127845778
+  name: "Tri Dao"
 
 - id: A5067498868
   name: "Tomasz Malisiewicz"
@@ -1832,15 +1911,3 @@
 
 - id: A5099137433
   name: "Zilong Huang"
-
-- id: A5101647390
-  name: "Bharath Hariharan"
-  orcid: "0000-0002-2309-4703"
-
-- id: A5018609918
-  name: "Serge Belongie"
-  orcid: "0000-0002-0388-5217"
-
-- id: A5028179581
-  name: "Alexey Bochkovskiy"
-  orcid: "0000-0003-1805-1909"

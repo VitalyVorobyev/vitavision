@@ -319,6 +319,7 @@
 - id: sturm2003-plane-based
   title: "On plane-based camera calibration: A general algorithm, singularities, applications"
   authors: ["P. Sturm", "S. J. Maybank"]
+  authorIds: [A5111417803, A5078239319]
   year: 1999
   venue: IEEE CVPR
   url: https://inria.hal.science/inria-00525681/document
@@ -402,6 +403,7 @@
 - id: sinzinger2007-model-based
   title: "A model-based approach to junction detection using radial energy"
   authors: ["E. D. Sinzinger"]
+  authorIds: [A5064473511]
   year: 2008
   venue: Pattern Recognition
   url: https://www.sciencedirect.com/science/article/abs/pii/S0031320307002889
@@ -503,6 +505,7 @@
 - id: rasmussen2006-gpml
   title: "Gaussian Processes for Machine Learning"
   authors: ["C. E. Rasmussen", "C. K. I. Williams"]
+  authorIds: [A5108711177, A5080713659]
   year: 2006
   venue: MIT Press
   url: https://gaussianprocess.org/gpml/
@@ -592,6 +595,7 @@
 - id: fischler1981-ransac
   title: "Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography"
   authors: ["M. A. Fischler", "R. C. Bolles"]
+  authorIds: [A5062440435, A5019197436]
   year: 1981
   venue: Communications of the ACM
   url: https://dl.acm.org/doi/pdf/10.1145/358669.358692
@@ -614,7 +618,7 @@
 - id: barath2019-magsac
   title: "MAGSAC: marginalizing sample consensus"
   authors: ["D. Barath", "J. Matas", "J. Noskova"]
-  authorIds: [A5016636021, A5007656938]
+  authorIds: [A5016636021, A5007656938, A5010104340]
   year: 2019
   venue: CVPR
   url: https://arxiv.org/abs/1803.07469
@@ -628,6 +632,7 @@
 - id: lepetit2009-epnp
   title: "EPnP: An Accurate O(n) Solution to the PnP Problem"
   authors: ["V. Lepetit", "F. Moreno-Noguer", "P. Fua"]
+  authorIds: [A5070382607, A5106691454, A5038674741]
   year: 2009
   venue: International Journal of Computer Vision
   url: http://hdl.handle.net/2117/10327
@@ -1020,7 +1025,7 @@
 - id: tomasi1991-detection-tracking
   title: "Detection and Tracking of Point Features"
   authors: ["C. Tomasi", "T. Kanade"]
-  authorIds: [A5079878449]
+  authorIds: [A5079878449, A5057924291]
   year: 1991
   venue: Carnegie Mellon University Technical Report CMU-CS-91-132
   url: https://kilthub.cmu.edu/articles/journal_contribution/Detection_and_tracking_of_point_features/6603148
@@ -1077,7 +1082,7 @@
 - id: sofiiuk2021-ritm
   title: "Reviving Iterative Training with Mask Guidance for Interactive Segmentation"
   authors: ["K. Sofiiuk", "I. A. Petrov", "A. Konushin"]
-  authorIds: [A5038193389, A5065787419]
+  authorIds: [A5038193389, A5102779220, A5065787419]
   year: 2021
   venue: arXiv (Cornell University)
   url: https://arxiv.org/pdf/2102.06583
@@ -1284,7 +1289,7 @@
 - id: yu2018-bisenet
   title: "BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation"
   authors: ["C. Yu", "J. Wang", "C. Peng", "C. Gao", "G. Yu", "S. Nong"]
-  authorIds: [A5013651586, A5100456762, A5020100372, A5035295689, A5003400275]
+  authorIds: [A5013651586, A5100456762, A5020100372, A5035295689, A5003400275, A5013734579]
   year: 2018
   venue: ECCV 2018 (arXiv 2018)
   url: https://arxiv.org/pdf/1808.00897
@@ -1302,7 +1307,7 @@
 - id: yu2020-bisenet
   title: "BiSeNet V2: Bilateral Network with Guided Aggregation for Real-time Semantic Segmentation"
   authors: ["C. Yu", "C. Gao", "J. Wang", "G. Yu", "C. Shen", "S. Nong"]
-  authorIds: [A5013651586, A5035295689, A5100456761, A5003400275, A5006294869]
+  authorIds: [A5013651586, A5035295689, A5100456762, A5003400275, A5006294869, A5013734579]
   year: 2020
   venue: IJCV 2021 (arXiv 2020)
   url: https://arxiv.org/pdf/2004.02147
@@ -1618,6 +1623,7 @@
 - id: vaswani2017-attention
   title: "Attention Is All You Need"
   authors: ["A. Vaswani", "N. Shazeer", "N. Parmar", "J. Uszkoreit", "L. Jones", "A. N. Gomez", "Ł. Kaiser", "I. Polosukhin"]
+  authorIds: [A5103024730, A5021878400, A5005777963, A5022416424, A5023448834, A5079288315, A5031789995, A5045719436]
   year: 2017
   venue: NeurIPS 2017
   url: https://arxiv.org/pdf/1706.03762
@@ -1660,7 +1666,7 @@
 - id: dao2022-flashattention
   title: "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness"
   authors: ["T. Dao", "D. Y. Fu", "S. Ermon", "A. Rudra", "C. Ré"]
-  authorIds: [A5032865467, A5091179481, A5001041485, A5103852640]
+  authorIds: [A5127845778, A5032865467, A5091179481, A5001041485, A5103852640]
   year: 2022
   venue: NeurIPS 2022
   url: https://arxiv.org/pdf/2205.14135
@@ -1671,7 +1677,7 @@
 - id: su2021-roformer
   title: "RoFormer: Enhanced Transformer with Rotary Position Embedding"
   authors: ["J. Su", "Y. Lu", "S. Pan", "A. Murtadha", "B. Wen", "Y. Liu"]
-  authorIds: [A5078222384, A5101645258, A5049491241, A5024735754, A5100357482]
+  authorIds: [A5078222384, A5101645258, A5049491241, A5087283637, A5102000858, A5100357482]
   year: 2021
   venue: Neurocomputing 2024
   url: https://arxiv.org/pdf/2104.09864

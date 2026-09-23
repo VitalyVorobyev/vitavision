@@ -1,16 +1,11 @@
 /**
- * Rule 4b: typed relations[] target resolution (algorithm only, all
- * qualities) + `quality: "historical"` gates.
+ * Rule 4b: `quality: "historical"` gates (algorithm pages).
  *
  * A historical page is preserved for citation/lineage; the method is
  * superseded for practical use. The "Superseded by" link is derived from a
  * `relations[]` entry of type "generalized_by" with confidence "high".
  * See CLAUDE.md → "Quality field" and "Relations field" for the policy.
- *
- * NOTE: the `relations[].target` resolution check here duplicates part of
- * Rule 1 (scripts/validate/rules/slugs.ts) for algorithm pages specifically.
- * Kept as-is per the task scope — a follow-up fix commit removes the
- * duplication separately.
+
  */
 import type { Diagnostic, TypedRelation, ValidationContext } from "../types.ts";
 
@@ -19,16 +14,6 @@ export function historicalRule(ctx: ValidationContext): Diagnostic[] {
 
     for (const e of ctx.algoFiltered) {
         const relations = (e.frontmatter.relations as TypedRelation[] | undefined) ?? [];
-
-        // Every relations[].target must resolve to a known slug, regardless of quality.
-        for (const rel of relations) {
-            if (!ctx.knownSlugs.has(rel.target)) {
-                diagnostics.push({
-                    level: "error",
-                    message: `[${e.file}] relations[].target "${rel.target}" does not resolve to a known page`,
-                });
-            }
-        }
 
         if (e.frontmatter.quality !== "historical") continue;
 

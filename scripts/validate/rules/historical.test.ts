@@ -27,7 +27,7 @@ describe("historicalRule", () => {
         expect(historicalRule(ctx)).toEqual([]);
     });
 
-    it("flags relations[].target that doesn't resolve, even on a non-historical page", () => {
+    it("leaves unresolved relations[].target to the slugs rule (no duplicate report)", () => {
         const ctx = createContext({
             algorithms: [
                 algo("a.md", {
@@ -35,9 +35,7 @@ describe("historicalRule", () => {
                 }),
             ],
         });
-        expect(historicalRule(ctx)).toEqual([
-            { level: "error", message: '[a.md] relations[].target "ghost" does not resolve to a known page' },
-        ]);
+        expect(historicalRule(ctx)).toEqual([]);
     });
 
     it("flags a historical page with no generalized_by/high relation", () => {

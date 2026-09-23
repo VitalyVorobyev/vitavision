@@ -140,6 +140,7 @@ export default function NarrativePage() {
     );
 
     const focusIds = stepIndex === null ? null : steps[stepIndex]?.focus ?? null;
+    const firstStepFocusIds = steps[0]?.focus ?? null;
     const selectedNode = selectedId ? nodesById.get(selectedId) ?? null : null;
     const walkthrough = mod?.walkthrough ?? "focus";
     const revealedIds = useMemo(
@@ -232,6 +233,7 @@ export default function NarrativePage() {
                                 onSelect={setSelected}
                                 walkthrough={walkthrough}
                                 revealedIds={revealedIds}
+                                firstStepFocusIds={firstStepFocusIds}
                             />
                         </div>
                         <aside className="flex flex-col gap-3">

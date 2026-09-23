@@ -170,8 +170,10 @@ references (warning only), narrative rules (node XOR, page/paper resolution, len
 completeness, edge-vs-Atlas-relations warnings), blog/demo frontmatter schemas, image references
 (existence + empty-alt warning, all kinds), internal links (`/atlas/...`, `/blog/...`,
 `/demos/...`, `/authors/...`, `/papers/...`, static routes, legacy-redirect warnings, unresolved-anchor
-warnings), and cross-content references (`relatedPosts`, `relatedDemos`, legacy
-`relatedAlgorithms`).
+warnings), cross-content references (`relatedPosts`, `relatedDemos`, legacy
+`relatedAlgorithms`), and author registry integrity (`authorIds` resolve against
+`docs/papers/authors.yaml`, a paper missing `authorIds` warns, an `authorIds`/`authors`
+length mismatch warns, and a `mergedInto` target must exist and be acyclic).
 
 `bun run build` (`INCLUDE_DRAFTS=true bun run content:build && tsc -b && vite build`)
 already runs this same validator with drafts included, via `scripts/content-build.ts`, and

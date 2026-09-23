@@ -128,6 +128,30 @@ export function sameAuthorsPapers(
     return rows;
 }
 
+// ── Nickname tokens (search) ─────────────────────────────────────────────────
+
+/**
+ * Registry paper ids follow the `<surname><year>-<nickname[-more-words]>`
+ * convention (e.g. "he2016-resnet", "longuet-higgins1981-eight-point"). This
+ * extracts the nickname tokens after the first surname+year token — the part
+ * a reader is likely to actually type ("resnet", "eight", "point") — so a
+ * colloquial-name query can find the paper even though that word never
+ * appears in its title or venue. Returns `[]` when no token contains a digit
+ * (no year token found).
+ *
+ * Shared by the MiniSearch paper record builder (`scripts/content-search.ts`)
+ * and the Papers view's own local search (`matchesPaperSearch` in
+ * `papersDirectory.ts`), so a "resnet" query behaves the same whether it
+ * lands via the Atlas catalog's People & Papers matches or is typed directly
+ * into the Papers view.
+ */
+export function paperNicknameTags(id: string): string[] {
+    const tokens = id.split("-");
+    const yearIdx = tokens.findIndex((t) => /\d/.test(t));
+    if (yearIdx === -1 || yearIdx === tokens.length - 1) return [];
+    return tokens.slice(yearIdx + 1);
+}
+
 // ── Short author list for lineage rows ──────────────────────────────────────
 
 /** "Surname, Surname et al." — every surname for up to 3 authors, else the

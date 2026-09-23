@@ -285,6 +285,7 @@ function buildContextCore(input: RawContextInput): ValidationContext {
         bodyEntries,
         imageExists,
         authorIds,
+        authorRecords: input.authorRecords,
         loaderDiagnostics,
     };
 }

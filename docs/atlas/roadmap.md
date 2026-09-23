@@ -41,7 +41,7 @@ After PR-B: 54 models · 154 sources · 144 notes (11 in v2 form) · 502 canonic
 |---|---|---|---|
 | A — Workflow hygiene | Skills and docs describe the system as it is | **done** (#158) | — |
 | B — Dense-prediction injection | FPN, DPT, PointRend pages; SegFormer note → v2 | **done** (PR-B) | — |
-| F — Authors & papers experience | Papers and people become first-class, well-designed Atlas surfaces | **in progress** — F1 #163 (paper pages); F2 (this PR): Atlas tabs, People directory + network, Papers view, author page v2 | F3: search (BL-022), author data (BL-032), narrative fit (BL-034) |
+| F — Authors & papers experience | Papers and people become first-class, well-designed Atlas surfaces | **done** (#163 paper pages, #164 Atlas tabs / People / Papers / author page, F3 search + author data + narrative fit) | residuals BL-036..038 |
 | G — Build-pipeline quality | Validator, build scripts, and frontend/editor monoliths modular and tested | **done** (#160, #161, #162) | — |
 | H — Note v2 migration | Every relation rests on a note with `# Stated relations` | planned | batch 1: highest-degree segmentation/detection notes |
 | I — Coverage waves | Close page debt and notes-without-pages | planned | multi-scale wave after PR-B |

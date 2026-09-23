@@ -60,6 +60,8 @@ export default function AlgorithmIndex() {
                 setMode={setMode}
                 personId={filters.person}
                 setPersonFocus={setPersonFocus}
+                query={filters.query}
+                setQuery={setQuery}
             />
         );
     }
@@ -70,6 +72,8 @@ export default function AlgorithmIndex() {
                 isDesktop={isDesktop}
                 view={filters.view}
                 setView={setView}
+                query={filters.query}
+                setQuery={setQuery}
             />
         );
     }

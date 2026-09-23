@@ -18,10 +18,19 @@ import {
     scaleLensCoords,
     yearRulerTicks,
 } from "../../lib/narratives/narrativeLayout.ts";
+import {
+    NARRATIVE_MIN_LEGIBLE_SCALE,
+    NARRATIVE_STEP_MAX_SCALE,
+    planInitialCamera,
+    unionBox,
+} from "../../lib/narratives/initialCamera.ts";
 import NarrativeLegend from "./NarrativeLegend.tsx";
 
 /** How long the chips take to slide to a new lens's coordinates. */
 const LENS_TRANSITION_MS = 380;
+
+/** Padding (content px) kept around whatever box the camera frames — matches `useViewport`'s call below. */
+const CAMERA_FIT_PADDING = 48;
 
 interface NarrativeCanvasProps {
     narrative: ResolvedNarrative;
@@ -34,6 +43,13 @@ interface NarrativeCanvasProps {
     walkthrough?: "focus" | "reveal";
     /** Union of every focus set from step 0 through the active step; `null` when not stepping. */
     revealedIds?: string[] | null;
+    /**
+     * The walkthrough's first step's focus ids, if it has one — used only to
+     * pick what the initial (pre-walkthrough) camera frames when the whole
+     * lens doesn't fit at a legible scale. `null`/omitted when the narrative
+     * has no steps.
+     */
+    firstStepFocusIds?: string[] | null;
 }
 
 // ── Node chip ───────────────────────────────────────────────────────────────
@@ -143,6 +159,7 @@ export default function NarrativeCanvas({
     onSelect,
     walkthrough = "focus",
     revealedIds = null,
+    firstStepFocusIds = null,
 }: NarrativeCanvasProps) {
     const lens = useMemo(
         () => narrative.lenses.find((l) => l.id === lensId) ?? narrative.lenses[0],
@@ -184,35 +201,54 @@ export default function NarrativeCanvas({
         onPointerMove,
         onPointerUp,
         onPointerCancel,
-    } = useViewport({ bounds, refitKey: lens?.id ?? "", fitPadding: 48 });
+    } = useViewport({ bounds, refitKey: lens?.id ?? "", fitPadding: CAMERA_FIT_PADDING });
 
-    // Walkthrough camera: frame the active step's focused chips; on leaving the
-    // walkthrough, glide back out to the whole constellation.
+    /** Union bbox (edge-geometry `Box` → `fitBounds`'s `ViewportBounds`) for a set of node ids, or null if none laid out. */
+    const focusBoxFor = (ids: readonly string[]): ViewportBounds | null => {
+        const boxes = ids
+            .map((id) => layout.positions[id])
+            .filter((p): p is { x: number; y: number } => p !== undefined)
+            .map(nodeBox)
+            .map((b) => ({ minX: b.x, minY: b.y, maxX: b.x + b.w, maxY: b.y + b.h }));
+        return unionBox(boxes);
+    };
+
+    // Camera: while a walkthrough step is active, frame its focused chips
+    // (never below the legibility floor — BL-034). Otherwise (initial load,
+    // a lens switch, or leaving the walkthrough) default to the whole lens,
+    // but if the whole lens wouldn't be legible at that scale, frame the
+    // walkthrough's first step instead, or — with no steps to anchor on —
+    // the earliest slice of the lens, both floored the same way.
     const hadFocusRef = useRef(false);
     useEffect(() => {
         if (vp.w === 0 || vp.h === 0) return;
+
         if (focusIds !== null && focusIds.length > 0) {
-            const boxes = focusIds
-                .map((id) => layout.positions[id])
-                .filter((p): p is { x: number; y: number } => p !== undefined)
-                .map(nodeBox);
-            if (boxes.length === 0) return;
+            const box = focusBoxFor(focusIds);
+            if (!box) return;
             hadFocusRef.current = true;
-            fitBounds(
-                {
-                    minX: Math.min(...boxes.map((b) => b.x)),
-                    minY: Math.min(...boxes.map((b) => b.y)),
-                    maxX: Math.max(...boxes.map((b) => b.x + b.w)),
-                    maxY: Math.max(...boxes.map((b) => b.y + b.h)),
-                },
-                true,
-                1,
-            );
-        } else if (hadFocusRef.current) {
-            hadFocusRef.current = false;
+            fitBounds(box, true, NARRATIVE_STEP_MAX_SCALE, NARRATIVE_MIN_LEGIBLE_SCALE);
+            return;
+        }
+
+        const leavingWalkthrough = hadFocusRef.current;
+        hadFocusRef.current = false;
+
+        const plan = planInitialCamera(
+            bounds,
+            vp,
+            CAMERA_FIT_PADDING,
+            focusBoxFor(firstStepFocusIds ?? []),
+        );
+        if (plan) {
+            fitBounds(plan.box, true, plan.maxScale, plan.minScale);
+        } else if (leavingWalkthrough) {
             fitView(true);
         }
-    }, [focusIds, layout, vp.w, vp.h, fitBounds, fitView]);
+        // else: the whole lens already fits legibly — the hook's own
+        // mount/resize/lens-switch effect has already fit it; nothing to override.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [focusIds, layout, vp.w, vp.h, bounds, firstStepFocusIds, fitBounds, fitView]);
 
     // Chips slide to their new coordinates on a lens switch; the bezier edges
     // can't tween their `d`, so they fade out and back in around the move

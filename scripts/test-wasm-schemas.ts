@@ -9,6 +9,18 @@
  */
 
 import { $ } from "bun";
+import { fileURLToPath } from "node:url";
+
+// Each test's `code` runs in its own `bun -e` subprocess (see the runner loop
+// below), so it can't `import` a sibling module by relative path the way the
+// rest of this file does. Resolve the shared worker helpers to an absolute
+// file path once, up front, and inject an import line into every test that
+// needs `deepMerge`/`unwrapMaps` — these must stay the exact same
+// implementations the worker itself uses (src/lib/wasm/worker/util.ts), not
+// private copies that can silently drift from them.
+const UTIL_PATH = fileURLToPath(new URL("../src/lib/wasm/worker/util.ts", import.meta.url));
+const IMPORT_DEEP_MERGE = `const { deepMerge } = await import(${JSON.stringify(UTIL_PATH)});`;
+const IMPORT_DEEP_MERGE_AND_UNWRAP_MAPS = `const { deepMerge, unwrapMaps } = await import(${JSON.stringify(UTIL_PATH)});`;
 
 const tests: Array<{ name: string; code: string }> = [
     {
@@ -121,6 +133,7 @@ process.exit(0);
         code: `
 const mod = await import('@vitavision/ringgrid');
 await mod.default();
+${IMPORT_DEEP_MERGE}
 
 // 1. Schema check: v6 (0.11.0), not v5 or the legacy flat v4. The board's
 // shape is unchanged across v5 -> v6; only the version string moved.
@@ -130,19 +143,10 @@ if (def.schema !== 'ringgrid.target.v6' || typeof def.name !== 'string')
 console.log('PASS: default board JSON has schema ringgrid.target.v6 + name');
 
 // 2. Build a board through the same nested-aware merge path the adapter/worker
-// use (wasmWorker.ts handleRinggrid), with non-default values, and assert the
-// nested structure is correct AND that untouched sibling keys (lattice.kind,
-// coding.kind) survive — a shallow {...target, ...source} merge would wipe them.
-function deepMerge(target, source) {
-    const out = { ...target };
-    for (const key of Object.keys(source)) {
-        const sv = source[key], tv = target[key];
-        if (sv !== null && typeof sv === 'object' && !Array.isArray(sv) && tv !== null && typeof tv === 'object' && !Array.isArray(tv))
-            out[key] = deepMerge(tv, sv);
-        else out[key] = sv;
-    }
-    return out;
-}
+// use (src/lib/wasm/worker/ringgrid.ts's handleRinggrid), with non-default
+// values, and assert the nested structure is correct AND that untouched
+// sibling keys (lattice.kind, coding.kind) survive — a shallow
+// {...target, ...source} merge would wipe them.
 const adapterBoardOverride = {
     lattice: { rows: 9, long_row_cols: 8, pitch_mm: 12 },
     marker: { outer_radius_mm: 5.6, inner_radius_mm: 3.2 },
@@ -204,16 +208,7 @@ process.exit(0);
     {
         name: "@vitavision/calib-targets: chessboard schema",
         code: `
-function deepMerge(t, s) {
-    const o = { ...t };
-    for (const k of Object.keys(s)) {
-        const sv = s[k], tv = t[k];
-        if (sv && typeof sv === 'object' && !Array.isArray(sv) && tv && typeof tv === 'object' && !Array.isArray(tv))
-            o[k] = deepMerge(tv, sv);
-        else o[k] = sv;
-    }
-    return o;
-}
+${IMPORT_DEEP_MERGE}
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
@@ -279,16 +274,7 @@ process.exit(0);
     {
         name: "@vitavision/calib-targets: charuco",
         code: `
-function deepMerge(t, s) {
-    const o = { ...t };
-    for (const k of Object.keys(s)) {
-        const sv = s[k], tv = t[k];
-        if (sv && typeof sv === 'object' && !Array.isArray(sv) && tv && typeof tv === 'object' && !Array.isArray(tv))
-            o[k] = deepMerge(tv, sv);
-        else o[k] = sv;
-    }
-    return o;
-}
+${IMPORT_DEEP_MERGE}
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
@@ -351,16 +337,7 @@ process.exit(0);
     {
         name: "@vitavision/calib-targets: markerboard",
         code: `
-function deepMerge(t, s) {
-    const o = { ...t };
-    for (const k of Object.keys(s)) {
-        const sv = s[k], tv = t[k];
-        if (sv && typeof sv === 'object' && !Array.isArray(sv) && tv && typeof tv === 'object' && !Array.isArray(tv))
-            o[k] = deepMerge(tv, sv);
-        else o[k] = sv;
-    }
-    return o;
-}
+${IMPORT_DEEP_MERGE_AND_UNWRAP_MAPS}
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
@@ -464,12 +441,6 @@ console.log('PASS: detect_marker_board silently ignores a 4th circle rather than
 // through to the success branch and throws TypeError on result.corners.
 // That is invisible to tsc because the module is any-typed, so assert the
 // actual value here.
-function unwrapMaps(v) {
-    if (v instanceof Map) { const o = {}; for (const [k, x] of v.entries()) o[k] = unwrapMaps(x); return o; }
-    if (Array.isArray(v)) return v.map(unwrapMaps);
-    if (v !== null && typeof v === 'object') { const o = {}; for (const k of Object.keys(v)) o[k] = unwrapMaps(v[k]); return o; }
-    return v;
-}
 const miss = unwrapMaps(mod.diagnose_marker_board(32, 32, gray, chessCfg, params));
 if (!('result' in miss))
     throw new Error('diagnose_marker_board payload has no result key: ' + JSON.stringify(Object.keys(miss)));
@@ -580,6 +551,13 @@ if (diag.result.corners.length !== 361)
 if (diag.result.decode.bit_error_rate !== 0)
     throw new Error('expected a clean decode (bit_error_rate 0), got ' + diag.result.decode.bit_error_rate);
 console.log('PASS: real photo decodes to 361 corners at bit_error_rate 0');
+// 0.14 reshaped GridAlignment to { lattice, matrix: [[a,b],[c,d]], translation }.
+// wasmWorker.ts alignmentFromWasm() converts it for PuzzleboardOverlay.
+const al = diag.result.alignment;
+if (!Array.isArray(al?.matrix) || al.matrix.length !== 2 || !al.matrix.every((row) => Array.isArray(row) && row.length === 2)
+    || !Array.isArray(al.translation) || al.translation.length !== 2)
+    throw new Error('alignment is not { matrix: 2x2, translation: [tx, ty] }: ' + JSON.stringify(al));
+console.log('PASS: alignment is { matrix: 2x2, translation } (0.14 GridTransform)');
 // observed_edges backs PuzzleboardOverlay's edge-bit markers and lives ONLY on
 // the diagnostics side — an empty array here means the overlay renders nothing.
 const edges = diag.diagnostics?.observed_edges;

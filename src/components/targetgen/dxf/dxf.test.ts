@@ -9,9 +9,9 @@ const REPO_ROOT = resolve(import.meta.dirname, "../../../..");
 // production WASM Web Worker (`src/lib/wasm/wasmWorkerProxy.ts`), which
 // spawns a browser `Worker` — unavailable under vitest's jsdom environment.
 // Stub out only the worker *transport*: call the real renderer packages
-// in-process instead, exactly the WASM calls `src/lib/wasm/wasmWorker.ts`'s
-// `handleRenderTargetBundle` (calib-targets) and `handleRenderRinggridBundle`
-// (ringgrid) make. This exercises the real libraries end-to-end (schema, DXF
+// in-process instead, exactly the WASM calls `src/lib/wasm/worker/calibTargets.ts`'s
+// `handleRenderTargetBundle` and `src/lib/wasm/worker/ringgrid.ts`'s
+// `handleRenderRinggridBundle` make. This exercises the real libraries end-to-end (schema, DXF
 // terminator, etc.) — only the postMessage/Worker plumbing is bypassed.
 //
 // Loaded via `initSync` on a buffer read straight off disk rather than each

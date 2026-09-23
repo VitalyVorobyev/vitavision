@@ -62,6 +62,7 @@ import type {
 import { toPrintableDocument } from "../src/components/targetgen/printableDocument";
 import { resolvePageDimensions } from "../src/components/targetgen/svg/paperConstants";
 import { toRinggridTarget } from "../src/components/targetgen/ringgridTarget";
+import { deepMerge, unwrapMaps } from "../src/lib/wasm/worker/util";
 import { PNG } from "pngjs";
 
 /** Fixed rasterisation resolution for the round trip — real enough to feed a
@@ -159,57 +160,12 @@ function rasterizeGray(svgText: string, dpi: number): Raster {
     return { width, height, gray };
 }
 
-/**
- * Recursively convert a value that may contain nested JS `Map`s into plain
- * objects/arrays.
- *
- * `diagnose_marker_board` returns a payload that is `instanceof Map` at
- * every object level — an upstream serde_wasm_bindgen quirk verified
- * empirically against the real WASM module (see the identical helper in
- * `src/lib/wasm/wasmWorker.ts`), despite the package's `.d.ts` declaring a
- * plain `{ result, diagnostics }` object. `Object.fromEntries` only unwraps
- * the outermost Map; this walks the whole tree so downstream code can treat
- * the result as ordinary JSON.
- */
-function unwrapMaps(value: unknown): unknown {
-    if (value instanceof Map) {
-        const out: Record<string, unknown> = {};
-        for (const [key, v] of value.entries()) out[key] = unwrapMaps(v);
-        return out;
-    }
-    if (Array.isArray(value)) return value.map(unwrapMaps);
-    if (value !== null && typeof value === "object") {
-        const out: Record<string, unknown> = {};
-        for (const key of Object.keys(value as Record<string, unknown>)) {
-            out[key] = unwrapMaps((value as Record<string, unknown>)[key]);
-        }
-        return out;
-    }
-    return value;
-}
-
-/**
- * Merge `source` over `target`, recursing into nested plain objects.
- *
- * Every WASM `detect_*`/`default_*_params` call must start from the
- * module's own defaults and layer overrides on top — a params object built
- * from scratch fails with `missing field ...` (see CLAUDE.md's WASM plugin
- * guidance). This is the same shallow-recursive merge used by
- * `src/lib/wasm/wasmWorker.ts::deepMerge` and `scripts/test-wasm-schemas.ts`.
- */
-function deepMerge<T extends Record<string, unknown>>(target: T, source: Record<string, unknown>): T {
-    const out: Record<string, unknown> = { ...target };
-    for (const key of Object.keys(source)) {
-        const sv = source[key];
-        const tv = target[key];
-        if (sv !== null && typeof sv === "object" && !Array.isArray(sv) && tv !== null && typeof tv === "object" && !Array.isArray(tv)) {
-            out[key] = deepMerge(tv as Record<string, unknown>, sv as Record<string, unknown>);
-        } else {
-            out[key] = sv;
-        }
-    }
-    return out as T;
-}
+// `deepMerge`/`unwrapMaps` are imported from `src/lib/wasm/worker/util.ts` —
+// the same shallow-recursive merge and Map-unwrapping helpers the worker
+// itself uses (see that file's doc comments for why each exists: every WASM
+// `detect_*`/`default_*_params` call must start from the module's own
+// defaults and layer overrides on top, and `diagnose_marker_board` returns a
+// payload that is `instanceof Map` at every object level).
 
 /** `#rrggbb` count of `<rect>` tags in a rendered SVG document. */
 function countRects(svgText: string): number {

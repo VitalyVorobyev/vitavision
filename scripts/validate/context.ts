@@ -7,8 +7,8 @@
  * pure-data path `createContext` (the in-memory test builder) drives, so
  * disk-loaded and in-memory contexts are built identically after loading.
  */
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { join, relative, sep } from "node:path";
 import { parse as parseYaml } from "yaml";
 
 import {
@@ -20,13 +20,33 @@ import {
 import type { ContentGraph, ContentEntry } from "../content-graph.ts";
 import { buildContentGraph } from "../content-graph.ts";
 import { computeReadingTimeMinutes } from "../reading-time.ts";
-import { CONTENT_DIR, PAPERS_INDEX_PATH } from "../lib/paths.ts";
+import { CONTENT_DIR, IMAGES_DIR } from "../lib/paths.ts";
+import { PAPERS_INDEX_PATH } from "../lib/paths.ts";
 import { loadIndexEntries, paperYears as papersIndexYears, sourceKeyMap } from "../lib/papers-index.ts";
 import type { RawIndexEntry } from "../lib/papers-index.ts";
 import { parseSourceRef } from "../lib/source-ref.ts";
-import { loadMarkdownDir, algoSlug, modelSlug, conceptSlug, narrativeSlug } from "../lib/content-kinds.ts";
+import { loadMarkdownDir, algoSlug, modelSlug, conceptSlug, narrativeSlug, blogSlug, demoSlug } from "../lib/content-kinds.ts";
 import type { MarkdownDirEntry } from "../lib/content-kinds.ts";
-import type { AtlasLookup, Diagnostic, ParsedEntry, TypedRelation, ValidationContext } from "./types.ts";
+import { loadAuthorsYaml } from "../lib/authors.ts";
+import type { AuthorRecord } from "../lib/authors.ts";
+import type { AtlasLookup, BodyEntry, Diagnostic, ParsedEntry, TypedRelation, ValidationContext } from "./types.ts";
+
+/** Recursively lists every file under `dir`, returning paths relative to
+ *  `dir` with POSIX separators (matching how image refs are authored:
+ *  `images/<subdir>/<file>`). Returns `[]` when `dir` does not exist. */
+function listFilesRecursive(dir: string, base: string = dir): string[] {
+    if (!existsSync(dir)) return [];
+    const out: string[] = [];
+    for (const entry of readdirSync(dir)) {
+        const full = join(dir, entry);
+        if (statSync(full).isDirectory()) {
+            out.push(...listFilesRecursive(full, base));
+        } else {
+            out.push(relative(base, full).split(sep).join("/"));
+        }
+    }
+    return out;
+}
 
 /**
  * Options for validateContent.
@@ -47,9 +67,16 @@ interface RawContextInput {
     models: MarkdownDirEntry[];
     concepts: MarkdownDirEntry[];
     narratives: MarkdownDirEntry[];
+    /** Raw (unparsed) — see `ValidationContext.blogEntries`. */
+    blog: MarkdownDirEntry[];
+    /** Raw (unparsed) — see `ValidationContext.demoEntries`. */
+    demos: MarkdownDirEntry[];
     indexEntries: RawIndexEntry[];
     /** Raw content/tags.yaml text, or `null` if the file does not exist. */
     tagsYamlText: string | null;
+    /** Paths relative to content/images/, POSIX-separated. */
+    imagePaths: string[];
+    authorRecords: AuthorRecord[];
     includeDrafts: boolean;
     publishedGraph?: ContentGraph;
 }
@@ -209,6 +236,28 @@ function buildContextCore(input: RawContextInput): ValidationContext {
         }
     }
 
+    // ── blog/demo — kept raw (not zod-parsed); rules/schemas.ts validates ──
+    const blogEntries = input.blog;
+    const demoEntries = input.demos;
+    const blogSlugs = new Set(blogEntries.map((e) => e.slug));
+    const demoSlugs = new Set(demoEntries.map((e) => e.slug));
+    const narrativeSlugs = new Set(narrativeEntries.map((e) => e.slug));
+
+    // ── images/links/cross-refs: one normalized body list across all kinds ──
+    const bodyEntries: BodyEntry[] = [
+        ...algoEntries.map((e): BodyEntry => ({ kind: "algorithm", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
+        ...modelEntries.map((e): BodyEntry => ({ kind: "model", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
+        ...conceptEntries.map((e): BodyEntry => ({ kind: "concept", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
+        ...narrativeEntries.map((e): BodyEntry => ({ kind: "narrative", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
+        ...blogEntries.map((e): BodyEntry => ({ kind: "blog", file: e.file, slug: e.slug, content: e.content, data: e.data, isDraft: !!(e.data.draft) })),
+        ...demoEntries.map((e): BodyEntry => ({ kind: "demo", file: e.file, slug: e.slug, content: e.content, data: e.data, isDraft: !!(e.data.draft) })),
+    ];
+
+    const imageSet = new Set(input.imagePaths);
+    const imageExists = (relPath: string): boolean => imageSet.has(relPath);
+
+    const authorIds = new Set(input.authorRecords.map((r) => r.id));
+
     return {
         includeDrafts,
         algoEntries,
@@ -228,6 +277,14 @@ function buildContextCore(input: RawContextInput): ValidationContext {
         paperYears,
         atlasBySlug,
         tagsYamlSlugs,
+        blogEntries,
+        demoEntries,
+        blogSlugs,
+        demoSlugs,
+        narrativeSlugs,
+        bodyEntries,
+        imageExists,
+        authorIds,
         loaderDiagnostics,
     };
 }
@@ -241,19 +298,28 @@ export function buildValidationContext(options: ValidateContentOptions = {}): Va
     const models = loadMarkdownDir(join(CONTENT_DIR, "models"), modelSlug);
     const concepts = loadMarkdownDir(join(CONTENT_DIR, "concepts"), conceptSlug);
     const narratives = loadMarkdownDir(join(CONTENT_DIR, "narratives"), narrativeSlug);
+    const blog = loadMarkdownDir(join(CONTENT_DIR, "blog"), blogSlug);
+    const demos = loadMarkdownDir(join(CONTENT_DIR, "demos"), demoSlug);
 
     const indexEntries = loadIndexEntries(PAPERS_INDEX_PATH, { onMissing: () => [] });
 
     const tagsYamlPath = join(CONTENT_DIR, "tags.yaml");
     const tagsYamlText = existsSync(tagsYamlPath) ? readFileSync(tagsYamlPath, "utf-8") : null;
 
+    const imagePaths = listFilesRecursive(IMAGES_DIR);
+    const authorRecords = loadAuthorsYaml();
+
     return buildContextCore({
         algorithms,
         models,
         concepts,
         narratives,
+        blog,
+        demos,
         indexEntries,
         tagsYamlText,
+        imagePaths,
+        authorRecords,
         includeDrafts,
         publishedGraph: options.publishedGraph,
     });
@@ -269,9 +335,17 @@ export interface CreateContextInput {
     models?: MarkdownDirEntry[];
     concepts?: MarkdownDirEntry[];
     narratives?: MarkdownDirEntry[];
+    /** Raw (unparsed) blog fixtures — see `ValidationContext.blogEntries`. */
+    blog?: MarkdownDirEntry[];
+    /** Raw (unparsed) demo fixtures — see `ValidationContext.demoEntries`. */
+    demos?: MarkdownDirEntry[];
     indexEntries?: RawIndexEntry[];
     /** Raw content/tags.yaml text; omit or pass `null` to simulate an absent file. */
     tagsYaml?: string | null;
+    /** Fixture image paths (relative to content/images/, POSIX-separated) — backs `ctx.imageExists`. */
+    images?: string[];
+    /** Fixture docs/papers/authors.yaml rows — backs `ctx.authorIds`. */
+    authorRecords?: AuthorRecord[];
     includeDrafts?: boolean;
     publishedGraph?: ContentGraph;
 }
@@ -285,8 +359,12 @@ export function createContext(input: CreateContextInput = {}): ValidationContext
         models: input.models ?? [],
         concepts: input.concepts ?? [],
         narratives: input.narratives ?? [],
+        blog: input.blog ?? [],
+        demos: input.demos ?? [],
         indexEntries: input.indexEntries ?? [],
         tagsYamlText: input.tagsYaml ?? null,
+        imagePaths: input.images ?? [],
+        authorRecords: input.authorRecords ?? [],
         includeDrafts: input.includeDrafts ?? false,
         publishedGraph: input.publishedGraph,
     });

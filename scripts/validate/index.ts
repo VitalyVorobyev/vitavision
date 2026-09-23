@@ -24,6 +24,10 @@ import { domainRule } from "./rules/domain.ts";
 import { tagsRule } from "./rules/tags.ts";
 import { proseRefsRule } from "./rules/prose-refs.ts";
 import { narrativesRule } from "./rules/narratives/index.ts";
+import { schemasRule } from "./rules/schemas.ts";
+import { imagesRule } from "./rules/images.ts";
+import { linksRule } from "./rules/links.ts";
+import { crossRefsRule } from "./rules/cross-refs.ts";
 
 export type { ValidateContentOptions };
 
@@ -47,6 +51,10 @@ export async function validateContent(options?: ValidateContentOptions): Promise
     all.push(...tagsRule(ctx));                   // Rule 8: tags.yaml drift
     all.push(...proseRefsRule(ctx));              // Rule 10: prose references (warning only)
     all.push(...(await narrativesRule(ctx)));     // Rule 11: narratives
+    all.push(...schemasRule(ctx));                // Rule 12: blog/demo frontmatter schemas
+    all.push(...imagesRule(ctx));                 // Rule 13: image references (all kinds)
+    all.push(...linksRule(ctx));                  // Rule 14: internal links (all kinds)
+    all.push(...crossRefsRule(ctx));              // Rule 15: relatedPosts/relatedDemos/relatedAlgorithms
 
     const errors = all.filter((d) => d.level === "error").map((d) => d.message);
     const warnings = all.filter((d) => d.level === "warning").map((d) => d.message);
@@ -57,7 +65,7 @@ export async function validateContent(options?: ValidateContentOptions): Promise
     // ── Summary ───────────────────────────────────────────────────────────────
     if (errors.length === 0) {
         console.log(
-            `content:validate — ${totalChecked} page(s) validated (${ctx.algoFiltered.length} algo, ${ctx.modelFiltered.length} model, ${ctx.conceptFiltered.length} concept, ${ctx.narrativeFiltered.length} narrative), no errors`,
+            `content:validate — ${totalChecked} page(s) validated (${ctx.algoFiltered.length} algo, ${ctx.modelFiltered.length} model, ${ctx.conceptFiltered.length} concept, ${ctx.narrativeFiltered.length} narrative, ${ctx.blogEntries.length} blog, ${ctx.demoEntries.length} demo), no errors`,
         );
     }
     if (warnings.length > 0) {

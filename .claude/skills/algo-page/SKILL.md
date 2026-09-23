@@ -278,7 +278,7 @@ B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no b
    ```
    Any MISS line means either (a) the note is incomplete and should be extended, or (b) Sonnet hallucinated. In case (a), extend the note and re-delegate. In case (b), reject the draft and re-delegate with a stricter prompt.
 9. **Assemble and write.** Opus assembles `--- frontmatter ---\n<body string from Sonnet>` and calls `Write` once. The frontmatter `prerequisites` / `relations[].target` slugs come from the note's `Connections` section + the §4 citation-graph candidates, NOT from the body string. Cross-check every slug against `knownSlugs` (read from `src/generated/content-graph.ts` or by listing `content/{algorithms,models,concepts}/`).
-10. **Verify.** `bun run build && bun run lint && npx vitest run && bun run scripts/validate-content.ts`. (`bun run build` already runs the Atlas graph validator with drafts included via `scripts/content-build.ts`; the explicit `validate-content.ts` run additionally checks the published-only set, matching CI.)
+10. **Verify.** `bun run build && bun run lint && npx vitest run && bun run content:validate`. (`bun run build` already runs the Atlas graph validator with drafts included via `scripts/content-build.ts`; the explicit `content:validate` run additionally checks the published-only set, matching CI.)
 
 ## Voice rules
 

@@ -63,7 +63,7 @@ For each slug, a Haiku subagent computes, per page, without judgment calls:
 - `relations:` field: present/absent, entry count.
 - `quality:` field value (absent, `stub`, `canonical`, `historical`).
 - Validator warnings naming this slug: run
-  `bun run scripts/validate-content.ts` once for the whole batch and grep
+  `bun run content:validate` once for the whole batch and grep
   its warning output for each slug — don't re-run per page.
 
 Returns one JSON object per page: `{slug, word_counts, placeholders,

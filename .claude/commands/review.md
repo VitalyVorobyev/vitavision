@@ -28,7 +28,7 @@ Check the diff against `.claude/CLAUDE.md`:
   changed) — single global slug namespace, no hand-authored reverse edges (`usedBy`,
   `generalises`, etc.), correct `relations[].type` per the Rule A/B/C comparison discipline,
   `quality:` field gates satisfied, `sources` kinds valid with a matching research note, and
-  `bun run scripts/validate-content.ts` passes.
+  `bun run content:validate` passes.
 - **Touch & mobile interaction** (if an interactive SVG, canvas, or react-konva surface
   changed) — `touch-action: none` set on the interactive element; hover-only affordances have
   a tap-equivalent via `pointerType === "touch"`/`"pen"`.

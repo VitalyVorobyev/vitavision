@@ -47,6 +47,28 @@ export interface AtlasLookup {
     relations: TypedRelation[];
 }
 
+/** Content kinds carrying a markdown body — the set `rules/images.ts`,
+ *  `rules/links.ts`, and `rules/cross-refs.ts` scan uniformly. */
+export type BodyEntryKind = "algorithm" | "model" | "concept" | "narrative" | "blog" | "demo";
+
+/**
+ * One page's body + raw frontmatter data, normalized across every content
+ * kind so images/links/cross-refs rules don't special-case algo/model/concept
+ * (which carry zod-parsed `frontmatter`) vs blog/demo (kept raw — see
+ * `ValidationContext.blogEntries`/`demoEntries`). `data` is whichever of the
+ * two a kind has; both shapes key relationship fields (`relatedPosts`, ...)
+ * identically, untouched by zod transforms.
+ */
+export interface BodyEntry {
+    kind: BodyEntryKind;
+    file: string;
+    slug: string;
+    content: string;
+    data: Record<string, unknown>;
+    /** `draft: true` or `dev: true` in raw frontmatter, independent of includeDrafts filtering. */
+    isDraft: boolean;
+}
+
 export interface ValidationContext {
     includeDrafts: boolean;
 
@@ -83,6 +105,32 @@ export interface ValidationContext {
     /** Tag slugs declared in content/tags.yaml, or `null` when the file is
      *  absent or has no `tags` key (both cases skip Rule 8 entirely). */
     tagsYamlSlugs: Set<string> | null;
+
+    /** Raw (gray-matter parsed, NOT zod-validated) blog/demo entries — schema
+     *  errors are a rule (`rules/schemas.ts`), not a context-build failure,
+     *  so a schema-invalid blog/demo page still gets image/link/cross-ref
+     *  checks, matching the old content-validate.ts's behaviour. */
+    blogEntries: MarkdownDirEntry[];
+    demoEntries: MarkdownDirEntry[];
+    blogSlugs: Set<string>;
+    demoSlugs: Set<string>;
+    /** Narrative slugs, UNFILTERED (drafts included) — links may target a draft narrative. */
+    narrativeSlugs: Set<string>;
+
+    /** Every page's body + raw data, across all six content kinds, UNFILTERED
+     *  — used by rules/images.ts, rules/links.ts, rules/cross-refs.ts. */
+    bodyEntries: BodyEntry[];
+
+    /** True when `content/images/<relPath>` exists on disk (or is present in
+     *  a test fixture's injected image list). Kept as a function (backed by
+     *  a precomputed Set) so rules stay pure/sync while tests can inject an
+     *  arbitrary fixture image list via `createContext({ images: [...] })`. */
+    imageExists: (relPath: string) => boolean;
+
+    /** Every author id in docs/papers/authors.yaml (canonical AND merged-away
+     *  ids — a merged id's page still exists as a redirect, so both resolve
+     *  as valid `/authors/<id>` link targets). */
+    authorIds: Set<string>;
 
     /** Diagnostics produced while building the context itself — index.yaml
      *  loader errors (reserved-prefix ids, malformed repo/doc entries) and

@@ -13,10 +13,9 @@
    `deep-model-page` / `concept-page` / `narrative-page`. Comparison prose only when both
    research notes exist. After each ingest: `bun run papers:backfill-authors --only <id>`.
 3. Verification after every phase: `bun run build` (also runs the Atlas graph validator, drafts
-   included) · `bun run lint` · `npx vitest run` · `bun run scripts/validate-content.ts`
-   (published-only, as CI) · `bun run content:validate` · `bun run narratives:debt` (narrative
-   PRs) · `bun run ds:validate` (if DS-exported components touched) · devtools touch emulation for
-   interactive-canvas changes.
+   included) · `bun run lint` · `npx vitest run` · `bun run content:validate` (published-only, as
+   CI) · `bun run narratives:debt` (narrative PRs) · `bun run ds:validate` (if DS-exported
+   components touched) · devtools touch emulation for interactive-canvas changes.
 4. At session end: update Workstream status and the Decisions log.
 
 **PR policy (user mandate, 2026-08-23):** Claude opens and merges PRs itself, no codex review;

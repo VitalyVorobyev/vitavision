@@ -100,7 +100,9 @@ INCLUDE_DRAFTS=true bun run scripts/validate-content.ts  # all pages
 
 Run this **by path** before opening a PR. It checks slug resolution (including `relations[].target`), prerequisite cycles, source-id existence, and canonical-quality gates.
 
-CI's `validate-content` job runs it too, as a step named "Validate content (Atlas graph)", alongside `bun run content:validate` → `scripts/content-validate.ts` (narrower — blog/algorithm internal links and `relatedPosts` only). The two script names are confusingly similar but cover different ground; neither supersedes the other. `bun run build` runs neither, so a local build succeeding is not proof content is valid.
+`bun run build` (`INCLUDE_DRAFTS=true bun run content:build && tsc -b && vite build`) already runs this validator with drafts included, via `scripts/content-build.ts`, and fails the build on any validation error — so, consistent with unknown slugs failing `bun run build` above, a local build succeeding is proof the graph validates against the include-drafts set. It does not run `content:validate`.
+
+CI's `validate-content` job runs both: this validator (as a step named "Validate content (Atlas graph)", on published pages only — no `INCLUDE_DRAFTS`), alongside `bun run content:validate` → `scripts/content-validate.ts` (narrower — blog/algorithm internal links and `relatedPosts` only). The two script names are confusingly similar but cover different ground; neither supersedes the other.
 
 ## No parallel atlas tree
 

@@ -123,7 +123,7 @@ The renderer groups entries into three sidebar sections by category — **Lineag
 
 Frontmatter `sources.primary` and `sources.references[]` accept three source kinds, all registered in `docs/papers/index.yaml`:
 
-- `<bare-id>` or `paper:<id>` — a paper. Default kind; the 45+ existing entries use this form. Do not invent paper IDs.
+- `<bare-id>` or `paper:<id>` — a paper. Default kind; most existing entries use this form. Do not invent paper IDs.
 - `repo:<https-url>@<sha>` — a GitHub repo pinned at a 7–40-char commit SHA. The index entry must exist with `kind: repo` and matching commit. Use this for repos cited as background or comparison; for the page's own reference implementation use `sources.impl` (algo) or `implementations[]` (model) — those are richer-typed and license-verified.
 - `doc:<repo-relative-path>` — a markdown doc inside this repo. The path must exist under `docs/` or `content/`. Index entry has `kind: doc`.
 
@@ -161,13 +161,19 @@ resolution (including `relations[].target`), prerequisite cycles, source-id exis
 canonical-quality gates, and narrative rules (node XOR, page/paper resolution, lens/step
 completeness, edge-vs-Atlas-relations warnings) in the same run.
 
+`bun run build` (`INCLUDE_DRAFTS=true bun run content:build && tsc -b && vite build`)
+already runs the Atlas graph validator (`validate-content.ts`) with drafts included,
+via `scripts/content-build.ts`, and throws on any validation error — a local build
+succeeding on its own IS proof the graph validates against the include-drafts set.
+It does NOT run `content:validate` (`scripts/content-validate.ts`).
+
 CI's `validate-content` job runs both scripts: `bun run content:validate` →
 `scripts/content-validate.ts` (narrower — blog/algorithm internal links and
 `relatedPosts` only), and `bun run scripts/validate-content.ts` by path (the real
-Atlas graph validator described above). The two script names are confusingly
-similar but cover different ground — don't assume one supersedes the other, and
-don't remove either without replacing its coverage. `bun run build` still does not
-run either validator, so a local build succeeding is not proof content is valid.
+Atlas graph validator described above, run again here on published pages only —
+i.e. without `INCLUDE_DRAFTS`). The two script names are confusingly similar but
+cover different ground — don't assume one supersedes the other, and don't remove
+either without replacing its coverage.
 
 ### Research notes (unpublished reasoning substrate)
 

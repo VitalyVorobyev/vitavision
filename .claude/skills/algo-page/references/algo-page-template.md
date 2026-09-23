@@ -3,16 +3,17 @@
 title: "<Display name of the algorithm>"
 date: YYYY-MM-DD
 summary: "<One sentence, index-card length. Declarative. No narrative opening.>"
-tags: ["<primary>", "<secondary>"]
-category: <corner-detection|calibration-targets|subpixel-refinement|explainers|calibration>
+tags: ["<primary>", "<secondary>"]   # each from `tagValues` in src/lib/content/schema.ts
 author: "Vitaly Vorobyev"
 
 # Optional
+domain: <one of `domainValues` in src/lib/content/schema.ts, e.g. features|geometry|calibration|targets>
+tasks: [<zero or more of `taskValues` in src/lib/content/schema.ts, e.g. corner-detection, camera-calibration>]
 difficulty: <beginner|intermediate|advanced>
 draft: false
 relatedPosts: ["<blog-slug>"]
 relatedDemos: ["<demo-slug>"]
-editorAlgorithmId: <chess-corners|chessboard|charuco|markerboard|ringgrid|radsym>
+editorAlgorithmId: <chess-corners|chessboard|charuco|markerboard|ringgrid|radsym|puzzleboard>
 coverImage: "./images/<slug>/cover.png"
 repoLinks: ["https://github.com/..."]
 demoLinks: ["https://..."]

@@ -121,7 +121,10 @@ feat(demos): add /demos route and content pipeline
 
 Do NOT:
 - Create a `docs/handoffs/` entry.
-- Update a backlog file.
+- Update `docs/atlas/roadmap.md` or `docs/atlas/backlog.md` unless the task
+  explicitly asked for it — the Atlas initiative uses those two files as
+  living state (not a `docs/handoffs/`-style one-off note), so an explicit
+  request to update them is in scope; an unprompted edit is not.
 - Skip hooks with `--no-verify`.
 
 ## Anti-patterns

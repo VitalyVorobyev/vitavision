@@ -100,8 +100,12 @@ Validates against `modelFrontmatterSchema` in `src/lib/content/schema.ts`.
 title: "..."                 # Display title (e.g. "ResNet", "SuperPoint")
 date: YYYY-MM-DD
 summary: "..."               # One sentence, index-card length
-tags: [...]                  # At least one; start with "computer-vision" if applicable
+tags: [...]                  # At least one, each from `tagValues` in src/lib/content/schema.ts (e.g. "deep-learning" + primary architecture/task tag)
 author: "Vitaly Vorobyev"
+
+# Optional
+domain: <one of `domainValues` in src/lib/content/schema.ts, e.g. representation-learning|detection|segmentation|depth>
+tasks: [<zero or more of `taskValues` in src/lib/content/schema.ts, e.g. image-classification, image-segmentation>]
 
 # Required for any non-draft page
 sources:
@@ -141,9 +145,7 @@ coverImage: "..."
 
 ## Research-note awareness
 
-Research notes at `docs/research/notes/<sources.primary>.md` are the **canonical input** for this skill. The Draft contract reads them, not the paper cache. Before any draft pass, verify the note exists for the primary source AND for every reference in `sources.references`. If any required note is missing, the skill stops and reports: *"Cannot draft — research note `docs/research/notes/<id>.md` does not exist. Run `/paper-ingest <id-or-arxiv-ref>` first."*
-
-The note's `## NEW: <slug>` or `## UPDATE: <slug>` block provides authoritative content guidance for the section being drafted. The note's other sections (Setting, Core idea, Assumptions, Failure regime, Numerical sensitivity, Applicability, Connections) are the reasoning substrate the Draft subagent works from.
+See `.claude/skills/_shared/page-pipeline.md` §1 for the canonical-input rule and the explicit rules shared with `algo-page` (no pairwise comparison pages, no raw LLM summaries, cite registered source IDs only, no unresolved slugs, no authored reverse edges). Binding.
 
 **Two invocation paths:**
 
@@ -155,14 +157,9 @@ The note's `## NEW: <slug>` or `## UPDATE: <slug>` block provides authoritative 
 - Prefer a **model-family page** (e.g. "ResNet family", "YOLO family") over a single-paper page when successive papers in a series differ primarily in scale, training recipe, or minor architectural tweaks rather than in fundamental design decisions. Create one family page and note variants in `# Architecture.Family & shape`.
 - **Avoid chasing minor model-version variants.** When a new version (e.g. ResNet-50 → ResNet-101, YOLOv5 → YOLOv8) appears, update the existing family page rather than creating a new one. Create a new page only when the architectural change is substantial (new training objective, new fundamental block type, new modality).
 
-**Explicit rules:**
+**Explicit rules (deep-model-page-specific — see `_shared/page-pipeline.md` §1 for the rules shared with `algo-page`):**
 
 - **1:1 page = primary paper (or paper family).** Every model page has exactly one primary paper in `sources.primary`. Supplementary papers go in `sources.references` only.
-- **No pairwise comparison pages.** Use `relations[type=compared_with]` + an inline `## When to choose X over Y` section in the more authoritative page. Surveys allowed only with ≥3 methods, ≥800 words, and a decision table.
-- **Never publish raw LLM summaries.** Always synthesize against the research note's structured fields and your own understanding. Each claim must trace to a paper section, equation, table, or impl file/line.
-- **Cite source IDs only from `docs/papers/index.yaml`.** Do not invent paper IDs.
-- **Never reference unresolved slugs.** Verify every slug in `relations[].target` and `prerequisites` exists on disk before adding it.
-- **Do not author reverse edges.** `usedBy:` and similar reverse fields are computed by the build. Never add them manually.
 - Use `quality: stub` only for intentional public placeholders; `quality: canonical` only when the canonical gate is satisfied.
 
 ## Workflow
@@ -176,22 +173,12 @@ This procedure is mandatory for any new or rewritten model page.
 
 ### Bootstrap (Claude-driven, for entirely new pages)
 
-B1. **Resolve the input.** Parse to `arxiv:<id>` or `doi:<doi>`. URL → extract arxiv id or DOI first. `bun papers:fetch-meta` accepts all three forms.
-
-B2. **Fetch metadata.** `bun papers:fetch-meta <arg>`; capture stdout YAML. Review `id` and `url` as in `algo-page` B2 — rename awkward ids now, replace fragile URLs with stabler mirrors.
-
-B3. **Append to `docs/papers/index.yaml`.** Edit tool, end of file. Preserve inline `# <title>` comments on unresolved `<name><year>-???` cite lines.
-
-B4. **Curate the cites list.** Same rules as `algo-page` B4: chase direct antecedents (the backbone paper, the training-objective paper, the seminal architecture the model extends), drop tangential citations.
-
-B5. **Cache PDFs + text + ar5iv HTML.** `bun papers:fetch`.
-
-B6. **Ensure the research note exists.** Run `bun ls docs/research/notes/<primary-id>.md`. If absent, stop and tell the user: *"Bootstrap requires the research note. Run `/paper-ingest <input>` first to create `docs/research/notes/<primary-id>.md`, then rerun `deep-model-page`."* Do NOT load the cache file into orchestrator context — drafting happens in Workflow §7 via the Draft contract.
+Follow `.claude/skills/_shared/page-pipeline.md` §2 for B1–B6 (resolve input, fetch metadata, append to `docs/papers/index.yaml`, curate the cites list — chase the backbone paper, the training-objective paper, the seminal architecture the model extends; drop tangentials — cache PDFs + text + ar5iv HTML, ensure the research note exists). In B6's stop message, use `deep-model-page` as the skill to rerun.
 
 B7. **Choose the page slug.** Kebab-case, descriptive — the model's common name. `resnet`, not `he2016`. `superpoint`, not `detone2018`. `swin-transformer`, not `swin` (ambiguous) or `swin-v1` (version-chasing).
 
 B8. **Synthesize the frontmatter — sources and header metadata.** No body yet.
-   - `title` (display name, quoted), `date: <today>`, `summary` (one sentence: what the model takes in, produces, and how it is trained), `tags` (at least `computer-vision` + primary task), `difficulty: intermediate` unless clearly another tier, `author: "Vitaly Vorobyev"`.
+   - `title` (display name, quoted), `date: <today>`, `summary` (one sentence: what the model takes in, produces, and how it is trained), `tags` (one or more values from `tagValues` in `src/lib/content/schema.ts`, e.g. `deep-learning` + primary architecture/task tag), `domain` (one value from `domainValues` in `src/lib/content/schema.ts`), `tasks` (zero or more values from `taskValues` in `src/lib/content/schema.ts`), `difficulty: intermediate` unless clearly another tier, `author: "Vitaly Vorobyev"`.
    - `sources.primary`, `sources.references` (curated in B4 + cross-link candidates from `bun papers:query pages-using <ref-id>`), `sources.notes` (key equations / losses / table references grounding the page).
    - `arch_family`, `params`, `flops` if the paper reports them. Use the canonical configuration the paper tables compare against.
    - `relations[]` cross-links (e.g. `learned_alternative_of` to the classical algorithm this model replaces) / `relatedPosts` as applicable.
@@ -258,7 +245,7 @@ B10. **Flip `draft: false`** once B9a wrote at least one valid implementations e
    ```
    Additionally: every `license`, `weights_license`, `framework`, and `role` claim in the body must match the verified `implementations[]` entry from §3 — string-match. Any mismatch is a hallucination flag. In case of MISS, either extend the note and re-delegate, or reject the draft and re-delegate with a stricter prompt.
 9. **Assemble and write.** Opus assembles `--- frontmatter ---\n<body string from Sonnet>` and calls `Write` once. Frontmatter `relations[].target` slugs come from §4 candidates + the primary note's `Connections` section, NOT from the body string. Cross-check every slug against `knownSlugs` (read from `src/generated/content-graph.ts` or by listing `content/{algorithms,models,concepts}/`).
-10. **Verify.** `bun run build && bun run lint && npx vitest run`.
+10. **Verify.** `bun run build && bun run lint && npx vitest run && bun run scripts/validate-content.ts`. (`bun run build` already runs the Atlas graph validator with drafts included via `scripts/content-build.ts`; the explicit `validate-content.ts` run additionally checks the published-only set, matching CI.)
 
 ## Voice rules
 
@@ -307,7 +294,7 @@ Run before handing off a draft.
 
 ## Notes on cache file fidelity
 
-For arxiv papers, `docs/papers/.cache/<id>.html` (ar5iv rendering) preserves LaTeX source in `<annotation encoding="application/x-tex">` blocks and section structure — equations transcribe directly without OCR artefacts. For non-arxiv papers, or when ar5iv returned 404, `<id>.txt` (pdftotext -layout) serves as the fallback. These notes are guidance for whoever is creating the research note via `paper-ingest` — the orchestrator (Opus) does not open cache files during `deep-model-page`.
+See `.claude/skills/_shared/page-pipeline.md` §3 — shared verbatim with `algo-page`.
 
 ## When not to use this skill
 
@@ -324,3 +311,4 @@ For arxiv papers, `docs/papers/.cache/<id>.html` (ar5iv rendering) preserves LaT
 - `.venv/bin/python py/generate_<slug>_<name>.py` — repo-root venv (matplotlib, numpy preinstalled) for running generator scripts. Model generators on `py/generate_harris_eigenvalue_regions.py`.
 - `https://raw.githubusercontent.com/<owner>/<repo>/<sha>/LICENSE` — the canonical source for an implementation's license string. Read the file; do not infer.
 - `.claude/skills/_shared/subagent-prompts.md` — Draft contract template, AUDIT JSON shape, page-vs-note verification recipe. Inherited from `algo-page`.
+- `.claude/skills/_shared/page-pipeline.md` — Bootstrap B1–B6, research-note-awareness rules, and cache-file-fidelity notes shared with `algo-page`.

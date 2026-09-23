@@ -145,7 +145,7 @@ Do not copy bullets from research notes verbatim — synthesize. The Draft contr
 
 Invoke the Draft contract from `.claude/skills/_shared/subagent-prompts.md` with:
 - The list of research note paths (from Step 2)
-- The page-template skeleton path (`references/concept-page-template.md` if it exists; otherwise the 5-section convention defined in `## Structure` above)
+- The 5-section convention defined in `## Structure` above (no separate template file — concept pages have no `references/` skeleton)
 - The target concept slug
 
 Sonnet returns:
@@ -169,7 +169,7 @@ Opus assembles `--- frontmatter --- \n <body string from Sonnet>` and calls `Wri
 ### Step 6 — Verify
 
 ```bash
-bun run build && bun run scripts/content-validate.ts
+bun run build && bun run scripts/validate-content.ts
 ```
 
 ## Voice rules

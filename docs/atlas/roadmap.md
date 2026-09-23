@@ -41,7 +41,7 @@ After PR-B: 54 models · 154 sources · 144 notes (11 in v2 form) · 502 canonic
 | A — Workflow hygiene | Skills and docs describe the system as it is | **done** (#158) | — |
 | B — Dense-prediction injection | FPN, DPT, PointRend pages; SegFormer note → v2 | **done** (PR-B) | — |
 | F — Authors & papers experience | Papers and people become first-class, well-designed Atlas surfaces | planned | design phase (see below) |
-| G — Build-pipeline quality | Validator, build scripts, and frontend/editor monoliths modular and tested | **in progress** — D1 scripts (#160), D2 Atlas frontend (PR) | D3 WASM worker + editor |
+| G — Build-pipeline quality | Validator, build scripts, and frontend/editor monoliths modular and tested | **done** (#160, #161, D3 PR) | — |
 | H — Note v2 migration | Every relation rests on a note with `# Stated relations` | planned | batch 1: highest-degree segmentation/detection notes |
 | I — Coverage waves | Close page debt and notes-without-pages | planned | multi-scale wave after PR-B |
 | J — Quality tiers | Canonical rollout per domain; second audit pass | planned | `atlas-audit` batch 2 over BL-001 remainder |
@@ -157,6 +157,20 @@ narrative should get a page — paper-only nodes are debt, not normal.
   OpenAlex 404s on arXiv DOIs for ICCV/CVPR papers indexed under their conference DOI — search by
   title/DOI and verify authors before registering. Lesson: pdftotext drops superscripts (PointRend
   "142"/"282" were 14²/28²) — sanity-check any suspicious constant against the paper's own arithmetic.
+
+- 2026-09-23 — **WS-G monolith batch** (user-approved: all three areas, fix found bugs in separate
+  commits, one validator name). `content-validate.ts` deleted; `bun run content:validate` is the single
+  validator (`scripts/validate/context.ts` + pure `rules/*.ts` with fixtures), now also checking
+  internal links/anchors, images and cross-refs; the build validates before writing `src/generated`.
+  `scripts/lib/` holds the one `index.yaml` loader and shared helpers; `content-build.ts` is
+  orchestration over `scripts/build/*`. Frontend: GraphExplorer / AlgorithmIndex / RelationshipPanel
+  split into pure tested `src/lib/atlas/*` modules + components; GraphExplorer lazy-loaded; search
+  index in its own `atlas-search` chunk. WASM worker: entry + command table over
+  `src/lib/wasm/worker/*` with a discriminated request protocol. Method: byte/pixel parity against a
+  pre-refactor snapshot for every refactor commit (generated files, validator stdout, deterministic
+  Playwright screenshots, editor feature exports, worker-command hashes). Found along the way:
+  PuzzleBoard results crashed on every run since calib-targets 0.14 reshaped `GridAlignment` (casts in
+  the worker hid it from tsc — `test-wasm-schemas` now asserts the shape); 5 broken internal links.
 
 ## Deferred / parked
 

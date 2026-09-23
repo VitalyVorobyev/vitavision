@@ -78,37 +78,32 @@ export interface CoAuthor {
     name: string;
     /** Papers this co-author shares with the subject author. */
     shared: number;
-    /** Sorted atlas slugs citing any paper the two authors share. */
-    sharedPages: string[];
-}
-
-/** Paper ids in `paperAuthors` whose author list includes both `a` and `b`. */
-function papersSharedBy(a: string, b: string, paperAuthors: Record<string, string[]>): string[] {
-    const ids: string[] = [];
-    for (const [paperId, authorIds] of Object.entries(paperAuthors)) {
-        if (authorIds.includes(a) && authorIds.includes(b)) ids.push(paperId);
-    }
-    return ids;
+    /** Paper ids shared with the subject author, as given by the scholarly
+     *  index's `coauthorPapers` table (oldest first). */
+    sharedPaperIds: string[];
 }
 
 /**
  * Every other author sharing at least one paper with `authorId`, with the
- * shared-paper count and the atlas pages citing a shared paper. Reads the
- * build-time `AuthorsIndex.coauthors` edge table rather than recomputing
- * counts. Ordered by shared count desc, then A–Z by surname.
+ * shared-paper count (from the build-time `AuthorsIndex.coauthors` edge
+ * table) and the shared paper ids themselves (from the scholarly index's
+ * `coauthorPapers` table — no client-side scan over `paperAuthors`). Ordered
+ * by shared count desc, then A–Z by surname.
  */
-export function coAuthorsOf(authorId: string, index: AuthorsIndex): CoAuthor[] {
+export function coAuthorsOf(
+    authorId: string,
+    index: AuthorsIndex,
+    coauthorPapers: Record<string, Record<string, string[]>>,
+): CoAuthor[] {
     const row = index.coauthors[authorId];
     if (!row) return [];
+    const sharedWith = coauthorPapers[authorId] ?? {};
     return Object.entries(row)
         .map(([id, shared]) => ({
             id,
             name: index.authors[id]?.name ?? id,
             shared,
-            sharedPages: atlasSlugsForPapers(
-                papersSharedBy(authorId, id, index.paperAuthors),
-                index.pagesByPaper,
-            ),
+            sharedPaperIds: sharedWith[id] ?? [],
         }))
         .sort(
             (a, b) =>

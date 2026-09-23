@@ -9,7 +9,7 @@ function makeCoAuthors(n: number): CoAuthor[] {
         id: `A${i}`,
         name: `Collaborator ${i}`,
         shared: i + 1,
-        sharedPages: [],
+        sharedPaperIds: [],
     }));
 }
 

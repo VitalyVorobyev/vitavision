@@ -96,16 +96,30 @@ describe("compareByPaperCount", () => {
     });
 });
 
+const coauthorPapers: Record<string, Record<string, string[]>> = {
+    A1: { A2: ["p1", "p2"], A4: ["p2"] },
+    A2: { A1: ["p1", "p2"], A3: ["p3"], A4: ["p2"] },
+    A3: { A2: ["p3"] },
+    A4: { A1: ["p2"], A2: ["p2"] },
+};
+
 describe("coAuthorsOf", () => {
-    it("aggregates shared-paper counts and excludes the author themselves", () => {
-        expect(coAuthorsOf("A1", index)).toEqual([
-            { id: "A2", name: "Jian Sun", shared: 2, sharedPages: ["faster-rcnn", "resnet"] },
-            { id: "A4", name: "Мария Иванова", shared: 1, sharedPages: ["faster-rcnn", "resnet"] },
+    it("aggregates shared-paper counts and resolves shared paper ids from coauthorPapers", () => {
+        expect(coAuthorsOf("A1", index, coauthorPapers)).toEqual([
+            { id: "A2", name: "Jian Sun", shared: 2, sharedPaperIds: ["p1", "p2"] },
+            { id: "A4", name: "Мария Иванова", shared: 1, sharedPaperIds: ["p2"] },
         ]);
     });
 
     it("returns an empty list for an unknown author", () => {
-        expect(coAuthorsOf("nope", index)).toEqual([]);
+        expect(coAuthorsOf("nope", index, coauthorPapers)).toEqual([]);
+    });
+
+    it("defaults to an empty shared-paper list when coauthorPapers has no row for the pair", () => {
+        expect(coAuthorsOf("A1", index, {})).toEqual([
+            { id: "A2", name: "Jian Sun", shared: 2, sharedPaperIds: [] },
+            { id: "A4", name: "Мария Иванова", shared: 1, sharedPaperIds: [] },
+        ]);
     });
 });
 

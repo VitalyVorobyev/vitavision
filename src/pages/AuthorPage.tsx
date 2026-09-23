@@ -1,153 +1,138 @@
-import { useMemo, type ReactNode } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { useContext, useMemo } from "react";
+import { Navigate, useParams } from "react-router-dom";
 import SeoHead from "../components/seo/SeoHead.tsx";
-import OrcidLink from "../components/atlas/OrcidLink.tsx";
-import { SourceCard } from "../components/atlas/SourceCard.tsx";
-import { CoauthorEgoGraph } from "../components/atlas/CoauthorEgoGraph.tsx";
-import { contentGraph } from "../generated/content-graph.ts";
+import AuthorHeader from "../components/authors/AuthorHeader.tsx";
+import AuthorTimeline from "../components/authors/AuthorTimeline.tsx";
+import AuthorContribution from "../components/authors/AuthorContribution.tsx";
+import AuthorNarratives from "../components/authors/AuthorNarratives.tsx";
+import AuthorPapersTable from "../components/authors/AuthorPapersTable.tsx";
+import AuthorCoauthors from "../components/authors/AuthorCoauthors.tsx";
+import { PapersContext } from "../lib/atlas/papersContext.ts";
 import { useAuthorsIndex } from "../lib/atlas/useAuthorsIndex.ts";
-import { atlasSlugsForPapers, coAuthorsOf } from "../lib/atlas/authorStats.ts";
+import { useScholarlyIndex } from "../lib/atlas/useScholarlyIndex.ts";
+import { coAuthorsOf } from "../lib/atlas/authorStats.ts";
+import {
+    authorNarrativesUnion,
+    authorSeoDescription,
+    buildAuthorPaperRows,
+    buildAuthorSummary,
+    buildCoAuthorRows,
+    buildTimelineEntries,
+    groupContributionByDomain,
+} from "../lib/atlas/authorView.ts";
+import useMediaQuery from "../hooks/useMediaQuery.ts";
 import NotFound from "./NotFound.tsx";
+import type { ScholarlyPageMeta, ScholarlyPaper } from "../lib/atlas/scholarlyTypes.ts";
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+// Referentially-stable empty fallbacks, so a `useMemo` dependency array never
+// sees a "new" empty object/array on every render while the scholarly index
+// or the author's own paper list are still unresolved.
+const EMPTY_PAPER_IDS: string[] = [];
+const EMPTY_SCHOLARLY_PAPERS: Record<string, ScholarlyPaper> = {};
+const EMPTY_PAGES: Record<string, ScholarlyPageMeta> = {};
+const EMPTY_COAUTHOR_PAPERS: Record<string, Record<string, string[]>> = {};
+
+function AuthorPageSkeleton() {
     return (
-        <section className="space-y-2.5">
-            <h2 className="text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-muted-foreground m-0">
-                {title}
-            </h2>
-            {children}
-        </section>
+        <div className="mx-auto max-w-[1100px] px-4 py-9 lg:px-8" aria-busy="true">
+            <div className="flex max-w-[720px] animate-pulse flex-col gap-4">
+                <div className="h-3 w-40 rounded bg-muted" />
+                <div className="h-9 w-2/3 rounded bg-muted" />
+                <div className="h-5 w-full rounded bg-muted" />
+                <div className="h-24 w-full rounded bg-muted" />
+            </div>
+        </div>
     );
 }
 
 export default function AuthorPage() {
     const { id } = useParams<{ id: string }>();
-    const index = useAuthorsIndex();
-    const author = id ? index.authors[id] : undefined;
+    const authorsIndex = useAuthorsIndex();
+    const { index: scholarly, status } = useScholarlyIndex();
+    const papers = useContext(PapersContext);
+    const isDesktop = useMediaQuery("(min-width: 1024px)", true);
 
-    const atlasSlugs = useMemo(
-        () => (author ? atlasSlugsForPapers(author.papers, index.pagesByPaper) : []),
-        [author, index.pagesByPaper],
+    const author = id ? authorsIndex.authors[id] : undefined;
+    // Every hook below must run on every render regardless of whether `author`
+    // resolves, so the early returns for "loading"/"redirect"/"not found"
+    // further down never change the hook count between renders.
+    const authorPaperIds = author?.papers ?? EMPTY_PAPER_IDS;
+
+    const scholarlyAuthor = scholarly?.authors[id ?? ""];
+    const scholarlyPapers = scholarly?.papers ?? EMPTY_SCHOLARLY_PAPERS;
+    const pages = scholarly?.pages ?? EMPTY_PAGES;
+    const coauthorPapers = scholarly?.coauthorPapers ?? EMPTY_COAUTHOR_PAPERS;
+
+    const narratives = useMemo(
+        () => authorNarrativesUnion(authorPaperIds, scholarlyPapers),
+        [authorPaperIds, scholarlyPapers],
     );
-    const coAuthors = useMemo(() => (id ? coAuthorsOf(id, index) : []), [id, index]);
+    const summary = useMemo(
+        () => buildAuthorSummary(scholarlyAuthor, authorPaperIds.length, narratives.length),
+        [scholarlyAuthor, authorPaperIds.length, narratives.length],
+    );
+    const contributionGroups = useMemo(
+        () => groupContributionByDomain(authorPaperIds, scholarlyPapers, pages),
+        [authorPaperIds, scholarlyPapers, pages],
+    );
+    const timelineEntries = useMemo(
+        () => buildTimelineEntries(authorPaperIds, papers, scholarlyPapers, pages),
+        [authorPaperIds, papers, scholarlyPapers, pages],
+    );
+    const paperRows = useMemo(
+        () => buildAuthorPaperRows(authorPaperIds, papers, scholarlyPapers, pages),
+        [authorPaperIds, papers, scholarlyPapers, pages],
+    );
+    const coAuthors = useMemo(
+        () => (id ? coAuthorsOf(id, authorsIndex, coauthorPapers) : []),
+        [id, authorsIndex, coauthorPapers],
+    );
+    const coAuthorRows = useMemo(() => buildCoAuthorRows(coAuthors, papers), [coAuthors, papers]);
 
-    // The index arrives asynchronously on the client (SSR/prerender gets it
-    // synchronously). An empty register means "still loading", not "unknown id".
-    const indexLoaded = Object.keys(index.authors).length > 0;
+    // The identity index arrives asynchronously on the client (SSR/prerender
+    // gets it synchronously). An empty register means "still loading", not
+    // "unknown id" — check that before falling through to alias/404.
+    const authorsLoaded = Object.keys(authorsIndex.authors).length > 0;
 
     if (!author) {
-        if (!indexLoaded) {
-            return (
-                <div className="max-w-[880px] mx-auto py-12 px-4 lg:px-8">
-                    <p className="text-[13px] text-muted-foreground">Loading the author register…</p>
-                </div>
-            );
-        }
-        const canonicalId = id ? index.aliases[id] : undefined;
+        if (!authorsLoaded) return <AuthorPageSkeleton />;
+        const canonicalId = id ? authorsIndex.aliases[id] : undefined;
         if (canonicalId) return <Navigate to={`/authors/${canonicalId}`} replace />;
         return <NotFound />;
     }
 
-    const paperWord = author.papers.length === 1 ? "paper" : "papers";
+    const papersLoaded = Object.keys(papers).length > 0;
+    const scholarlyLoaded = status === "ready" && scholarly !== null;
+
+    if (!papersLoaded || !scholarlyLoaded) {
+        return <AuthorPageSkeleton />;
+    }
+
+    const description = authorSeoDescription(author.name, authorPaperIds.length, scholarlyAuthor?.pageCount ?? 0);
 
     return (
-        <div className="max-w-[880px] mx-auto py-12 px-4 lg:px-8 space-y-8 animate-in fade-in">
-            <SeoHead
-                title={author.name}
-                description={`${author.name} — ${author.papers.length} ${paperWord} cited by the VitaVision computer vision atlas.`}
-                url={`/authors/${id}`}
-            />
+        <div className="mx-auto max-w-[1100px] px-4 py-9 lg:px-8">
+            <SeoHead title={author.name} description={description} url={`/authors/${id}`} ogType="profile" />
 
-            <header className="space-y-2">
-                <Link
-                    to="/authors"
-                    className="text-[11.5px] font-mono text-muted-foreground hover:text-foreground transition-colors"
-                >
-                    ← Authors
-                </Link>
-                <div className="flex items-center gap-2">
-                    <h1 className="text-[26px] font-bold -tracking-[0.4px] m-0">{author.name}</h1>
-                    {author.orcid && <OrcidLink orcid={author.orcid} size={16} />}
+            <div className="flex flex-col gap-9">
+                <AuthorHeader id={id ?? ""} name={author.name} orcid={author.orcid} summary={summary} />
+
+                <AuthorTimeline entries={timelineEntries} isDesktop={isDesktop} />
+
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-14">
+                    <AuthorContribution groups={contributionGroups} isDesktop={isDesktop} />
+                    <AuthorNarratives narratives={narratives} />
                 </div>
-                <p className="text-[13px] text-muted-foreground m-0">
-                    {author.papers.length} {paperWord} · {atlasSlugs.length} atlas page
-                    {atlasSlugs.length === 1 ? "" : "s"}
-                </p>
-                <div className="flex flex-wrap gap-2 pt-1 text-[11.5px] font-mono">
-                    <a
-                        href={`https://openalex.org/${id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center h-7 px-2.5 rounded-md border border-border bg-muted text-foreground hover:bg-surface transition-colors no-underline"
-                    >
-                        OpenAlex ↗
-                    </a>
-                    {author.orcid && (
-                        <a
-                            href={`https://orcid.org/${author.orcid}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center h-7 px-2.5 rounded-md border border-border bg-muted text-foreground hover:bg-surface transition-colors no-underline"
-                        >
-                            ORCID ↗
-                        </a>
-                    )}
-                </div>
-            </header>
 
-            <Section title={`Papers (${author.papers.length})`}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {author.papers.map((paperId) => (
-                        <SourceCard key={paperId} primary={paperId} />
-                    ))}
-                </div>
-            </Section>
+                <AuthorPapersTable rows={paperRows} />
 
-            {atlasSlugs.length > 0 && (
-                <Section title={`In the Atlas (${atlasSlugs.length})`}>
-                    <div className="flex flex-wrap gap-1.5">
-                        {atlasSlugs.map((slug) => (
-                            <Link
-                                key={slug}
-                                to={`/atlas/${slug}`}
-                                className="inline-flex items-center h-7 px-2.5 rounded-md border border-border bg-muted/40 text-[11.5px] text-foreground hover:bg-muted hover:border-primary/40 transition-colors no-underline"
-                            >
-                                {contentGraph.nodes[slug]?.title ?? slug}
-                            </Link>
-                        ))}
-                    </div>
-                </Section>
-            )}
-
-            {coAuthors.length > 0 && (
-                <Section title={`Co-authors (${coAuthors.length})`}>
-                    <CoauthorEgoGraph subjectName={author.name} coAuthors={coAuthors} />
-                    <ul className="list-none p-0 m-0">
-                        {coAuthors.map((co) => (
-                            <li
-                                key={co.id}
-                                className="flex items-baseline gap-2 py-1 border-b border-[hsl(var(--border)/0.4)] last:border-b-0"
-                            >
-                                <Link
-                                    to={`/authors/${co.id}`}
-                                    className="text-[13.5px] text-foreground hover:text-primary transition-colors"
-                                >
-                                    {co.name}
-                                </Link>
-                                <span className="flex-1" />
-                                {co.sharedPages.length > 0 && (
-                                    <span className="text-[11.5px] font-mono text-muted-foreground whitespace-nowrap">
-                                        {co.sharedPages.length} atlas page{co.sharedPages.length === 1 ? "" : "s"}
-                                    </span>
-                                )}
-                                <span className="text-[11.5px] font-mono text-muted-foreground whitespace-nowrap tabular-nums">
-                                    {co.shared} shared {co.shared === 1 ? "paper" : "papers"}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
-                </Section>
-            )}
+                <AuthorCoauthors
+                    subjectId={id ?? ""}
+                    subjectName={author.name}
+                    coAuthors={coAuthors}
+                    rows={coAuthorRows}
+                />
+            </div>
         </div>
     );
 }

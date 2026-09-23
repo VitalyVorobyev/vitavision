@@ -15,6 +15,7 @@ import type { AuthorsIndex } from "../src/generated/authors-index.ts";
 import { EMPTY_AUTHORS_INDEX } from "../src/lib/atlas/authorsContext.ts";
 import type { ScholarlyIndex } from "../src/generated/scholarly-index.ts";
 import { paperSeoDescription } from "../src/lib/atlas/paperView.ts";
+import { authorSeoDescription } from "../src/lib/atlas/authorView.ts";
 import {
     buildAlgorithmJsonLd,
     buildBlogJsonLd,
@@ -275,10 +276,10 @@ async function main(): Promise<void> {
 
     for (const authorId of authorIds) {
         const author = authors.authors[authorId];
-        const paperWord = author.papers.length === 1 ? "paper" : "papers";
+        const pageCount = scholarly?.authors[authorId]?.pageCount ?? 0;
         writePage(template, `/authors/${authorId}`, `authors/${authorId}`, {
             title: author.name,
-            description: `${author.name} — ${author.papers.length} ${paperWord} cited by the VitaVision computer vision atlas.`,
+            description: authorSeoDescription(author.name, author.papers.length, pageCount),
             ogType: "profile",
             url: `/authors/${authorId}`,
         }, staticContent, papers, authors, scholarly);

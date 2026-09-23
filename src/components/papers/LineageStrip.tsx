@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
 import { computeLineageLayout } from "../../lib/atlas/lineage.ts";
+import { useElementWidth } from "../../hooks/useElementWidth.ts";
 
 export interface LineageEntry {
     id: string;
@@ -17,22 +17,6 @@ interface LineageStripProps {
  *  strip is then re-laid-out at its real pixel width so dots and tick labels
  *  keep their size on a phone instead of being scaled down with the viewBox. */
 const BASE_WIDTH = 680;
-
-function useElementWidth<T extends HTMLElement>(fallback: number) {
-    const ref = useRef<T>(null);
-    const [width, setWidth] = useState(fallback);
-    useEffect(() => {
-        const el = ref.current;
-        if (!el || typeof ResizeObserver === "undefined") return;
-        const ro = new ResizeObserver(([entry]) => {
-            const w = Math.round(entry.contentRect.width);
-            if (w > 0) setWidth(w);
-        });
-        ro.observe(el);
-        return () => ro.disconnect();
-    }, []);
-    return [ref, width] as const;
-}
 
 function tickLabel(year: number): string {
     return `’${String(year).slice(-2)}`;

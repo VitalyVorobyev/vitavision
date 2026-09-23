@@ -17,7 +17,7 @@ For some topics, there will also be interactive demos directly on the site, such
 The initial structure of the site is the following:
 
 - [**Blog**](/blog) — articles about use cases, concepts, and implementations from scratch, with a clear focus on practical applications.
-- [**Algorithms**](/algorithms) — a structured index of focused algorithm pages with problem statements, descriptions, illustrations, and references from blog posts.
+- [**Atlas**](/atlas) — a structured index of focused algorithm pages with problem statements, descriptions, illustrations, and references from blog posts.
 - [**Editor**](/editor) — an interactive playground for testing algorithms on images.
 - [**Calibration target generator**](/tools/target-generator) — a practical tool for configuring and exporting chessboards, ChArUco boards, marker boards, ring grids, and other calibration targets.
 

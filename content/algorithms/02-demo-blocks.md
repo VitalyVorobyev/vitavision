@@ -17,7 +17,7 @@ This draft algorithm page mirrors the rich markdown feature coverage of the blog
 
 Body text is rendered in Source Serif 4 at 18px with a line height of 1.75. This creates comfortable reading rhythm for technical prose. The maximum line width is constrained to approximately 68 characters, which is optimal for sustained reading.
 
-Paragraphs have generous spacing between them. **Bold text** stands out clearly, while *italic text* provides subtle emphasis. Links like [the algorithms index](/algorithms) use a steel blue color with a subtle underline that becomes more prominent on hover.
+Paragraphs have generous spacing between them. **Bold text** stands out clearly, while *italic text* provides subtle emphasis. Links like [the Atlas index](/atlas) use a steel blue color with a subtle underline that becomes more prominent on hover.
 
 ### Heading Hierarchy
 

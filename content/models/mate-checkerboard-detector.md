@@ -55,7 +55,7 @@ sources:
 
 Detect inner corners of a planar checkerboard pattern in a greyscale image without requiring the pattern's square count $(r \times c)$ as a prior — and do it with a learned CNN rather than a hand-crafted gradient or saddle-fitting pipeline. MATE (Donné et al., *Sensors* 2016) is the first deep-learning checkerboard X-corner detector and is the direct architectural ancestor that [CCDN](/atlas/ccdn-checkerboard-detector) (Chen et al., 2023) extends and supersedes.
 
-Prior work — [ChESS](/atlas/chess-corners), [ROCHADE](/atlas/rochade), OCamCalib ([Rufli 2008](/atlas/rufli2008-blurred)) — was entirely hand-crafted: ring-sampling, gradient-magnitude centrelines, saddle-fitting refinement. MATE's contribution is to show that a minimal three-layer CNN trained on labelled checkerboard images can learn the X-corner signature directly from data, and to do so without any prior on the pattern's grid size.
+Prior work — [ChESS](/atlas/chess-corners), [ROCHADE](/atlas/rochade), OCamCalib ([Rufli 2008](https://rpg.ifi.uzh.ch/docs/IROS08_scaramuzza_b.pdf)) — was entirely hand-crafted: ring-sampling, gradient-magnitude centrelines, saddle-fitting refinement. MATE's contribution is to show that a minimal three-layer CNN trained on labelled checkerboard images can learn the X-corner signature directly from data, and to do so without any prior on the pattern's grid size.
 
 # Architecture
 

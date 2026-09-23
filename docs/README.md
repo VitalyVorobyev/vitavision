@@ -28,7 +28,7 @@ Public site lives at:
 | **Blog post** | `content/blog/*.md` | Free-form. | Long-form notes, write-ups, exploratory work. Not part of the atlas. |
 | **Research note** | `docs/research/notes/<paper-id>.md` | 1:1 with paper. | Always created during paper ingestion. Committed to GitHub but not deployed. |
 | **Narrative** | `content/narratives/*.md` | Many-to-many over pages and papers. | A curated argument told by moving through the graph; nodes are an atlas slug XOR a registered paper XOR a question — paper-only nodes are tracked debt. |
-| **Author record** | `docs/papers/authors.yaml` + `authorIds` in `docs/papers/index.yaml` | Many-to-many via papers. | Generated; never hand-authored beyond identity fixes. Powers `/authors`. |
+| **Author record** | `docs/papers/authors.yaml` + `authorIds` in `docs/papers/index.yaml` | Many-to-many via papers. | Generated; never hand-authored beyond identity fixes. Powers `/authors/:id`, the People view (`/atlas?view=people`) and paper pages (`/papers/:id`). |
 
 ## 3. The relationship graph
 
@@ -195,7 +195,7 @@ in `scripts/validate/**`). What it catches:
 - `docs/research/` paths leaking into `dist/`.
 - Blog/demo frontmatter schema issues.
 - Broken image references (existence + empty-alt warning) across every content kind.
-- Broken internal links (`/atlas/...`, `/blog/...`, `/demos/...`, `/authors/...`, static routes)
+- Broken internal links (`/atlas/...`, `/blog/...`, `/demos/...`, `/authors/...`, `/papers/...`, static routes)
   across every content kind — unresolved fragment anchors and legacy-redirect links (`/algorithms/...`,
   `/concepts/...`) are warnings, not errors.
 - Broken `relatedPosts` / `relatedDemos` references.

@@ -169,7 +169,7 @@ gates, feeds_into chronology, model implementations requirements, domain/tag dri
 references (warning only), narrative rules (node XOR, page/paper resolution, lens/step
 completeness, edge-vs-Atlas-relations warnings), blog/demo frontmatter schemas, image references
 (existence + empty-alt warning, all kinds), internal links (`/atlas/...`, `/blog/...`,
-`/demos/...`, `/authors/...`, static routes, legacy-redirect warnings, unresolved-anchor
+`/demos/...`, `/authors/...`, `/papers/...`, static routes, legacy-redirect warnings, unresolved-anchor
 warnings), and cross-content references (`relatedPosts`, `relatedDemos`, legacy
 `relatedAlgorithms`).
 

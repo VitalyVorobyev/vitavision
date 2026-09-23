@@ -580,6 +580,13 @@ if (diag.result.corners.length !== 361)
 if (diag.result.decode.bit_error_rate !== 0)
     throw new Error('expected a clean decode (bit_error_rate 0), got ' + diag.result.decode.bit_error_rate);
 console.log('PASS: real photo decodes to 361 corners at bit_error_rate 0');
+// 0.14 reshaped GridAlignment to { lattice, matrix: [[a,b],[c,d]], translation }.
+// wasmWorker.ts alignmentFromWasm() converts it for PuzzleboardOverlay.
+const al = diag.result.alignment;
+if (!Array.isArray(al?.matrix) || al.matrix.length !== 2 || !al.matrix.every((row) => Array.isArray(row) && row.length === 2)
+    || !Array.isArray(al.translation) || al.translation.length !== 2)
+    throw new Error('alignment is not { matrix: 2x2, translation: [tx, ty] }: ' + JSON.stringify(al));
+console.log('PASS: alignment is { matrix: 2x2, translation } (0.14 GridTransform)');
 // observed_edges backs PuzzleboardOverlay's edge-bit markers and lives ONLY on
 // the diagnostics side — an empty array here means the overlay renders nothing.
 const edges = diag.diagnostics?.observed_edges;

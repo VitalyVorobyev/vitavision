@@ -235,6 +235,23 @@ function toPointArrayOrNull(v: unknown): Array<{ x: number; y: number }> | null 
     return toPointArray(v);
 }
 
+/**
+ * calib-targets ≥0.14 emits `GridAlignment` as `{ lattice, matrix, translation }`
+ * with a row-major integer `matrix` applied before `translation`. The app keeps
+ * the older `{ transform: {a,b,c,d}, translation }` shape (PuzzleboardOverlay maps
+ * local edge coords to master ids with it), so convert here:
+ * master = [[a, b], [c, d]] · local + translation.
+ */
+function alignmentFromWasm(raw: unknown): {
+    transform: { a: number; b: number; c: number; d: number };
+    translation: [number, number];
+} {
+    const al = raw as { matrix: [[number, number], [number, number]]; translation: [number, number] };
+    const [[a, b], [c, d]] = al.matrix;
+    return { transform: { a, b, c, d }, translation: [al.translation[0], al.translation[1]] };
+}
+
+
 function adaptCalibTargetResult(
     raw: unknown,
     algorithm: "chessboard" | "charuco" | "markerboard",
@@ -351,14 +368,7 @@ function adaptCalibTargetResult(
     }
 
     // Alignment (charuco and markerboard)
-    let alignment = null;
-    if (r.alignment) {
-        const a = r.alignment as { transform: Record<string, number>; translation: number[] };
-        alignment = {
-            transform: a.transform,
-            translation: a.translation,
-        };
-    }
+    const alignment = r.alignment ? alignmentFromWasm(r.alignment) : null;
 
     return {
         status: "success" as const,
@@ -889,7 +899,6 @@ function adaptPuzzleboardResult(
     const r = raw as Record<string, unknown>;
     const detection = r.detection as { kind: string; corners: Array<Record<string, unknown>> };
     const decodeRaw = r.decode as Record<string, unknown>;
-    const alignmentRaw = r.alignment as { transform: Record<string, number>; translation: number[] } | null;
     const observedEdgesRaw = (r.observed_edges as Array<Record<string, unknown>>) ?? [];
 
     const corners = detection.corners.map((c) => {
@@ -912,8 +921,8 @@ function adaptPuzzleboardResult(
         };
     });
 
-    const alignment = alignmentRaw
-        ? { transform: alignmentRaw.transform as { a: number; b: number; c: number; d: number }, translation: alignmentRaw.translation as [number, number] }
+    const alignment = r.alignment
+        ? alignmentFromWasm(r.alignment)
         : { transform: { a: 1, b: 0, c: 0, d: 1 }, translation: [0, 0] as [number, number] };
 
     const decode = {

@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
     type AlgorithmsKind,
@@ -41,7 +41,18 @@ export interface UseAlgorithmsFiltersReturn {
 export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const filters = parseFiltersFromParams(searchParams);
+    // Bumped by setView: when the URL carries no `view`, the view comes from
+    // localStorage, and switching back to the default view writes storage
+    // without changing the URL — the memo must still recompute.
+    const [storedViewNonce, setStoredViewNonce] = useState(0);
+
+    // Memoised so `filters` (and every callback / downstream memo depending on
+    // it) keeps its identity until the URL or the stored view actually changes.
+    const filters = useMemo(
+        () => parseFiltersFromParams(searchParams),
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- storedViewNonce is a recompute trigger
+        [searchParams, storedViewNonce],
+    );
 
     const update = useCallback(
         (next: AlgorithmsFilters) => {
@@ -81,6 +92,7 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
     const setView = useCallback(
         (view: AlgorithmsView) => {
             writeStoredView(view);
+            setStoredViewNonce((n) => n + 1);
             update({ ...filters, view });
         },
         [filters, update],

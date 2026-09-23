@@ -1,37 +1,15 @@
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { parse as parseYaml } from "yaml";
+import { writeFileSync } from "node:fs";
+import { join } from "node:path";
 
-// `fileURLToPath(import.meta.url)` (rather than Bun's `import.meta.dir`) so this
-// module's path constants resolve under both `bun run` and vitest/Node — the
-// latter is how scripts/authors-build.test.ts exercises the pure functions below.
-const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-const AUTHORS_YAML_PATH = join(SCRIPT_DIR, "..", "docs", "papers", "authors.yaml");
-const PAPERS_INDEX_PATH = join(SCRIPT_DIR, "..", "docs", "papers", "index.yaml");
-const PUBLIC_DIR = join(SCRIPT_DIR, "..", "public");
-const GENERATED_DIR = join(SCRIPT_DIR, "..", "src", "generated");
+import { PAPERS_INDEX_PATH, PUBLIC_DIR, GENERATED_DIR } from "./lib/paths.ts";
+import { loadIndexEntries, paperAuthorIds as papersIndexAuthorIds } from "./lib/papers-index.ts";
+import { loadAuthorsYaml, buildAliasResolver } from "./lib/authors.ts";
+import type { AuthorRecord } from "./lib/authors.ts";
+import { normalizeSourceId } from "./lib/source-ref.ts";
 
-/** One row of docs/papers/authors.yaml. Populated by `papers-backfill-authors.ts`
- *  (`bun run papers:backfill-authors`); hand-edited for corrections. Absence is
- *  still tolerated as a valid state (e.g. a fresh checkout before the first run). */
-export interface AuthorRecord {
-    id: string;
-    name: string;
-    orcid?: string;
-    /** When set, this id is a duplicate identity merged into the canonical
-     *  author id `mergedInto`. Merged rows never appear in `AuthorsIndex.authors`. */
-    mergedInto?: string;
-}
-
-/** A single paper entry from docs/papers/index.yaml, narrowed to the fields
- *  this module cares about. `authorIds` is populated by `papers-backfill-authors.ts`
- *  after each ingest, but not every entry has been backfilled — treat it as optional. */
-interface PaperIndexAuthorFields {
-    id?: string;
-    kind?: "paper" | "repo" | "doc";
-    authorIds?: string[];
-}
+export { loadAuthorsYaml, buildAliasResolver };
+export type { AuthorRecord };
+export { normalizeSourceId };
 
 /** A published atlas page's slug and its `sources` frontmatter, the minimal
  *  shape this module needs to derive `pagesByPaper`. Structurally compatible
@@ -61,56 +39,12 @@ export interface AuthorsIndex {
     coauthors: Record<string, Record<string, number>>;
 }
 
-/** Reads docs/papers/authors.yaml. Tolerates absence or a malformed/non-list
- *  file by returning an empty array, for robustness on a checkout predating
- *  the registry or a corrupted edit — the file is normally present and populated. */
-export function loadAuthorsYaml(): AuthorRecord[] {
-    if (!existsSync(AUTHORS_YAML_PATH)) return [];
-    const raw = readFileSync(AUTHORS_YAML_PATH, "utf-8");
-    const parsed = parseYaml(raw);
-    if (!Array.isArray(parsed)) {
-        console.warn("authors:build — docs/papers/authors.yaml is not a list; authors will be empty");
-        return [];
-    }
-    const records: AuthorRecord[] = [];
-    for (const entry of parsed as AuthorRecord[]) {
-        if (!entry?.id || !entry?.name) continue;
-        records.push({
-            id: entry.id,
-            name: entry.name,
-            ...(entry.orcid ? { orcid: entry.orcid } : {}),
-            ...(entry.mergedInto ? { mergedInto: entry.mergedInto } : {}),
-        });
-    }
-    return records;
-}
-
 /** Reads docs/papers/index.yaml and extracts `{ paperId, authorIds }` for
  *  every paper entry that already carries `authorIds`. Tolerates the file
  *  being absent, not a list, or every entry lacking `authorIds` — no paper
  *  has this field yet; it arrives via a future backfill script. */
 export function loadPaperAuthorIds(): { paperId: string; authorIds: string[] }[] {
-    if (!existsSync(PAPERS_INDEX_PATH)) return [];
-    const raw = readFileSync(PAPERS_INDEX_PATH, "utf-8");
-    const parsed = parseYaml(raw);
-    if (!Array.isArray(parsed)) return [];
-    const out: { paperId: string; authorIds: string[] }[] = [];
-    for (const entry of parsed as PaperIndexAuthorFields[]) {
-        const kind = entry.kind ?? "paper";
-        if (kind !== "paper") continue;
-        if (!entry.id) continue;
-        if (!Array.isArray(entry.authorIds) || entry.authorIds.length === 0) continue;
-        out.push({ paperId: entry.id, authorIds: entry.authorIds });
-    }
-    return out;
-}
-
-/** Strips a `paper:` prefix and normalizes; returns undefined for `repo:`/`doc:`
- *  refs (and any other non-paper prefix), which carry no author data. */
-export function normalizeSourceId(raw: string): string | undefined {
-    const id = raw.startsWith("paper:") ? raw.slice("paper:".length) : raw;
-    if (id.startsWith("repo:") || id.startsWith("doc:")) return undefined;
-    return id;
+    return papersIndexAuthorIds(loadIndexEntries(PAPERS_INDEX_PATH, { onMissing: () => [] }));
 }
 
 /** Derives, for every paper id referenced by a published page's
@@ -142,60 +76,6 @@ export function buildPagesByPaper(pages: PageSourcesEntry[]): Record<string, str
         out[id] = [...slugs].sort();
     }
     return out;
-}
-
-/** Builds a cycle-safe id → canonical-id resolver from `mergedInto` rows, plus
- *  the flattened alias map (old id → final canonical id) for every id that
- *  resolves to something other than itself.
- *
- *  A normal chain (A→B→C, C has no `mergedInto`) resolves every id in it to
- *  the terminal id C. A cycle (A→B→A) has no terminal id, so every id in the
- *  cycle instead resolves to the lexicographically smallest id in that cycle
- *  — deterministic and stable regardless of which id is resolved first, so
- *  two ids that merge into each other never resolve to two different
- *  "canonical" ids. */
-function buildAliasResolver(authorRecords: AuthorRecord[]): {
-    resolve: (id: string) => string;
-    aliases: Record<string, string>;
-} {
-    const mergedInto = new Map<string, string>();
-    for (const r of authorRecords) {
-        if (r.mergedInto) mergedInto.set(r.id, r.mergedInto);
-    }
-    const canonical = new Map<string, string>();
-    const resolve = (id: string): string => {
-        const cached = canonical.get(id);
-        if (cached) return cached;
-        const path: string[] = [];
-        let current = id;
-        for (;;) {
-            const already = canonical.get(current);
-            if (already) {
-                for (const p of path) canonical.set(p, already);
-                return already;
-            }
-            const cycleStart = path.indexOf(current);
-            if (cycleStart !== -1) {
-                const cycle = path.slice(cycleStart);
-                const cycleCanonical = [...cycle].sort()[0];
-                for (const c of path) canonical.set(c, cycleCanonical);
-                return cycleCanonical;
-            }
-            path.push(current);
-            const next = mergedInto.get(current);
-            if (!next) {
-                for (const p of path) canonical.set(p, current);
-                return current;
-            }
-            current = next;
-        }
-    };
-    const aliases: Record<string, string> = {};
-    for (const id of mergedInto.keys()) {
-        const canonicalId = resolve(id);
-        if (canonicalId !== id) aliases[id] = canonicalId;
-    }
-    return { resolve, aliases };
 }
 
 /** Symmetric co-author counts over unordered pairs within each paper's

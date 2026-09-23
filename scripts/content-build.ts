@@ -1,7 +1,6 @@
 import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync, rmSync } from "node:fs";
-import { join, basename } from "node:path";
+import { join } from "node:path";
 import matter from "gray-matter";
-import { parse as parseYaml } from "yaml";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -50,64 +49,24 @@ import type { AtlasPageLookup, PaperLookup } from "./narrative-build.ts";
 import { emitAuthorsIndex } from "./authors-build.ts";
 import type { PageSourcesEntry } from "./authors-build.ts";
 
-const CONTENT_DIR = join(import.meta.dir, "..", "content");
-const GENERATED_DIR = join(import.meta.dir, "..", "src", "generated");
-const PAPERS_INDEX_PATH = join(import.meta.dir, "..", "docs", "papers", "index.yaml");
-
-interface PaperIndexEntry {
-    id: string;
-    kind?: "paper" | "repo" | "doc";
-    title?: string;
-    authors?: string[];
-    year?: number;
-    venue?: string;
-    url?: string;
-    arxiv?: string;
-    doi?: string;
-}
-
-interface PaperRefRecord {
-    id: string;
-    title: string;
-    authors: string[];
-    year: number;
-    venue: string;
-    url: string;
-    arxiv?: string;
-    doi?: string;
-}
+import { CONTENT_DIR, GENERATED_DIR, PAPERS_INDEX_PATH, PUBLIC_DIR } from "./lib/paths.ts";
+import { loadIndexEntries, paperRefRecords } from "./lib/papers-index.ts";
+import type { PaperRefRecord } from "./lib/papers-index.ts";
+import { primaryPaperId } from "./lib/source-ref.ts";
+import { slugFromFile } from "./lib/content-kinds.ts";
 
 function loadPapersIndex(): PaperRefRecord[] {
-    if (!existsSync(PAPERS_INDEX_PATH)) {
-        console.warn("content:build — docs/papers/index.yaml not found; papers-index will be empty");
-        return [];
-    }
-    const raw = readFileSync(PAPERS_INDEX_PATH, "utf-8");
-    const parsed = parseYaml(raw);
-    if (!Array.isArray(parsed)) {
-        console.warn("content:build — docs/papers/index.yaml is not a list; papers-index will be empty");
-        return [];
-    }
-    const entries = parsed as PaperIndexEntry[];
-    const papers: PaperRefRecord[] = [];
-    for (const entry of entries) {
-        const kind = entry.kind ?? "paper";
-        if (kind !== "paper") continue;
-        if (!entry.id) continue;
-        // Required-for-display fields. If any are missing we still emit a stub —
-        // the page UI guards on undefined and the strip is omitted gracefully.
-        papers.push({
-            id: entry.id,
-            title: entry.title ?? entry.id,
-            authors: entry.authors ?? [],
-            year: typeof entry.year === "number" ? entry.year : 0,
-            venue: entry.venue ?? "",
-            url: entry.url ?? "",
-            ...(entry.arxiv ? { arxiv: entry.arxiv } : {}),
-            ...(entry.doi ? { doi: entry.doi } : {}),
-        });
-    }
-    return papers;
+    const entries = loadIndexEntries(PAPERS_INDEX_PATH, {
+        onMissing: () => {
+            console.warn("content:build — docs/papers/index.yaml not found; papers-index will be empty");
+            return [];
+        },
+        onNotList: () => {
+            console.warn("content:build — docs/papers/index.yaml is not a list; papers-index will be empty");
+            return [];
+        },
+    });
+    return paperRefRecords(entries);
 }
 
 function emitPapersIndex(papers: PaperRefRecord[], usedPrimaryIds: Set<string>): void {
@@ -122,7 +81,6 @@ function emitPapersIndex(papers: PaperRefRecord[], usedPrimaryIds: Set<string>):
     // Emit the lookup as a static JSON asset under public/ so Vite serves it
     // verbatim from /papers-index.json. This keeps ~16 kB of paper metadata
     // out of the main JS bundle; the client lazy-fetches it once on demand.
-    const PUBLIC_DIR = join(import.meta.dir, "..", "public");
     const papersById = Object.fromEntries(papers.map((p) => [p.id, p]));
     const jsonPath = join(PUBLIC_DIR, "papers-index.json");
     writeFileSync(jsonPath, JSON.stringify(papersById, null, 2), "utf-8");
@@ -154,28 +112,27 @@ function emitPapersIndex(papers: PaperRefRecord[], usedPrimaryIds: Set<string>):
 }
 
 function blogSlug(filename: string): string {
-    // YYYY-MM-DD-title.md → title
-    return basename(filename, ".md").replace(/^\d{4}-\d{2}-\d{2}-/, "");
+    return slugFromFile("blog", filename);
 }
 
 function algoSlug(filename: string): string {
-    return basename(filename, ".md");
+    return slugFromFile("algorithm", filename);
 }
 
 function demoSlug(filename: string): string {
-    return basename(filename, ".md");
+    return slugFromFile("demo", filename);
 }
 
 function modelSlug(filename: string): string {
-    return basename(filename, ".md");
+    return slugFromFile("model", filename);
 }
 
 function conceptSlug(filename: string): string {
-    return basename(filename, ".md");
+    return slugFromFile("concept", filename);
 }
 
 function narrativeSlug(filename: string): string {
-    return basename(filename, ".md");
+    return slugFromFile("narrative", filename);
 }
 
 /** Rewrite relative image paths (./images/*, ../images/*, images/*) to /content/images/*. */
@@ -754,10 +711,8 @@ async function main(): Promise<void> {
     const papers = loadPapersIndex();
     const papersById = new Map(papers.map((p) => [p.id, p]));
     const resolvePrimaryYear = (fm: { sources?: { primary?: string } }): number | undefined => {
-        const raw = fm.sources?.primary;
-        if (!raw) return undefined;
-        const id = raw.startsWith("paper:") ? raw.slice("paper:".length) : raw;
-        if (id.startsWith("repo:") || id.startsWith("doc:")) return undefined;
+        const id = primaryPaperId(fm.sources?.primary);
+        if (!id) return undefined;
         const y = papersById.get(id)?.year;
         return typeof y === "number" && y > 0 ? y : undefined;
     };
@@ -856,13 +811,8 @@ async function main(): Promise<void> {
     // Source-strip rendering (Atlas page redesign) reads this on the client.
     const usedPrimaryIds = new Set<string>();
     const collectPrimary = (fm: { sources?: { primary?: string } }) => {
-        const p = fm.sources?.primary;
-        if (!p) return;
-        // Bare IDs are treated as `paper:<id>` for backward compat.
-        const id = p.startsWith("paper:") ? p.slice("paper:".length) : p;
-        if (!id.startsWith("repo:") && !id.startsWith("doc:")) {
-            usedPrimaryIds.add(id);
-        }
+        const id = primaryPaperId(fm.sources?.primary);
+        if (id) usedPrimaryIds.add(id);
     };
     for (const e of algorithmPublished) collectPrimary(e.frontmatter);
     for (const e of modelPublished) collectPrimary(e.frontmatter);
@@ -882,10 +832,8 @@ async function main(): Promise<void> {
     const resolvePrimary = (
         fm: { sources?: { primary?: string } },
     ): { authors?: string[]; venue?: string } | undefined => {
-        const raw = fm.sources?.primary;
-        if (!raw) return undefined;
-        const id = raw.startsWith("paper:") ? raw.slice("paper:".length) : raw;
-        if (id.startsWith("repo:") || id.startsWith("doc:")) return undefined;
+        const id = primaryPaperId(fm.sources?.primary);
+        if (!id) return undefined;
         const paper = papersById.get(id);
         if (!paper) return undefined;
         return {

@@ -8,6 +8,7 @@
 
 import { loadAuthorsYaml, loadPaperAuthorIds } from "./authors-build.ts";
 import type { AuthorRecord } from "./authors-build.ts";
+import { deaccent } from "./lib/text.ts";
 
 export interface AuthorDupeCandidate {
     ids: string[];
@@ -15,10 +16,6 @@ export interface AuthorDupeCandidate {
     /** Paper ids credited to each id, keyed by id. */
     papers: Record<string, string[]>;
     reason: string;
-}
-
-function deaccent(s: string): string {
-    return s.normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
 
 /** `surname|first-initial` key, diacritic-free and lowercased. Middle tokens

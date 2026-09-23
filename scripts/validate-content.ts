@@ -10,9 +10,8 @@
  * Exit code 1 on any validation failure.
  * Set INCLUDE_DRAFTS=true to also validate draft pages.
  */
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import matter from "gray-matter";
 import { parse as parseYaml } from "yaml";
 
 import {
@@ -35,10 +34,15 @@ import remarkMath from "remark-math";
 import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
+import { REPO_ROOT, CONTENT_DIR, PAPERS_INDEX_PATH } from "./lib/paths.ts";
+import { loadIndexEntries, paperYears as papersIndexYears, sourceKeyMap } from "./lib/papers-index.ts";
+import type { RawIndexEntry } from "./lib/papers-index.ts";
+import { parseSourceRef } from "./lib/source-ref.ts";
+import { normalizeArxivId, normalizeDoiText, stripTrailingPunctuation } from "./lib/text.ts";
+import { loadMarkdownDir, algoSlug, modelSlug, conceptSlug, narrativeSlug } from "./lib/content-kinds.ts";
+import type { MarkdownDirEntry } from "./lib/content-kinds.ts";
 
-const REPO_ROOT = join(import.meta.dir, "..");
-const CONTENT_DIR = join(REPO_ROOT, "content");
-const PAPERS_INDEX = join(REPO_ROOT, "docs", "papers", "index.yaml");
+const PAPERS_INDEX = PAPERS_INDEX_PATH;
 
 // ── Minimal markdown renderer (no Shiki/KaTeX) for TODO scanning ───────────
 async function renderMarkdownPlain(content: string): Promise<string> {
@@ -71,22 +75,7 @@ async function renderNarrativeBodyForAnchors(content: string): Promise<string> {
 }
 
 // ── Typed source registry ─────────────────────────────────────────────────────
-type SourceKind = "paper" | "repo" | "doc";
-
-interface IndexEntry {
-    id: string;
-    kind: SourceKind;
-    // paper:
-    url?: string;
-    arxiv?: string;
-    doi?: string;
-    // repo:
-    repo?: string;
-    commit?: string;
-    license?: string;
-    // doc:
-    path?: string;
-}
+type IndexEntry = RawIndexEntry;
 
 /**
  * Build a typed Map keyed by canonical source-ref form:
@@ -97,80 +86,8 @@ interface IndexEntry {
  * Also validates defensive rule: no paper id may start with "repo:" or "doc:".
  */
 function loadSourceIndex(validatorErrors: string[]): Map<string, IndexEntry> {
-    const index = new Map<string, IndexEntry>();
-    if (!existsSync(PAPERS_INDEX)) return index;
-    const raw = readFileSync(PAPERS_INDEX, "utf-8");
-    const entries = parseYaml(raw) as Array<Record<string, unknown>>;
-    if (!Array.isArray(entries)) return index;
-
-    for (const e of entries) {
-        const id = e.id as string | undefined;
-        if (!id) continue;
-        const kind = (e.kind as SourceKind | undefined) ?? "paper";
-
-        // Defensive rule: paper ids must not start with reserved prefixes.
-        if (kind === "paper" && (id.startsWith("repo:") || id.startsWith("doc:"))) {
-            validatorErrors.push(
-                `[index.yaml] entry id "${id}" must not start with reserved prefix "repo:" or "doc:"`,
-            );
-            continue;
-        }
-
-        const entry: IndexEntry = {
-            id,
-            kind,
-            url: e.url as string | undefined,
-            arxiv: e.arxiv as string | undefined,
-            doi: e.doi as string | undefined,
-            repo: e.repo as string | undefined,
-            commit: e.commit as string | undefined,
-            license: e.license as string | undefined,
-            path: e.path as string | undefined,
-        };
-
-        let key: string;
-        if (kind === "paper") {
-            key = `paper:${id}`;
-        } else if (kind === "repo") {
-            const repo = e.repo as string | undefined;
-            const commit = e.commit as string | undefined;
-            if (!repo || !commit) {
-                validatorErrors.push(
-                    `[index.yaml] entry id "${id}" (kind: repo) must have "repo" and "commit" fields`,
-                );
-                continue;
-            }
-            key = `repo:${repo}@${commit}`;
-        } else {
-            // doc
-            const path = e.path as string | undefined;
-            if (!path) {
-                validatorErrors.push(
-                    `[index.yaml] entry id "${id}" (kind: doc) must have a "path" field`,
-                );
-                continue;
-            }
-            key = `doc:${path}`;
-        }
-
-        index.set(key, entry);
-    }
-    return index;
-}
-
-/** Parse a source-ref string into a { kind, key } pair. */
-function parseSourceRef(s: string): { kind: SourceKind; key: string } | null {
-    if (s.startsWith("paper:")) {
-        return { kind: "paper", key: s };
-    }
-    if (s.startsWith("repo:")) {
-        return { kind: "repo", key: s };
-    }
-    if (s.startsWith("doc:")) {
-        return { kind: "doc", key: s };
-    }
-    // Bare id → backward-compat paper reference
-    return { kind: "paper", key: `paper:${s}` };
+    const entries = loadIndexEntries(PAPERS_INDEX, { onMissing: () => [] });
+    return sourceKeyMap(entries, validatorErrors);
 }
 
 /**
@@ -179,47 +96,18 @@ function parseSourceRef(s: string): { kind: SourceKind; key: string } | null {
  * numeric `year` field.
  */
 function loadPaperYears(): Map<string, number> {
-    const years = new Map<string, number>();
-    if (!existsSync(PAPERS_INDEX)) return years;
-    const raw = readFileSync(PAPERS_INDEX, "utf-8");
-    const entries = parseYaml(raw) as Array<Record<string, unknown>>;
-    if (!Array.isArray(entries)) return years;
-
-    for (const e of entries) {
-        const id = e.id as string | undefined;
-        if (!id) continue;
-        const kind = (e.kind as string | undefined) ?? "paper";
-        if (kind !== "paper") continue;
-        const year = e.year;
-        if (typeof year !== "number") continue;
-        years.set(id, year);
-    }
-    return years;
+    return papersIndexYears(loadIndexEntries(PAPERS_INDEX, { onMissing: () => [] }));
 }
 
 // ── Prose reference scanning (arXiv / DOI) ─────────────────────────────────────
 // Warning-only rule: flags links or bare-text citations in a page's markdown
 // body that look like an arXiv or DOI reference but do not resolve to any
 // entry in docs/papers/index.yaml. Never blocks the build — see Rule 10 below.
-
-/** Strip common trailing punctuation picked up when a URL/id is embedded in prose. */
-function stripTrailingPunctuation(s: string): string {
-    return s.replace(/[)\]"'>,.;:]+$/g, "");
-}
-
-/** Normalize an arXiv id: drop "arxiv:" prefix, ".pdf" suffix, and version suffix (v\d+). */
-function normalizeArxivId(id: string): string {
-    return stripTrailingPunctuation(id.trim())
-        .replace(/^arxiv:/i, "")
-        .replace(/\.pdf$/i, "")
-        .replace(/v\d+$/i, "")
-        .toLowerCase();
-}
-
-/** Normalize a DOI: case-insensitive comparison. */
-function normalizeDoi(doi: string): string {
-    return stripTrailingPunctuation(doi.trim()).toLowerCase();
-}
+// normalizeArxivId / normalizeDoi live in scripts/lib/text.ts as
+// normalizeArxivId / normalizeDoiText (this file's DOI normalizer strips
+// trailing prose punctuation, distinct from papers-backfill-authors.ts's
+// URL-prefix-stripping normalizer — see that module's header).
+const normalizeDoi = normalizeDoiText;
 
 interface ProseRef {
     /** Human-readable form for the warning message, e.g. "arXiv:1706.03762" or "doi:10.1109/...". */
@@ -272,42 +160,22 @@ function scanProseReferences(content: string): ProseRef[] {
     return refs;
 }
 
-// ── Slug helpers ─────────────────────────────────────────────────────────────
-function algoSlug(filename: string): string {
-    return filename.replace(/\.md$/, "");
-}
-function modelSlug(filename: string): string {
-    return filename.replace(/\.md$/, "");
-}
-function conceptSlug(filename: string): string {
-    return filename.replace(/\.md$/, "");
-}
-function narrativeSlug(filename: string): string {
-    return filename.replace(/\.md$/, "");
-}
-
 // ── Types ─────────────────────────────────────────────────────────────────────
-interface RawEntry {
-    slug: string;
-    file: string;
-    data: Record<string, unknown>;
-    content: string;
-}
+type RawEntry = MarkdownDirEntry;
 
 // ── Load all content pages (without full markdown rendering) ──────────────────
+// Backfills `readingTimeMinutes` (mutating `data` in place) when absent, same
+// as content-build.ts's `processDirectory` — `loadMarkdownDir` itself does not,
+// since not every caller wants this mutation.
 function loadDirectory(
     dir: string,
     slugFn: (f: string) => string,
 ): RawEntry[] {
-    if (!existsSync(dir)) return [];
-    const files = readdirSync(dir).filter((f) => f.endsWith(".md"));
-    return files.map((file) => {
-        const raw = readFileSync(join(dir, file), "utf-8");
-        const { data, content } = matter(raw);
-        if (data.readingTimeMinutes === undefined) {
-            data.readingTimeMinutes = computeReadingTimeMinutes(content);
+    return loadMarkdownDir(dir, slugFn).map((e) => {
+        if (e.data.readingTimeMinutes === undefined) {
+            e.data.readingTimeMinutes = computeReadingTimeMinutes(e.content);
         }
-        return { slug: slugFn(file), file, data, content };
+        return e;
     });
 }
 

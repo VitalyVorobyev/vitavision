@@ -11,16 +11,15 @@
  * Source of truth: content/** + docs/papers/index.yaml. Edits made here are
  * blown away on the next `bun run vault:build`.
  */
-import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync, rmSync } from "node:fs";
-import { join, basename } from "node:path";
-import matter from "gray-matter";
-import { parse as parseYaml } from "yaml";
+import { readdirSync, writeFileSync, existsSync, mkdirSync, rmSync } from "node:fs";
+import { join } from "node:path";
 import type { RelationType, TypedRelation } from "../src/lib/content/schema.ts";
+import { CONTENT_DIR, PAPERS_INDEX_PATH, ATLAS_VAULT_DIR } from "./lib/paths.ts";
+import { loadIndexEntries } from "./lib/papers-index.ts";
+import { loadMarkdownDir, algoSlug, modelSlug, conceptSlug } from "./lib/content-kinds.ts";
 
-const REPO_ROOT = join(import.meta.dir, "..");
-const CONTENT_DIR = join(REPO_ROOT, "content");
-const PAPERS_INDEX = join(REPO_ROOT, "docs", "papers", "index.yaml");
-const VAULT_DIR = join(REPO_ROOT, "docs", "atlas-vault");
+const PAPERS_INDEX = PAPERS_INDEX_PATH;
+const VAULT_DIR = ATLAS_VAULT_DIR;
 
 type NodeType = "algorithm" | "model" | "concept" | "paper";
 
@@ -111,14 +110,15 @@ function uniqSorted(values: string[]): string[] {
     return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b));
 }
 
+const SLUG_FN: Record<PageNode["type"], (filename: string) => string> = {
+    algorithm: algoSlug,
+    model: modelSlug,
+    concept: conceptSlug,
+};
+
 function readPages(dir: string, type: PageNode["type"]): PageNode[] {
-    if (!existsSync(dir)) return [];
-    const files = readdirSync(dir).filter((f) => f.endsWith(".md"));
-    return files.map((file) => {
-        const raw = readFileSync(join(dir, file), "utf-8");
-        const { data } = matter(raw);
+    return loadMarkdownDir(dir, SLUG_FN[type]).map(({ slug, data }) => {
         const fm = data as PageFrontmatter;
-        const slug = basename(file, ".md");
         return {
             slug,
             type,
@@ -134,12 +134,13 @@ function readPages(dir: string, type: PageNode["type"]): PageNode[] {
 }
 
 function readPapers(): PaperNode[] {
-    if (!existsSync(PAPERS_INDEX)) return [];
-    const parsed = parseYaml(readFileSync(PAPERS_INDEX, "utf-8"));
-    if (!Array.isArray(parsed)) {
-        throw new Error(`docs/papers/index.yaml is not a list`);
-    }
-    return (parsed as PaperEntry[]).map((p) => ({
+    const entries = loadIndexEntries(PAPERS_INDEX, {
+        onMissing: () => [],
+        onNotList: () => {
+            throw new Error(`docs/papers/index.yaml is not a list`);
+        },
+    });
+    return (entries as PaperEntry[]).map((p) => ({
         id: p.id,
         title: p.title,
         authors: p.authors ?? [],

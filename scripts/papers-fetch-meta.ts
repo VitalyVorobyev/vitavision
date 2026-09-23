@@ -1,9 +1,13 @@
 import { readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
 import { parse as parseYaml } from "yaml";
 
-const REPO_ROOT = join(import.meta.dir, "..");
-const INDEX_PATH = join(REPO_ROOT, "docs", "papers", "index.yaml");
+import { PAPERS_INDEX_PATH, AUTHORS_YAML_PATH } from "./lib/paths.ts";
+import { loadIndexEntries } from "./lib/papers-index.ts";
+import type { RawIndexEntry } from "./lib/papers-index.ts";
+import { normalizeTitle } from "./lib/text.ts";
+import { bareAuthorId, bareOrcid, userAgent, withAuth } from "./lib/openalex.ts";
+
+const INDEX_PATH = PAPERS_INDEX_PATH;
 
 const SKIP_WORDS = new Set([
     "the", "a", "an", "on", "of", "for", "in", "to", "by", "and", "with", "from",
@@ -11,13 +15,7 @@ const SKIP_WORDS = new Set([
 
 const OPENALEX_BASE = "https://api.openalex.org";
 
-interface PaperEntry {
-    id: string;
-    title: string;
-    arxiv?: string;
-    doi?: string;
-    cites?: string[];
-}
+type PaperEntry = RawIndexEntry & { title: string };
 
 interface OAIds {
     openalex?: string;
@@ -125,14 +123,7 @@ function buildCandidateId(authorships: OAAuthorship[], year: number, title: stri
 }
 
 function loadIndex(): PaperEntry[] {
-    if (!existsSync(INDEX_PATH)) return [];
-    const raw = readFileSync(INDEX_PATH, "utf-8");
-    const parsed = parseYaml(raw);
-    return Array.isArray(parsed) ? (parsed as PaperEntry[]) : [];
-}
-
-function normalizeTitle(t: string): string {
-    return t.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return loadIndexEntries(INDEX_PATH, { onMissing: () => [] }) as PaperEntry[];
 }
 
 function extractArxivFromDoi(doi: string): string | undefined {
@@ -146,15 +137,7 @@ function oaWorkUrl(workUrl: string): string {
     return workUrl.replace("https://openalex.org/", "");
 }
 
-function bareAuthorId(authorUrl: string): string {
-    return authorUrl.replace(/^https?:\/\/openalex\.org\//i, "");
-}
-
-function bareOrcid(orcidUrl: string): string {
-    return orcidUrl.replace(/^https?:\/\/orcid\.org\//i, "");
-}
-
-const AUTHORS_PATH = join(REPO_ROOT, "docs", "papers", "authors.yaml");
+const AUTHORS_PATH = AUTHORS_YAML_PATH;
 
 function loadKnownAuthorIds(): Set<string> {
     if (!existsSync(AUTHORS_PATH)) return new Set();
@@ -189,25 +172,6 @@ function buildCitesYaml(refs: RefInfo[], index: PaperEntry[]): string[] {
         const titleComment = ref.title ? ` # unmatched: "${ref.title}"` : "";
         return `  - ${placeholder}${titleComment}`;
     });
-}
-
-function userAgent(): string {
-    const email = process.env.OPENALEX_EMAIL;
-    if (!email) {
-        process.stderr.write(
-            "papers:fetch-meta — OPENALEX_EMAIL not set; using default address. " +
-            "Set OPENALEX_EMAIL=you@example.com to join the polite pool for higher rate limits.\n"
-        );
-        return "vitavision/0.1 (mailto:vitavision@example.invalid)";
-    }
-    return `vitavision/0.1 (mailto:${email})`;
-}
-
-function withAuth(url: string): string {
-    const apiKey = process.env.OPENALEX_API_KEY;
-    if (!apiKey) return url;
-    const sep = url.includes("?") ? "&" : "?";
-    return `${url}${sep}api_key=${encodeURIComponent(apiKey)}`;
 }
 
 async function fetchWork(url: string, ua: string): Promise<OAWork> {
@@ -293,7 +257,7 @@ async function main(): Promise<void> {
         process.exit(1);
     }
 
-    const ua = userAgent();
+    const ua = userAgent("papers:fetch-meta");
     const { kind, value } = parseArg(arg);
 
     let primaryUrl: string;

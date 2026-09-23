@@ -6,18 +6,17 @@
  *
  * Exit code 1 on any validation failure.
  */
-import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { join, basename } from "node:path";
-import matter from "gray-matter";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 
 import {
     blogFrontmatterSchema,
     algorithmFrontmatterSchema,
 } from "../src/lib/content/schema.ts";
 import type { ZodType, ZodError } from "zod";
-
-const CONTENT_DIR = join(import.meta.dir, "..", "content");
-const IMAGES_DIR = join(CONTENT_DIR, "images");
+import { CONTENT_DIR, IMAGES_DIR } from "./lib/paths.ts";
+import { loadMarkdownDir, algoSlug, blogSlug } from "./lib/content-kinds.ts";
+import type { MarkdownDirEntry } from "./lib/content-kinds.ts";
 
 let errors = 0;
 
@@ -30,30 +29,14 @@ function warn(file: string, msg: string): void {
     console.warn(`  WARN  [${file}]: ${msg}`);
 }
 
-function blogSlug(filename: string): string {
-    return basename(filename, ".md").replace(/^\d{4}-\d{2}-\d{2}-/, "");
-}
-
-function algoSlug(filename: string): string {
-    return basename(filename, ".md");
-}
-
-function listMdFiles(dir: string): string[] {
-    if (!existsSync(dir)) return [];
-    return readdirSync(dir).filter((f) => f.endsWith(".md"));
-}
-
 function validateFrontmatter<T>(
-    dir: string,
-    files: string[],
+    entries: MarkdownDirEntry[],
     schema: ZodType<T>,
     label: string,
 ): { file: string; data: Record<string, unknown>; content: string }[] {
     const results: { file: string; data: Record<string, unknown>; content: string }[] = [];
 
-    for (const file of files) {
-        const raw = readFileSync(join(dir, file), "utf-8");
-        const { data, content } = matter(raw);
+    for (const { file, data, content } of entries) {
         try {
             schema.parse(data);
         } catch (e) {
@@ -172,17 +155,17 @@ function main(): void {
 
     // Collect blog files
     const blogDir = join(CONTENT_DIR, "blog");
-    const blogFiles = listMdFiles(blogDir);
-    const blogEntries = validateFrontmatter(blogDir, blogFiles, blogFrontmatterSchema, "blog");
+    const blogDirEntries = loadMarkdownDir(blogDir, blogSlug);
+    const blogEntries = validateFrontmatter(blogDirEntries, blogFrontmatterSchema, "blog");
 
     // Collect algorithm files
     const algoDir = join(CONTENT_DIR, "algorithms");
-    const algoFiles = listMdFiles(algoDir);
-    const algoEntries = validateFrontmatter(algoDir, algoFiles, algorithmFrontmatterSchema, "algorithm");
+    const algoDirEntries = loadMarkdownDir(algoDir, algoSlug);
+    const algoEntries = validateFrontmatter(algoDirEntries, algorithmFrontmatterSchema, "algorithm");
 
     // Build known blog slugs
-    const knownBlogSlugs = new Set(blogFiles.map(blogSlug));
-    const knownAlgorithmSlugs = new Set(algoFiles.map(algoSlug));
+    const knownBlogSlugs = new Set(blogDirEntries.map((e) => e.slug));
+    const knownAlgorithmSlugs = new Set(algoDirEntries.map((e) => e.slug));
 
     // Check image references, internal links, and related-content references
     for (const entry of blogEntries) {
@@ -200,7 +183,7 @@ function main(): void {
     }
 
     // Summary
-    const totalFiles = blogFiles.length + algoFiles.length;
+    const totalFiles = blogDirEntries.length + algoDirEntries.length;
     if (errors > 0) {
         console.error(`\ncontent:validate — ${errors} error(s) in ${totalFiles} file(s)`);
         process.exit(1);

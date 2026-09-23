@@ -203,7 +203,7 @@ export function NetworkCanvas({
                     height={planeHeight}
                     viewBox={viewBox}
                     className="absolute inset-0"
-                    style={{ pointerEvents: "none" }}
+                    style={{ pointerEvents: "none", overflow: "visible" }}
                     aria-hidden="true"
                 >
                     <NetworkEdges edges={edges} positions={positions} focusId={focusId} ringIds={ringIds} />
@@ -214,10 +214,18 @@ export function NetworkCanvas({
                     height={planeHeight}
                     viewBox={viewBox}
                     className="absolute inset-0"
-                    style={{ pointerEvents: "none" }}
+                    style={{ pointerEvents: "none", overflow: "visible" }}
                     aria-hidden="true"
                 >
-                    <NetworkNodes nodes={renderNodes} labels={labels} hoveredId={hoveredId} onHover={onHover} onSelect={onSelect} />
+                    <NetworkNodes
+                        nodes={renderNodes}
+                        labels={labels}
+                        hoveredId={hoveredId}
+                        onHover={onHover}
+                        onSelect={onSelect}
+                        scale={view.scale}
+                        twoTapToFocus={focusId !== undefined}
+                    />
                 </svg>
             </PannableViewport>
         </div>

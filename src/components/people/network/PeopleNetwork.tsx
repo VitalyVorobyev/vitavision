@@ -16,10 +16,14 @@ import useMediaQuery from "../../../hooks/useMediaQuery.ts";
 import { useViewport } from "../../../lib/graph/useViewport.ts";
 import type { ViewportBounds } from "../../../lib/graph/useViewport.ts";
 import {
+    cameraFitBounds,
+    FOCUS_LABEL_BUDGET,
+    hoverLabelAnchor,
     layoutLabels,
     reservedLabelBoxes,
     selectFocusLabelCandidates,
     selectOverviewLabelCandidates,
+    type CoauthorTie,
     type Era,
     type LabelMode,
 } from "../../../lib/atlas/peopleNetwork.ts";
@@ -72,12 +76,21 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
 
     // ── Pan/zoom ─────────────────────────────────────────────────────────────
     //
-    // The camera target IS the `bounds` fed to `useViewport` (`cameraBounds`
-    // from `useNetworkLayout`). Its own auto-fit effect (keyed on `refitKey`)
-    // then does all the fitting — animated on a focus transition, instant on
+    // The camera target IS the `bounds` fed to `useViewport` — biased away
+    // from whichever fixed-position overlay would otherwise sit on top of it
+    // (see `cameraFitBounds`: minimap+legend in the overview, the details
+    // card once focused). Its own auto-fit effect (keyed on `refitKey`) then
+    // does all the fitting — animated on a focus transition, instant on
     // resize. This (rather than a second effect calling `fitBounds`
     // manually) avoids a race between two effects fighting over view state.
-    const viewportBounds = scholarly ? cameraBounds : null;
+    // Label placement below deliberately keeps using the UNBIASED
+    // `cameraBounds` so labels never drift into the phantom space the bias
+    // adds — which is exactly where the overlay ends up on screen.
+    const viewportFitBounds = useMemo(
+        () => cameraFitBounds(cameraBounds, isPhone, Boolean(activeFocusId)),
+        [cameraBounds, isPhone, activeFocusId],
+    );
+    const viewportBounds = scholarly ? viewportFitBounds : null;
     const fitScaleMax = activeFocusId ? FOCUS_MAX_SCALE : 1.6;
 
     const {
@@ -109,16 +122,21 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
     // between the overview's wide box and a focused person's tight one.
     const contentPerScreenPx = useMemo(() => {
         if (vp.w === 0 || vp.h === 0) return 1;
-        const bboxW = cameraBounds.maxX - cameraBounds.minX + 128;
-        const bboxH = cameraBounds.maxY - cameraBounds.minY + 128;
+        const bboxW = viewportFitBounds.maxX - viewportFitBounds.minX + 128;
+        const bboxH = viewportFitBounds.maxY - viewportFitBounds.minY + 128;
         const approxScale = Math.min(fitScaleMax, Math.max(0.25, Math.min(vp.w / bboxW, vp.h / bboxH)));
         return 1 / approxScale;
-    }, [vp, cameraBounds, fitScaleMax]);
+    }, [vp, viewportFitBounds, fitScaleMax]);
 
-    const labels = useMemo(() => {
+    // The label CANVAS (bounds candidates are constrained to) recomputes only
+    // on focus/era/labelMode/scale changes — cheap and correct, since a
+    // hover/tap doesn't change any of those. The one-off hover/tap "reveal a
+    // name" label below is kept OUT of this memo so hovering never re-runs
+    // the full collision layout for the whole ring.
+    const { labels, unlabelledTies } = useMemo(() => {
         // Inset the placement canvas a little further than the fitted camera
         // box so labels don't land right at the edge the viewport clips to.
-        const margin = 24 * contentPerScreenPx;
+        const margin = 10 * contentPerScreenPx;
         const canvas: ViewportBounds = {
             minX: cameraBounds.minX + margin,
             minY: cameraBounds.minY + margin,
@@ -126,11 +144,37 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
             maxY: cameraBounds.maxY - margin,
         };
         const reserved = reservedLabelBoxes(canvas, Boolean(activeFocusId), contentPerScreenPx);
-        const candidates = activeFocusId
-            ? selectFocusLabelCandidates(labelPeople, activeFocusId, ties, labelMode)
-            : selectOverviewLabelCandidates(labelPeople, labelMode);
-        return layoutLabels(candidates, canvas, reserved);
-    }, [labelPeople, activeFocusId, ties, labelMode, cameraBounds, contentPerScreenPx]);
+        if (activeFocusId) {
+            // A phone's narrow canvas has far less room per label than
+            // desktop — shrink both the mandatory-tie budget and the
+            // optional-context count so a high-degree focus doesn't cram as
+            // many competing labels into the same small frame.
+            const tieBudget = isPhone ? 6 : FOCUS_LABEL_BUDGET;
+            const extraLimit = isPhone ? 2 : 8;
+            const { candidates, unlabelledTies: unlabelled } = selectFocusLabelCandidates(
+                labelPeople,
+                activeFocusId,
+                ties,
+                labelMode,
+                extraLimit,
+                tieBudget,
+            );
+            return { labels: layoutLabels(candidates, canvas, reserved, contentPerScreenPx), unlabelledTies: unlabelled };
+        }
+        const candidates = selectOverviewLabelCandidates(labelPeople, labelMode);
+        return { labels: layoutLabels(candidates, canvas, reserved, contentPerScreenPx), unlabelledTies: [] as CoauthorTie[] };
+    }, [labelPeople, activeFocusId, ties, labelMode, cameraBounds, contentPerScreenPx, isPhone]);
+
+    // Hover (mouse) / tap-reveal (touch, first tap) shows an unlabelled tie's
+    // name without re-running the full layout above.
+    const unlabelledTieIds = useMemo(() => new Set(unlabelledTies.map((t) => t.id)), [unlabelledTies]);
+    const hoverLabel = useMemo(() => {
+        if (!hoveredId || !unlabelledTieIds.has(hoveredId)) return null;
+        const node = renderNodes.find((n) => n.id === hoveredId);
+        if (!node) return null;
+        return hoverLabelAnchor(node, labels, contentPerScreenPx);
+    }, [hoveredId, unlabelledTieIds, renderNodes, labels, contentPerScreenPx]);
+    const canvasLabels = useMemo(() => (hoverLabel ? [...labels, hoverLabel] : labels), [labels, hoverLabel]);
 
     const nameOf = useCallback((id: string) => authorsIdx.authors[id]?.name ?? id, [authorsIdx]);
     const groupOf = useCallback((id: string) => scholarly?.authors[id]?.group ?? ("other" as const), [scholarly]);
@@ -173,14 +217,17 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
                     edges={edges}
                     positions={positions}
                     renderNodes={renderNodes}
-                    labels={labels}
+                    labels={canvasLabels}
                     adjacency={adjacency}
                     ringIds={ringIds}
                     focusId={activeFocusId}
                     hoveredId={hoveredId}
                     onHover={setHoveredId}
                     onSelect={onFocusChange}
-                    onClear={() => onFocusChange(undefined)}
+                    onClear={() => {
+                        onFocusChange(undefined);
+                        setHoveredId(null);
+                    }}
                     onPinchZoom={zoomAroundCenter}
                     ariaLabel={
                         activeFocusId
@@ -208,9 +255,13 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
                                     paperCount={authorsIdx.authors[activeFocusId]?.papers.length ?? 0}
                                     pageCount={focusPerson.pageCount}
                                     ties={ties}
+                                    unlabelledCount={unlabelledTies.length}
                                     nameOf={nameOf}
                                     isPhone={isPhone}
-                                    onClose={() => onFocusChange(undefined)}
+                                    onClose={() => {
+                                        onFocusChange(undefined);
+                                        setHoveredId(null);
+                                    }}
                                 />
                             )}
                         </>

@@ -16,6 +16,7 @@ import {
     computeFocusPositions,
     eraIntersects,
     focusBounds,
+    focusHalfExtent,
     nodeRadius,
     resolveAuthorId,
     type Era,
@@ -25,7 +26,6 @@ import type { RenderNode } from "./NetworkNodes.tsx";
 import type { NetworkPoint } from "./networkTypes.ts";
 
 const EMPTY_BOUNDS: ViewportBounds = { minX: 0, minY: 0, maxX: 1, maxY: 1 };
-const FOCUS_HALF_EXTENT = 300;
 
 export interface UseNetworkLayoutArgs {
     scholarly: ScholarlyIndex | null;
@@ -129,10 +129,12 @@ export function useNetworkLayout({ scholarly, authorsIdx, focusId, era }: UseNet
     );
 
     // Camera target box: the whole network when unfocused, a tight box
-    // around the focused person when focused.
+    // around the focused person when focused — sized to the ACTUAL ring
+    // layout (see `focusHalfExtent`) so a high-degree focus's bigger,
+    // tie-count-scaled rings (`computeRingLayout`) still fit the frame.
     const focusBox = useMemo(
-        () => (activeFocusId ? focusBounds(nodes, activeFocusId, FOCUS_HALF_EXTENT) : null),
-        [nodes, activeFocusId],
+        () => (activeFocusId ? focusBounds(nodes, activeFocusId, focusHalfExtent(ties)) : null),
+        [nodes, activeFocusId, ties],
     );
     const cameraBounds = focusBox ?? bounds;
 

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { usePaperById } from "../../lib/atlas/usePaperById.ts";
 import AuthorByline from "./AuthorByline.tsx";
 
@@ -28,9 +29,12 @@ export function SourceCard({ primary }: SourceCardProps) {
             </span>
 
             {/* Title — wraps; capped at 3 lines */}
-            <p className="text-[12.5px] font-medium text-foreground leading-snug line-clamp-3 m-0">
+            <Link
+                to={`/papers/${paper.id}`}
+                className="block text-[12.5px] font-medium text-foreground leading-snug line-clamp-3 m-0 no-underline hover:underline"
+            >
                 {paper.title}
-            </p>
+            </Link>
 
             {/* Authors · Venue Year */}
             {(hasAuthors || venueYear) && (

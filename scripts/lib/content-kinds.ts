@@ -43,6 +43,54 @@ export function blogSlug(filename: string): string {
     return slugFromFile("blog", filename);
 }
 
+/** Content kinds that get per-slug generated HTML modules + a loader manifest (all but narrative, which has its own richer emit path in narrative-build.ts). */
+export type HtmlLoaderKind = Exclude<ContentKind, "narrative">;
+
+/** Describes one kind's generated-output shape: where its per-slug html modules live and how its loader manifest is named. */
+export interface HtmlLoaderKindDescriptor {
+    kind: HtmlLoaderKind;
+    /** Directory name under src/generated/content/ holding this kind's per-slug html modules. */
+    htmlDirName: string;
+    /** Generated loader-manifest filename under src/generated/. */
+    loaderFileName: string;
+    /** Exported loader-map identifier inside that manifest. */
+    loaderExportName: string;
+}
+
+/** One descriptor per HtmlLoaderKind, in the fixed order content-build.ts processes them. */
+export const HTML_LOADER_KIND_DESCRIPTORS: Record<HtmlLoaderKind, HtmlLoaderKindDescriptor> = {
+    blog: {
+        kind: "blog",
+        htmlDirName: "blog",
+        loaderFileName: "blog-loaders.ts",
+        loaderExportName: "blogHtmlLoaders",
+    },
+    algorithm: {
+        kind: "algorithm",
+        htmlDirName: "algorithms",
+        loaderFileName: "algorithm-loaders.ts",
+        loaderExportName: "algorithmHtmlLoaders",
+    },
+    demo: {
+        kind: "demo",
+        htmlDirName: "demos",
+        loaderFileName: "demo-loaders.ts",
+        loaderExportName: "demoHtmlLoaders",
+    },
+    model: {
+        kind: "model",
+        htmlDirName: "models",
+        loaderFileName: "model-loaders.ts",
+        loaderExportName: "modelHtmlLoaders",
+    },
+    concept: {
+        kind: "concept",
+        htmlDirName: "concepts",
+        loaderFileName: "concept-loaders.ts",
+        loaderExportName: "conceptHtmlLoaders",
+    },
+};
+
 export interface MarkdownDirEntry {
     file: string;
     slug: string;

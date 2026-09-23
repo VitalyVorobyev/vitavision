@@ -1,8 +1,9 @@
 # Shared subagent contracts for Atlas authoring skills
 
-This document defines the two reusable subagent contracts used by `paper-ingest`,
-`algo-page`, `deep-model-page`, and `concept-page`. Each Atlas skill cites this
-document instead of duplicating prompt text.
+This document defines the reusable subagent contracts used by `paper-ingest`,
+`algo-page`, `deep-model-page`, `concept-page`, `narrative-page`, and
+`atlas-audit`. Each Atlas skill cites this document instead of duplicating
+prompt text.
 
 The architect+reviewer pattern from `.claude/skills/impl/SKILL.md` applies: the
 main agent (Opus) orchestrates and verifies; Sonnet does the heavy reads.
@@ -14,6 +15,41 @@ regime, Numerical sensitivity, Connections, Atlas update plan, Provenance), all
 equations as inline LaTeX, all numerical constants, and citation pointers back
 to the source. Downstream page-authoring skills draft from notes — never from
 raw cache files.
+
+## Cross-link scan contract
+
+Used by `paper-ingest` Step 4 to find Atlas pages a newly-registered source
+might relate to, without loading every page's body into the orchestrator's
+context (a full scan of `content/{algorithms,models,concepts}/` frontmatter
+plus title-heuristic matching is cheap for a subagent but not worth spending
+the main agent's context budget on for a check that runs once per ingest).
+
+**Inputs (provided by orchestrator):**
+- `source_id` — the canonical paper id (from paper-ingest Step 3).
+- Title and abstract from the Step 2 metadata fetch — used for heuristic
+  title-matching.
+- The three content directories to walk: `content/algorithms/`,
+  `content/models/`, `content/concepts/`.
+
+**Output (reply):** a JSON array. No file writes.
+
+```json
+[{ "slug": "harris-corner-detector", "match_kind": "primary", "evidence": "sources.primary == source_id" }]
+```
+
+`match_kind` values: `primary` (`sources.primary == source_id`), `reference`
+(`source_id` in `sources.references[]`), `title-heuristic` (words from the
+paper title appear in the page's `summary` or `title`). Capped at ~30
+entries — if more candidates match, keep the strongest `primary`/`reference`
+matches and the highest-overlap `title-heuristic` matches.
+
+**Hard rules:**
+- Read only frontmatter (not page bodies) when scanning the three content
+  directories.
+- Never read `docs/papers/.cache/**` or `docs/sources/.cache/**`.
+- Do not decide relevance beyond the three `match_kind` categories — ranking
+  and final confirmation happen in the orchestrator (paper-ingest Step 4's
+  user-confirmation step), not here.
 
 ## Extract contract
 

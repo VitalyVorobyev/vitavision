@@ -3,9 +3,12 @@
 title: "<Common name of the model (e.g. ResNet, SuperPoint, DINOv2)>"
 date: YYYY-MM-DD
 summary: "<One sentence, index-card length. Declarative. What it takes in, what it produces, and how it is trained.>"
-tags: ["computer-vision", "<primary task>", "<secondary tag>"]
-category: <detection|depth-stereo|pose-geometry|segmentation-flow|foundation-ssl|calibration-learning>
+tags: ["<primary>", "<secondary>"]   # each from `tagValues` in src/lib/content/schema.ts (e.g. "deep-learning")
 author: "Vitaly Vorobyev"
+
+# Optional
+domain: <one of `domainValues` in src/lib/content/schema.ts, e.g. representation-learning|detection|segmentation|depth>
+tasks: [<zero or more of `taskValues` in src/lib/content/schema.ts, e.g. image-classification, image-segmentation>]
 
 # Required for non-draft pages
 sources:

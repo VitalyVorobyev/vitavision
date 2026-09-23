@@ -14,10 +14,11 @@ interface AuthorBylineProps {
 }
 
 /**
- * Renders the same compact byline as `formatAuthorsShort` — first four last
- * names, then "et al." — but turns each name whose author id is known into a
- * link to `/authors/<id>`. Names without a resolvable id stay plain text, which
- * is also the whole-byline behaviour before the authors index has loaded.
+ * Renders the same compact byline as `scripts/narrative-build.ts`'s
+ * `formatAuthorsShort` — first four last names, then "et al." — but turns
+ * each name whose author id is known into a link to `/authors/<id>`. Names
+ * without a resolvable id stay plain text, which is also the whole-byline
+ * behaviour before the authors index has loaded.
  */
 export default function AuthorByline({ paperId, authors, linkClassName = "" }: AuthorBylineProps) {
     const { authors: authorsById, paperAuthors } = useAuthorsIndex();

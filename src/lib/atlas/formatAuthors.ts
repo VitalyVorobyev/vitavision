@@ -6,7 +6,7 @@ export interface AuthorBylineSegment {
 }
 
 /** Byline as structured segments: the first 4 last-names, plus an `etAl` flag.
- *  `formatAuthorsShort` is the plain-string rendering of exactly this. */
+ *  Consumed by `AuthorByline` to render a compact byline with per-name links. */
 export function authorsShortSegments(authors: string[]): {
     segments: AuthorBylineSegment[];
     etAl: boolean;
@@ -17,12 +17,4 @@ export function authorsShortSegments(authors: string[]): {
     }));
     if (segments.length <= 4) return { segments, etAl: false };
     return { segments: segments.slice(0, 4), etAl: true };
-}
-
-/** First 4 last-names joined by ", " — keeps a byline compact without losing all attribution. */
-export function formatAuthorsShort(authors: string[]): string {
-    if (authors.length === 0) return "";
-    const { segments, etAl } = authorsShortSegments(authors);
-    const joined = segments.map((s) => s.lastName).join(", ");
-    return etAl ? `${joined} et al.` : joined;
 }

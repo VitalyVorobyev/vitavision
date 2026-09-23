@@ -34,6 +34,10 @@ jobs:
       # `relatedPosts`. `scripts/validate-content.ts` is the real Atlas graph
       # validator — slug resolution (including `relations[].target`),
       # prerequisite cycles, source-id existence, canonical-quality gates.
+      # `bun run build` (below, in build-frontend) already runs this same
+      # validator with drafts included (scripts/content-build.ts calls it);
+      # this step re-runs it explicitly on published pages only (no
+      # INCLUDE_DRAFTS), which is the coverage `bun run build` doesn't give.
       # Run by explicit path so the distinction stays unmissable in the log.
       - name: Validate content (blog/demo links)
         run: bun run content:validate

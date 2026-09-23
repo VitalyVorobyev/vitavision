@@ -141,16 +141,17 @@ Validates against `algorithmFrontmatterSchema` in `src/lib/content/schema.ts`.
 title: "..."          # Display title
 date: YYYY-MM-DD
 summary: "..."        # One sentence, index-card length
-tags: [...]           # At least one
-category: ...         # corner-detection | calibration-targets | subpixel-refinement | calibration
+tags: [...]           # At least one, each from `tagValues` in src/lib/content/schema.ts
 author: "..."
 
 # Optional
+domain: ...                   # one of `domainValues` in src/lib/content/schema.ts (e.g. features, geometry, calibration, targets)
+tasks: [...]                  # zero or more of `taskValues` in src/lib/content/schema.ts (e.g. corner-detection, camera-calibration) — omit for computational primitives (RANSAC, DLT, NMS)
 difficulty: ...               # beginner | intermediate | advanced
 draft: false
 relatedPosts: [...]           # Blog post slugs
 relatedDemos: [...]           # Demo page slugs
-editorAlgorithmId: ...        # chess-corners | chessboard | charuco | markerboard | ringgrid | radsym
+editorAlgorithmId: ...        # chess-corners | chessboard | charuco | markerboard | ringgrid | radsym | puzzleboard
 sources:                      # Authoritative sources for this page (see Workflow section)
   primary: <paper-id>         # id from docs/papers/index.yaml
   references: [<paper-id>]    # additional cited papers
@@ -186,7 +187,7 @@ relations:                                # see CLAUDE.md → "Relations field".
 
 ### `editorAlgorithmId` — deep-link must be one-click runnable
 
-Setting `editorAlgorithmId` renders a "Try in the editor →" button on the page, linking to `/editor?algo=<id>&sample=<sample-id>`. The sample id is mapped from the algorithm id by a lookup in `src/pages/AlgorithmPost.tsx` (currently: `chess-corners → chessboard`, `chessboard → chessboard`, `charuco → charuco`, `markerboard → markerboard`, `ringgrid → ringgrid`, `radsym → ringgrid`). The landing experience must be: editor mode, sample image preloaded, algorithm preselected, one click on Run.
+Setting `editorAlgorithmId` renders a "Try in the editor →" button on the page, linking to `/editor?algo=<id>&sample=<sample-id>`. The sample id is mapped from the algorithm id by a lookup in `src/pages/AlgorithmPost.tsx` (currently: `chess-corners → chessboard`, `chessboard → chessboard`, `charuco → charuco`, `markerboard → markerboard`, `ringgrid → ringgrid`, `radsym → ringgrid`, `puzzleboard → puzzleboard`). The landing experience must be: editor mode, sample image preloaded, algorithm preselected, one click on Run.
 
 When introducing a new `editorAlgorithmId` value:
 
@@ -198,23 +199,16 @@ A deep-link that leaves the user in gallery mode with no image is worse than no 
 
 ## Research-note awareness
 
-Research notes at `docs/research/notes/<sources.primary>.md` are the **canonical input** for this skill. The Draft contract reads them, not the paper cache. Before any draft pass, verify the note exists for the primary source AND for every reference in `sources.references`. If any required note is missing, the skill stops and reports: *"Cannot draft — research note `docs/research/notes/<id>.md` does not exist. Run `/paper-ingest <id-or-arxiv-ref>` first."*
-
-The note's `## NEW: <slug>` or `## UPDATE: <slug>` block provides authoritative content guidance for the section being drafted. The note's other sections (Setting, Core idea, Assumptions, Failure regime, Numerical sensitivity, Applicability, Connections) are the reasoning substrate the Draft subagent works from.
+See `.claude/skills/_shared/page-pipeline.md` §1 for the canonical-input rule and the explicit rules shared with `deep-model-page` (no pairwise comparison pages, no raw LLM summaries, cite registered source IDs only, no unresolved slugs, no authored reverse edges). Binding.
 
 **Two invocation paths:**
 
 - **Bootstrap** (new page from scratch): supply `arxiv:<id>`, `doi:<doi>`, or a URL. Runs Bootstrap B1–B9 below. The research note for `sources.primary` **must exist** before continuing to Workflow §7 (Draft contract delegation). If it is absent after Bootstrap completes, stop and instruct the user to run `paper-ingest` first.
 - **Apply from research note** (update existing page): invoke as `/algo-page <existing-slug>`. The research note for `sources.primary` **must exist**. If it is missing, stop and instruct the user to run `/paper-ingest <primary-id>` first. The Draft subagent reads the note and applies `## UPDATE: <slug>` bullets per the Draft contract in Workflow §7 — not by copying them verbatim, and not by reading the paper cache.
 
-**Explicit rules:**
+**Explicit rules (algo-page-specific — see `_shared/page-pipeline.md` §1 for the rules shared with `deep-model-page`):**
 
 - **1:1 page = primary paper.** Every algorithm page has exactly one primary paper in `sources.primary`. Supplementary papers go in `sources.references` only.
-- **No pairwise comparison pages.** Use `relations[type=compared_with]` + an inline `## When to choose X over Y` section inside the more authoritative page. Surveys allowed only with ≥3 methods, ≥800 words, and a decision table.
-- **Never publish raw LLM summaries.** Always synthesize against the research note's structured fields and your own understanding. Each claim must trace to a paper section, equation, or impl line.
-- **Cite source IDs only from `docs/papers/index.yaml`.** Do not invent paper IDs.
-- **Never reference unresolved slugs.** Verify every slug in `relations[].target` and `prerequisites` exists on disk before adding it.
-- **Do not author reverse edges.** `usedBy:` and similar reverse fields are computed by the build. Never add them manually.
 - Use `quality: stub` only for intentional public placeholders; `quality: canonical` only when the canonical gate is satisfied (sources present, prerequisites non-empty, no TODO markers); `quality: historical` only when a same-domain successor on the site supersedes this method (per CLAUDE.md → Comparison authoring discipline → Rule A). Historical pages must include at least one `relations[]` entry with `{ type: generalized_by, confidence: high, target: <successor-slug> }`, drop `editorAlgorithmId`, and omit any `relations[type=compared_with]` entry entirely.
 
 ## Workflow
@@ -230,27 +224,12 @@ This procedure is mandatory for any new or rewritten algorithm page. It codifies
 
 These steps are executed by Claude, not by the user. Narrate key decisions; stop and ask only when the primary's id, url, or scope is ambiguous.
 
-B1. **Resolve the input.** Parse the argument to `arxiv:<id>` or `doi:<doi>`. If the user pasted a URL, extract an arXiv id (e.g. `arxiv.org/abs/<id>` or `arxiv.org/pdf/<id>`) first; otherwise extract the DOI. `bun papers:fetch-meta` accepts both forms and the bare id.
-
-B2. **Fetch metadata.** `bun papers:fetch-meta <arg>`; capture stdout YAML. Review two fields:
-  - **`id`**: The script emits `firstauthor<year>-keyword` from the title. If the keyword is awkward (e.g. `shi1994-good` → `shi-tomasi1994-features`), rename now. The id is a hard identifier — rename before paste, not after.
-  - **`url`**: OpenAlex's best open-access link. If it looks fragile (preprint mirror, redirect chain, non-institutional host), run `curl -fLsI <url> | head -3` to confirm 200; replace with a stabler mirror if it 404s or 405s.
-
-B3. **Append to `docs/papers/index.yaml`.** Use the `Edit` tool to insert the stanza at the end of the file. Preserve the inline `# <title>` comments on unresolved `<name><year>-???` cite lines — they are the only hint about what each placeholder refers to. Show the user the diff after the write.
-
-B4. **Curate the cites list.** Each `<name><year>-???` entry is a paper the primary cites but the registry doesn't have yet. Decide per line:
-  - **Chase** if the placeholder is a direct algorithmic antecedent worth showing in the page's `# References` or as a `relations[]` cross-link (the corner detector fed into this algorithm, the numerical method it builds on, the paper that introduced the same idea in a different context). Recurse on steps B2–B3 to fetch and append each one.
-  - **Drop** if the placeholder is tangential (cited in passing, a generic textbook, the venue's comparison survey, a self-citation from the authors). Delete the line from the primary's `cites:` block.
-  - Report the keep/drop decisions in the turn log. When in doubt between chase and drop, read the primary (after step B5) for context first.
-
-B5. **Cache PDFs + text + ar5iv HTML.** `bun papers:fetch`. The script walks `docs/papers/index.yaml`, downloads any missing PDFs into `docs/papers/.cache/`, runs `pdftotext -layout` into `<id>.txt`, and — for entries with an `arxiv:` field — also curls `https://ar5iv.labs.arxiv.org/html/<arxiv-id>` into `<id>.html`. Second run is all cache hits — no network.
-
-B6. **Ensure the research note exists.** Run `bun ls docs/research/notes/<primary-id>.md`. If absent, stop and tell the user: *"Bootstrap requires the research note. Run `/paper-ingest <input>` first to create `docs/research/notes/<primary-id>.md`, then rerun `algo-page`."* Do NOT load the cache file into orchestrator context — drafting happens in Workflow §7 via the Draft contract.
+Follow `.claude/skills/_shared/page-pipeline.md` §2 for B1–B6 (resolve input, fetch metadata, append to `docs/papers/index.yaml`, curate the cites list, cache PDFs + text + ar5iv HTML, ensure the research note exists). In B6's stop message, use `algo-page` as the skill to rerun.
 
 B7. **Choose the page slug.** Kebab-case, descriptive to a reader browsing the algorithms register — not an id echo. `shu-topological-grid`, not `shu2009`. `harris-corner-detector`, not `harris-combined`.
 
 B8. **Synthesize the frontmatter.** No body yet — just the yaml block.
-  - `title` (display name, quoted), `date: <today>`, `summary` (one sentence: what it computes, what it returns), `tags` (at least `computer-vision` + primary topic), `category` (one of `corner-detection | calibration-targets | subpixel-refinement | calibration`), `difficulty: intermediate` unless the content clearly warrants another tier, `author: "Vitaly Vorobyev"`.
+  - `title` (display name, quoted), `date: <today>`, `summary` (one sentence: what it computes, what it returns), `tags` (one or more values from `tagValues` in `src/lib/content/schema.ts`, e.g. `classical`, `keypoint-detection`, `subpixel`), `domain` (one value from `domainValues` in `src/lib/content/schema.ts`, e.g. `features`, `calibration`, `targets`), `tasks` (zero or more values from `taskValues` in `src/lib/content/schema.ts`, e.g. `corner-detection`, `camera-calibration` — omit for computational primitives that solve no user-facing task on their own), `difficulty: intermediate` unless the content clearly warrants another tier, `author: "Vitaly Vorobyev"`.
   - `sources.primary`: the paper id.
   - `sources.references`: curated — direct antecedents from B4 plus any cross-link candidates from `bun papers:query pages-using <ref-id>`. These are the papers that will appear in `# References`.
   - `sources.notes`: freeform summary of key equations, symbols, and constants grounding the page.
@@ -299,7 +278,7 @@ B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no b
    ```
    Any MISS line means either (a) the note is incomplete and should be extended, or (b) Sonnet hallucinated. In case (a), extend the note and re-delegate. In case (b), reject the draft and re-delegate with a stricter prompt.
 9. **Assemble and write.** Opus assembles `--- frontmatter ---\n<body string from Sonnet>` and calls `Write` once. The frontmatter `prerequisites` / `relations[].target` slugs come from the note's `Connections` section + the §4 citation-graph candidates, NOT from the body string. Cross-check every slug against `knownSlugs` (read from `src/generated/content-graph.ts` or by listing `content/{algorithms,models,concepts}/`).
-10. **Verify.** `bun run build && bun run lint && npx vitest run`.
+10. **Verify.** `bun run build && bun run lint && npx vitest run && bun run scripts/validate-content.ts`. (`bun run build` already runs the Atlas graph validator with drafts included via `scripts/content-build.ts`; the explicit `validate-content.ts` run additionally checks the published-only set, matching CI.)
 
 ## Voice rules
 
@@ -312,7 +291,7 @@ Pages with `quality: "historical"` follow a tighter discipline:
 - **No editorialising about obsolescence.** Words like "outdated", "obsolete", "primitive", "legacy", "archaic" are forbidden. The reader-visible "Historical" badge already conveys the status. Prose stays factual: state when the paper appeared, what was new, what the successor improved, why the page is preserved.
 - **No `# Algorithm` / `# Implementation` / `# Remarks` headings.** The trimmed template is `# Goal` + `# Historical context` + `# References` only. Math lives in the original paper PDF and the research note; do not duplicate it.
 - **`# Historical context` covers four points** in 2–4 paragraphs: (a) when and in what landscape the paper appeared; (b) what was new — the contribution sentence; (c) what the successor improved (with a concrete sentence on the lifted limitation, linking the successor's page); (d) why the page is preserved (citation lineage, pedagogical value, period-correct understanding).
-- **No "When to choose X over Y" subsections.** Supersession is not comparison; the `successor:` field carries the relationship.
+- **No "When to choose X over Y" subsections.** Supersession is not comparison; the `relations[]` entry `{ type: generalized_by, target: <successor-slug>, confidence: high }` carries the relationship (per CLAUDE.md → Quality field / Comparison authoring discipline → Rule A).
 - **References include the successor's primary source** so the reader can follow the lineage forward without leaving the page.
 
 ## Forbidden patterns (taken from real failure modes)
@@ -347,7 +326,7 @@ Run before handing off a draft.
 - [ ] No rhetorical questions, no framing questions.
 - [ ] No softeners, no marketing vocabulary, no hedges.
 - [ ] Math uses `$...$` and `$$...$$`. Every code fence has a language tag.
-- [ ] Frontmatter: `category` present. `relatedDemos` and `editorAlgorithmId` evaluated (populate if applicable).
+- [ ] Frontmatter: `domain` set to a value from `domainValues`; `tasks` set to values from `taskValues` when the algorithm solves a user-facing task (omit for computational primitives). `relatedDemos` and `editorAlgorithmId` evaluated (populate if applicable).
 - [ ] Frontmatter `sources:` block populated: `primary` set; `impl` set when a sibling Rust crate exists (not when the page's own `# Implementation` is the only Rust); `references` lists every paper cited in `# References`.
 - [ ] Every paper id in `sources:` exists as an entry in `docs/papers/index.yaml`.
 - [ ] Working notes (ephemeral, not committed) trace every numerical constant on the page to a specific source line — paper §/equation or impl file/line. Anything untraceable was fixed or removed.
@@ -363,7 +342,7 @@ Run before handing off a draft.
 
 ## Notes on cache file fidelity
 
-For arxiv papers, `docs/papers/.cache/<id>.html` (ar5iv rendering) preserves LaTeX source in `<annotation encoding="application/x-tex">` blocks and section structure in `<section id="Sx…">` — equations transcribe directly without OCR artefacts. For non-arxiv papers, or when ar5iv returned 404, `<id>.txt` (pdftotext -layout) serves as the fallback. These notes are guidance for whoever is creating the research note via `paper-ingest` — the orchestrator (Opus) does not open cache files during `algo-page`.
+See `.claude/skills/_shared/page-pipeline.md` §3 — shared verbatim with `deep-model-page`.
 
 ## When not to use this skill
 
@@ -380,3 +359,4 @@ If a draft wants to explain the history of an algorithm, contrast it with altern
 - `bun papers:fetch [id]` / `bun papers:fetch-meta <arxiv-id|doi>` / `bun impls:fetch <slug>` / `bun papers:query <relation> <id>` — the four reasoning tools that drive the Workflow above.
 - `.venv/bin/python py/generate_<slug>_<name>.py` — repo-root venv (matplotlib, numpy preinstalled) for running and re-running generator scripts.
 - `.claude/skills/_shared/subagent-prompts.md` — Draft contract template, AUDIT JSON shape, page-vs-note verification recipe.
+- `.claude/skills/_shared/page-pipeline.md` — Bootstrap B1–B6, research-note-awareness rules, and cache-file-fidelity notes shared with `deep-model-page`.

@@ -12,8 +12,9 @@ const PAPERS_INDEX_PATH = join(SCRIPT_DIR, "..", "docs", "papers", "index.yaml")
 const PUBLIC_DIR = join(SCRIPT_DIR, "..", "public");
 const GENERATED_DIR = join(SCRIPT_DIR, "..", "src", "generated");
 
-/** One row of docs/papers/authors.yaml. Not yet populated by any script — the
- *  future `papers-backfill-authors.ts` writes it. Absence is a normal, valid state. */
+/** One row of docs/papers/authors.yaml. Populated by `papers-backfill-authors.ts`
+ *  (`bun run papers:backfill-authors`); hand-edited for corrections. Absence is
+ *  still tolerated as a valid state (e.g. a fresh checkout before the first run). */
 export interface AuthorRecord {
     id: string;
     name: string;
@@ -24,8 +25,8 @@ export interface AuthorRecord {
 }
 
 /** A single paper entry from docs/papers/index.yaml, narrowed to the fields
- *  this module cares about. `authorIds` does not exist on any entry yet — it
- *  arrives via a future backfill script. */
+ *  this module cares about. `authorIds` is populated by `papers-backfill-authors.ts`
+ *  after each ingest, but not every entry has been backfilled — treat it as optional. */
 interface PaperIndexAuthorFields {
     id?: string;
     kind?: "paper" | "repo" | "doc";
@@ -61,7 +62,8 @@ export interface AuthorsIndex {
 }
 
 /** Reads docs/papers/authors.yaml. Tolerates absence or a malformed/non-list
- *  file by returning an empty array — authors.yaml does not exist yet. */
+ *  file by returning an empty array, for robustness on a checkout predating
+ *  the registry or a corrupted edit — the file is normally present and populated. */
 export function loadAuthorsYaml(): AuthorRecord[] {
     if (!existsSync(AUTHORS_YAML_PATH)) return [];
     const raw = readFileSync(AUTHORS_YAML_PATH, "utf-8");

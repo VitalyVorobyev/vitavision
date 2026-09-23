@@ -95,8 +95,8 @@ A row like `"R. Tsai"` should carry the person's full name.
 
 - `bun run authors:build` — rebuilds `public/authors-index.json` / `src/generated/authors-index.ts`
   without errors.
-- `bunx vitest run` — `scripts/authors-build.test.ts` (and `papers-backfill-authors.test.ts` once
-  it lands) stay green.
+- `bunx vitest run` — `scripts/authors-build.test.ts` and `scripts/papers-backfill-authors.test.ts`
+  stay green.
 - `bun run build` — type-check + production build.
 - Open the affected `/authors/<id>` page(s) in `bun run dev` and confirm papers, name, and (for a
   merge) the redirect render as expected.

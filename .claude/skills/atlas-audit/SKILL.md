@@ -33,9 +33,16 @@ One of:
 - An explicit list of slugs.
 - A domain/kind selector (e.g. "all `geometry`-domain algorithms", "all
   model pages").
-- The literal phrase "all zero-relation pages" — resolve by grepping
-  `content/{algorithms,models,concepts}/*.md` frontmatter for an empty or
-  absent `relations:` field.
+- The literal phrase "all zero-relation pages" — resolve from
+  `src/generated/content-graph.ts`, not from frontmatter grep (a page can
+  have an empty authored `relations:` field and still be connected via a
+  build-mirrored symmetric edge or a reverse bucket). A page is isolated
+  only when ALL of the following are empty for its slug: `forward[slug]
+  .relations` (which already includes symmetric types — `compared_with`,
+  `alternative_formulation_of`, `parallel_foundation_with` — mirrored onto
+  this page by the build when authored on the other side) AND every reverse
+  bucket in `reverse[slug]` (`usedBy`, `affects`, `generalises`, `extending`,
+  `fedBy`, `hasLearnedAlternative`).
 
 Cap a single audit run at ~15 pages so Step 3 triage stays reviewable in one
 pass; split a larger request into multiple runs.
@@ -102,11 +109,10 @@ Returns the JSON array shape defined in the Audit contract:
   Step 2 flags a missing section that's actually present under a slightly
   different heading spelling — verify before keeping).
 - Assign `BL-nnn` ids continuing from the highest id already in
-  `docs/atlas/backlog.md`. If the file doesn't exist yet, create it with a
-  header row (`| id | slug | severity | category | finding | fix skill |
-  status |`) before appending — this skill is the first consumer, not just a
-  reader.
-- Append one row per surviving finding:
+  `docs/atlas/backlog.md`. If the file doesn't exist yet, create it with the
+  header row `| ID | Scope | Severity | Category | Issue | Fix path | Status |`
+  before appending — this skill is the first consumer, not just a reader.
+- Append one row per surviving finding, matching that column order:
   `| BL-nnn | <slug> | <severity> | <category> | <finding> | <fix skill> | open |`.
 - Group survivors into a suggested first fix batch, by domain or page kind,
   so the next `algo-page`/`deep-model-page`/`concept-page` invocation has a

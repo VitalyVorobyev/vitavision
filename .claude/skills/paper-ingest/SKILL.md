@@ -93,20 +93,7 @@ Typed relations are never auto-committed. How the question is grounded depends o
 
 **Papers without such structure (most classical papers), or when the Stated-relations table came back empty:** surface the typed-relations question to the user **verbatim** (no auto-detection from title heuristics or year delta):
 
-> "For each candidate slug above, is there a typed relationship between **this** paper and that page? The vocabulary is fixed (see CLAUDE.md → Relations field), in three categories:
->
-> *Lineage:*
-> - `generalized_by` — same problem, target strictly more general/robust.
-> - `alternative_formulation_of` — same problem, different mathematical formulation; both coexist.
-> - `parallel_foundation_with` — concurrent peers that founded the field together.
-> - `extended_by` — target builds on this method without replacing it.
->
-> *Practice:*
-> - `compared_with` — peer practitioner choice; reader picks one.
-> - `feeds_into` — intellectual/compositional lineage: B was conceived building on A, incorporating A as a named component. **Not** runtime data-flow. Must respect chronology: A's paper ≤ B's. Example: VGG → FCN; FAST → ORB.
->
-> *Cross-paradigm:*
-> - `learned_alternative_of` — this paper's deep-learning model replaces classical target algorithm. (Model→algorithm only.)
+> "For each candidate slug above, is there a typed relationship between **this** paper and that page? The vocabulary is fixed — see CLAUDE.md → 'Relations field' for the full list of types (`generalized_by`, `alternative_formulation_of`, `parallel_foundation_with`, `extended_by`, `compared_with`, `feeds_into`, `learned_alternative_of`) and → 'Comparison authoring discipline' Rules A–C for how to pick one (Rule A: supersession is not `compared_with`; Rule B: cross-domain pairs get no edge; Rule C: don't use `feeds_into` for a data-flow-only pipeline).
 >
 > For each relation, give: `(type, target-slug, confidence: high|medium|low, optional caution: <one line>)`. If any relation is `generalized_by` with `confidence: high` AND you intend the older page to render as preserved-for-lineage-only, also flag it as `quality: historical`. If unsure on any of these, answer 'no relation' — we can revisit at page-authoring time."
 

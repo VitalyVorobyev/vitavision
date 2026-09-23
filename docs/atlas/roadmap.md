@@ -1,75 +1,103 @@
-# Atlas initiative roadmap — narratives v2 · authors · dev docs
+# Atlas roadmap
 
-> **Status document.** This file is the living state of the Atlas narratives/authors initiative
-> and deliberately overrides the repo's default "work is driven from plan files, not a tracked
-> backlog" rule for this initiative only (user decision, 2026-08-23).
+> **Status document.** Living state of the Atlas initiative. It deliberately overrides the repo's
+> default "work is driven from plan files, not a tracked backlog" rule for this initiative only
+> (user decision, 2026-08-23). Page-quality and tech-debt rows live in `docs/atlas/backlog.md`.
 >
-> Full plan: `~/.claude/plans/i-want-you-to-tingly-matsumoto.md` (approved 2026-09-15).
+> Current plan: `~/.claude/plans/i-want-you-to-stateful-koala.md` (approved 2026-09-23).
 
 ## Session protocol
 
 1. At session start: read this file top to bottom; pick up the first `planned` row unless directed.
 2. Content pages go through skills: `paper-ingest` → research note → `algo-page` /
    `deep-model-page` / `concept-page` / `narrative-page`. Comparison prose only when both
-   research notes exist.
-3. Verification after every phase: `bun run build` · `bun run lint` · `npx vitest run` ·
-   `bun run scripts/validate-content.ts` · `bun run content:validate` ·
-   `bun run narratives:debt` (narrative PRs) · `bun run ds:validate` (if DS-exported components
-   touched) · devtools touch emulation for interactive-canvas changes (narrative canvas, ego graph).
-4. At session end: update Workstream status, the program tables, and the Decisions log.
-
-## Workstream status
-
-| WS | State | Next action |
-|---|---|---|
-| A — Narratives infra v2 | **done** (PR-1) — `question` nodes, step `claim`, `walkthrough: reveal`, edge-vs-relations validator warning, orphan layout generator removed | — |
-| B — Authors: identity, edges, ego graph | **done** (PR-2) | run `author-identity` Workflow B on the remaining `authors:dupes` candidates (Dong Liu ×2 HRNet, Yang Zou ×2 WinCLIP/VisA look like real splits); re-run backfill — the dry-run now matches 4 of the 10 unlinked papers by DOI |
-| C — Narratives program (13 stories) | N9, N7, N8 live (PR-3, PR-6) | N3 next, then N4, N5, N2, N6 |
-| D — Page-quality audit | first audit run done (PR-5): 10 pages / 14 findings, 3 blockers + 5 majors fixed | next `atlas-audit` batch over the remaining unaudited BL-001 zero-relation pages |
-| E — Source injections (RAFT, COLMAP, Kannala–Brandt, LO-RANSAC) | **done** (PR-4) — 4 notes, 4 pages, 8 page updates, relations confirmed | — |
+   research notes exist. After each ingest: `bun run papers:backfill-authors --only <id>`.
+3. Verification after every phase: `bun run build` (also runs the Atlas graph validator, drafts
+   included) · `bun run lint` · `npx vitest run` · `bun run scripts/validate-content.ts`
+   (published-only, as CI) · `bun run content:validate` · `bun run narratives:debt` (narrative
+   PRs) · `bun run ds:validate` (if DS-exported components touched) · devtools touch emulation for
+   interactive-canvas changes.
+4. At session end: update Workstream status and the Decisions log.
 
 **PR policy (user mandate, 2026-08-23):** Claude opens and merges PRs itself, no codex review;
 strictly one PR at a time; PRs must be substantial — every main commit triggers a production deploy.
 
-## Narratives program (13)
+## Shipped
 
-Consolidated from an 18-story proposal (see Decisions log). Authoring order (readiness × value):
-N9 → N7, N8, N3 (after source injections) → N4, N5, N2, N6 → N10, N11, N12, N13 → N1 extension + debt pages.
+- **Phase 1 (2026-08-23, PRs #125–#131):** typed `relations[]`, content graph with derived reverse
+  edges, quality tiers, authors registry, CLIP wave, canonical rollout.
+- **Narratives v2 + authors v1 (2026-09-15, PRs #143–#157):** question nodes, step `claim`,
+  `walkthrough: reveal`; `mergedInto` aliases, weighted co-author edges, per-author ego graph,
+  `author-identity` skill; source injections (RAFT, COLMAP, Kannala–Brandt, LO-RANSAC); first
+  `atlas-audit` batch; all 13 planned narratives live (N1–N13).
 
-| # | Slug | Thesis | Nodes | New-page deps | Lenses | Status | PR |
-|---|---|---|---|---|---|---|---|
-| N1 | `foundation-models-for-vision` | Extend: "what is normal" lens; question node | 21 existing + 5 debt | winclip, anomalyclip, simplenet, siglip2, register-tokens pages | overview, ssl-lineage, distillation, anomaly-bridge, +what-is-normal | live, extension planned | — |
-| N2 | `where-did-the-inductive-bias-go` | Assumptions migrate algorithm → architecture → data+objective | 12 + question | — | overview, classifier-lineage, bias-migration, timeline | **live** | PR-10 |
-| N3 | `the-geometry-pipeline-collapses` | Learned geometry absorbs pipeline stages | 18 + question | colmap | overview, features, pipeline, timeline | **live** | PR-7 |
-| N4 | `segmentation-from-energy-to-prompt` | Prior moves from energy function to pretrained model | 14 + question | — | overview, dense-prediction, interactive, timeline | **live** | PR-8 |
-| N5 | `detection-removing-the-machinery` | Sliding windows → proposals → regression → set prediction | 8 + question | — | overview, timeline | **live** | PR-9 |
-| N6 | `depth-becomes-general-geometry` | Training signal, not architecture, is the story | 7 + question | — | overview, timeline | **live** | PR-11 |
-| N7 | `forty-years-against-outliers` | Algebra → numerics → outliers → adaptive thresholds | 10 + question | lo-ransac | overview, solver-line, estimator-line, timeline | **live** | PR-6 |
-| N8 | `calibration-changed-the-target` | Usability came from the planar target, not new math | 9 + question | kannala-brandt-model | overview, target-line, model-line, timeline | **live** | PR-6 |
-| N9 | `finding-a-chessboard` | Local evidence isn't enough; topology, learning, self-identifying targets | 17 + question | — | overview, local-response, topology-beats-appearance, timeline | **live** (pilot) | PR-3 |
-| N10 | `local-versus-global-motion` | Three answers, then learned iteration | 5 + question | raft | overview, timeline | **live** | PR-12 |
-| N11 | `one-homography-is-not-enough` | Parallax breaks the global model | 5 + question | — | overview, timeline | **live** | PR-13 |
-| N12 | `four-answers-to-rectification` | One goal, four assumption sets | 6 | — | overview, assumptions (2×2), timeline | **live** | PR-14 |
-| N13 | `vision-under-a-latency-budget` | History of compute constraints, not accuracy | 15 (14 pages + 1 question) | — | overview, timeline | **live** | PR-15 |
+Atlas size at 2026-09-23: 55 algorithms · 51 models · 35 concepts · 13 narratives · 151 registered
+sources · 141 research notes (7 in v2 form) · 499 canonical authors.
 
-## Authors program
+## Workstream status
 
-- [x] Alias mechanism: `mergedInto` on `authors.yaml` rows, resolved in `buildAuthorsIndex`, `AuthorPage` redirects alias → canonical.
-- [x] Data fixes (OpenAlex-verified, see `author-identity` worked cases): Tomasi, Michael S. Brown, Jian Sun merged via `mergedInto`; Kirillov (SAM) and Zilong Huang (Depth Anything) were misattributions to a crystallographer and a microbiologist — re-pointed; `zhang2000-flexible` re-pointed to Zhengyou Zhang `A5113678278`.
-- [x] `scripts/authors-dupes.ts` (`bun run authors:dupes`) — candidate-split report.
-- [x] Backfill merge fix (`--write` merges into existing `authors.yaml` instead of overwriting) + `--only <paper-id>` flag (`bun run papers:backfill-authors`).
-- [x] Weighted co-author edges (`AuthorsIndex.coauthors`) at build time.
-- [x] Static ego graph on `AuthorPage` (top collaborators, ring layout, click-through).
-- [x] `author-identity` skill.
+| WS | Goal | State | Next action |
+|---|---|---|---|
+| A — Workflow hygiene | Skills and docs describe the system as it is | **in progress** (PR-A) | — |
+| B — Dense-prediction injection | FPN, DPT, PointRend pages; SegFormer note → v2 | planned (PR-B) | `paper-ingest` FPN, DPT, PointRend; refresh `xie2021-segformer` |
+| F — Authors & papers experience | Papers and people become first-class, well-designed Atlas surfaces | planned | design phase (see below) |
+| G — Build-pipeline quality | Validator and build scripts that are modular and tested | planned | BL-028…BL-032 |
+| H — Note v2 migration | Every relation rests on a note with `# Stated relations` | planned | batch 1: highest-degree segmentation/detection notes |
+| I — Coverage waves | Close page debt and notes-without-pages | planned | multi-scale wave after PR-B |
+| J — Quality tiers | Canonical rollout per domain; second audit pass | planned | `atlas-audit` batch 2 over BL-001 remainder |
+| K — Citation & influence graph | Surface `cites` as paper→paper and author→author influence | long-term | after F ships paper pages |
 
-## Sources to inject
+### B — Dense-prediction injection (short-term)
 
-| Source | Paper id | Page | Kind | Narrative | Status |
-|---|---|---|---|---|---|
-| Teed & Deng, RAFT, ECCV 2020 | `teed2020-raft` | `raft` | model (`deep-model-page`) | N10 | live (PR-4) |
-| Schönberger & Frahm, SfM Revisited, CVPR 2016 | `schonberger2016-colmap` | `colmap` | algorithm (`algo-page`) | N3 | live (PR-4) |
-| Kannala & Brandt, generic camera model, TPAMI 2006 | `kannala2006-generic` | `kannala-brandt-model` | algorithm (`algo-page`) | N8 | live (PR-4) |
-| Chum, Matas & Kittler, LO-RANSAC, DAGM 2003 | `chum2003-lo-ransac` | `lo-ransac` | algorithm (`algo-page`) | N7 | live (PR-4) |
+| Source | Paper id | Page | Relation candidates (confirm against notes) | Status |
+|---|---|---|---|---|
+| Lin et al., FPN, CVPR 2017 (arXiv:1612.03144) | `lin2017-fpn` | `fpn` | resnet → fpn `feeds_into`; fpn → mask-rcnn, mask2former `feeds_into`; prereq `image-pyramid`; closes BL-011 | planned |
+| Ranftl et al., DPT, ICCV 2021 (arXiv:2103.13413) | `ranftl2021-dpt` | `dpt` | vit → dpt `feeds_into`; midas ↔ dpt (type from note); dpt → depth-anything ×3, dust3r, vggt `feeds_into`; dpt `compared_with` segformer | planned |
+| Kirillov et al., PointRend, CVPR 2020 (arXiv:1912.08193) | `kirillov2020-pointrend` | `pointrend` | mask-rcnn → pointrend `feeds_into`; pointrend → mask2former `feeds_into` | planned |
+| Xie et al., SegFormer, NeurIPS 2021 (arXiv:2105.15203) | `xie2021-segformer` | `segformer` (exists) | refresh note to v2; add relations to the new pages | planned |
+
+Narrative follow-ups (via `narrative-page`): `fpn` node in `detection-removing-the-machinery`,
+`dpt` node in `depth-becomes-general-geometry`.
+
+### F — Authors & papers experience (mid-term)
+
+Design-led: `react-ui-designer` preference round → high-fidelity mockups (paper page, author page,
+global graph) → user approval → implementation. The bar is *well-designed*, not merely functional.
+
+1. **Paper pages** `/papers/:id` — the hub between people and the Atlas: authors, venue/year,
+   Atlas pages built on the paper, narratives it appears in, cites / cited-by (the `cites` field is
+   already in `index.yaml` but never reaches the site).
+2. **Author page v2 (Author → Atlas)** — contribution-first: the pages and narratives the author's
+   work underpins, grouped by domain, with a year strip; co-author edges carry their shared-paper
+   lists, precomputed at build (drop the client `papersSharedBy` loop).
+3. **Global co-author graph** at `/authors` — community clusters, domain/era filters,
+   focus+context, touch-safe.
+4. **Discoverability** — `/authors` and papers reachable from Atlas navigation; global search
+   palette consuming author/paper records (BL-022).
+5. **Data integrity** — backfill the 10 papers without `authorIds`; validator rules for authors
+   (BL-032).
+
+### H — Note v2 migration (mid-term)
+
+134 of 141 notes predate the structured-ingestion pivot (no `# Claimed contributions` /
+`# Stated relations`), so Step 4b's "confirm against the counterpart's note" is impossible for most
+existing relations. Upgrade in domain batches (Sonnet Extract, orchestrator review), highest-degree
+pages first; each batch ends with a relation audit against the stated relations. Add a v1/v2 count
+to a report script so progress is measurable.
+
+### I — Coverage waves (mid-term)
+
+- Multi-scale wave: `retinanet` page (note exists; FPN is its backbone), survey concept
+  `multi-scale-feature-fusion` (FPN, U-Net, HRNet, DeepLab/ASPP, SegFormer, DPT).
+- N1 extension ("what is normal" lens) + 5 debt pages below; 4 of those papers need notes first.
+- BL-021 notes without pages; 10 registered papers without notes.
+
+### J, K — Long-term
+
+- **J:** canonical rollout per domain (5 canonical pages today), MATE stub (BL-002), second
+  `atlas-audit` pass over BL-001's remainder, failure-mode pages once candidates reach 3+ referrers.
+- **K:** paper-level citation lineage overlay in the graph explorer; author→author influence edges
+  derived from `cites`.
 
 ## Page-debt from narratives
 
@@ -95,59 +123,35 @@ narrative should get a page — paper-only nodes are debt, not normal.
 - 2026-08-23 — Narrative nodes: atlas slug XOR registered paper id; paper-only = tracked debt.
 - 2026-08-23 — Authors keyed by OpenAlex IDs; `docs/papers/authors.yaml` = identity only.
 - 2026-08-23 — IA: narratives are a 4th `/atlas` view tab; detail at `/atlas/narratives/:slug`;
-  `/authors` unlisted (search + SourceStrip + index footer discovery).
+  `/authors` unlisted (search + SourceStrip + index footer discovery). *Revisited 2026-09-23 (WS-F).*
 - 2026-08-23 — Narrative edge vocabulary diverges from Atlas relations on purpose: `prerequisite |
   evolution | bridge | contrast` + free-text `label` (story altitude, not encyclopedic claims).
 - 2026-08-23 — Narrative layout is loosely chronological; inversions of ≥2 years draw a validator warning.
 - 2026-08-23 — Narrative steps carry chapter-length prose anchored to `##` headings; essay stays
   the single authored source.
-- 2026-09-15 — Story consolidation, 18 → 13: 3+4 merged (segmentation dense/interactive are two
-  lenses of one energy→prompt arc); 12+13 merged (topology is the second half of the chessboard
-  story); 1+6 merged (features and pipeline are the same collapse from two ends); 2+18 merged
-  (inductive bias is the thesis of the classifier→foundation lineage); 8+9 folded into the
-  existing Foundation Models narrative (N1) as a "what is normal" lens + question node.
-- 2026-09-15 — `claim` field added to narrative steps (≤360 chars, rendered as step headline)
-  while chapters remain the reading body.
-- 2026-09-15 — `question` node kind added: no year, no link, not counted as page debt.
-- 2026-09-15 — First `atlas-audit` run triaged 10 pages (14 findings). 7 of the 10 "zero-relation"
-  candidate pages turned out to already be reverse-linked via `src/generated/content-graph.ts`
-  (mirrored symmetric relations or typed reverse buckets) once checked directly, rather than
-  genuinely isolated — BL-001's audit
-  metric (raw `relations[]` frontmatter emptiness) undercounts connectivity for pages that are only
-  targets of another page's authored relation. The real defects this batch surfaced were fidelity
-  (an internally inconsistent Geman-McClure formula), comparison-hosting discipline (two stale
-  Remarks bullets asserting comparisons CLAUDE.md's Rules A/B forbid), broken relative page links,
-  a missing `# Implementation` section, and two `flowchart LR` pipelines that should have been
-  generated SVGs — not missing relations.
-- 2026-09-15 — `walkthrough: reveal` mode added (default stays `focus`): hides not-yet-focused
-  nodes/edges instead of dimming them.
-- 2026-09-15 — Narrative edges must not contradict Atlas `relations[]` (validator warns, does not error).
-- 2026-09-15 — Orphaned constellation layout generator deleted (`scripts/computeConstellationLayout.ts`,
-  `src/generated/atlas-graph-layout.ts`, the `atlas:layout` build step) — nothing imported it.
+- 2026-09-15 — Story consolidation, 18 → 13 narratives (overlapping stories became lenses of one
+  narrative); `claim` field on steps; `question` node kind; `walkthrough: reveal` mode; narrative
+  edges must not contradict Atlas `relations[]` (validator warns).
+- 2026-09-15 — First `atlas-audit` run: raw `relations[]` emptiness undercounts connectivity —
+  7 of 10 "zero-relation" pages were reverse-linked via `src/generated/content-graph.ts`. Real
+  defects were fidelity, comparison-hosting discipline, broken links, missing sections, and
+  `flowchart LR` pipelines that should have been generated SVGs.
 - 2026-09-15 — Authors: `mergedInto` alias mechanism (build-resolved, cycle-safe, old ids redirect);
-  weighted co-author edges precomputed at build; static ego graph on author pages.
-- 2026-09-15 — Pilot narrative `finding-a-chessboard` authored end-to-end through `narrative-page`: Sonnet outline →
-  orchestrator reconciliation (two survey "unifying" bridges dropped as meta-edges) → Sonnet draft with 49-entry AUDIT
-  (0 misses) → Playwright desktop/touch pass. Lesson: extract the drafter's reply from its transcript by script — the
-  hand-back summary does not carry the body; strip any leading agent chatter before assembly.
-- 2026-09-15 — Source injections authored (PR-4). Relations decided from the notes: raft `learned_alternative_of`
-  horn-schunck (medium); fischler-bolles-ransac `extended_by` lo-ransac (high); lo-ransac `feeds_into` raguram-usac
-  (high — USAC's stage 4) and `compared_with` barath-magsac (medium, LO-RANSAC hosts); zhang-planar-calibration
-  `feeds_into` kannala-brandt-model (high); kannala-brandt-model `compared_with` scaramuzza-omni-calibration (medium,
-  same year → the more general model hosts); colmap carries prerequisites only (concept targets, Rule B for
-  feed-forward 3D).
-- 2026-09-15 — Author identity fixes, all from OpenAlex `authors/<id>` evidence: Tomasi `A5088492440`→`A5079878449`,
-  Michael S. Brown `A5075135613`→`A5106406020` (more works; both stitching papers are his), Jian Sun
-  `A5100785015`→`A5101425421` (Microsoft affiliation) merged; `kirillov2023-sam` re-pointed
-  `A5008626158` (a crystallographer) → `A5101930471`; `yang2024-depth-anything` re-pointed `A5101358906`
-  (a microbiologist) → `A5099137433`; `zhang2000-flexible` re-pointed `A5056480447` → `A5113678278`.
-  Lesson: name+initial similarity produced two false merges in the original plan — always check
+  weighted co-author edges precomputed at build; static ego graph on author pages. Identity fixes
+  from OpenAlex evidence (Tomasi, Michael S. Brown, Jian Sun merged; Kirillov, Zilong Huang,
+  Zhengyou Zhang re-pointed). Lesson: name+initial similarity produces false merges — check
   affiliations/topics before merging.
+- 2026-09-15 — Pilot-narrative lesson: extract the drafter's reply from its transcript by script;
+  the hand-back summary does not carry the body.
+- 2026-09-15 — Source injections (RAFT, COLMAP, Kannala–Brandt, LO-RANSAC): relations decided from
+  the notes (see the respective pages' `relations[]`).
+- 2026-09-23 — **Atlas review** (user-approved): SegFormer note refreshed to v2 rather than skipped;
+  authors roadmap = Author→Atlas pages, global co-author graph, discoverability — explicitly
+  design-led; affiliations stay parked. Review found that `bun run build` *does* run the Atlas
+  graph validator (docs said otherwise — corrected), 134/141 notes are pre-pivot (WS-H), and the
+  page skills still emitted the removed `category` field and an invalid `computer-vision` tag.
 
 ## Deferred / parked
 
-Page-quality and tech-debt items live in `docs/atlas/backlog.md`; this list holds only scoped-out features.
-
+- Authors: affiliations (OpenAlex institutions) and disambiguation tooling beyond `authors:dupes`.
 - Foundation-models / frozen-backbones concept page.
-- Authors: affiliations, per-author timelines, disambiguation tooling beyond `authors:dupes`.
-- Global co-author graph (ego graph per author is scheduled; a full-graph view is not).

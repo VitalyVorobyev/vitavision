@@ -1,6 +1,6 @@
 ---
 name: tech-writer
-description: Draft, outline, rewrite, and polish technical articles, algorithm pages, engineering notes, and product copy in Vitaly Vorobyev's Vitavision style. Use when Codex needs to turn raw technical material, repo context, implementation details, benchmarks, or rough notes into clean, practical, opinionated prose with a personal engineering voice rather than generic documentation or academic writing.
+description: Draft, outline, rewrite, and polish blog posts, engineering notes, and product copy in Vitaly Vorobyev's Vitavision style. Use when the agent needs to turn raw technical material, repo context, implementation details, benchmarks, or rough notes into clean, practical, opinionated prose with a personal engineering voice rather than generic documentation or academic writing. For Atlas register pages (algorithm/model/concept), use `algo-page`, `deep-model-page`, or `concept-page` instead — those are reference-entry voice, not this narrative voice.
 ---
 
 # Vitavision Tech Writer
@@ -12,12 +12,12 @@ The canonical reference is `content/blog/01-chesscorners.md`. The style guide in
 ## Workflow
 
 1. **Identify the deliverable.**
-   - Outline, section rewrite, full draft, short intro, algorithm-page copy, or review pass?
-   - Know the reader, the expected length, and where the piece will live (blog post, algorithm page, README section, product copy).
+   - Outline, section rewrite, full draft, short intro, or review pass?
+   - Know the reader, the expected length, and where the piece will live (blog post, engineering note, README section, product copy).
    - Ask only the minimum missing questions. If the answer is in the workspace, read for it first.
 
 2. **Build the technical context from the workspace.**
-   - Read the primary sources: the crate, the paper, the benchmark script, prior drafts, related algorithm pages.
+   - Read the primary sources: the crate, the paper, the benchmark script, prior drafts, related Atlas pages.
    - Do not invent performance numbers, implementation details, or historical claims. If a fact is not in the workspace, either ask or mark it as an assumption.
    - Re-read the style guide's "signature moves" sections before writing.
 
@@ -57,11 +57,11 @@ Run this pass after every substantive draft. Items come from the style guide; sq
 This voice is narrative and opinionated. It is **not** the right register for:
 
 - API reference documentation (use neutral, declarative docstrings instead).
-- Commit messages and PR descriptions (see the `commit` workflow).
+- Commit messages and PR descriptions.
 - README files for open-source libraries aimed at a general audience.
 - Changelogs, issue templates, or support boilerplate.
 
-Use the skill for blog posts, algorithm pages, engineering notes, long-form READMEs that serve as introductions to a method, and product-facing technical copy that should read like a real engineer is behind it.
+Use the skill for blog posts, engineering notes, long-form READMEs that serve as introductions to a method, and product-facing technical copy that should read like a real engineer is behind it. Use `algo-page`, `deep-model-page`, or `concept-page` for the algorithms/models/concepts register under `content/{algorithms,models,concepts}/` — that voice is reference-entry, not narrative.
 
 ## Resources
 

@@ -8,7 +8,7 @@ If you only have time for one section, read **§6 Workflow at a glance**.
 
 ## 1. What the atlas is
 
-`vitavision.dev/algorithms` is a connected **practical computer vision atlas**: short reference cards for algorithms, models, and concepts, cross-linked by a typed relationship graph (prerequisites, typed `relations[]`, used-by, failure-modes). The atlas is intentionally curated — depth and correctness over coverage. Public pages are source-grounded and machine-checked; private research notes carry the reasoning substrate that backs the public content.
+`vitavision.dev/atlas` is a connected **practical computer vision atlas**: short reference cards for algorithms, models, and concepts, cross-linked by a typed relationship graph (prerequisites, typed `relations[]`, used-by, failure-modes). The atlas is intentionally curated — depth and correctness over coverage. Public pages are source-grounded and machine-checked; private research notes carry the reasoning substrate that backs the public content.
 
 Public site lives at:
 - `/atlas` — the atlas index, with tabs for grid / list / graph / narratives views.
@@ -124,7 +124,7 @@ You: bun run build && bun run scripts/validate-content.ts
 
 ### Path B — concept page (no single paper)
 
-Concepts span many sources. Don't go through `paper-ingest` first; start at the page skill:
+Concepts span many sources. Rather than running `paper-ingest` for a new source, a concept page synthesises ≥3 existing research notes (each already produced by `paper-ingest` for its own paper). Start at the page skill:
 
 ```text
 You: Use concept-page to evaluate whether "epipolar geometry" meets the
@@ -179,7 +179,7 @@ Run before every commit:
 ```bash
 bun run build              # type-check + content-build + Vite + postbuild guard
 bun run lint               # ESLint
-npx vitest run             # 238 unit tests
+npx vitest run             # unit tests
 bun run scripts/validate-content.ts          # public pages only
 INCLUDE_DRAFTS=true bun run scripts/validate-content.ts   # public + drafts
 ```
@@ -214,7 +214,7 @@ summary: "One sentence. Subject-first."
 tags: ["..."]
 author: "Vitaly Vorobyev"
 draft: true                # default: false (public). Hides until INCLUDE_DRAFTS=true.
-quality: stub | canonical  # optional. Stub = visible placeholder; canonical = strict gate.
+quality: stub | canonical | historical  # optional. Stub = visible placeholder; canonical = strict gate; historical = superseded, trimmed body.
 difficulty: beginner | intermediate | advanced
 
 # Relationship fields (all optional; all forward edges)
@@ -233,7 +233,7 @@ sources:
 ---
 ```
 
-Type-specific fields (`category` enum, `editorAlgorithmId`, model `implementations`, etc.) live in `src/lib/content/schema.ts`.
+Type-specific fields (`domain`/`tasks` enums, `editorAlgorithmId`, model `implementations`, etc.) live in `src/lib/content/schema.ts`. (`category` is a separate enum scoped to demo pages only — `interactive-figure | tool | playground` — not algorithms/models/concepts.)
 
 ## 10. What never gets deployed to the site
 

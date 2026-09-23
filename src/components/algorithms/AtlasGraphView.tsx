@@ -3,8 +3,8 @@ import SeoHead from "../seo/SeoHead.tsx";
 import AlgorithmsViewToggle from "./AlgorithmsViewToggle.tsx";
 import type { AlgorithmsView } from "../../hooks/useAlgorithmsFilters.ts";
 
-// Code-split: the graph explorer (react-force-graph + friends) is heavy and
-// only needed when the reader actually picks the graph view.
+// Code-split: the graph explorer is only needed when the reader picks the
+// graph view, so it ships as its own chunk.
 const GraphExplorer = lazy(() => import("../atlas/GraphExplorer.tsx"));
 
 // Same box as GraphExplorer's own root container, so the Suspense fallback
@@ -62,7 +62,7 @@ export default function AtlasGraphView({ isDesktop, view, setView, focusParam }:
             {/* Title row */}
             <div className="flex items-baseline justify-between mb-4">
                 <h1 className="text-[22px] font-bold -tracking-[0.5px]">Atlas</h1>
-                <span className="text-xs text-muted-foreground">Graph view</span>
+                <AlgorithmsViewToggle view={view} onChange={setView} />
             </div>
 
             <Suspense fallback={<GraphFallback />}>

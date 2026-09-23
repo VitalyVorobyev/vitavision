@@ -29,11 +29,11 @@ export default tseslint.config([
         argsIgnorePattern: '^_',
         caughtErrorsIgnorePattern: '^_',
       }],
-      // useThemeVariant is a hook (not a component) but lives alongside the
-      // ThemeVariantProvider component — explicitly allow it.
+      // useThemeVariant / useFormControlMode are hooks (not components) but
+      // live alongside their *Provider component — explicitly allow them.
       'react-refresh/only-export-components': ['error', {
         allowConstantExport: true,
-        allowExportNames: ['useThemeVariant'],
+        allowExportNames: ['useThemeVariant', 'useFormControlMode'],
       }],
     },
   },

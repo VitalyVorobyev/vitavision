@@ -1,17 +1,22 @@
 import { describe, expect, it } from "vitest";
 import {
+    cameraFitBounds,
     coauthorTies,
     computeFocusPositions,
+    computeRingLayout,
     eraIntersects,
     focusBounds,
+    focusHalfExtent,
     layoutLabels,
     matchesQuery,
     nodeRadius,
     resolveAuthorId,
     ringRadius,
+    ringRadiusScale,
     searchPeople,
     selectFocusLabelCandidates,
     selectOverviewLabelCandidates,
+    splitFocusTieLabels,
 } from "./peopleNetwork.ts";
 import type { ScholarlyNetworkNode } from "./scholarlyTypes.ts";
 
@@ -264,7 +269,127 @@ describe("layoutLabels", () => {
         const placed = layoutLabels([{ id: "a", x: 100, y: 100, radius: 5, text: "Ada", fontSize: 12 }], canvas, reserved);
         expect(placed).toHaveLength(0);
     });
+
+    it("scales collision math by contentPerScreenPx — the same screen-px font renders further from the node when content units are 'bigger' (zoomed out)", () => {
+        const candidate = { id: "a", x: 500, y: 500, radius: 5, text: "Ada", fontSize: 12 };
+        const atFitScale = layoutLabels([candidate], canvas, [], 1);
+        const zoomedOut = layoutLabels([candidate], canvas, [], 4);
+        const distAt1 = Math.hypot(atFitScale[0].x - 500, atFitScale[0].y - 500);
+        const distAt4 = Math.hypot(zoomedOut[0].x - 500, zoomedOut[0].y - 500);
+        expect(distAt4).toBeGreaterThan(distAt1);
+    });
+
+    it("never lets two mandatory labels overlap, even in a dense ring (nudges directly apart)", () => {
+        // Mirrors a real focused view: many mandatory co-author labels on one
+        // ring — using `computeRingLayout`'s real (tie-count-scaled) radius,
+        // since a synthetic ring far smaller than what the real system would
+        // ever produce isn't a scenario the nudge budget is meant to rescue
+        // (see the Girshick-scale test below for that guarantee end-to-end).
+        const n = 10;
+        const ties = Array.from({ length: n }, (_, i) => ({ id: `p${i}`, shared: 1 }));
+        const ring = computeRingLayout(ties);
+        const candidates = ties.map((t) => {
+            const slot = ring.get(t.id)!;
+            return {
+                id: t.id,
+                x: 500 + slot.x,
+                y: 500 + slot.y,
+                radius: 5,
+                text: `Person Number ${t.id}`,
+                fontSize: 12.5,
+                mandatory: true,
+            };
+        });
+        const placed = layoutLabels(candidates, { minX: 0, minY: 0, maxX: 1000, maxY: 1000 });
+        expect(placed).toHaveLength(n);
+        expectNoPairwiseOverlap(placed);
+    });
+
+    it("resolves a cross-tier collision (different ring radii, so no shared tangent direction) by nudging along the real separating vector", () => {
+        // An inner-ring and an outer-ring candidate placed close enough to
+        // collide — the old tangent-based nudge could push two such labels
+        // in unrelated (or even worsening) directions since their tangents
+        // come from different-radius circles; nudging along the vector
+        // between their actual box centers works regardless of ring geometry.
+        const candidates = [
+            { id: "inner", x: 500, y: 500, radius: 5, text: "Inner Ring Person", fontSize: 12.5, mandatory: true },
+            { id: "outer", x: 540, y: 505, radius: 5, text: "Outer Ring Person", fontSize: 12.5, mandatory: true },
+        ];
+        const placed = layoutLabels(candidates, { minX: 0, minY: 0, maxX: 1000, maxY: 1000 });
+        expect(placed).toHaveLength(2);
+        expectNoPairwiseOverlap(placed);
+    });
+
+    it("Girshick-scale end-to-end (42 ties): budget + scaled rings + capped nudge together avoid overlap and clipping", () => {
+        const focusId = "focus";
+        // Roughly mirrors the reported case: a couple of strong ties, a few
+        // medium, and many single-paper ties.
+        const ties = [
+            { id: "s0", shared: 7 },
+            { id: "s1", shared: 6 },
+            { id: "m0", shared: 2 },
+            { id: "m1", shared: 2 },
+            { id: "m2", shared: 2 },
+            ...Array.from({ length: 37 }, (_, i) => ({ id: `w${i}`, shared: 1 })),
+        ];
+        expect(ties).toHaveLength(42);
+
+        const nodes: ScholarlyNetworkNode[] = [{ id: focusId, x: 0, y: 0 }, ...ties.map((t) => ({ id: t.id, x: 0, y: 0 }))];
+        const positions = computeFocusPositions(nodes, ties, focusId);
+        const people = [
+            { id: focusId, name: "Focus Person", pageCount: 14, x: 0, y: 0 },
+            ...ties.map((t, i) => ({ id: t.id, name: `Co Author Number ${i}`, pageCount: 5, x: positions.get(t.id)!.x, y: positions.get(t.id)!.y })),
+        ];
+
+        const halfExtent = focusHalfExtent(ties);
+        const canvas = { minX: -halfExtent, minY: -halfExtent, maxX: halfExtent, maxY: halfExtent };
+        const { candidates, unlabelledTies } = selectFocusLabelCandidates(people, focusId, ties, "none");
+        const placed = layoutLabels(candidates, canvas, [], 1);
+
+        // Budget: 16 total - 1 (focus) - 5 (strong+medium) = 10 single-paper ties labelled.
+        expect(unlabelledTies).toHaveLength(37 - 10);
+        expectNoPairwiseOverlap(placed);
+
+        for (const p of placed) {
+            const w = p.text.length * p.fontSize * 0.62;
+            const box = { minX: p.x - 2, minY: p.y - p.fontSize, maxX: p.x + w + 2, maxY: p.y + 4 };
+
+            // No label clipped by the canvas frame.
+            expect(box.minX).toBeGreaterThanOrEqual(canvas.minX - 0.01);
+            expect(box.maxX).toBeLessThanOrEqual(canvas.maxX + 0.01);
+            expect(box.minY).toBeGreaterThanOrEqual(canvas.minY - 0.01);
+            expect(box.maxY).toBeLessThanOrEqual(canvas.maxY + 0.01);
+
+            // Never more than roughly a couple of label-heights from its own
+            // node — measured to the NEAREST edge of the label's box, not its
+            // anchor coordinate (a "left"-anchored label's `x` is its far/start
+            // edge, which is naturally ~a label-width away even though the
+            // near edge sits right beside the node).
+            const node = people.find((person) => person.id === p.id)!;
+            const dx = Math.max(box.minX - node.x, 0, node.x - box.maxX);
+            const dy = Math.max(box.minY - node.y, 0, node.y - box.maxY);
+            const gap = Math.hypot(dx, dy);
+            expect(gap).toBeLessThan(p.fontSize * 2.5);
+        }
+    });
 });
+
+/** Asserts no two placed labels' boxes overlap — shared by several dense-ring tests. */
+function expectNoPairwiseOverlap(placed: { x: number; y: number; text: string; fontSize: number }[]): void {
+    const boxOf = (p: (typeof placed)[number]) => {
+        const w = p.text.length * p.fontSize * 0.62;
+        const h = p.fontSize;
+        return [p.x - 2, p.y - h, p.x + w + 2, p.y + 4] as const;
+    };
+    for (let i = 0; i < placed.length; i++) {
+        for (let j = i + 1; j < placed.length; j++) {
+            const a = boxOf(placed[i]);
+            const b = boxOf(placed[j]);
+            const overlaps = !(a[2] < b[0] || a[0] > b[2] || a[3] < b[1] || a[1] > b[3]);
+            expect(overlaps).toBe(false);
+        }
+    }
+}
 
 describe("selectOverviewLabelCandidates", () => {
     const people = Array.from({ length: 25 }, (_, i) => ({ id: `p${i}`, name: `Person ${i}`, pageCount: 25 - i, x: i, y: i }));
@@ -302,25 +427,152 @@ describe("selectFocusLabelCandidates", () => {
         { id: "tie-b", shared: 1 },
     ];
 
-    it("always includes the focus node and every tie as mandatory", () => {
-        const candidates = selectFocusLabelCandidates(people, "focus", ties, "none");
+    it("always includes the focus node and every tie as mandatory (under the budget)", () => {
+        const { candidates } = selectFocusLabelCandidates(people, "focus", ties, "none");
         const mandatoryIds = candidates.filter((c) => c.mandatory).map((c) => c.id).sort();
         expect(mandatoryIds).toEqual(["focus", "tie-a", "tie-b"]);
     });
 
     it("adds no optional context labels when labelMode is 'none'", () => {
-        const candidates = selectFocusLabelCandidates(people, "focus", ties, "none");
+        const { candidates } = selectFocusLabelCandidates(people, "focus", ties, "none");
         expect(candidates.every((c) => c.mandatory)).toBe(true);
     });
 
     it("adds optional high-page-count context labels when labelMode isn't 'none'", () => {
-        const candidates = selectFocusLabelCandidates(people, "focus", ties, "top20", 5);
+        const { candidates } = selectFocusLabelCandidates(people, "focus", ties, "top20", 5);
         const optional = candidates.filter((c) => !c.mandatory);
         expect(optional.map((c) => c.id)).toContain("other-1");
     });
 
     it("caps optional context labels by extraLimit", () => {
-        const candidates = selectFocusLabelCandidates(people, "focus", ties, "top20", 1);
+        const { candidates } = selectFocusLabelCandidates(people, "focus", ties, "top20", 1);
         expect(candidates.filter((c) => !c.mandatory)).toHaveLength(1);
+    });
+
+    it("reports no unlabelled ties when everyone fits under the budget", () => {
+        const { unlabelledTies } = selectFocusLabelCandidates(people, "focus", ties, "none");
+        expect(unlabelledTies).toHaveLength(0);
+    });
+});
+
+// ── focus label budget ───────────────────────────────────────────────────────
+
+describe("splitFocusTieLabels", () => {
+    it("always labels every tie with >= 2 shared papers, regardless of budget", () => {
+        const ties = Array.from({ length: 10 }, (_, i) => ({ id: `s${i}`, shared: 2 }));
+        const { labelled, unlabelled } = splitFocusTieLabels(ties, 4);
+        expect(labelled).toHaveLength(10);
+        expect(unlabelled).toHaveLength(0);
+    });
+
+    it("fills remaining budget with single-paper ties spread evenly across the ring, not a bunched prefix", () => {
+        const strong = [{ id: "a", shared: 3 }, { id: "b", shared: 2 }];
+        const weak = Array.from({ length: 20 }, (_, i) => ({ id: `w${i}`, shared: 1 }));
+        const { labelled, unlabelled } = splitFocusTieLabels([...strong, ...weak], 16);
+        // budget 16, -1 for the focus node's own label, -2 for the strong pair = 13 weak slots.
+        expect(labelled).toHaveLength(2 + 13);
+        const weakIndices = labelled.slice(2).map((t) => Number(t.id.slice(1)));
+        // Ring order preserved (strictly increasing indices)...
+        expect(weakIndices).toEqual([...weakIndices].sort((x, y) => x - y));
+        // ...but NOT a contiguous prefix — spread across the full 0..19 range,
+        // since a prefix would bunch every labelled tie into one narrow arc.
+        expect(Math.max(...weakIndices) - Math.min(...weakIndices)).toBeGreaterThan(13);
+        expect(unlabelled).toHaveLength(20 - 13);
+    });
+
+    it("leaves nobody unlabelled when the total is small", () => {
+        const ties = [{ id: "a", shared: 1 }, { id: "b", shared: 1 }];
+        const { unlabelled } = splitFocusTieLabels(ties, 16);
+        expect(unlabelled).toHaveLength(0);
+    });
+});
+
+// ── ring radius / layout scaling ─────────────────────────────────────────────
+
+describe("ringRadiusScale", () => {
+    it("is 1 (no-op) at and below 16 ties", () => {
+        expect(ringRadiusScale(0)).toBe(1);
+        expect(ringRadiusScale(16)).toBe(1);
+    });
+
+    it("grows past 16 ties, per sqrt(n/16)", () => {
+        expect(ringRadiusScale(64)).toBeCloseTo(2);
+        expect(ringRadiusScale(144)).toBeCloseTo(3);
+    });
+});
+
+describe("computeRingLayout", () => {
+    it("gives a high-degree focus (42 ties) visibly bigger rings than a low-degree one (2 ties)", () => {
+        const fewTies = [{ id: "a", shared: 1 }, { id: "b", shared: 1 }];
+        const manyTies = Array.from({ length: 42 }, (_, i) => ({ id: `t${i}`, shared: 1 }));
+        const fewRadius = computeRingLayout(fewTies).get("a")!.radius;
+        const manyRadius = computeRingLayout(manyTies).get("t0")!.radius;
+        expect(manyRadius).toBeGreaterThan(fewRadius);
+    });
+
+    it("keeps same-ring neighbors at least MIN_RING_ARC_SPACING apart even when tightly packed", () => {
+        const ties = Array.from({ length: 42 }, (_, i) => ({ id: `t${i}`, shared: 1 }));
+        const ring = computeRingLayout(ties);
+        const slots = ties.map((t) => ring.get(t.id)!);
+        // Adjacent-by-angle spacing: straight-line distance between consecutive slots.
+        for (let i = 0; i < slots.length; i++) {
+            const a = slots[i];
+            const b = slots[(i + 1) % slots.length];
+            const dist = Math.hypot(a.x - b.x, a.y - b.y);
+            expect(dist).toBeGreaterThanOrEqual(20); // a little under the 22 target — ellipse foreshortens x.
+        }
+    });
+
+    it("lays out each tier independently — a single strong tie doesn't affect a full weak ring's spacing", () => {
+        const ties = [{ id: "strong", shared: 3 }, ...Array.from({ length: 8 }, (_, i) => ({ id: `w${i}`, shared: 1 }))];
+        const ring = computeRingLayout(ties);
+        const weakAngles = Array.from({ length: 8 }, (_, i) => ring.get(`w${i}`)!.angle);
+        expect(new Set(weakAngles.map((a) => a.toFixed(3))).size).toBe(8);
+    });
+});
+
+describe("focusHalfExtent", () => {
+    it("grows for a high-degree focus so the camera fit follows the larger ring extent", () => {
+        const fewTies = [{ id: "a", shared: 1 }, { id: "b", shared: 1 }];
+        const manyTies = Array.from({ length: 42 }, (_, i) => ({ id: `t${i}`, shared: 1 }));
+        expect(focusHalfExtent(manyTies)).toBeGreaterThan(focusHalfExtent(fewTies));
+    });
+
+    it("never shrinks below the given base", () => {
+        expect(focusHalfExtent([], 220)).toBe(220);
+    });
+});
+
+// ── camera fit bias ──────────────────────────────────────────────────────────
+
+describe("cameraFitBounds", () => {
+    const box = { minX: 0, minY: 0, maxX: 100, maxY: 100 };
+
+    it("overview: pushes content right, away from the left-side minimap+legend", () => {
+        const biased = cameraFitBounds(box, false, false);
+        expect(biased.minX).toBeLessThan(box.minX);
+        expect(biased.maxX).toBe(box.maxX);
+        expect(biased.minY).toBe(box.minY);
+        expect(biased.maxY).toBe(box.maxY);
+    });
+
+    it("focused on phone: pushes content up, away from the bottom-sheet focus card", () => {
+        const biased = cameraFitBounds(box, true, true);
+        expect(biased.maxY).toBeGreaterThan(box.maxY);
+        expect(biased.minX).toBe(box.minX);
+        expect(biased.maxX).toBe(box.maxX);
+    });
+
+    it("focused on desktop: pushes content left, away from the top-right focus card", () => {
+        const biased = cameraFitBounds(box, false, true);
+        expect(biased.maxX).toBeGreaterThan(box.maxX);
+        expect(biased.minY).toBe(box.minY);
+        expect(biased.maxY).toBe(box.maxY);
+    });
+
+    it("phone overview uses the overview (left) bias, not the phone-focused (bottom) bias", () => {
+        const biased = cameraFitBounds(box, true, false);
+        expect(biased.minX).toBeLessThan(box.minX);
+        expect(biased.maxY).toBe(box.maxY);
     });
 });

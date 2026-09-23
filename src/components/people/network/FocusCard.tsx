@@ -11,12 +11,17 @@ export interface FocusCardProps {
     paperCount: number;
     pageCount: number;
     ties: CoauthorTie[];
+    /** Ties the label budget left unlabelled on the ring — still drawn, just
+     *  not statically labelled (see `splitFocusTieLabels`). Revealed one at a
+     *  time via hover (mouse) or tap (touch); this count tells the reader
+     *  they exist at all. */
+    unlabelledCount: number;
     nameOf: (id: string) => string;
     isPhone: boolean;
     onClose: () => void;
 }
 
-export function FocusCard({ id, name, paperCount, pageCount, ties, nameOf, isPhone, onClose }: FocusCardProps) {
+export function FocusCard({ id, name, paperCount, pageCount, ties, unlabelledCount, nameOf, isPhone, onClose }: FocusCardProps) {
     const strongest = ties.slice(0, 3);
 
     return (
@@ -51,6 +56,11 @@ export function FocusCard({ id, name, paperCount, pageCount, ties, nameOf, isPho
                             {nameOf(t.id)} ({t.shared})
                         </span>
                     ))}
+                </span>
+            )}
+            {unlabelledCount > 0 && (
+                <span className="text-xs text-muted-foreground leading-relaxed">
+                    +{unlabelledCount} more co-{unlabelledCount === 1 ? "author" : "authors"} — hover or tap to see names
                 </span>
             )}
             <Link

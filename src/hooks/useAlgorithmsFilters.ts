@@ -6,6 +6,7 @@ import {
     type AlgorithmsSort,
     type AlgorithmsFilters,
     type FacetCounts,
+    type PeopleMode,
     ATLAS_VIEW_STORAGE_KEY,
     DEFAULTS,
     filterAlgorithms,
@@ -15,13 +16,14 @@ import {
     parseFiltersFromParams,
     buildParams,
     writeStoredView,
+    readStoredCatalogLayout,
 } from "../lib/atlas/atlasFilters.ts";
 
 // Re-exported for existing importers (AlgorithmIndex.tsx, AlgorithmsSidebar,
-// AlgorithmsFilterSheet, AlgorithmsViewToggle) — the pure filter/URL logic
-// itself lives in ../lib/atlas/atlasFilters.ts.
-export type { AlgorithmsKind, AlgorithmsView, AlgorithmsSort, AlgorithmsFilters, FacetCounts };
-export { ATLAS_VIEW_STORAGE_KEY, filterAlgorithms, filterModels, filterConcepts, computeFacets };
+// AlgorithmsFilterSheet, AtlasViewTabs) — the pure filter/URL logic itself
+// lives in ../lib/atlas/atlasFilters.ts.
+export type { AlgorithmsKind, AlgorithmsView, AlgorithmsSort, AlgorithmsFilters, FacetCounts, PeopleMode };
+export { ATLAS_VIEW_STORAGE_KEY, filterAlgorithms, filterModels, filterConcepts, computeFacets, readStoredCatalogLayout };
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -34,6 +36,10 @@ export interface UseAlgorithmsFiltersReturn {
     setView:       (view: AlgorithmsView) => void;
     setSort:       (sort: AlgorithmsSort) => void;
     setProblem:    (problem: string) => void;
+    /** People-view-only: Directory vs. Network. */
+    setMode:       (mode: PeopleMode) => void;
+    /** People-view-only: the focused author id in Network mode; `undefined` clears focus. */
+    setPersonFocus: (id: string | undefined) => void;
     /** Resets tags, query, sort, problem — keeps kind and view. */
     reset:         () => void;
 }
@@ -108,6 +114,16 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
         [filters, update],
     );
 
+    const setMode = useCallback(
+        (mode: PeopleMode) => update({ ...filters, mode }),
+        [filters, update],
+    );
+
+    const setPersonFocus = useCallback(
+        (id: string | undefined) => update({ ...filters, person: id }),
+        [filters, update],
+    );
+
     const reset = useCallback(
         () =>
             update({
@@ -127,6 +143,8 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
         setView,
         setSort,
         setProblem,
+        setMode,
+        setPersonFocus,
         reset,
     };
 }

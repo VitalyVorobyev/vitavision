@@ -1,4 +1,5 @@
-import type { AlgorithmsFilters, AlgorithmsKind, FacetCounts } from "../../hooks/useAlgorithmsFilters.ts";
+import { LayoutGrid, List } from "lucide-react";
+import type { AlgorithmsFilters, AlgorithmsKind, AlgorithmsView, FacetCounts } from "../../hooks/useAlgorithmsFilters.ts";
 import { taskOrder, taskLabel } from "../../lib/content/taskLabels.ts";
 
 interface Props {
@@ -6,6 +7,9 @@ interface Props {
     facets: FacetCounts;
     onKindChange: (k: AlgorithmsKind) => void;
     onProblemChange: (id: string) => void;
+    /** Catalog-only secondary toggle — grid vs. list layout. */
+    layout: "grid" | "list";
+    onLayoutChange: (view: AlgorithmsView) => void;
 }
 
 function SectionLabel({
@@ -32,9 +36,44 @@ export default function AlgorithmsSidebar({
     facets,
     onKindChange,
     onProblemChange,
+    layout,
+    onLayoutChange,
 }: Props) {
     return (
         <aside className="w-[220px] shrink-0 border-r border-[hsl(var(--border)/0.38)] py-5 pl-[22px] pr-[18px] text-[13px]">
+            {/* Layout section — grid vs. list, secondary to the Catalog tab */}
+            <div className="mb-[22px]">
+                <SectionLabel label="Layout" />
+                <div
+                    role="radiogroup"
+                    aria-label="Layout"
+                    className="grid grid-cols-2 gap-1"
+                >
+                    {(
+                        [
+                            ["grid", "Grid", LayoutGrid],
+                            ["list", "List", List],
+                        ] as const
+                    ).map(([key, label, Icon]) => (
+                        <button
+                            key={key}
+                            type="button"
+                            role="radio"
+                            aria-checked={layout === key}
+                            onClick={() => onLayoutChange(key)}
+                            className={`flex items-center justify-center gap-1.5 rounded-[5px] py-[7px] text-[12.5px] transition-colors ${
+                                layout === key
+                                    ? "bg-[hsl(var(--surface-hi))] text-foreground font-semibold"
+                                    : "text-[hsl(var(--foreground)/0.8)] hover:bg-[hsl(var(--surface-hi)/0.5)]"
+                            }`}
+                        >
+                            <Icon size={13} />
+                            {label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             {/* Kind section */}
             <div className="mb-[22px]">
                 <SectionLabel label="Type" />

@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import SeoHead from "../seo/SeoHead.tsx";
-import AlgorithmsViewToggle from "./AlgorithmsViewToggle.tsx";
+import AtlasViewTabs from "./AtlasViewTabs.tsx";
 import type { AlgorithmsView } from "../../hooks/useAlgorithmsFilters.ts";
 
 // Code-split: the graph explorer is only needed when the reader picks the
@@ -38,7 +38,7 @@ export default function AtlasGraphView({ isDesktop, view, setView, focusParam }:
                 <main className="flex flex-1 flex-col min-w-0 px-6 py-5">
                     <div className="flex items-baseline justify-between mb-3">
                         <h1 className="text-[22px] font-bold -tracking-[0.4px]">Atlas</h1>
-                        <AlgorithmsViewToggle view={view} onChange={setView} />
+                        <AtlasViewTabs view={view} onChange={setView} />
                     </div>
                     {/* key remounts on external ?focus= change so the
                         graph re-centers; internal trail nav never touches
@@ -60,9 +60,9 @@ export default function AtlasGraphView({ isDesktop, view, setView, focusParam }:
             />
 
             {/* Title row */}
-            <div className="flex items-baseline justify-between mb-4">
+            <div className="mb-4 flex flex-col gap-3">
                 <h1 className="text-[22px] font-bold -tracking-[0.5px]">Atlas</h1>
-                <AlgorithmsViewToggle view={view} onChange={setView} />
+                <AtlasViewTabs view={view} onChange={setView} compact />
             </div>
 
             <Suspense fallback={<GraphFallback />}>

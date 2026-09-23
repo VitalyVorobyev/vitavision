@@ -1,20 +1,5 @@
 import type { AuthorsIndex } from "../../generated/authors-index.ts";
 
-/** One row of the /authors listing. */
-export interface AuthorRow {
-    id: string;
-    name: string;
-    orcid?: string;
-    /** Papers in docs/papers/index.yaml credited to this author. */
-    paperCount: number;
-    /** Distinct atlas pages citing any of those papers. */
-    pageCount: number;
-    /** Surname-first collation key, lowercased and diacritic-free. */
-    sortKey: string;
-    /** Grouping letter for the A–Z view; "#" for non-Latin initials. */
-    initial: string;
-}
-
 function deaccent(s: string): string {
     return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
@@ -32,83 +17,37 @@ export function authorSortKey(name: string): string {
     return deaccent(`${surname} ${rest}`).trim().toLowerCase();
 }
 
-/** Grouping letter for the A–Z view, derived from the same surname key. */
-export function authorInitial(name: string): string {
-    const first = authorSortKey(name).charAt(0).toUpperCase();
-    return /^[A-Z]$/.test(first) ? first : "#";
-}
-
-/** Distinct, sorted atlas slugs citing any of the given papers. */
-export function atlasSlugsForPapers(
-    papers: string[],
-    pagesByPaper: Record<string, string[]>,
-): string[] {
-    const slugs = new Set<string>();
-    for (const paperId of papers) {
-        for (const slug of pagesByPaper[paperId] ?? []) slugs.add(slug);
-    }
-    return [...slugs].sort();
-}
-
-/** Builds every /authors row from the index. Unsorted — callers pick the order. */
-export function buildAuthorRows(index: AuthorsIndex): AuthorRow[] {
-    return Object.entries(index.authors).map(([id, ref]) => ({
-        id,
-        name: ref.name,
-        ...(ref.orcid ? { orcid: ref.orcid } : {}),
-        paperCount: ref.papers.length,
-        pageCount: atlasSlugsForPapers(ref.papers, index.pagesByPaper).length,
-        sortKey: authorSortKey(ref.name),
-        initial: authorInitial(ref.name),
-    }));
-}
-
-/** A–Z by surname key; ties broken by id so the order is total and stable. */
-export function compareByName(a: AuthorRow, b: AuthorRow): number {
-    return a.sortKey.localeCompare(b.sortKey) || a.id.localeCompare(b.id);
-}
-
-/** Most papers first; ties fall back to the A–Z order. */
-export function compareByPaperCount(a: AuthorRow, b: AuthorRow): number {
-    return b.paperCount - a.paperCount || compareByName(a, b);
-}
-
 export interface CoAuthor {
     id: string;
     name: string;
     /** Papers this co-author shares with the subject author. */
     shared: number;
-    /** Sorted atlas slugs citing any paper the two authors share. */
-    sharedPages: string[];
-}
-
-/** Paper ids in `paperAuthors` whose author list includes both `a` and `b`. */
-function papersSharedBy(a: string, b: string, paperAuthors: Record<string, string[]>): string[] {
-    const ids: string[] = [];
-    for (const [paperId, authorIds] of Object.entries(paperAuthors)) {
-        if (authorIds.includes(a) && authorIds.includes(b)) ids.push(paperId);
-    }
-    return ids;
+    /** Paper ids shared with the subject author, as given by the scholarly
+     *  index's `coauthorPapers` table (oldest first). */
+    sharedPaperIds: string[];
 }
 
 /**
  * Every other author sharing at least one paper with `authorId`, with the
- * shared-paper count and the atlas pages citing a shared paper. Reads the
- * build-time `AuthorsIndex.coauthors` edge table rather than recomputing
- * counts. Ordered by shared count desc, then A–Z by surname.
+ * shared-paper count (from the build-time `AuthorsIndex.coauthors` edge
+ * table) and the shared paper ids themselves (from the scholarly index's
+ * `coauthorPapers` table — no client-side scan over `paperAuthors`). Ordered
+ * by shared count desc, then A–Z by surname.
  */
-export function coAuthorsOf(authorId: string, index: AuthorsIndex): CoAuthor[] {
+export function coAuthorsOf(
+    authorId: string,
+    index: AuthorsIndex,
+    coauthorPapers: Record<string, Record<string, string[]>>,
+): CoAuthor[] {
     const row = index.coauthors[authorId];
     if (!row) return [];
+    const sharedWith = coauthorPapers[authorId] ?? {};
     return Object.entries(row)
         .map(([id, shared]) => ({
             id,
             name: index.authors[id]?.name ?? id,
             shared,
-            sharedPages: atlasSlugsForPapers(
-                papersSharedBy(authorId, id, index.paperAuthors),
-                index.pagesByPaper,
-            ),
+            sharedPaperIds: sharedWith[id] ?? [],
         }))
         .sort(
             (a, b) =>
@@ -116,15 +55,4 @@ export function coAuthorsOf(authorId: string, index: AuthorsIndex): CoAuthor[] {
                 authorSortKey(a.name).localeCompare(authorSortKey(b.name)) ||
                 a.id.localeCompare(b.id),
         );
-}
-
-/** Splits name-ordered rows into `#`/A–Z groups, preserving the incoming order. */
-export function groupByInitial(rows: AuthorRow[]): { letter: string; rows: AuthorRow[] }[] {
-    const groups: { letter: string; rows: AuthorRow[] }[] = [];
-    for (const row of rows) {
-        const last = groups[groups.length - 1];
-        if (last && last.letter === row.initial) last.rows.push(row);
-        else groups.push({ letter: row.initial, rows: [row] });
-    }
-    return groups;
 }

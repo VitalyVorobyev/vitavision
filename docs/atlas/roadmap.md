@@ -41,7 +41,7 @@ After PR-B: 54 models · 154 sources · 144 notes (11 in v2 form) · 502 canonic
 |---|---|---|---|
 | A — Workflow hygiene | Skills and docs describe the system as it is | **done** (#158) | — |
 | B — Dense-prediction injection | FPN, DPT, PointRend pages; SegFormer note → v2 | **done** (PR-B) | — |
-| F — Authors & papers experience | Papers and people become first-class, well-designed Atlas surfaces | **in progress** — design approved; F1 paper pages (this PR) | F2: Atlas tabs + People views + author page v2 |
+| F — Authors & papers experience | Papers and people become first-class, well-designed Atlas surfaces | **in progress** — F1 #163 (paper pages); F2 (this PR): Atlas tabs, People directory + network, Papers view, author page v2 | F3: search (BL-022), author data (BL-032), narrative fit (BL-034) |
 | G — Build-pipeline quality | Validator, build scripts, and frontend/editor monoliths modular and tested | **done** (#160, #161, #162) | — |
 | H — Note v2 migration | Every relation rests on a note with `# Stated relations` | planned | batch 1: highest-degree segmentation/detection notes |
 | I — Coverage waves | Close page debt and notes-without-pages | planned | multi-scale wave after PR-B |
@@ -63,10 +63,11 @@ Narrative follow-ups (via `narrative-page`) done: `fpn` node + chapter paragraph
 ### F — Authors & papers experience (mid-term)
 
 Design-led; approved 2026-09-23 (Atlas-native elevated look, impact-first paper page, People =
-directory + network tab, People/Papers as Atlas view tabs). Three PRs: **F1** scholarly data layer
-(`public/scholarly-index.json`, lazy) + `/papers/:id`; **F2** 5-tab Atlas view switch (BL-035),
-People directory + network, author page v2; **F3** Papers view, search (BL-022), author data
-integrity (BL-032), narrative fit (BL-034).
+directory + network tab, People/Papers as Atlas view tabs). Three PRs: **F1** (#163) scholarly data layer
+(`public/scholarly-index.json`, lazy) + `/papers/:id`; **F2** 5-tab Atlas view switch (BL-035 fixed),
+People directory + network (`/atlas?view=people[&mode=network&person=<id>]`, `/authors` → 301),
+Papers view (`/atlas?view=papers`), author page v2; **F3** search over people and papers (BL-022),
+author data integrity (BL-032), narrative fit (BL-034).
 
 1. **Paper pages** `/papers/:id` — the hub between people and the Atlas: authors, venue/year,
    Atlas pages built on the paper, narratives it appears in, cites / cited-by (the `cites` field is
@@ -127,7 +128,13 @@ narrative should get a page — paper-only nodes are debt, not normal.
 - 2026-08-23 — Narrative nodes: atlas slug XOR registered paper id; paper-only = tracked debt.
 - 2026-08-23 — Authors keyed by OpenAlex IDs; `docs/papers/authors.yaml` = identity only.
 - 2026-08-23 — IA: narratives are a 4th `/atlas` view tab; detail at `/atlas/narratives/:slug`;
-  `/authors` unlisted (search + SourceStrip + index footer discovery). *Revisited 2026-09-23 (WS-F).*
+  `/authors` unlisted (search + SourceStrip + index footer discovery). *Superseded 2026-09-23 (WS-F):*
+  People and Papers are Atlas view tabs 5 and 6 (Catalog groups grid/list); `/authors` redirects to
+  the People view; author (`/authors/:id`) and paper (`/papers/:id`) detail pages are prerendered.
+- 2026-09-23 — People/papers relationships are derived at build time into one lazy
+  `scholarly-index.json` (never loaded by ordinary Atlas pages); citation counts are registry-only
+  and labelled as such; the People network layout is precomputed (deterministic d3-force) and
+  coloured by five domain communities (`src/lib/atlas/scholarlyGroups.ts`).
 - 2026-08-23 — Narrative edge vocabulary diverges from Atlas relations on purpose: `prerequisite |
   evolution | bridge | contrast` + free-text `label` (story altitude, not encyclopedic claims).
 - 2026-08-23 — Narrative layout is loosely chronological; inversions of ≥2 years draw a validator warning.

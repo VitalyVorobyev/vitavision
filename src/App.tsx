@@ -26,7 +26,6 @@ const BlogPost = lazy(() => import('./pages/BlogPost'));
 const AlgorithmIndex = lazy(() => import('./pages/AlgorithmIndex'));
 const AtlasPost = lazy(() => import('./pages/AtlasPost'));
 const NarrativePage = lazy(() => import('./pages/NarrativePage'));
-const AuthorsIndex = lazy(() => import('./pages/AuthorsIndex'));
 const AuthorPage = lazy(() => import('./pages/AuthorPage'));
 const PaperPage = lazy(() => import('./pages/PaperPage'));
 const DemoIndex = lazy(() => import('./pages/DemoIndex'));
@@ -68,8 +67,8 @@ function AppLayout() {
                         {/* Static segment must be matched before the /atlas/:slug catch-all. */}
                         <Route path="/atlas/narratives/:slug" element={<NarrativePage />} />
                         <Route path="/atlas/:slug" element={<AtlasPost />} />
-                        {/* Unlisted author register — reached from source bylines, not the navbar. */}
-                        <Route path="/authors" element={<AuthorsIndex />} />
+                        {/* The People view replaces the old unlisted author register. */}
+                        <Route path="/authors" element={<Navigate to="/atlas?view=people" replace />} />
                         <Route path="/authors/:id" element={<AuthorPage />} />
                         {/* Unlisted paper register — reached from source strips/bylines, not the navbar. */}
                         <Route path="/papers/:id" element={<PaperPage />} />

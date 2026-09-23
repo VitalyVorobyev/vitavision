@@ -88,7 +88,7 @@ export { default as AIDisclosure } from '../src/components/atlas/AIDisclosure.ts
 export { default as AlgorithmGlyph } from '../src/components/algorithms/AlgorithmGlyph.tsx';
 export { default as CategoryGlyph } from '../src/components/algorithms/CategoryGlyph.tsx';
 export { default as AlgorithmsSidebar } from '../src/components/algorithms/AlgorithmsSidebar.tsx';
-export { default as AlgorithmsViewToggle } from '../src/components/algorithms/AlgorithmsViewToggle.tsx';
+export { default as AtlasViewTabs } from '../src/components/algorithms/AtlasViewTabs.tsx';
 export { default as AlgorithmsFilterSheet } from '../src/components/algorithms/AlgorithmsFilterSheet.tsx';
 
 /* ── Demos ─────────────────────────────────────────────────────────────── */

@@ -37,7 +37,7 @@
     "AlgorithmGlyph": "src/components/algorithms/AlgorithmGlyph.tsx",
     "CategoryGlyph": "src/components/algorithms/CategoryGlyph.tsx",
     "AlgorithmsSidebar": "src/components/algorithms/AlgorithmsSidebar.tsx",
-    "AlgorithmsViewToggle": "src/components/algorithms/AlgorithmsViewToggle.tsx",
+    "AtlasViewTabs": "src/components/algorithms/AtlasViewTabs.tsx",
     "AlgorithmsFilterSheet": "src/components/algorithms/AlgorithmsFilterSheet.tsx",
 
     "DemoCover": "src/components/demos/DemoCover.tsx",

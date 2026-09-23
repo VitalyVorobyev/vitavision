@@ -1,239 +1,59 @@
 import { create } from 'zustand';
-import { featureSchema } from './featureSchema';
+import type {
+    SampleId,
+    Feature,
+    GalleryImage,
+    ToolType,
+    PanelMode,
+    OverlayVisibilityKey,
+    OverlayToggles,
+    RunHistoryEntry,
+} from './editorTypes';
+import { normalizeFeature, normalizeImportedFeatures, isReadonlyFeature } from './features';
+import { SAMPLE_GALLERY_IMAGES } from './galleryImages';
 
-export type ToolType = 'SELECT' | 'POINT' | 'LINE' | 'POLYLINE' | 'POLYGON' | 'BBOX' | 'ELLIPSE';
-export type FeatureType = 'point' | 'line' | 'polyline' | 'polygon' | 'bbox' | 'ellipse' | 'directed_point' | 'ring_marker' | 'aruco_marker' | 'circle' | 'labeled_point';
-export type FeatureSource = 'manual' | 'algorithm';
-export type SampleId = 'chessboard' | 'charuco' | 'markerboard' | 'ringgrid' | 'puzzleboard' | 'upload';
-
-export interface Point2D {
-    x: number;
-    y: number;
-}
-
-export interface GridCoords {
-    i: number;
-    j: number;
-}
-
-export interface GridCell {
-    gx: number;
-    gy: number;
-}
-
-export interface CellOffset {
-    di: number;
-    dj: number;
-}
-
-export interface FeatureMeta {
-    kind?: string;
-    score?: number;
-    grid?: GridCoords;
-    gridCell?: GridCell;
-    cornerId?: number | null;
-    markerId?: number | null;
-    targetPosition?: Point2D | null;
-    rotation?: number;
-    hamming?: number;
-    borderScore?: number;
-    code?: number;
-    inverted?: boolean;
-    polarity?: string;
-    contrast?: number;
-    distanceCells?: number | null;
-    offsetCells?: CellOffset | null;
-}
-
-export interface BaseFeature {
-    id: string;
-    type: FeatureType;
-    source: FeatureSource;
-    algorithmId?: string;
-    runId?: string;
-    readonly?: boolean;
-    color?: string;
-    label?: string;
-    meta?: FeatureMeta;
-}
-
-export interface PointFeature extends BaseFeature {
-    type: 'point';
-    x: number;
-    y: number;
-    angle?: number;
-}
-
-export interface LineFeature extends BaseFeature {
-    type: 'line';
-    points: [number, number, number, number];
-}
-
-export interface PolylineFeature extends BaseFeature {
-    type: 'polyline';
-    points: number[];
-}
-
-export interface PolygonFeature extends BaseFeature {
-    type: 'polygon';
-    points: number[];
-    closed: boolean;
-}
-
-export interface BBoxFeature extends BaseFeature {
-    type: 'bbox';
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    rotation: number;
-}
-
-export interface EllipseFeature extends BaseFeature {
-    type: 'ellipse';
-    x: number;
-    y: number;
-    radiusX: number;
-    radiusY: number;
-    rotation: number;
-}
-
-export interface DirectedAxis {
-    dx: number;
-    dy: number;
-    sigmaRad?: number;
-    angleRad?: number;
-}
-
-export interface DirectedPointFeature extends BaseFeature {
-    type: 'directed_point';
-    x: number;
-    y: number;
-    axes: [DirectedAxis, DirectedAxis];
-    score: number;
-    contrast?: number;
-    fitRms?: number;
-}
-
-export interface RingMarkerEllipse {
-    cx: number;
-    cy: number;
-    a: number;
-    b: number;
-    angleDeg: number;
-}
-
-export interface RingMarkerFeature extends BaseFeature {
-    type: 'ring_marker';
-    x: number;
-    y: number;
-    outerEllipse: RingMarkerEllipse;
-    innerEllipse: RingMarkerEllipse;
-}
-
-export interface ArUcoMarkerFeature extends BaseFeature {
-    type: 'aruco_marker';
-    x: number;
-    y: number;
-    corners: [number, number, number, number, number, number, number, number];
-}
-
-export interface CircleFeature extends BaseFeature {
-    type: 'circle';
-    x: number;
-    y: number;
-    radius: number;
-    score?: number;
-}
-
-export interface LabeledPointFeature extends BaseFeature {
-    type: 'labeled_point';
-    x: number;
-    y: number;
-    score: number;
-    gridIndex: { i: number; j: number };
-    masterId: number;
-    targetPosMm?: { x: number; y: number };
-}
-
-export type Feature =
-    | PointFeature
-    | LineFeature
-    | PolylineFeature
-    | PolygonFeature
-    | BBoxFeature
-    | EllipseFeature
-    | DirectedPointFeature
-    | RingMarkerFeature
-    | ArUcoMarkerFeature
-    | CircleFeature
-    | LabeledPointFeature;
-
-export interface GalleryImage {
-    id: string;
-    src: string;
-    name: string;
-    sampleId: SampleId;
-    description?: string;
-    recommendedAlgorithms?: string[];
-}
-
-// --- Panel mode, run history, overlay visibility ---
-
-export type PanelMode = 'configure' | 'results';
-
-export type OverlayVisibilityKey = 'features' | 'algorithmOverlay';
-
-export interface OverlayToggles {
-    edges: boolean;
-    labels: boolean;
-}
+// Re-export everything that used to live directly in this file so existing
+// importers (types and helpers alike) keep working unchanged.
+export type {
+    ToolType,
+    FeatureType,
+    FeatureSource,
+    SampleId,
+    Point2D,
+    GridCoords,
+    GridCell,
+    CellOffset,
+    FeatureMeta,
+    BaseFeature,
+    PointFeature,
+    LineFeature,
+    PolylineFeature,
+    PolygonFeature,
+    BBoxFeature,
+    EllipseFeature,
+    DirectedAxis,
+    DirectedPointFeature,
+    RingMarkerEllipse,
+    RingMarkerFeature,
+    ArUcoMarkerFeature,
+    CircleFeature,
+    LabeledPointFeature,
+    Feature,
+    GalleryImage,
+    PanelMode,
+    OverlayVisibilityKey,
+    OverlayToggles,
+    RunSummaryEntry,
+    RunHistoryEntry,
+} from './editorTypes';
+export { normalizeFeature, normalizeImportedFeatures, isReadonlyFeature };
 
 const DEFAULT_OVERLAY_TOGGLES: OverlayToggles = {
     edges: true,
     labels: false,
 };
 
-export interface RunSummaryEntry {
-    label: string;
-    value: string;
-}
-
-export interface RunHistoryEntry {
-    runId: string;
-    algorithmId: string;
-    algorithmTitle: string;
-    summary: RunSummaryEntry[];
-    featureCount: number;
-    timestamp: number;
-}
-
 const MAX_RUN_HISTORY = 20;
-
-export const normalizeFeature = (feature: Feature): Feature => {
-    const source: FeatureSource = feature.source === 'algorithm' ? 'algorithm' : 'manual';
-    const readonly = feature.readonly ?? source === 'algorithm';
-    return {
-        ...feature,
-        source,
-        readonly,
-    };
-};
-
-export const normalizeImportedFeatures = (value: unknown): Feature[] => {
-    if (!Array.isArray(value)) {
-        return [];
-    }
-
-    return value
-        .map((item) => featureSchema.safeParse(item))
-        .filter((result): result is { success: true; data: Feature } => result.success)
-        .map((result) => normalizeFeature(result.data as Feature));
-};
-
-export const isReadonlyFeature = (feature: Feature): boolean => {
-    return feature.readonly === true;
-};
 
 interface EditorState {
     imageSrc: string | null;
@@ -388,48 +208,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     setPan: (pan) => set({ pan }),
 
     galleryMode: true,
-    galleryImages: [
-        {
-            id: 'sample-chessboard',
-            src: '/chessboard.png',
-            name: 'Chessboard',
-            sampleId: 'chessboard',
-            description: 'Labeled board corners or low-level ChESS keypoints on the same sample.',
-            recommendedAlgorithms: ['Chessboard', 'ChESS Corners'],
-        },
-        {
-            id: 'sample-charuco',
-            src: '/charuco.png',
-            name: 'ChArUco',
-            sampleId: 'charuco',
-            description: 'Dense ChArUco board with embedded markers.',
-            recommendedAlgorithms: ['ChArUco'],
-        },
-        {
-            id: 'sample-markerboard',
-            src: '/markerboard.png',
-            name: 'Marker Board',
-            sampleId: 'markerboard',
-            description: 'Checkerboard plus fiducial circles for marker-board detection.',
-            recommendedAlgorithms: ['Marker Board'],
-        },
-        {
-            id: 'sample-ringgrid',
-            src: '/ringgrid.png',
-            name: 'Ring Grid',
-            sampleId: 'ringgrid',
-            description: 'Hex-lattice concentric ring markers with binary code bands.',
-            recommendedAlgorithms: ['Ring Grid', 'Radial Symmetry'],
-        },
-        {
-            id: 'sample-puzzleboard',
-            src: '/author_like_oblique.png',
-            name: 'PuzzleBoard',
-            sampleId: 'puzzleboard',
-            description: 'Self-identifying checkerboard with embedded edge-bit pattern for absolute (u,v) grid.',
-            recommendedAlgorithms: ['PuzzleBoard'],
-        },
-    ],
+    galleryImages: SAMPLE_GALLERY_IMAGES,
     setGalleryMode: (mode) => set({ galleryMode: mode }),
     addGalleryImage: (img) => set((state) => ({ galleryImages: [...state.galleryImages, img] })),
 

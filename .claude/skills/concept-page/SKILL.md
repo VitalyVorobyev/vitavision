@@ -169,7 +169,7 @@ Opus assembles `--- frontmatter --- \n <body string from Sonnet>` and calls `Wri
 ### Step 6 — Verify
 
 ```bash
-bun run build && bun run scripts/validate-content.ts
+bun run build && bun run content:validate
 ```
 
 ## Voice rules
@@ -203,7 +203,7 @@ Run before handing off a draft.
 - [ ] No first-person pronouns anywhere on the page.
 - [ ] No `usedBy:` or any reverse field in frontmatter.
 - [ ] Every paper id in `sources:` exists in `docs/papers/index.yaml`.
-- [ ] `bun run scripts/validate-content.ts` passes.
+- [ ] `bun run content:validate` passes.
 - [ ] At least 3 distinct research notes exist for cited papers; page draft is the result of the Draft contract on those notes; the orchestrator did not load any `docs/papers/.cache/*` file.
 - [ ] AUDIT JSON returned by the Draft subagent has zero MISS entries when grep-checked against the cited notes.
 - [ ] At least 3 of the 5 page sections draw from ≥2 distinct source notes (verified from the AUDIT JSON's `source_note` distribution).

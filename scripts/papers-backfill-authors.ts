@@ -12,20 +12,18 @@
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import { parse as parseYaml } from "yaml";
 import { loadAuthorsYaml } from "./authors-build.ts";
 import type { AuthorRecord } from "./authors-build.ts";
+import { PAPERS_INDEX_PATH, AUTHORS_YAML_PATH } from "./lib/paths.ts";
+import { loadIndexEntries } from "./lib/papers-index.ts";
+import type { RawIndexEntry } from "./lib/papers-index.ts";
+import { normalizeDoiUrl, normalizeTitle } from "./lib/text.ts";
+import { bareAuthorId, bareOrcid, userAgent, withAuth } from "./lib/openalex.ts";
 
-// `fileURLToPath(import.meta.url)` (rather than Bun's `import.meta.dir`) so this
-// module's path constants resolve under both `bun run` and vitest/Node — the
-// latter is how scripts/papers-backfill-authors.test.ts exercises the pure
-// functions below without triggering the network-calling `main()`.
-const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = join(SCRIPT_DIR, "..");
-const INDEX_PATH = join(REPO_ROOT, "docs", "papers", "index.yaml");
-const AUTHORS_PATH = join(REPO_ROOT, "docs", "papers", "authors.yaml");
+const INDEX_PATH = PAPERS_INDEX_PATH;
+const AUTHORS_PATH = AUTHORS_YAML_PATH;
 // A plain OS temp path (never repo-relative) so a dry-run preview never risks
 // being picked up as a tracked file, and works the same for any contributor.
 const SCRATCHPAD_DIFF_PATH = join(tmpdir(), "vitavision-authors-backfill-dryrun.txt");
@@ -34,14 +32,7 @@ const OPENALEX_BASE = "https://api.openalex.org";
 const DOI_BATCH = 50;
 const SLEEP_MS = 150;
 
-interface PaperEntry {
-    id: string;
-    title: string;
-    kind?: string;
-    doi?: string;
-    year?: number;
-    authorIds?: string[];
-}
+type PaperEntry = RawIndexEntry & { title: string };
 
 interface OAAuthor {
     id?: string;
@@ -76,41 +67,6 @@ function sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function userAgent(): string {
-    const email = process.env.OPENALEX_EMAIL;
-    if (!email) {
-        process.stderr.write(
-            "papers:backfill-authors — OPENALEX_EMAIL not set; using default address. " +
-            "Set OPENALEX_EMAIL=you@example.com to join the polite pool for higher rate limits.\n"
-        );
-        return "vitavision/0.1 (mailto:vitavision@example.invalid)";
-    }
-    return `vitavision/0.1 (mailto:${email})`;
-}
-
-function withAuth(url: string): string {
-    const apiKey = process.env.OPENALEX_API_KEY;
-    if (!apiKey) return url;
-    const sep = url.includes("?") ? "&" : "?";
-    return `${url}${sep}api_key=${encodeURIComponent(apiKey)}`;
-}
-
-function normalizeDoi(doi: string): string {
-    return doi.replace(/^https?:\/\/doi\.org\//i, "").toLowerCase();
-}
-
-function normalizeTitle(t: string): string {
-    return t.toLowerCase().replace(/[^a-z0-9]/g, "");
-}
-
-function bareAuthorId(authorUrl: string): string {
-    return authorUrl.replace(/^https?:\/\/openalex\.org\//i, "");
-}
-
-function bareOrcid(orcidUrl: string): string {
-    return orcidUrl.replace(/^https?:\/\/orcid\.org\//i, "");
-}
-
 function authorIdsFromWork(work: OAWork): string[] {
     return (work.authorships ?? [])
         .map((a) => (a.author.id ? bareAuthorId(a.author.id) : undefined))
@@ -130,8 +86,7 @@ function recordAuthors(work: OAWork, identities: Map<string, AuthorIdentity>): v
 
 function loadIndex(): { raw: string; entries: PaperEntry[] } {
     const raw = readFileSync(INDEX_PATH, "utf-8");
-    const parsed = parseYaml(raw);
-    const entries = Array.isArray(parsed) ? (parsed as PaperEntry[]) : [];
+    const entries = loadIndexEntries(INDEX_PATH) as PaperEntry[];
     return { raw, entries };
 }
 
@@ -277,7 +232,7 @@ function formatDiffHunk(entry: PaperEntry, authorsLineIndex: number, lines: stri
 
 async function main(): Promise<void> {
     const { mode, only } = parseArgs(process.argv.slice(2));
-    const ua = userAgent();
+    const ua = userAgent("papers:backfill-authors");
     const { raw, entries } = loadIndex();
 
     const candidates = entries
@@ -302,7 +257,7 @@ async function main(): Promise<void> {
     // --- Pass 1: batch-resolve entries with a DOI ---
     const withDoi = candidates.filter((e) => !!e.doi);
     const doiToEntry = new Map<string, PaperEntry>();
-    for (const e of withDoi) doiToEntry.set(normalizeDoi(e.doi!), e);
+    for (const e of withDoi) doiToEntry.set(normalizeDoiUrl(e.doi!), e);
 
     const doiList = [...doiToEntry.keys()];
     const matchedDoiEntryIds = new Set<string>();
@@ -311,7 +266,7 @@ async function main(): Promise<void> {
         const batch = doiList.slice(i, i + DOI_BATCH);
         const works = await fetchDoiBatch(batch, ua);
         for (const w of works) {
-            const workDoi = w.doi ? normalizeDoi(w.doi) : undefined;
+            const workDoi = w.doi ? normalizeDoiUrl(w.doi) : undefined;
             if (!workDoi) continue;
             const entry = doiToEntry.get(workDoi);
             if (!entry) continue;

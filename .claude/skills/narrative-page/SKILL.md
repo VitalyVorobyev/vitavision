@@ -128,7 +128,7 @@ once to `content/narratives/<slug>.md`.
 ## Step 5 — Validate
 
 ```bash
-INCLUDE_DRAFTS=true bun run scripts/validate-content.ts   # 0 errors; page-debt warnings only for intended debt; 0 lens inversions or unjustified warnings
+INCLUDE_DRAFTS=true bun run content:validate   # 0 errors; page-debt warnings only for intended debt; 0 lens inversions or unjustified warnings
 bun run narratives:debt                                   # confirm the debt table matches what Gate 0 intended
 bun run build
 bun run dev   # open /atlas/narratives/<slug>, step through every step on desktop
@@ -207,7 +207,7 @@ renaming an id breaks every link anyone has shared.
 - [ ] Every step's `focus` intersects its chapter's actual content.
 - [ ] Draft's AUDIT JSON grep-verified at zero MISS.
 - [ ] `overview` lens covers every node; no lens named `timeline`.
-- [ ] `INCLUDE_DRAFTS=true bun run scripts/validate-content.ts` — 0 errors,
+- [ ] `INCLUDE_DRAFTS=true bun run content:validate` — 0 errors,
       only intended page-debt warnings, 0 lens inversions.
 - [ ] `bun run narratives:debt` output pasted into the roadmap if it changed.
 - [ ] `bun run build` succeeds.
@@ -223,8 +223,9 @@ renaming an id breaks every link anyone has shared.
   annotated frontmatter+body skeleton.
 - `src/lib/content/schema.ts` (narrative section, `~L308-464`) —
   `narrativeFrontmatterSchema` and the resolved-graph types.
-- `scripts/validate-content.ts` (Rule 11, `~L868-1046`) — the exact narrative
-  validator checks (XOR, resolution, lens/step completeness, chronology).
+- `scripts/validate/rules/narratives/` — the exact narrative validator checks
+  (XOR, resolution, lens/step completeness, chronology), run as part of
+  `bun run content:validate`.
 - `scripts/narrative-debt.ts` / `bun run narratives:debt` — page-debt table.
 - `.claude/skills/_shared/subagent-prompts.md` — Narrative outline, Narrative
   draft contracts, and the AUDIT verification recipe.

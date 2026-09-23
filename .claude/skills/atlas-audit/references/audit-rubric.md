@@ -13,7 +13,7 @@ Step 3 triage may downgrade/upgrade with a stated reason.
 | MECH-06 | Unregistered source id | `sources.primary` / `sources.references[]` entry not in `docs/papers/index.yaml` | Haiku | blocker (build error if it ever reaches validator) | matching page skill |
 | MECH-07 | Empty relations | `relations:` absent or `[]` | Haiku | minor (informational — feeds Step 2 relations-completeness, not a defect on its own) | matching page skill |
 | MECH-08 | Quality-field mismatch | `quality: canonical` set but page has a `TODO`, missing sources, or thin sections (canonical gate per CLAUDE.md); or `quality: historical` page still carries `# Algorithm`/`# Implementation`/`# Remarks`, `editorAlgorithmId`, or `comparedWith:` | Haiku | blocker (validator-enforced for canonical; historical trim is a hard content rule) | matching page skill |
-| MECH-09 | Live validator warning | `bun run scripts/validate-content.ts` warning output names this slug | Haiku | matches the validator's own class (usually minor/major, never silently dropped) | matching page skill |
+| MECH-09 | Live validator warning | `bun run content:validate` warning output names this slug | Haiku | matches the validator's own class (usually minor/major, never silently dropped) | matching page skill |
 | FID-01 | Untraceable numeric constant | a number/equation on the page has no matching value in any cited note | Sonnet | blocker | matching page skill (extend note first if the number is real) |
 | FID-02 | Untraceable attributed claim | a claim attributed to a source ("X showed that…") has no matching note passage | Sonnet | blocker | matching page skill |
 | STRUCT-01 | Wrong/missing section for page kind | algo: not exactly Goal/Algorithm/Implementation/Remarks/References (or the historical trim); model: not `deep-model-page`'s Motivation/Architecture/Implementations/Assessment/References; concept: not `concept-page`'s five sections | Sonnet | major | matching page skill |
@@ -30,7 +30,7 @@ Step 3 triage may downgrade/upgrade with a stated reason.
 
 ## Severity guide (condensed from CLAUDE.md)
 
-- **blocker**: would fail `scripts/validate-content.ts`, breaks rendering, or
+- **blocker**: would fail `bun run content:validate`, breaks rendering, or
   states something false that a reader would act on (wrong constant, wrong
   attribution).
 - **major**: violates an authoring rule that affects correctness or the

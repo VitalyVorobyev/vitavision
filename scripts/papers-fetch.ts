@@ -1,24 +1,14 @@
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { parse as parseYaml } from "yaml";
 
-const REPO_ROOT = join(import.meta.dir, "..");
-const INDEX_PATH = join(REPO_ROOT, "docs", "papers", "index.yaml");
-const CACHE_DIR = join(REPO_ROOT, "docs", "papers", ".cache");
+import { PAPERS_INDEX_PATH, PAPERS_CACHE_DIR } from "./lib/paths.ts";
+import { loadIndexEntries } from "./lib/papers-index.ts";
+import type { RawIndexEntry } from "./lib/papers-index.ts";
+import { spawnAndWait } from "./lib/github.ts";
 
-interface PaperEntry {
-    id: string;
-    url: string;
-    pdf?: string;
-    arxiv?: string;
-}
+const CACHE_DIR = PAPERS_CACHE_DIR;
 
-async function spawnAndWait(cmd: string[]): Promise<{ ok: boolean; stderr: string }> {
-    const proc = Bun.spawn(cmd, { stdout: "ignore", stderr: "pipe" });
-    const exitCode = await proc.exited;
-    const stderrText = await new Response(proc.stderr).text();
-    return { ok: exitCode === 0, stderr: stderrText.trim() };
-}
+type PaperEntry = RawIndexEntry & { url: string };
 
 async function fetchEntry(entry: PaperEntry): Promise<boolean> {
     const pdfName = entry.pdf ?? `${entry.id}.pdf`;
@@ -73,13 +63,12 @@ async function fetchEntry(entry: PaperEntry): Promise<boolean> {
 async function main(): Promise<void> {
     const filterId = process.argv[2];
 
-    const raw = readFileSync(INDEX_PATH, "utf-8");
-    const entries = parseYaml(raw) as PaperEntry[];
-
-    if (!Array.isArray(entries)) {
-        process.stderr.write("papers:fetch — index.yaml is not a list\n");
-        process.exit(1);
-    }
+    const entries = loadIndexEntries(PAPERS_INDEX_PATH, {
+        onNotList: () => {
+            process.stderr.write("papers:fetch — index.yaml is not a list\n");
+            process.exit(1);
+        },
+    }) as PaperEntry[];
 
     const targets = filterId ? entries.filter((e) => e.id === filterId) : entries;
 

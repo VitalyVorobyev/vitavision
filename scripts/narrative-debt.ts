@@ -8,37 +8,17 @@
  * Run: bun run scripts/narrative-debt.ts
  * Set INCLUDE_DRAFTS=true to also scan draft narratives.
  */
-import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import matter from "gray-matter";
-import { parse as parseYaml } from "yaml";
 
 import { narrativeFrontmatterSchema } from "../src/lib/content/schema.ts";
+import { CONTENT_DIR } from "./lib/paths.ts";
+import { loadIndexEntries, paperTitles as papersIndexTitles } from "./lib/papers-index.ts";
+import { loadMarkdownDir, narrativeSlug } from "./lib/content-kinds.ts";
 
-const REPO_ROOT = join(import.meta.dir, "..");
-const CONTENT_DIR = join(REPO_ROOT, "content");
 const NARRATIVES_DIR = join(CONTENT_DIR, "narratives");
-const PAPERS_INDEX = join(REPO_ROOT, "docs", "papers", "index.yaml");
-
-interface PaperIndexEntry {
-    id: string;
-    kind?: "paper" | "repo" | "doc";
-    title?: string;
-}
 
 function loadPaperTitles(): Map<string, string> {
-    const titles = new Map<string, string>();
-    if (!existsSync(PAPERS_INDEX)) return titles;
-    const raw = readFileSync(PAPERS_INDEX, "utf-8");
-    const entries = parseYaml(raw) as PaperIndexEntry[] | null;
-    if (!Array.isArray(entries)) return titles;
-    for (const e of entries) {
-        if (!e.id) continue;
-        const kind = e.kind ?? "paper";
-        if (kind !== "paper") continue;
-        titles.set(e.id, e.title ?? e.id);
-    }
-    return titles;
+    return papersIndexTitles(loadIndexEntries(undefined, { onMissing: () => [] }));
 }
 
 interface DebtRow {
@@ -54,38 +34,31 @@ function main(): void {
 
     const debt = new Map<string, DebtRow>();
 
-    if (existsSync(NARRATIVES_DIR)) {
-        const files = readdirSync(NARRATIVES_DIR).filter((f) => f.endsWith(".md"));
-        for (const file of files) {
-            const raw = readFileSync(join(NARRATIVES_DIR, file), "utf-8");
-            const { data } = matter(raw);
-            const slug = file.replace(/\.md$/, "");
+    for (const { file, slug, data } of loadMarkdownDir(NARRATIVES_DIR, narrativeSlug)) {
+        let fm: { draft?: boolean; nodes: { id: string; paper?: string }[] };
+        try {
+            fm = narrativeFrontmatterSchema.parse(data) as typeof fm;
+        } catch (err) {
+            console.error(`narratives:debt — skipping ${file}: frontmatter parse error: ${String(err)}`);
+            continue;
+        }
 
-            let fm: { draft?: boolean; nodes: { id: string; paper?: string }[] };
-            try {
-                fm = narrativeFrontmatterSchema.parse(data) as typeof fm;
-            } catch (err) {
-                console.error(`narratives:debt — skipping ${file}: frontmatter parse error: ${String(err)}`);
-                continue;
+        if (fm.draft && !includeDrafts) continue;
+
+        for (const node of fm.nodes) {
+            if (!node.paper) continue;
+            let row = debt.get(node.paper);
+            if (!row) {
+                row = {
+                    paperId: node.paper,
+                    paperTitle: paperTitles.get(node.paper) ?? node.paper,
+                    nodeIds: new Set(),
+                    narrativeSlugs: new Set(),
+                };
+                debt.set(node.paper, row);
             }
-
-            if (fm.draft && !includeDrafts) continue;
-
-            for (const node of fm.nodes) {
-                if (!node.paper) continue;
-                let row = debt.get(node.paper);
-                if (!row) {
-                    row = {
-                        paperId: node.paper,
-                        paperTitle: paperTitles.get(node.paper) ?? node.paper,
-                        nodeIds: new Set(),
-                        narrativeSlugs: new Set(),
-                    };
-                    debt.set(node.paper, row);
-                }
-                row.nodeIds.add(node.id);
-                row.narrativeSlugs.add(slug);
-            }
+            row.nodeIds.add(node.id);
+            row.narrativeSlugs.add(slug);
         }
     }
 

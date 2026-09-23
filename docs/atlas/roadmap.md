@@ -13,10 +13,9 @@
    `deep-model-page` / `concept-page` / `narrative-page`. Comparison prose only when both
    research notes exist. After each ingest: `bun run papers:backfill-authors --only <id>`.
 3. Verification after every phase: `bun run build` (also runs the Atlas graph validator, drafts
-   included) · `bun run lint` · `npx vitest run` · `bun run scripts/validate-content.ts`
-   (published-only, as CI) · `bun run content:validate` · `bun run narratives:debt` (narrative
-   PRs) · `bun run ds:validate` (if DS-exported components touched) · devtools touch emulation for
-   interactive-canvas changes.
+   included) · `bun run lint` · `npx vitest run` · `bun run content:validate` (published-only, as
+   CI) · `bun run narratives:debt` (narrative PRs) · `bun run ds:validate` (if DS-exported
+   components touched) · devtools touch emulation for interactive-canvas changes.
 4. At session end: update Workstream status and the Decisions log.
 
 **PR policy (user mandate, 2026-08-23):** Claude opens and merges PRs itself, no codex review;
@@ -42,7 +41,7 @@ After PR-B: 54 models · 154 sources · 144 notes (11 in v2 form) · 502 canonic
 | A — Workflow hygiene | Skills and docs describe the system as it is | **done** (#158) | — |
 | B — Dense-prediction injection | FPN, DPT, PointRend pages; SegFormer note → v2 | **done** (PR-B) | — |
 | F — Authors & papers experience | Papers and people become first-class, well-designed Atlas surfaces | planned | design phase (see below) |
-| G — Build-pipeline quality | Validator and build scripts that are modular and tested | planned | BL-028…BL-032 |
+| G — Build-pipeline quality | Validator, build scripts, and frontend/editor monoliths modular and tested | **in progress** — D1 scripts (PR) | D2 Atlas frontend (BL-031, BL-023), D3 WASM worker + editor |
 | H — Note v2 migration | Every relation rests on a note with `# Stated relations` | planned | batch 1: highest-degree segmentation/detection notes |
 | I — Coverage waves | Close page debt and notes-without-pages | planned | multi-scale wave after PR-B |
 | J — Quality tiers | Canonical rollout per domain; second audit pass | planned | `atlas-audit` batch 2 over BL-001 remainder |

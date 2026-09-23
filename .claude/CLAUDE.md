@@ -156,24 +156,30 @@ to fix a split identity. Maintain via the `author-identity` skill: `bun run pape
 after each ingest, `bun run authors:dupes` to find candidate splits, OpenAlex evidence before any merge.
 
 ### Validation
-Run `bun run scripts/validate-content.ts` **by path** before opening a PR. It checks slug
-resolution (including `relations[].target`), prerequisite cycles, source-id existence,
-canonical-quality gates, and narrative rules (node XOR, page/paper resolution, lens/step
-completeness, edge-vs-Atlas-relations warnings) in the same run.
+There is one validator: `scripts/validate-content.ts` (implementation in `scripts/validate/**` —
+a `ValidationContext` builder in `context.ts` plus one pure `(ctx) => Diagnostic[]` rule module
+per check under `rules/*.ts`, each with its own vitest fixtures). `bun run content:validate` runs
+it on published pages only; `INCLUDE_DRAFTS=true bun run content:validate` includes drafts. Run
+it (or `bun run build`, below) before opening a PR.
+
+It checks, across all content kinds it applies to: slug resolution (`prerequisites`,
+`failureModes`, `relations[].target`, including `relatedAlgorithms`'s legacy global-namespace
+form), prerequisite cycles, source-id existence, canonical-quality gates, typed-relation/historical
+gates, feeds_into chronology, model implementations requirements, domain/tag drift, prose
+references (warning only), narrative rules (node XOR, page/paper resolution, lens/step
+completeness, edge-vs-Atlas-relations warnings), blog/demo frontmatter schemas, image references
+(existence + empty-alt warning, all kinds), internal links (`/atlas/...`, `/blog/...`,
+`/demos/...`, `/authors/...`, static routes, legacy-redirect warnings, unresolved-anchor
+warnings), and cross-content references (`relatedPosts`, `relatedDemos`, legacy
+`relatedAlgorithms`).
 
 `bun run build` (`INCLUDE_DRAFTS=true bun run content:build && tsc -b && vite build`)
-already runs the Atlas graph validator (`validate-content.ts`) with drafts included,
-via `scripts/content-build.ts`, and throws on any validation error — a local build
-succeeding on its own IS proof the graph validates against the include-drafts set.
-It does NOT run `content:validate` (`scripts/content-validate.ts`).
+already runs this same validator with drafts included, via `scripts/content-build.ts`, and
+throws on any validation error — a local build succeeding on its own IS proof the graph
+validates against the include-drafts set.
 
-CI's `validate-content` job runs both scripts: `bun run content:validate` →
-`scripts/content-validate.ts` (narrower — blog/algorithm internal links and
-`relatedPosts` only), and `bun run scripts/validate-content.ts` by path (the real
-Atlas graph validator described above, run again here on published pages only —
-i.e. without `INCLUDE_DRAFTS`). The two script names are confusingly similar but
-cover different ground — don't assume one supersedes the other, and don't remove
-either without replacing its coverage.
+CI's `validate-content` job runs `bun run content:validate` on published pages only
+(no `INCLUDE_DRAFTS`) — the one case `bun run build` doesn't cover.
 
 ### Research notes (unpublished reasoning substrate)
 

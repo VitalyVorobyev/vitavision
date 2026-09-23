@@ -104,7 +104,7 @@ These skills cover every authoring path. There is **no separate `atlas-update` s
 ```
 new paper          paper-ingest                   review                 algo-page / deep-model-page / concept-page                 validate
 arxiv:2304.02643 → docs/research/notes/<id>.md →  read the           →  apply the "## NEW: <slug>" or "## UPDATE: <slug>" bullets → bun run build
-                                                  Atlas update plan      to the public page                                          + validate-content.ts
+                                                  Atlas update plan      to the public page                                          + content:validate
 ```
 
 Concrete:
@@ -119,7 +119,7 @@ You: Use algo-page on harris-corner-detector. Apply the bullets from
      docs/research/notes/<paper-id>.md.
 → updates content/algorithms/harris-corner-detector.md.
 
-You: bun run build && bun run scripts/validate-content.ts
+You: bun run build && bun run content:validate
 ```
 
 ### Path B — concept page (no single paper)
@@ -145,7 +145,7 @@ You: Use narrative-page to draft "finding-a-chessboard" (N9 in docs/atlas/roadma
 → skill checks every page node exists and is published, every paper node is registered
   (and becomes tracked debt), then drafts chapters + edges + lenses + steps.
 
-You: bun run scripts/validate-content.ts && bun run narratives:debt
+You: bun run content:validate && bun run narratives:debt
 ```
 
 Narrative edges use a story-altitude vocabulary (`prerequisite | evolution | bridge | contrast`)
@@ -180,17 +180,25 @@ Run before every commit:
 bun run build              # type-check + content-build + Vite + postbuild guard
 bun run lint               # ESLint
 npx vitest run             # unit tests
-bun run scripts/validate-content.ts          # public pages only
-INCLUDE_DRAFTS=true bun run scripts/validate-content.ts   # public + drafts
+bun run content:validate          # public pages only
+INCLUDE_DRAFTS=true bun run content:validate   # public + drafts
 ```
 
-What validation catches:
-- Unknown slugs in `prerequisites` / `relations[].target` / `failureModes`.
+`content:validate` runs the one unified validator (`scripts/validate-content.ts`, implementation
+in `scripts/validate/**`). What it catches:
+- Unknown slugs in `prerequisites` / `relations[].target` / `failureModes` (including the legacy
+  `relatedAlgorithms` field's global-namespace form).
 - Cycles in the prerequisites graph.
 - Missing source IDs (any `sources.primary` or `sources.references` not in `docs/papers/index.yaml`).
 - `quality: canonical` pages missing the canonical-gate fields.
 - Non-draft model pages missing `implementations[]`.
 - `docs/research/` paths leaking into `dist/`.
+- Blog/demo frontmatter schema issues.
+- Broken image references (existence + empty-alt warning) across every content kind.
+- Broken internal links (`/atlas/...`, `/blog/...`, `/demos/...`, `/authors/...`, static routes)
+  across every content kind — unresolved fragment anchors and legacy-redirect links (`/algorithms/...`,
+  `/concepts/...`) are warnings, not errors.
+- Broken `relatedPosts` / `relatedDemos` references.
 
 Narrative-specific rules (same script):
 - Errors: every node is exactly one of page / paper / question (XOR); `page` nodes resolve to a

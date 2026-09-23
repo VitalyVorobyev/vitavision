@@ -4,7 +4,8 @@
 > default "work is driven from plan files, not a tracked backlog" rule for this initiative only
 > (user decision, 2026-08-23). Page-quality and tech-debt rows live in `docs/atlas/backlog.md`.
 >
-> Current plan: `~/.claude/plans/i-want-you-to-stateful-koala.md` (approved 2026-09-23).
+> Current plan: `~/.claude/plans/ws-f-people-papers.md` (approved 2026-09-23; design canvas
+> https://claude.ai/artifact/RcTo7hXnDqmLLwGx6e6vZP).
 
 ## Session protocol
 
@@ -40,8 +41,8 @@ After PR-B: 54 models · 154 sources · 144 notes (11 in v2 form) · 502 canonic
 |---|---|---|---|
 | A — Workflow hygiene | Skills and docs describe the system as it is | **done** (#158) | — |
 | B — Dense-prediction injection | FPN, DPT, PointRend pages; SegFormer note → v2 | **done** (PR-B) | — |
-| F — Authors & papers experience | Papers and people become first-class, well-designed Atlas surfaces | planned | design phase (see below) |
-| G — Build-pipeline quality | Validator, build scripts, and frontend/editor monoliths modular and tested | **done** (#160, #161, D3 PR) | — |
+| F — Authors & papers experience | Papers and people become first-class, well-designed Atlas surfaces | **in progress** — design approved; F1 paper pages (this PR) | F2: Atlas tabs + People views + author page v2 |
+| G — Build-pipeline quality | Validator, build scripts, and frontend/editor monoliths modular and tested | **done** (#160, #161, #162) | — |
 | H — Note v2 migration | Every relation rests on a note with `# Stated relations` | planned | batch 1: highest-degree segmentation/detection notes |
 | I — Coverage waves | Close page debt and notes-without-pages | planned | multi-scale wave after PR-B |
 | J — Quality tiers | Canonical rollout per domain; second audit pass | planned | `atlas-audit` batch 2 over BL-001 remainder |
@@ -61,8 +62,11 @@ Narrative follow-ups (via `narrative-page`) done: `fpn` node + chapter paragraph
 
 ### F — Authors & papers experience (mid-term)
 
-Design-led: `react-ui-designer` preference round → high-fidelity mockups (paper page, author page,
-global graph) → user approval → implementation. The bar is *well-designed*, not merely functional.
+Design-led; approved 2026-09-23 (Atlas-native elevated look, impact-first paper page, People =
+directory + network tab, People/Papers as Atlas view tabs). Three PRs: **F1** scholarly data layer
+(`public/scholarly-index.json`, lazy) + `/papers/:id`; **F2** 5-tab Atlas view switch (BL-035),
+People directory + network, author page v2; **F3** Papers view, search (BL-022), author data
+integrity (BL-032), narrative fit (BL-034).
 
 1. **Paper pages** `/papers/:id` — the hub between people and the Atlas: authors, venue/year,
    Atlas pages built on the paper, narratives it appears in, cites / cited-by (the `cites` field is

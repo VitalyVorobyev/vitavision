@@ -13,6 +13,8 @@ import type { StaticContentContextValue } from "../src/lib/content/ssr-content.t
 import type { PapersById } from "../src/generated/papers-index.ts";
 import type { AuthorsIndex } from "../src/generated/authors-index.ts";
 import { EMPTY_AUTHORS_INDEX } from "../src/lib/atlas/authorsContext.ts";
+import type { ScholarlyIndex } from "../src/generated/scholarly-index.ts";
+import { paperSeoDescription } from "../src/lib/atlas/paperView.ts";
 import {
     buildAlgorithmJsonLd,
     buildBlogJsonLd,
@@ -77,9 +79,10 @@ function writePage(
     staticContent: StaticContentContextValue,
     papers: PapersById,
     authors: AuthorsIndex,
+    scholarly: ScholarlyIndex | undefined,
     extraHead?: string,
 ): void {
-    const html = render(url, staticContent, papers, authors);
+    const html = render(url, staticContent, papers, authors, scholarly);
     let page = template.replace(
         '<div id="root"></div>',
         `<div id="root">${html}</div>`,
@@ -149,6 +152,13 @@ async function main(): Promise<void> {
     const authors: AuthorsIndex = existsSync(authorsJsonPath)
         ? (JSON.parse(readFileSync(authorsJsonPath, "utf-8")) as AuthorsIndex)
         : EMPTY_AUTHORS_INDEX;
+    // Same treatment for the scholarly index — read once from disk so SSR has
+    // it synchronously on every prerendered paper page (the client otherwise
+    // lazy-fetches this ~440 kB asset only when a paper page mounts).
+    const scholarlyJsonPath = join(import.meta.dir, "..", "public", "scholarly-index.json");
+    const scholarly: ScholarlyIndex | undefined = existsSync(scholarlyJsonPath)
+        ? (JSON.parse(readFileSync(scholarlyJsonPath, "utf-8")) as ScholarlyIndex)
+        : undefined;
     let count = 0;
 
     // Blog index
@@ -156,7 +166,7 @@ async function main(): Promise<void> {
         title: "Blog",
         description:
             "Articles on computer vision algorithms, calibration, and building intelligent systems.",
-    }, staticContent, papers, authors);
+    }, staticContent, papers, authors, scholarly);
     count++;
 
     // Individual blog posts
@@ -169,7 +179,7 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/blog/${post.slug}`,
-        }, staticContent, papers, authors, jsonLd);
+        }, staticContent, papers, authors, scholarly, jsonLd);
         count++;
     }
 
@@ -177,7 +187,7 @@ async function main(): Promise<void> {
     writePage(template, "/atlas", "atlas", {
         title: "Atlas",
         description: "Computer vision atlas — algorithms, models, and concepts.",
-    }, staticContent, papers, authors);
+    }, staticContent, papers, authors, scholarly);
     count++;
 
     // Individual algorithm pages
@@ -190,7 +200,7 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/atlas/${page.slug}`,
-        }, staticContent, papers, authors, jsonLd);
+        }, staticContent, papers, authors, scholarly, jsonLd);
         count++;
     }
 
@@ -198,7 +208,7 @@ async function main(): Promise<void> {
     writePage(template, "/demos", "demos", {
         title: "Demos",
         description: "Interactive demos of computer vision algorithms.",
-    }, staticContent, papers, authors);
+    }, staticContent, papers, authors, scholarly);
     count++;
 
     // Individual demo pages
@@ -210,7 +220,7 @@ async function main(): Promise<void> {
             description: frontmatter.summary,
             ogType: "article",
             url: `/demos/${demo.slug}`,
-        }, staticContent, papers, authors, jsonLd);
+        }, staticContent, papers, authors, scholarly, jsonLd);
         count++;
     }
 
@@ -224,7 +234,7 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/atlas/${model.slug}`,
-        }, staticContent, papers, authors, jsonLd);
+        }, staticContent, papers, authors, scholarly, jsonLd);
         count++;
     }
 
@@ -238,7 +248,7 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/atlas/${page.slug}`,
-        }, staticContent, papers, authors, jsonLd);
+        }, staticContent, papers, authors, scholarly, jsonLd);
         count++;
     }
 
@@ -249,7 +259,7 @@ async function main(): Promise<void> {
             description: narrative.summary,
             ogType: "article",
             url: `/atlas/narratives/${narrative.slug}`,
-        }, staticContent, papers, authors);
+        }, staticContent, papers, authors, scholarly);
         count++;
     }
 
@@ -260,7 +270,7 @@ async function main(): Promise<void> {
         title: "Authors",
         description: "Every researcher credited on a paper cited by the VitaVision computer vision atlas.",
         url: "/authors",
-    }, staticContent, papers, authors);
+    }, staticContent, papers, authors, scholarly);
     count++;
 
     for (const authorId of authorIds) {
@@ -271,7 +281,22 @@ async function main(): Promise<void> {
             description: `${author.name} — ${author.papers.length} ${paperWord} cited by the VitaVision computer vision atlas.`,
             ogType: "profile",
             url: `/authors/${authorId}`,
-        }, staticContent, papers, authors);
+        }, staticContent, papers, authors, scholarly);
+        count++;
+    }
+
+    // Paper register — unlisted (not in the navbar), reached from source
+    // strips/bylines and the lineage graph. One page per registry paper.
+    const paperIds = Object.keys(papers).sort();
+    for (const paperId of paperIds) {
+        const paper = papers[paperId];
+        const primaryCount = scholarly?.papers[paperId]?.primaryPages.length ?? 0;
+        writePage(template, `/papers/${paperId}`, `papers/${paperId}`, {
+            title: paper.title,
+            description: paperSeoDescription(paper, primaryCount),
+            ogType: "article",
+            url: `/papers/${paperId}`,
+        }, staticContent, papers, authors, scholarly);
         count++;
     }
 
@@ -279,7 +304,7 @@ async function main(): Promise<void> {
     writePage(template, "/tools/target-generator", "tools/target-generator", {
         title: "Target Generator",
         description: "Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.",
-    }, staticContent, papers, authors);
+    }, staticContent, papers, authors, scholarly);
     count++;
 
     // Generate sitemap
@@ -291,6 +316,7 @@ async function main(): Promise<void> {
         ...conceptPages.map((c) => `/atlas/${c.slug}`),
         ...publishedNarratives.map((n) => `/atlas/narratives/${n.slug}`),
         "/authors", ...authorIds.map((a) => `/authors/${a}`),
+        ...paperIds.map((p) => `/papers/${p}`),
         "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
         "/tools/target-generator",
     ];

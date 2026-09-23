@@ -57,6 +57,18 @@ describe("linksRule", () => {
         ]);
     });
 
+    it("resolves a valid /papers/<id> link and flags an unknown one", () => {
+        const ctx = createContext({
+            algorithms: [
+                algo("a.md", "See [paper](/papers/bennett2013-chess) and [ghost](/papers/does-not-exist)."),
+            ],
+            indexEntries: [{ id: "bennett2013-chess", year: 2013, title: "ChESS" }],
+        });
+        expect(linksRule(ctx)).toEqual([
+            { level: "error", message: "[a.md] broken link: /papers/does-not-exist (registry paper not found)" },
+        ]);
+    });
+
     it("warns on a legacy /algorithms/<slug> link but resolves a valid /atlas/narratives/<slug> link", () => {
         const ctx = createContext({
             algorithms: [algo("a.md", "[old](/algorithms/foo) [n](/atlas/narratives/story)")],

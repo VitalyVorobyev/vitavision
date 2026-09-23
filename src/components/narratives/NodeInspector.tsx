@@ -79,14 +79,22 @@ export default function NodeInspector({ node, areas, onClose }: NodeInspectorPro
                 </Link>
             )}
             {node.kind === "paper" && (
-                <a
-                    href={node.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex h-8 items-center justify-center rounded-md border border-border bg-muted px-3 font-mono text-[11px] text-foreground no-underline transition-colors hover:bg-surface"
-                >
-                    Read the paper ↗
-                </a>
+                <div className="mt-3 flex flex-wrap gap-2">
+                    <Link
+                        to={`/papers/${node.paperId}`}
+                        className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-muted px-3 text-[12px] font-medium text-foreground no-underline transition-colors hover:bg-surface"
+                    >
+                        Paper page →
+                    </Link>
+                    <a
+                        href={node.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-muted px-3 font-mono text-[11px] text-foreground no-underline transition-colors hover:bg-surface"
+                    >
+                        Read the paper ↗
+                    </a>
+                </div>
             )}
             {/* question nodes: no link/button — there is nothing to open. */}
         </div>

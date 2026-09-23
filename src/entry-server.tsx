@@ -11,6 +11,7 @@ import NarrativePage from "./pages/NarrativePage.tsx";
 // `AuthorsIndex` data type imported below.
 import AuthorsIndexPage from "./pages/AuthorsIndex.tsx";
 import AuthorPage from "./pages/AuthorPage.tsx";
+import PaperPage from "./pages/PaperPage.tsx";
 import DemoIndex from "./pages/DemoIndex.tsx";
 import DemoPage from "./pages/DemoPage.tsx";
 import Navbar from "./components/layout/Navbar.tsx";
@@ -21,6 +22,8 @@ import type { PapersById } from "./generated/papers-index.ts";
 import { AuthorsProvider } from "./lib/atlas/authorsIndex.tsx";
 import { EMPTY_AUTHORS_INDEX } from "./lib/atlas/authorsContext.ts";
 import type { AuthorsIndex } from "./generated/authors-index.ts";
+import { ScholarlyProvider } from "./lib/atlas/scholarlyIndex.tsx";
+import type { ScholarlyIndex } from "./generated/scholarly-index.ts";
 
 // In SSR (postbuild), Vite doesn't substitute import.meta.env — read from process.env instead.
 // ClerkProvider is required because Navbar renders <SignedOut>/<SignedIn>.
@@ -35,12 +38,14 @@ export function render(
     staticContent: StaticContentContextValue | null = null,
     papers: PapersById = {},
     authors: AuthorsIndex = EMPTY_AUTHORS_INDEX,
+    scholarly: ScholarlyIndex | undefined = undefined,
 ): string {
     return renderToString(
         <ClerkProvider publishableKey={SSR_PUBLISHABLE_KEY}>
         <StaticContentProvider value={staticContent}>
         <PapersProvider initial={papers}>
         <AuthorsProvider initial={authors}>
+        <ScholarlyProvider initial={scholarly}>
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
                 <MemoryRouter initialEntries={[url]}>
                     <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
@@ -55,6 +60,7 @@ export function render(
                                 <Route path="/atlas/:slug" element={<AtlasPost />} />
                                 <Route path="/authors" element={<AuthorsIndexPage />} />
                                 <Route path="/authors/:id" element={<AuthorPage />} />
+                                <Route path="/papers/:id" element={<PaperPage />} />
                                 <Route path="/demos" element={<DemoIndex />} />
                                 <Route path="/demos/:slug" element={<DemoPage />} />
                                 <Route path="/tools/target-generator" element={
@@ -71,6 +77,7 @@ export function render(
                     </div>
                 </MemoryRouter>
             </ThemeProvider>
+        </ScholarlyProvider>
         </AuthorsProvider>
         </PapersProvider>
         </StaticContentProvider>

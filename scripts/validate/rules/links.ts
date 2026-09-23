@@ -13,6 +13,8 @@
  *   - /blog/<slug>, /demos/<slug> — slug must exist on disk.
  *   - /authors/<id> — id must exist in docs/papers/authors.yaml (merged-away
  *     ids included: `/authors/<old-id>` still redirects, per CLAUDE.md).
+ *   - /papers/<id> — id must be a registry paper (`kind: paper`, or absent,
+ *     in docs/papers/index.yaml — the same set `ctx.paperYears` indexes).
  *   - legacy /algorithms, /algorithms/models(/<slug>)?, /algorithms/<slug>,
  *     /concepts/<slug> — still redirect, so only a warning ("use /atlas/…").
  *   - anything else with a leading "/" — error, unknown path prefix.
@@ -174,6 +176,14 @@ export function linksRule(ctx: ValidationContext): Diagnostic[] {
             if (authorMatch) {
                 if (!ctx.authorIds.has(authorMatch[1])) {
                     diagnostics.push({ level: "error", message: `[${e.file}] broken link: ${href} (author id not found)` });
+                }
+                continue;
+            }
+
+            const paperMatch = path.match(/^\/papers\/([^/]+)$/);
+            if (paperMatch) {
+                if (!ctx.paperYears.has(paperMatch[1])) {
+                    diagnostics.push({ level: "error", message: `[${e.file}] broken link: ${href} (registry paper not found)` });
                 }
                 continue;
             }

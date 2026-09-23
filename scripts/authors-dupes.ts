@@ -6,7 +6,7 @@
 // anything. Run with `bun run authors:dupes`; review and hand-fix
 // docs/papers/authors.yaml (add `mergedInto:`) as a separate step.
 
-import { loadAuthorsYaml, loadPaperAuthorIds } from "./authors-build.ts";
+import { buildAliasResolver, loadAuthorsYaml, loadPaperAuthorIds } from "./authors-build.ts";
 import type { AuthorRecord } from "./authors-build.ts";
 import { deaccent } from "./lib/text.ts";
 
@@ -28,31 +28,6 @@ function surnameInitialKey(name: string): string {
     return `${surname}|${firstInitial}`;
 }
 
-/** Cycle-safe id → canonical-id resolver built from `mergedInto` rows, mirroring
- *  scripts/authors-build.ts's internal resolver (kept local — this script only
- *  needs it to skip pairs already resolved). */
-function buildResolver(records: AuthorRecord[]): (id: string) => string {
-    const mergedInto = new Map<string, string>();
-    for (const r of records) {
-        if (r.mergedInto) mergedInto.set(r.id, r.mergedInto);
-    }
-    const cache = new Map<string, string>();
-    return function resolve(id: string): string {
-        const cached = cache.get(id);
-        if (cached) return cached;
-        const seen = new Set<string>([id]);
-        let current = id;
-        while (mergedInto.has(current)) {
-            const next = mergedInto.get(current)!;
-            if (seen.has(next)) break;
-            seen.add(next);
-            current = next;
-        }
-        cache.set(id, current);
-        return current;
-    };
-}
-
 /**
  * Pure duplicate-identity scan over authors.yaml rows + each id's papers.
  * Skips any group whose ids already resolve to the same canonical id via
@@ -62,7 +37,7 @@ export function findAuthorDupes(
     records: AuthorRecord[],
     paperAuthorIds: { paperId: string; authorIds: string[] }[],
 ): AuthorDupeCandidate[] {
-    const resolve = buildResolver(records);
+    const { resolve } = buildAliasResolver(records);
     const byId = new Map(records.map((r) => [r.id, r]));
 
     const papersByAuthor = new Map<string, string[]>();

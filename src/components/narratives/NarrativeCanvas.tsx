@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { NarrativeEdgeType, NarrativeNode, ResolvedNarrative } from "../../lib/content/schema.ts";
 import { buildEdge } from "../../lib/graph/edgeGeometry.ts";
-import { GRAPH_CANVAS_GRADIENT, GRAPH_PILL_BG } from "../../lib/graph/graphTheme.ts";
 import { useViewport, type ViewportBounds } from "../../lib/graph/useViewport.ts";
 import { ZoomControls } from "../atlas/graph/ZoomControls.tsx";
+import { PannableViewport } from "../atlas/graph/PannableViewport.tsx";
+import { EdgeMarkers } from "../atlas/graph/EdgeMarkers.tsx";
+import { EdgeLabelPill } from "../atlas/graph/EdgeLabelPill.tsx";
 import {
     NARRATIVE_EDGE_DASH,
     NARRATIVE_NODE_H,
@@ -250,138 +252,106 @@ export default function NarrativeCanvas({
         walkthrough === "reveal" && focusIds !== null && !(revealedIds ?? []).includes(id);
 
     return (
-        <div
-            ref={viewportRef}
-            className="relative h-full w-full overflow-hidden rounded-xl border border-border"
-            style={{ background: GRAPH_CANVAS_GRADIENT, touchAction: "none" }}
+        <PannableViewport
+            viewportRef={viewportRef}
+            planeRef={planeRef}
+            viewportClassName="relative h-full w-full overflow-hidden rounded-xl border border-border"
+            planeClassName="absolute left-0 top-0"
+            view={view}
+            animate={animate}
+            planeWidth={contentW}
+            planeHeight={contentH}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerCancel}
-        >
-            <div
-                ref={planeRef}
-                className="absolute left-0 top-0"
-                style={{
-                    width:           contentW,
-                    height:          contentH,
-                    transform:       `translate(${view.x}px, ${view.y}px) scale(${view.scale})`,
-                    transformOrigin: "0 0",
-                    transition:      animate ? "transform 280ms ease" : "none",
-                }}
-            >
-                {showRuler && (
-                    <YearRuler minYear={yearRange.min} maxYear={yearRange.max} width={contentW} />
-                )}
-
-                {/* Edge layer */}
-                <svg
-                    className="absolute left-0 top-0 pointer-events-none"
-                    width={contentW}
-                    height={contentH}
-                    style={{ opacity: settling ? 0 : 1, transition: "opacity 200ms ease" }}
-                >
-                    <defs>
-                        {edgeTypes.map((t) => (
-                            <marker
-                                key={`mk-${t}`}
-                                id={`narr-arr-${t}`}
-                                viewBox="0 0 10 10"
-                                refX="8.5"
-                                refY="5"
-                                markerWidth="5"
-                                markerHeight="5"
-                                orient="auto-start-reverse"
-                            >
-                                <path d="M0,1 L9,5 L0,9 Z" fill={narrativeEdgeColor(t)} />
-                            </marker>
-                        ))}
-                    </defs>
-
-                    {narrative.edges.map((edge, i) => {
-                        const from = layout.positions[edge.from];
-                        const to   = layout.positions[edge.to];
-                        if (!from || !to) return null;
-                        const geom   = buildEdge(nodeBox(from), nodeBox(to));
-                        const dim    = isDimmed(edge.from) || isDimmed(edge.to);
-                        const hidden = isHidden(edge.from) || isHidden(edge.to);
-                        return (
-                            <path
-                                key={`e-${i}`}
-                                d={geom.path}
-                                fill="none"
-                                stroke={narrativeEdgeColor(edge.type)}
-                                strokeWidth="1.3"
-                                strokeDasharray={NARRATIVE_EDGE_DASH[edge.type]}
-                                opacity={hidden ? 0 : dim ? 0.14 : 0.65}
-                                style={hidden ? { pointerEvents: "none" } : undefined}
-                                markerEnd={`url(#narr-arr-${edge.type})`}
-                            />
-                        );
-                    })}
-
-                    {/* Edge label pills — after the lines so they sit on top */}
-                    {narrative.edges.map((edge, i) => {
-                        if (!edge.label) return null;
-                        const from = layout.positions[edge.from];
-                        const to   = layout.positions[edge.to];
-                        if (!from || !to) return null;
-                        const geom   = buildEdge(nodeBox(from), nodeBox(to));
-                        const color  = narrativeEdgeColor(edge.type);
-                        const dim    = isDimmed(edge.from) || isDimmed(edge.to);
-                        const hidden = isHidden(edge.from) || isHidden(edge.to);
-                        const w      = edge.label.length * 5.6 + 10;
-                        return (
-                            <g
-                                key={`lbl-${i}`}
-                                transform={`translate(${geom.labelX} ${geom.labelY})`}
-                                opacity={hidden ? 0 : dim ? 0.15 : 0.95}
-                                style={hidden ? { pointerEvents: "none" } : undefined}
-                            >
-                                <rect
-                                    x={-w / 2} y={-7} width={w} height={14} rx={3}
-                                    fill={GRAPH_PILL_BG}
-                                    stroke={color}
-                                    strokeOpacity="0.7"
-                                    strokeWidth="0.8"
-                                />
-                                <text
-                                    x={0} y={3}
-                                    textAnchor="middle"
-                                    style={{
-                                        font: "500 9.5px ui-monospace, Geist Mono, monospace",
-                                        letterSpacing: "0.04em",
-                                        fill: color,
-                                    }}
-                                >
-                                    {edge.label}
-                                </text>
-                            </g>
-                        );
-                    })}
-                </svg>
-
-                {nodes.map((node) => (
-                    <NodeChip
-                        key={node.id}
-                        node={node}
-                        pos={layout.positions[node.id]}
-                        areaIds={areaIds}
-                        dimmed={isDimmed(node.id)}
-                        hidden={isHidden(node.id)}
-                        selected={selectedId === node.id}
-                        onSelect={onSelect}
+            overlays={
+                <>
+                    {/* Viewport overlays — not scaled or translated */}
+                    <NarrativeLegend edgeTypes={edgeTypes} areas={narrative.areas} hasQuestionNodes={hasQuestionNodes} />
+                    <ZoomControls
+                        onZoomIn={() => zoomAroundCenter(1.25)}
+                        onZoomOut={() => zoomAroundCenter(1 / 1.25)}
+                        onFit={() => fitView(true)}
                     />
-                ))}
-            </div>
+                </>
+            }
+        >
+            {showRuler && (
+                <YearRuler minYear={yearRange.min} maxYear={yearRange.max} width={contentW} />
+            )}
 
-            {/* Viewport overlays — not scaled or translated */}
-            <NarrativeLegend edgeTypes={edgeTypes} areas={narrative.areas} hasQuestionNodes={hasQuestionNodes} />
-            <ZoomControls
-                onZoomIn={() => zoomAroundCenter(1.25)}
-                onZoomOut={() => zoomAroundCenter(1 / 1.25)}
-                onFit={() => fitView(true)}
-            />
-        </div>
+            {/* Edge layer */}
+            <svg
+                className="absolute left-0 top-0 pointer-events-none"
+                width={contentW}
+                height={contentH}
+                style={{ opacity: settling ? 0 : 1, transition: "opacity 200ms ease" }}
+            >
+                <EdgeMarkers
+                    idPrefix="narr-arr-"
+                    markers={edgeTypes.map((t) => ({ key: t, color: narrativeEdgeColor(t) }))}
+                />
+
+                {narrative.edges.map((edge, i) => {
+                    const from = layout.positions[edge.from];
+                    const to   = layout.positions[edge.to];
+                    if (!from || !to) return null;
+                    const geom   = buildEdge(nodeBox(from), nodeBox(to));
+                    const dim    = isDimmed(edge.from) || isDimmed(edge.to);
+                    const hidden = isHidden(edge.from) || isHidden(edge.to);
+                    return (
+                        <path
+                            key={`e-${i}`}
+                            d={geom.path}
+                            fill="none"
+                            stroke={narrativeEdgeColor(edge.type)}
+                            strokeWidth="1.3"
+                            strokeDasharray={NARRATIVE_EDGE_DASH[edge.type]}
+                            opacity={hidden ? 0 : dim ? 0.14 : 0.65}
+                            style={hidden ? { pointerEvents: "none" } : undefined}
+                            markerEnd={`url(#narr-arr-${edge.type})`}
+                        />
+                    );
+                })}
+
+                {/* Edge label pills — after the lines so they sit on top */}
+                {narrative.edges.map((edge, i) => {
+                    if (!edge.label) return null;
+                    const from = layout.positions[edge.from];
+                    const to   = layout.positions[edge.to];
+                    if (!from || !to) return null;
+                    const geom   = buildEdge(nodeBox(from), nodeBox(to));
+                    const color  = narrativeEdgeColor(edge.type);
+                    const dim    = isDimmed(edge.from) || isDimmed(edge.to);
+                    const hidden = isHidden(edge.from) || isHidden(edge.to);
+                    const w      = edge.label.length * 5.6 + 10;
+                    return (
+                        <EdgeLabelPill
+                            key={`lbl-${i}`}
+                            label={edge.label}
+                            width={w}
+                            transform={`translate(${geom.labelX} ${geom.labelY})`}
+                            opacity={hidden ? 0 : dim ? 0.15 : 0.95}
+                            color={color}
+                            style={hidden ? { pointerEvents: "none" } : undefined}
+                        />
+                    );
+                })}
+            </svg>
+
+            {nodes.map((node) => (
+                <NodeChip
+                    key={node.id}
+                    node={node}
+                    pos={layout.positions[node.id]}
+                    areaIds={areaIds}
+                    dimmed={isDimmed(node.id)}
+                    hidden={isHidden(node.id)}
+                    selected={selectedId === node.id}
+                    onSelect={onSelect}
+                />
+            ))}
+        </PannableViewport>
     );
 }

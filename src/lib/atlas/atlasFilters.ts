@@ -8,16 +8,26 @@ import { taskOrder } from "../content/taskLabels.ts";
 // ── Public types ────────────────────────────────────────────────────────────
 
 export type AlgorithmsKind = "all" | "algorithm" | "model" | "concept";
-export type AlgorithmsView = "grid" | "list" | "graph" | "narratives";
+export type AlgorithmsView = "grid" | "list" | "graph" | "narratives" | "people" | "papers";
 export type AlgorithmsSort = "az" | "recent";
+/** People-view-only sub-mode: the directory table or the co-author network. */
+export type PeopleMode = "directory" | "network";
 
 /** localStorage key the view selection is persisted to. */
 export const ATLAS_VIEW_STORAGE_KEY = "atlas:view";
+/** localStorage key the last catalog layout (grid|list) is persisted to,
+ *  independent of ATLAS_VIEW_STORAGE_KEY — so the "Catalog" tab can restore
+ *  the last grid/list choice even after visiting People/Papers/Graph/Narratives. */
+const ATLAS_CATALOG_LAYOUT_KEY = "atlas:catalogLayout";
 
-const VIEW_VALUES: readonly AlgorithmsView[] = ["grid", "list", "graph", "narratives"];
+const VIEW_VALUES: readonly AlgorithmsView[] = ["grid", "list", "graph", "narratives", "people", "papers"];
 
 function isAlgorithmsView(value: string | null): value is AlgorithmsView {
     return value !== null && (VIEW_VALUES as readonly string[]).includes(value);
+}
+
+function isCatalogLayout(value: AlgorithmsView): value is "grid" | "list" {
+    return value === "grid" || value === "list";
 }
 
 export interface AlgorithmsFilters {
@@ -27,6 +37,12 @@ export interface AlgorithmsFilters {
     view: AlgorithmsView;
     sort: AlgorithmsSort;
     problem: string;      // "all" | Task slug
+    /** People-view-only: directory table vs. network graph. Ignored by every
+     *  other view and dropped from the URL when `view` isn't "people". */
+    mode: PeopleMode;
+    /** People-view-only: the focused author id in network mode. Same
+     *  drop-when-not-"people" rule as `mode`. */
+    person: string | undefined;
 }
 
 export interface FacetCounts {
@@ -44,6 +60,8 @@ export const DEFAULTS: AlgorithmsFilters = {
     view:       "grid",
     sort:       "recent",
     problem:    "all",
+    mode:       "directory",
+    person:     undefined,
 };
 
 // ── Pure filter helpers ──────────────────────────────────────────────────────
@@ -282,7 +300,12 @@ export function parseFiltersFromParams(params: URLSearchParams): AlgorithmsFilte
         rawProblem !== null && (taskOrder as readonly string[]).includes(rawProblem)
             ? rawProblem
             : DEFAULTS.problem;
-    return { kind, tags, query, view, sort, problem };
+    // `mode`/`person` are People-view-only, but harmless to parse regardless
+    // of `view` — buildParams is what enforces "dropped when not People".
+    const rawMode = params.get("mode");
+    const mode: PeopleMode = rawMode === "network" ? "network" : DEFAULTS.mode;
+    const person = params.get("person") ?? undefined;
+    return { kind, tags, query, view, sort, problem, mode, person };
 }
 
 export function readStoredView(): AlgorithmsView | null {
@@ -299,14 +322,31 @@ export function writeStoredView(view: AlgorithmsView): void {
     if (typeof window === "undefined") return;
     try {
         window.localStorage.setItem(ATLAS_VIEW_STORAGE_KEY, view);
+        // Also remember grid/list specifically, so the Catalog tab can restore
+        // it later even if the overall last view ends up being People/Papers/etc.
+        if (isCatalogLayout(view)) {
+            window.localStorage.setItem(ATLAS_CATALOG_LAYOUT_KEY, view);
+        }
     } catch {
         // quota / private mode — silently ignore
     }
 }
 
+/** The catalog layout (grid|list) to return to when the "Catalog" tab is
+ *  selected — the last one used, or "grid" if none was ever recorded. */
+export function readStoredCatalogLayout(): "grid" | "list" {
+    if (typeof window === "undefined") return "grid";
+    try {
+        const raw = window.localStorage.getItem(ATLAS_CATALOG_LAYOUT_KEY);
+        return raw === "grid" || raw === "list" ? raw : "grid";
+    } catch {
+        return "grid";
+    }
+}
+
 /** Params this module owns; everything else in the URL (e.g. `focus`) is
  *  carried through untouched by `buildParams`. */
-const FILTER_PARAM_KEYS = ["kind", "tags", "q", "view", "sort", "problem"] as const;
+const FILTER_PARAM_KEYS = ["kind", "tags", "q", "view", "sort", "problem", "mode", "person"] as const;
 
 export function buildParams(filters: AlgorithmsFilters, current?: URLSearchParams): URLSearchParams {
     const p = new URLSearchParams(current);
@@ -317,5 +357,11 @@ export function buildParams(filters: AlgorithmsFilters, current?: URLSearchParam
     if (filters.view    !== DEFAULTS.view)        p.set("view", filters.view);
     if (filters.sort    !== DEFAULTS.sort)        p.set("sort", filters.sort);
     if (filters.problem !== DEFAULTS.problem)    p.set("problem", filters.problem);
+    // `mode`/`person` are People-only — always dropped when leaving that view,
+    // regardless of what the caller passed in `filters`.
+    if (filters.view === "people") {
+        if (filters.mode   !== DEFAULTS.mode) p.set("mode", filters.mode);
+        if (filters.person)                   p.set("person", filters.person);
+    }
     return p;
 }

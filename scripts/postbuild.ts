@@ -265,14 +265,12 @@ async function main(): Promise<void> {
     }
 
     // Author register — unlisted (not in the navbar) but fully prerendered so
-    // every byline link resolves to static HTML and is crawlable.
+    // every byline link resolves to static HTML and is crawlable. The index
+    // itself (`/authors`) is retired in favor of the People Atlas view
+    // (`/atlas?view=people`) — see the `/authors` redirect in App.tsx /
+    // entry-server.tsx and public/_redirects — but every `/authors/<id>`
+    // profile page keeps being prerendered.
     const authorIds = Object.keys(authors.authors).sort();
-    writePage(template, "/authors", "authors", {
-        title: "Authors",
-        description: "Every researcher credited on a paper cited by the VitaVision computer vision atlas.",
-        url: "/authors",
-    }, staticContent, papers, authors, scholarly);
-    count++;
 
     for (const authorId of authorIds) {
         const author = authors.authors[authorId];
@@ -316,7 +314,7 @@ async function main(): Promise<void> {
         ...modelPages.map((m) => `/atlas/${m.slug}`),
         ...conceptPages.map((c) => `/atlas/${c.slug}`),
         ...publishedNarratives.map((n) => `/atlas/narratives/${n.slug}`),
-        "/authors", ...authorIds.map((a) => `/authors/${a}`),
+        ...authorIds.map((a) => `/authors/${a}`),
         ...paperIds.map((p) => `/papers/${p}`),
         "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
         "/tools/target-generator",

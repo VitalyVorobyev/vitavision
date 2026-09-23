@@ -16,6 +16,7 @@ sources:
     - oquab2023-dinov2
     - wang2025-vggt
     - wang2023-dust3r
+    - ranftl2021-dpt
 implementations:
   - role: official
     repo: https://github.com/ByteDance-Seed/Depth-Anything-3
@@ -47,7 +48,7 @@ a pixel-level element-wise combination of the depth and ray maps. Camera intrins
 
 *Camera conditioning.* A per-view token $c_i = E_c(f_i, q_i, t_i)$ is produced by an MLP when poses are available; when they are not, a single shared learnable token $c_l$ is used instead. The token is prepended to the patch sequence and participates in all attention operations. Pose conditioning is applied with probability 0.2 during training. (§3.2, §3.4.)
 
-*Dual-DPT head.* Shared DPT reassembly modules feed into two separate sets of fusion layers, one branch predicting depth $\hat{D}$ and the other predicting ray map $\hat{M}$. The shared low-level reassembly is essential: ablation shows removing the dual-DPT head collapses HiRoom AUC3 from 39.2 to 5.59, an 86 % drop in pose accuracy (Table 7, row d, §3.2).
+*Dual-DPT head.* Shared [DPT](/atlas/dpt) reassembly modules feed into two separate sets of fusion layers, one branch predicting depth $\hat{D}$ and the other predicting ray map $\hat{M}$. The shared low-level reassembly is essential: ablation shows removing the dual-DPT head collapses HiRoom AUC3 from 39.2 to 5.59, an 86 % drop in pose accuracy (Table 7, row d, §3.2).
 
 **Training.** A teacher-student distillation pipeline. The teacher is a DA2-architecture monocular depth model trained exclusively on synthetic data; it predicts exponential scale-shift-invariant depth rather than the disparity used by DA2, improving discrimination at small distances. The student (DA3) is supervised on real-world multi-view data using teacher pseudo-labels RANSAC-aligned to sparse metric measurements via
 

@@ -31,6 +31,12 @@ relations:
     target: resnet
     confidence: high
     caution: "ViT vs ResNet (BiT) is the headline classification comparison in the paper. Both coexist as production backbones — ResNet's conv inductive bias dominates in small-data regimes; ViT scales better with large pretraining (JFT-300M)."
+  - type: feeds_into
+    target: dpt
+    confidence: high
+  - type: feeds_into
+    target: segformer
+    confidence: high
 sources:
   primary: dosovitskiy2020-vit
   references:

@@ -29,6 +29,12 @@ nodes:
     role: milestone
     takeaway: MiDaS introduces a scale-and-shift-invariant loss that lets datasets with incompatible depth formats, metric, scale-only, stereo, train together in one loop, enabling zero-shot transfer across domains.
     remark: Its Pareto multi-dataset mixing recipe becomes the training template every later model in this story reuses; the architecture itself, a 2019 CNN encoder-decoder, is soon left behind.
+  - id: dpt
+    page: dpt
+    area: features
+    role: bridge
+    takeaway: "Swaps MiDaS's convolutional encoder for a Vision Transformer and keeps the MiDaS loss and dataset mixing unchanged; a Reassemble step turns transformer tokens back into image-like maps at four resolutions for a convolutional decoder."
+    remark: "The architecture change is real, but what outlives it is the decoder: every Depth Anything version and VGGT's dense heads reuse the DPT head, while the encoder underneath keeps changing."
   - id: dinov2
     page: dinov2
     area: features
@@ -70,6 +76,14 @@ edges:
     to: depth-anything
     type: evolution
     label: scales the loss
+  - from: midas
+    to: dpt
+    type: evolution
+    label: swaps the encoder
+  - from: dpt
+    to: depth-anything
+    type: evolution
+    label: supplies decoder
   - from: dinov2
     to: depth-anything
     type: evolution
@@ -102,6 +116,9 @@ lenses:
       midas:
         - 1.6
         - 1
+      dpt:
+        - 2.6
+        - 2
       dinov2:
         - 4
         - 2
@@ -129,8 +146,9 @@ steps:
       - midas
   - title: Borrowed features
     anchor: borrowed-features
-    claim: DINOv2 was built for image recognition, not depth, yet its frozen features turn out to encode enough scene geometry that every depth and multi-view model in this story later borrows it wholesale instead of training its own encoder.
+    claim: DPT swaps MiDaS's encoder for a Vision Transformer under an unchanged loss, and what survives is its decoder. DINOv2, built for recognition rather than depth, then supplies frozen features that every later depth and multi-view model in this story borrows instead of training its own encoder.
     focus:
+      - dpt
       - dinov2
   - title: Data breadth as training signal
     anchor: data-breadth-as-signal
@@ -160,6 +178,8 @@ A single image fixes scene geometry only up to degrees of freedom no photometric
 What the loss does not touch is the network carrying it: an encoder pretrained on web images for classification, not depth, and simply the best one available in 2019. Scaling the loss further is one problem; scaling the features underneath it is another, and that is where the story turns next.
 
 ## Borrowed Features
+
+[DPT](/atlas/dpt) changes the encoder first and nothing else. It keeps the MiDaS protocol, the scale-and-shift-invariant trimmed loss and the dataset mixing, and replaces the convolutional encoder with a Vision Transformer whose tokens a Reassemble step turns back into image-like feature maps at four resolutions for a convolutional decoder. Under that identical training signal, zero-shot transfer improves on MiDaS by more than 23 percent for DPT-Hybrid and 28 percent for DPT-Large. The encoder is still pretrained for image classification; what later work keeps from DPT is the decoder, not the backbone.
 
 [DINOv2](/atlas/dinov2) was built to solve a different problem than depth: general-purpose visual representation. It trains a Vision Transformer through self-supervised distillation on a corpus assembled automatically, with no human annotation anywhere in the pipeline, selecting 142 million images for diversity and domain coverage. The resulting backbone is used frozen at evaluation time, with no finetuning and no task-specific pretraining. Its features match or exceed text-supervised models on classification and retrieval, and decisively outperform them on dense tasks such as semantic segmentation and monocular depth.
 

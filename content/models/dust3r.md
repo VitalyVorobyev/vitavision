@@ -11,6 +11,8 @@ params: "ViT-Large encoder + ViT-Base decoders (CroCo-pretrained)"
 prerequisites: [epipolar-geometry, pose-estimation, bundle-adjustment, pinhole-camera-model, feed-forward-3d-reconstruction]
 sources:
   primary: wang2023-dust3r
+  references:
+    - ranftl2021-dpt
 relations:
   - type: extended_by
     target: mast3r
@@ -51,7 +53,7 @@ $$
 
 Each block applies self-attention within one view followed by cross-attention to the other view's tokens, giving every position in one image full context from the other — the mechanism by which the network discovers correspondences without any explicit matching step.
 
-3. *DPT-style regression heads.* One Dense Prediction Transformer head per view converts the final decoder tokens to a full-resolution pointmap $X^{v,1}$ and a scalar confidence map parameterised as $C^{v,1} = 1 + \exp(\hat{C}^{v,1})$, ensuring strict positivity (§3.1).
+3. *[DPT](/atlas/dpt)-style regression heads.* One Dense Prediction Transformer head per view converts the final decoder tokens to a full-resolution pointmap $X^{v,1}$ and a scalar confidence map parameterised as $C^{v,1} = 1 + \exp(\hat{C}^{v,1})$, ensuring strict positivity (§3.1).
 
 4. *Pointmap coordinate convention.* The pointmap from camera $n$ expressed in camera $m$'s frame is defined as (Eq. 1, §3):
 

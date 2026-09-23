@@ -37,6 +37,9 @@ relations:
     target: efficientad
     confidence: medium
     caution: "EfficientAD distils its patch description network from a WideResNet-101 teacher; the wide variant is not this page's subject, hence medium confidence."
+  - type: feeds_into
+    target: fpn
+    confidence: high
 sources:
   primary: he2016-resnet
   references:

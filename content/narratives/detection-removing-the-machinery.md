@@ -47,6 +47,12 @@ nodes:
     role: milestone
     takeaway: "Deletes the exhaustive scan itself: a small trained network proposes a few hundred candidate boxes from shared convolutional features, and only those get classified. The sliding window becomes a learned first stage instead of a fixed grid over the whole image."
     remark: The proposal network still relies on nine hand-chosen anchor-box shapes at every position, so a human-designed prior about typical object sizes and aspect ratios remains baked into the architecture.
+  - id: fpn
+    page: fpn
+    area: proposals-regression
+    role: milestone
+    takeaway: "Deletes the image pyramid: a top-down pathway with lateral connections builds strong features at every scale from one forward pass of the backbone, and the unchanged proposal and detection heads run on each level."
+    remark: "The anchors survive, only redistributed: one anchor scale per pyramid level, fifteen anchors across the pyramid, still chosen by hand."
   - id: yolo-v1
     page: yolo-v1
     area: proposals-regression
@@ -92,6 +98,14 @@ edges:
     to: faster-rcnn
     type: evolution
   - from: faster-rcnn
+    to: fpn
+    type: evolution
+    label: pyramid moves inside
+  - from: felzenszwalb-deformable-parts
+    to: fpn
+    type: contrast
+    label: image vs feature pyramid
+  - from: faster-rcnn
     to: yolo-v1
     type: contrast
     label: drops proposals
@@ -131,14 +145,17 @@ lenses:
       yolo-v1:
         - 9
         - 1
+      fpn:
+        - 10.4
+        - 1
       detr:
-        - 10.5
+        - 11.3
         - 2
       rf-detr:
-        - 12
+        - 12.6
         - 2
       q-nms-training:
-        - 13.5
+        - 13.9
         - 2
 steps:
   - title: A table that makes exhaustive search cheap
@@ -155,9 +172,10 @@ steps:
       - felzenszwalb-deformable-parts
   - title: The window learns to look fewer places
     anchor: window-learns-fewer-places
-    claim: Faster R-CNN drops the cost of generating candidate regions from about 1.5 seconds of hand-tuned Selective Search to roughly 10 milliseconds of shared-convolution network inference, but the nine anchor-box shapes it proposes from are still a human-chosen grid of sizes and aspect ratios.
+    claim: Faster R-CNN cuts candidate generation from about 1.5 seconds of hand-tuned Selective Search to a 10 ms learned pass, and FPN then moves the image pyramid inside the network. Both still propose from a human-chosen grid of anchor sizes and aspect ratios.
     focus:
       - faster-rcnn
+      - fpn
   - title: One pass, then no proposals at all
     anchor: one-pass-then-no-proposals
     claim: YOLO regresses boxes and classes from a single 7x7 grid in one forward pass, deleting the propose-then-classify split entirely; DETR then deletes the grid's anchors and its non-maximum-suppression clean-up too, training a fixed set of one hundred queries so each claims at most one object.
@@ -188,7 +206,9 @@ What AdaBoost trains is which rectangle-intensity test to run and in what order,
 
 [Faster R-CNN](/atlas/faster-rcnn) removes the exhaustive scan itself. Generating candidate object locations had meant roughly 1.5 s of hand-tuned Selective Search computation on a CPU; Faster R-CNN's Region Proposal Network shares convolutional features with the detection head and turns candidate generation into a 10 ms learned forward pass on the same GPU-resident features. This is the first removal of the search, not merely of the feature computed inside each window.
 
-What the network proposes from is still a fixed, hand-chosen prior: $k = 9$ anchors are placed at every spatial location, three scales crossed with three aspect ratios, and only boxes near one of those nine templates get refined into a detection. The pipeline also keeps a two-stage split: one network proposes, a second classifies and refines. Both the anchor grid and the propose-then-classify division are the next machinery to go.
+The image pyramid goes next, still inside the two-stage family. [Feature Pyramid Networks](/atlas/fpn) build the multi-scale representation from the network's own feedforward hierarchy: a top-down pathway upsamples the coarsest map and adds each finer backbone stage through a $1\times1$ lateral connection, so every level from stride 4 to stride 32 carries strong semantics without the input ever being rescaled. The region-proposal and detection heads are reattached unchanged to each level, and proposal recall rises from 48.3 to 56.3 over the single-scale baseline. The pyramid that Viola-Jones, HOG and the deformable parts model enumerated over the image is now computed once, inside the network.
+
+What either network proposes from is still a fixed, hand-chosen prior — FPN only redistributes it, one anchor scale per level: $k = 9$ anchors are placed at every spatial location, three scales crossed with three aspect ratios, and only boxes near one of those nine templates get refined into a detection. The pipeline also keeps a two-stage split: one network proposes, a second classifies and refines. Both the anchor grid and the propose-then-classify division are the next machinery to go.
 
 ## One Pass, Then No Proposals
 

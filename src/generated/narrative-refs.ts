@@ -76,6 +76,12 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
       "title": "Depth Becomes General Geometry"
     }
   ],
+  "dpt": [
+    {
+      "slug": "depth-becomes-general-geometry",
+      "title": "Depth Becomes General Geometry"
+    }
+  ],
   "dinov2": [
     {
       "slug": "depth-becomes-general-geometry",
@@ -163,6 +169,12 @@ export const narrativeRefs: Record<string, { slug: string; title: string }[]> = 
     }
   ],
   "faster-rcnn": [
+    {
+      "slug": "detection-removing-the-machinery",
+      "title": "Detection, Removing the Machinery"
+    }
+  ],
+  "fpn": [
     {
       "slug": "detection-removing-the-machinery",
       "title": "Detection, Removing the Machinery"

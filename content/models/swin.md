@@ -21,6 +21,10 @@ relations:
     target: resnet
     confidence: high
     caution: "Benchmarked as interchangeable backbones inside identical detection/segmentation frameworks at matched FLOPs tiers — a backbone-level practitioner choice across paradigms."
+  - type: compared_with
+    target: segformer
+    confidence: medium
+    caution: "Swin is a general backbone (paired with a UperNet head for segmentation); SegFormer is a full segmenter with its own hierarchical encoder."
 implementations:
   - role: official
     repo: https://github.com/microsoft/Swin-Transformer
@@ -125,6 +129,10 @@ Official PyTorch release from Microsoft; ships training code, configs, and pretr
 - Absolute position embedding added on top of the relative bias flips sign by task — "+0.4%" top-1 but "-0.2 box/mask AP on COCO and -0.6 mIoU on ADE20K". Position encoding choices cannot be tuned on classification alone.
 - All results assume ImageNet-1K or ImageNet-22K pretraining; the low-data regime is not evaluated.
 - The windowing and patch-merging machinery adds no benefit when only image-level classification at fixed resolution is needed and a single-scale backbone suffices.
+
+## When to choose Swin over SegFormer
+
+Swin is a general-purpose backbone: the same pretrained hierarchy is reused across ImageNet-1K/22K classification, COCO detection and instance segmentation, and ADE20K semantic segmentation, but semantic segmentation still requires pairing it with a separately-designed decoder — the paper reports its ADE20K headline with UperNet, reaching 53.5 mIoU on val with Swin-L (ImageNet-22K pretrained). [SegFormer](/atlas/segformer) is a segmentation-only design: its MiT encoder ships with a purpose-built lightweight all-MLP decoder, reaching 51.8 mIoU (multi-scale) on ADE20K val with SegFormer-B5 at 84.7M total encoder+decoder parameters. Choose Swin when one backbone must serve classification and detection as well as segmentation from a single set of pretrained weights, or when the absolute mIoU ceiling matters more than parameter/decoder overhead. Choose SegFormer when the task is semantic segmentation only and a compact, self-contained encoder-decoder pair — without sourcing and tuning a separate dense-prediction head such as UperNet — is preferred.
 
 # References
 

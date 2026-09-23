@@ -21,6 +21,9 @@ relations:
   - type: extended_by
     target: mask-rcnn
     confidence: high
+  - type: feeds_into
+    target: fpn
+    confidence: high
 sources:
   primary: ren2015-faster
   references:

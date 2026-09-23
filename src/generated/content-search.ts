@@ -3,7 +3,7 @@
 export interface SearchRecord {
     slug: string;
     path: string;
-    type: "algorithm" | "model" | "concept" | "narrative" | "author";
+    type: "algorithm" | "model" | "concept" | "narrative" | "author" | "paper";
     title: string;
     summary: string;
     tags: string[];
@@ -7881,5 +7881,2887 @@ export const searchRecords: SearchRecord[] = [
     "summary": "1 paper",
     "tags": [],
     "headings": []
+  },
+  {
+    "slug": "paper:bennett2013-chess",
+    "path": "/papers/bennett2013-chess",
+    "type": "paper",
+    "title": "ChESS — Quick and Robust Detection of Chess-board Features",
+    "summary": "arXiv 2013",
+    "tags": [
+      "chess"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Bennett",
+      "J. Lasenby"
+    ],
+    "venue": "arXiv"
+  },
+  {
+    "slug": "paper:rosten2006-fast",
+    "path": "/papers/rosten2006-fast",
+    "type": "paper",
+    "title": "Machine Learning for High-Speed Corner Detection",
+    "summary": "ECCV 2006",
+    "tags": [
+      "fast"
+    ],
+    "headings": [],
+    "authors": [
+      "E. Rosten",
+      "T. Drummond"
+    ],
+    "venue": "ECCV"
+  },
+  {
+    "slug": "paper:harris1988-corner",
+    "path": "/papers/harris1988-corner",
+    "type": "paper",
+    "title": "A Combined Corner and Edge Detector",
+    "summary": "Alvey Vision Conference 1988",
+    "tags": [
+      "corner"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Harris",
+      "M. J. Stephens"
+    ],
+    "venue": "Alvey Vision Conference"
+  },
+  {
+    "slug": "paper:shi-tomasi1994-features",
+    "path": "/papers/shi-tomasi1994-features",
+    "type": "paper",
+    "title": "Good Features to Track",
+    "summary": "IEEE CVPR 1994",
+    "tags": [
+      "features"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Shi",
+      "C. Tomasi"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "paper:shu2009-topological",
+    "path": "/papers/shu2009-topological",
+    "type": "paper",
+    "title": "A topological approach to finding grids in calibration patterns",
+    "summary": "Machine Vision and Applications 2009",
+    "tags": [
+      "topological"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Shu",
+      "A. Brunton",
+      "M. A. Fiala"
+    ],
+    "venue": "Machine Vision and Applications"
+  },
+  {
+    "slug": "paper:stelldinger2024-puzzleboard",
+    "path": "/papers/stelldinger2024-puzzleboard",
+    "type": "paper",
+    "title": "PuzzleBoard: A New Camera Calibration Pattern with Position Encoding",
+    "summary": "arXiv 2024",
+    "tags": [
+      "puzzleboard"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Stelldinger",
+      "N. Schönherr",
+      "J. Biermann"
+    ],
+    "venue": "arXiv"
+  },
+  {
+    "slug": "paper:laureano2013-topological",
+    "path": "/papers/laureano2013-topological",
+    "type": "paper",
+    "title": "Topological Detection of Chessboard Pattern for Camera Calibration",
+    "summary": "IPCV (WorldComp) 2013",
+    "tags": [
+      "topological"
+    ],
+    "headings": [],
+    "authors": [
+      "G. T. Laureano",
+      "M. S. V. de Paiva",
+      "A. S. da Silva"
+    ],
+    "venue": "IPCV (WorldComp)"
+  },
+  {
+    "slug": "paper:fuersattel2016-ocpad",
+    "path": "/papers/fuersattel2016-ocpad",
+    "type": "paper",
+    "title": "OCPAD — Occluded Checkerboard Pattern Detector",
+    "summary": "IEEE WACV 2016",
+    "tags": [
+      "ocpad"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Fürsattel",
+      "S. Dotenco",
+      "S. Placht",
+      "M. Balda",
+      "A. Maier",
+      "C. Riess"
+    ],
+    "venue": "IEEE WACV"
+  },
+  {
+    "slug": "paper:placht2014-rochade",
+    "path": "/papers/placht2014-rochade",
+    "type": "paper",
+    "title": "ROCHADE: Robust Checkerboard Advanced Detection for Camera Calibration",
+    "summary": "ECCV 2014",
+    "tags": [
+      "rochade"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Placht",
+      "P. Fürsattel",
+      "E. A. Mengue",
+      "H. Hofmann",
+      "C. Schaller",
+      "M. Balda",
+      "E. Angelopoulou"
+    ],
+    "venue": "ECCV"
+  },
+  {
+    "slug": "paper:cordella2004-vf2",
+    "path": "/papers/cordella2004-vf2",
+    "type": "paper",
+    "title": "A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs",
+    "summary": "IEEE TPAMI 2004",
+    "tags": [
+      "vf2"
+    ],
+    "headings": [],
+    "authors": [
+      "L. P. Cordella",
+      "P. Foggia",
+      "C. Sansone",
+      "M. Vento"
+    ],
+    "venue": "IEEE TPAMI"
+  },
+  {
+    "slug": "paper:lucchese2003-saddle",
+    "path": "/papers/lucchese2003-saddle",
+    "type": "paper",
+    "title": "Using saddle points for subpixel feature detection in camera calibration targets",
+    "summary": "Asia Pacific Conference on Circuits and Systems 2003",
+    "tags": [
+      "saddle"
+    ],
+    "headings": [],
+    "authors": [
+      "L. Lucchese",
+      "S. Mitra"
+    ],
+    "venue": "Asia Pacific Conference on Circuits and Systems"
+  },
+  {
+    "slug": "paper:chen2005-xcorner",
+    "path": "/papers/chen2005-xcorner",
+    "type": "paper",
+    "title": "A New Sub-Pixel Detector for X-Corners in Camera Calibration Targets",
+    "summary": "WSCG Short Papers 2005",
+    "tags": [
+      "xcorner"
+    ],
+    "headings": [],
+    "authors": [
+      "D. Chen",
+      "G. Zhang"
+    ],
+    "venue": "WSCG Short Papers"
+  },
+  {
+    "slug": "paper:rufli2008-blurred",
+    "path": "/papers/rufli2008-blurred",
+    "type": "paper",
+    "title": "Automatic detection of checkerboards on blurred and distorted images",
+    "summary": "IEEE/RSJ IROS 2008",
+    "tags": [
+      "blurred"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Rufli",
+      "D. Scaramuzza",
+      "R. Siegwart"
+    ],
+    "venue": "IEEE/RSJ IROS"
+  },
+  {
+    "slug": "paper:niblack1992-skeleton",
+    "path": "/papers/niblack1992-skeleton",
+    "type": "paper",
+    "title": "Generating skeletons and centerlines from the distance transform",
+    "summary": "CVGIP Graphical Models and Image Processing 1992",
+    "tags": [
+      "skeleton"
+    ],
+    "headings": [],
+    "authors": [
+      "C. W. Niblack",
+      "P. B. Gibbons",
+      "D. W. Capson"
+    ],
+    "venue": "CVGIP Graphical Models and Image Processing"
+  },
+  {
+    "slug": "paper:abeles2021-pyramidal",
+    "path": "/papers/abeles2021-pyramidal",
+    "type": "paper",
+    "title": "Pyramidal Blur Aware X-Corner Chessboard Detector",
+    "summary": "arXiv (Cornell University) 2021",
+    "tags": [
+      "pyramidal"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Abeles"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:chen2023-ccdn",
+    "path": "/papers/chen2023-ccdn",
+    "type": "paper",
+    "title": "CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration",
+    "summary": "arXiv (Cornell University) 2023",
+    "tags": [
+      "ccdn"
+    ],
+    "headings": [],
+    "authors": [
+      "B. Chen",
+      "C. Xiong",
+      "Q. Zhang"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:donne2016-mate",
+    "path": "/papers/donne2016-mate",
+    "type": "paper",
+    "title": "MATE: Machine Learning for Adaptive Calibration Template Detection",
+    "summary": "Sensors 2016",
+    "tags": [
+      "mate"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Donné",
+      "J. De Vylder",
+      "B. Goossens",
+      "W. Philips"
+    ],
+    "venue": "Sensors"
+  },
+  {
+    "slug": "paper:potje2024-xfeat",
+    "path": "/papers/potje2024-xfeat",
+    "type": "paper",
+    "title": "XFeat: Accelerated Features for Lightweight Image Matching",
+    "summary": "CVPR 2024",
+    "tags": [
+      "xfeat"
+    ],
+    "headings": [],
+    "authors": [
+      "G. Potje",
+      "F. Cadar",
+      "A. Araujo",
+      "R. Martins",
+      "E. R. Nascimento"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:detone2018-superpoint",
+    "path": "/papers/detone2018-superpoint",
+    "type": "paper",
+    "title": "SuperPoint: Self-Supervised Interest Point Detection and Description",
+    "summary": "CVPR Workshop (Deep Learning for Visual SLAM) 2018",
+    "tags": [
+      "superpoint"
+    ],
+    "headings": [],
+    "authors": [
+      "D. DeTone",
+      "T. Malisiewicz",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR Workshop (Deep Learning for Visual SLAM)"
+  },
+  {
+    "slug": "paper:zhang2000-flexible",
+    "path": "/papers/zhang2000-flexible",
+    "type": "paper",
+    "title": "A Flexible New Technique for Camera Calibration",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 2000",
+    "tags": [
+      "flexible"
+    ],
+    "headings": [],
+    "authors": [
+      "Z. Zhang"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:tsai1987-versatile",
+    "path": "/papers/tsai1987-versatile",
+    "type": "paper",
+    "title": "A versatile camera calibration technique for high-accuracy 3D machine vision metrology using off-the-shelf TV cameras and lenses",
+    "summary": "IEEE Journal on Robotics and Automation 1987",
+    "tags": [
+      "versatile"
+    ],
+    "headings": [],
+    "authors": [
+      "R. Y. Tsai"
+    ],
+    "venue": "IEEE Journal on Robotics and Automation"
+  },
+  {
+    "slug": "paper:weng1992-camera",
+    "path": "/papers/weng1992-camera",
+    "type": "paper",
+    "title": "Camera calibration with distortion models and accuracy evaluation",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 1992",
+    "tags": [
+      "camera"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Weng",
+      "P. Cohen",
+      "M. Herniou"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:sturm2003-plane-based",
+    "path": "/papers/sturm2003-plane-based",
+    "type": "paper",
+    "title": "On plane-based camera calibration: A general algorithm, singularities, applications",
+    "summary": "IEEE CVPR 1999",
+    "tags": [
+      "plane",
+      "based"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Sturm",
+      "S. J. Maybank"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "paper:tsai1989-handeye",
+    "path": "/papers/tsai1989-handeye",
+    "type": "paper",
+    "title": "A new technique for fully autonomous and efficient 3D robotics hand/eye calibration",
+    "summary": "IEEE Transactions on Robotics and Automation 1989",
+    "tags": [
+      "handeye"
+    ],
+    "headings": [],
+    "authors": [
+      "R. Y. Tsai",
+      "R. K. Lenz"
+    ],
+    "venue": "IEEE Transactions on Robotics and Automation"
+  },
+  {
+    "slug": "paper:shiu1989-calibration",
+    "path": "/papers/shiu1989-calibration",
+    "type": "paper",
+    "title": "Calibration of wrist-mounted robotic sensors by solving homogeneous transform equations of the form AX=XB",
+    "summary": "IEEE Transactions on Robotics and Automation 1989",
+    "tags": [
+      "calibration"
+    ],
+    "headings": [],
+    "authors": [
+      "Y. C. Shiu",
+      "S. Ahmad"
+    ],
+    "venue": "IEEE Transactions on Robotics and Automation"
+  },
+  {
+    "slug": "paper:daniilidis1999-hand-eye",
+    "path": "/papers/daniilidis1999-hand-eye",
+    "type": "paper",
+    "title": "Hand-Eye Calibration Using Dual Quaternions",
+    "summary": "The International Journal of Robotics Research 1999",
+    "tags": [
+      "hand",
+      "eye"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Daniilidis"
+    ],
+    "venue": "The International Journal of Robotics Research"
+  },
+  {
+    "slug": "paper:kumar2014-grac",
+    "path": "/papers/kumar2014-grac",
+    "type": "paper",
+    "title": "Generalized Radial Alignment Constraint for Camera Calibration",
+    "summary": "International Conference on Pattern Recognition (ICPR) 2014",
+    "tags": [
+      "grac"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Kumar",
+      "N. Ahuja"
+    ],
+    "venue": "International Conference on Pattern Recognition (ICPR)"
+  },
+  {
+    "slug": "paper:duda2018-accurate",
+    "path": "/papers/duda2018-accurate",
+    "type": "paper",
+    "title": "Accurate Detection and Localization of Checkerboard Corners for Calibration",
+    "summary": "British Machine Vision Conference (BMVC) 2018",
+    "tags": [
+      "accurate"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Duda",
+      "U. Frese"
+    ],
+    "venue": "British Machine Vision Conference (BMVC)"
+  },
+  {
+    "slug": "paper:sinzinger2007-model-based",
+    "path": "/papers/sinzinger2007-model-based",
+    "type": "paper",
+    "title": "A model-based approach to junction detection using radial energy",
+    "summary": "Pattern Recognition 2008",
+    "tags": [
+      "model",
+      "based"
+    ],
+    "headings": [],
+    "authors": [
+      "E. D. Sinzinger"
+    ],
+    "venue": "Pattern Recognition"
+  },
+  {
+    "slug": "paper:zaragoza2013-apap",
+    "path": "/papers/zaragoza2013-apap",
+    "type": "paper",
+    "title": "As-Projective-As-Possible Image Stitching with Moving DLT",
+    "summary": "IEEE CVPR 2013",
+    "tags": [
+      "apap"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Zaragoza",
+      "T.-J. Chin",
+      "M. S. Brown",
+      "D. Suter"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "paper:hartley1997-eight-point",
+    "path": "/papers/hartley1997-eight-point",
+    "type": "paper",
+    "title": "In Defense of the Eight-Point Algorithm",
+    "summary": "IEEE TPAMI 1997",
+    "tags": [
+      "eight",
+      "point"
+    ],
+    "headings": [],
+    "authors": [
+      "R. I. Hartley"
+    ],
+    "venue": "IEEE TPAMI"
+  },
+  {
+    "slug": "paper:schaefer2006-mls",
+    "path": "/papers/schaefer2006-mls",
+    "type": "paper",
+    "title": "Image Deformation Using Moving Least Squares",
+    "summary": "ACM SIGGRAPH 2006",
+    "tags": [
+      "mls"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Schaefer",
+      "T. McPhail",
+      "J. Warren"
+    ],
+    "venue": "ACM SIGGRAPH"
+  },
+  {
+    "slug": "paper:gao2011-dual-homography",
+    "path": "/papers/gao2011-dual-homography",
+    "type": "paper",
+    "title": "Constructing Image Panoramas Using Dual-Homography Warping",
+    "summary": "IEEE CVPR 2011",
+    "tags": [
+      "dual",
+      "homography"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Gao",
+      "S. J. Kim",
+      "M. S. Brown"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "paper:lin2011-svastitching",
+    "path": "/papers/lin2011-svastitching",
+    "type": "paper",
+    "title": "Smoothly Varying Affine Stitching",
+    "summary": "IEEE CVPR 2011",
+    "tags": [
+      "svastitching"
+    ],
+    "headings": [],
+    "authors": [
+      "W.-Y. Lin",
+      "S. Liu",
+      "Y. Matsushita",
+      "T.-T. Ng",
+      "L.-F. Cheong"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "paper:igarashi2005-arap",
+    "path": "/papers/igarashi2005-arap",
+    "type": "paper",
+    "title": "As-Rigid-As-Possible Shape Manipulation",
+    "summary": "ACM SIGGRAPH 2005",
+    "tags": [
+      "arap"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Igarashi",
+      "T. Moscovich",
+      "J. F. Hughes"
+    ],
+    "venue": "ACM SIGGRAPH"
+  },
+  {
+    "slug": "paper:geiger2012-automatic",
+    "path": "/papers/geiger2012-automatic",
+    "type": "paper",
+    "title": "Automatic camera and range sensor calibration using a single shot",
+    "summary": "IEEE ICRA 2012",
+    "tags": [
+      "automatic"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Geiger",
+      "F. Moosmann",
+      "O. Car",
+      "B. Schuster"
+    ],
+    "venue": "IEEE ICRA"
+  },
+  {
+    "slug": "paper:rasmussen2006-gpml",
+    "path": "/papers/rasmussen2006-gpml",
+    "type": "paper",
+    "title": "Gaussian Processes for Machine Learning",
+    "summary": "MIT Press 2006",
+    "tags": [
+      "gpml"
+    ],
+    "headings": [],
+    "authors": [
+      "C. E. Rasmussen",
+      "C. K. I. Williams"
+    ],
+    "venue": "MIT Press"
+  },
+  {
+    "slug": "paper:hillen2023-enhanced",
+    "path": "/papers/hillen2023-enhanced",
+    "type": "paper",
+    "title": "Enhanced Checkerboard Detection Using Gaussian Processes",
+    "summary": "Mathematics (MDPI) 2023",
+    "tags": [
+      "enhanced"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Hillen",
+      "I. De Boi",
+      "T. De Kerf",
+      "S. Sels",
+      "E. Cardenas De La Hoz",
+      "J. Gladines",
+      "G. Steenackers",
+      "R. Penne",
+      "S. Vanlanduit"
+    ],
+    "venue": "Mathematics (MDPI)"
+  },
+  {
+    "slug": "paper:zhang2022-learning-based",
+    "path": "/papers/zhang2022-learning-based",
+    "type": "paper",
+    "title": "Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration",
+    "summary": "IEEE Robotics and Automation Letters 2022",
+    "tags": [
+      "learning",
+      "based"
+    ],
+    "headings": [],
+    "authors": [
+      "Y. Zhang",
+      "X. Zhao",
+      "D. Qian"
+    ],
+    "venue": "IEEE Robotics and Automation Letters"
+  },
+  {
+    "slug": "paper:wu2021-highly",
+    "path": "/papers/wu2021-highly",
+    "type": "paper",
+    "title": "A highly accurate and robust deep checkerboard corner detector",
+    "summary": "Electronics Letters 2021",
+    "tags": [
+      "highly"
+    ],
+    "headings": [],
+    "authors": [
+      "Hao Wu",
+      "Yi Wan"
+    ],
+    "venue": "Electronics Letters"
+  },
+  {
+    "slug": "paper:loy2003-frst",
+    "path": "/papers/loy2003-frst",
+    "type": "paper",
+    "title": "Fast radial symmetry for detecting points of interest",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 2003",
+    "tags": [
+      "frst"
+    ],
+    "headings": [],
+    "authors": [
+      "Gareth Loy",
+      "Alexander Zelinsky"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:ni2012-gfrs",
+    "path": "/papers/ni2012-gfrs",
+    "type": "paper",
+    "title": "Fast radial symmetry detection under affine transformations",
+    "summary": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2012",
+    "tags": [
+      "gfrs"
+    ],
+    "headings": [],
+    "authors": [
+      "Jie Ni",
+      "Maneesh K. Singh",
+      "Claus Bahlmann"
+    ],
+    "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)"
+  },
+  {
+    "slug": "paper:fischler1981-ransac",
+    "path": "/papers/fischler1981-ransac",
+    "type": "paper",
+    "title": "Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography",
+    "summary": "Communications of the ACM 1981",
+    "tags": [
+      "ransac"
+    ],
+    "headings": [],
+    "authors": [
+      "M. A. Fischler",
+      "R. C. Bolles"
+    ],
+    "venue": "Communications of the ACM"
+  },
+  {
+    "slug": "paper:raguram2013-usac",
+    "path": "/papers/raguram2013-usac",
+    "type": "paper",
+    "title": "USAC: A Universal Framework for Random Sample Consensus",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 2013",
+    "tags": [
+      "usac"
+    ],
+    "headings": [],
+    "authors": [
+      "R. Raguram",
+      "O. Chum",
+      "M. Pollefeys",
+      "J. Matas",
+      "J. Frahm"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:barath2019-magsac",
+    "path": "/papers/barath2019-magsac",
+    "type": "paper",
+    "title": "MAGSAC: marginalizing sample consensus",
+    "summary": "CVPR 2019",
+    "tags": [
+      "magsac"
+    ],
+    "headings": [],
+    "authors": [
+      "D. Barath",
+      "J. Matas",
+      "J. Noskova"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:lepetit2009-epnp",
+    "path": "/papers/lepetit2009-epnp",
+    "type": "paper",
+    "title": "EPnP: An Accurate O(n) Solution to the PnP Problem",
+    "summary": "International Journal of Computer Vision 2009",
+    "tags": [
+      "epnp"
+    ],
+    "headings": [],
+    "authors": [
+      "V. Lepetit",
+      "F. Moreno-Noguer",
+      "P. Fua"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "paper:scaramuzza2006-omni",
+    "path": "/papers/scaramuzza2006-omni",
+    "type": "paper",
+    "title": "A Toolbox for Easily Calibrating Omnidirectional Cameras",
+    "summary": "IEEE/RSJ IROS 2006",
+    "tags": [
+      "omni"
+    ],
+    "headings": [],
+    "authors": [
+      "D. Scaramuzza",
+      "A. Martinelli",
+      "R. Siegwart"
+    ],
+    "venue": "IEEE/RSJ IROS"
+  },
+  {
+    "slug": "paper:lowe2004-sift",
+    "path": "/papers/lowe2004-sift",
+    "type": "paper",
+    "title": "Distinctive Image Features from Scale-Invariant Keypoints",
+    "summary": "International Journal of Computer Vision 2004",
+    "tags": [
+      "sift"
+    ],
+    "headings": [],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "paper:canny1986-edge",
+    "path": "/papers/canny1986-edge",
+    "type": "paper",
+    "title": "A Computational Approach to Edge Detection",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 1986",
+    "tags": [
+      "edge"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Canny"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:bay2006-surf",
+    "path": "/papers/bay2006-surf",
+    "type": "paper",
+    "title": "SURF: Speeded Up Robust Features",
+    "summary": "Lecture notes in computer science 2006",
+    "tags": [
+      "surf"
+    ],
+    "headings": [],
+    "authors": [
+      "H. Bay",
+      "T. Tuytelaars",
+      "L. V. Gool"
+    ],
+    "venue": "Lecture notes in computer science"
+  },
+  {
+    "slug": "paper:calonder2010-brief",
+    "path": "/papers/calonder2010-brief",
+    "type": "paper",
+    "title": "BRIEF: Binary Robust Independent Elementary Features",
+    "summary": "Lecture notes in computer science 2010",
+    "tags": [
+      "brief"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Calonder",
+      "V. Lepetit",
+      "C. Strecha",
+      "P. Fua"
+    ],
+    "venue": "Lecture notes in computer science"
+  },
+  {
+    "slug": "paper:rublee2011-orb",
+    "path": "/papers/rublee2011-orb",
+    "type": "paper",
+    "title": "ORB: An efficient alternative to SIFT or SURF",
+    "summary": "ICCV 2011",
+    "tags": [
+      "orb"
+    ],
+    "headings": [],
+    "authors": [
+      "E. Rublee",
+      "V. Rabaud",
+      "K. Konolige",
+      "G. Bradski"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:sarlin2020-superglue",
+    "path": "/papers/sarlin2020-superglue",
+    "type": "paper",
+    "title": "SuperGlue: Learning Feature Matching with Graph Neural Networks",
+    "summary": "CVPR 2020",
+    "tags": [
+      "superglue"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Sarlin",
+      "D. DeTone",
+      "T. Malisiewicz",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:sun2021-loftr",
+    "path": "/papers/sun2021-loftr",
+    "type": "paper",
+    "title": "LoFTR: Detector-Free Local Feature Matching with Transformers",
+    "summary": "CVPR 2021",
+    "tags": [
+      "loftr"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Sun",
+      "Z. Shen",
+      "Y. Wang",
+      "H. Bao",
+      "X. Zhou"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:lindenberger2023-lightglue",
+    "path": "/papers/lindenberger2023-lightglue",
+    "type": "paper",
+    "title": "LightGlue: Local Feature Matching at Light Speed",
+    "summary": "ICCV 2023",
+    "tags": [
+      "lightglue"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Lindenberger",
+      "P. Sarlin",
+      "M. Pollefeys"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:felzenszwalb2004-graph-segm",
+    "path": "/papers/felzenszwalb2004-graph-segm",
+    "type": "paper",
+    "title": "Efficient Graph-Based Image Segmentation",
+    "summary": "International Journal of Computer Vision 2004",
+    "tags": [
+      "graph",
+      "segm"
+    ],
+    "headings": [],
+    "authors": [
+      "P. F. Felzenszwalb",
+      "D. P. Huttenlocher"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "paper:boykov2001-graph-cut-segmentation",
+    "path": "/papers/boykov2001-graph-cut-segmentation",
+    "type": "paper",
+    "title": "Interactive Graph Cuts for Optimal Boundary & Region Segmentation of Objects in N-D Images",
+    "summary": "ICCV 2001",
+    "tags": [
+      "graph",
+      "cut",
+      "segmentation"
+    ],
+    "headings": [],
+    "authors": [
+      "Y. Boykov",
+      "M.-P. Jolly"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:yang2018-sub-pixel",
+    "path": "/papers/yang2018-sub-pixel",
+    "type": "paper",
+    "title": "Sub-Pixel Chessboard Corner Localization for Camera Calibration and Pose Estimation",
+    "summary": "Applied Sciences 2018",
+    "tags": [
+      "sub",
+      "pixel"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Yang",
+      "Q. Zhao",
+      "W. Xian",
+      "Q. Zhou"
+    ],
+    "venue": "Applied Sciences"
+  },
+  {
+    "slug": "paper:longuet-higgins1981-eight-point",
+    "path": "/papers/longuet-higgins1981-eight-point",
+    "type": "paper",
+    "title": "A computer algorithm for reconstructing a scene from two projections",
+    "summary": "Nature 1981",
+    "tags": [
+      "eight",
+      "point"
+    ],
+    "headings": [],
+    "authors": [
+      "H. C. Longuet-Higgins"
+    ],
+    "venue": "Nature"
+  },
+  {
+    "slug": "paper:rother2004-grabcut",
+    "path": "/papers/rother2004-grabcut",
+    "type": "paper",
+    "title": "GrabCut: Interactive Foreground Extraction using Iterated Graph Cuts",
+    "summary": "ACM Transactions on Graphics (SIGGRAPH) 2004",
+    "tags": [
+      "grabcut"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Rother",
+      "V. Kolmogorov",
+      "A. Blake"
+    ],
+    "venue": "ACM Transactions on Graphics (SIGGRAPH)"
+  },
+  {
+    "slug": "paper:long2015-fcn",
+    "path": "/papers/long2015-fcn",
+    "type": "paper",
+    "title": "Fully Convolutional Networks for Semantic Segmentation",
+    "summary": "CVPR 2015",
+    "tags": [
+      "fcn"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Long",
+      "E. Shelhamer",
+      "T. Darrell"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:ronneberger2015-unet",
+    "path": "/papers/ronneberger2015-unet",
+    "type": "paper",
+    "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+    "summary": "MICCAI (Lecture Notes in Computer Science) 2015",
+    "tags": [
+      "unet"
+    ],
+    "headings": [],
+    "authors": [
+      "O. Ronneberger",
+      "P. Fischer",
+      "T. Brox"
+    ],
+    "venue": "MICCAI (Lecture Notes in Computer Science)"
+  },
+  {
+    "slug": "paper:chen2018-deeplab",
+    "path": "/papers/chen2018-deeplab",
+    "type": "paper",
+    "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 2018",
+    "tags": [
+      "deeplab"
+    ],
+    "headings": [],
+    "authors": [
+      "L. Chen",
+      "G. Papandreou",
+      "I. Kokkinos",
+      "K. Murphy",
+      "A. Yuille"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:he2017-maskrcnn",
+    "path": "/papers/he2017-maskrcnn",
+    "type": "paper",
+    "title": "Mask R-CNN",
+    "summary": "ICCV 2017",
+    "tags": [
+      "maskrcnn"
+    ],
+    "headings": [],
+    "authors": [
+      "K. He",
+      "G. Gkioxari",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:kirillov2023-sam",
+    "path": "/papers/kirillov2023-sam",
+    "type": "paper",
+    "title": "Segment Anything",
+    "summary": "ICCV 2023",
+    "tags": [
+      "sam"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Kirillov",
+      "E. Mintun",
+      "N. Ravi",
+      "H. Mao",
+      "C. Rolland",
+      "L. Gustafson",
+      "T. Xiao",
+      "S. Whitehead",
+      "A. C. Berg",
+      "W. Lo",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:viola2001-detector",
+    "path": "/papers/viola2001-detector",
+    "type": "paper",
+    "title": "Rapid object detection using a boosted cascade of simple features",
+    "summary": "CVPR 2001",
+    "tags": [
+      "detector"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Viola",
+      "M. Jones"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:dalal2005-hog",
+    "path": "/papers/dalal2005-hog",
+    "type": "paper",
+    "title": "Histograms of Oriented Gradients for Human Detection",
+    "summary": "CVPR 2005",
+    "tags": [
+      "hog"
+    ],
+    "headings": [],
+    "authors": [
+      "N. Dalal",
+      "B. Triggs"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:felzenszwalb2010-detection",
+    "path": "/papers/felzenszwalb2010-detection",
+    "type": "paper",
+    "title": "Object Detection with Discriminatively Trained Part-Based Models",
+    "summary": "IEEE TPAMI 2010",
+    "tags": [
+      "detection"
+    ],
+    "headings": [],
+    "authors": [
+      "P. F. Felzenszwalb",
+      "R. B. Girshick",
+      "D. McAllester",
+      "D. Ramanan"
+    ],
+    "venue": "IEEE TPAMI"
+  },
+  {
+    "slug": "paper:krizhevsky2012-alexnet",
+    "path": "/papers/krizhevsky2012-alexnet",
+    "type": "paper",
+    "title": "ImageNet Classification with Deep Convolutional Neural Networks",
+    "summary": "NeurIPS 2012",
+    "tags": [
+      "alexnet"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Krizhevsky",
+      "I. Sutskever",
+      "G. E. Hinton"
+    ],
+    "venue": "NeurIPS"
+  },
+  {
+    "slug": "paper:simonyan2014-vgg",
+    "path": "/papers/simonyan2014-vgg",
+    "type": "paper",
+    "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+    "summary": "ICLR 2015 / arXiv 2014",
+    "tags": [
+      "vgg"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Simonyan",
+      "A. Zisserman"
+    ],
+    "venue": "ICLR 2015 / arXiv"
+  },
+  {
+    "slug": "paper:szegedy2015-inception",
+    "path": "/papers/szegedy2015-inception",
+    "type": "paper",
+    "title": "Going deeper with convolutions",
+    "summary": "CVPR 2015",
+    "tags": [
+      "inception"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Szegedy",
+      "W. Liu",
+      "Y. Jia",
+      "P. Sermanet",
+      "S. Reed",
+      "D. Anguelov",
+      "D. Erhan",
+      "V. Vanhoucke",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR 2015"
+  },
+  {
+    "slug": "paper:he2016-resnet",
+    "path": "/papers/he2016-resnet",
+    "type": "paper",
+    "title": "Deep Residual Learning for Image Recognition",
+    "summary": "CVPR 2016",
+    "tags": [
+      "resnet"
+    ],
+    "headings": [],
+    "authors": [
+      "K. He",
+      "X. Zhang",
+      "S. Ren",
+      "J. Sun"
+    ],
+    "venue": "CVPR 2016"
+  },
+  {
+    "slug": "paper:ren2015-faster",
+    "path": "/papers/ren2015-faster",
+    "type": "paper",
+    "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+    "summary": "NeurIPS 2015",
+    "tags": [
+      "faster"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Ren",
+      "K. He",
+      "R. Girshick",
+      "J. Sun"
+    ],
+    "venue": "NeurIPS 2015"
+  },
+  {
+    "slug": "paper:redmon2016-yolo",
+    "path": "/papers/redmon2016-yolo",
+    "type": "paper",
+    "title": "You Only Look Once: Unified, Real-Time Object Detection",
+    "summary": "CVPR 2016",
+    "tags": [
+      "yolo"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Redmon",
+      "S. Divvala",
+      "R. Girshick",
+      "A. Farhadi"
+    ],
+    "venue": "CVPR 2016"
+  },
+  {
+    "slug": "paper:lin2017-retinanet",
+    "path": "/papers/lin2017-retinanet",
+    "type": "paper",
+    "title": "Focal Loss for Dense Object Detection",
+    "summary": "ICCV 2017",
+    "tags": [
+      "retinanet"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Lin",
+      "P. Goyal",
+      "R. Girshick",
+      "K. He",
+      "P. Dollár"
+    ],
+    "venue": "ICCV 2017"
+  },
+  {
+    "slug": "paper:lucas1981-lucas-kanade",
+    "path": "/papers/lucas1981-lucas-kanade",
+    "type": "paper",
+    "title": "An Iterative Image Registration Technique with an Application to Stereo Vision",
+    "summary": "IJCAI 1981",
+    "tags": [
+      "lucas",
+      "kanade"
+    ],
+    "headings": [],
+    "authors": [
+      "B. D. Lucas",
+      "T. Kanade"
+    ],
+    "venue": "IJCAI 1981"
+  },
+  {
+    "slug": "paper:tomasi1991-detection-tracking",
+    "path": "/papers/tomasi1991-detection-tracking",
+    "type": "paper",
+    "title": "Detection and Tracking of Point Features",
+    "summary": "Carnegie Mellon University Technical Report CMU-CS-91-132 1991",
+    "tags": [
+      "detection",
+      "tracking"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Tomasi",
+      "T. Kanade"
+    ],
+    "venue": "Carnegie Mellon University Technical Report CMU-CS-91-132"
+  },
+  {
+    "slug": "paper:horn1981-horn-schunck",
+    "path": "/papers/horn1981-horn-schunck",
+    "type": "paper",
+    "title": "Determining optical flow",
+    "summary": "Artificial Intelligence 1981",
+    "tags": [
+      "horn",
+      "schunck"
+    ],
+    "headings": [],
+    "authors": [
+      "B. K. P. Horn",
+      "B. G. Schunck"
+    ],
+    "venue": "Artificial Intelligence"
+  },
+  {
+    "slug": "paper:black1996-robust",
+    "path": "/papers/black1996-robust",
+    "type": "paper",
+    "title": "The Robust Estimation of Multiple Motions: Parametric and Piecewise-Smooth Flow Fields",
+    "summary": "Computer Vision and Image Understanding 1996",
+    "tags": [
+      "robust"
+    ],
+    "headings": [],
+    "authors": [
+      "M. J. Black",
+      "P. Anandan"
+    ],
+    "venue": "Computer Vision and Image Understanding"
+  },
+  {
+    "slug": "paper:crow1984-summed-area",
+    "path": "/papers/crow1984-summed-area",
+    "type": "paper",
+    "title": "Summed-area tables for texture mapping",
+    "summary": "ACM SIGGRAPH Computer Graphics 1984",
+    "tags": [
+      "summed",
+      "area"
+    ],
+    "headings": [],
+    "authors": [
+      "F. C. Crow"
+    ],
+    "venue": "ACM SIGGRAPH Computer Graphics"
+  },
+  {
+    "slug": "paper:abbas2019-bev",
+    "path": "/papers/abbas2019-bev",
+    "type": "paper",
+    "title": "A Geometric Approach to Obtain a Bird's Eye View From an Image",
+    "summary": "ICCVW 2019",
+    "tags": [
+      "bev"
+    ],
+    "headings": [],
+    "authors": [
+      "S. A. Abbas",
+      "A. Zisserman"
+    ],
+    "venue": "ICCVW 2019"
+  },
+  {
+    "slug": "paper:sofiiuk2021-ritm",
+    "path": "/papers/sofiiuk2021-ritm",
+    "type": "paper",
+    "title": "Reviving Iterative Training with Mask Guidance for Interactive Segmentation",
+    "summary": "arXiv (Cornell University) 2021",
+    "tags": [
+      "ritm"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Sofiiuk",
+      "I. A. Petrov",
+      "A. Konushin"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:sun2019-hrnet",
+    "path": "/papers/sun2019-hrnet",
+    "type": "paper",
+    "title": "Deep High-Resolution Representation Learning for Human Pose Estimation",
+    "summary": "CVPR 2019",
+    "tags": [
+      "hrnet"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Sun",
+      "B. Xiao",
+      "D. Liu",
+      "J. Wang"
+    ],
+    "venue": "CVPR 2019"
+  },
+  {
+    "slug": "paper:sun2019-hrnetv2",
+    "path": "/papers/sun2019-hrnetv2",
+    "type": "paper",
+    "title": "High-Resolution Representations for Labeling Pixels and Regions",
+    "summary": "arXiv (Cornell University) 2019",
+    "tags": [
+      "hrnetv2"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Sun",
+      "Y. Zhao",
+      "B. Jiang",
+      "T. Cheng",
+      "B. Xiao",
+      "D. Liu",
+      "Y. Mu",
+      "X. Wang",
+      "W. Liu",
+      "J. Wang"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:wang2020-hrnet-journal",
+    "path": "/papers/wang2020-hrnet-journal",
+    "type": "paper",
+    "title": "Deep High-Resolution Representation Learning for Visual Recognition",
+    "summary": "TPAMI 2020 (arXiv 2019) 2020",
+    "tags": [
+      "hrnet",
+      "journal"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Wang",
+      "K. Sun",
+      "T. Cheng",
+      "B. Jiang",
+      "C. Deng",
+      "Y. Zhao",
+      "D. Liu",
+      "Y. Mu",
+      "M. Tan",
+      "X. Wang",
+      "W. Liu",
+      "B. Xiao"
+    ],
+    "venue": "TPAMI 2020 (arXiv 2019)"
+  },
+  {
+    "slug": "paper:zhang2023-mobilesam",
+    "path": "/papers/zhang2023-mobilesam",
+    "type": "paper",
+    "title": "Faster Segment Anything: Towards Lightweight SAM for Mobile Applications",
+    "summary": "arXiv (Cornell University) 2023",
+    "tags": [
+      "mobilesam"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Zhang",
+      "D. Han",
+      "Y. Qiao",
+      "J. U. Kim",
+      "S. Bae",
+      "S. Lee",
+      "C. S. Hong"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:zhang2023-mobilesamv2",
+    "path": "/papers/zhang2023-mobilesamv2",
+    "type": "paper",
+    "title": "MobileSAMv2: Faster Segment Anything to Everything",
+    "summary": "arXiv (Cornell University) 2023",
+    "tags": [
+      "mobilesamv2"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Zhang",
+      "D. Han",
+      "S. Zheng",
+      "J. Choi",
+      "T. Kim",
+      "C. S. Hong"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:ravi2024-sam2",
+    "path": "/papers/ravi2024-sam2",
+    "type": "paper",
+    "title": "SAM 2: Segment Anything in Images and Videos",
+    "summary": "arXiv (Cornell University) 2024",
+    "tags": [
+      "sam2"
+    ],
+    "headings": [],
+    "authors": [
+      "N. Ravi",
+      "V. Gabeur",
+      "Y. Hu",
+      "R. Hu",
+      "C. K. Ryali",
+      "T. Ma",
+      "H. Khedr",
+      "R. Rädle",
+      "C. Rolland",
+      "L. Gustafson",
+      "E. Mintun",
+      "J. Pan",
+      "K. V. Alwala",
+      "N. Carion",
+      "C. Wu",
+      "R. Girshick",
+      "P. Dollár",
+      "C. Feichtenhofer"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:carion2025-sam3",
+    "path": "/papers/carion2025-sam3",
+    "type": "paper",
+    "title": "SAM 3: Segment Anything with Concepts",
+    "summary": "arXiv (Cornell University) 2025",
+    "tags": [
+      "sam3"
+    ],
+    "headings": [],
+    "authors": [
+      "N. Carion",
+      "L. Gustafson",
+      "Y. Hu",
+      "S. Debnath",
+      "R. Hu",
+      "D. Suris",
+      "C. K. Ryali",
+      "K. V. Alwala",
+      "H. Khedr",
+      "A. C. Huang",
+      "J. Lei",
+      "T. Ma",
+      "B. Guo",
+      "A. Kalla",
+      "M. D. Marks",
+      "J. Greer",
+      "M. Wang",
+      "P. Sun",
+      "R. Rädle",
+      "T. Afouras",
+      "E. Mavroudi",
+      "K. Xu",
+      "T. Wu",
+      "Y. Zhou",
+      "L. Momeni",
+      "R. Hazra",
+      "S. Ding",
+      "S. Vaze",
+      "F. Porcher",
+      "L. Feng",
+      "S. Li",
+      "A. Kamath",
+      "H. Cheng",
+      "P. Dollár",
+      "N. Ravi",
+      "K. Saenko",
+      "P. Zhang",
+      "C. Feichtenhofer"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:dosovitskiy2020-vit",
+    "path": "/papers/dosovitskiy2020-vit",
+    "type": "paper",
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "summary": "ICLR 2021 (arXiv 2020)",
+    "tags": [
+      "vit"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Dosovitskiy",
+      "L. Beyer",
+      "A. Kolesnikov",
+      "D. Weissenborn",
+      "X. Zhai",
+      "T. Unterthiner",
+      "M. Dehghani",
+      "M. Minderer",
+      "G. Heigold",
+      "S. Gelly",
+      "J. Uszkoreit",
+      "N. Houlsby"
+    ],
+    "venue": "ICLR 2021 (arXiv 2020)"
+  },
+  {
+    "slug": "paper:carion2020-detr",
+    "path": "/papers/carion2020-detr",
+    "type": "paper",
+    "title": "End-to-End Object Detection with Transformers",
+    "summary": "ECCV 2020",
+    "tags": [
+      "detr"
+    ],
+    "headings": [],
+    "authors": [
+      "N. Carion",
+      "F. Massa",
+      "G. Synnaeve",
+      "N. Usunier",
+      "A. Kirillov",
+      "S. Zagoruyko"
+    ],
+    "venue": "ECCV 2020"
+  },
+  {
+    "slug": "paper:cheng2021-maskformer",
+    "path": "/papers/cheng2021-maskformer",
+    "type": "paper",
+    "title": "Per-Pixel Classification is Not All You Need for Semantic Segmentation",
+    "summary": "NeurIPS 2021",
+    "tags": [
+      "maskformer"
+    ],
+    "headings": [],
+    "authors": [
+      "B. Cheng",
+      "A. G. Schwing",
+      "A. Kirillov"
+    ],
+    "venue": "NeurIPS 2021"
+  },
+  {
+    "slug": "paper:cheng2022-mask2former",
+    "path": "/papers/cheng2022-mask2former",
+    "type": "paper",
+    "title": "Masked-attention Mask Transformer for Universal Image Segmentation",
+    "summary": "CVPR 2022 (arXiv 2021) 2022",
+    "tags": [
+      "mask2former"
+    ],
+    "headings": [],
+    "authors": [
+      "B. Cheng",
+      "I. Misra",
+      "A. G. Schwing",
+      "A. Kirillov",
+      "R. Girdhar"
+    ],
+    "venue": "CVPR 2022 (arXiv 2021)"
+  },
+  {
+    "slug": "paper:he2021-mae",
+    "path": "/papers/he2021-mae",
+    "type": "paper",
+    "title": "Masked Autoencoders Are Scalable Vision Learners",
+    "summary": "CVPR 2022 (arXiv 2021)",
+    "tags": [
+      "mae"
+    ],
+    "headings": [],
+    "authors": [
+      "K. He",
+      "X. Chen",
+      "S. Xie",
+      "Y. Li",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "CVPR 2022 (arXiv 2021)"
+  },
+  {
+    "slug": "paper:chen2022-focalclick",
+    "path": "/papers/chen2022-focalclick",
+    "type": "paper",
+    "title": "FocalClick: Towards Practical Interactive Image Segmentation",
+    "summary": "CVPR 2022 (arXiv 2022)",
+    "tags": [
+      "focalclick"
+    ],
+    "headings": [],
+    "authors": [
+      "X. Chen",
+      "Z. Zhao",
+      "Y. Zhang",
+      "M. Duan",
+      "D. Qi",
+      "H. Zhao"
+    ],
+    "venue": "CVPR 2022 (arXiv 2022)"
+  },
+  {
+    "slug": "paper:xie2021-segformer",
+    "path": "/papers/xie2021-segformer",
+    "type": "paper",
+    "title": "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers",
+    "summary": "NeurIPS 2021 (arXiv 2021)",
+    "tags": [
+      "segformer"
+    ],
+    "headings": [],
+    "authors": [
+      "E. Xie",
+      "W. Wang",
+      "Z. Yu",
+      "A. Anandkumar",
+      "J. M. Alvarez",
+      "P. Luo"
+    ],
+    "venue": "NeurIPS 2021 (arXiv 2021)"
+  },
+  {
+    "slug": "paper:yu2018-bisenet",
+    "path": "/papers/yu2018-bisenet",
+    "type": "paper",
+    "title": "BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation",
+    "summary": "ECCV 2018 (arXiv 2018)",
+    "tags": [
+      "bisenet"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Yu",
+      "J. Wang",
+      "C. Peng",
+      "C. Gao",
+      "G. Yu",
+      "S. Nong"
+    ],
+    "venue": "ECCV 2018 (arXiv 2018)"
+  },
+  {
+    "slug": "paper:yu2020-bisenet",
+    "path": "/papers/yu2020-bisenet",
+    "type": "paper",
+    "title": "BiSeNet V2: Bilateral Network with Guided Aggregation for Real-time Semantic Segmentation",
+    "summary": "IJCV 2021 (arXiv 2020)",
+    "tags": [
+      "bisenet"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Yu",
+      "C. Gao",
+      "J. Wang",
+      "G. Yu",
+      "C. Shen",
+      "S. Nong"
+    ],
+    "venue": "IJCV 2021 (arXiv 2020)"
+  },
+  {
+    "slug": "paper:poudel2019-fast-scnn",
+    "path": "/papers/poudel2019-fast-scnn",
+    "type": "paper",
+    "title": "Fast-SCNN: Fast Semantic Segmentation Network",
+    "summary": "BMVC 2019 (arXiv 2019)",
+    "tags": [
+      "fast",
+      "scnn"
+    ],
+    "headings": [],
+    "authors": [
+      "R. P. K. Poudel",
+      "S. Liwicki",
+      "R. Cipolla"
+    ],
+    "venue": "BMVC 2019 (arXiv 2019)"
+  },
+  {
+    "slug": "paper:howard2019-mobilenetv3",
+    "path": "/papers/howard2019-mobilenetv3",
+    "type": "paper",
+    "title": "Searching for MobileNetV3",
+    "summary": "ICCV 2019 (arXiv 2019)",
+    "tags": [
+      "mobilenetv3"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Howard",
+      "M. Sandler",
+      "G. Chu",
+      "L. Chen",
+      "B. Chen",
+      "M. Tan",
+      "W. Wang",
+      "Y. Zhu",
+      "R. Pang",
+      "V. Vasudevan",
+      "Q. V. Le",
+      "H. Adam"
+    ],
+    "venue": "ICCV 2019 (arXiv 2019)"
+  },
+  {
+    "slug": "paper:sandler2018-mobilenetv2",
+    "path": "/papers/sandler2018-mobilenetv2",
+    "type": "paper",
+    "title": "MobileNetV2: Inverted Residuals and Linear Bottlenecks",
+    "summary": "CVPR 2018 (arXiv 2018)",
+    "tags": [
+      "mobilenetv2"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Sandler",
+      "A. Howard",
+      "M. Zhu",
+      "A. Zhmoginov",
+      "L. Chen"
+    ],
+    "venue": "CVPR 2018 (arXiv 2018)"
+  },
+  {
+    "slug": "paper:tan2019-mnasnet",
+    "path": "/papers/tan2019-mnasnet",
+    "type": "paper",
+    "title": "MnasNet: Platform-Aware Neural Architecture Search for Mobile",
+    "summary": "CVPR 2019 (arXiv 2018) 2019",
+    "tags": [
+      "mnasnet"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Tan",
+      "B. Chen",
+      "R. Pang",
+      "V. Vasudevan",
+      "M. Sandler",
+      "A. Howard",
+      "Q. V. Le"
+    ],
+    "venue": "CVPR 2019 (arXiv 2018)"
+  },
+  {
+    "slug": "paper:robinson2025-rf-detr",
+    "path": "/papers/robinson2025-rf-detr",
+    "type": "paper",
+    "title": "RF-DETR: Neural Architecture Search for Real-Time Detection Transformers",
+    "summary": "arXiv (2025)",
+    "tags": [
+      "rf",
+      "detr"
+    ],
+    "headings": [],
+    "authors": [
+      "I. Robinson",
+      "P. Robicheaux",
+      "M. Popov",
+      "D. Ramanan",
+      "N. Peri"
+    ],
+    "venue": "arXiv (2025)"
+  },
+  {
+    "slug": "paper:lin2025-depth-anything-3",
+    "path": "/papers/lin2025-depth-anything-3",
+    "type": "paper",
+    "title": "Depth Anything 3: Recovering the Visual Space from Any Views",
+    "summary": "arXiv (2025)",
+    "tags": [
+      "depth",
+      "anything",
+      "3"
+    ],
+    "headings": [],
+    "authors": [
+      "H. Lin",
+      "S. Chen",
+      "J. Liew",
+      "D. Y. Chen",
+      "Z. Li",
+      "G. Shi",
+      "J. Feng",
+      "B. Kang"
+    ],
+    "venue": "arXiv (2025)"
+  },
+  {
+    "slug": "paper:oquab2023-dinov2",
+    "path": "/papers/oquab2023-dinov2",
+    "type": "paper",
+    "title": "DINOv2: Learning Robust Visual Features without Supervision",
+    "summary": "TMLR 2024 (arXiv 2023)",
+    "tags": [
+      "dinov2"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Oquab",
+      "T. Darcet",
+      "T. Moutakanni",
+      "H. Vo",
+      "M. Szafraniec",
+      "V. Khalidov",
+      "P. Fernandez",
+      "D. Haziza",
+      "F. Massa",
+      "A. El-Nouby",
+      "M. Assran",
+      "N. Ballas",
+      "W. Galuba",
+      "R. Howes",
+      "P. Huang",
+      "S. Li",
+      "I. Misra",
+      "M. Rabbat",
+      "V. Sharma",
+      "G. Synnaeve",
+      "H. Xu",
+      "H. Jegou",
+      "J. Mairal",
+      "P. Labatut",
+      "A. Joulin",
+      "P. Bojanowski"
+    ],
+    "venue": "TMLR 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "paper:ranftl2019-midas",
+    "path": "/papers/ranftl2019-midas",
+    "type": "paper",
+    "title": "Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-shot Cross-dataset Transfer",
+    "summary": "TPAMI 2022 (arXiv 2019)",
+    "tags": [
+      "midas"
+    ],
+    "headings": [],
+    "authors": [
+      "R. Ranftl",
+      "K. Lasinger",
+      "D. Hafner",
+      "K. Schindler",
+      "V. Koltun"
+    ],
+    "venue": "TPAMI 2022 (arXiv 2019)"
+  },
+  {
+    "slug": "paper:yang2024-depth-anything",
+    "path": "/papers/yang2024-depth-anything",
+    "type": "paper",
+    "title": "Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data",
+    "summary": "CVPR 2024",
+    "tags": [
+      "depth",
+      "anything"
+    ],
+    "headings": [],
+    "authors": [
+      "L. Yang",
+      "B. Kang",
+      "Z. Huang",
+      "X. Xu",
+      "J. Feng",
+      "H. Zhao"
+    ],
+    "venue": "CVPR 2024"
+  },
+  {
+    "slug": "paper:yang2024-depth-anything-v2",
+    "path": "/papers/yang2024-depth-anything-v2",
+    "type": "paper",
+    "title": "Depth Anything V2",
+    "summary": "NeurIPS 2024",
+    "tags": [
+      "depth",
+      "anything",
+      "v2"
+    ],
+    "headings": [],
+    "authors": [
+      "L. Yang",
+      "B. Kang",
+      "Z. Huang",
+      "Z. Zhao",
+      "X. Xu",
+      "J. Feng",
+      "H. Zhao"
+    ],
+    "venue": "NeurIPS 2024"
+  },
+  {
+    "slug": "paper:wang2023-dust3r",
+    "path": "/papers/wang2023-dust3r",
+    "type": "paper",
+    "title": "DUSt3R: Geometric 3D Vision Made Easy",
+    "summary": "CVPR 2024 (arXiv 2023)",
+    "tags": [
+      "dust3r"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Wang",
+      "V. Leroy",
+      "Y. Cabon",
+      "B. Chidlovskii",
+      "J. Revaud"
+    ],
+    "venue": "CVPR 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "paper:leroy2024-mast3r",
+    "path": "/papers/leroy2024-mast3r",
+    "type": "paper",
+    "title": "Grounding Image Matching in 3D with MASt3R",
+    "summary": "ECCV 2024",
+    "tags": [
+      "mast3r"
+    ],
+    "headings": [],
+    "authors": [
+      "V. Leroy",
+      "Y. Cabon",
+      "J. Revaud"
+    ],
+    "venue": "ECCV 2024"
+  },
+  {
+    "slug": "paper:wang2025-vggt",
+    "path": "/papers/wang2025-vggt",
+    "type": "paper",
+    "title": "VGGT: Visual Geometry Grounded Transformer",
+    "summary": "CVPR 2025",
+    "tags": [
+      "vggt"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Wang",
+      "M. Chen",
+      "N. Karaev",
+      "A. Vedaldi",
+      "C. Rupprecht",
+      "D. Novotny"
+    ],
+    "venue": "CVPR 2025"
+  },
+  {
+    "slug": "paper:hartley1999-projective-rectification",
+    "path": "/papers/hartley1999-projective-rectification",
+    "type": "paper",
+    "title": "Theory and Practice of Projective Rectification",
+    "summary": "International Journal of Computer Vision 1999",
+    "tags": [
+      "projective",
+      "rectification"
+    ],
+    "headings": [],
+    "authors": [
+      "R. I. Hartley"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "paper:loop1999-rectifying-homographies",
+    "path": "/papers/loop1999-rectifying-homographies",
+    "type": "paper",
+    "title": "Computing Rectifying Homographies for Stereo Vision",
+    "summary": "IEEE CVPR 1999",
+    "tags": [
+      "rectifying",
+      "homographies"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Loop",
+      "Z. Zhang"
+    ],
+    "venue": "IEEE CVPR 1999"
+  },
+  {
+    "slug": "paper:pollefeys1999-polar-rectification",
+    "path": "/papers/pollefeys1999-polar-rectification",
+    "type": "paper",
+    "title": "A Simple and Efficient Rectification Method for General Motion",
+    "summary": "IEEE ICCV 1999",
+    "tags": [
+      "polar",
+      "rectification"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Pollefeys",
+      "R. Koch",
+      "L. Van Gool"
+    ],
+    "venue": "IEEE ICCV 1999"
+  },
+  {
+    "slug": "paper:fusiello2000-compact-rectification",
+    "path": "/papers/fusiello2000-compact-rectification",
+    "type": "paper",
+    "title": "A Compact Algorithm for Rectification of Stereo Pairs",
+    "summary": "Machine Vision and Applications 2000",
+    "tags": [
+      "compact",
+      "rectification"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Fusiello",
+      "E. Trucco",
+      "A. Verri"
+    ],
+    "venue": "Machine Vision and Applications"
+  },
+  {
+    "slug": "paper:batzner2023-efficientad",
+    "path": "/papers/batzner2023-efficientad",
+    "type": "paper",
+    "title": "EfficientAD: Accurate Visual Anomaly Detection at Millisecond-Level Latencies",
+    "summary": "WACV 2024 (arXiv 2023)",
+    "tags": [
+      "efficientad"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Batzner",
+      "L. Heckler",
+      "R. König"
+    ],
+    "venue": "WACV 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "paper:bergmann2019-mvtec-ad",
+    "path": "/papers/bergmann2019-mvtec-ad",
+    "type": "paper",
+    "title": "MVTec AD — A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection",
+    "summary": "CVPR 2019",
+    "tags": [
+      "mvtec",
+      "ad"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Bergmann",
+      "M. Fauser",
+      "D. Sattlegger",
+      "C. Steger"
+    ],
+    "venue": "CVPR 2019"
+  },
+  {
+    "slug": "paper:bergmann2020-uninformed-students",
+    "path": "/papers/bergmann2020-uninformed-students",
+    "type": "paper",
+    "title": "Uninformed Students: Student-Teacher Anomaly Detection With Discriminative Latent Embeddings",
+    "summary": "CVPR 2020",
+    "tags": [
+      "uninformed",
+      "students"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Bergmann",
+      "M. Fauser",
+      "D. Sattlegger",
+      "C. Steger"
+    ],
+    "venue": "CVPR 2020"
+  },
+  {
+    "slug": "paper:bergmann2022-mvtec-loco",
+    "path": "/papers/bergmann2022-mvtec-loco",
+    "type": "paper",
+    "title": "Beyond Dents and Scratches: Logical Constraints in Unsupervised Anomaly Detection and Localization",
+    "summary": "International Journal of Computer Vision 2022",
+    "tags": [
+      "mvtec",
+      "loco"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Bergmann",
+      "K. Batzner",
+      "M. Fauser",
+      "D. Sattlegger",
+      "C. Steger"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "paper:roth2022-patchcore",
+    "path": "/papers/roth2022-patchcore",
+    "type": "paper",
+    "title": "Towards Total Recall in Industrial Anomaly Detection",
+    "summary": "CVPR 2022",
+    "tags": [
+      "patchcore"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Roth",
+      "L. Pemula",
+      "J. Zepeda",
+      "B. Schölkopf",
+      "T. Brox",
+      "P. Gehler"
+    ],
+    "venue": "CVPR 2022"
+  },
+  {
+    "slug": "paper:rudolph2023-ast",
+    "path": "/papers/rudolph2023-ast",
+    "type": "paper",
+    "title": "Asymmetric Student-Teacher Networks for Industrial Anomaly Detection",
+    "summary": "WACV 2023",
+    "tags": [
+      "ast"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Rudolph",
+      "T. Wehrbein",
+      "B. Rosenhahn",
+      "B. Wandt"
+    ],
+    "venue": "WACV 2023"
+  },
+  {
+    "slug": "paper:zou2022-visa",
+    "path": "/papers/zou2022-visa",
+    "type": "paper",
+    "title": "SPot-the-Difference Self-Supervised Pre-training for Anomaly Detection and Segmentation",
+    "summary": "ECCV 2022",
+    "tags": [
+      "visa"
+    ],
+    "headings": [],
+    "authors": [
+      "Y. Zou",
+      "J. Jeong",
+      "L. Pemula",
+      "D. Zhang",
+      "O. Dabeer"
+    ],
+    "venue": "ECCV 2022"
+  },
+  {
+    "slug": "paper:vaswani2017-attention",
+    "path": "/papers/vaswani2017-attention",
+    "type": "paper",
+    "title": "Attention Is All You Need",
+    "summary": "NeurIPS 2017",
+    "tags": [
+      "attention"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Vaswani",
+      "N. Shazeer",
+      "N. Parmar",
+      "J. Uszkoreit",
+      "L. Jones",
+      "A. N. Gomez",
+      "Ł. Kaiser",
+      "I. Polosukhin"
+    ],
+    "venue": "NeurIPS 2017"
+  },
+  {
+    "slug": "paper:bahdanau2014-align",
+    "path": "/papers/bahdanau2014-align",
+    "type": "paper",
+    "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+    "summary": "ICLR 2015 2014",
+    "tags": [
+      "align"
+    ],
+    "headings": [],
+    "authors": [
+      "D. Bahdanau",
+      "K. Cho",
+      "Y. Bengio"
+    ],
+    "venue": "ICLR 2015"
+  },
+  {
+    "slug": "paper:katharopoulos2020-linear-attention",
+    "path": "/papers/katharopoulos2020-linear-attention",
+    "type": "paper",
+    "title": "Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention",
+    "summary": "ICML 2020",
+    "tags": [
+      "linear",
+      "attention"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Katharopoulos",
+      "A. Vyas",
+      "N. Pappas",
+      "F. Fleuret"
+    ],
+    "venue": "ICML 2020"
+  },
+  {
+    "slug": "paper:darcet2023-registers",
+    "path": "/papers/darcet2023-registers",
+    "type": "paper",
+    "title": "Vision Transformers Need Registers",
+    "summary": "ICLR 2024 2023",
+    "tags": [
+      "registers"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Darcet",
+      "M. Oquab",
+      "J. Mairal",
+      "P. Bojanowski"
+    ],
+    "venue": "ICLR 2024"
+  },
+  {
+    "slug": "paper:dao2022-flashattention",
+    "path": "/papers/dao2022-flashattention",
+    "type": "paper",
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "summary": "NeurIPS 2022",
+    "tags": [
+      "flashattention"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Dao",
+      "D. Y. Fu",
+      "S. Ermon",
+      "A. Rudra",
+      "C. Ré"
+    ],
+    "venue": "NeurIPS 2022"
+  },
+  {
+    "slug": "paper:su2021-roformer",
+    "path": "/papers/su2021-roformer",
+    "type": "paper",
+    "title": "RoFormer: Enhanced Transformer with Rotary Position Embedding",
+    "summary": "Neurocomputing 2024 2021",
+    "tags": [
+      "roformer"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Su",
+      "Y. Lu",
+      "S. Pan",
+      "A. Murtadha",
+      "B. Wen",
+      "Y. Liu"
+    ],
+    "venue": "Neurocomputing 2024"
+  },
+  {
+    "slug": "paper:ainslie2023-gqa",
+    "path": "/papers/ainslie2023-gqa",
+    "type": "paper",
+    "title": "GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints",
+    "summary": "EMNLP 2023",
+    "tags": [
+      "gqa"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Ainslie",
+      "J. Lee-Thorp",
+      "M. de Jong",
+      "Y. Zemlyanskiy",
+      "F. Lebrón",
+      "S. Sanghai"
+    ],
+    "venue": "EMNLP 2023"
+  },
+  {
+    "slug": "paper:ioffe2015-batchnorm",
+    "path": "/papers/ioffe2015-batchnorm",
+    "type": "paper",
+    "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+    "summary": "ICML 2015",
+    "tags": [
+      "batchnorm"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Ioffe",
+      "C. Szegedy"
+    ],
+    "venue": "ICML 2015"
+  },
+  {
+    "slug": "paper:ba2016-layernorm",
+    "path": "/papers/ba2016-layernorm",
+    "type": "paper",
+    "title": "Layer Normalization",
+    "summary": "arXiv preprint 2016",
+    "tags": [
+      "layernorm"
+    ],
+    "headings": [],
+    "authors": [
+      "J. L. Ba",
+      "J. R. Kiros",
+      "G. E. Hinton"
+    ],
+    "venue": "arXiv preprint"
+  },
+  {
+    "slug": "paper:wu2018-groupnorm",
+    "path": "/papers/wu2018-groupnorm",
+    "type": "paper",
+    "title": "Group Normalization",
+    "summary": "ECCV 2018",
+    "tags": [
+      "groupnorm"
+    ],
+    "headings": [],
+    "authors": [
+      "Y. Wu",
+      "K. He"
+    ],
+    "venue": "ECCV 2018"
+  },
+  {
+    "slug": "paper:caron2021-dino",
+    "path": "/papers/caron2021-dino",
+    "type": "paper",
+    "title": "Emerging Properties in Self-Supervised Vision Transformers",
+    "summary": "ICCV 2021",
+    "tags": [
+      "dino"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Caron",
+      "H. Touvron",
+      "I. Misra",
+      "H. Jégou",
+      "J. Mairal",
+      "P. Bojanowski",
+      "A. Joulin"
+    ],
+    "venue": "ICCV 2021"
+  },
+  {
+    "slug": "paper:simeoni2025-dinov3",
+    "path": "/papers/simeoni2025-dinov3",
+    "type": "paper",
+    "title": "DINOv3",
+    "summary": "arXiv preprint 2025",
+    "tags": [
+      "dinov3"
+    ],
+    "headings": [],
+    "authors": [
+      "O. Siméoni",
+      "H. V. Vo",
+      "M. Seitzer",
+      "F. Baldassarre",
+      "M. Oquab",
+      "C. Jose",
+      "V. Khalidov",
+      "M. Szafraniec",
+      "S. Yi",
+      "M. Ramamonjisoa",
+      "F. Massa",
+      "D. Haziza",
+      "L. Wehrstedt",
+      "J. Wang",
+      "T. Darcet",
+      "T. Moutakanni",
+      "L. Sentana",
+      "C. Roberts",
+      "A. Vedaldi",
+      "J. Tolan",
+      "J. Brandt",
+      "C. Couprie",
+      "J. Mairal",
+      "H. Jégou",
+      "P. Labatut",
+      "P. Bojanowski"
+    ],
+    "venue": "arXiv preprint"
+  },
+  {
+    "slug": "paper:hinton2015-distillation",
+    "path": "/papers/hinton2015-distillation",
+    "type": "paper",
+    "title": "Distilling the Knowledge in a Neural Network",
+    "summary": "NeurIPS 2014 Deep Learning Workshop (arXiv 2015)",
+    "tags": [
+      "distillation"
+    ],
+    "headings": [],
+    "authors": [
+      "G. E. Hinton",
+      "O. Vinyals",
+      "J. Dean"
+    ],
+    "venue": "NeurIPS 2014 Deep Learning Workshop (arXiv 2015)"
+  },
+  {
+    "slug": "paper:touvron2020-deit",
+    "path": "/papers/touvron2020-deit",
+    "type": "paper",
+    "title": "Training data-efficient image transformers & distillation through attention",
+    "summary": "ICML 2021 (arXiv 2020)",
+    "tags": [
+      "deit"
+    ],
+    "headings": [],
+    "authors": [
+      "H. Touvron",
+      "M. Cord",
+      "M. Douze",
+      "F. Massa",
+      "A. Sablayrolles",
+      "H. Jégou"
+    ],
+    "venue": "ICML 2021 (arXiv 2020)"
+  },
+  {
+    "slug": "paper:liu2021-swin",
+    "path": "/papers/liu2021-swin",
+    "type": "paper",
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "summary": "ICCV 2021",
+    "tags": [
+      "swin"
+    ],
+    "headings": [],
+    "authors": [
+      "Z. Liu",
+      "Y. Lin",
+      "Y. Cao",
+      "H. Hu",
+      "Y. Wei",
+      "Z. Zhang",
+      "S. Lin",
+      "B. Guo"
+    ],
+    "venue": "ICCV 2021"
+  },
+  {
+    "slug": "paper:chen2020-simclr",
+    "path": "/papers/chen2020-simclr",
+    "type": "paper",
+    "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+    "summary": "ICML 2020",
+    "tags": [
+      "simclr"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Chen",
+      "S. Kornblith",
+      "M. Norouzi",
+      "G. E. Hinton"
+    ],
+    "venue": "ICML 2020"
+  },
+  {
+    "slug": "paper:he2019-moco",
+    "path": "/papers/he2019-moco",
+    "type": "paper",
+    "title": "Momentum Contrast for Unsupervised Visual Representation Learning",
+    "summary": "CVPR 2020 (arXiv 2019)",
+    "tags": [
+      "moco"
+    ],
+    "headings": [],
+    "authors": [
+      "K. He",
+      "H. Fan",
+      "Y. Wu",
+      "S. Xie",
+      "R. Girshick"
+    ],
+    "venue": "CVPR 2020 (arXiv 2019)"
+  },
+  {
+    "slug": "paper:grill2020-byol",
+    "path": "/papers/grill2020-byol",
+    "type": "paper",
+    "title": "Bootstrap your own latent: A new approach to self-supervised Learning",
+    "summary": "NeurIPS 2020",
+    "tags": [
+      "byol"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Grill",
+      "F. Strub",
+      "F. Altché",
+      "C. Tallec",
+      "P. H. Richemond",
+      "E. Buchatskaya",
+      "C. Doersch",
+      "B. Á. Pires",
+      "Z. D. Guo",
+      "M. G. Azar",
+      "B. Piot",
+      "K. Kavukcuoglu",
+      "R. Munos",
+      "M. Valko"
+    ],
+    "venue": "NeurIPS 2020"
+  },
+  {
+    "slug": "paper:radford2021-clip",
+    "path": "/papers/radford2021-clip",
+    "type": "paper",
+    "title": "Learning Transferable Visual Models From Natural Language Supervision",
+    "summary": "ICML 2021",
+    "tags": [
+      "clip"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Radford",
+      "J. W. Kim",
+      "C. Hallacy",
+      "A. Ramesh",
+      "G. Goh",
+      "S. Agarwal",
+      "G. Sastry",
+      "A. Askell",
+      "P. Mishkin",
+      "J. Clark",
+      "G. Krueger",
+      "I. Sutskever"
+    ],
+    "venue": "ICML 2021"
+  },
+  {
+    "slug": "paper:tschannen2025-siglip2",
+    "path": "/papers/tschannen2025-siglip2",
+    "type": "paper",
+    "title": "SigLIP 2: Multilingual Vision-Language Encoders with Improved Semantic Understanding, Localization, and Dense Features",
+    "summary": "arXiv preprint 2025",
+    "tags": [
+      "siglip2"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Tschannen",
+      "A. A. Gritsenko",
+      "X. Wang",
+      "M. F. Naeem",
+      "I. Alabdulmohsin",
+      "N. Parthasarathy",
+      "T. Evans",
+      "L. Beyer",
+      "Y. Xia",
+      "B. Mustafa",
+      "O. J. Hénaff",
+      "J. Harmsen",
+      "A. Steiner",
+      "X. Zhai"
+    ],
+    "venue": "arXiv preprint"
+  },
+  {
+    "slug": "paper:jeong2023-winclip",
+    "path": "/papers/jeong2023-winclip",
+    "type": "paper",
+    "title": "WinCLIP: Zero-/Few-Shot Anomaly Classification and Segmentation",
+    "summary": "CVPR 2023",
+    "tags": [
+      "winclip"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Jeong",
+      "Y. Zou",
+      "T. Kim",
+      "D. Zhang",
+      "A. Ravichandran",
+      "O. Dabeer"
+    ],
+    "venue": "CVPR 2023"
+  },
+  {
+    "slug": "paper:zhou2023-anomalyclip",
+    "path": "/papers/zhou2023-anomalyclip",
+    "type": "paper",
+    "title": "AnomalyCLIP: Object-agnostic Prompt Learning for Zero-shot Anomaly Detection",
+    "summary": "ICLR 2024 (arXiv 2023)",
+    "tags": [
+      "anomalyclip"
+    ],
+    "headings": [],
+    "authors": [
+      "Q. Zhou",
+      "G. Pang",
+      "Y. Tian",
+      "S. He",
+      "J. Chen"
+    ],
+    "venue": "ICLR 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "paper:liu2023-simplenet",
+    "path": "/papers/liu2023-simplenet",
+    "type": "paper",
+    "title": "SimpleNet: A Simple Network for Image Anomaly Detection and Localization",
+    "summary": "CVPR 2023",
+    "tags": [
+      "simplenet"
+    ],
+    "headings": [],
+    "authors": [
+      "Z. Liu",
+      "Y. Zhou",
+      "Y. Xu",
+      "Z. Wang"
+    ],
+    "venue": "CVPR 2023"
+  },
+  {
+    "slug": "paper:teed2020-raft",
+    "path": "/papers/teed2020-raft",
+    "type": "paper",
+    "title": "RAFT: Recurrent All-Pairs Field Transforms for Optical Flow",
+    "summary": "ECCV 2020",
+    "tags": [
+      "raft"
+    ],
+    "headings": [],
+    "authors": [
+      "Z. Teed",
+      "J. Deng"
+    ],
+    "venue": "ECCV 2020"
+  },
+  {
+    "slug": "paper:schonberger2016-colmap",
+    "path": "/papers/schonberger2016-colmap",
+    "type": "paper",
+    "title": "Structure-from-Motion Revisited",
+    "summary": "CVPR 2016",
+    "tags": [
+      "colmap"
+    ],
+    "headings": [],
+    "authors": [
+      "J. L. Schönberger",
+      "J. Frahm"
+    ],
+    "venue": "CVPR 2016"
+  },
+  {
+    "slug": "paper:kannala2006-generic",
+    "path": "/papers/kannala2006-generic",
+    "type": "paper",
+    "title": "A Generic Camera Model and Calibration Method for Conventional, Wide-Angle, and Fish-Eye Lenses",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 2006",
+    "tags": [
+      "generic"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Kannala",
+      "S. S. Brandt"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:chum2003-lo-ransac",
+    "path": "/papers/chum2003-lo-ransac",
+    "type": "paper",
+    "title": "Locally Optimized RANSAC",
+    "summary": "DAGM 2003 (Lecture Notes in Computer Science) 2003",
+    "tags": [
+      "lo",
+      "ransac"
+    ],
+    "headings": [],
+    "authors": [
+      "O. Chum",
+      "J. Matas",
+      "J. Kittler"
+    ],
+    "venue": "DAGM 2003 (Lecture Notes in Computer Science)"
+  },
+  {
+    "slug": "paper:lin2017-fpn",
+    "path": "/papers/lin2017-fpn",
+    "type": "paper",
+    "title": "Feature Pyramid Networks for Object Detection",
+    "summary": "CVPR 2017",
+    "tags": [
+      "fpn"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Lin",
+      "P. Dollár",
+      "R. Girshick",
+      "K. He",
+      "B. Hariharan",
+      "S. Belongie"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:ranftl2021-dpt",
+    "path": "/papers/ranftl2021-dpt",
+    "type": "paper",
+    "title": "Vision Transformers for Dense Prediction",
+    "summary": "ICCV 2021",
+    "tags": [
+      "dpt"
+    ],
+    "headings": [],
+    "authors": [
+      "R. Ranftl",
+      "A. Bochkovskiy",
+      "V. Koltun"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:kirillov2020-pointrend",
+    "path": "/papers/kirillov2020-pointrend",
+    "type": "paper",
+    "title": "PointRend: Image Segmentation As Rendering",
+    "summary": "CVPR 2020",
+    "tags": [
+      "pointrend"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Kirillov",
+      "Y. Wu",
+      "K. He",
+      "R. Girshick"
+    ],
+    "venue": "CVPR"
   }
 ];

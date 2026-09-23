@@ -47,7 +47,7 @@ import { buildScholarlyIndex, emitScholarlyIndex } from "./build/scholarly.ts";
 import type { ScholarlyPageInput, ScholarlyPaperInput, ScholarlyNarrativeInput } from "./build/scholarly.ts";
 
 import { buildContentGraph, emitContentGraph } from "./content-graph.ts";
-import { buildAuthorSearchRecords, buildSearchRecords, emitContentSearch } from "./content-search.ts";
+import { buildAuthorSearchRecords, buildPaperSearchRecords, buildSearchRecords, emitContentSearch } from "./content-search.ts";
 import type { SearchEntry } from "./content-search.ts";
 import {
     resolveNarrative,
@@ -274,6 +274,9 @@ async function main(): Promise<void> {
 
     // Author register records live in the same index so a surname query can
     // resolve to the person's page, not only to the pages citing their work.
+    // `authorsIndex.authors` is already alias-resolved (see buildAuthorsIndex
+    // in authors-build.ts) — a merged duplicate identity's id is never a key
+    // here, only its canonical id is — so no extra filtering is needed.
     const authorSearchRecords = buildAuthorSearchRecords(
         Object.entries(authorsIndex.authors).map(([id, ref]) => ({
             id,
@@ -281,7 +284,11 @@ async function main(): Promise<void> {
             papers: ref.papers,
         })),
     );
-    const searchRecords = [...buildSearchRecords(searchEntries), ...authorSearchRecords];
+    // Paper register records (kind:paper only — `papers` already excludes
+    // repo:/doc: entries via `paperRefRecords`) live in the same index so a
+    // paper title/venue/nickname query can resolve straight to /papers/<id>.
+    const paperSearchRecords = buildPaperSearchRecords(papers);
+    const searchRecords = [...buildSearchRecords(searchEntries), ...authorSearchRecords, ...paperSearchRecords];
     emitContentSearch(searchRecords, GENERATED_DIR);
 
     console.log(

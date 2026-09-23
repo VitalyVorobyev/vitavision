@@ -27,6 +27,11 @@ interface AtlasPeopleViewProps {
     setMode: (mode: PeopleMode) => void;
     personId: string | undefined;
     setPersonFocus: (id: string | undefined) => void;
+    /** URL-backed (`?q=`) search query — shared with the Catalog and Papers
+     *  views so a "All matching people →" link from a catalog search lands
+     *  here pre-filtered, and typing here updates the same `q` param. */
+    query: string;
+    setQuery: (q: string) => void;
 }
 
 function NetworkFallback() {
@@ -47,12 +52,13 @@ export default function AtlasPeopleView({
     setMode,
     personId,
     setPersonFocus,
+    query,
+    setQuery,
 }: AtlasPeopleViewProps) {
     const { index: scholarly, status } = useScholarlyIndex();
     const authorsIndex = useAuthorsIndex();
     const papersById = useContext(PapersContext);
 
-    const [query, setQuery] = useState("");
     const [sort, setSort] = useState<PeopleSort>("reach");
     const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
 

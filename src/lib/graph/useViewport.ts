@@ -65,9 +65,12 @@ export interface UseViewportResult {
     /**
      * Animate/jump the viewport to frame an arbitrary sub-box of the content
      * (e.g. a walkthrough step's focused nodes). `maxScale` caps how far the
-     * camera zooms in on a small box; defaults to `fitScaleMax`.
+     * camera zooms in on a small box; defaults to `fitScaleMax`. `minScale`
+     * raises the floor below which the camera won't zoom out on this call
+     * (e.g. a legibility floor); defaults to the hook's own `fitScaleMin`, so
+     * callers that don't pass it keep the existing clamp exactly.
      */
-    fitBounds: (b: ViewportBounds, animated: boolean, maxScale?: number) => void;
+    fitBounds: (b: ViewportBounds, animated: boolean, maxScale?: number, minScale?: number) => void;
     zoomAroundCenter: (factor: number) => void;
     onPointerDown:   (e: React.PointerEvent<HTMLDivElement>) => void;
     onPointerMove:   (e: React.PointerEvent<HTMLDivElement>) => void;
@@ -112,7 +115,7 @@ export function useViewport({
 
     // ── fitView ────────────────────────────────────────────────────────────────
 
-    const fitBounds = useCallback((b: ViewportBounds, animated: boolean, maxScale?: number) => {
+    const fitBounds = useCallback((b: ViewportBounds, animated: boolean, maxScale?: number, minScale?: number) => {
         if (vp.w === 0 || vp.h === 0) return;
 
         const minX = b.minX - fitPadding, minY = b.minY - fitPadding;
@@ -120,7 +123,7 @@ export function useViewport({
         const bboxW = maxX - minX;
         const bboxH = maxY - minY;
 
-        const scale = clamp(Math.min(vp.w / bboxW, vp.h / bboxH), fitScaleMin, maxScale ?? fitScaleMax);
+        const scale = clamp(Math.min(vp.w / bboxW, vp.h / bboxH), minScale ?? fitScaleMin, maxScale ?? fitScaleMax);
         const x = (vp.w - bboxW * scale) / 2 - minX * scale;
         const y = (vp.h - bboxH * scale) / 2 - minY * scale;
 

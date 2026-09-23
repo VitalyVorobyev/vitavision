@@ -3,12 +3,24 @@ import useAlgorithmsFilters from "../hooks/useAlgorithmsFilters.ts";
 import AtlasCatalogView from "../components/algorithms/AtlasCatalogView.tsx";
 import AtlasGraphView from "../components/algorithms/AtlasGraphView.tsx";
 import AtlasNarrativesView from "../components/algorithms/AtlasNarrativesView.tsx";
+import AtlasPeopleView from "../components/people/AtlasPeopleView.tsx";
+import AtlasPapersView from "../components/papersIndex/AtlasPapersView.tsx";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 
 export default function AlgorithmIndex() {
-    const { filters, setKind, setQuery, setView, setProblem, toggleTag, setTags, reset } =
-        useAlgorithmsFilters();
+    const {
+        filters,
+        setKind,
+        setQuery,
+        setView,
+        setProblem,
+        setMode,
+        setPersonFocus,
+        toggleTag,
+        setTags,
+        reset,
+    } = useAlgorithmsFilters();
     const [searchParams] = useSearchParams();
     const focusParam = searchParams.get("focus") ?? undefined;
 
@@ -34,6 +46,30 @@ export default function AlgorithmIndex() {
                 view={filters.view}
                 setView={setView}
                 focusParam={focusParam}
+            />
+        );
+    }
+
+    if (filters.view === "people") {
+        return (
+            <AtlasPeopleView
+                isDesktop={isDesktop}
+                view={filters.view}
+                setView={setView}
+                mode={filters.mode}
+                setMode={setMode}
+                personId={filters.person}
+                setPersonFocus={setPersonFocus}
+            />
+        );
+    }
+
+    if (filters.view === "papers") {
+        return (
+            <AtlasPapersView
+                isDesktop={isDesktop}
+                view={filters.view}
+                setView={setView}
             />
         );
     }

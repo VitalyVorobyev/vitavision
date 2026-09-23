@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { narrativePages } from "../../generated/content-index.ts";
 import SeoHead from "../seo/SeoHead.tsx";
 import NarrativeCard from "../narratives/NarrativeCard.tsx";
-import AlgorithmsViewToggle from "./AlgorithmsViewToggle.tsx";
+import AtlasViewTabs from "./AtlasViewTabs.tsx";
 import type { AlgorithmsView } from "../../hooks/useAlgorithmsFilters.ts";
 
 /**
@@ -60,7 +60,7 @@ export default function AtlasNarrativesView({ isDesktop, view, setView, isAdmin 
                 <main className="mx-auto w-full min-w-0 max-w-[1000px] flex-1 px-6 py-5">
                     <div className="mb-1 flex items-baseline justify-between">
                         <h1 className="text-[22px] font-bold -tracking-[0.4px]">Narratives</h1>
-                        <AlgorithmsViewToggle view={view} onChange={setView} />
+                        <AtlasViewTabs view={view} onChange={setView} />
                     </div>
                     <p className="mb-4 text-[13px] text-muted-foreground">
                         Long-form walks through the atlas — a constellation of pages and papers,
@@ -79,9 +79,9 @@ export default function AtlasNarrativesView({ isDesktop, view, setView, isAdmin 
                 title="Atlas narratives"
                 description="Guided walks through the computer vision atlas — long-form essays over a curated constellation of pages and papers."
             />
-            <div className="mb-4 flex items-baseline justify-between">
+            <div className="mb-4 flex flex-col gap-3">
                 <h1 className="text-[22px] font-bold -tracking-[0.5px]">Narratives</h1>
-                <AlgorithmsViewToggle view={view} onChange={setView} />
+                <AtlasViewTabs view={view} onChange={setView} compact />
             </div>
             <NarrativesList showDrafts={isAdmin} />
         </div>

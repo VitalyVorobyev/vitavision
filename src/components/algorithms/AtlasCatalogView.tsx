@@ -3,7 +3,7 @@ import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import SeoHead from "../seo/SeoHead.tsx";
 import AlgorithmsSidebar from "./AlgorithmsSidebar.tsx";
 import AlgorithmsFilterSheet from "./AlgorithmsFilterSheet.tsx";
-import AlgorithmsViewToggle from "./AlgorithmsViewToggle.tsx";
+import AtlasViewTabs from "./AtlasViewTabs.tsx";
 import ActiveTagChips from "./ActiveTagChips.tsx";
 import RecentlyAddedSection from "./RecentlyAddedSection.tsx";
 import UnifiedResults from "./UnifiedResults.tsx";
@@ -57,6 +57,8 @@ export default function AtlasCatalogView({
                         facets={facets}
                         onKindChange={setKind}
                         onProblemChange={setProblem}
+                        layout={filters.view === "list" ? "list" : "grid"}
+                        onLayoutChange={setView}
                     />
 
                     {/* Main column */}
@@ -84,7 +86,7 @@ export default function AtlasCatalogView({
                                     />
                                 </div>
 
-                                <AlgorithmsViewToggle
+                                <AtlasViewTabs
                                     view={filters.view}
                                     onChange={setView}
                                 />
@@ -137,6 +139,8 @@ export default function AtlasCatalogView({
                     {facets.total} entries
                 </span>
             </div>
+
+            <AtlasViewTabs view={filters.view} onChange={setView} compact />
 
             {/* Segmented Type control */}
             <div
@@ -199,11 +203,11 @@ export default function AtlasCatalogView({
 
             {/* Card sections */}
             {showRecentlyAdded && (
-                <RecentlyAddedSection entries={recentEntries} layout="list" />
+                <RecentlyAddedSection entries={recentEntries} layout={filters.view === "grid" ? "grid" : "list"} />
             )}
             <UnifiedResults
                 groups={unifiedGroups}
-                layout="list"
+                layout={filters.view === "grid" ? "grid" : "list"}
                 isMobile={true}
             />
 
@@ -217,6 +221,8 @@ export default function AtlasCatalogView({
                 onKindChange={setKind}
                 onProblemChange={setProblem}
                 onReset={reset}
+                layout={filters.view === "list" ? "list" : "grid"}
+                onLayoutChange={setView}
             />
         </div>
     );

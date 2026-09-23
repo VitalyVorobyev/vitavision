@@ -1,5 +1,5 @@
 import { renderToString } from "react-dom/server";
-import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { MemoryRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { ClerkProvider } from "@clerk/clerk-react";
 import Blog from "./pages/Blog.tsx";
@@ -7,9 +7,6 @@ import BlogPost from "./pages/BlogPost.tsx";
 import AlgorithmIndex from "./pages/AlgorithmIndex.tsx";
 import AtlasPost from "./pages/AtlasPost.tsx";
 import NarrativePage from "./pages/NarrativePage.tsx";
-// Aliased: the page's default export would otherwise collide with the
-// `AuthorsIndex` data type imported below.
-import AuthorsIndexPage from "./pages/AuthorsIndex.tsx";
 import AuthorPage from "./pages/AuthorPage.tsx";
 import PaperPage from "./pages/PaperPage.tsx";
 import DemoIndex from "./pages/DemoIndex.tsx";
@@ -58,7 +55,7 @@ export function render(
                                 {/* Static segment must be matched before the /atlas/:slug catch-all. */}
                                 <Route path="/atlas/narratives/:slug" element={<NarrativePage />} />
                                 <Route path="/atlas/:slug" element={<AtlasPost />} />
-                                <Route path="/authors" element={<AuthorsIndexPage />} />
+                                <Route path="/authors" element={<Navigate to="/atlas?view=people" replace />} />
                                 <Route path="/authors/:id" element={<AuthorPage />} />
                                 <Route path="/papers/:id" element={<PaperPage />} />
                                 <Route path="/demos" element={<DemoIndex />} />

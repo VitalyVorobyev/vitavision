@@ -10,6 +10,7 @@ import {
 } from "./papersDirectory.ts";
 import type { PapersById } from "./paperRefTypes.ts";
 import type { ScholarlyIndex } from "./scholarlyTypes.ts";
+import type { PaperRow } from "./papersDirectory.ts";
 
 function scholarly(papers: ScholarlyIndex["papers"], pages: ScholarlyIndex["pages"] = {}): ScholarlyIndex {
     return {
@@ -141,6 +142,25 @@ describe("normalizeSearchText / matchesPaperSearch", () => {
     it("no match returns false", () => {
         const resnet = rows.find((r) => r.id === "resnet")!;
         expect(matchesPaperSearch(resnet, normalizeSearchText("nonexistent"))).toBe(false);
+    });
+
+    it("matches a paper by its id's colloquial nickname, even absent from title/venue/authors", () => {
+        // Fixture ids above ("resnet", "vit", ...) are bare test ids without
+        // the registry's `<surname><year>-<nickname>` convention, so this
+        // needs its own row built with a realistic id.
+        const row: PaperRow = {
+            id: "he2016-resnet",
+            year: 2016,
+            title: "Deep Residual Learning for Image Recognition",
+            venue: "CVPR 2016",
+            authorsShort: "He, Zhang, Ren, Sun",
+            authorsRaw: ["Kaiming He", "Xiangyu Zhang", "Shaoqing Ren", "Jian Sun"],
+            primaryPages: [],
+            citingPageCount: 0,
+            citedByCount: 0,
+            hasPage: false,
+        };
+        expect(matchesPaperSearch(row, normalizeSearchText("resnet"))).toBe(true);
     });
 });
 

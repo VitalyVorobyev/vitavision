@@ -24,15 +24,19 @@ interface AtlasPapersViewProps {
     isDesktop: boolean;
     view: AlgorithmsView;
     setView: (view: AlgorithmsView) => void;
+    /** URL-backed (`?q=`) search query — shared with the Catalog and People
+     *  views so a "All matching papers →" link from a catalog search lands
+     *  here pre-filtered, and typing here updates the same `q` param. */
+    query: string;
+    setQuery: (q: string) => void;
 }
 
 /** The Atlas Papers view — every registry paper, searchable, filterable by
  *  whether it anchors an Atlas page, sortable, grouped by decade. */
-export default function AtlasPapersView({ isDesktop, view, setView }: AtlasPapersViewProps) {
+export default function AtlasPapersView({ isDesktop, view, setView, query, setQuery }: AtlasPapersViewProps) {
     const papersById = useContext(PapersContext);
     const { index: scholarly, status } = useScholarlyIndex();
 
-    const [query, setQuery] = useState("");
     const [filter, setFilter] = useState<PapersFilter>("all");
     const [sort, setSort] = useState<PapersSort>("citedBy");
 

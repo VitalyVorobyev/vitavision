@@ -9,7 +9,7 @@
  */
 import type { PapersById } from "./paperRefTypes.ts";
 import type { ScholarlyIndex, ScholarlyPageMeta } from "./scholarlyTypes.ts";
-import { shortAuthorList } from "./paperView.ts";
+import { paperNicknameTags, shortAuthorList } from "./paperView.ts";
 
 export interface PaperPageTag {
     slug: string;
@@ -98,11 +98,18 @@ export function normalizeSearchText(s: string): string {
     return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 }
 
-/** True when the title, venue, or any author name contains the (already
- *  normalized) search needle. An empty needle always matches. */
+/** True when the title, venue, any author name, or the paper id's colloquial
+ *  nickname (e.g. "resnet" for "he2016-resnet" — see `paperNicknameTags`)
+ *  contains the (already normalized) search needle. An empty needle always
+ *  matches. Nickname tokens keep this in sync with the Atlas catalog's
+ *  MiniSearch-backed People & Papers matches, so a "resnet" query behaves the
+ *  same whether typed here directly or landed on via that block's "All
+ *  matching papers →" link. */
 export function matchesPaperSearch(row: PaperRow, needle: string): boolean {
     if (!needle) return true;
-    const haystack = [row.title, row.venue, ...row.authorsRaw].map(normalizeSearchText).join(" ␟ ");
+    const haystack = [row.title, row.venue, ...row.authorsRaw, ...paperNicknameTags(row.id)]
+        .map(normalizeSearchText)
+        .join(" ␟ ");
     return haystack.includes(needle);
 }
 

@@ -7,6 +7,7 @@ import AtlasViewTabs from "./AtlasViewTabs.tsx";
 import ActiveTagChips from "./ActiveTagChips.tsx";
 import RecentlyAddedSection from "./RecentlyAddedSection.tsx";
 import UnifiedResults from "./UnifiedResults.tsx";
+import PeoplePapersMatches from "./PeoplePapersMatches.tsx";
 import useAtlasCatalog from "../../hooks/useAtlasCatalog.ts";
 import type { AlgorithmsFilters, AlgorithmsKind, AlgorithmsView } from "../../hooks/useAlgorithmsFilters.ts";
 
@@ -110,6 +111,7 @@ export default function AtlasCatalogView({
                         )}
 
                         {/* Results */}
+                        {filters.query.trim() !== "" && <PeoplePapersMatches query={filters.query} />}
                         {showRecentlyAdded && (
                             <RecentlyAddedSection entries={recentEntries} layout={filters.view === "list" ? "list" : "grid"} />
                         )}
@@ -202,6 +204,7 @@ export default function AtlasCatalogView({
             />
 
             {/* Card sections */}
+            {filters.query.trim() !== "" && <PeoplePapersMatches query={filters.query} />}
             {showRecentlyAdded && (
                 <RecentlyAddedSection entries={recentEntries} layout={filters.view === "grid" ? "grid" : "list"} />
             )}

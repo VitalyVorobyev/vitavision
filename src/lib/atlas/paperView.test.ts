@@ -3,6 +3,7 @@ import {
     computePaperStats,
     firstSentence,
     groupCitingPagesByDomain,
+    paperNicknameTags,
     sameAuthorsPapers,
     shortAuthorList,
 } from "./paperView.ts";
@@ -173,5 +174,25 @@ describe("firstSentence", () => {
 
     it("falls back to the whole trimmed scope when no sentence punctuation is found", () => {
         expect(firstSentence("no punctuation here")).toBe("no punctuation here");
+    });
+});
+
+describe("paperNicknameTags", () => {
+    it("extracts the nickname after a simple surname+year token", () => {
+        expect(paperNicknameTags("he2016-resnet")).toEqual(["resnet"]);
+    });
+
+    it("extracts multiple nickname tokens", () => {
+        expect(paperNicknameTags("gao2011-dual-homography")).toEqual(["dual", "homography"]);
+    });
+
+    it("handles a hyphenated surname by finding the first token with a digit", () => {
+        expect(paperNicknameTags("shi-tomasi1994-features")).toEqual(["features"]);
+        expect(paperNicknameTags("longuet-higgins1981-eight-point")).toEqual(["eight", "point"]);
+    });
+
+    it("returns [] when no token contains a digit, or the digit token is last", () => {
+        expect(paperNicknameTags("no-year-here")).toEqual([]);
+        expect(paperNicknameTags("smith2020")).toEqual([]);
     });
 });

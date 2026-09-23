@@ -304,8 +304,13 @@ export function writeStoredView(view: AlgorithmsView): void {
     }
 }
 
-export function buildParams(filters: AlgorithmsFilters): URLSearchParams {
-    const p = new URLSearchParams();
+/** Params this module owns; everything else in the URL (e.g. `focus`) is
+ *  carried through untouched by `buildParams`. */
+const FILTER_PARAM_KEYS = ["kind", "tags", "q", "view", "sort", "problem"] as const;
+
+export function buildParams(filters: AlgorithmsFilters, current?: URLSearchParams): URLSearchParams {
+    const p = new URLSearchParams(current);
+    for (const key of FILTER_PARAM_KEYS) p.delete(key);
     if (filters.kind    !== DEFAULTS.kind)       p.set("kind",  filters.kind);
     if (filters.tags.length > 0)                 p.set("tags", filters.tags.join(","));
     if (filters.query   !== DEFAULTS.query)      p.set("q",    filters.query);

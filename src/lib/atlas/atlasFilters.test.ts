@@ -83,6 +83,20 @@ afterEach(() => {
 // ── parseFiltersFromParams / buildParams round-trip ─────────────────────────
 
 describe("buildParams / parseFiltersFromParams round-trip", () => {
+    it("carries params it does not own (e.g. focus) through unchanged", () => {
+        const current = new URLSearchParams("focus=fpn&kind=model&q=old");
+        const params = buildParams({ ...DEFAULTS, kind: "algorithm", query: "corner" }, current);
+        expect(params.get("focus")).toBe("fpn");
+        expect(params.get("kind")).toBe("algorithm");
+        expect(params.get("q")).toBe("corner");
+    });
+
+    it("drops owned params that return to their defaults", () => {
+        const current = new URLSearchParams("focus=fpn&kind=model&q=old");
+        const params = buildParams(DEFAULTS, current);
+        expect(params.toString()).toBe("focus=fpn");
+    });
+
     it("round-trips a fully non-default filter set", () => {
         const filters = baseFilters({
             kind: "model",

@@ -45,7 +45,7 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
 
     const update = useCallback(
         (next: AlgorithmsFilters) => {
-            setSearchParams(buildParams(next), { replace: true });
+            setSearchParams((prev) => buildParams(next, prev), { replace: true });
         },
         [setSearchParams],
     );

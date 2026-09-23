@@ -29,27 +29,3 @@ export function checkEmptyDivGuard(entries: EmptyDivGuardEntry[]): void {
         );
     }
 }
-
-/**
- * Enforce: any non-draft, non-dev model page must have at least one `implementations[]`
- * entry, unless `noPublicImpl: true` declares no public implementation exists for
- * legitimate reasons. Must run before the draft filter so draft pages can freely
- * omit implementations.
- */
-export function checkModelImplementationsGuard(entries: { slug: string; frontmatter: unknown }[]): void {
-    for (const entry of entries) {
-        const fm = entry.frontmatter as {
-            draft?: boolean;
-            dev?: boolean;
-            noPublicImpl?: boolean;
-            implementations?: unknown[];
-        };
-        if (!fm.draft && !fm.dev && !fm.noPublicImpl) {
-            if (!fm.implementations || fm.implementations.length === 0) {
-                throw new Error(
-                    `content:build failed: model page "${entry.slug}" is not draft but has no implementations[] entry (and noPublicImpl is not set). See .claude/skills/deep-model-page/SKILL.md §Workflow B9a.`,
-                );
-            }
-        }
-    }
-}

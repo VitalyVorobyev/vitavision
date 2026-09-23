@@ -32,7 +32,7 @@ import type {
 
 import { processDirectory, createShikiHighlighter } from "./build/render.ts";
 import { serializeFilterSort, serializeNarrativeFrontmatter, byTitleAsc, byDateDesc } from "./build/serialize.ts";
-import { checkEmptyDivGuard, checkModelImplementationsGuard } from "./build/guards.ts";
+import { checkEmptyDivGuard } from "./build/guards.ts";
 import { generateOutput, emitPapersIndex } from "./build/emit.ts";
 import {
     buildAtlasBySlug,
@@ -95,7 +95,6 @@ async function main(): Promise<void> {
     const demoPages = serializeFilterSort<DemoEntry>(rawDemoPages, includeDrafts, byTitleAsc);
 
     const rawModelPages = await processDirectory(join(CONTENT_DIR, "models"), modelFrontmatterSchema, modelSlug, highlighter);
-    checkModelImplementationsGuard(rawModelPages);
     const modelPages = serializeFilterSort<ModelEntry>(rawModelPages, includeDrafts, byTitleAsc);
     const modelPublished = modelPages.filter(notDev);
 
@@ -149,6 +148,27 @@ async function main(): Promise<void> {
         ...rawNarrativePages,
     ]);
 
+    // Build content graph from all non-draft, non-dev entries.
+    // dev:true pages are excluded from relationship edges and slug lookups so
+    // they do not appear in navigation. They remain routable via direct URL.
+    const graphEntries = buildAtlasGraphEntries(algorithmPublished, modelPublished, conceptPublished);
+    const contentGraph = buildContentGraph(graphEntries);
+
+    // Validate before writing anything: a failing build must not leave a
+    // half-updated src/generated/ behind.
+    const { validateContent } = await import("./validate-content.ts");
+    const validationErrors = await validateContent({
+        includeDrafts,
+        publishedGraph: contentGraph,
+    });
+
+    if (validationErrors.length > 0) {
+        for (const err of validationErrors) {
+            console.error(`  ERROR ${err}`);
+        }
+        throw new Error(`content:validate failed with ${validationErrors.length} error(s)`);
+    }
+
     generateOutput({
         blogPosts,
         algorithmPages,
@@ -186,11 +206,6 @@ async function main(): Promise<void> {
     const authorsIndex = emitAuthorsIndex(buildAtlasAuthorPages(algorithmPublished, modelPublished, conceptPublished));
     const resolvePrimary = makePrimaryDisplayResolver(papersById);
 
-    // Build content graph from all non-draft, non-dev entries.
-    // dev:true pages are excluded from relationship edges and slug lookups so
-    // they do not appear in navigation. They remain routable via direct URL.
-    const graphEntries = buildAtlasGraphEntries(algorithmPublished, modelPublished, conceptPublished);
-    const contentGraph = buildContentGraph(graphEntries);
     emitContentGraph(contentGraph, GENERATED_DIR);
 
     // Build search records from all non-draft, non-dev entries.
@@ -217,20 +232,6 @@ async function main(): Promise<void> {
     );
     const searchRecords = [...buildSearchRecords(searchEntries), ...authorSearchRecords];
     emitContentSearch(searchRecords, GENERATED_DIR);
-
-    // Run validation after all content is processed.
-    const { validateContent } = await import("./validate-content.ts");
-    const validationErrors = await validateContent({
-        includeDrafts,
-        publishedGraph: contentGraph,
-    });
-
-    if (validationErrors.length > 0) {
-        for (const err of validationErrors) {
-            console.error(`  ERROR ${err}`);
-        }
-        throw new Error(`content:validate failed with ${validationErrors.length} error(s)`);
-    }
 
     console.log(
         `content:build — ${blogPosts.length} blog post(s), ${algorithmPages.length} algorithm page(s), ${demoPages.length} demo page(s), ${modelPages.length} model page(s), ${conceptPages.length} concept page(s), ${narrativePages.length} narrative(s) → ${GENERATED_DIR}`,

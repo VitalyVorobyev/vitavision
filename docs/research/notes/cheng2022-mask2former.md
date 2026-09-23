@@ -104,7 +104,7 @@ Sections to extend on the family page:
 - **Architecture.Training**: point-sampled mask loss ($K=12544$ points, importance sampling for final loss, uniform sampling for matching); AdamW, lr $10^{-4}$, weight decay $0.05$; 50 epochs on COCO, 160k iters on ADE20K; LSJ augmentation.
 - **Assessment.Strengths**: COCO panoptic val PQ 57.8 (Swin-L, Table 1 of the paper); COCO panoptic PQ^Th 64.2 / PQ^St 48.6 / mIoU 67.4 (Table 1); COCO instance val AP 50.1 (Swin-L, Table 2); ADE20K semantic val mIoU 57.7 m.s. (Swin-L + FaPN, Table 3); Cityscapes panoptic val PQ 66.6 multi-scale (Table 6, Swin-L). All Swin-L models: 216M parameters. Outperforms MaskFormer by >5 PQ on COCO panoptic across all backbones, converging 6× faster (50 vs 300 epochs).
 - **Assessment.Limitations**: still inherits DETR-class slow convergence relative to Mask R-CNN-family models (25–50 epochs vs 12–36 epochs); specialised single-task SOTA has since exceeded it on individual benchmarks; fails on very thin structures and densely packed small instances.
-- **References**: primary source cheng2022-mask2former; foundation cheng2021-maskformer; DETR carion2020-detr; PointRend (importance sampling) [kirillov2020-pointrend?].
+- **References**: primary source cheng2022-mask2former; foundation cheng2021-maskformer; DETR carion2020-detr; PointRend (importance sampling) [kirillov2020-pointrend].
 
 Relations: no new typed relations beyond what the family-page's foundation note (cheng2021-maskformer) already carries — the primary-source promotion from v1 to v2 is handled by updating `sources.primary` on the Atlas page.
 

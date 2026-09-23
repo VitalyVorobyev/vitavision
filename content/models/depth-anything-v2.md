@@ -15,6 +15,7 @@ sources:
     - yang2024-depth-anything
     - ranftl2019-midas
     - oquab2023-dinov2
+    - ranftl2021-dpt
 relations:
   - type: generalized_by
     target: depth-anything-3
@@ -35,7 +36,7 @@ Takes a single RGB image and produces a dense affine-invariant inverse depth map
 
 # Architecture
 
-**Family & shape.** DINOv2-pretrained ViT encoders — ViT-S (25M params), ViT-B, ViT-L (335M), and ViT-G (1.3B, teacher only) — coupled to a DPT depth decoder inherited from V1. Input: single RGB image, shorter side resized to 518 during training (518 = 37 × 14 patches, matching DINOv2's patch size); aspect-ratio preserved and random-cropped to 518×518. Output: dense disparity map $d = 1/t$, normalised per image by scale and shift to remove absolute depth ambiguity — the same affine-invariant formulation as MiDaS and V1.
+**Family & shape.** DINOv2-pretrained ViT encoders — ViT-S (25M params), ViT-B, ViT-L (335M), and ViT-G (1.3B, teacher only) — coupled to a [DPT](/atlas/dpt) depth decoder inherited from V1. Input: single RGB image, shorter side resized to 518 during training (518 = 37 × 14 patches, matching DINOv2's patch size); aspect-ratio preserved and random-cropped to 518×518. Output: dense disparity map $d = 1/t$, normalised per image by scale and shift to remove absolute depth ambiguity — the same affine-invariant formulation as MiDaS and V1.
 
 **Blocks.** The encoder is a standard DINOv2 ViT with 14-pixel patch embeddings and no architectural modification. The DPT decoder fuses multi-scale encoder features into a dense prediction head. Architecture is identical to V1; all improvement over V1 comes from the data recipe.
 

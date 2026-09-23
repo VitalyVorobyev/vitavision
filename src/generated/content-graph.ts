@@ -603,6 +603,14 @@ export const contentGraph: ContentGraph = {
       "path": "/atlas/dinov3",
       "draft": false
     },
+    "dpt": {
+      "slug": "dpt",
+      "type": "model",
+      "title": "DPT (Dense Prediction Transformer)",
+      "summary": "ViT encoder whose tokens from four layers are reassembled into image-like feature maps at multiple resolutions and fused by a convolutional decoder into full-resolution dense predictions; trained for monocular depth with the MiDaS protocol and for semantic segmentation.",
+      "path": "/atlas/dpt",
+      "draft": false
+    },
     "dust3r": {
       "slug": "dust3r",
       "type": "model",
@@ -641,6 +649,14 @@ export const contentGraph: ContentGraph = {
       "title": "FCN: Fully Convolutional Networks",
       "summary": "Encoder-decoder CNN for dense pixel-wise classification — converts ImageNet classifiers into fully convolutional networks via 1×1-conv reinterpretation, then upsamples via learnable bilinear-initialised deconvolution with skip connections from earlier pooling stages.",
       "path": "/atlas/fcn-semantic-segmentation",
+      "draft": false
+    },
+    "fpn": {
+      "slug": "fpn",
+      "type": "model",
+      "title": "Feature Pyramid Network (FPN)",
+      "summary": "Builds a multi-scale feature pyramid inside a single-scale CNN via a top-down pathway with lateral connections, giving every level strong semantics at a fraction of the cost of image pyramids; drives RPN and Fast R-CNN heads per level.",
+      "path": "/atlas/fpn",
       "draft": false
     },
     "focalclick": {
@@ -769,6 +785,14 @@ export const contentGraph: ContentGraph = {
       "title": "PatchCore",
       "summary": "Training-free industrial anomaly detection: a single forward pass over defect-free images builds a coreset-subsampled memory bank of locally aware mid-level CNN patch features, and test images are scored by reweighted nearest-neighbour distance in that feature space.",
       "path": "/atlas/patchcore",
+      "draft": false
+    },
+    "pointrend": {
+      "slug": "pointrend",
+      "type": "model",
+      "title": "PointRend",
+      "summary": "Treats mask prediction as rendering: starts from a coarse mask and refines it by predicting labels only at adaptively selected uncertain points with a small point-wise MLP over fine-grained and coarse features, giving sharp boundaries at a fraction of dense-upsampling cost.",
+      "path": "/atlas/pointrend",
       "draft": false
     },
     "raft": {
@@ -2585,6 +2609,43 @@ export const contentGraph: ContentGraph = {
       "failureModes": [],
       "relations": []
     },
+    "dpt": {
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "transformer",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "depth-anything",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-v2",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-3",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "dust3r",
+          "confidence": "high",
+          "caution": "DUSt3R reuses DPT-style regression heads to decode pointmaps, not depth."
+        },
+        {
+          "type": "feeds_into",
+          "target": "vggt",
+          "confidence": "high",
+          "caution": "VGGT uses a DPT upsampler for its dense heads; the aggregator backbone is its own."
+        }
+      ]
+    },
     "dust3r": {
       "prerequisites": [
         "epipolar-geometry",
@@ -2685,6 +2746,11 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
+          "type": "feeds_into",
+          "target": "fpn",
+          "confidence": "high"
+        },
+        {
           "type": "compared_with",
           "target": "detr",
           "confidence": "high",
@@ -2739,6 +2805,21 @@ export const contentGraph: ContentGraph = {
           "target": "segformer",
           "confidence": "high",
           "mirrored": true
+        }
+      ]
+    },
+    "fpn": {
+      "prerequisites": [
+        "image-pyramid",
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN's headline configuration uses a ResNet-FPN backbone; FPN §5.2.3 points to Mask R-CNN as the follow-up."
         }
       ]
     },
@@ -2934,6 +3015,12 @@ export const contentGraph: ContentGraph = {
           "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
         },
         {
+          "type": "feeds_into",
+          "target": "pointrend",
+          "confidence": "medium",
+          "caution": "PointRend is a generic refinement module; Mask R-CNN is its primary instance-segmentation base, not its only one."
+        },
+        {
           "type": "compared_with",
           "target": "mask2former",
           "confidence": "high",
@@ -3036,6 +3123,12 @@ export const contentGraph: ContentGraph = {
           "type": "feeds_into",
           "target": "depth-anything",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "dpt",
+          "confidence": "high",
+          "caution": "DPT reuses MiDaS's scale-and-shift-invariant loss and dataset mixing with a ViT encoder; later MiDaS releases (v3) ship DPT."
         }
       ]
     },
@@ -3132,6 +3225,20 @@ export const contentGraph: ContentGraph = {
         }
       ]
     },
+    "pointrend": {
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mask2former",
+          "confidence": "high",
+          "caution": "Mask2Former adopts PointRend's importance point sampling to compute its mask loss on sampled points, not the point head itself."
+        }
+      ]
+    },
     "raft": {
       "prerequisites": [
         "optical-flow",
@@ -3187,6 +3294,11 @@ export const contentGraph: ContentGraph = {
           "target": "efficientad",
           "confidence": "medium",
           "caution": "EfficientAD distils its patch description network from a WideResNet-101 teacher; the wide variant is not this page's subject, hence medium confidence."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fpn",
+          "confidence": "high"
         },
         {
           "type": "compared_with",
@@ -3348,6 +3460,13 @@ export const contentGraph: ContentGraph = {
           "target": "fast-scnn",
           "confidence": "medium",
           "mirrored": true
+        },
+        {
+          "type": "compared_with",
+          "target": "swin",
+          "confidence": "medium",
+          "caution": "Swin is a general backbone (paired with a UperNet head for segmentation); SegFormer is a full segmenter with its own hierarchical encoder.",
+          "mirrored": true
         }
       ]
     },
@@ -3444,6 +3563,12 @@ export const contentGraph: ContentGraph = {
           "target": "resnet",
           "confidence": "high",
           "caution": "Benchmarked as interchangeable backbones inside identical detection/segmentation frameworks at matched FLOPs tiers — a backbone-level practitioner choice across paradigms."
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "medium",
+          "caution": "Swin is a general backbone (paired with a UperNet head for segmentation); SegFormer is a full segmenter with its own hierarchical encoder."
         },
         {
           "type": "compared_with",
@@ -3574,6 +3699,16 @@ export const contentGraph: ContentGraph = {
           "target": "resnet",
           "confidence": "high",
           "caution": "ViT vs ResNet (BiT) is the headline classification comparison in the paper. Both coexist as production backbones — ResNet's conv inductive bias dominates in small-data regimes; ViT scales better with large pretraining (JFT-300M)."
+        },
+        {
+          "type": "feeds_into",
+          "target": "dpt",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "segformer",
+          "confidence": "high"
         }
       ]
     },
@@ -4645,6 +4780,10 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
+          "slug": "dpt",
+          "confidence": "high"
+        },
+        {
           "slug": "midas",
           "confidence": "high"
         }
@@ -4673,6 +4812,10 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
+          "slug": "dpt",
+          "confidence": "high"
+        },
+        {
           "slug": "dust3r",
           "confidence": "medium",
           "caution": "DA3 inherits DUSt3R's pose-free feed-forward pointmap paradigm but is a distinct any-view model."
@@ -4693,6 +4836,10 @@ export const contentGraph: ContentGraph = {
       "fedBy": [
         {
           "slug": "dinov2",
+          "confidence": "high"
+        },
+        {
+          "slug": "dpt",
           "confidence": "high"
         }
       ],
@@ -4742,12 +4889,36 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "dpt": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "midas",
+          "confidence": "high",
+          "caution": "DPT reuses MiDaS's scale-and-shift-invariant loss and dataset mixing with a ViT encoder; later MiDaS releases (v3) ship DPT."
+        },
+        {
+          "slug": "vit",
+          "confidence": "high"
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "dust3r": {
       "usedBy": [],
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "dpt",
+          "confidence": "high",
+          "caution": "DUSt3R reuses DPT-style regression heads to decode pointmaps, not depth."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "efficientad": {
@@ -4812,6 +4983,23 @@ export const contentGraph: ContentGraph = {
           "slug": "vgg",
           "confidence": "high",
           "caution": "VGG-16 is FCN's canonical backbone per FCN Table 1; FCN-VGG16 mean IU 56.0 vs FCN-AlexNet 39.8."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
+    "fpn": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "faster-rcnn",
+          "confidence": "high"
+        },
+        {
+          "slug": "resnet",
+          "confidence": "high"
         }
       ],
       "hasLearnedAlternative": []
@@ -4916,6 +5104,11 @@ export const contentGraph: ContentGraph = {
           "caution": "Mask R-CNN adopts FCN's per-pixel binary prediction for the mask branch inside an instance-segmentation pipeline; mask branch is decoupled from class prediction."
         },
         {
+          "slug": "fpn",
+          "confidence": "high",
+          "caution": "Mask R-CNN's headline configuration uses a ResNet-FPN backbone; FPN §5.2.3 points to Mask R-CNN as the follow-up."
+        },
+        {
           "slug": "resnet",
           "confidence": "high",
           "caution": "Mask R-CNN's headline backbones are ResNet-50/101 and ResNeXt-101 paired with FPN."
@@ -4928,7 +5121,13 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "pointrend",
+          "confidence": "high",
+          "caution": "Mask2Former adopts PointRend's importance point sampling to compute its mask loss on sampled points, not the point head itself."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "mast3r": {
@@ -5033,6 +5232,20 @@ export const contentGraph: ContentGraph = {
       "fedBy": [],
       "hasLearnedAlternative": []
     },
+    "pointrend": {
+      "usedBy": [],
+      "affects": [],
+      "generalises": [],
+      "extending": [],
+      "fedBy": [
+        {
+          "slug": "mask-rcnn",
+          "confidence": "medium",
+          "caution": "PointRend is a generic refinement module; Mask R-CNN is its primary instance-segmentation base, not its only one."
+        }
+      ],
+      "hasLearnedAlternative": []
+    },
     "raft": {
       "usedBy": [],
       "affects": [],
@@ -5126,7 +5339,12 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "vit",
+          "confidence": "high"
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "superglue": {
@@ -5206,6 +5424,11 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
+          "slug": "dpt",
+          "confidence": "high",
+          "caution": "VGGT uses a DPT upsampler for its dense heads; the aggregator backbone is its own."
+        },
+        {
           "slug": "dust3r",
           "confidence": "high"
         }
@@ -5251,6 +5474,7 @@ export const contentGraph: ContentGraph = {
         "detr",
         "dino",
         "dinov2",
+        "dpt",
         "feature-matching",
         "lightglue",
         "loftr",
@@ -5337,6 +5561,7 @@ export const contentGraph: ContentGraph = {
         "detr",
         "efficientad",
         "fast-scnn",
+        "fpn",
         "geometric-bev",
         "googlenet",
         "hrnet",
@@ -5346,6 +5571,7 @@ export const contentGraph: ContentGraph = {
         "mobilenetv2",
         "mobilenetv3",
         "patchcore",
+        "pointrend",
         "raft",
         "resnet",
         "rf-detr",
@@ -5531,6 +5757,7 @@ export const contentGraph: ContentGraph = {
     },
     "image-pyramid": {
       "usedBy": [
+        "fpn",
         "orb",
         "pyramidal-blur-aware-xcorner",
         "sift",
@@ -5573,6 +5800,7 @@ export const contentGraph: ContentGraph = {
         "depth-anything",
         "depth-anything-3",
         "depth-anything-v2",
+        "dpt",
         "midas"
       ],
       "affects": [],
@@ -5794,6 +6022,7 @@ export const contentGraph: ContentGraph = {
     "transformer": {
       "usedBy": [
         "clip",
+        "dpt",
         "swin"
       ],
       "affects": [],
@@ -5919,12 +6148,14 @@ export const contentGraph: ContentGraph = {
     "dino": 3,
     "dinov2": 3,
     "dinov3": 4,
+    "dpt": 3,
     "dust3r": 4,
     "visual-anomaly-detection": 2,
     "efficientad": 3,
     "fast-scnn": 2,
     "faster-rcnn": 0,
     "fcn-semantic-segmentation": 0,
+    "fpn": 2,
     "focalclick": 0,
     "googlenet": 2,
     "hrnet": 2,
@@ -5942,6 +6173,7 @@ export const contentGraph: ContentGraph = {
     "sam": 2,
     "mobilesam": 3,
     "patchcore": 3,
+    "pointrend": 2,
     "raft": 4,
     "resnet": 2,
     "rf-detr": 2,

@@ -1490,6 +1490,26 @@ export const searchRecords: SearchRecord[] = [
     "venue": "arXiv preprint"
   },
   {
+    "slug": "dpt",
+    "path": "/atlas/dpt",
+    "type": "model",
+    "title": "DPT (Dense Prediction Transformer)",
+    "summary": "ViT encoder whose tokens from four layers are reassembled into image-like feature maps at multiple resolutions and fused by a convolutional decoder into full-resolution dense predictions; trained for monocular depth with the MiDaS protocol and for semantic segmentation.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "multi-scale"
+    ],
+    "domain": "depth",
+    "headings": [],
+    "authors": [
+      "R. Ranftl",
+      "A. Bochkovskiy",
+      "V. Koltun"
+    ],
+    "venue": "ICCV"
+  },
+  {
     "slug": "dust3r",
     "path": "/atlas/dust3r",
     "type": "model",
@@ -1586,6 +1606,29 @@ export const searchRecords: SearchRecord[] = [
       "J. Long",
       "E. Shelhamer",
       "T. Darrell"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "fpn",
+    "path": "/atlas/fpn",
+    "type": "model",
+    "title": "Feature Pyramid Network (FPN)",
+    "summary": "Builds a multi-scale feature pyramid inside a single-scale CNN via a top-down pathway with lateral connections, giving every level strong semantics at a fraction of the cost of image pyramids; drives RPN and Fast R-CNN heads per level.",
+    "tags": [
+      "deep-learning",
+      "multi-scale",
+      "region-based"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "T. Lin",
+      "P. Dollár",
+      "R. Girshick",
+      "K. He",
+      "B. Hariharan",
+      "S. Belongie"
     ],
     "venue": "CVPR"
   },
@@ -1945,6 +1988,26 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR 2022"
   },
   {
+    "slug": "pointrend",
+    "path": "/atlas/pointrend",
+    "type": "model",
+    "title": "PointRend",
+    "summary": "Treats mask prediction as rendering: starts from a coarse mask and refines it by predicting labels only at adaptively selected uncertain points with a small point-wise MLP over fine-grained and coarse features, giving sharp boundaries at a fraction of dense-upsampling cost.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "A. Kirillov",
+      "Y. Wu",
+      "K. He",
+      "R. Girshick"
+    ],
+    "venue": "CVPR"
+  },
+  {
     "slug": "raft",
     "path": "/atlas/raft",
     "type": "model",
@@ -2126,7 +2189,8 @@ export const searchRecords: SearchRecord[] = [
     ],
     "domain": "representation-learning",
     "headings": [
-      "What Swin introduced"
+      "What Swin introduced",
+      "When to choose Swin over SegFormer"
     ],
     "authors": [
       "Z. Liu",
@@ -4736,7 +4800,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5100700361",
     "type": "author",
     "title": "Kaiming He",
-    "summary": "7 papers",
+    "summary": "9 papers",
     "tags": [],
     "headings": []
   },
@@ -4754,7 +4818,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5057866698",
     "type": "author",
     "title": "Piotr Dollár",
-    "summary": "6 papers",
+    "summary": "7 papers",
     "tags": [],
     "headings": []
   },
@@ -4763,7 +4827,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5049246408",
     "type": "author",
     "title": "Ross Girshick",
-    "summary": "9 papers",
+    "summary": "11 papers",
     "tags": [],
     "headings": []
   },
@@ -4772,7 +4836,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5101930471",
     "type": "author",
     "title": "Alexander Kirillov",
-    "summary": "4 papers",
+    "summary": "5 papers",
     "tags": [],
     "headings": []
   },
@@ -5087,7 +5151,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5052768778",
     "type": "author",
     "title": "Tsung-Yi Lin",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -6482,7 +6546,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5076203786",
     "type": "author",
     "title": "René Ranftl",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -6518,7 +6582,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5006181255",
     "type": "author",
     "title": "Vladlen Koltun",
-    "summary": "1 paper",
+    "summary": "2 papers",
     "tags": [],
     "headings": []
   },
@@ -7130,7 +7194,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5018369948",
     "type": "author",
     "title": "Yuxin Wu",
-    "summary": "2 papers",
+    "summary": "3 papers",
     "tags": [],
     "headings": []
   },
@@ -7787,6 +7851,33 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5028209738",
     "type": "author",
     "title": "Josef Kittler",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101647390",
+    "path": "/authors/A5101647390",
+    "type": "author",
+    "title": "Bharath Hariharan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018609918",
+    "path": "/authors/A5018609918",
+    "type": "author",
+    "title": "Serge Belongie",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028179581",
+    "path": "/authors/A5028179581",
+    "type": "author",
+    "title": "Alexey Bochkovskiy",
     "summary": "1 paper",
     "tags": [],
     "headings": []

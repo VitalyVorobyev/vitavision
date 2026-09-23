@@ -33,13 +33,14 @@ strictly one PR at a time; PRs must be substantial — every main commit trigger
 
 Atlas size at 2026-09-23: 55 algorithms · 51 models · 35 concepts · 13 narratives · 151 registered
 sources · 141 research notes (7 in v2 form) · 499 canonical authors.
+After PR-B: 54 models · 154 sources · 144 notes (11 in v2 form) · 502 canonical authors.
 
 ## Workstream status
 
 | WS | Goal | State | Next action |
 |---|---|---|---|
-| A — Workflow hygiene | Skills and docs describe the system as it is | **in progress** (PR-A) | — |
-| B — Dense-prediction injection | FPN, DPT, PointRend pages; SegFormer note → v2 | planned (PR-B) | `paper-ingest` FPN, DPT, PointRend; refresh `xie2021-segformer` |
+| A — Workflow hygiene | Skills and docs describe the system as it is | **done** (#158) | — |
+| B — Dense-prediction injection | FPN, DPT, PointRend pages; SegFormer note → v2 | **done** (PR-B) | — |
 | F — Authors & papers experience | Papers and people become first-class, well-designed Atlas surfaces | planned | design phase (see below) |
 | G — Build-pipeline quality | Validator and build scripts that are modular and tested | planned | BL-028…BL-032 |
 | H — Note v2 migration | Every relation rests on a note with `# Stated relations` | planned | batch 1: highest-degree segmentation/detection notes |
@@ -49,15 +50,15 @@ sources · 141 research notes (7 in v2 form) · 499 canonical authors.
 
 ### B — Dense-prediction injection (short-term)
 
-| Source | Paper id | Page | Relation candidates (confirm against notes) | Status |
+| Source | Paper id | Page | Committed relations (user-confirmed 2026-09-23) | Status |
 |---|---|---|---|---|
-| Lin et al., FPN, CVPR 2017 (arXiv:1612.03144) | `lin2017-fpn` | `fpn` | resnet → fpn `feeds_into`; fpn → mask-rcnn, mask2former `feeds_into`; prereq `image-pyramid`; closes BL-011 | planned |
-| Ranftl et al., DPT, ICCV 2021 (arXiv:2103.13413) | `ranftl2021-dpt` | `dpt` | vit → dpt `feeds_into`; midas ↔ dpt (type from note); dpt → depth-anything ×3, dust3r, vggt `feeds_into`; dpt `compared_with` segformer | planned |
-| Kirillov et al., PointRend, CVPR 2020 (arXiv:1912.08193) | `kirillov2020-pointrend` | `pointrend` | mask-rcnn → pointrend `feeds_into`; pointrend → mask2former `feeds_into` | planned |
-| Xie et al., SegFormer, NeurIPS 2021 (arXiv:2105.15203) | `xie2021-segformer` | `segformer` (exists) | refresh note to v2; add relations to the new pages | planned |
+| Lin et al., FPN, CVPR 2017 (arXiv:1612.03144) | `lin2017-fpn` | `fpn` | resnet → fpn, faster-rcnn → fpn, fpn → mask-rcnn (`feeds_into`, high); prereqs image-pyramid, CNN; closed BL-011 | **live** |
+| Ranftl et al., DPT, ICCV 2021 (arXiv:2103.13413) | `ranftl2021-dpt` | `dpt` | vit → dpt, midas → dpt; dpt → depth-anything ×3, dust3r, vggt (`feeds_into`, high) | **live** |
+| Kirillov et al., PointRend, CVPR 2020 (arXiv:1912.08193) | `kirillov2020-pointrend` | `pointrend` | mask-rcnn → pointrend (medium, generic-module caution); pointrend → mask2former (high) | **live** |
+| Xie et al., SegFormer, NeurIPS 2021 (arXiv:2105.15203) | `xie2021-segformer` | `segformer` | note refreshed to v2; vit → segformer (`feeds_into`, high); swin `compared_with` segformer (medium, Swin hosts `## When to choose`) | **live** |
 
-Narrative follow-ups (via `narrative-page`): `fpn` node in `detection-removing-the-machinery`,
-`dpt` node in `depth-becomes-general-geometry`.
+Narrative follow-ups (via `narrative-page`) done: `fpn` node + chapter paragraph in
+`detection-removing-the-machinery`, `dpt` node + paragraph in `depth-becomes-general-geometry`.
 
 ### F — Authors & papers experience (mid-term)
 
@@ -150,6 +151,13 @@ narrative should get a page — paper-only nodes are debt, not normal.
   design-led; affiliations stay parked. Review found that `bun run build` *does* run the Atlas
   graph validator (docs said otherwise — corrected), 134/141 notes are pre-pivot (WS-H), and the
   page skills still emitted the removed `category` field and an invalid `computer-vision` tag.
+- 2026-09-23 — Dense-prediction injection: dropped as unsupported by either paper — fpn→mask2former
+  (only a paraphrased "FPN-style" decoder), dpt↔segformer (neither paper mentions the other),
+  pointrend↔deeplab/fcn (interchangeable base architectures = data-flow, not lineage). midas→dpt is
+  `feeds_into`, not `extended_by`: new architecture reusing the MiDaS loss/data mix as a component.
+  OpenAlex 404s on arXiv DOIs for ICCV/CVPR papers indexed under their conference DOI — search by
+  title/DOI and verify authors before registering. Lesson: pdftotext drops superscripts (PointRend
+  "142"/"282" were 14²/28²) — sanity-check any suspicious constant against the paper's own arithmetic.
 
 ## Deferred / parked
 

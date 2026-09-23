@@ -2819,7 +2819,8 @@ export const modelPages: ModelIndexEntry[] = [
         "primary": "yang2024-depth-anything",
         "references": [
           "ranftl2019-midas",
-          "oquab2023-dinov2"
+          "oquab2023-dinov2",
+          "ranftl2021-dpt"
         ]
       },
       "implementations": [
@@ -2866,7 +2867,8 @@ export const modelPages: ModelIndexEntry[] = [
           "yang2024-depth-anything-v2",
           "oquab2023-dinov2",
           "wang2025-vggt",
-          "wang2023-dust3r"
+          "wang2023-dust3r",
+          "ranftl2021-dpt"
         ]
       },
       "implementations": [
@@ -2916,7 +2918,8 @@ export const modelPages: ModelIndexEntry[] = [
         "references": [
           "yang2024-depth-anything",
           "ranftl2019-midas",
-          "oquab2023-dinov2"
+          "oquab2023-dinov2",
+          "ranftl2021-dpt"
         ]
       },
       "implementations": [
@@ -3170,6 +3173,83 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "dpt",
+    "frontmatter": {
+      "title": "DPT (Dense Prediction Transformer)",
+      "summary": "ViT encoder whose tokens from four layers are reassembled into image-like feature maps at multiple resolutions and fused by a convolutional decoder into full-resolution dense predictions; trained for monocular depth with the MiDaS protocol and for semantic segmentation.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "advanced",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "monocular-depth-estimation",
+        "transformer",
+        "attention-mechanism"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "depth-anything",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-v2",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "depth-anything-3",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "dust3r",
+          "confidence": "high",
+          "caution": "DUSt3R reuses DPT-style regression heads to decode pointmaps, not depth."
+        },
+        {
+          "type": "feeds_into",
+          "target": "vggt",
+          "confidence": "high",
+          "caution": "VGGT uses a DPT upsampler for its dense heads; the aggregator backbone is its own."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction",
+        "multi-scale"
+      ],
+      "domain": "depth",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "hybrid",
+      "params": "112M (DPT-Base) — 343M (DPT-Large)",
+      "sources": {
+        "primary": "ranftl2021-dpt",
+        "references": [
+          "dosovitskiy2020-vit",
+          "ranftl2019-midas"
+        ],
+        "notes": "Paper-grounded facts: Reassemble = Resample ∘ Concatenate ∘ Read\n(Eqs. 1–6, §3); RefineNet-style fusion blocks; variants DPT-Base 112M, DPT-Large 343M,\nDPT-Hybrid 123M vs MiDaS 105M (Table 9); MIX 6 training set (~1.4M images, §4.1); depth and\nADE20K segmentation results per Tables 1–4.\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/isl-org/DPT",
+          "commit": "cd3fe90bb4c48577535cc4d51b602acca688a2ee",
+          "framework": "pytorch",
+          "license": "MIT"
+        }
+      ],
+      "date": "2026-09-23",
+      "year": 2021
+    }
+  },
+  {
     "slug": "dust3r",
     "frontmatter": {
       "title": "DUSt3R",
@@ -3212,7 +3292,10 @@ export const modelPages: ModelIndexEntry[] = [
       "arch_family": "vit",
       "params": "ViT-Large encoder + ViT-Base decoders (CroCo-pretrained)",
       "sources": {
-        "primary": "wang2023-dust3r"
+        "primary": "wang2023-dust3r",
+        "references": [
+          "ranftl2021-dpt"
+        ]
       },
       "implementations": [
         {
@@ -3386,6 +3469,11 @@ export const modelPages: ModelIndexEntry[] = [
           "type": "extended_by",
           "target": "mask-rcnn",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "fpn",
+          "confidence": "high"
         }
       ],
       "tags": [
@@ -3511,6 +3599,65 @@ export const modelPages: ModelIndexEntry[] = [
       ],
       "date": "2026-05-10",
       "year": 2015
+    }
+  },
+  {
+    "slug": "fpn",
+    "frontmatter": {
+      "title": "Feature Pyramid Network (FPN)",
+      "summary": "Builds a multi-scale feature pyramid inside a single-scale CNN via a top-down pathway with lateral connections, giving every level strong semantics at a fraction of the cost of image pyramids; drives RPN and Fast R-CNN heads per level.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "intermediate",
+      "readingTimeMinutes": 7,
+      "access": "public",
+      "prerequisites": [
+        "image-pyramid",
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mask-rcnn",
+          "confidence": "high",
+          "caution": "Mask R-CNN's headline configuration uses a ResNet-FPN backbone; FPN §5.2.3 points to Mask R-CNN as the follow-up."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "multi-scale",
+        "region-based"
+      ],
+      "domain": "detection",
+      "arch_family": "cnn",
+      "sources": {
+        "primary": "lin2017-fpn",
+        "references": [
+          "he2016-resnet",
+          "ren2015-faster",
+          "he2017-maskrcnn"
+        ],
+        "notes": "Paper-grounded facts: bottom-up C2–C5 (strides 4–32), top-down\n2× nearest upsampling + 1×1 lateral add, 3×3 smoothing, d = 256 (§3); RoI level assignment\nk = ⌊k0 + log2(√(wh)/224)⌋, k0 = 4 (Eq. 1, §4.2); anchors {32²…512²} × 3 ratios (§4.1);\nRPN AR 48.3 → 56.3 (Table 1); Fast R-CNN AP 31.6 → 33.9 (Table 3); test-dev AP 36.2 (Table 4).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/Detectron",
+          "commit": "04155a01a6ea68f22ac27c79a822066457941ece",
+          "framework": "caffe",
+          "license": "Apache-2.0"
+        },
+        {
+          "role": "community",
+          "repo": "https://github.com/facebookresearch/detectron2",
+          "commit": "d1e04565d3bec8719335b88be9e9b961bf3ec464",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-09-23",
+      "year": 2017
     }
   },
   {
@@ -3887,6 +4034,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "felzenszwalb-deformable-parts",
           "confidence": "medium",
           "caution": "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+        },
+        {
+          "type": "feeds_into",
+          "target": "pointrend",
+          "confidence": "medium",
+          "caution": "PointRend is a generic refinement module; Mask R-CNN is its primary instance-segmentation base, not its only one."
         }
       ],
       "tags": [
@@ -3902,7 +4055,8 @@ export const modelPages: ModelIndexEntry[] = [
         "references": [
           "ren2015-faster",
           "long2015-fcn",
-          "he2016-resnet"
+          "he2016-resnet",
+          "lin2017-fpn"
         ],
         "notes": "Multi-task loss per RoI: L = L_cls + L_box + L_mask (§3 Mask R-CNN).\nMask branch outputs Km^2-dim tensor — K binary masks of resolution\nm × m, per-pixel sigmoid; L_mask is the binary cross-entropy on the\nk-th channel only, where k is the ground-truth class. Mask resolution\nm=14 for ResNet-C4 head, m=28 for FPN head (Figure 4). RoIAlign uses\nx/16 (no rounding) with bilinear interpolation at four regularly\nspaced sampling points per bin; RoIPool used [x/16] quantization\ninstead (§3 RoIAlign, Figure 3). Training: COCO train2017, 80 classes,\nSGD momentum 0.9, weight decay 1e-4, LR 0.02 → 0.002 step at 120k of\n160k iters, 8 GPUs at 2 images/GPU effective batch 16 (§3.1 Training);\nResNeXt variants 1 image/GPU, LR 0.01. Headline COCO test-dev mask AP\n(Table 1): ResNet-101-FPN 35.7, ResNeXt-101-FPN 37.1; FCIS+++ baseline\n33.6. RoIAlign vs RoIPool ablation (Table 2c, ResNet-50-C4): ~3 AP /\n~5 AP_75 gain. Per-class sigmoid vs softmax (Table 2b): +5.5 AP\n(30.3 vs 24.8). Inference: 5 fps Tesla M40, ~195 ms/image ResNet-101-\nFPN; ResNet-101-C4 ~400 ms/image (§4.4). Mask branch adds ~20%\noverhead over Faster R-CNN counterpart.\n"
       },
@@ -3970,7 +4124,8 @@ export const modelPages: ModelIndexEntry[] = [
         "references": [
           "cheng2021-maskformer",
           "carion2020-detr",
-          "he2016-resnet"
+          "he2016-resnet",
+          "kirillov2020-pointrend"
         ],
         "notes": "MaskFormer v1 (cheng2021-maskformer, NeurIPS 2021): the foundational\nparadigm shift — per-pixel classification (FCN/DeepLab) replaced by\n**mask classification**. Architecture (Fig. 2, §3): backbone (ResNet\nor Swin) → **pixel decoder** (FPN-like upsampling, output\n$\\mathcal{E}_\\text{pixel} \\in \\mathbb{R}^{C \\times H/4 \\times W/4}$\nwith $C=256$) + **transformer decoder** (DETR-style with $N=100$\nlearnable queries, 6 layers, embedding dim 256) → per-query class\nhead (MLP) + per-query mask head ($m_i(x,y) = \\sigma(q_i^\\top\n\\mathcal{E}_\\text{pixel}(x,y))$, sigmoid of query·pixel dot product).\nLoss $\\mathcal{L}_\\text{mask-cls}$ (Eq. 1): bipartite-matching\nHungarian over $N$ predictions; per-pair = cross-entropy on class +\nbinary cross-entropy + dice on mask; $\\lambda_\\text{focal}=20.0$,\n$\\lambda_\\text{dice}=1.0$, \"no object\" weight 0.1, backbone stride\n$S=32$. Headline (Swin-L†): ADE20K val mIoU 55.6, COCO panoptic\nval PQ 52.7 (Tables 3-4).\n\nMask2Former v2 (cheng2022-mask2former, CVPR 2022): direct\narchitectural extension of v1 — same pixel-decoder + transformer-\ndecoder + mask-head topology, **three changes** in the decoder:\n(i) **Masked attention** (Eq. 2, §3.2): cross-attention is\nrestricted to the foreground of each query's previously-predicted\nmask. $\\mathbf{X}_l = \\text{softmax}(\\mathcal{M}_{l-1} + \\mathbf{Q}_l \\mathbf{K}_l^\\top) \\mathbf{V}_l + \\mathbf{X}_{l-1}$\nwhere $\\mathcal{M}_{l-1}(x,y) = 0$ if mask threshold > 0.5 at $(x,y)$,\n$-\\infty$ otherwise (Eq. 5). Forces queries to focus locally instead\nof globally (DETR-style), accelerating convergence and improving\nquality. (ii) **Multi-scale round-robin features**: queries\ncross-attend to 1/32, 1/16, 1/8 resolution feature maps in rotation\nacross consecutive decoder layers (instead of v1's single 1/32 map).\nImproves small-object segmentation. (iii) **Point-sampled mask\nloss**: compute mask loss on $K=12544$ importance-sampled points\ninstead of all $H \\times W$ pixels, reducing per-image memory ~3×\n(18 GB → 6 GB) and enabling larger batch.\nTraining: AdamW, LR $10^{-4}$, weight decay 0.05, backbone LR×0.1;\n50 epochs COCO, 160k iters ADE20K, 90k iters Cityscapes.\nHeadline (Swin-L, multi-scale): COCO panoptic val PQ 57.8 (+5.1 over\nv1), ADE20K semantic mIoU 57.7 (+2.1 over v1), COCO instance mask\nAP 50.1, Cityscapes panoptic PQ 66.6. Converges 6× faster than v1\n(50 vs 300 epochs). 216M params with Swin-L. Queries: 100 (semantic,\npanoptic) or 200 (instance).\n"
       },
@@ -4131,6 +4286,12 @@ export const modelPages: ModelIndexEntry[] = [
           "type": "feeds_into",
           "target": "depth-anything",
           "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "dpt",
+          "confidence": "high",
+          "caution": "DPT reuses MiDaS's scale-and-shift-invariant loss and dataset mixing with a ViT encoder; later MiDaS releases (v3) ship DPT."
         }
       ],
       "tags": [
@@ -4140,7 +4301,10 @@ export const modelPages: ModelIndexEntry[] = [
       "domain": "depth",
       "arch_family": "cnn",
       "sources": {
-        "primary": "ranftl2019-midas"
+        "primary": "ranftl2019-midas",
+        "references": [
+          "ranftl2021-dpt"
+        ]
       },
       "implementations": [
         {
@@ -4477,6 +4641,60 @@ export const modelPages: ModelIndexEntry[] = [
     }
   },
   {
+    "slug": "pointrend",
+    "frontmatter": {
+      "title": "PointRend",
+      "summary": "Treats mask prediction as rendering: starts from a coarse mask and refines it by predicting labels only at adaptively selected uncertain points with a small point-wise MLP over fine-grained and coarse features, giving sharp boundaries at a fraction of dense-upsampling cost.",
+      "author": "Vitaly Vorobyev",
+      "draft": false,
+      "difficulty": "advanced",
+      "readingTimeMinutes": 6,
+      "access": "public",
+      "prerequisites": [
+        "convolutional-neural-network"
+      ],
+      "failureModes": [],
+      "relations": [
+        {
+          "type": "feeds_into",
+          "target": "mask2former",
+          "confidence": "high",
+          "caution": "Mask2Former adopts PointRend's importance point sampling to compute its mask loss on sampled points, not the point head itself."
+        }
+      ],
+      "tags": [
+        "deep-learning",
+        "dense-prediction"
+      ],
+      "domain": "segmentation",
+      "tasks": [
+        "image-segmentation"
+      ],
+      "arch_family": "cnn",
+      "flops": "0.9B vs 34B (4×conv head) for a 224×224 mask output",
+      "sources": {
+        "primary": "kirillov2020-pointrend",
+        "references": [
+          "he2017-maskrcnn",
+          "chen2018-deeplab",
+          "lin2017-fpn"
+        ],
+        "notes": "Paper-grounded facts: adaptive subdivision inference\n(M0 = 7 → M = 224, N = 28² points per step, N·log2(M/M0) point predictions); training point\nselection k = 3, β = 0.75, N = 14² (§3.1); point head = 3 hidden layers × 256 channels MLP\n(§3.2); Mask R-CNN + PointRend AP gains (Table 1); FLOPs 0.9B vs 34B at 224×224 (Table 2).\n"
+      },
+      "implementations": [
+        {
+          "role": "official",
+          "repo": "https://github.com/facebookresearch/detectron2",
+          "commit": "d1e04565d3bec8719335b88be9e9b961bf3ec464",
+          "framework": "pytorch",
+          "license": "Apache-2.0"
+        }
+      ],
+      "date": "2026-09-23",
+      "year": 2020
+    }
+  },
+  {
     "slug": "raft",
     "frontmatter": {
       "title": "RAFT",
@@ -4576,6 +4794,11 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "efficientad",
           "confidence": "medium",
           "caution": "EfficientAD distils its patch description network from a WideResNet-101 teacher; the wide variant is not this page's subject, hence medium confidence."
+        },
+        {
+          "type": "feeds_into",
+          "target": "fpn",
+          "confidence": "high"
         }
       ],
       "tags": [
@@ -5095,7 +5318,7 @@ export const modelPages: ModelIndexEntry[] = [
       "summary": "Hierarchical vision transformer with shifted-window attention: linear complexity in image area, CNN-style multi-scale feature maps, and a drop-in backbone for dense prediction — with relative position bias replacing absolute embeddings.",
       "author": "Vitaly Vorobyev",
       "difficulty": "intermediate",
-      "readingTimeMinutes": 10,
+      "readingTimeMinutes": 11,
       "access": "public",
       "prerequisites": [
         "vit",
@@ -5109,6 +5332,12 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "resnet",
           "confidence": "high",
           "caution": "Benchmarked as interchangeable backbones inside identical detection/segmentation frameworks at matched FLOPs tiers — a backbone-level practitioner choice across paradigms."
+        },
+        {
+          "type": "compared_with",
+          "target": "segformer",
+          "confidence": "medium",
+          "caution": "Swin is a general backbone (paired with a UperNet head for segmentation); SegFormer is a full segmenter with its own hierarchical encoder."
         }
       ],
       "tags": [
@@ -5352,7 +5581,8 @@ export const modelPages: ModelIndexEntry[] = [
           "wang2023-dust3r",
           "leroy2024-mast3r",
           "oquab2023-dinov2",
-          "darcet2023-registers"
+          "darcet2023-registers",
+          "ranftl2021-dpt"
         ]
       },
       "implementations": [
@@ -5412,6 +5642,16 @@ export const modelPages: ModelIndexEntry[] = [
           "target": "resnet",
           "confidence": "high",
           "caution": "ViT vs ResNet (BiT) is the headline classification comparison in the paper. Both coexist as production backbones — ResNet's conv inductive bias dominates in small-data regimes; ViT scales better with large pretraining (JFT-300M)."
+        },
+        {
+          "type": "feeds_into",
+          "target": "dpt",
+          "confidence": "high"
+        },
+        {
+          "type": "feeds_into",
+          "target": "segformer",
+          "confidence": "high"
         }
       ],
       "tags": [
@@ -6642,7 +6882,7 @@ export const narrativePages: NarrativeIndexEntry[] = [
     "tagline": "The network barely changed. The signal did.",
     "date": "2026-09-15",
     "stats": {
-      "nodes": 8,
+      "nodes": 9,
       "steps": 5,
       "debt": 0
     },
@@ -6668,6 +6908,10 @@ export const narrativePages: NarrativeIndexEntry[] = [
       "midas": [
         0.14035087719298245,
         0
+      ],
+      "dpt": [
+        0.22807017543859648,
+        0.5
       ],
       "dinov2": [
         0.3508771929824561,
@@ -6702,7 +6946,7 @@ export const narrativePages: NarrativeIndexEntry[] = [
     "tagline": "Every step deleted something a human had designed.",
     "date": "2026-09-15",
     "stats": {
-      "nodes": 9,
+      "nodes": 10,
       "steps": 5,
       "debt": 0
     },
@@ -6726,31 +6970,35 @@ export const narrativePages: NarrativeIndexEntry[] = [
         0
       ],
       "viola-jones-detector": [
-        0.15384615384615385,
+        0.14925373134328357,
         0
       ],
       "hog-descriptor": [
-        0.2846153846153846,
+        0.27611940298507465,
         0
       ],
       "felzenszwalb-deformable-parts": [
-        0.4076923076923077,
+        0.39552238805970147,
         0
       ],
       "faster-rcnn": [
-        0.5384615384615384,
+        0.5223880597014925,
         0.5
       ],
       "yolo-v1": [
-        0.6538461538461539,
+        0.6343283582089552,
+        0.5
+      ],
+      "fpn": [
+        0.7388059701492538,
         0.5
       ],
       "detr": [
-        0.7692307692307693,
+        0.8059701492537313,
         1
       ],
       "rf-detr": [
-        0.8846153846153846,
+        0.9029850746268656,
         1
       ],
       "q-nms-training": [

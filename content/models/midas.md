@@ -10,10 +10,16 @@ arch_family: cnn
 prerequisites: [monocular-depth-estimation, pinhole-camera-model]
 sources:
   primary: ranftl2019-midas
+  references:
+    - ranftl2021-dpt
 relations:
   - type: feeds_into
     target: depth-anything
     confidence: high
+  - type: feeds_into
+    target: dpt
+    confidence: high
+    caution: "DPT reuses MiDaS's scale-and-shift-invariant loss and dataset mixing with a ViT encoder; later MiDaS releases (v3) ship DPT."
 implementations:
   - role: official
     repo: https://github.com/isl-org/MiDaS
@@ -113,6 +119,7 @@ Official PyTorch release under MIT license, with MIT-licensed pretrained weights
 - **Resolution ceiling and thin structures.** The 384 × 384 input resolution limits boundary sharpness for thin structures and blurs distant background depth; a known artefact attributed to limited training resolution (§6).
 - **Reflective surfaces and framed pictures.** Mirrors and framed artwork produce depth maps that follow the depicted scene rather than the physical reflector plane, because training data does not include reflectance supervision (§6, Fig. 9).
 - **Bounded by 2019-era CNN backbone and dataset scale.** The WSL-pretrained ResNeXt-101 encoder was the best available in 2019; subsequent work (Depth Anything, using DINOv2 ViT backbones trained on billions of images) showed that scaling the encoder and the unlabelled data pool dramatically extends zero-shot performance beyond what MiDaS achieves.
+- **Superseded encoder-wise by DPT.** [DPT](/atlas/dpt) is the transformer-encoder successor trained under the same MiDaS protocol — scale-and-shift-invariant loss, gradient-matching regularizer, and multi-dataset mixing — substituting a ViT backbone for the WSL-pretrained ResNeXt-101 CNN encoder used here.
 
 # References
 

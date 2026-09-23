@@ -1937,3 +1937,64 @@
   commit: be5e29168d4aff238409d60424812df66aac919f
   license: BSD-3-Clause
   description: "Open-source structure-from-motion and multi-view stereo pipeline; reference implementation for Schönberger & Frahm's incremental SfM improvements."
+
+- id: lin2017-fpn
+  title: "Feature Pyramid Networks for Object Detection"
+  authors: ["T. Lin", "P. Dollár", "R. Girshick", "K. He", "B. Hariharan", "S. Belongie"]
+  authorIds: [A5052768778, A5057866698, A5049246408, A5100700361, A5101647390, A5018609918]
+  year: 2017
+  venue: CVPR
+  url: https://arxiv.org/pdf/1612.03144
+  arxiv: "1612.03144"
+  doi: "10.1109/cvpr.2017.106"
+  pdf: lin2017-fpn.pdf
+  cites:
+  - ronneberger2015-unet
+  - long2015-fcn
+  - lowe2004-sift
+  - dalal2005-hog
+  - felzenszwalb2010-detection
+  - he2016-resnet
+  - he2017-maskrcnn
+  - ren2015-faster
+
+- id: ranftl2021-dpt
+  title: "Vision Transformers for Dense Prediction"
+  authors: ["R. Ranftl", "A. Bochkovskiy", "V. Koltun"]
+  authorIds: [A5076203786, A5028179581, A5006181255]
+  year: 2021
+  venue: ICCV
+  url: https://arxiv.org/pdf/2103.13413
+  arxiv: "2103.13413"
+  doi: "10.1109/iccv48922.2021.01196"
+  pdf: ranftl2021-dpt.pdf
+  cites:
+  - ronneberger2015-unet
+  - long2015-fcn
+  - he2016-resnet
+  - chen2018-deeplab
+  - sun2019-hrnet
+  - wang2020-hrnet-journal
+  - ranftl2019-midas
+  - dosovitskiy2020-vit
+  - touvron2020-deit
+
+- id: kirillov2020-pointrend
+  title: "PointRend: Image Segmentation As Rendering"
+  authors: ["A. Kirillov", "Y. Wu", "K. He", "R. Girshick"]
+  authorIds: [A5101930471, A5018369948, A5100700361, A5049246408]
+  year: 2020
+  venue: CVPR
+  url: https://arxiv.org/pdf/1912.08193
+  arxiv: "1912.08193"
+  doi: "10.1109/cvpr42600.2020.00982"
+  pdf: kirillov2020-pointrend.pdf
+  cites:
+  - ioffe2015-batchnorm
+  - ronneberger2015-unet
+  - long2015-fcn
+  - krizhevsky2012-alexnet
+  - he2016-resnet
+  - chen2018-deeplab
+  - sun2019-hrnetv2
+  - he2017-maskrcnn

@@ -39,3 +39,23 @@ export function getFocusEntry(slug: string): FocusEntry | null {
 
     return null;
 }
+
+export interface EntryMeta {
+    kind: FocusKind;
+    year: number | undefined;
+}
+
+/**
+ * Convenience wrapper over `getFocusEntry` for the two fields the graph
+ * cards need repeatedly (kind + year), with the same defaults the original
+ * per-callsite scans used: kind falls back to "concept" and year to
+ * `undefined` when the slug can't be resolved (shouldn't happen for a
+ * neighbor slug pulled from the content graph, but kept for parity).
+ */
+export function entryMeta(slug: string): EntryMeta {
+    const entry = getFocusEntry(slug);
+    return {
+        kind: entry?.kind ?? "concept",
+        year: entry ? (entry.fm as { year?: number }).year : undefined,
+    };
+}

@@ -1,0 +1,94 @@
+/**
+ * Shared types for the content validator (scripts/validate/**).
+ *
+ * `ValidationContext` is the read-only bag every rule module consumes —
+ * built once by `buildValidationContext` (or, for tests, `createContext`)
+ * in ./context.ts. Rules never touch disk; they only read from the context
+ * and return `Diagnostic[]`.
+ */
+import type { ContentGraph, ContentEntry } from "../content-graph.ts";
+import type { RawIndexEntry } from "../lib/papers-index.ts";
+import type { MarkdownDirEntry } from "../lib/content-kinds.ts";
+
+export type IndexEntry = RawIndexEntry;
+
+/** One validator finding. `message` is the exact string the CLI prints,
+ *  including its leading `[file]`-shaped prefix where applicable. */
+export interface Diagnostic {
+    level: "error" | "warning";
+    message: string;
+}
+
+/**
+ * Shape of one `relations[]` entry, as authored in frontmatter. Kept as a
+ * loosely-typed local shape (matching the original validate-content.ts)
+ * rather than importing content-graph.ts's stricter `TypedRelation`, since
+ * the validator must tolerate not-yet-schema-valid data while reporting on it.
+ */
+export type TypedRelation = {
+    type: string;
+    target: string;
+    confidence: string;
+    caution?: string;
+};
+
+/** A loaded + zod-parsed content page, tagged with its effective draft status
+ *  (`draft: true` or `dev: true` in frontmatter). */
+export interface ParsedEntry extends MarkdownDirEntry {
+    frontmatter: Record<string, unknown>;
+    isDraft: boolean;
+}
+
+/** Per-slug lookup used by the narratives rule to resolve `page` nodes and to
+ *  cross-check narrative edges against each page's authored Atlas relations. */
+export interface AtlasLookup {
+    isDraft: boolean;
+    year?: number;
+    relations: TypedRelation[];
+}
+
+export interface ValidationContext {
+    includeDrafts: boolean;
+
+    /** Loaded + zod-parsed entries, UNFILTERED (drafts included). */
+    algoEntries: ParsedEntry[];
+    modelEntries: ParsedEntry[];
+    conceptEntries: ParsedEntry[];
+    narrativeEntries: ParsedEntry[];
+
+    /** Draft-filtered per includeDrafts — the set actually validated by most rules. */
+    algoFiltered: ParsedEntry[];
+    modelFiltered: ParsedEntry[];
+    conceptFiltered: ParsedEntry[];
+    narrativeFiltered: ParsedEntry[];
+
+    /** algo + model + concept, UNFILTERED — used where a rule must see draft
+     *  pages regardless of includeDrafts (e.g. resolving a historical page's
+     *  generalized_by target, or canonical's derived-incoming check). */
+    allEntries: ParsedEntry[];
+    /** `allEntries` projected into content-graph.ts's `ContentEntry` shape. */
+    allGraphEntries: ContentEntry[];
+
+    /** Full (draft-inclusive) slug namespace — used for relationship-field resolution. */
+    knownSlugs: Set<string>;
+    fullGraph: ContentGraph;
+    /** Published-only graph (or `options.publishedGraph`, when supplied) — used for cycle detection. */
+    graph: ContentGraph;
+
+    sourceIndex: Map<string, IndexEntry>;
+    /** Map<paperId, year>, from docs/papers/index.yaml. */
+    paperYears: Map<string, number>;
+    /** Map<slug, AtlasLookup> over algo+model+concept, UNFILTERED — used by the narratives rule. */
+    atlasBySlug: Map<string, AtlasLookup>;
+    /** Tag slugs declared in content/tags.yaml, or `null` when the file is
+     *  absent or has no `tags` key (both cases skip Rule 8 entirely). */
+    tagsYamlSlugs: Set<string> | null;
+
+    /** Diagnostics produced while building the context itself — index.yaml
+     *  loader errors (reserved-prefix ids, malformed repo/doc entries) and
+     *  frontmatter parse errors. These occurred before any rule ran in the
+     *  original monolith, so they must be emitted first, in this order. */
+    loaderDiagnostics: Diagnostic[];
+}
+
+export type Rule = (ctx: ValidationContext) => Diagnostic[] | Promise<Diagnostic[]>;

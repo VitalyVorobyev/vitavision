@@ -2275,7 +2275,8 @@ export const contentGraph: ContentGraph = {
         {
           "type": "compared_with",
           "target": "segformer",
-          "confidence": "high"
+          "confidence": "medium",
+          "caution": "Editorial real-time peer pairing; neither paper benchmarks the other."
         },
         {
           "type": "compared_with",
@@ -2494,6 +2495,12 @@ export const contentGraph: ContentGraph = {
           "target": "rf-detr",
           "confidence": "high",
           "caution": "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
+        },
+        {
+          "type": "feeds_into",
+          "target": "mask2former",
+          "confidence": "high",
+          "caution": "Mask2Former inherits DETR's set-prediction objective via MaskFormer and its zero-initialised learnable queries (Mask2Former §3.2.3)."
         }
       ]
     },
@@ -2697,7 +2704,8 @@ export const contentGraph: ContentGraph = {
         {
           "type": "learned_alternative_of",
           "target": "felzenszwalb-deformable-parts",
-          "confidence": "high"
+          "confidence": "medium",
+          "caution": "Paradigm-level replacement; the paper contrasts DPM only qualitatively (pyramid of filters vs pyramid of anchors, §3.1.1), with no DPM benchmark."
         },
         {
           "type": "learned_alternative_of",
@@ -2991,13 +2999,6 @@ export const contentGraph: ContentGraph = {
           "confidence": "high",
           "caution": "Mask R-CNN is the dominant per-RoI proposal-then-segment baseline; Mask2Former reframes the same problem as mask classification + set prediction, achieving unified handling of semantic, instance, and panoptic in one architecture.",
           "mirrored": true
-        },
-        {
-          "type": "compared_with",
-          "target": "sam",
-          "confidence": "medium",
-          "caution": "Different problem classes — Mask R-CNN is closed-set instance detection with category labels; SAM is class-agnostic promptable segmentation.",
-          "mirrored": true
         }
       ]
     },
@@ -3012,7 +3013,7 @@ export const contentGraph: ContentGraph = {
           "type": "feeds_into",
           "target": "sam",
           "confidence": "high",
-          "caution": "SAM 3's mask head is adapted from MaskFormer/Mask2Former — this family establishes the per-query mask classification + set-prediction paradigm SAM 3 inherits for concept segmentation."
+          "caution": "SAM v1's mask decoder cites MaskFormer (Mask2Former's direct precursor) as an inspiration; SAM 3's mask head is adapted from MaskFormer/Mask2Former."
         },
         {
           "type": "compared_with",
@@ -3266,6 +3267,18 @@ export const contentGraph: ContentGraph = {
           "confidence": "high"
         },
         {
+          "type": "feeds_into",
+          "target": "hrnet",
+          "confidence": "high",
+          "caution": "HRNet's first stage is built from ResNet-50 bottleneck units and follows ResNet's depth-per-stage rule (HRNet §3); the two also remain peer backbones."
+        },
+        {
+          "type": "feeds_into",
+          "target": "detr",
+          "confidence": "high",
+          "caution": "DETR's CNN backbone is an ImageNet-pretrained ResNet-50/101 feeding the transformer encoder (DETR §3.2, §4)."
+        },
+        {
           "type": "compared_with",
           "target": "hrnet",
           "confidence": "medium",
@@ -3303,12 +3316,13 @@ export const contentGraph: ContentGraph = {
         {
           "type": "learned_alternative_of",
           "target": "grabcut-iterative-segmentation",
-          "confidence": "high"
+          "confidence": "medium",
+          "caution": "RITM names GrabCut only as the classic energy-minimisation approach (§2); its benchmarked classical baseline is Graph Cut."
         },
         {
           "type": "learned_alternative_of",
           "target": "graph-cut-segmentation",
-          "confidence": "medium",
+          "confidence": "high",
           "caution": "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
         },
         {
@@ -3347,12 +3361,6 @@ export const contentGraph: ContentGraph = {
           "type": "learned_alternative_of",
           "target": "felzenszwalb-graph-segmentation",
           "confidence": "high"
-        },
-        {
-          "type": "compared_with",
-          "target": "mask-rcnn",
-          "confidence": "medium",
-          "caution": "Different problem classes — Mask R-CNN is closed-set instance detection with category labels; SAM is class-agnostic promptable segmentation."
         },
         {
           "type": "compared_with",
@@ -3417,7 +3425,8 @@ export const contentGraph: ContentGraph = {
         {
           "type": "compared_with",
           "target": "bisenet",
-          "confidence": "high",
+          "confidence": "medium",
+          "caution": "Editorial real-time peer pairing; neither paper benchmarks the other.",
           "mirrored": true
         },
         {
@@ -4104,7 +4113,8 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": [
         {
           "slug": "faster-rcnn",
-          "confidence": "high"
+          "confidence": "medium",
+          "caution": "Paradigm-level replacement; the paper contrasts DPM only qualitatively (pyramid of filters vs pyramid of anchors, §3.1.1), with no DPM benchmark."
         },
         {
           "slug": "mask-rcnn",
@@ -4235,7 +4245,8 @@ export const contentGraph: ContentGraph = {
         },
         {
           "slug": "ritm-interactive-segmentation",
-          "confidence": "high"
+          "confidence": "medium",
+          "caution": "RITM names GrabCut only as the classic energy-minimisation approach (§2); its benchmarked classical baseline is Graph Cut."
         },
         {
           "slug": "sam",
@@ -4252,7 +4263,7 @@ export const contentGraph: ContentGraph = {
       "hasLearnedAlternative": [
         {
           "slug": "ritm-interactive-segmentation",
-          "confidence": "medium",
+          "confidence": "high",
           "caution": "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
         },
         {
@@ -4815,7 +4826,13 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "high",
+          "caution": "DETR's CNN backbone is an ImageNet-pretrained ResNet-50/101 feeding the transformer encoder (DETR §3.2, §4)."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "dino": {
@@ -5007,7 +5024,13 @@ export const contentGraph: ContentGraph = {
       "affects": [],
       "generalises": [],
       "extending": [],
-      "fedBy": [],
+      "fedBy": [
+        {
+          "slug": "resnet",
+          "confidence": "high",
+          "caution": "HRNet's first stage is built from ResNet-50 bottleneck units and follows ResNet's depth-per-stage rule (HRNet §3); the two also remain peer backbones."
+        }
+      ],
       "hasLearnedAlternative": []
     },
     "lightglue": {
@@ -5087,6 +5110,11 @@ export const contentGraph: ContentGraph = {
       "generalises": [],
       "extending": [],
       "fedBy": [
+        {
+          "slug": "detr",
+          "confidence": "high",
+          "caution": "Mask2Former inherits DETR's set-prediction objective via MaskFormer and its zero-initialised learnable queries (Mask2Former §3.2.3)."
+        },
         {
           "slug": "pointrend",
           "confidence": "high",
@@ -5290,7 +5318,7 @@ export const contentGraph: ContentGraph = {
         {
           "slug": "mask2former",
           "confidence": "high",
-          "caution": "SAM 3's mask head is adapted from MaskFormer/Mask2Former — this family establishes the per-query mask classification + set-prediction paradigm SAM 3 inherits for concept segmentation."
+          "caution": "SAM v1's mask decoder cites MaskFormer (Mask2Former's direct precursor) as an inspiration; SAM 3's mask head is adapted from MaskFormer/Mask2Former."
         },
         {
           "slug": "vit",

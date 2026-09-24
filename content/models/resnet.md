@@ -40,6 +40,14 @@ relations:
   - type: feeds_into
     target: fpn
     confidence: high
+  - type: feeds_into
+    target: hrnet
+    confidence: high
+    caution: "HRNet's first stage is built from ResNet-50 bottleneck units and follows ResNet's depth-per-stage rule (HRNet §3); the two also remain peer backbones."
+  - type: feeds_into
+    target: detr
+    confidence: high
+    caution: "DETR's CNN backbone is an ImageNet-pretrained ResNet-50/101 feeding the transformer encoder (DETR §3.2, §4)."
 sources:
   primary: he2016-resnet
   references:

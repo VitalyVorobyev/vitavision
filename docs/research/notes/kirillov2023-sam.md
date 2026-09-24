@@ -5,6 +5,7 @@ authors: ["A. Kirillov", "E. Mintun", "N. Ravi", "H. Mao", "C. Rolland", "L. Gus
 year: 2023
 url: https://arxiv.org/abs/2304.02643
 created: 2026-05-11
+refreshed: 2026-09-24
 relevant_atlas_pages: [mask-rcnn, fcn-semantic-segmentation, unet-segmentation, deeplab-semantic-segmentation, grabcut-iterative-segmentation, graph-cut-segmentation, felzenszwalb-graph-segmentation]
 ---
 
@@ -40,6 +41,36 @@ SAM decomposes into three components with deliberately asymmetric compute budget
 
 **Data engine**: three-stage human-in-the-loop collection. Stage 1 (assisted-manual): annotators use SAM interactively; 4.3M masks from 120k images, annotation time reduced from 34 s to 14 s/mask as the model improved; image encoder scaled from ViT-B → ViT-H across 6 retraining rounds. Stage 2 (semi-automatic): automatically prefill confident masks, annotators label remaining; 10.2M masks total from 300k images. Stage 3 (fully automatic): 32×32 grid of point prompts per image; NMS deduplication + stability filter ($\delta = 0.5$ threshold perturbation); ~100 masks per image; all 11M images processed yielding 1.1B masks (99.1% of SA-1B generated automatically).
 
+# Claimed contributions
+
+- C1: A new task — promptable segmentation — "we propose the promptable
+  segmentation task, where the goal is to return a valid segmentation mask
+  given any segmentation prompt." (§2 "Segment Anything Task", p.4018)
+  Restated in the Conclusion as one of three principal contributions: "Our
+  principal contributions are a new task (promptable segmentation), model
+  (SAM), and dataset (SA-1B) that make this leap possible." (§7 "Conclusion",
+  p.4023)
+- C2: A new promptable model, SAM — "The model is designed and trained to be
+  promptable, so it can transfer zero-shot to new image distributions and
+  tasks." (Abstract, p.4015)
+- C3: A new dataset, SA-1B, the largest of its kind — "Using our efficient
+  model in a data collection loop, we built the largest segmentation dataset
+  to date (by far), with over 1 billion masks on 11M licensed and privacy
+  respecting images." (Abstract, p.4015); "SA-1B ... has 400⇥ more masks than
+  any existing segmentation dataset." (§1, "Dataset (§5)" paragraph, p.4016)
+- C4: A three-stage human-in-the-loop data engine that scales mask
+  collection — "Our data engine has three stages: assisted-manual,
+  semi-automatic, and fully automatic." (§1, "Data engine (§4)" paragraph,
+  p.4016)
+- C5: Zero-shot performance competitive with or better than prior supervised
+  results — "We evaluate its capabilities on numerous tasks and find that its
+  zero-shot performance is impressive – often competitive with or even
+  superior to prior fully supervised results." (Abstract, p.4015)
+- C6: Open release under a permissive license — "We are releasing the SA-1B
+  dataset for research purposes and making SAM available under a permissive
+  open license (Apache 2.0) at https://segment-anything.com." (§1, "Release"
+  paragraph, p.4016)
+
 # Assumptions
 
 1. **Natural-image RGB input** (hard). SAM was trained on natural photographs; domain shifts to medical imaging, satellite imagery, or highly synthetic data degrade performance without fine-tuning.
@@ -74,6 +105,22 @@ SAM decomposes into three components with deliberately asymmetric compute budget
 - **Don't use when**: semantic or panoptic segmentation without an external classifier; fine-detail boundary accuracy is critical (e.g., matting); domain-specific imagery (medical, satellite) without fine-tuning; real-time end-to-end inference on CPU (ViT-H encoding is the bottleneck).
 - **Compared against**: RITM [90] (strongest single-point interactive segmenter; SAM outperforms on 16/23 datasets with the oracle resolving ambiguity wins on all 23); SimpleClick [65] and FocalClick [17] (gap shrinks at >1 point; SAM not designed for high-IoU multi-click regime).
 
+# Stated relations
+
+| target (paper-id or slug) | paper's claim (quote + §) | proposed type | confidence | notes |
+|---|---|---|---|---|
+| `ritm-interactive-segmentation` (sofiiuk2021-ritm) | "we compare mainly to RITM [90], a strong interactive segmenter that performs best on our benchmark compared to other strong baselines [65, 17]." + "SAM yields higher results on 16 of the 23 datasets, by as much as ∼47 IoU." + "with the oracle to perform ambiguity resolution, SAM outperforms RITM on all datasets." | compared_with | medium | §6 "Zero-Shot Transfer Experiments" intro (p.4021) and §6.1 "Results" (p.4022). Peer, not Rule-A supersession: elsewhere the paper concedes the gap narrows and dedicated interactive segmenters can overtake SAM once more points are given (see next row). Matches the live page's existing `compared_with, medium` edge — no change needed. |
+| `focalclick` (chen2022-focalclick) | "does not produce boundaries as crisply as more computationally intensive methods that 'zoom-in', e.g. [17]." + Fig. 7d/7e baseline comparison against "SimpleClick [65] and FocalClick [17]" | compared_with | medium | §7 "Limitations" (p.4023) and §6.1 "Results" (p.4022). Explicit weakness admission (boundary crispness) plus a direct empirical multi-point comparison. Matches the live page's existing `compared_with, medium` edge — no change needed. |
+| SimpleClick (Liu et al., arXiv:2210.11006) — **not registered** in `docs/papers/index.yaml`, no Atlas page | "we expect dedicated interactive segmentation methods to outperform SAM when many points are provided, e.g. [65]." | compared_with | medium | §7 "Limitations" (p.4023). Cannot commit a target — ingest SimpleClick first. |
+| ilastik (Berg et al. 2019, Nature Methods, ref [7]) — **not registered**, no Atlas page | "there are domain-specific tools, such as [7], that we expect to outperform SAM in their respective domains." | none (Rule B) | — | §7 "Limitations" (p.4023). Biomedical bioimage-analysis tool — different problem domain; no edge even if ingested. |
+| `clip` | "free-form text with an off-the-shelf text encoder from CLIP [80]." | feeds_into (CLIP→SAM) | medium | §3 "Prompt encoder" (p.4019). Already captured as `fedBy: clip (medium)` on the live page (authored on CLIP's page per the upstream-authoring convention). No new action. |
+| `mae` | "we use an MAE [46] pre-trained Vision Transformer (ViT) [32]"; "SAM uses an MAE [46] pre-trained ViT-H [32] image encoder." | feeds_into (MAE→SAM) | high | §3 "Image encoder" (p.4019); §6 "Implementation" (p.4023). Already captured as `fedBy: mae (high)`. No new action. |
+| `vit` | "MAE [46] pre-trained Vision Transformer (ViT) [32] minimally adapted to process high resolution inputs [60]." | feeds_into (ViT→SAM) | high | §3 "Image encoder" (p.4019). Already captured as `fedBy: vit (high)`. No new action. |
+| `detr` | "This design, inspired by [13, 19], employs a modification of a Transformer decoder block [101] followed by a dynamic mask prediction head." (ref [13] = Carion et al., DETR) | feeds_into (DETR→SAM) | high | §3 "Mask decoder" (p.4019). Already captured as `fedBy: detr (high)`. No new action. |
+| `mask2former` (via ref [19]) | same quote as the DETR row; ref [19] = Cheng, Schwing, Kirillov, "Per-pixel classification is not all you need for semantic segmentation," NeurIPS 2021 | feeds_into (→SAM) | high | §3 "Mask decoder" (p.4019). Already captured as `fedBy: mask2former (high)`, mapped here for lack of a standalone MaskFormer page. **Precision flag**: ref [19] is *MaskFormer* (Cheng et al., NeurIPS 2021), not *Mask2Former* (Cheng, Misra, Schwing, Kirillov, Girdhar, CVPR 2022 — that is ref [18] in this same reference list). This v1 paper's own inspiration citation is to MaskFormer, a stronger/more direct v1-level source than the live page's caution text ("SAM 3's mask head is adapted from MaskFormer/Mask2Former") implies — that caution reads as if the link were only via SAM 3. See suspected-errors note in the reply. |
+| Faster R-CNN (ren2015-faster) / `faster-rcnn` — no existing edge on either page | "we trained a bounding box detector [82] on all first stage masks using a generic 'object' category." | none (data-flow) | — | §4 "Semi-automatic stage" (p.4020). Faster R-CNN is used as an off-the-shelf annotation-pipeline tool to prefill confident masks for the data engine, not incorporated as a named architectural component of SAM itself — the "A's output can be fed to B" case CLAUDE.md excludes from `feeds_into`. Omit. |
+| MCC (Wu et al., CVPR 2023, ref [104]) — **not registered**, no Atlas page | "MCC [104] can easily use SAM to segment an object of interest and achieve strong generalization to unseen objects for 3D reconstruction from a single RGB-D image." | feeds_into (SAM→MCC) | medium | §7 "Discussion → Compositionality" (p.4023). Downstream composition claim; cannot commit a target — ingest MCC first if wanted. |
+
 # Connections
 
 - **Builds on**: MAE (ViT-H initialization) [46], ViT [32], windowed ViT for high-res [60], DETR-style transformer decoder [13, 19], focal loss [63], dice loss [71], Fourier positional encodings [93], CLIP [80] (text encoder for text-prompt variant).
@@ -98,7 +145,8 @@ Relations:
 - { type: learned_alternative_of, target: grabcut-iterative-segmentation, confidence: high }
 - { type: learned_alternative_of, target: graph-cut-segmentation, confidence: high }
 - { type: learned_alternative_of, target: felzenszwalb-graph-segmentation, confidence: high }
-- { type: compared_with, target: mask-rcnn, confidence: medium, caution: "Different problem classes — Mask R-CNN is instance-detection with category labels; SAM is class-agnostic promptable segmentation" }
+- DROPPED: { type: compared_with, target: mask-rcnn } — Rule B (different problem classes; SAM never mentions Mask R-CNN) (WS-H audit 2026-09-24, user-confirmed against # Stated relations)
+- The three learned_alternative_of edges above are editorial (the paper does not discuss GrabCut, graph cut or Felzenszwalb–Huttenlocher); kept by user decision (WS-H audit 2026-09-24, user-confirmed against # Stated relations)
 
 # Provenance
 

@@ -46,6 +46,27 @@ Resolve the canonical `source-id` from the input (same logic as Step 1 — for a
 
 Rationale: notes are hand-curated reasoning substrate. Auto-overwriting destroys human edits.
 
+### Refresh mode (v1 → v2)
+
+Step 0 blocks re-ingestion, not migration. When the user or an approved plan asks to bring an
+existing pre-pivot note up to v2 (WS-H; `bun run notes:status` lists v1 notes by page degree),
+skip Steps 1–5 and run the **Refresh contract** in `.claude/skills/_shared/subagent-prompts.md`
+instead of Extract. The refresh is insert-only:
+
+- `# Claimed contributions` goes directly after `# Core idea`; `# Stated relations` goes directly
+  after `# Applicability` — both in the template's format.
+- The frontmatter gains `refreshed: <today>`; `created:` is kept.
+- Every other line stays byte-identical, including the update plan and any recorded `Relations:`
+  lines. Corrections the subagent notices in existing prose go into its reply, not the file.
+
+The orchestrator checks `git diff` for insertions only, then runs Step 4b over the new
+Stated-relations table against the page's current `relations[]`: each existing edge is
+*supported*, *unsupported* (keep with lower confidence + caution, or drop), and each unstated
+row is a *new proposal* or *no edge* (Rule B / data-flow). The user confirms every change; only
+confirmed rows become `Relations:` lines. A paper with no Related Work / contributions structure
+still gets both headings, each holding a one-line reason why it is empty, so the note counts as
+migrated.
+
 ### Step 1 — Identify the paper
 
 Parse the input to canonical form (`arxiv:<id>` or `doi:<doi>`). For URLs, extract the arxiv id or DOI first. For local PDFs, extract what metadata is available from the PDF header; if the title or DOI is visible, resolve it.
@@ -181,7 +202,7 @@ The distinction matters because primary-update notes are applied to a single pag
 - **Never invent paper IDs not in `docs/papers/index.yaml`.** If the ID is unknown, run `bun papers:fetch-meta` first.
 - **Never reference unresolved Atlas slugs in the update plan.** Verify a slug exists in `content/algorithms/`, `content/models/`, or `content/concepts/` before writing it under `## NEW:` or `## UPDATE:`.
 - **Never write `usedBy:` (or any reverse edge) anywhere.** Reverse edges are computed by the build from `src/generated/content-graph.ts`.
-- **Never overwrite an existing research note.** Step 0 enforces this. To re-author, delete the note first.
+- **Never overwrite an existing research note.** Step 0 enforces this. To re-author, delete the note first. The v1 → v2 Refresh mode is the one exception, and it only inserts.
 - **Never read the cache `.txt` / `.html` directly in the orchestrator.** Cache reads happen inside the delegated Extract contract; the orchestrator only sees Sonnet's reply.
 - **Never auto-commit typed relations or historical status.** The Extract subagent may *propose* relations in the note's `# Stated relations` table — but only from the paper's own positioning statements, each anchored to a quote + location, never from title heuristics or year delta. Committing any relation (recording a `Relations:` line, marking a page historical) always requires the user's or the approved plan's explicit confirmation (Step 4b). Even when the answer seems obvious, the orchestrator surfaces the proposal and records the confirmed answer, including confidence and any caution. The cost of one short question is far smaller than the cost of silently mislabelling a relation type or marking a page historical.
 

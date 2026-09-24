@@ -15,7 +15,7 @@ relations:
   - type: feeds_into
     target: sam
     confidence: high
-    caution: "SAM 3's mask head is adapted from MaskFormer/Mask2Former — this family establishes the per-query mask classification + set-prediction paradigm SAM 3 inherits for concept segmentation."
+    caution: "SAM v1's mask decoder cites MaskFormer (Mask2Former's direct precursor) as an inspiration; SAM 3's mask head is adapted from MaskFormer/Mask2Former."
   - type: compared_with
     target: mask-rcnn
     confidence: high

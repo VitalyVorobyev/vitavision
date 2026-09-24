@@ -5,6 +5,7 @@ authors: ["J. Long", "E. Shelhamer", "T. Darrell"]
 year: 2015
 url: https://arxiv.org/abs/1411.4038
 created: 2026-05-10
+refreshed: 2026-09-24
 relevant_atlas_pages: []
 ---
 
@@ -36,6 +37,15 @@ For VGG-16 this yields a total downsampling stride of 32 (five 2× pooling stage
 The underlying rationale (Section 4.2): deep layers encode coarse semantic information ("what"), shallow layers encode fine spatial detail ("where"); skip connections merge these streams, calling this the "deep jet" by analogy to Koenderick–van Doorn's feature jet.
 
 Training is end-to-end by per-pixel multinomial logistic (softmax cross-entropy) loss summed over all spatial output positions. Whole-image training is shown to be identical in expectation to patchwise training but faster in wall time (Section 3.4, Figure 5).
+
+# Claimed contributions
+
+- C1: First end-to-end FCN training for pixelwise prediction from supervised pre-training — "To our knowledge, this is the first work to train FCNs end-to-end (1) for pixelwise prediction and (2) from supervised pre-training." (§1 Introduction)
+- C2: State-of-the-art segmentation without additional machinery — "We show that a fully convolutional network (FCN) trained end-to-end, pixels-to-pixels on semantic segmentation exceeds the state-of-the-art without further machinery." (§1 Introduction)
+- C3: Reinterpretation of classification nets as FCNs via fine-tuning — "We adapt contemporary classification networks (AlexNet [20], the VGG net [31], and GoogLeNet [32]) into fully convolutional networks and transfer their learned representations by fine-tuning [3] to the segmentation task." (Abstract)
+- C4: Skip architecture fusing deep and shallow layers — "We then define a skip architecture that combines semantic information from a deep, coarse layer with appearance information from a shallow, fine layer to produce accurate and detailed segmentations." (Abstract)
+- C5: Headline quantitative wins — "Our fully convolutional network achieves state-of-the-art segmentation of PASCAL VOC (20% relative improvement to 62.2% mean IU on 2012), NYUDv2, and SIFT Flow, while inference takes less than one fifth of a second for a typical image." (Abstract)
+- C6: No pre-/post-processing complications required — "Our approach does not make use of pre- and post-processing complications, including superpixels [7, 15], proposals [15, 13], or post-hoc refinement by random fields or local classifiers [7, 15]." (§1 Introduction)
 
 # Assumptions
 
@@ -73,6 +83,16 @@ Training is end-to-end by per-pixel multinomial logistic (softmax cross-entropy)
 - Use when: dense per-pixel class labelling from abundant supervised labels; large receptive field and coarse-to-fine architecture acceptable; ImageNet-pretrained backbone available; no post-processing CRF needed.
 - Don't use when: fine boundary precision is paramount (use U-Net, SegNet, DeepLab v2+); labels are scarce (few-shot or zero-shot segmentation); real-time inference on CPU or embedded hardware (210 ms GPU inference is a lower bound; the model has 134 M parameters for VGG-16 backbone).
 - Compared against: SDS (Hariharan et al. ECCV 2014, hybrid R-CNN proposal-classifier — 52.6 mean IU PASCAL VOC 2011 test vs FCN-8s 62.7); R-CNN (Girshick et al. CVPR 2014 — 47.9 mean IU); Farabet et al. 2013 multi-scale convnet; Pinheiro & Collobert 2014 recurrent convnet.
+
+# Stated relations
+
+| target (paper-id or slug) | paper's claim (quote + §) | proposed type | confidence | notes |
+|---|---|---|---|---|
+| SDS (Hariharan et al. [15], ECCV 2014) | "Hariharan et al. [15] and Gupta et al. [13] likewise adapt deep classification nets to semantic segmentation, but do so in hybrid proposal-classifier models... Neither method is learned end-to-end. They achieve state-of-the-art segmentation results on PASCAL VOC and NYUDv2 respectively, so we directly compare our standalone, end-to-end FCN to their semantic segmentation results in Section 5." | `compared_with` | high | Explicit head-to-head empirical comparison, quantified in Table 3 (SDS 52.6 vs. FCN-8s 62.7 mean IU, already recorded in this note's Applicability/Provenance). Not registered in `docs/papers/index.yaml`; no Atlas page exists. No edge can be authored until SDS is ingested. |
+| R-CNN (Girshick et al. [10], CVPR 2014, "Rich feature hierarchies...") | "These approaches fine-tune an R-CNN system [10] by sampling bounding boxes and/or region proposals for detection, semantic segmentation, and instance segmentation." | `compared_with` | high | Table 3 gives R-CNN 47.9 mean IU vs. FCN-8s 62.7 (already in this note's Applicability). This is the original Girshick R-CNN (CVPR 2014), distinct from the "Faster R-CNN" paper that IS registered in `docs/papers/index.yaml`; the CVPR-2014 R-CNN itself is not registered and has no Atlas page. |
+| SPP-net (He et al. [17], ECCV 2014) | "Alternatively, He et al. [17] discard the non-convolutional portion of classification nets to make a feature extractor. They combine proposals and spatial pyramid pooling to yield a localized, fixed-length feature for classification. While fast and effective, this hybrid model cannot be learned end-to-end." | `compared_with` | medium | Qualitative contrast only — no numeric table entry for SPP-net in this paper, just the "cannot be learned end-to-end" critique. Not registered in `docs/papers/index.yaml`; no Atlas page. |
+| Prior patchwise/multi-scale dense-prediction convnets (Farabet et al. [7], Pinheiro & Collobert [28], Ganin & Lempitsky [9], Ciresan et al. [2], Sermanet et al. [29], Eigen et al. [4,5], Tompson et al. [35], Ning et al. [27]) | "Common elements of these approaches include • small models restricting capacity and receptive fields; • patchwise training [27, 2, 7, 28, 9]; • post-processing by superpixel projection, random field regularization, filtering, or local classification [7, 2, 9]; • input shifting and output interlacing for dense output [29, 28, 9]; • multi-scale pyramid processing [7, 28, 9]; • saturating tanh nonlinearities [7, 4, 28]; and • ensembles [2, 9], whereas our method does without this machinery." | `generalized_by`-pattern (Rule A), collective — no single target | low | FCN frames itself as doing the same job (dense prediction via convnets) while dropping the machinery this whole prior cohort needs, which reads as a Rule-A "does the same, more simply" claim — but it names a class of methods, not one paper, and none of Farabet/Pinheiro-Collobert/Ganin-Lempitsky/Ciresan/Sermanet/Eigen/Tompson/Ning are registered in `docs/papers/index.yaml`. No edge can be authored; Farabet et al. 2013 is already named in this note's own Applicability "Compared against" line. |
+| Matan et al. [26] (1991) / Wolf & Platt [37] (1994) | "To our knowledge, the idea of extending a convnet to arbitrary-sized inputs first appeared in Matan et al. [26], which extended the classic LeNet [21] to recognize strings of digits... Wolf and Platt [37] expand convnet outputs to 2-dimensional maps of detection scores for the four corners of postal address blocks. Both of these historical works do inference and learning fully convolutionally for detection." | `feeds_into`-pattern (historical precedent for the fully-convolutional idea; would be authored on Matan/Wolf-Platt's page targeting FCN, chronologically upstream) | medium | Neither Matan et al. 1991 nor Wolf & Platt 1994 is registered in `docs/papers/index.yaml`; no Atlas page. Acknowledged as prior art for the "fully convolutional" mechanism itself, not a numeric comparison. |
 
 # Connections
 

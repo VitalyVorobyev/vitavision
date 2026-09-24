@@ -5,6 +5,7 @@ authors: ["C. Yu", "J. Wang", "C. Peng", "C. Gao", "G. Yu", "S. Nong"]
 year: 2018
 url: https://arxiv.org/pdf/1808.00897
 created: 2026-05-28
+refreshed: 2026-09-24
 relevant_atlas_pages: [bisenet, fcn-semantic-segmentation, deeplab-semantic-segmentation, segformer, hrnet, attention-mechanism, convolutional-neural-network]
 ---
 
@@ -44,6 +45,12 @@ $$L(X; W) = l_p(X; W) + \alpha \sum_{i=2}^{K} l_i(X_i; W), \quad K=3, \; \alpha=
 
 Auxiliary losses supervise Context Path stage outputs during training only; $\alpha = 1$ in all reported experiments. [§3.3 "Loss function", Eq. 1–2]
 
+# Claimed contributions
+
+- C1: A two-path decoupling of spatial-detail preservation from receptive-field growth — "We propose a novel approach to decouple the function of spatial information preservation and receptive field offering into two paths. Specifically, we propose a Bilateral Segmentation Network (BiSeNet) with a Spatial Path (SP) and a Context Path (CP)." (§1, "Our main contributions are summarized as follows" bullet list)
+- C2: Two fusion/refinement modules — "We design two specific modules, Feature Fusion Module (FFM) and Attention Refinement Module (ARM), to further improve the accuracy with acceptable cost." (§1, contributions bullet list)
+- C3: Headline speed/accuracy result — "We achieve impressive results on the benchmarks of Cityscapes, CamVid, and COCO-Stuff. More specifically, we obtain the results of 68.4% on the Cityscapes test dataset with the speed of 105 FPS." (§1, contributions bullet list)
+
 # Assumptions
 
 1. **(Soft) Two-path complementarity holds:** The spatial and semantic information are sufficiently decoupled that a shallow wide path can recover spatial detail independently of the context path. If the two paths encode highly correlated information, the FFM gains little over a simpler merge. [§3.3]
@@ -74,6 +81,16 @@ Auxiliary losses supervise Context Path stage outputs during training only; $\al
 - **Don't use when:** Very tight latency budgets requiring >200 FPS (ENet at 1280×720: 46.8 FPS vs BiSeNet-Xception39: 82.3 FPS [Table 5]); or very small objects at high resolution where 1/8 stride loses too much resolution.
 - **Don't use when:** Arbitrary-domain images where ImageNet pre-training is irrelevant; the CP backbone depends on transfer from ImageNet.
 - **Compared against:** ENet, SegNet, ICNet, Two-column Net, DLC, DeepLab v1/v2, PSPNet, FCN-8s, RefineNet, DUC, Dilation10, LRR [Tables 6, 7, 8, 9].
+
+# Stated relations
+
+| target (paper-id or slug) | paper's claim (quote + §) | proposed type | confidence | notes |
+|---|---|---|---|---|
+| `long2015-fcn` (FCN [22]) | "Recently, lots of approaches based on FCN [22] have achieved the state-of-the-art performance on different benchmarks of the semantic segmentation task." | `feeds_into` (FCN=A, BiSeNet=B) | medium | Foundational-framing claim, not a component-level "named building block" claim as explicit as SegFormer↔ViT, hence medium. Already authored on the FCN page (`content/models/fcn-semantic-segmentation.md` → `feeds_into: bisenet`) — the live page's reverse `fedBy` bucket confirms this edge exists; this row corroborates it from the source text. |
+| U-shape family — U-Net [27], RefineNet [18], LRR [10], Deconvnet [24], Global Convolution Network [26] | "researchers widely utilize the U-shape structure [1,10,22,24,27]... this technique has two weaknesses. 1) The complete U-shape structure can reduce the speed of the model due to the introduction of extra computation on high-resolution feature maps. 2) More importantly, most spatial information lost in the pruning or cropping cannot be easily recovered by involving the shallow layers... the U-shape technique is better to regard as a relief, rather than an essential solution." | `compared_with` (peer alternative, not supersession — no claim BiSeNet strictly generalises U-Net's recoverable information) | medium | `unet-segmentation` | Critiques the U-shape *family* collectively by ref number (U-Net is the registered, canonical member — `ronneberger2015-unet`); no BiSeNet-vs-U-Net numeric head-to-head is given in this paper, so confidence is medium pending a source with explicit numbers. Not Rule A: BiSeNet doesn't claim to recover everything U-Net recovers plus more — it claims a *different* mechanism (two parallel paths vs. skip-connected decoder) avoids U-Net's specific failure mode (irrecoverable lost detail), which is a peer-approach critique. |
+| DUC [32], PSPNet [40], DeepLab v2 [5] / v3 [6] | "DUC [32], PSPNet [40], DeepLab v2 [5], and Deeplab v3 [6] use the dilated convolution to preserve the spatial size of the feature map." Quantitative: Table 7 — "DeepLab-v2+CRF = 70.4%, PSPNet = 78.4%" (Cityscapes test) vs. BiSeNet-Res101 = 78.9%. | `compared_with` | high | `deeplab-semantic-segmentation` | Direct quantitative Cityscapes-test comparison (Table 7) plus explicit method-family positioning (§2 "Spatial information"). Supports the existing `compared_with → deeplab-semantic-segmentation` (high) edge already on the live `bisenet` page. |
+| Real-time peers — SegNet [1], ENet [25], ICNet [39], Two-column Net (Wu et al. [34]) | "SegNet [1] utilizes a small network structure and the skip-connected method to achieve a fast speed. E-Net [25] designs a lightweight network from scratch and delivers an extremely high speed. ICNet [39] uses the image cascade to speed up the semantic segmentation method... [34] designs a novel two-column network and spatial sparsity to reduce computation cost. Differently, our proposed method employs a lightweight model to provide sufficient receptive field." Quantitative: Table 6 (Cityscapes test @ Titan XP) — Two-column Net 72.9%/14.7 FPS, ICNet 69.5%/30.3 FPS vs. BiSeNet-Xception39 68.4%/105.8 FPS. | `compared_with` | — | none (no Atlas page; SegNet/ENet/ICNet/Two-column Net are not registered in `docs/papers/index.yaml`) | Explicit peer differentiation with quantitative FPS/mIoU tables (Table 6, Table 9), but no counterpart is ingested — no edge can be authored until one of these is registered and gets a page. |
+| SENet (Hu et al. [13]), DFN (Yu et al. [36], same author group as this paper) | "we design the Feature Fusion Module to fuse... we first concatenate the output features... then we use a global average pooling to balance this scale, and compute a weight vector, like SENet [13]." + "Like the DFN [36], they learn the global context as attention and revise the features." | `feeds_into` (SENet/DFN's channel-attention idea is a named component inside FFM, not a data-flow edge) | — | none (no Atlas page or registered paper id for either SENet or DFN — Hu et al. and the authors' own prior DFN paper) | FFM explicitly borrows the squeeze-and-excitation channel-reweighting pattern from SENet, and the paper draws a direct parallel to its own earlier DFN work's global-context-as-attention design. Genuine named-component lineage (would be `feeds_into` once ingested), but neither source is registered — ingest first. The broader `attention-mechanism` concept page is already a `prerequisites` entry on the live `bisenet` page, which is the correct home for this until SENet/DFN get their own pages. |
 
 # Connections
 
@@ -111,7 +128,7 @@ Note: This page covers **both** BiSeNet V1 (primary, foundational — this paper
 - **References:** yu2018-bisenet (V1 primary), yu2020-bisenet (V2).
 
 Relations:
-- { type: compared_with, target: segformer, confidence: high }
+- { type: compared_with, target: segformer, confidence: medium, caution: "Editorial real-time peer pairing; neither paper benchmarks the other." }  # was high (WS-H audit 2026-09-24, user-confirmed against # Stated relations)
 - { type: compared_with, target: deeplab-semantic-segmentation, confidence: high }
 - { type: compared_with, target: hrnet, confidence: medium, caution: "both target spatial-detail loss in dense prediction — HRNet via a maintained high-res branch, BiSeNet via the Spatial Path" }
 

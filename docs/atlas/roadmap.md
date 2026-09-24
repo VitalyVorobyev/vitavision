@@ -4,8 +4,8 @@
 > default "work is driven from plan files, not a tracked backlog" rule for this initiative only
 > (user decision, 2026-08-23). Page-quality and tech-debt rows live in `docs/atlas/backlog.md`.
 >
-> Current plan: `~/.claude/plans/ws-f-people-papers.md` (approved 2026-09-23; design canvas
-> https://claude.ai/artifact/RcTo7hXnDqmLLwGx6e6vZP).
+> Current plan: `~/.claude/plans/read-the-backlog-and-cuddly-iverson.md` (WS-H batch 1, approved
+> 2026-09-24).
 
 ## Session protocol
 
@@ -34,6 +34,7 @@ strictly one PR at a time; PRs must be substantial — every main commit trigger
 Atlas size at 2026-09-23: 55 algorithms · 51 models · 35 concepts · 13 narratives · 151 registered
 sources · 141 research notes (7 in v2 form) · 499 canonical authors.
 After PR-B: 54 models · 154 sources · 144 notes (11 in v2 form) · 502 canonical authors.
+After WS-H batch 1: 144 notes, 24 in v2 form (`bun run notes:status`).
 
 ## Workstream status
 
@@ -43,7 +44,7 @@ After PR-B: 54 models · 154 sources · 144 notes (11 in v2 form) · 502 canonic
 | B — Dense-prediction injection | FPN, DPT, PointRend pages; SegFormer note → v2 | **done** (PR-B) | — |
 | F — Authors & papers experience | Papers and people become first-class, well-designed Atlas surfaces | **done** (#163 paper pages, #164 Atlas tabs / People / Papers / author page, F3 search + author data + narrative fit) | residuals BL-036..038 |
 | G — Build-pipeline quality | Validator, build scripts, and frontend/editor monoliths modular and tested | **done** (#160, #161, #162) | — |
-| H — Note v2 migration | Every relation rests on a note with `# Stated relations` | planned | batch 1: highest-degree segmentation/detection notes |
+| H — Note v2 migration | Every relation rests on a note with `# Stated relations` | **in progress** — batch 1 done (13 seg/det notes) | batch 2: backbones vit, resnet, dinov2 + next `notes:status` tier |
 | I — Coverage waves | Close page debt and notes-without-pages | planned | multi-scale wave after PR-B |
 | J — Quality tiers | Canonical rollout per domain; second audit pass | planned | `atlas-audit` batch 2 over BL-001 remainder |
 | K — Citation & influence graph | Surface `cites` as paper→paper and author→author influence | long-term | after F ships paper pages |
@@ -87,8 +88,17 @@ author data integrity (BL-032), narrative fit (BL-034).
 134 of 141 notes predate the structured-ingestion pivot (no `# Claimed contributions` /
 `# Stated relations`), so Step 4b's "confirm against the counterpart's note" is impossible for most
 existing relations. Upgrade in domain batches (Sonnet Extract, orchestrator review), highest-degree
-pages first; each batch ends with a relation audit against the stated relations. Add a v1/v2 count
-to a report script so progress is measurable.
+pages first; each batch ends with a relation audit against the stated relations. Progress:
+`bun run notes:status` (v1/v2 totals + v1 notes ranked by citing-page degree). Method:
+paper-ingest **Refresh mode** (insert-only `# Claimed contributions` + `# Stated relations`, one
+Sonnet agent per note, `git diff` must show insertions only), then a per-page audit — each edge
+*supported* / *unsupported* / *new proposal* / *no edge* — confirmed by the user.
+
+- **Batch 1 (done):** sam, mask-rcnn, fcn, deeplab, faster-rcnn, fast-scnn, bisenet, hrnet,
+  focalclick, ritm, mask2former, detr, unet.
+- **Batch 2 (next):** vit, resnet, dinov2, then the top of `notes:status` (zhang2000-flexible,
+  lowe2004-sift, vaswani2017-attention, alexnet, dust3r — mostly classical papers: expect
+  empty Stated-relations sections with a one-line reason).
 
 ### I — Coverage waves (mid-term)
 
@@ -182,6 +192,19 @@ narrative should get a page — paper-only nodes are debt, not normal.
   Playwright screenshots, editor feature exports, worker-command hashes). Found along the way:
   PuzzleBoard results crashed on every run since calib-targets 0.14 reshaped `GridAlignment` (casts in
   the worker hid it from tsc — `test-wasm-schemas` now asserts the shape); 5 broken internal links.
+
+- 2026-09-24 — **WS-H batch 1** (user-confirmed audit). Added: detr → mask2former, resnet → hrnet,
+  resnet → detr (`feeds_into`, high; stated by the later paper). Recalibrated: faster-rcnn → DPM
+  high→medium and ritm → grabcut high→medium (qualitative mentions only), ritm → graph-cut
+  medium→high (Table 7 benchmarks Boykov–Jolly "GC"), bisenet ↔ segformer high→medium (neither paper
+  cites the other); the sam ← mask2former caution now says SAM v1 cites MaskFormer directly. Dropped: sam
+  ↔ mask-rcnn (Rule B — its own caution said "different problem classes"). Kept as editorial:
+  `learned_alternative_of` edges whose classical target the paper never discusses (sam ×3,
+  mask-rcnn → DPM, focalclick → grabcut, faster-rcnn → viola-jones) — cross-paradigm edges are
+  editorial by nature. Declined: bisenet ↔ unet (critique of the U-shape family), ritm ↔ deeplab
+  (backbone choice, not a peer). Note errors fixed: RITM's "GC" row was attributed to GrabCut; Faster R-CNN
+  overstated DPM as a benchmark baseline. Many stated relations target unregistered papers (MNC,
+  FCIS, MaskFormer, SegNet, PSPNet, f-BRS, Fast R-CNN…) — ingest candidates, no edges yet.
 
 ## Deferred / parked
 

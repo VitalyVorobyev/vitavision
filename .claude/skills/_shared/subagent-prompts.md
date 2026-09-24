@@ -91,6 +91,45 @@ Used by `paper-ingest` to turn a cached source into a research note.
   each row with the user before anything is committed. Omit both sections for
   papers without that structure.
 
+## Refresh contract
+
+Used by `paper-ingest` Refresh mode to bring a pre-pivot (v1) note up to v2 in place. One
+subagent per note; parallel runs are safe only because each owns exactly one file.
+
+**Inputs (provided by orchestrator):**
+- `note_path` — `docs/research/notes/<source-id>.md` (the one file the subagent may write)
+- `cache_path` — `docs/papers/.cache/<source-id>.html` if present, else `.txt`
+- Path to `docs/research/templates/source-note.md` (format of the two new sections)
+- The citing page's current forward `relations[]` (context for the reply, not for the file)
+- `scratch_path` — where to write a copy of the Stated-relations table
+
+**Output (file edit — insert only):**
+- `# Claimed contributions` directly after the `# Core idea` section, and `# Stated relations`
+  directly after `# Applicability`, both in the template's format.
+- `refreshed: <today>` added to the frontmatter.
+- No other line changes. No deletions, no reflow, no fixes to existing prose — report suspected
+  errors in the reply instead.
+
+**Output (reply):**
+- The Stated-relations table, verbatim, also written to `scratch_path`.
+- A line per current relation of the citing page: supported (quote + §) / not stated.
+- Suspected errors in the existing note (e.g. constants mangled by pdftotext).
+
+**Hard rules:**
+- Read only the note, its cache file and the template. Write only `note_path` and
+  `scratch_path`. Never delete, rename or edit any other file; never run git.
+- Stated-relations `target` cells are existing Atlas slugs (check `content/{algorithms,models,
+  concepts}/<slug>.md` exists) or ids registered in `docs/papers/index.yaml`; anything else is
+  named in prose in the notes column.
+- Every row carries a quote + location from the paper. Proposed types follow CLAUDE.md Rules
+  A–C; `none (Rule B)` / `none (data-flow)` are valid proposals.
+- Papers promote themselves: record the claim as stated; do not upgrade confidence because the
+  claim is emphatic.
+- pdftotext drops superscripts and mangles symbols — cross-check any constant quoted from the
+  `.txt` against the paper's own arithmetic.
+- If the paper has no contribution list or Related Work, keep both headings with a one-line
+  reason under each.
+
 ## Draft contract
 
 Used by `algo-page`, `deep-model-page`, `concept-page` to turn note(s) into a

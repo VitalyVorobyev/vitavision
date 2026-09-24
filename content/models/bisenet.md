@@ -15,7 +15,8 @@ failureModes: []
 relations:
   - type: compared_with
     target: segformer
-    confidence: high
+    confidence: medium
+    caution: "Editorial real-time peer pairing; neither paper benchmarks the other."
   - type: compared_with
     target: deeplab-semantic-segmentation
     confidence: high

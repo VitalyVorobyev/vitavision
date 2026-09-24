@@ -5,6 +5,7 @@ authors: ["O. Ronneberger", "P. Fischer", "T. Brox"]
 year: 2015
 url: https://arxiv.org/abs/1505.04597
 created: 2026-05-11
+refreshed: 2026-09-24
 relevant_atlas_pages: [fcn-semantic-segmentation, unet-segmentation]
 ---
 
@@ -29,6 +30,17 @@ U-Net is a fully convolutional encoder-decoder whose two halves are nearly symme
 The critical insight over vanilla FCN is the concatenation-based skip connections: instead of simply adding encoder features to decoder features (as in later residual variants), U-Net concatenates the full (cropped) encoder feature map with the decoder feature map at every symmetric resolution level. This propagates fine-grained spatial detail — cell boundaries, membrane locations — that would otherwise be lost through pooling.
 
 For application to arbitrarily large images, an **overlap-tile strategy** partitions the image into overlapping input tiles. Pixels in the border region of each tile lack full context; missing input data is filled by mirroring the image at the boundary (Fig. 2). This makes the network applicable without retraining on any image size.
+
+# Claimed contributions
+
+*(No explicit numbered "our contributions are" list — this 2015 paper predates that convention and has no Related Work section; the following are drawn from the Abstract's own narrative enumeration of results.)*
+
+- C1: A network + training strategy that makes efficient use of very few annotated samples via data augmentation — "we present a network and training strategy that relies on the strong use of data augmentation to use the available annotated samples more efficiently." (Abstract)
+- C2: A symmetric contracting/expanding architecture for precise localization — "The architecture consists of a contracting path to capture context and a symmetric expanding path that enables precise localization." (Abstract)
+- C3: End-to-end training from very few images, beating the prior sliding-window CNN on the ISBI EM-segmentation challenge — "We show that such a network can be trained end-to-end from very few images and outperforms the prior best method (a sliding-window convolutional network) on the ISBI challenge for segmentation of neuronal structures in electron microscopic stacks." (Abstract)
+- C4: Large-margin win on the ISBI 2015 cell tracking challenge with the same network on a different imaging modality — "Using the same network trained on transmitted light microscopy images (phase contrast and DIC) we won the ISBI cell tracking challenge 2015 in these categories by a large margin." (Abstract)
+- C5: Fast inference — "Moreover, the network is fast. Segmentation of a 512x512 image takes less than a second on a recent GPU." (Abstract)
+- C6: Public release of implementation and trained networks — "The full implementation (based on Caffe) and the trained networks are available at http://lmb.informatik.uni-freiburg.de/people/ronneber/u-net." (Abstract)
 
 # Assumptions
 
@@ -73,6 +85,17 @@ where $w_c$ balances class frequencies, $d_1$ and $d_2$ are distances to the bor
 - **Use when:** (a) biomedical or scientific pixel-level segmentation with limited annotated data (tens of images rather than thousands); (b) touching-object instance separation is important and the weight-map regime can be applied; (c) the target domain is 2D (or 3D data can be processed slice-by-slice with acceptable z-consistency); (d) inference speed matters — 512×512 images segment in under 1 second on a recent GPU (Section 5).
 - **Don't use when:** (a) natural-image semantic segmentation with large labelled datasets (DeepLab, SegFormer, or similar scale better); (b) volumetric data requiring full 3D context (use V-Net, nnU-Net, or 3D U-Net variants); (c) instance segmentation requiring bounding-box-level reasoning (Mask R-CNN family is more appropriate); (d) extreme resolution requirements beyond GPU memory — the single-image batch and large tile approach will OOM before other methods.
 - **Compare against:** FCN (`long2015-fcn`) — the upstream architecture; SegNet — similar encoder-decoder without skip concatenation (more compressed memory footprint, less boundary detail); sliding-window ConvNet (Ciresan et al. [1]) — the prior ISBI 2012 winner, slower and less accurate; DeepLab series — for natural-image semantic segmentation on large datasets.
+
+# Stated relations
+
+*(No Related Work section — this paper folds its positioning entirely into the Introduction. Rows below are the paper's own claims toward prior/concurrent work found there; proposals only, mapped through CLAUDE.md's Relations rules. None of DeepLab or SegFormer — the two relations already authored on the live `unet-segmentation` page — are mentioned anywhere in this 2015 paper; both postdate it by years.)*
+
+| target (paper-id or slug) | paper's claim (quote + §) | proposed type | confidence | notes |
+|---|---|---|---|---|
+| `fcn-semantic-segmentation` | "In this paper, we build upon a more elegant architecture, the so-called "fully convolutional network" [9]. We modify and extend this architecture such that it works with very few training images and yields more precise segmentations" (§1 Introduction, para 3) | `extended_by` (authored on FCN's page, `target: unet-segmentation`) | high | Already authored: the live content graph shows `fcn-semantic-segmentation` --extended_by--> `unet-segmentation` (confidence high). This refresh confirms the paper's own text supports the existing edge; no new action needed. |
+| Ciresan et al. sliding-window CNN [1] — (no Atlas page; not registered in `docs/papers/index.yaml`) | "outperforms the prior best method (a sliding-window convolutional network) on the ISBI challenge" (Abstract); "This is significantly better than the sliding-window convolutional network result by Ciresan et al. [1], whose best submission had a warping error of 0.000420 and a rand error of 0.0504." (§4 Experiments, Table 1) | `compared_with` (empirical benchmark win over the prior ISBI-2012 winner; different architecture family, not a structural generalization, so Rule A does not apply) | — | Named 5x with concrete numeric comparison. No edge can be authored until this paper is ingested and registered. |
+| Hariharan et al. Hypercolumns [4] / Seyedhosseini et al. [11] — (neither registered in `docs/papers/index.yaml`) | "More recent approaches [11,4] proposed a classifier output that takes into account the features from multiple layers. Good localization and the use of context are possible at the same time." (§1 Introduction) | `compared_with` (peer multi-layer-feature approaches; grouped mention, no per-method quantitative comparison) | low | Passing grouped mention; no individual quote or number for either paper. Flag only, not actionable without ingestion. |
+| Dosovitskiy et al. 2014, "Discriminative unsupervised feature learning..." [2] — | "The value of data augmentation for learning invariance has been shown in Dosovitskiy et al. [2] in the scope of unsupervised feature learning." (§1 Introduction) | `none (Rule B)` | — | Supporting citation for the data-augmentation technique, not a same-problem-class method relation — different task (unsupervised feature learning vs. supervised segmentation). Also unregistered. |
 
 # Connections
 

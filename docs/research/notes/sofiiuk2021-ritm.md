@@ -5,6 +5,7 @@ authors: ["K. Sofiiuk", "I. A. Petrov", "A. Konushin"]
 year: 2021
 url: https://arxiv.org/pdf/2102.06583
 created: 2026-05-27
+refreshed: 2026-09-24
 relevant_atlas_pages:
   - grabcut-iterative-segmentation
   - graph-cut-segmentation
@@ -49,6 +50,14 @@ This keeps the aggregate gradient constant, matching the total gradient of BCE. 
 
 **ZoomIn inference.** Adopted from f-BRS: after the first click the input image is cropped around the predicted object bounding box with an expansion margin, then predictions are averaged with the horizontally-flipped crop (Sec. 5, implementation). This is an inference-time crop trick, not a backward-pass optimization.
 
+# Claimed contributions
+
+- C1: A simple feedforward model matching/exceeding optimization-based inference — "In this paper, we extensively evaluate various design choices for interactive segmentation and discover that new state-of-the-art results can be obtained without any additional optimization schemes. Thus, we propose a simple feedforward model for click-based interactive segmentation that employs the segmentation masks from previous steps." (Abstract)
+- C2: Extension to mask correction, not just fresh segmentation — "It allows not only to segment an entirely new object, but also to start with an external mask and correct it." (Abstract); "We propose an extension of click-based interactive segmentation that allows to modify existing instance segmentation masks interactively." (§1 Introduction)
+- C3: Revived iterative training with mask-from-previous-step awareness — "We revive an iterative training procedure, and make a network aware of the mask from a previous step [14]. We show that such awareness improves the models' stability, i.e. allows to avoid accuracy dropping when adding new clicks." (§1 Introduction)
+- C4: New COCO+LVIS training dataset — "We propose a new training dataset obtained by combining the LVIS and COCO datasets." (§1 Introduction); "We train models on a combination of LVIS and COCO datasets [12, 13], that, to the best of our knowledge, are the most suitable for training interactive segmentation models." (§1 Introduction)
+- C5: Training-dataset choice found to dominate accuracy — "When analyzing the performance of models trained on different datasets, we observe that the choice of a training dataset greatly impacts the quality of interactive segmentation. We find that the models trained on a combination of COCO and LVIS with diverse and high-quality annotations show performance superior to all existing models." (Abstract)
+
 # Assumptions
 
 1. (Hard) Clicks arrive from a bounded-noise user — each click is placed somewhere inside (or near the boundary of) the target region, not at a random image location. The training simulation strategy mimics this.
@@ -80,6 +89,19 @@ This keeps the aggregate gradient constant, matching the total gradient of BCE. 
 - **Don't use when:** the runtime environment does not support PyTorch forward passes; objects are extremely thin structures or require sub-pixel-accurate boundary segmentation; domain is far from natural images without fine-tuning; a fully automatic segmentation (no user interaction) is preferred.
 - **Compared against:** GrabCut (classical energy minimisation, Rother et al. 2004), BRS (jang2019-brs, backward-pass refinement), f-BRS (sofiiuk2020-fbrs, feature-level backward refinement), DIOS (xu2016-deep-interactive, first CNN-based), FCA-Net (attention-based), ITIS (Mahadevan et al. 2019, mask-feedback predecessor). RITM outperforms all of them on NoC@90 across all five benchmarks at state-of-the-art as of Table 7 at publication time.
 
+# Stated relations
+
+| target (paper-id or slug) | paper's claim (quote + §) | proposed type | confidence | notes |
+|---|---|---|---|---|
+| `rother2004-grabcut` / `grabcut-iterative-segmentation` | "Early methods [15, 16, 17, 18] tackle the problem using optimization-based approaches minimizing a specifically constructed cost function defined on a graph over image pixels. GrabCut proposed in [18] is a classic approach based on iterative energy minimization of a cost function, that is modeled using a Gaussian mixture." (§2 Related Work) | `learned_alternative_of` | medium | Descriptive positioning only — GrabCut [18] is never given its own benchmarked row in Table 7 (see error flag below); no head-to-head NoC number against GrabCut specifically. This paper's own text supports the edge but not at `confidence: high`. |
+| `boykov2001-graph-cut-segmentation` / `graph-cut-segmentation` | Table 7 row "GC [15]": GrabCut-dataset NoC@85 = 7.98, NoC@90 = 10.00, vs. best RITM variant (H18 IT-M, C+L) NoC@90 = 1.54. + "We notice that even the proposed baseline model with HRNet18+OCR backbone outperforms all previous methods." (§5.3 "Comparison with Previous Works") | `learned_alternative_of` | high | Ref [15] = Boykov & Jolly, "Interactive graph cuts..." (2001) — the classical Graph Cut method, directly and quantitatively benchmarked. Stronger support than the GrabCut row above. |
+| — (f-BRS, Sofiiuk et al. 2020; not registered in `docs/papers/index.yaml`) | Table 7 row "f-BRS-B [4]": GrabCut NoC@85 = 2.50, NoC@90 = 2.98. + "These methods are considerably more computationally expensive compared to feedforward approaches, as they require performing backward passes through a network during inference and are hard to deploy on mobile frameworks that usually support only forward passes." (Abstract) | `generalized_by` (RITM=B) candidate, Rule A | — | f-BRS is RITM's own direct predecessor (same authors) and the backward-pass baseline RITM's feedforward design removes. No paper id or Atlas page exists — ingest `sofiiuk2020-fbrs` first. |
+| — (BRS, Jang & Kim 2019; not registered) | Table 7 row "BRS [2]": GrabCut NoC@85 = 2.60, NoC@90 = 3.60. | none (not ingested) | — | Originating backward-pass-refinement method the abstract argues against generically. No registered id/page. |
+| — (ITIS, Mahadevan et al. 2018; not registered) | "We adopt the iterative sampling procedure proposed by Mahadevan et al. [14] with the following changes." (§3, sampling procedure) + "We revive an iterative training procedure, and make a network aware of the mask from a previous step [14]." (§1 Introduction) | `feeds_into` candidate | — | Strongest named-component lineage claim in the paper — RITM explicitly adopts and modifies Mahadevan's procedure. No registered id/page; ingest `mahadevan2018-itis` (or equivalent id) first. |
+| — (DIOS, Xu et al. 2016; not registered) | "Xu et al. [1] first propose a CNN-based model for interactive segmentation and introduced a clicks simulation strategy for training that is adopted in some further works." (§2 Related Work) | none (not ingested) | — | Supplies the click-simulation training protocol RITM's own simulator extends. No registered id/page. |
+| `sun2019-hrnet` / `wang2020-hrnet-journal` / `hrnet` | "We consider the DeepLabV3+ [32] and HRNet+OCR [33, 34] semantic segmentation architectures as a backbone for our interactive segmentation model... HRNet is a relatively new promising one that was specially designed to produce high-resolution output. According to our experiments, HRNet is a more preferable architecture for this task." (§3.1 "Revising Network Architecture") | `feeds_into` (authored on HRNet's page, `target: ritm-interactive-segmentation`) | high | Confirms the already-existing derived reverse edge `fedBy: hrnet` on the RITM page — this paper's own text is the primary support for that edge. |
+| `deeplab-semantic-segmentation` | Same §3.1 passage: "While DeepLabV3+ is a well-studied segmentation architecture that proved efficient in many segmentation-related tasks, HRNet is a relatively new promising one... HRNet is a more preferable architecture for this task." Backbone ablation vs. HRNet variants in Tables 1/3/4. | `compared_with` | medium | RITM explicitly evaluates DeepLabV3+ as an alternative backbone and picks HRNet over it. Genuine peer-backbone comparison; not currently in RITM's `relations[]`. |
+
 # Connections
 
 - **Builds on:**
@@ -96,7 +118,7 @@ This keeps the aggregate gradient constant, matching the total gradient of BCE. 
   - Annotation tools using click-based correction of model outputs (e.g., CVAT, Label Studio plugins).
 
 - **Refutes / supersedes:**
-  - GrabCut-class methods for click-driven interactive segmentation in natural-image settings — Table 7 shows GrabCut at NoC@90 = 10.00 on GrabCut dataset vs RITM ITER-M 1.54.
+  - GrabCut-class methods for click-driven interactive segmentation in natural-image settings — Table 7 shows Graph Cut ("GC [15]", Boykov & Jolly 2001 — not GrabCut [18]) at NoC@90 = 10.00 on the GrabCut dataset vs RITM ITER-M 1.54.
   - The claim that inference-time backward passes are necessary for state-of-the-art interactive segmentation — RITM feedforward matches or exceeds BRS/f-BRS without any backward pass.
 
 # Atlas update plan
@@ -106,8 +128,8 @@ Type: model
 Category: interactive-segmentation
 Primary source: this paper (sofiiuk2021-ritm)
 Relations:
-  - { type: learned_alternative_of, target: grabcut-iterative-segmentation, confidence: high }
-  - { type: learned_alternative_of, target: graph-cut-segmentation, confidence: medium, caution: "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation" }
+  - { type: learned_alternative_of, target: grabcut-iterative-segmentation, confidence: medium, caution: "RITM names GrabCut only as the classic energy-minimisation approach (§2); its benchmarked classical baseline is Graph Cut." }  # was high (WS-H audit 2026-09-24, user-confirmed against # Stated relations)
+  - { type: learned_alternative_of, target: graph-cut-segmentation, confidence: high, caution: "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation" }  # was medium; Table 7 "GC [15]" (WS-H audit 2026-09-24, user-confirmed against # Stated relations)
 Bullets per public-page section:
 
   - Motivation: Prior DL interactive segmenters (BRS, f-BRS) achieve accuracy via expensive inference-time backward passes that cannot run on mobile; RITM shows that a well-trained feedforward model—using iterative click simulation and previous-mask guidance—matches or exceeds them with a single forward pass per click.

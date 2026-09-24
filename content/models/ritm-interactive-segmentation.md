@@ -15,10 +15,11 @@ failureModes: []
 relations:
   - type: learned_alternative_of
     target: grabcut-iterative-segmentation
-    confidence: high
+    confidence: medium
+    caution: "RITM names GrabCut only as the classic energy-minimisation approach (§2); its benchmarked classical baseline is Graph Cut."
   - type: learned_alternative_of
     target: graph-cut-segmentation
-    confidence: medium
+    confidence: high
     caution: "RITM replaces interactive (click-seeded) graph-cut workflows; not all energy-min segmentation."
   - type: extended_by
     target: focalclick

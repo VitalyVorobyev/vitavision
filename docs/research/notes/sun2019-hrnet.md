@@ -5,6 +5,7 @@ authors: ["K. Sun", "B. Xiao", "D. Liu", "J. Wang"]
 year: 2019
 url: https://arxiv.org/pdf/1902.09212
 created: 2026-05-27
+refreshed: 2026-09-24
 relevant_atlas_pages:
   - ritm-interactive-segmentation
   - resnet
@@ -59,6 +60,13 @@ The extra output map when transitioning between stages ($Y_{s+1} = a(Y_s, s+1)$)
 - HRNet-W48: $C = 48$; parallel widths 48, 96, 192, 384. (§3)
 
 An HRNet-W18 variant is referenced in later work but the primary paper reports W32 and W48 (Table 1 and Table 2).
+
+# Claimed contributions
+
+- C1: Parallel (not serial) high-to-low subnetwork connection — "Our approach connects high-to-low resolution subnetworks in parallel rather than in series as done in most existing solutions. Thus, our approach is able to maintain the high resolution instead of recovering the resolution through a low-to-high process, and accordingly the predicted heatmap is potentially spatially more precise." (§1, "Our network has two benefits" paragraph, benefit (i))
+- C2: Repeated multi-scale fusion (vs. one-shot low/high aggregation) — "Most existing fusion schemes aggregate low-level and high-level representations. Instead, we perform repeated multi-scale fusions to boost the high-resolution representations with the help of the low-resolution representations of the same depth and similar level, and vice versa, resulting in that high-resolution representations are also rich for pose estimation. Consequently, our predicted heatmap is potentially more accurate." (§1, benefit (ii))
+- C3: Accuracy/efficiency claim without intermediate supervision — "Our approach, without using intermediate heatmap supervision, is superior in keypoint detection accuracy and efficient in computation complexity and parameters." (§2 Related Work, "Our approach" paragraph)
+- C4: Empirical superiority claim across benchmarks — "We empirically demonstrate the superior keypoint detection performance over two benchmark datasets: the COCO keypoint detection dataset [36] and the MPII Human Pose dataset [2]. In addition, we show the superiority of our network in video pose tracking on the PoseTrack dataset [1]." (§1, closing paragraph of Introduction)
 
 # Assumptions
 
@@ -125,6 +133,17 @@ Each additional level of fusion yields diminishing but positive returns.
 - **Don't use when:** image-level classification (no benefit over ResNet), low-resolution inputs (<128px on the short side), severely memory-constrained real-time inference (mobile, embedded), or tasks where global context dominates over local spatial precision.
 - **Compared against:** Hourglass [40] (symmetric encode-decode), CPN [11] (cascaded pyramid network, ResNet-50 backbone), SimpleBaseline [72] (ResNet + transposed convolutions), RMPE/PyraNet [77] (feature pyramid learning). HRNet outperforms all on COCO val and test-dev with comparable or fewer parameters and GFLOPs than SimpleBaseline-ResNet152 (see Table 1 and Table 2).
 
+# Stated relations
+
+| target (paper-id or slug) | paper's claim (quote + §) | proposed type | confidence | notes |
+|---|---|---|---|---|
+| `resnet` | "We instantiate the network for keypoint heatmap estimation by following the design rule of ResNet to distribute the depth to each stage and the number of channels to each resolution." + "The first stage contains 4 residual units where each unit, the same to the ResNet-50, is formed by a bottleneck with the width 64" (§3, "Network instantiation") | `feeds_into` | high | ResNet's bottleneck block is reused verbatim as Stage-1's named internal component and its depth-distribution rule governs the whole network — named-component lineage (Rule C), chronologically valid (He et al. 2016 ≤ Sun et al. 2019). Distinct from, and compatible with, the empirical-comparison row below. |
+| `resnet` | "[HRNet-W48's ImageNet model has a] single-model top-5 validation error of 6.5% and has a single-model top-1 validation error of 22.7% with the single-crop testing. Our HRNet-W48 gets better performance: 6.1% top-5 errors and 22.1% top-1 error." (Appendix, "Results on the ImageNet Validation Set") | `compared_with` | medium | Direct empirical head-to-head on ImageNet classification (image-level task, where the note's own Assumption 3 says HRNet's advantage is marginal). This is the concrete support for the live page's existing `compared_with→resnet, medium` edge. |
+| — (Hourglass, Newell et al. [40]; not registered in `docs/papers/index.yaml`) | "8-stage Hourglass [40] ... 66.9 AP" vs. HRNet-W32 73.4 AP (Table 1); "Hourglass [40] recovers the high resolution through a symmetric low-to-high process" (§1) | `compared_with` | high | Direct Table-1 quantitative comparison plus explicit architectural contrast (symmetric encode-decode vs. HRNet's parallel streams); no Atlas page or paper id exists yet, so named in prose only. |
+| — (Cascaded Pyramid Network, Chen et al. [11]; not registered) | "CPN [11] ResNet-50 ... 68.6 AP" / "CPN + OHKM [11] ... 69.4 AP" vs. HRNet-W32 73.4 AP (Table 1); "In cascaded pyramid network [11], a globalnet combines low-to-high level features in the high-to-low process progressively into the low-to-high process, and then a refinenet combines the low-to-high level features that are processed through convolutions." (§2) | `compared_with` | high | Direct Table 1/2 quantitative comparison and explicit architectural contrast; not registered as a source yet. |
+| — (SimpleBaseline, Xiao et al. [72]; not registered) | "SimpleBaseline [72] ResNet-152 ... 74.3 AP" (384×288) vs. HRNet-W32 75.8 AP / HRNet-W48 76.3 AP (Table 1); "the low-to-high process is simply a few bilinear-upsampling [11] or transpose convolution [72] layers" (§2) | `compared_with` | high | Repeated, direct quantitative comparison across Tables 1, 2 and 6 (PoseTrack) — SimpleBaseline is the paper's primary baseline throughout; not registered as a source yet. |
+| — (Convolutional Neural Fabrics [56], Interlinked CNN [83], Grid network [18], Multi-scale DenseNets [24]; none registered) | "there are clear differences making them not applicable to our problem. Convolutional neural fabrics [56] and interlinked CNN [83] fail to produce high-quality segmentation results because of a lack of proper design on each subnetwork... The grid network [18]... consists of two separate fusion processes across multi-resolution representations... and thus less competitive. Multi-scale densenets [24] does not target and cannot generate reliable high-resolution representations." (§2, "Multi-scale fusion") | `none (Rule B / explicit non-applicability)` | high | The paper itself states these classification/segmentation multi-scale nets are not applicable to its problem — no edge warranted even once/if they are registered. |
+
 # Connections
 
 - **Builds on:**
@@ -150,6 +169,7 @@ Primary source: this paper (sun2019-hrnet)
 Relations:
   - { type: feeds_into, target: ritm-interactive-segmentation, confidence: high }
   - { type: compared_with, target: resnet, confidence: medium, caution: "ResNet is the dominant backbone for dense prediction; HRNet trades higher activation memory for better keypoint/segmentation accuracy via parallel high-resolution streams." }
+  - { type: feeds_into, target: hrnet, confidence: high }  # authored on resnet — Stage 1 = ResNet-50 bottleneck units (§3) (WS-H audit 2026-09-24, user-confirmed against # Stated relations)
 
 Bullets per public-page section:
 

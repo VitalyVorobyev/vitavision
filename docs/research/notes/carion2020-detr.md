@@ -5,6 +5,7 @@ authors: ["N. Carion", "F. Massa", "G. Synnaeve", "N. Usunier", "A. Kirillov", "
 year: 2020
 url: https://arxiv.org/pdf/2005.12872
 created: 2026-05-27
+refreshed: 2026-09-24
 relevant_atlas_pages:
   - faster-rcnn
   - mask-rcnn
@@ -49,6 +50,39 @@ $$\mathcal{L}_{\rm Hungarian}(y, \hat{y}) = \sum_{i=1}^N \left[ -\log \hat{p}_{\
 where $\mathcal{L}_{\rm box}$ is a linear combination of L1 loss and Generalized IoU (GIoU) loss. (§3.1)
 
 The matching cost $\mathcal{L}_{\rm match}$ is the same combination (classification probability + L1 + GIoU) but uses the raw predicted probability for the ground-truth class without log, ensuring the cost is non-negative for the solver. Auxiliary losses from every decoder layer are added with shared FFN weights, each with its own Hungarian matching. (§3.2.5)
+
+# Claimed contributions
+
+- C1: Removes hand-designed detection components — "Our approach streamlines
+  the detection pipeline, effectively removing the need for many hand-designed
+  components like a non-maximum suppression procedure or anchor generation
+  that explicitly encode our prior knowledge about the task." (Abstract)
+- C2: A set-based global loss via bipartite matching plus a transformer
+  encoder-decoder — "The main ingredients of the new framework, called
+  DEtection TRansformer or DETR, are a set-based global loss that forces
+  unique predictions via bipartite matching, and a transformer encoder-decoder
+  architecture." (Abstract)
+- C3: Parallel, non-autoregressive set prediction from learned object queries
+  — "Given a fixed small set of learned object queries, DETR reasons about the
+  relations of the objects and the global image context to directly output
+  the final set of predictions in parallel." (Abstract)
+- C4: No specialized library required — "The new model is conceptually simple
+  and does not require a specialized library, unlike many other modern
+  detectors." (Abstract)
+- C5: Accuracy and run-time on par with Faster R-CNN — "DETR demonstrates
+  accuracy and run-time performance on par with the well-established and
+  highly-optimized Faster R-CNN baseline on the challenging COCO object
+  detection dataset." (Abstract)
+- C6: Naturally generalizes to panoptic segmentation — "Moreover, DETR can be
+  easily generalized to produce panoptic segmentation in a unified manner. We
+  show that it significantly outperforms competitive baselines." (Abstract)
+- C7: The conjunction of bipartite matching and non-autoregressive parallel
+  decoding as the distinguishing design choice versus prior set-prediction
+  work — "Compared to most previous work on direct set prediction, the main
+  features of DETR are the conjunction of the bipartite matching loss and
+  transformers with (non-autoregressive) parallel decoding [29,12,10,8]. In
+  contrast, previous work focused on autoregressive decoding with RNNs
+  [43,41,30,36,42]." (§1 Introduction)
 
 # Assumptions
 
@@ -111,6 +145,18 @@ DETR's AP_L of 61.1 substantially exceeds Faster RCNN-FPN+'s 53.4. (Table 1)
 - **Don't use when:** training budget is constrained (Faster R-CNN converges 10–25× faster); small-object detection is critical (AP_S deficit ~5 points vs FPN variants); inference throughput at real-time rates is required with DETR-DC5 (187 GFLOPs/12 FPS vs 180/26 for Faster RCNN-FPN).
 - **Compared against:** Faster R-CNN (with FPN and DC5 variants; multiple training schedules). No comparison against YOLO or SSD in this paper.
 
+# Stated relations
+
+| target (paper-id or slug) | paper's claim (quote + §) | proposed type | confidence | notes |
+|---|---|---|---|---|
+| `faster-rcnn` | "DETR demonstrates accuracy and run-time performance on par with the well-established and highly-optimized Faster R-CNN baseline on the challenging COCO object detection dataset." + "Our experiments show that our new model achieves comparable performances. More precisely, DETR demonstrates significantly better performance on large objects... It obtains, however, lower performances on small objects." (Abstract; §1 Introduction; §4.1 "Comparison with Faster R-CNN") | `compared_with` | high | DETR frames itself as comparable-but-different (better AP_L, worse AP_S), not a strict superset of Faster R-CNN — textbook peer comparison, not Rule A supersession. Matches the `compared_with→faster-rcnn, confidence: high` edge already authored on the live `detr` page. |
+| `resnet` (paper id `he2016-resnet`, registered) | "In our work we use standard implementations of Transformers [47] and ResNet [15] backbones from standard deep learning libraries." + "is with ImageNet-pretrained ResNet model [15] from torchvision with frozen batchnorm layers." (§1 footnote 1; §4.0.2 "Technical details") | `feeds_into` (authored on ResNet's page, `target: detr`, per the upstream-author convention) | high | ResNet is used verbatim as DETR's CNN backbone component — named-component compositional lineage, chronological (ResNet 2016 ≤ DETR 2020). Not yet on the live `detr` page's `relations[]`, and correctly so: the edge belongs on `resnet.md`, not here. |
+| `attention-mechanism` (paper id `vaswani2017-attention`, registered) | "We adopt an encoder-decoder architecture based on transformers [47], a popular architecture for sequence prediction." + "Transformers were introduced by Vaswani et al. [47] as a new attention-based building block for machine translation." (§1 Introduction; §2.2 "Transformers and Parallel Decoding") | none — already captured via `prerequisites: [attention-mechanism]` on the live `detr` page, not a `relations[]` edge | — | Confirms the existing prerequisite; attention is a foundational concept dependency, not a peer/lineage method, so no new `relations[]` edge is warranted. |
+| `mask-rcnn` | "Similarly to the extension of Faster R-CNN [37] to Mask R-CNN [14], DETR can be naturally extended by adding a mask head on top of the decoder outputs." (§4.4 "DETR for panoptic segmentation") | none (analogy only) | — | Mask R-CNN is cited only as a precedent analogy for the "detector + mask head" extension pattern, not as a claim that DETR is compared with, extends, or feeds into Mask R-CNN itself. No `relations[]` edge is supported by this sentence. |
+| Recurrent/autoregressive set-prediction detectors ([43] Stewart et al.; instance-seg RNNs [41,30,36,42]) — (no Atlas page, no `docs/papers/index.yaml` id for [43] or the cited instance-segmentation RNN papers) | "Recurrent detectors. Closest to our approach are end-to-end set predictions for object detection [43] and instance segmentation [41,30,36,42]. Similarly to us, they use bipartite-matching losses with encoder-decoder architectures... However, these approaches... were only evaluated on small datasets and not against modern baselines. In particular, they are based on autoregressive models (more precisely RNNs), so they do not leverage the recent transformers with parallel decoding." (§2.3 "Recurrent detectors") | `generalized_by`-flavored claim (DETR=B claims to leverage parallel decoding where these RNN methods=A do not) — no target authorable | — | Genuine near-supersession framing ("closest to our approach", explicit limitation named), but the counterpart papers aren't registered. Named in prose only; ingest first before any edge. |
+| Learnable NMS / relation networks ([16] Hosang et al.; [17] relation networks) — (no Atlas page, no registered paper id) | "Learnable NMS methods [16,4] and relation networks [17] explicitly model relations between different predictions with attention... However, these methods employ additional hand-crafted context features like proposal box coordinates to model relations between detections efficiently, while we look for solutions that reduce the prior knowledge encoded in the model." (§2.3 "Set-based loss") | `compared_with` (peer prior work on attention-based relation modeling for detection) — no target authorable | — | Peer contrast on attention-for-detection design choice, but neither Hosang et al. (learnable NMS) nor Hu et al. (relation networks) are registered. Same "ingest first" gate as the recurrent-detectors row. |
+| `non-maximum-suppression` (concept page exists) | "effectively removing the need for many hand-designed components like a non-maximum suppression procedure or anchor generation that explicitly encode our prior knowledge about the task." + "DETR simplifies the detection pipeline by dropping multiple hand-designed components that encode prior knowledge, like spatial anchors or non-maximal suppression." (Abstract; §1 Introduction) | none (`relations[]` doesn't fit — DETR eliminates the component rather than comparing itself against it as a peer method) | — | Better captured in the `non-maximum-suppression` concept page's "Where it appears" section (DETR as an example pipeline that eliminates NMS) than as a `relations[]` edge on `detr.md`. |
+
 # Connections
 
 - **Builds on:** ResNet (CNN backbone, He et al. 2016); Transformer / attention mechanism (Vaswani et al. 2017); Faster R-CNN / RPN detection pipeline (Ren et al. 2015); Hungarian algorithm for bipartite matching (Kuhn 1955); GIoU loss (Rezatofighi et al. 2019).
@@ -123,6 +169,9 @@ DETR's AP_L of 61.1 substantially exceeds Faster RCNN-FPN+'s 53.4. (Table 1)
 Type: model
 Category: detection (end-to-end set prediction)
 Primary source: this paper (carion2020-detr)
+Relations (WS-H audit 2026-09-24, user-confirmed against # Stated relations):
+- { type: feeds_into, target: detr, confidence: high }  # authored on resnet — ImageNet-pretrained ResNet backbone (§3.2, §4)
+- { type: feeds_into, target: mask2former, confidence: high }  # authored on detr — confirmed from cheng2022-mask2former §2, §3.2.3
 Bullets per public-page section:
 
 **Motivation:**

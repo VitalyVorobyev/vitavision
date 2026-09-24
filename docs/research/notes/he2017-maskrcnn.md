@@ -5,6 +5,7 @@ authors: ["K. He", "G. Gkioxari", "P. Dollár", "R. Girshick"]
 year: 2017
 url: https://arxiv.org/abs/1703.06870
 created: 2026-05-11
+refreshed: 2026-09-24
 relevant_atlas_pages: [fcn-semantic-segmentation, mask-rcnn]
 ---
 
@@ -23,6 +24,18 @@ Mask R-CNN extends Faster R-CNN's two-stage pipeline (RPN for region proposals +
 **Per-class sigmoid mask loss** $L_\text{mask}$: the mask branch produces a $Km^2$-dimensional output encoding $K$ binary masks of resolution $m \times m$. A per-pixel sigmoid is applied; $L_\text{mask}$ is the average binary cross-entropy loss computed only on the $k$-th mask channel (the ground-truth class channel). Masks for other classes do not contribute to the loss. Total multi-task loss per RoI: $L = L_\text{cls} + L_\text{box} + L_\text{mask}$ (Section 3, §Mask R-CNN).
 
 The framework also extends naturally to **person keypoint detection**: model each of $K_\text{kp}$ joint types as a one-hot binary mask (one spatial channel per joint), apply softmax cross-entropy over spatial positions, with a single foreground pixel per keypoint channel (Section 5).
+
+# Claimed contributions
+
+*(No enumerated contribution list in the paper — claims extracted from the Abstract and §1 Introduction prose.)*
+
+- C1: A general, flexible instance-segmentation framework — "We present a conceptually simple, flexible, and general framework for object instance segmentation." (Abstract)
+- C2: Minimal extension of Faster R-CNN via a parallel mask branch — "The method, called Mask R-CNN, extends Faster R-CNN by adding a branch for predicting an object mask in parallel with the existing branch for bounding box recognition." (Abstract)
+- C3: Small training/inference overhead — "Mask R-CNN is simple to train and adds only a small overhead to Faster R-CNN, running at 5 fps." (Abstract)
+- C4: State-of-the-art across all three COCO tracks — "We show top results in all three tracks of the COCO suite of challenges, including instance segmentation, bounding-box object detection, and person keypoint detection. Without tricks, Mask R-CNN outperforms all existing, single-model entries on every task, including the COCO 2016 challenge winners." (Abstract)
+- C5: RoIAlign fixes RoIPool misalignment — "To fix the misalignment, we propose a simple, quantization-free layer, called RoIAlign, that faithfully preserves exact spatial locations... RoIAlign has a large impact: it improves mask accuracy by relative 10% to 50%, showing bigger gains under stricter localization metrics." (§1 Introduction)
+- C6: Decoupling mask and class prediction is essential — "we found it essential to decouple mask and class prediction: we predict a binary mask for each class independently, without competition among classes, and rely on the network's RoI classification branch to predict the category." (§1 Introduction)
+- C7: Generalises to keypoint detection — "we showcase the generality of our framework via the task of human pose estimation on the COCO keypoint dataset... Without tricks, Mask R-CNN surpasses the winner of the 2016 COCO keypoint competition, and at the same time runs at 5 fps." (§1 Introduction)
 
 # Assumptions
 
@@ -61,6 +74,17 @@ The framework also extends naturally to **person keypoint detection**: model eac
 - **Use when**: COCO-style instance segmentation (80 classes, closed vocabulary); multi-task training combining detection + segmentation + optional keypoints; well-resourced GPU training (8 GPUs typical); strong off-the-shelf baselines via Detectron2 (Apache-2.0); when pixel-accurate instance boundaries matter more than raw speed.
 - **Don't use when**: dense panoptic segmentation at scale (use Panoptic FPN, Mask2Former, or DETR-derived methods); real-time mobile inference at <10 ms budgets (use YOLACT, SOLO, or YOLOv8-seg); semantic segmentation of scenes without instance separation needed (use FCN, DeepLab); when one-stage or anchor-free architecture is required for deployment constraints; open-vocabulary instance segmentation without fine-tuning.
 - **Compared against** (Table 1): MNC (Dai et al. 2016, COCO 2015 segmentation challenge winner, AP = 24.6), FCIS +OHEM (Li et al. 2016, COCO 2016 winner, AP = 29.2), FCIS+++ +OHEM (AP = 33.6 — Mask R-CNN ResNet-101-FPN surpasses this at AP = 35.7 without test-time augmentation).
+
+# Stated relations
+
+The paper's own Related Work (§2) and Timing/Results sections make explicit positioning claims against three prior instance-segmentation lines. None of the three counterparts is a registered paper id in `docs/papers/index.yaml` or has an Atlas page, so no edge can be authored yet — rows below are proposals for after ingestion.
+
+| target (paper-id or slug) | paper's claim (quote + §) | proposed type | confidence | notes |
+|---|---|---|---|---|
+| — (Dai et al. 2016, "Instance-aware Semantic Segmentation via Multi-task Network Cascades" / MNC, ref [7]; not registered) | "Likewise, Dai et al. [7] proposed a complex multiple-stage cascade that predicts segment proposals from bounding-box proposals, followed by classification. Instead, our method is based on parallel prediction of masks and class labels, which is simpler and more flexible." (§2 Related Work, "Instance Segmentation") + Table 1: MNC AP = 24.6 vs. Mask R-CNN ResNet-101-FPN AP = 35.7 | generalized_by (Rule A — same problem class, explicit "instead of X's complex cascade, ours is simpler and more flexible" plus large quantitative margin) | high | No Atlas page / registered paper id for MNC — cannot author until ingested. Paper's own claim is unambiguous ("instead... simpler and more flexible"), not just emphatic phrasing. |
+| — (Li et al. 2016, FCIS, ref [21]; not registered) | "Most recently, Li et al. [21] combined the segment proposal system in [5] and object detection system in [8] for 'fully convolutional instance segmentation' (FCIS)... But FCIS exhibits systematic errors on overlapping instances and creates spurious edges (Figure 5), showing that it is challenged by the fundamental difficulties of segmenting instances." + Fig. 5 caption: "FCIS+++ [21] (top) vs. Mask R-CNN (bottom, ResNet-101-FPN). FCIS exhibits systematic artifacts on overlapping objects." + Table 1: FCIS+++ +OHEM AP = 33.6 vs. Mask R-CNN AP = 35.7 without test-time augmentation | generalized_by (Rule A — explicit named failure mode of FCIS plus quantitative superiority without TTA) | high | No Atlas page / registered paper id for FCIS — cannot author until ingested. |
+| — (Pinheiro et al. 2015 DeepMask / 2016 SharpMask, refs [27],[28]; not registered) | "DeepMask [27] and following works [28, 5] learn to propose segment candidates, which are then classified by Fast R-CNN. In these methods, segmentation precedes recognition, which is slow and less accurate." (§2 Related Work, "Instance Segmentation") | generalized_by (Rule A, weaker form — architectural critique stated, but no matching head-to-head numeric table row for DeepMask/SharpMask in this paper) | medium | No Atlas page / registered paper id for DeepMask/SharpMask. Confidence kept at medium (not upgraded to match the paper's emphatic tone) since, unlike MNC/FCIS, no quantitative comparison backs this claim in this paper. |
+| none (background lineage, already covered via existing `faster-rcnn` edge) | "The Region-based CNN (R-CNN) approach [10]... R-CNN was extended [14, 9] to allow attending to RoIs on feature maps using RoIPool... Faster R-CNN [29] advanced this stream by learning the attention mechanism with a Region Proposal Network (RPN)." + "The second stage, which is in essence Fast R-CNN [9], extracts features using RoIPool from each candidate box..." | none (transitive) | — | §2 Related Work "R-CNN:"; §3 "Faster R-CNN:". R-CNN, Fast R-CNN, and SPPnet [14] are two hops removed from Mask R-CNN (via Faster R-CNN, already the existing direct edge) and are not independently registered as paper ids or Atlas pages — no direct edge proposed. |
 
 # Connections
 

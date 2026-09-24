@@ -13,7 +13,8 @@ failureModes: []
 relations:
   - type: learned_alternative_of
     target: felzenszwalb-deformable-parts
-    confidence: high
+    confidence: medium
+    caution: "Paradigm-level replacement; the paper contrasts DPM only qualitatively (pyramid of filters vs pyramid of anchors, §3.1.1), with no DPM benchmark."
   - type: learned_alternative_of
     target: viola-jones-detector
     confidence: medium

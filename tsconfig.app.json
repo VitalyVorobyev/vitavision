@@ -1,27 +1,17 @@
 {
+  // The shared compiler options come from @vitavision/config-ts.
+  "extends": "@vitavision/config-ts/tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "target": "ES2022",
     "useDefineForClassFields": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-    "jsx": "react-jsx",
-
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    // Exception from the toolchain upgrade (lab-ui PLAN L2-4): the shared config turns
+    // both of these on, and here they report 665 errors across 110 files. Fixing them
+    // is a change of its own, not part of a version bump, so they stay off until then.
+    "noUncheckedIndexedAccess": false,
+    "exactOptionalPropertyTypes": false
   },
   "include": ["src"]
 }

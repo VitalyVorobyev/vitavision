@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { motion } from "motion/react";
+import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import SeoHead from "../components/seo/SeoHead.tsx";

@@ -146,7 +146,7 @@ export default function DownloadBar({ state, generateDxf }: Props) {
                     <Download size={14} />
                     SVG
                 </button>
-                <button className={btnClass} onClick={handlePng} disabled={disabled} title="Download PNG">
+                <button className={btnClass} onClick={() => void handlePng()} disabled={disabled} title="Download PNG">
                     <Download size={14} />
                     PNG
                 </button>

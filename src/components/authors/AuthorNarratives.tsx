@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import type { ScholarlyNarrativeRef } from "../../lib/atlas/scholarlyTypes.ts";
 

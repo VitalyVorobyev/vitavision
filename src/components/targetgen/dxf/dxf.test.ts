@@ -33,33 +33,28 @@ vi.mock("../../../lib/wasm/wasmWorkerProxy", async () => {
     });
 
     return {
-        renderTargetBundleWasm: async (doc: unknown) => {
+        renderTargetBundleWasm: (doc: unknown) => {
             const bundle = calibTargets.render_target_bundle_json(doc) as {
                 svg_text: string;
                 dxf_text: string;
                 json_text: string;
                 png_bytes: Uint8Array;
             };
-            return {
+            return Promise.resolve({
                 svg: bundle.svg_text,
                 dxf: bundle.dxf_text,
                 json: bundle.json_text,
                 png: bundle.png_bytes,
-            };
+            });
         },
-        renderRinggridBundleWasm: async (targetJson: string, optionsJson: string) => {
-            const bundle = ringgrid.render_target_bundle_json(targetJson, optionsJson) as {
-                svg_text: string;
-                dxf_text: string;
-                json_text: string;
-                png_bytes: Uint8Array;
-            };
-            return {
+        renderRinggridBundleWasm: (targetJson: string, optionsJson: string) => {
+            const bundle = ringgrid.render_target_bundle_json(targetJson, optionsJson);
+            return Promise.resolve({
                 svg: bundle.svg_text,
                 dxf: bundle.dxf_text,
                 json: bundle.json_text,
                 png: bundle.png_bytes,
-            };
+            });
         },
     };
 });

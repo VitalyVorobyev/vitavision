@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router";
 import { narrativePages } from "../generated/content-index.ts";
 import { narrativeLoaders, type GeneratedNarrativeModule } from "../generated/narrative-loaders.ts";
 import SeoHead from "../components/seo/SeoHead.tsx";

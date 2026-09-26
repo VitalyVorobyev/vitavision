@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { PaperPageTag, NoPageTag } from "./PaperPageTag.tsx";
 import type { PaperRow } from "../../lib/atlas/papersDirectory.ts";
 

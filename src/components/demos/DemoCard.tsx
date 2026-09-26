@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import type { DemoFrontmatterSerialized } from "../../lib/content/schema.ts";
 import TagBadge from "../blog/TagBadge.tsx";
 import DemoCover from "./DemoCover.tsx";

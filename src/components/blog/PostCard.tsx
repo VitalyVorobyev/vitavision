@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Lock } from "lucide-react";
 import type { BlogIndexEntry } from "../../lib/content/schema.ts";
 import TagBadge from "./TagBadge.tsx";

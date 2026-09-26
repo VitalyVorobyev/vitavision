@@ -64,7 +64,7 @@ export async function validateConfig(
             // which bypasses the type checker at runtime.
             if (c.circles.length !== 3) {
                 errors.push(
-                    `Marker board requires exactly 3 circles, got ${c.circles.length}. ` +
+                    `Marker board requires exactly 3 circles, got ${String(c.circles.length)}. ` +
                     `The @vitavision/calib-targets library fixes this count (MarkerCircleSpec is a [T; 3] array).`,
                 );
             }

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { contentGraph } from "../../generated/content-graph.ts";
 import { groupCitingPagesByDomain, firstSentence } from "../../lib/atlas/paperView.ts";

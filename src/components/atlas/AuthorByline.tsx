@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { authorsShortSegments } from "../../lib/atlas/formatAuthors.ts";
 import { resolveAuthorIds } from "../../lib/atlas/authorLinks.ts";
 import { useAuthorsIndex } from "../../lib/atlas/useAuthorsIndex.ts";

@@ -22,7 +22,7 @@ function makeAlgoPoint(id: string, algorithmId: string, runId: string): Feature 
         readonly: true,
         x: 10,
         y: 20,
-    } as Feature;
+    };
 }
 
 describe("replaceAlgorithmFeatures", () => {

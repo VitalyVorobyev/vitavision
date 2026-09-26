@@ -2,7 +2,7 @@
 // Concept). Extracted so the cards stay thin and the graph chip + relation line
 // have a single implementation.
 
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { getNeighbors, shortTitle } from "../../lib/atlas/graphNeighbors.ts";
 import { contentGraph } from "../../generated/content-graph.ts";
 import { KIND_TEXT_CLASSES, KIND_LABEL } from "./cardText.ts";

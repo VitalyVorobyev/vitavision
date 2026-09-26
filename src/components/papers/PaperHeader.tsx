@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ArrowUpRight, ExternalLink } from "lucide-react";
 import type { PaperRef } from "../../generated/papers-index.ts";
 import type { AuthorsIndex } from "../../generated/authors-index.ts";

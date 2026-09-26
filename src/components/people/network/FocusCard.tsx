@@ -1,7 +1,7 @@
 // FocusCard — details panel for the currently focused person. Top-right on
 // desktop; a bottom-sheet-style card on phones (full width, anchored low).
 
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ArrowRight, X } from "lucide-react";
 import type { CoauthorTie } from "../../../lib/atlas/peopleNetwork.ts";
 

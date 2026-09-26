@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import type { GraphNode, NodeType } from "../../../generated/content-graph.ts";
 
 // ── Type-specific badge styling (block variant) for plain slug lists ─────────

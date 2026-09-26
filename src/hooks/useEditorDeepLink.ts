@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { ALGORITHM_MANIFEST, DEFAULT_ALGORITHM_ID } from "../components/editor/algorithms/registry";
 import type { SampleId } from "../store/editor/useEditorStore";
 
@@ -28,7 +28,7 @@ function parseSampleId(value: string | null): SampleId | null {
 
 export interface DeepLinkState {
     algorithmId: string;
-    config: unknown | null;
+    config: unknown;
     sampleId: SampleId | null;
 }
 
@@ -45,7 +45,7 @@ export function readDeepLink(searchParams: URLSearchParams): DeepLinkState {
         ? algoParam
         : DEFAULT_ALGORITHM_ID;
 
-    let config: unknown | null = null;
+    let config: unknown = null;
     if (configParam) {
         try {
             config = JSON.parse(fromBase64Url(configParam));

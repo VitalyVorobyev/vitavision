@@ -1,5 +1,5 @@
 import { useContext, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import PaperHeader from "../components/papers/PaperHeader.tsx";
 import PaperStats from "../components/papers/PaperStats.tsx";

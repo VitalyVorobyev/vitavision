@@ -30,7 +30,19 @@ bun run build                          # Type-check + Vite production build
 bun run lint                           # ESLint
 npx vitest run                         # Unit tests
 bun run scripts/test-wasm-schemas.ts   # WASM integration tests
+bun run test:screens                   # screenshots of the main routes (after a build)
 ```
+
+`test:screens` serves `dist/` with `vite preview` and captures seventeen main routes in
+light and dark. Its baseline (`e2e/.screens/`) is local and uncommitted: capture it with
+`--update-snapshots` before a change such as a dependency upgrade, and compare after it
+on the same machine. It is not a CI gate.
+
+The toolchain follows the shared vitavision baseline: compiler options from
+`@vitavision/config-ts` and lint from `@vitavision/config-eslint` (type-aware). Two of
+the shared compiler options, `noUncheckedIndexedAccess` and
+`exactOptionalPropertyTypes`, are switched off in `tsconfig.app.json` until the ~665
+places they report are fixed as a change of their own.
 
 ---
 

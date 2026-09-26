@@ -69,9 +69,7 @@ export const radsymAlgorithm: AlgorithmDefinition = {
     presets,
     executionModes: ["wasm"],
     ConfigComponent: RadsymConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async () => {
-        throw new Error("Radial Symmetry detection is only available via client-side WASM.");
-    },
+    run: () => Promise.reject(new Error("Radial Symmetry detection is only available via client-side WASM.")),
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as RadsymConfig;
         if (c.minRadius > c.maxRadius) {

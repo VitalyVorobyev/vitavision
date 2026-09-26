@@ -1,6 +1,7 @@
 import { useRef, useCallback, type PointerEvent, type KeyboardEvent, type ReactElement } from "react";
 import { triangleArea, triangleMinAngle } from "./geometry";
 import type { DelaunayVoronoiState } from "./useDelaunayVoronoi";
+import type { HoverTarget } from "./types";
 
 const W = 800;
 const H = 600;
@@ -34,7 +35,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
 
     // Shared hit-test used by both mouse-hover and touch-tap paths.
     const hitTest = useCallback(
-        (x: number, y: number): import("./types").HoverTarget | null => {
+        (x: number, y: number): HoverTarget | null => {
             if (layers.voronoi && voronoi && allPoints.length >= 3) {
                 const cellIdx = delaunay?.find(x, y);
                 if (cellIdx !== undefined && cellIdx >= 0) {
@@ -118,7 +119,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
 
             if (activeTool === "move" || activeTool === "add" || activeTool === "grid") {
                 dragging.current = { id };
-                (e.currentTarget as SVGElement).setPointerCapture(e.pointerId);
+                e.currentTarget.setPointerCapture(e.pointerId);
                 demo.selectPoint(id);
             }
             void isCorner;

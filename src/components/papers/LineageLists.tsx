@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ChevronRight } from "lucide-react";
 import { shortAuthorList } from "../../lib/atlas/paperView.ts";
 import type { LineageEntry } from "./LineageStrip.tsx";

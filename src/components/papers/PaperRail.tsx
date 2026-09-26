@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import type { PaperRef } from "../../generated/papers-index.ts";
 import type { SameAuthorPaper } from "../../lib/atlas/paperView.ts";
 

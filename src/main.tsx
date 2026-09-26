@@ -17,9 +17,9 @@ import type { StaticContentContextValue } from './lib/content/ssr-content.tsx'
 // into each atlas page so the first client paint can render the same content
 // synchronously — no spinner, no async chunk fetch on cold visits.
 function readSSRSnapshot(): StaticContentContextValue {
-    const el = document.querySelector(
+    const el = document.querySelector<HTMLElement>(
         'article[data-atlas-slug][data-atlas-kind]',
-    ) as HTMLElement | null
+    )
     if (!el) return {}
     const { atlasSlug: slug, atlasKind: kind } = el.dataset
     const html = el.innerHTML

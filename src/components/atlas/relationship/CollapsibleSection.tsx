@@ -20,7 +20,7 @@ export default function CollapsibleSection({ heading, count, open, onToggle, cla
     return (
         <details
             open={open}
-            onToggle={(e) => onToggle((e.currentTarget as HTMLDetailsElement).open)}
+            onToggle={(e) => onToggle(e.currentTarget.open)}
             className={className}
         >
             <summary className="flex items-center justify-between gap-2 cursor-pointer list-none mb-2.5 [&::-webkit-details-marker]:hidden">

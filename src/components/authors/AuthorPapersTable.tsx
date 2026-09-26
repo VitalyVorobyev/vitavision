@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { shortAuthorList } from "../../lib/atlas/paperView.ts";
 import type { AuthorPaperRow } from "../../lib/atlas/authorView.ts";
 

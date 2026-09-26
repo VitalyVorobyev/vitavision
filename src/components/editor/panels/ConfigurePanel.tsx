@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { toast } from "sonner";
 import { LoaderCircle, Sparkles, AlertCircle, Maximize2, ChevronDown, X } from "lucide-react";
 
@@ -115,7 +115,7 @@ export default function ConfigurePanel() {
 
     useEffect(() => {
         let cancelled = false;
-        loadAlgorithm(selectedAlgorithmId).then(() => {
+        void loadAlgorithm(selectedAlgorithmId).then(() => {
             if (!cancelled) setLoadTick((tick) => tick + 1);
         });
         return () => { cancelled = true; };
@@ -154,7 +154,7 @@ export default function ConfigurePanel() {
         runner.clearError();
         // Load the new algorithm and sync URL once it resolves.
         // We don't block the selection on the load — the picker updates immediately.
-        loadAlgorithm(id).then((algo) => {
+        void loadAlgorithm(id).then((algo) => {
             // If the user has since picked a different algorithm, don't let
             // this stale resolution overwrite the URL with the older selection.
             // Reading from the store at resolution time avoids the closure
@@ -215,7 +215,7 @@ export default function ConfigurePanel() {
                 </div>
             ) : hasHint && (
                 <HintCard
-                    image={activeGalleryImage!}
+                    image={activeGalleryImage}
                     onSelectAlgorithm={handleSelectAlgorithm}
                 />
             )}
@@ -289,7 +289,7 @@ export default function ConfigurePanel() {
 
             {/* Section 5: Run + status + summary */}
             <RailSection label="Run">
-                <RunSection runner={runner} canRun={canRun} onRun={handleRun} />
+                <RunSection runner={runner} canRun={canRun} onRun={() => void handleRun()} />
             </RailSection>
         </>
     );

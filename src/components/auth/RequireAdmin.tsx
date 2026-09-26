@@ -1,5 +1,5 @@
 import { useAuth, useUser } from '@clerk/clerk-react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router';
 import type { ReactNode } from 'react';
 import NotFound from '../../pages/NotFound';
 

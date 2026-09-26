@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import type { NarrativeNode, ResolvedNarrative } from "../../lib/content/schema.ts";
 import type { NarrativeStep } from "../../lib/narratives/types.ts";
 import { areaColor } from "../../lib/narratives/narrativeLayout.ts";

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import type { ModelIndexEntry } from "../../lib/content/schema.ts";
 import { EntryIcon } from "../atlas/EntryIcon.tsx";
 import { taskLabel } from "../../lib/content/taskLabels.ts";

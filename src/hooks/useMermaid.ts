@@ -60,7 +60,7 @@ export function useMermaid(
 
         let cancelled = false;
 
-        (async () => {
+        void (async () => {
             // Mermaid is the heaviest lazy chunk in the app (~470 kB shared deps
             // + ~430 kB cytoscape + ~256 kB katex for math-in-diagrams + per-
             // diagram modules). Everything is loaded only on pages that actually

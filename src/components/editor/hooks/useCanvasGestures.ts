@@ -115,7 +115,7 @@ export function useCanvasGestures({ pan, setZoom, setPan, touchPrimary }: Gestur
             const oldScale = stage.scaleX();
             const newScale = oldScale * (dist / lastTouchDist.current);
 
-            const rect = (stage.container() as HTMLDivElement).getBoundingClientRect();
+            const rect = stage.container().getBoundingClientRect();
             const stageCenter = { x: center.x - rect.left, y: center.y - rect.top };
             const mousePointTo = {
                 x: (stageCenter.x - stage.x()) / oldScale,

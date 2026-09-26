@@ -89,9 +89,7 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
         markerboard: { ...initialConfig },
     },
     ConfigComponent: MarkerBoardConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async () => {
-        throw new Error("Marker Board detection is only available via client-side WASM.");
-    },
+    run: () => Promise.reject(new Error("Marker Board detection is only available via client-side WASM.")),
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as MarkerBoardConfig;
         return detectMarkerboardWasm(pixels, width, height, {

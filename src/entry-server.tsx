@@ -1,5 +1,5 @@
 import { renderToString } from "react-dom/server";
-import { MemoryRouter, Routes, Route, Navigate } from "react-router-dom";
+import { MemoryRouter, Routes, Route, Navigate } from "react-router";
 import { ThemeProvider } from "next-themes";
 import { ClerkProvider } from "@clerk/clerk-react";
 import Blog from "./pages/Blog.tsx";

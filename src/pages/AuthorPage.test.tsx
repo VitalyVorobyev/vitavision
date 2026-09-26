@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import AuthorPage from "./AuthorPage.tsx";
 import { PapersProvider } from "../lib/atlas/papersIndex.tsx";

@@ -64,9 +64,7 @@ export const charucoAlgorithm: AlgorithmDefinition = {
         charuco: { ...initialConfig },
     },
     ConfigComponent: CharucoConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async () => {
-        throw new Error("ChArUco detection is only available via client-side WASM.");
-    },
+    run: () => Promise.reject(new Error("ChArUco detection is only available via client-side WASM.")),
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as CharucoConfig;
         return detectCharucoWasm(pixels, width, height, {

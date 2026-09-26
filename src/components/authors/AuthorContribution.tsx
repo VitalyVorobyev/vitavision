@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { KindDot } from "../papers/KindBadge.tsx";
 import type { ContributionGroup } from "../../lib/atlas/authorView.ts";
 

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Circle, Group, Label, Tag, Text } from "react-konva";
 
 import type { PuzzleBoardDetectResult, PuzzleBoardLabeledCorner, PuzzleBoardObservedEdge } from "../../../../lib/types";
-import type { Feature, LabeledPointFeature, OverlayToggles } from "../../../../store/editor/useEditorStore";
+import type { Feature, OverlayToggles } from "../../../../store/editor/useEditorStore";
 import type { GridEdge, GridNode } from "../../algorithms/calibrationTargets/overlayData";
 import GridEdgesGroup from "../../canvas/overlays/GridEdgesGroup";
 import { overlayTheme } from "../../canvas/overlays/overlayTheme";
@@ -138,8 +138,7 @@ function buildFeatureIdMap(features: Feature[]): Map<string, string> {
     const map = new Map<string, string>();
     for (const f of features) {
         if (f.type === "labeled_point") {
-            const lp = f as LabeledPointFeature;
-            map.set(`${lp.gridIndex.i}:${lp.gridIndex.j}`, lp.id);
+            map.set(`${f.gridIndex.i}:${f.gridIndex.j}`, f.id);
         }
     }
     return map;

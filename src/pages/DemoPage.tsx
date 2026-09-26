@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router";
 import { Helmet } from "react-helmet-async";
 import { demoPages } from "../generated/content-index.ts";
 import { demoHtmlLoaders } from "../generated/demo-loaders.ts";

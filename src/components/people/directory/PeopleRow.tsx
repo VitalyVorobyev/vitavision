@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import OrcidLink from "../../atlas/OrcidLink.tsx";
 import PeopleEraBar from "./PeopleEraBar.tsx";
 import { domainLabel, type PeopleRow as PeopleRowData } from "../../../lib/atlas/peopleDirectory.ts";

@@ -27,7 +27,7 @@ async function runDetection(req: DetectionRequest): Promise<unknown> {
     if (algorithm === "ringgrid") return handleRinggrid(pixels, width, height, config);
     if (algorithm === "radsym") return handleRadsym(pixels, width, height, config);
     if (algorithm === "puzzleboard") return handlePuzzleboard(pixels, width, height, config);
-    return handleCalibTarget(algorithm as "chessboard" | "charuco" | "markerboard", pixels, width, height, config);
+    return handleCalibTarget(algorithm, pixels, width, height, config);
 }
 
 interface Dispatched {

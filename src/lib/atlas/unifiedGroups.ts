@@ -88,7 +88,7 @@ export function computeUnifiedGroups(
     return domainOrder
         .map((dom) => {
             const entries = (byDomain.get(dom) ?? []).sort(comparator);
-            return { id: dom, label: domainLabels[dom as keyof typeof domainLabels] ?? dom, entries };
+            return { id: dom, label: domainLabels[dom] ?? dom, entries };
         })
         .filter((g) => g.entries.length > 0);
 }

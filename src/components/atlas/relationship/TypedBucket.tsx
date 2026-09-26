@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { contentGraph } from "../../../generated/content-graph.ts";
 import type { GraphNode } from "../../../generated/content-graph.ts";
 import type { DisplayRelation } from "../../../lib/atlas/relationDisplay.ts";

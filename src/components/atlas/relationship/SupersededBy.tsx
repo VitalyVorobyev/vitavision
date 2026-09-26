@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { contentGraph } from "../../../generated/content-graph.ts";
 
 // ── Superseded-by section (historical pages only) ──────────────────────────────

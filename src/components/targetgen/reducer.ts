@@ -7,7 +7,6 @@ import type {
     RingGridConfig,
     PuzzleboardConfig,
     CircleSpec,
-    TargetType,
 } from "./types";
 
 /** Compute default circle triangle centered on the board. */
@@ -109,7 +108,7 @@ export function targetGeneratorReducer(
                 ...state.configCache,
                 [state.target.targetType]: state.target.config,
             };
-            const config = cache[action.targetType as TargetType] ?? defaultConfigForType(action.targetType);
+            const config = cache[action.targetType] ?? defaultConfigForType(action.targetType);
             return {
                 ...state,
                 configCache: cache,
@@ -121,7 +120,7 @@ export function targetGeneratorReducer(
 
             // Auto-center circles when markerboard dimensions change
             if (state.target.targetType === "markerboard") {
-                const prev = state.target.config as MarkerBoardConfig;
+                const prev = state.target.config;
                 const next = merged as MarkerBoardConfig;
                 const dimsChanged =
                     ("innerRows" in action.partial && action.partial.innerRows !== prev.innerRows) ||

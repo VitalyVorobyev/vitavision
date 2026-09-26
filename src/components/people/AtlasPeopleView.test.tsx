@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import AtlasPeopleView from "./AtlasPeopleView.tsx";
 

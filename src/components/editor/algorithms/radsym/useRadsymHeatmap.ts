@@ -25,7 +25,7 @@ export function useRadsymHeatmap() {
 
         let cancelled = false;
 
-        (async () => {
+        void (async () => {
             try {
                 const { pixels, width, height } = await decodeImageUrl(imageSrc);
                 if (cancelled) return;

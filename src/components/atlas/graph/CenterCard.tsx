@@ -2,7 +2,7 @@
 // live in FocusedEntryPanel; this card is just the canvas anchor + link to
 // the full page. Extracted from GraphExplorer.tsx.
 
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import { getFocusEntry } from "../../../lib/atlas/focusEntry.ts";
 import { GG, KIND_ACCENT, KIND_LABEL, type Layout } from "../../../lib/atlas/graphLayout.ts";

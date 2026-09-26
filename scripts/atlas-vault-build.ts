@@ -27,7 +27,7 @@ type NodeType = "algorithm" | "model" | "concept" | "paper";
 // Mirrors src/components/atlas/RelationshipPanel.tsx (FORWARD_LABEL, ~L14, and
 // the three sidebar categories per .claude/CLAUDE.md → "Relations field"). Kept
 // as a local copy rather than an import: the component pulls in React,
-// react-router-dom, and the generated content graph, none of which belong in
+// react-router, and the generated content graph, none of which belong in
 // this Node/Bun build script. Keep in sync by hand if the label text changes.
 type RelationCategory = "Lineage" | "Practice" | "Cross-paradigm";
 

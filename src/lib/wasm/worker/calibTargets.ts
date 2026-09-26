@@ -174,7 +174,7 @@ export async function handleCalibTarget(
     const chessCfg = config.chessCfg
         ? (() => {
             const overrides = config.chessCfg as Record<string, unknown>;
-            const merged = deepMerge(mod.default_chess_config(), overrides);
+            const merged = deepMerge(mod.default_chess_config() as Record<string, unknown>, overrides);
             if (overrides.threshold !== undefined) merged.threshold = overrides.threshold;
             if (overrides.upscale !== undefined) merged.upscale = overrides.upscale;
             return merged;

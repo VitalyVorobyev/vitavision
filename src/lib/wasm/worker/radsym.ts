@@ -1,5 +1,6 @@
 import { generateId } from "./util";
 import { getRadsymModule } from "./modules";
+import type * as RadsymModuleNs from "@vitavision/radsym";
 
 /** Adapt extract_proposals output (stride 3: x, y, score) to RadsymResult. */
 export function adaptRadsymProposalResult(
@@ -51,7 +52,7 @@ export function adaptRadsymProposalResult(
     };
 }
 
-type RadsymModule = typeof import("@vitavision/radsym");
+type RadsymModule = typeof RadsymModuleNs;
 type RadSymProcessor = InstanceType<RadsymModule["RadSymProcessor"]>;
 
 /**

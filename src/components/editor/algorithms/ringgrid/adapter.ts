@@ -83,9 +83,7 @@ export const ringgridAlgorithm: AlgorithmDefinition = {
     },
     executionModes: ["wasm"],
     ConfigComponent: RinggridConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async () => {
-        throw new Error("Ring Grid detection is only available via client-side WASM.");
-    },
+    run: () => Promise.reject(new Error("Ring Grid detection is only available via client-side WASM.")),
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as RinggridConfig;
         // ringgrid.target.v6 nests layout fields under lattice/marker/coding.

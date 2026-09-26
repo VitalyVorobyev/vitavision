@@ -140,7 +140,7 @@ export function categorize(slug: string): ByRel | null {
             // Only include nodes that exist in the content graph (non-draft)
             if (seen.has(s) || !(s in contentGraph.nodes)) continue;
             seen.add(s);
-            (out[rel] as string[]).push(s);
+            out[rel].push(s);
         }
     }
     return out as ByRel;
@@ -150,19 +150,19 @@ export function categorize(slug: string): ByRel | null {
 
 export function computeLayout(byRel: ByRel): Layout {
     const wList: Array<{ slug: string; rel: RelKey }> = [
-        ...byRel.prerequisites.map((s) => ({ slug: s, rel: "prerequisites" as RelKey })),
-        ...byRel.extended_from.map((s) => ({ slug: s, rel: "extended_from" as RelKey })),
-        ...byRel.fed_by.map((s) => ({ slug: s, rel: "fed_by" as RelKey })),
+        ...byRel.prerequisites.map((s): { slug: string; rel: RelKey } => ({ slug: s, rel: "prerequisites" })),
+        ...byRel.extended_from.map((s): { slug: string; rel: RelKey } => ({ slug: s, rel: "extended_from" })),
+        ...byRel.fed_by.map((s): { slug: string; rel: RelKey } => ({ slug: s, rel: "fed_by" })),
     ];
     const eList: Array<{ slug: string; rel: RelKey }> = [
-        ...byRel.extended_by.map((s) => ({ slug: s, rel: "extended_by" as RelKey })),
-        ...byRel.feeds_into.map((s) => ({ slug: s, rel: "feeds_into" as RelKey })),
-        ...byRel.used_by.map((s) => ({ slug: s, rel: "used_by" as RelKey })),
+        ...byRel.extended_by.map((s): { slug: string; rel: RelKey } => ({ slug: s, rel: "extended_by" })),
+        ...byRel.feeds_into.map((s): { slug: string; rel: RelKey } => ({ slug: s, rel: "feeds_into" })),
+        ...byRel.used_by.map((s): { slug: string; rel: RelKey } => ({ slug: s, rel: "used_by" })),
     ];
     const nList: Array<{ slug: string; rel: RelKey }> = byRel.compared_with.map((s) => ({ slug: s, rel: "compared_with" }));
     const sList: Array<{ slug: string; rel: RelKey }> = [
-        ...byRel.learned_by.map((s) => ({ slug: s, rel: "learned_by" as RelKey })),
-        ...byRel.learned_alternative_of.map((s) => ({ slug: s, rel: "learned_alternative_of" as RelKey })),
+        ...byRel.learned_by.map((s): { slug: string; rel: RelKey } => ({ slug: s, rel: "learned_by" })),
+        ...byRel.learned_alternative_of.map((s): { slug: string; rel: RelKey } => ({ slug: s, rel: "learned_alternative_of" })),
     ];
 
     const wrapAt = 5;

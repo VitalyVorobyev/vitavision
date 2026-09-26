@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { usePaperById } from "../../lib/atlas/usePaperById.ts";
 import AuthorByline from "./AuthorByline.tsx";
 

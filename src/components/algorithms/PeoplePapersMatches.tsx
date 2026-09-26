@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { searchEntities } from "../../lib/atlas/searchClient.ts";
 
 const MAX_PER_GROUP = 3;

@@ -3,7 +3,7 @@
 // GraphExplorer.tsx.
 
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { contentGraph } from "../../../generated/content-graph.ts";
 import { entryMeta, getFocusEntry } from "../../../lib/atlas/focusEntry.ts";
 import { shortTitle } from "../../../lib/atlas/graphNeighbors.ts";

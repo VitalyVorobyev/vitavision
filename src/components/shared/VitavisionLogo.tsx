@@ -1,9 +1,9 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 interface VitavisionLogoProps {
     /** "full" renders all elements; "mark" renders only the mark */
     variant?: "full" | "mark";
-    /** Enable framer-motion entrance animation (path draw + scale-in stagger) */
+    /** Enable motion entrance animation (path draw + scale-in stagger) */
     animate?: boolean;
     className?: string;
 }

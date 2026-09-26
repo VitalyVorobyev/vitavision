@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import CanvasWorkspace from "../components/editor/CanvasWorkspace";

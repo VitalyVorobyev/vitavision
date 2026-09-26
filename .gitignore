@@ -47,3 +47,8 @@ ds-bundle/
 .design-sync/.cache/
 .design-sync/learnings/
 .design-sync/node_modules
+
+# Screenshot suite: local baseline and Playwright output (playwright.config.ts)
+e2e/.screens
+test-results
+playwright-report

@@ -3,9 +3,10 @@ title: "ViT"
 date: 2026-05-27
 summary: "Vision Transformer — a pure-transformer image classification backbone that treats an image as a sequence of fixed-size patches: split RGB image into $N = HW/P^2$ patches of $P{\\times}P$ pixels (P=16 for ViT-B/L, P=14 for ViT-H), linearly project to $D$-dim tokens, prepend a learnable [CLS] token, add learned positional embeddings, and feed through a standard transformer encoder; classification head reads the [CLS] token's final-layer output. ViT-B/16 86M params, ViT-L/16 307M, ViT-H/14 632M. With large-scale pretraining (JFT-300M) ViT matches or exceeds ResNet-based BiT-L on ImageNet at lower compute."
 tags: ["deep-learning"]
-domain: features
+domain: representation-learning
 tasks: [image-classification]
 author: "Vitaly Vorobyev"
+quality: canonical
 difficulty: intermediate
 arch_family: vit
 params: "86M (ViT-B/16), 307M (ViT-L/16), 632M (ViT-H/14)"
@@ -13,20 +14,29 @@ flops: "17.6 GMAC (B/16), 61.6 GMAC (L/16), 167.4 GMAC (H/14) @ 224×224 (Table 
 prerequisites: [convolutional-neural-network, attention-mechanism]
 failureModes: []
 relations:
+  - type: extended_by
+    target: deit
+    confidence: high
+    caution: "DeiT is architecturally identical to ViT-B; it extends the training recipe (ImageNet-1k only) and adds the distillation token. ViT + large-scale pretraining still reaches higher absolute accuracy."
+  - type: feeds_into
+    target: clip
+    confidence: high
   - type: feeds_into
     target: sam
     confidence: high
   - type: feeds_into
     target: mobilesam
     confidence: high
-  - type: feeds_into
-    target: rf-detr
-    confidence: medium
-    caution: "RF-DETR's backbone is a DINOv2 self-supervised ViT."
   - type: compared_with
     target: resnet
     confidence: high
     caution: "ViT vs ResNet (BiT) is the headline classification comparison in the paper. Both coexist as production backbones — ResNet's conv inductive bias dominates in small-data regimes; ViT scales better with large pretraining (JFT-300M)."
+  - type: feeds_into
+    target: dpt
+    confidence: high
+  - type: feeds_into
+    target: segformer
+    confidence: high
 sources:
   primary: dosovitskiy2020-vit
   references:

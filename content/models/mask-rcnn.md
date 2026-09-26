@@ -15,12 +15,17 @@ relations:
     target: felzenszwalb-deformable-parts
     confidence: medium
     caution: "Mask R-CNN's CNN backbone, region proposals, and RoIAlign replace DPM's HOG features, root + part filters, and latent-SVM scoring; Mask R-CNN also outputs per-instance masks beyond DPM's bounding boxes."
+  - type: feeds_into
+    target: pointrend
+    confidence: medium
+    caution: "PointRend is a generic refinement module; Mask R-CNN is its primary instance-segmentation base, not its only one."
 sources:
   primary: he2017-maskrcnn
   references:
     - ren2015-faster
     - long2015-fcn
     - he2016-resnet
+    - lin2017-fpn
   notes: |
     Multi-task loss per RoI: L = L_cls + L_box + L_mask (§3 Mask R-CNN).
     Mask branch outputs Km^2-dim tensor — K binary masks of resolution
@@ -59,7 +64,7 @@ Instance segmentation assigns, for each detected object in an RGB image, a class
 
 # Architecture
 
-**Family & shape.** Two-stage CNN detection model (Faster R-CNN substrate) extended with a parallel mask head. Backbone: ResNet-50, ResNet-101, or ResNeXt-101, paired with FPN (the recommended default). Input: RGB image, shorter edge 800 px (§3.1). Outputs per detected instance: class label + score + bounding box + binary mask at $m \times m$ RoI resolution — $m = 14$ for the ResNet-C4 head, $m = 28$ for the FPN head (Figure 4).
+**Family & shape.** Two-stage CNN detection model (Faster R-CNN substrate) extended with a parallel mask head. Backbone: ResNet-50, ResNet-101, or ResNeXt-101, paired with [FPN](/atlas/fpn) (the recommended default). Input: RGB image, shorter edge 800 px (§3.1). Outputs per detected instance: class label + score + bounding box + binary mask at $m \times m$ RoI resolution — $m = 14$ for the ResNet-C4 head, $m = 28$ for the FPN head (Figure 4).
 
 **Blocks.**
 

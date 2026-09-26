@@ -95,14 +95,7 @@ These yield the composite criterion $\Sigma\Lambda = 0.92/(3\sigma)$ (Eq. 44) an
 4. **Hysteresis double-threshold.** Pixels surviving NMS with $|\nabla S| \geq T_h$ are accepted as edge seeds. A BFS flood-fill (8-connectivity) propagates each seed through neighbouring NMS-survivors with $|\nabla S| \geq T_l$. Pixels in $[T_l, T_h)$ not reachable from any seed are discarded. The recommended ratio is $T_h/T_l \in [2, 3]$ (§VI).
 :::
 
-```mermaid
-flowchart LR
-    I["I(x,y)"] --> S["Gaussian<br/>smooth (σ)"]
-    S --> G["gradient<br/>|∇S|, n̂"]
-    G --> N["NMS along n̂"]
-    N --> H["hysteresis<br/>T_l ≤ … ≤ T_h"]
-    H --> E["edge map"]
-```
+![canny-edge-detector pipeline: 6-stage flow from the input image through Gaussian smoothing, gradient magnitude and direction, non-maximum suppression along the gradient direction, hysteresis double-thresholding, to the final thin binary edge map.](./images/canny-edge-detector/pipeline.svg)
 
 ## Multi-scale and directional extensions
 

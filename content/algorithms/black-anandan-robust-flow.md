@@ -46,7 +46,7 @@ The IRLS weight is $w_L(x, \sigma) = \psi_L(x, \sigma) / x = 2\sigma^2 / (2\sigm
 
 :::definition[Geman-McClure M-estimator]
 
-$$\rho_{GM}(x, \sigma) = \frac{\sigma\,x^2}{\sigma + x^2}, \qquad \psi_{GM}(x, \sigma) = \frac{2\sigma\,x}{(\sigma + x^2)^2}.$$
+$$\rho_{GM}(x, \sigma) = \frac{x^2}{\sigma + x^2}, \qquad \psi_{GM}(x, \sigma) = \frac{2\sigma\,x}{(\sigma + x^2)^2}.$$
 
 The IRLS weight is $w_{GM}(x, \sigma) = 2\sigma / (\sigma + x^2)^2$. The outlier threshold is $\tau_{GM} = \sigma / \sqrt{3}$.
 

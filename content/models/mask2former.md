@@ -15,7 +15,7 @@ relations:
   - type: feeds_into
     target: sam
     confidence: high
-    caution: "SAM 3's mask head is adapted from MaskFormer/Mask2Former — this family establishes the per-query mask classification + set-prediction paradigm SAM 3 inherits for concept segmentation."
+    caution: "SAM v1's mask decoder cites MaskFormer (Mask2Former's direct precursor) as an inspiration; SAM 3's mask head is adapted from MaskFormer/Mask2Former."
   - type: compared_with
     target: mask-rcnn
     confidence: high
@@ -26,6 +26,7 @@ sources:
     - cheng2021-maskformer
     - carion2020-detr
     - he2016-resnet
+    - kirillov2020-pointrend
   notes: |
     MaskFormer v1 (cheng2021-maskformer, NeurIPS 2021): the foundational
     paradigm shift — per-pixel classification (FCN/DeepLab) replaced by
@@ -82,7 +83,7 @@ draft: false
 
 # Motivation
 
-Universal image segmentation via mask classification: given an RGB image, the model predicts a fixed set of $N$ (binary mask, class label) pairs, one per candidate segment, supervised by bipartite matching (DETR-style) rather than per-pixel cross-entropy. At inference, semantic segmentation is recovered by taking the argmax over masks weighted by class probability; instance and panoptic outputs are formed by retaining top-confidence masks with their class labels. The key departure from FCN-class per-pixel classifiers is that each prediction is a **mask + class** pair — the same architecture and loss train on semantic, instance, or panoptic supervision without changing the head structure. MaskFormer v1 (NeurIPS 2021) established this mask-classification paradigm and demonstrated it outperforms per-pixel classifiers, particularly at large vocabulary sizes. Mask2Former v2 (CVPR 2022) extends it with three targeted decoder changes — **masked attention** (cross-attention restricted to each query's predicted foreground), **multi-scale round-robin feature aggregation** (feature pyramid levels 1/32, 1/16, 1/8 fed to successive decoder layers in rotation), and **point-sampled mask loss** (mask supervision computed on $K = 12544$ importance-sampled points instead of all $H \times W$ pixels) — achieving the first single architecture to simultaneously surpass specialised state-of-the-art models on semantic, instance, and panoptic segmentation.
+Universal image segmentation via mask classification: given an RGB image, the model predicts a fixed set of $N$ (binary mask, class label) pairs, one per candidate segment, supervised by bipartite matching (DETR-style) rather than per-pixel cross-entropy. At inference, semantic segmentation is recovered by taking the argmax over masks weighted by class probability; instance and panoptic outputs are formed by retaining top-confidence masks with their class labels. The key departure from FCN-class per-pixel classifiers is that each prediction is a **mask + class** pair — the same architecture and loss train on semantic, instance, or panoptic supervision without changing the head structure. MaskFormer v1 (NeurIPS 2021) established this mask-classification paradigm and demonstrated it outperforms per-pixel classifiers, particularly at large vocabulary sizes. Mask2Former v2 (CVPR 2022) extends it with three targeted decoder changes — **masked attention** (cross-attention restricted to each query's predicted foreground), **multi-scale round-robin feature aggregation** (feature pyramid levels 1/32, 1/16, 1/8 fed to successive decoder layers in rotation), and **point-sampled mask loss** (adapted from [PointRend](/atlas/pointrend)'s importance-sampling strategy; mask supervision computed on $K = 12544$ importance-sampled points instead of all $H \times W$ pixels) — achieving the first single architecture to simultaneously surpass specialised state-of-the-art models on semantic, instance, and panoptic segmentation.
 
 # Architecture
 

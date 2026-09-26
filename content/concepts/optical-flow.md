@@ -15,6 +15,7 @@ sources:
     - lucas1981-lucas-kanade
     - black1996-robust
     - tomasi1991-detection-tracking
+    - teed2020-raft
 ---
 
 # Definition
@@ -103,9 +104,12 @@ The registered atlas pages each instantiate the optical-flow concept under a dif
 
 The Tomasi-Kanade tracker applies the same brightness-constancy constraint and structure tensor to a different problem: rather than estimating flow densely, it selects windows where the structure tensor is well-conditioned ($\min(\lambda_1, \lambda_2) > \tau$) and tracks only those feature points across frames. It is not yet a registered page.
 
+[RAFT](/atlas/raft) departs from all three classical resolutions above: rather than a hand-derived data term evaluated at one or a few scales, it computes an all-pairs 4D correlation volume once between the two frames and repeatedly queries it with a weight-tied recurrent update operator, maintaining a single fixed-resolution flow field instead of a coarse-to-fine cascade. It replaces the Horn-Schunck line's analytic gradient-descent step with a learned update rule while keeping the same single-flow-field, iteratively-refined structure.
+
 # References
 
 1. B. K. P. Horn, B. G. Schunck. *Determining Optical Flow.* Artificial Intelligence, 17(1–3):185–203, 1981.
 2. B. D. Lucas, T. Kanade. *An Iterative Image Registration Technique with an Application to Stereo Vision.* Proceedings of the 7th International Joint Conference on Artificial Intelligence, 1981.
 3. M. J. Black, P. Anandan. *The Robust Estimation of Multiple Motions: Parametric and Piecewise-Smooth Flow Fields.* Computer Vision and Image Understanding, 63(1):75–104, 1996.
 4. C. Tomasi, T. Kanade. *Detection and Tracking of Point Features.* Technical Report CMU-CS-91-132, Carnegie Mellon University, 1991.
+5. Z. Teed, J. Deng. *RAFT: Recurrent All-Pairs Field Transforms for Optical Flow.* ECCV 2020. [arXiv](https://arxiv.org/pdf/2003.12039)

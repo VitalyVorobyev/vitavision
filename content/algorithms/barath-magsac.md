@@ -123,6 +123,7 @@ where F: Fn(f64, f64) -> f64
 - For $\chi^2(4)$ residuals (2D point correspondences), the effective inlier threshold at each $\sigma_i$ is $\tau(\sigma_i) = 3.64\,\sigma_i$. For higher residual dimensions the constant changes; consult the appropriate $\chi^2$ quantile table.
 - Float32 underflow safety: $\exp(-D^2 / 2\sigma_i^2)$ underflows in float32 when $D > {\sim}13$ px for $\sigma_i = 1$ px — safely beyond the $\tau(\sigma_\mathrm{max})$ gate, so float32 arithmetic is workable throughout the $\sigma$ loop.
 - See [`raguram-usac`](/atlas/raguram-usac) for the unifying RANSAC engineering framework MAGSAC plugs into, including the *When to choose USAC over MAGSAC* discussion (hosted there per the older + broader-scope tiebreaker). See [`ransac`](/atlas/ransac) for the four design axes that organise the modern RANSAC family.
+- Compared with LO-RANSAC: see [When to choose LO-RANSAC over MAGSAC](/atlas/lo-ransac#when-to-choose-lo-ransac-over-magsac) on the LO-RANSAC page, which hosts the comparison.
 
 # References
 

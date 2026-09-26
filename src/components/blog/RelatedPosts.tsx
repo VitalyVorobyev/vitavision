@@ -30,12 +30,12 @@ export default function RelatedPosts({ slugs, type }: RelatedPostsProps) {
                 const entity = modelPages.find((p) => p.slug === slug);
                 if (!entity) return null;
                 if (entity.frontmatter.draft && !isAdmin) return null;
-                return { slug, title: entity.frontmatter.title, path: `/algorithms/models/${slug}` };
+                return { slug, title: entity.frontmatter.title, path: `/atlas/${slug}` };
             }
             const entity = algorithmPages.find((p) => p.slug === slug);
             if (!entity) return null;
             if (entity.frontmatter.draft && !isAdmin) return null;
-            return { slug, title: entity.frontmatter.title, path: `/algorithms/${slug}` };
+            return { slug, title: entity.frontmatter.title, path: `/atlas/${slug}` };
         })
         .filter((item): item is NonNullable<typeof item> => item !== null);
 

@@ -28,7 +28,7 @@ function CompactCard({ entry }: { entry: ConceptIndexEntry }) {
                     <CardBadges draft={fm.draft} date={fm.date} />
                     {/* Stretched-link title — ::after covers the whole card */}
                     <Link
-                        to={`/concepts/${slug}`}
+                        to={`/atlas/${slug}`}
                         className="inline text-[13px] font-semibold leading-tight text-foreground -tracking-[0.1px] group-hover:underline after:absolute after:inset-0 after:content-['']"
                     >
                         {fm.title}
@@ -61,7 +61,7 @@ function HorizontalCard({ entry }: { entry: ConceptIndexEntry }) {
                     <div className="min-w-0 flex-1">
                         <CardBadges draft={fm.draft} date={fm.date} />
                         <Link
-                            to={`/concepts/${slug}`}
+                            to={`/atlas/${slug}`}
                             className="text-[14px] font-semibold -tracking-[0.1px] truncate group-hover:underline text-foreground after:absolute after:inset-0 after:content-['']"
                         >
                             {fm.title}

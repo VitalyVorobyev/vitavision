@@ -5,14 +5,16 @@
 // No LLM calls. Fully deterministic and idempotent.
 // Usage:  bun run sources:fetch-repo [<source-id>]
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { parse as parseYaml } from "yaml";
 
-const REPO_ROOT = join(import.meta.dir, "..");
-const INDEX_PATH = join(REPO_ROOT, "docs", "papers", "index.yaml");
-const CACHE_BASE = join(REPO_ROOT, "docs", "sources", ".cache", "repo");
-const NOTES_DIR = join(REPO_ROOT, "docs", "research", "notes");
+import { PAPERS_INDEX_PATH, SOURCES_REPO_CACHE_DIR, RESEARCH_NOTES_DIR } from "./lib/paths.ts";
+import { loadIndexEntries } from "./lib/papers-index.ts";
+import { parseGitHubRepo } from "./lib/github.ts";
+
+const INDEX_PATH = PAPERS_INDEX_PATH;
+const CACHE_BASE = SOURCES_REPO_CACHE_DIR;
+const NOTES_DIR = RESEARCH_NOTES_DIR;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -27,13 +29,6 @@ interface RepoEntry {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function parseGitHubRepo(url: string): { owner: string; repo: string } | null {
-    const cleaned = url.replace(/\.git$/, "");
-    const match = cleaned.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)$/);
-    if (!match) return null;
-    return { owner: match[1], repo: match[2] };
-}
 
 async function spawnCapture(
     cmd: string[],
@@ -227,18 +222,16 @@ async function processEntry(
 async function main(): Promise<void> {
     const filterId = process.argv[2];
 
-    if (!existsSync(INDEX_PATH)) {
-        process.stderr.write("sources:fetch-repo — index.yaml not found\n");
-        process.exit(1);
-    }
-
-    const raw = readFileSync(INDEX_PATH, "utf-8");
-    const allEntries = parseYaml(raw) as Array<Record<string, unknown>>;
-
-    if (!Array.isArray(allEntries)) {
-        process.stderr.write("sources:fetch-repo — index.yaml is not a list\n");
-        process.exit(1);
-    }
+    const allEntries = loadIndexEntries(INDEX_PATH, {
+        onMissing: () => {
+            process.stderr.write("sources:fetch-repo — index.yaml not found\n");
+            process.exit(1);
+        },
+        onNotList: () => {
+            process.stderr.write("sources:fetch-repo — index.yaml is not a list\n");
+            process.exit(1);
+        },
+    }) as Array<Record<string, unknown>>;
 
     // Filter to kind: repo entries
     const repoEntries = allEntries

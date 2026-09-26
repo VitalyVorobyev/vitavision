@@ -15,6 +15,8 @@ sources:
     - wang2023-dust3r
     - leroy2024-mast3r
     - oquab2023-dinov2
+    - darcet2023-registers
+    - ranftl2021-dpt
 relations:
   - type: generalized_by
     target: depth-anything-3
@@ -51,7 +53,7 @@ Each image $I_i$ is patchified by a frozen DINOv2 ViT-L encoder (hidden dim 1024
 Three prediction heads read the backbone outputs:
 
 - *Camera head.* Output camera tokens $\hat{t}^g_i$ pass through 4 additional self-attention layers and a linear projection to produce $g_i = (q_i, t_i, f_i)$ — rotation quaternion, translation, and two-axis field-of-view — parameterised following VGGSfM (§3.1).
-- *Dense head.* Output image tokens $\hat{t}^I_i$ are decoded by a DPT upsampler (fed intermediate tokens from DINOv2 blocks 4, 11, 17, and 23) followed by a $3 \times 3$ convolution, yielding $D_i$, $P_i$, $T_i$, $\Sigma^D_i$, and $\Sigma^P_i$.
+- *Dense head.* Output image tokens $\hat{t}^I_i$ are decoded by a [DPT](/atlas/dpt) upsampler (fed intermediate tokens from DINOv2 blocks 4, 11, 17, and 23) followed by a $3 \times 3$ convolution, yielding $D_i$, $P_i$, $T_i$, $\Sigma^D_i$, and $\Sigma^P_i$.
 - *Tracking head.* A CoTracker2 architecture consumes $T_i$ features, producing 2D point tracks and visibility logits across frames.
 
 An important over-parameterization result (§4.3, Table 3): $P_i$, $D_i$, and $g_i$ are mathematically redundant — point maps can be derived from depth plus cameras via unprojection, and cameras are recoverable from point maps via PnP. Yet training all heads jointly improves each one. At inference, composing the depth head with the camera head yields lower ETH3D Chamfer error (0.677 Overall) than the dedicated point map head alone (0.709 Overall), confirming that decomposing into simpler subproblems outperforms the unified head for dense geometry.

@@ -81,7 +81,7 @@ The postbuild guard (`scripts/postbuild.ts`) enforces this mechanically — any 
 
 ## 9. When to create a concept page
 
-A new concept page is warranted only when the concept is referenced by 3+ existing or planned public pages AND can support at least 500 words of substantive standalone content (definition, math, numerical concerns, implementation implications). If unsure, ask:
+A new concept page is warranted when the topic is a genuinely fundamental, cross-cutting CV concept that can support at least 500 words of substantive standalone content (definition, math, numerical concerns, implementation implications), synthesised from ≥3 distinct sources. The number of pages that reference it is **not** a gate — see `docs/README.md` §2. If unsure, ask:
 
 ```
 Use concept-page to evaluate whether "scale-space" meets the page-creation criterion.

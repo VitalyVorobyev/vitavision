@@ -3,7 +3,7 @@
 export interface SearchRecord {
     slug: string;
     path: string;
-    type: "algorithm" | "model" | "concept";
+    type: "algorithm" | "model" | "concept" | "narrative" | "author" | "paper";
     title: string;
     summary: string;
     tags: string[];
@@ -141,6 +141,25 @@ export const searchRecords: SearchRecord[] = [
       "A. S. da Silva"
     ],
     "venue": "IPCV (WorldComp)"
+  },
+  {
+    "slug": "colmap",
+    "path": "/atlas/colmap",
+    "type": "algorithm",
+    "title": "COLMAP",
+    "summary": "Incremental structure-from-motion pipeline for unordered, uncalibrated image collections, replacing four stages of the classical incremental pipeline — scene-graph verification, next-best-view selection, multi-view triangulation, and bundle adjustment — with more robust and efficient variants.",
+    "tags": [
+      "classical",
+      "optimization",
+      "pose-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [],
+    "authors": [
+      "J. L. Schönberger",
+      "J. Frahm"
+    ],
+    "venue": "CVPR 2016"
   },
   {
     "slug": "daniilidis-dual-quaternion-handeye",
@@ -548,6 +567,25 @@ export const searchRecords: SearchRecord[] = [
     "venue": "Artificial Intelligence"
   },
   {
+    "slug": "kannala-brandt-model",
+    "path": "/atlas/kannala-brandt-model",
+    "type": "algorithm",
+    "title": "Kannala–Brandt Generic Camera Model",
+    "summary": "Single projection and planar-pattern calibration model spanning conventional, wide-angle, and fish-eye lenses, built on an odd-power polynomial in the incidence angle that stays finite as the field of view approaches and exceeds 180 degrees.",
+    "tags": [
+      "camera-model"
+    ],
+    "domain": "calibration",
+    "headings": [
+      "When to choose Kannala–Brandt over Scaramuzza"
+    ],
+    "authors": [
+      "J. Kannala",
+      "S. S. Brandt"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
     "slug": "kumar-generalized-rac",
     "path": "/atlas/kumar-generalized-rac",
     "type": "algorithm",
@@ -604,6 +642,27 @@ export const searchRecords: SearchRecord[] = [
       "U. Frese"
     ],
     "venue": "British Machine Vision Conference (BMVC)"
+  },
+  {
+    "slug": "lo-ransac",
+    "path": "/atlas/lo-ransac",
+    "type": "algorithm",
+    "title": "Locally Optimized RANSAC (LO-RANSAC)",
+    "summary": "RANSAC extension that corrects the false assumption that a minimal-sample model is consistent with all inliers, by running a local optimization step on every new best hypothesis — reaching the same termination guarantee in two to three times fewer samples.",
+    "tags": [
+      "robust-estimation"
+    ],
+    "domain": "geometry",
+    "headings": [
+      "Procedure",
+      "When to choose LO-RANSAC over MAGSAC"
+    ],
+    "authors": [
+      "O. Chum",
+      "J. Matas",
+      "J. Kittler"
+    ],
+    "venue": "DAGM 2003 (Lecture Notes in Computer Science)"
   },
   {
     "slug": "longuet-higgins-eight-point",
@@ -1156,6 +1215,36 @@ export const searchRecords: SearchRecord[] = [
     "venue": "IEEE Robotics and Automation Letters"
   },
   {
+    "slug": "clip",
+    "path": "/atlas/clip",
+    "type": "model",
+    "title": "CLIP",
+    "summary": "Contrastive image–text pretraining on 400M web pairs: dual encoders in one embedding space make natural language the classifier — zero-shot ImageNet at 76.2% via prompts, with unmatched robustness under distribution shift.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Zero-shot mechanics",
+      "What CLIP introduced"
+    ],
+    "authors": [
+      "A. Radford",
+      "J. W. Kim",
+      "C. Hallacy",
+      "A. Ramesh",
+      "G. Goh",
+      "S. Agarwal",
+      "G. Sastry",
+      "A. Askell",
+      "P. Mishkin",
+      "J. Clark",
+      "G. Krueger",
+      "I. Sutskever"
+    ],
+    "venue": "ICML 2021"
+  },
+  {
     "slug": "deeplab-semantic-segmentation",
     "path": "/atlas/deeplab-semantic-segmentation",
     "type": "model",
@@ -1175,6 +1264,29 @@ export const searchRecords: SearchRecord[] = [
       "A. Yuille"
     ],
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "deit",
+    "path": "/atlas/deit",
+    "type": "model",
+    "title": "DeiT",
+    "summary": "Data-efficient image transformers: ViT's architecture unchanged, made ImageNet-1k-competitive by a heavy augmentation/regularization recipe and distillation through attention — a dedicated distillation token supervised by a convnet teacher's hard decisions.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "What DeiT introduced"
+    ],
+    "authors": [
+      "H. Touvron",
+      "M. Cord",
+      "M. Douze",
+      "F. Massa",
+      "A. Sablayrolles",
+      "H. Jégou"
+    ],
+    "venue": "ICML 2021 (arXiv 2020)"
   },
   {
     "slug": "depth-anything",
@@ -1268,6 +1380,30 @@ export const searchRecords: SearchRecord[] = [
     "venue": "ECCV 2020"
   },
   {
+    "slug": "dino",
+    "path": "/atlas/dino",
+    "type": "model",
+    "title": "DINO",
+    "summary": "Self-distillation with no labels: an EMA teacher, multi-crop training, and centering+sharpening yield ViT features whose frozen k-NN accuracy nearly matches a linear probe and whose attention maps segment objects without supervision.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "What v1 introduced"
+    ],
+    "authors": [
+      "M. Caron",
+      "H. Touvron",
+      "I. Misra",
+      "H. Jégou",
+      "J. Mairal",
+      "P. Bojanowski",
+      "A. Joulin"
+    ],
+    "venue": "ICCV 2021"
+  },
+  {
     "slug": "dinov2",
     "path": "/atlas/dinov2",
     "type": "model",
@@ -1276,8 +1412,10 @@ export const searchRecords: SearchRecord[] = [
     "tags": [
       "deep-learning"
     ],
-    "domain": "features",
-    "headings": [],
+    "domain": "representation-learning",
+    "headings": [
+      "What v2 changed over v1"
+    ],
     "authors": [
       "M. Oquab",
       "T. Darcet",
@@ -1307,6 +1445,69 @@ export const searchRecords: SearchRecord[] = [
       "P. Bojanowski"
     ],
     "venue": "TMLR 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "dinov3",
+    "path": "/atlas/dinov3",
+    "type": "model",
+    "title": "DINOv3",
+    "summary": "A 6.7B-parameter self-supervised ViT trained on 1.7B curated images, with gram anchoring to stop dense-feature degradation at scale — one frozen backbone whose patch features match or beat specialized fine-tuned pipelines on detection, segmentation, and depth.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "What v3 introduced"
+    ],
+    "authors": [
+      "O. Siméoni",
+      "H. V. Vo",
+      "M. Seitzer",
+      "F. Baldassarre",
+      "M. Oquab",
+      "C. Jose",
+      "V. Khalidov",
+      "M. Szafraniec",
+      "S. Yi",
+      "M. Ramamonjisoa",
+      "F. Massa",
+      "D. Haziza",
+      "L. Wehrstedt",
+      "J. Wang",
+      "T. Darcet",
+      "T. Moutakanni",
+      "L. Sentana",
+      "C. Roberts",
+      "A. Vedaldi",
+      "J. Tolan",
+      "J. Brandt",
+      "C. Couprie",
+      "J. Mairal",
+      "H. Jégou",
+      "P. Labatut",
+      "P. Bojanowski"
+    ],
+    "venue": "arXiv preprint"
+  },
+  {
+    "slug": "dpt",
+    "path": "/atlas/dpt",
+    "type": "model",
+    "title": "DPT (Dense Prediction Transformer)",
+    "summary": "ViT encoder whose tokens from four layers are reassembled into image-like feature maps at multiple resolutions and fused by a convolutional decoder into full-resolution dense predictions; trained for monocular depth with the MiDaS protocol and for semantic segmentation.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction",
+      "multi-scale"
+    ],
+    "domain": "depth",
+    "headings": [],
+    "authors": [
+      "R. Ranftl",
+      "A. Bochkovskiy",
+      "V. Koltun"
+    ],
+    "venue": "ICCV"
   },
   {
     "slug": "dust3r",
@@ -1405,6 +1606,29 @@ export const searchRecords: SearchRecord[] = [
       "J. Long",
       "E. Shelhamer",
       "T. Darrell"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "fpn",
+    "path": "/atlas/fpn",
+    "type": "model",
+    "title": "Feature Pyramid Network (FPN)",
+    "summary": "Builds a multi-scale feature pyramid inside a single-scale CNN via a top-down pathway with lateral connections, giving every level strong semantics at a fraction of the cost of image pyramids; drives RPN and Fast R-CNN heads per level.",
+    "tags": [
+      "deep-learning",
+      "multi-scale",
+      "region-based"
+    ],
+    "domain": "detection",
+    "headings": [],
+    "authors": [
+      "T. Lin",
+      "P. Dollár",
+      "R. Girshick",
+      "K. He",
+      "B. Hariharan",
+      "S. Belongie"
     ],
     "venue": "CVPR"
   },
@@ -1526,7 +1750,7 @@ export const searchRecords: SearchRecord[] = [
     "tags": [
       "deep-learning"
     ],
-    "domain": "features",
+    "domain": "representation-learning",
     "headings": [],
     "authors": [
       "K. He",
@@ -1764,6 +1988,45 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR 2022"
   },
   {
+    "slug": "pointrend",
+    "path": "/atlas/pointrend",
+    "type": "model",
+    "title": "PointRend",
+    "summary": "Treats mask prediction as rendering: starts from a coarse mask and refines it by predicting labels only at adaptively selected uncertain points with a small point-wise MLP over fine-grained and coarse features, giving sharp boundaries at a fraction of dense-upsampling cost.",
+    "tags": [
+      "deep-learning",
+      "dense-prediction"
+    ],
+    "domain": "segmentation",
+    "headings": [],
+    "authors": [
+      "A. Kirillov",
+      "Y. Wu",
+      "K. He",
+      "R. Girshick"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "raft",
+    "path": "/atlas/raft",
+    "type": "model",
+    "title": "RAFT",
+    "summary": "Recurrent all-pairs field transform for dense two-frame optical flow: an all-pairs 4D correlation volume queried by a weight-tied convolutional-GRU update operator, refining a single fixed-resolution flow field instead of a coarse-to-fine cascade.",
+    "tags": [
+      "deep-learning",
+      "optical-flow",
+      "dense-prediction"
+    ],
+    "domain": "features",
+    "headings": [],
+    "authors": [
+      "Z. Teed",
+      "J. Deng"
+    ],
+    "venue": "ECCV 2020"
+  },
+  {
     "slug": "resnet",
     "path": "/atlas/resnet",
     "type": "model",
@@ -1916,6 +2179,32 @@ export const searchRecords: SearchRecord[] = [
     "venue": "CVPR Workshop (Deep Learning for Visual SLAM)"
   },
   {
+    "slug": "swin",
+    "path": "/atlas/swin",
+    "type": "model",
+    "title": "Swin Transformer",
+    "summary": "Hierarchical vision transformer with shifted-window attention: linear complexity in image area, CNN-style multi-scale feature maps, and a drop-in backbone for dense prediction — with relative position bias replacing absolute embeddings.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "What Swin introduced",
+      "When to choose Swin over SegFormer"
+    ],
+    "authors": [
+      "Z. Liu",
+      "Y. Lin",
+      "Y. Cao",
+      "H. Hu",
+      "Y. Wei",
+      "Z. Zhang",
+      "S. Lin",
+      "B. Guo"
+    ],
+    "venue": "ICCV 2021"
+  },
+  {
     "slug": "unet-segmentation",
     "path": "/atlas/unet-segmentation",
     "type": "model",
@@ -2009,7 +2298,7 @@ export const searchRecords: SearchRecord[] = [
     "tags": [
       "deep-learning"
     ],
-    "domain": "features",
+    "domain": "representation-learning",
     "headings": [],
     "authors": [
       "A. Dosovitskiy",
@@ -2078,21 +2367,24 @@ export const searchRecords: SearchRecord[] = [
     "tags": [
       "deep-learning"
     ],
-    "domain": "features",
+    "domain": "representation-learning",
     "headings": [
-      "Scaled dot-product attention",
-      "Multi-head attention",
-      "Self-attention and cross-attention",
-      "Positional encoding",
-      "Quadratic cost and the linear approximation"
+      "Origins: additive attention",
+      "Scaled dot-product and multi-head",
+      "Complexity and the efficiency lineage",
+      "Attention in vision"
     ],
     "authors": [
-      "P. Sarlin",
-      "D. DeTone",
-      "T. Malisiewicz",
-      "A. Rabinovich"
+      "A. Vaswani",
+      "N. Shazeer",
+      "N. Parmar",
+      "J. Uszkoreit",
+      "L. Jones",
+      "A. N. Gomez",
+      "Ł. Kaiser",
+      "I. Polosukhin"
     ],
-    "venue": "CVPR"
+    "venue": "NeurIPS 2017"
   },
   {
     "slug": "bundle-adjustment",
@@ -2130,6 +2422,7 @@ export const searchRecords: SearchRecord[] = [
       "Tsai 1987 — one term, radial only",
       "Weng 1992 — full Brown-Conrady with tangential",
       "Zhang 2000 — two-term radial, no tangential",
+      "Kannala-Brandt 2006 — odd-power polynomial in incidence angle",
       "CCS 2022 — learned correction decoupled from intrinsic estimation",
       "Kumar gRAC 2014 — radial generalised to non-frontal sensors",
       "Inverse distortion (rectification)",
@@ -2423,6 +2716,29 @@ export const searchRecords: SearchRecord[] = [
     "venue": "ACM SIGGRAPH Computer Graphics"
   },
   {
+    "slug": "knowledge-distillation",
+    "path": "/atlas/knowledge-distillation",
+    "type": "concept",
+    "title": "Knowledge Distillation",
+    "summary": "Training a student network to match a teacher's softened output distribution — the temperature softmax, the T² gradient scaling, hard-label distillation, and self-distillation with a momentum teacher.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Soft targets and temperature",
+      "The high-temperature limit",
+      "Hard-label distillation",
+      "Self-distillation with a momentum teacher"
+    ],
+    "authors": [
+      "G. E. Hinton",
+      "O. Vinyals",
+      "J. Dean"
+    ],
+    "venue": "NeurIPS 2014 Deep Learning Workshop (arXiv 2015)"
+  },
+  {
     "slug": "monocular-depth-estimation",
     "path": "/atlas/monocular-depth-estimation",
     "type": "concept",
@@ -2467,6 +2783,28 @@ export const searchRecords: SearchRecord[] = [
       "J. Canny"
     ],
     "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "normalization",
+    "path": "/atlas/normalization",
+    "type": "concept",
+    "title": "Normalization",
+    "summary": "Standardises intermediate activations over a chosen index set, then restores capacity with a learned affine transform; batch, layer, instance, and group normalization differ only in which indices are pooled.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Batch normalization",
+      "Layer normalization",
+      "Group normalization and the unifying view",
+      "Choosing among them"
+    ],
+    "authors": [
+      "S. Ioffe",
+      "C. Szegedy"
+    ],
+    "venue": "ICML 2015"
   },
   {
     "slug": "optical-flow",
@@ -2538,6 +2876,34 @@ export const searchRecords: SearchRecord[] = [
     "venue": "International Journal of Computer Vision"
   },
   {
+    "slug": "positional-encoding",
+    "path": "/atlas/positional-encoding",
+    "type": "concept",
+    "title": "Positional Encoding",
+    "summary": "Mechanisms that inject token order into permutation-invariant attention: absolute encodings added to embeddings, learned tables, and rotary schemes that rotate queries and keys so position enters the score.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Sinusoidal absolute encodings",
+      "Learned absolute encodings",
+      "Rotary (relative) encodings",
+      "When absolute vs relative matters"
+    ],
+    "authors": [
+      "A. Vaswani",
+      "N. Shazeer",
+      "N. Parmar",
+      "J. Uszkoreit",
+      "L. Jones",
+      "A. N. Gomez",
+      "Ł. Kaiser",
+      "I. Polosukhin"
+    ],
+    "venue": "NeurIPS 2017"
+  },
+  {
     "slug": "ransac",
     "path": "/atlas/ransac",
     "type": "concept",
@@ -2571,6 +2937,30 @@ export const searchRecords: SearchRecord[] = [
       "Discrete scale-space pyramids",
       "Characteristic scale"
     ]
+  },
+  {
+    "slug": "self-supervised-learning",
+    "path": "/atlas/self-supervised-learning",
+    "type": "concept",
+    "title": "Self-Supervised Learning",
+    "summary": "Survey of label-free visual representation learning: contrastive objectives (SimCLR, MoCo) and negative-free self-distillation (BYOL, DINO), with a decision table and the collapse mechanics that separate them.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Contrastive objectives with in-batch negatives",
+      "The dictionary perspective",
+      "Negative-free self-distillation",
+      "Cross-entropy self-distillation"
+    ],
+    "authors": [
+      "T. Chen",
+      "S. Kornblith",
+      "M. Norouzi",
+      "G. E. Hinton"
+    ],
+    "venue": "ICML 2020"
   },
   {
     "slug": "spatially-varying-image-stitching",
@@ -2666,6 +3056,36 @@ export const searchRecords: SearchRecord[] = [
     ]
   },
   {
+    "slug": "transformer",
+    "path": "/atlas/transformer",
+    "type": "concept",
+    "title": "Transformer",
+    "summary": "Sequence-to-sequence architecture assembled entirely from attention and position-wise feedforward sublayers, each wrapped in a residual connection and layer normalisation — no recurrence, no convolution.",
+    "tags": [
+      "deep-learning"
+    ],
+    "domain": "representation-learning",
+    "headings": [
+      "Encoder and decoder stacks",
+      "Position-wise feedforward network",
+      "Residual connections and normalisation",
+      "Positional information",
+      "Training configuration",
+      "The encoder in vision"
+    ],
+    "authors": [
+      "A. Vaswani",
+      "N. Shazeer",
+      "N. Parmar",
+      "J. Uszkoreit",
+      "L. Jones",
+      "A. N. Gomez",
+      "Ł. Kaiser",
+      "I. Polosukhin"
+    ],
+    "venue": "NeurIPS 2017"
+  },
+  {
     "slug": "visual-anomaly-detection",
     "path": "/atlas/visual-anomaly-detection",
     "type": "concept",
@@ -2683,5 +3103,7836 @@ export const searchRecords: SearchRecord[] = [
       "Autoencoder reconstruction in feature space",
       "Evaluation metrics"
     ]
+  },
+  {
+    "slug": "calibration-changed-the-target",
+    "path": "/atlas/narratives/calibration-changed-the-target",
+    "type": "narrative",
+    "title": "Calibration Changed the Target",
+    "summary": "How camera calibration became practical by changing the target, from a precision 3-D fixture to a printed plane in free poses, and then by letting the camera model reach past the pinhole.",
+    "tags": [
+      "calibration",
+      "classical"
+    ],
+    "headings": [
+      "The pinhole needs a precision target",
+      "The target becomes a printed plane",
+      "A concurrent derivation, and where it diverges",
+      "The distortion model is a choice bounded by its era",
+      "Two answers to the same wide-angle problem, the same year",
+      "What a printed plane and a polynomial still cannot buy"
+    ]
+  },
+  {
+    "slug": "depth-becomes-general-geometry",
+    "path": "/atlas/narratives/depth-becomes-general-geometry",
+    "type": "narrative",
+    "title": "Depth Becomes General Geometry",
+    "summary": "How monocular depth estimation stopped improving through architecture and started improving through the training signal: a scale-invariant loss, pseudo-labelled unlabelled images, synthetic labels with a large teacher, and finally a depth-and-ray target that any number of views can share.",
+    "tags": [
+      "depth",
+      "3d-reconstruction",
+      "deep-learning",
+      "foundation-models"
+    ],
+    "headings": [
+      "The Ambiguity That Never Left",
+      "Borrowed Features",
+      "Data Breadth as Signal",
+      "Synthetic Teachers",
+      "Geometry Converges"
+    ]
+  },
+  {
+    "slug": "detection-removing-the-machinery",
+    "path": "/atlas/narratives/detection-removing-the-machinery",
+    "type": "narrative",
+    "title": "Detection, Removing the Machinery",
+    "summary": "How object detection shed its hand-built machinery one component at a time: the enumerated window, the feature pyramid, the proposal stage, the anchors, and non-maximum suppression, until what remains is a classifier reading the image once.",
+    "tags": [
+      "detection",
+      "deep-learning",
+      "classical"
+    ],
+    "headings": [
+      "Table Makes Exhaustive Search Cheap",
+      "Better Templates, Same Window",
+      "Window Learns Fewer Places",
+      "One Pass, Then No Proposals",
+      "Where Machinery Actually Went"
+    ]
+  },
+  {
+    "slug": "finding-a-chessboard",
+    "path": "/atlas/narratives/finding-a-chessboard",
+    "type": "narrative",
+    "title": "Finding a Chessboard",
+    "summary": "How chessboard detection moved its decisive evidence from the per-pixel X-corner response to grid topology, then to learned detectors, and finally into a target that identifies itself.",
+    "tags": [
+      "calibration",
+      "classical"
+    ],
+    "headings": [
+      "The X-corner is not a generic corner",
+      "Hand-crafted responses compete on speed and blur",
+      "When the response is not enough, ask topology",
+      "Occlusion breaks the grid, not the corner",
+      "Detectors that learn the response",
+      "The target identifies itself",
+      "What remains for the detector to be robust to"
+    ]
+  },
+  {
+    "slug": "forty-years-against-outliers",
+    "path": "/atlas/narratives/forty-years-against-outliers",
+    "type": "narrative",
+    "title": "Forty Years Against Outliers",
+    "summary": "How robust two-view geometry advanced by changing what the estimator distrusts: the algebra, then the numerics, then gross outliers, and finally the fixed inlier threshold itself.",
+    "tags": [
+      "geometry",
+      "classical"
+    ],
+    "headings": [
+      "The Algebra of Two Views",
+      "Numerics Catch Up",
+      "Gross Outliers Enter",
+      "Correcting the Minimal Sample",
+      "One Engine, Many Parts",
+      "Marginalising the Threshold"
+    ]
+  },
+  {
+    "slug": "foundation-models-for-vision",
+    "path": "/atlas/narratives/foundation-models-for-vision",
+    "type": "narrative",
+    "title": "Foundation Models for Vision",
+    "summary": "How attention became a substrate, images became tokens, labels became optional, and one frozen backbone came to power everything from segmentation prompts to industrial anomaly detection.",
+    "tags": [
+      "deep-learning"
+    ],
+    "headings": [
+      "The substrate",
+      "Images become tokens",
+      "From classifier to representation",
+      "Distillation expands",
+      "Vision meets language",
+      "Three bridges into anomaly detection",
+      "The anomaly-detection design space"
+    ]
+  },
+  {
+    "slug": "four-answers-to-rectification",
+    "path": "/atlas/narratives/four-answers-to-rectification",
+    "type": "narrative",
+    "title": "Four Answers to Rectification",
+    "summary": "Stereo rectification has one goal, corresponding points on the same scanline, and four coexisting answers that differ only in what they assume: Hartley's minimal-distortion projective map, Loop and Zhang's decomposed criteria, Pollefeys' polar reparametrisation around the epipole, and Fusiello's compact calibrated form.",
+    "tags": [
+      "stereo",
+      "rectification",
+      "geometry",
+      "classical"
+    ],
+    "headings": [
+      "One Constraint, Four Answers",
+      "Hartley: Least Disparity",
+      "Loop-Zhang: Least Distortion",
+      "Pollefeys: Polar Reparametrisation",
+      "Fusiello: Compact Closed Form"
+    ]
+  },
+  {
+    "slug": "local-versus-global-motion",
+    "path": "/atlas/narratives/local-versus-global-motion",
+    "type": "narrative",
+    "title": "Local Versus Global Motion",
+    "summary": "Brightness constancy leaves optical flow underdetermined at every pixel, so each method is a choice of where the missing constraint comes from: a local window, a global smoothness prior, a robust version of both, and finally a learned update operator that may or may not still be imposing a prior at all.",
+    "tags": [
+      "optical-flow",
+      "motion",
+      "classical",
+      "deep-learning"
+    ],
+    "headings": [
+      "One Equation, Two Unknowns",
+      "Two 1981 Answers",
+      "Making the Prior Robust",
+      "The Prior Becomes Learned"
+    ]
+  },
+  {
+    "slug": "one-homography-is-not-enough",
+    "path": "/atlas/narratives/one-homography-is-not-enough",
+    "type": "narrative",
+    "title": "One Homography Is Not Enough",
+    "summary": "Parallax breaks the single-homography stitching model, and the fixes loosen it in sequence: two homographies for two planes, a smoothly varying affine warp, and a field of local homographies that is projective where there is data and global where there is none.",
+    "tags": [
+      "stitching",
+      "homography",
+      "classical",
+      "geometry"
+    ],
+    "headings": [
+      "One Warp, Two Conditions",
+      "Two Planes, One Blend",
+      "Smooth Affine Field",
+      "As Projective As Possible"
+    ]
+  },
+  {
+    "slug": "segmentation-from-energy-to-prompt",
+    "path": "/atlas/narratives/segmentation-from-energy-to-prompt",
+    "type": "narrative",
+    "title": "Segmentation, from Energy to Prompt",
+    "summary": "How image segmentation kept the same task for twenty years while its prior moved from a hand-written energy function to a trained dense predictor to a promptable pretrained model, and what the practitioner stopped having to supply at each move.",
+    "tags": [
+      "segmentation",
+      "interactive",
+      "deep-learning",
+      "classical"
+    ],
+    "headings": [
+      "Energy as Objective",
+      "Coordinate Descent Priors",
+      "Dense Prediction Takes Over",
+      "Instance and Token Mixing",
+      "Interactive Goes Feedforward",
+      "Prompt Conditions a Decoder"
+    ]
+  },
+  {
+    "slug": "the-geometry-pipeline-collapses",
+    "path": "/atlas/narratives/the-geometry-pipeline-collapses",
+    "type": "narrative",
+    "title": "The Geometry Pipeline Collapses",
+    "summary": "How learned geometry absorbed the classical structure-from-motion pipeline one stage boundary at a time, from the detector and the matcher to the whole chain, and what geometric constraint survives each collapse.",
+    "tags": [
+      "geometry",
+      "feature-matching",
+      "3d-reconstruction",
+      "deep-learning"
+    ],
+    "headings": [
+      "The Shared Substrate",
+      "Detectors and Descriptors, by Hand",
+      "The First Stage Falls to Learning",
+      "Matching Becomes a Learned Assignment",
+      "Matching Goes Dense and Detector-Free",
+      "The Whole Chain Becomes One Network",
+      "What Survives Collapse"
+    ]
+  },
+  {
+    "slug": "vision-under-a-latency-budget",
+    "path": "/atlas/narratives/vision-under-a-latency-budget",
+    "type": "narrative",
+    "title": "Vision Under a Latency Budget",
+    "summary": "A parallel history of computer vision driven by compute budgets rather than accuracy, from the integral image and binary descriptors to searched mobile backbones, two-branch segmentation, and distilled or searched foundation-era models, where the recurring move is a structural trick that removes work.",
+    "tags": [
+      "efficiency",
+      "real-time",
+      "mobile",
+      "classical",
+      "deep-learning"
+    ],
+    "headings": [
+      "The Primitive That Pays for Itself",
+      "Cheap Tests Replace Expensive Ones",
+      "The Backbone Becomes a Budgeted Object",
+      "The Same Trick for Dense Prediction",
+      "Distillation and Search as the New Discipline",
+      "Who Pays for Cheap"
+    ]
+  },
+  {
+    "slug": "where-did-the-inductive-bias-go",
+    "path": "/atlas/narratives/where-did-the-inductive-bias-go",
+    "type": "narrative",
+    "title": "Where Did the Inductive Bias Go?",
+    "summary": "How the assumptions that make vision work migrated from the algorithm (Canny, SIFT, HOG) into the architecture (the convolutional network and its scaling lineage) and then into the data and the training objective (ViT, MAE, DINOv2), and why it matters who now gets to change them.",
+    "tags": [
+      "deep-learning",
+      "classical",
+      "foundation-models",
+      "representation"
+    ],
+    "headings": [
+      "Bias in the Filter",
+      "Bias in the Descriptor",
+      "Bias Becomes Architecture",
+      "Scaling One Prior",
+      "Prior Moves to Objective",
+      "Task Systems Inherit"
+    ]
+  },
+  {
+    "slug": "A5060441291",
+    "path": "/authors/A5060441291",
+    "type": "author",
+    "title": "Stuart Bennett",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5019616738",
+    "path": "/authors/A5019616738",
+    "type": "author",
+    "title": "Joan Lasenby",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076168268",
+    "path": "/authors/A5076168268",
+    "type": "author",
+    "title": "Edward Rosten",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5017469047",
+    "path": "/authors/A5017469047",
+    "type": "author",
+    "title": "Tom Drummond",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049156189",
+    "path": "/authors/A5049156189",
+    "type": "author",
+    "title": "Chris Harris",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5082762217",
+    "path": "/authors/A5082762217",
+    "type": "author",
+    "title": "Matthew J. Stephens",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081456949",
+    "path": "/authors/A5081456949",
+    "type": "author",
+    "title": "Jianbo Shi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5079878449",
+    "path": "/authors/A5079878449",
+    "type": "author",
+    "title": "Carlo Tomasi",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101767301",
+    "path": "/authors/A5101767301",
+    "type": "author",
+    "title": "Chang Shu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5078124597",
+    "path": "/authors/A5078124597",
+    "type": "author",
+    "title": "Alan Brunton",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021003906",
+    "path": "/authors/A5021003906",
+    "type": "author",
+    "title": "Mark A. Fiala",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057113537",
+    "path": "/authors/A5057113537",
+    "type": "author",
+    "title": "Peer Stelldinger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090428190",
+    "path": "/authors/A5090428190",
+    "type": "author",
+    "title": "Nils Schönherr",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006002082",
+    "path": "/authors/A5006002082",
+    "type": "author",
+    "title": "Justus Biermann",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5055539616",
+    "path": "/authors/A5055539616",
+    "type": "author",
+    "title": "Peter Fuersattel",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5112143390",
+    "path": "/authors/A5112143390",
+    "type": "author",
+    "title": "Sergiu Dotenco",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5026038284",
+    "path": "/authors/A5026038284",
+    "type": "author",
+    "title": "Simon Placht",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5012614625",
+    "path": "/authors/A5012614625",
+    "type": "author",
+    "title": "Michael Balda",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101619735",
+    "path": "/authors/A5101619735",
+    "type": "author",
+    "title": "Andreas Maier",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049250339",
+    "path": "/authors/A5049250339",
+    "type": "author",
+    "title": "Christian Rieß",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062717854",
+    "path": "/authors/A5062717854",
+    "type": "author",
+    "title": "Peter Fürsattel",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5056616756",
+    "path": "/authors/A5056616756",
+    "type": "author",
+    "title": "Etienne Assoumou Mengue",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081273414",
+    "path": "/authors/A5081273414",
+    "type": "author",
+    "title": "Hannes Hofmann",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101410135",
+    "path": "/authors/A5101410135",
+    "type": "author",
+    "title": "Christian Schaller",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049805682",
+    "path": "/authors/A5049805682",
+    "type": "author",
+    "title": "Elli Angelopoulou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5009276474",
+    "path": "/authors/A5009276474",
+    "type": "author",
+    "title": "L.P. Cordella",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5082731857",
+    "path": "/authors/A5082731857",
+    "type": "author",
+    "title": "Pasquale Foggia",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090709130",
+    "path": "/authors/A5090709130",
+    "type": "author",
+    "title": "Carlo Sansone",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5110251352",
+    "path": "/authors/A5110251352",
+    "type": "author",
+    "title": "M. Vento",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062693600",
+    "path": "/authors/A5062693600",
+    "type": "author",
+    "title": "L. Lucchese",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065358142",
+    "path": "/authors/A5065358142",
+    "type": "author",
+    "title": "S. Mitra",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5091224826",
+    "path": "/authors/A5091224826",
+    "type": "author",
+    "title": "Dazhi Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100602615",
+    "path": "/authors/A5100602615",
+    "type": "author",
+    "title": "Guangjun Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5066262214",
+    "path": "/authors/A5066262214",
+    "type": "author",
+    "title": "Martin Rufli",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057116316",
+    "path": "/authors/A5057116316",
+    "type": "author",
+    "title": "Davide Scaramuzza",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083003222",
+    "path": "/authors/A5083003222",
+    "type": "author",
+    "title": "Roland Siegwart",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5074516721",
+    "path": "/authors/A5074516721",
+    "type": "author",
+    "title": "Carlton W. Niblack",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5014824446",
+    "path": "/authors/A5014824446",
+    "type": "author",
+    "title": "Phillip B. Gibbons",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5014807583",
+    "path": "/authors/A5014807583",
+    "type": "author",
+    "title": "David W. Capson",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088467090",
+    "path": "/authors/A5088467090",
+    "type": "author",
+    "title": "Peter Abeles",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102020871",
+    "path": "/authors/A5102020871",
+    "type": "author",
+    "title": "Ben Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100770696",
+    "path": "/authors/A5100770696",
+    "type": "author",
+    "title": "Caihua Xiong",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100360386",
+    "path": "/authors/A5100360386",
+    "type": "author",
+    "title": "Qi Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5056175786",
+    "path": "/authors/A5056175786",
+    "type": "author",
+    "title": "Simon Donné",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5056570824",
+    "path": "/authors/A5056570824",
+    "type": "author",
+    "title": "Jonas De Vylder",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101986863",
+    "path": "/authors/A5101986863",
+    "type": "author",
+    "title": "Bart Goossens",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071483672",
+    "path": "/authors/A5071483672",
+    "type": "author",
+    "title": "Wilfried Philips",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5074731322",
+    "path": "/authors/A5074731322",
+    "type": "author",
+    "title": "Guilherme Potje",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5112882128",
+    "path": "/authors/A5112882128",
+    "type": "author",
+    "title": "Felipe Cadar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101666068",
+    "path": "/authors/A5101666068",
+    "type": "author",
+    "title": "André Araujo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103150309",
+    "path": "/authors/A5103150309",
+    "type": "author",
+    "title": "Renato Martins",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002613601",
+    "path": "/authors/A5002613601",
+    "type": "author",
+    "title": "Erickson R. Nascimento",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002090912",
+    "path": "/authors/A5002090912",
+    "type": "author",
+    "title": "Daniel DeTone",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5067498868",
+    "path": "/authors/A5067498868",
+    "type": "author",
+    "title": "Tomasz Malisiewicz",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5026452365",
+    "path": "/authors/A5026452365",
+    "type": "author",
+    "title": "Andrew Rabinovich",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113678278",
+    "path": "/authors/A5113678278",
+    "type": "author",
+    "title": "Zhengyou Zhang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113435866",
+    "path": "/authors/A5113435866",
+    "type": "author",
+    "title": "R. Tsai",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102851268",
+    "path": "/authors/A5102851268",
+    "type": "author",
+    "title": "Juyang Weng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108230279",
+    "path": "/authors/A5108230279",
+    "type": "author",
+    "title": "Paul R. Cohen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081818577",
+    "path": "/authors/A5081818577",
+    "type": "author",
+    "title": "M. Herniou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5111417803",
+    "path": "/authors/A5111417803",
+    "type": "author",
+    "title": "Peter F. Sturm",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5078239319",
+    "path": "/authors/A5078239319",
+    "type": "author",
+    "title": "Stephen J. Maybank",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5110192522",
+    "path": "/authors/A5110192522",
+    "type": "author",
+    "title": "R. Lenz",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5030154719",
+    "path": "/authors/A5030154719",
+    "type": "author",
+    "title": "Y.C. Shiu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062061555",
+    "path": "/authors/A5062061555",
+    "type": "author",
+    "title": "S. Ahmad",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5064861062",
+    "path": "/authors/A5064861062",
+    "type": "author",
+    "title": "Konstantinos Daniilidis",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101602756",
+    "path": "/authors/A5101602756",
+    "type": "author",
+    "title": "Avinash Kumar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108521995",
+    "path": "/authors/A5108521995",
+    "type": "author",
+    "title": "Narendra Ahuja",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5052537634",
+    "path": "/authors/A5052537634",
+    "type": "author",
+    "title": "Alexander Duda",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5061113124",
+    "path": "/authors/A5061113124",
+    "type": "author",
+    "title": "Udo Frese",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5064473511",
+    "path": "/authors/A5064473511",
+    "type": "author",
+    "title": "Eric D. Sinzinger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031990673",
+    "path": "/authors/A5031990673",
+    "type": "author",
+    "title": "Julio H. Zaragoza",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5027317977",
+    "path": "/authors/A5027317977",
+    "type": "author",
+    "title": "Tat-Jun Chin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5106406020",
+    "path": "/authors/A5106406020",
+    "type": "author",
+    "title": "Michael S. Brown",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031492664",
+    "path": "/authors/A5031492664",
+    "type": "author",
+    "title": "David Suter",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5020216442",
+    "path": "/authors/A5020216442",
+    "type": "author",
+    "title": "Richard Hartley",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5037680267",
+    "path": "/authors/A5037680267",
+    "type": "author",
+    "title": "Scott Schaefer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065389320",
+    "path": "/authors/A5065389320",
+    "type": "author",
+    "title": "Travis McPhail",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113597103",
+    "path": "/authors/A5113597103",
+    "type": "author",
+    "title": "Joe Warren",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103211763",
+    "path": "/authors/A5103211763",
+    "type": "author",
+    "title": "Junhong Gao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103036411",
+    "path": "/authors/A5103036411",
+    "type": "author",
+    "title": "Seon Joo Kim",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5068556469",
+    "path": "/authors/A5068556469",
+    "type": "author",
+    "title": "Wen-Yan Lin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100620147",
+    "path": "/authors/A5100620147",
+    "type": "author",
+    "title": "Siying Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5033986386",
+    "path": "/authors/A5033986386",
+    "type": "author",
+    "title": "Yasuyuki Matsushita",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002069408",
+    "path": "/authors/A5002069408",
+    "type": "author",
+    "title": "Tian-Tsong Ng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5030078173",
+    "path": "/authors/A5030078173",
+    "type": "author",
+    "title": "Loong‐Fah Cheong",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102743150",
+    "path": "/authors/A5102743150",
+    "type": "author",
+    "title": "Takeo Igarashi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090522908",
+    "path": "/authors/A5090522908",
+    "type": "author",
+    "title": "Tomer Moscovich",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103642464",
+    "path": "/authors/A5103642464",
+    "type": "author",
+    "title": "John F. Hughes",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5016606943",
+    "path": "/authors/A5016606943",
+    "type": "author",
+    "title": "Andreas Geiger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5079874359",
+    "path": "/authors/A5079874359",
+    "type": "author",
+    "title": "Frank Moosmann",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081434393",
+    "path": "/authors/A5081434393",
+    "type": "author",
+    "title": "Omer Car",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5063602086",
+    "path": "/authors/A5063602086",
+    "type": "author",
+    "title": "Bernhard Schuster",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108711177",
+    "path": "/authors/A5108711177",
+    "type": "author",
+    "title": "Carl Edward Rasmussen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5080713659",
+    "path": "/authors/A5080713659",
+    "type": "author",
+    "title": "Christopher K. I. Williams",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5047932106",
+    "path": "/authors/A5047932106",
+    "type": "author",
+    "title": "Michaël Hillen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001584002",
+    "path": "/authors/A5001584002",
+    "type": "author",
+    "title": "Ivan De Boi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005825554",
+    "path": "/authors/A5005825554",
+    "type": "author",
+    "title": "Thomas De Kerf",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049403684",
+    "path": "/authors/A5049403684",
+    "type": "author",
+    "title": "Seppe Sels",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001363884",
+    "path": "/authors/A5001363884",
+    "type": "author",
+    "title": "Edgar Cardenas De La Hoz",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5053922584",
+    "path": "/authors/A5053922584",
+    "type": "author",
+    "title": "Jona Gladines",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5009366565",
+    "path": "/authors/A5009366565",
+    "type": "author",
+    "title": "Gunther Steenackers",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001783145",
+    "path": "/authors/A5001783145",
+    "type": "author",
+    "title": "Rudi Penne",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071951202",
+    "path": "/authors/A5071951202",
+    "type": "author",
+    "title": "Steve Vanlanduit",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5016802096",
+    "path": "/authors/A5016802096",
+    "type": "author",
+    "title": "Yesheng Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100440525",
+    "path": "/authors/A5100440525",
+    "type": "author",
+    "title": "Xu Zhao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081179416",
+    "path": "/authors/A5081179416",
+    "type": "author",
+    "title": "Dahong Qian",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021196481",
+    "path": "/authors/A5021196481",
+    "type": "author",
+    "title": "Hao Wu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101985050",
+    "path": "/authors/A5101985050",
+    "type": "author",
+    "title": "Yi Wan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5084041835",
+    "path": "/authors/A5084041835",
+    "type": "author",
+    "title": "Gareth Loy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076609571",
+    "path": "/authors/A5076609571",
+    "type": "author",
+    "title": "Alex Zelinsky",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5013615286",
+    "path": "/authors/A5013615286",
+    "type": "author",
+    "title": "Jie Ni",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062755809",
+    "path": "/authors/A5062755809",
+    "type": "author",
+    "title": "Maneesh Kumar Singh",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032338259",
+    "path": "/authors/A5032338259",
+    "type": "author",
+    "title": "Claus Bahlmann",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062440435",
+    "path": "/authors/A5062440435",
+    "type": "author",
+    "title": "Martin A. Fischler",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5019197436",
+    "path": "/authors/A5019197436",
+    "type": "author",
+    "title": "Robert C. Bolles",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065975557",
+    "path": "/authors/A5065975557",
+    "type": "author",
+    "title": "Rahul Raguram",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5019409717",
+    "path": "/authors/A5019409717",
+    "type": "author",
+    "title": "Ondřej Chum",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021908609",
+    "path": "/authors/A5021908609",
+    "type": "author",
+    "title": "Marc Pollefeys",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5007656938",
+    "path": "/authors/A5007656938",
+    "type": "author",
+    "title": "Jiří Matas",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018151384",
+    "path": "/authors/A5018151384",
+    "type": "author",
+    "title": "Jan‐Michael Frahm",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5016636021",
+    "path": "/authors/A5016636021",
+    "type": "author",
+    "title": "Dániel Baráth",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5010104340",
+    "path": "/authors/A5010104340",
+    "type": "author",
+    "title": "Jana Nosková",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5070382607",
+    "path": "/authors/A5070382607",
+    "type": "author",
+    "title": "Vincent Lepetit",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5106691454",
+    "path": "/authors/A5106691454",
+    "type": "author",
+    "title": "Francesc Moreno-Noguer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038674741",
+    "path": "/authors/A5038674741",
+    "type": "author",
+    "title": "Pascal Fua",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5013005906",
+    "path": "/authors/A5013005906",
+    "type": "author",
+    "title": "Agostino Martinelli",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5055202003",
+    "path": "/authors/A5055202003",
+    "type": "author",
+    "title": "David Lowe",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5089723214",
+    "path": "/authors/A5089723214",
+    "type": "author",
+    "title": "John Canny",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5112002146",
+    "path": "/authors/A5112002146",
+    "type": "author",
+    "title": "Herbert Bay",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5074816094",
+    "path": "/authors/A5074816094",
+    "type": "author",
+    "title": "Tinne Tuytelaars",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001254143",
+    "path": "/authors/A5001254143",
+    "type": "author",
+    "title": "Luc Van Gool",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005568128",
+    "path": "/authors/A5005568128",
+    "type": "author",
+    "title": "Michael Calonder",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5040251230",
+    "path": "/authors/A5040251230",
+    "type": "author",
+    "title": "Christoph Strecha",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031632823",
+    "path": "/authors/A5031632823",
+    "type": "author",
+    "title": "Ethan Rublee",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5017786000",
+    "path": "/authors/A5017786000",
+    "type": "author",
+    "title": "Vincent Rabaud",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5020223882",
+    "path": "/authors/A5020223882",
+    "type": "author",
+    "title": "Kurt Konolige",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5035523929",
+    "path": "/authors/A5035523929",
+    "type": "author",
+    "title": "Gary Bradski",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5047661610",
+    "path": "/authors/A5047661610",
+    "type": "author",
+    "title": "Paul-Edouard Sarlin",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5030787679",
+    "path": "/authors/A5030787679",
+    "type": "author",
+    "title": "Jiaming Sun",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5014481904",
+    "path": "/authors/A5014481904",
+    "type": "author",
+    "title": "Zehong Shen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100723101",
+    "path": "/authors/A5100723101",
+    "type": "author",
+    "title": "Yuang Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5059021869",
+    "path": "/authors/A5059021869",
+    "type": "author",
+    "title": "Hujun Bao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101814482",
+    "path": "/authors/A5101814482",
+    "type": "author",
+    "title": "Xiaowei Zhou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5047482262",
+    "path": "/authors/A5047482262",
+    "type": "author",
+    "title": "Philipp Lindenberger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5023765219",
+    "path": "/authors/A5023765219",
+    "type": "author",
+    "title": "Pedro F. Felzenszwalb",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5112446832",
+    "path": "/authors/A5112446832",
+    "type": "author",
+    "title": "Daniel P. Huttenlocher",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028352869",
+    "path": "/authors/A5028352869",
+    "type": "author",
+    "title": "Yuri Boykov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5109251531",
+    "path": "/authors/A5109251531",
+    "type": "author",
+    "title": "Marie‐Pierre Jolly",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004060675",
+    "path": "/authors/A5004060675",
+    "type": "author",
+    "title": "Tianlong Yang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018808803",
+    "path": "/authors/A5018808803",
+    "type": "author",
+    "title": "Qiancheng Zhao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5048916001",
+    "path": "/authors/A5048916001",
+    "type": "author",
+    "title": "Wang Xian",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5087193137",
+    "path": "/authors/A5087193137",
+    "type": "author",
+    "title": "Quan Zhou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113249053",
+    "path": "/authors/A5113249053",
+    "type": "author",
+    "title": "H. C. Longuet–Higgins",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5034290170",
+    "path": "/authors/A5034290170",
+    "type": "author",
+    "title": "Carsten Rother",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021390142",
+    "path": "/authors/A5021390142",
+    "type": "author",
+    "title": "Vladimir Kolmogorov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101657518",
+    "path": "/authors/A5101657518",
+    "type": "author",
+    "title": "Andrew Blake",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032863417",
+    "path": "/authors/A5032863417",
+    "type": "author",
+    "title": "Jonathan Long",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5023786468",
+    "path": "/authors/A5023786468",
+    "type": "author",
+    "title": "Evan Shelhamer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5029105520",
+    "path": "/authors/A5029105520",
+    "type": "author",
+    "title": "Trevor Darrell",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5045981348",
+    "path": "/authors/A5045981348",
+    "type": "author",
+    "title": "Olaf Ronneberger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041583196",
+    "path": "/authors/A5041583196",
+    "type": "author",
+    "title": "Philipp Fischer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5070290355",
+    "path": "/authors/A5070290355",
+    "type": "author",
+    "title": "Thomas Brox",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103273466",
+    "path": "/authors/A5103273466",
+    "type": "author",
+    "title": "Liang-Chieh Chen",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5034294456",
+    "path": "/authors/A5034294456",
+    "type": "author",
+    "title": "George Papandreou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5077035803",
+    "path": "/authors/A5077035803",
+    "type": "author",
+    "title": "Iasonas Kokkinos",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002713363",
+    "path": "/authors/A5002713363",
+    "type": "author",
+    "title": "Kevin Murphy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5086706224",
+    "path": "/authors/A5086706224",
+    "type": "author",
+    "title": "Alan Yuille",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100700361",
+    "path": "/authors/A5100700361",
+    "type": "author",
+    "title": "Kaiming He",
+    "summary": "9 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5014407395",
+    "path": "/authors/A5014407395",
+    "type": "author",
+    "title": "Georgia Gkioxari",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057866698",
+    "path": "/authors/A5057866698",
+    "type": "author",
+    "title": "Piotr Dollár",
+    "summary": "7 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049246408",
+    "path": "/authors/A5049246408",
+    "type": "author",
+    "title": "Ross Girshick",
+    "summary": "11 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101930471",
+    "path": "/authors/A5101930471",
+    "type": "author",
+    "title": "Alexander Kirillov",
+    "summary": "5 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5042149832",
+    "path": "/authors/A5042149832",
+    "type": "author",
+    "title": "Eric Mintun",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5045356290",
+    "path": "/authors/A5045356290",
+    "type": "author",
+    "title": "Nikhila Ravi",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021948346",
+    "path": "/authors/A5021948346",
+    "type": "author",
+    "title": "Hanzi Mao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5043279771",
+    "path": "/authors/A5043279771",
+    "type": "author",
+    "title": "Chloe Rolland",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5033942765",
+    "path": "/authors/A5033942765",
+    "type": "author",
+    "title": "Laura Gustafson",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041246275",
+    "path": "/authors/A5041246275",
+    "type": "author",
+    "title": "Tete Xiao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076767045",
+    "path": "/authors/A5076767045",
+    "type": "author",
+    "title": "Spencer Whitehead",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5104361813",
+    "path": "/authors/A5104361813",
+    "type": "author",
+    "title": "Alexander C. Berg",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090902802",
+    "path": "/authors/A5090902802",
+    "type": "author",
+    "title": "Wan‐Yen Lo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5042310818",
+    "path": "/authors/A5042310818",
+    "type": "author",
+    "title": "Paul Viola",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5064275902",
+    "path": "/authors/A5064275902",
+    "type": "author",
+    "title": "Michael Jones",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5050292858",
+    "path": "/authors/A5050292858",
+    "type": "author",
+    "title": "Navneet Dalal",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062363302",
+    "path": "/authors/A5062363302",
+    "type": "author",
+    "title": "Bill Triggs",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5033089246",
+    "path": "/authors/A5033089246",
+    "type": "author",
+    "title": "David McAllester",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004353237",
+    "path": "/authors/A5004353237",
+    "type": "author",
+    "title": "Deva Ramanan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031152245",
+    "path": "/authors/A5031152245",
+    "type": "author",
+    "title": "Alex Krizhevsky",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006446297",
+    "path": "/authors/A5006446297",
+    "type": "author",
+    "title": "Ilya Sutskever",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108093963",
+    "path": "/authors/A5108093963",
+    "type": "author",
+    "title": "Geoffrey E. Hinton",
+    "summary": "4 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004625775",
+    "path": "/authors/A5004625775",
+    "type": "author",
+    "title": "Karen Simonyan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057678172",
+    "path": "/authors/A5057678172",
+    "type": "author",
+    "title": "Andrew Zisserman",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002183320",
+    "path": "/authors/A5002183320",
+    "type": "author",
+    "title": "Christian Szegedy",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100641142",
+    "path": "/authors/A5100641142",
+    "type": "author",
+    "title": "Wei Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5110220840",
+    "path": "/authors/A5110220840",
+    "type": "author",
+    "title": "Yangqing Jia",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5066544075",
+    "path": "/authors/A5066544075",
+    "type": "author",
+    "title": "Pierre Sermanet",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5059110895",
+    "path": "/authors/A5059110895",
+    "type": "author",
+    "title": "Scott Reed",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081024054",
+    "path": "/authors/A5081024054",
+    "type": "author",
+    "title": "Dragomir Anguelov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5084125668",
+    "path": "/authors/A5084125668",
+    "type": "author",
+    "title": "Dumitru Erhan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5013813527",
+    "path": "/authors/A5013813527",
+    "type": "author",
+    "title": "Vincent Vanhoucke",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100362465",
+    "path": "/authors/A5100362465",
+    "type": "author",
+    "title": "Xiangyu Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100824251",
+    "path": "/authors/A5100824251",
+    "type": "author",
+    "title": "Shaoqing Ren",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101425421",
+    "path": "/authors/A5101425421",
+    "type": "author",
+    "title": "Jian Sun",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062301070",
+    "path": "/authors/A5062301070",
+    "type": "author",
+    "title": "Joseph Redmon",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5046849436",
+    "path": "/authors/A5046849436",
+    "type": "author",
+    "title": "Santosh Divvala",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101576595",
+    "path": "/authors/A5101576595",
+    "type": "author",
+    "title": "Ali Farhadi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5052768778",
+    "path": "/authors/A5052768778",
+    "type": "author",
+    "title": "Tsung-Yi Lin",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5035445731",
+    "path": "/authors/A5035445731",
+    "type": "author",
+    "title": "Priya Goyal",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081691937",
+    "path": "/authors/A5081691937",
+    "type": "author",
+    "title": "Bruce D. Lucas",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057924291",
+    "path": "/authors/A5057924291",
+    "type": "author",
+    "title": "Takeo Kanade",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5080970223",
+    "path": "/authors/A5080970223",
+    "type": "author",
+    "title": "Berthold K. P. Horn",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5008294855",
+    "path": "/authors/A5008294855",
+    "type": "author",
+    "title": "Brian G. Schunck",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065396778",
+    "path": "/authors/A5065396778",
+    "type": "author",
+    "title": "Michael J. Black",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103029420",
+    "path": "/authors/A5103029420",
+    "type": "author",
+    "title": "P. Anandan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5050345889",
+    "path": "/authors/A5050345889",
+    "type": "author",
+    "title": "Franklin C. Crow",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5069384071",
+    "path": "/authors/A5069384071",
+    "type": "author",
+    "title": "Syed Ammar Abbas",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038193389",
+    "path": "/authors/A5038193389",
+    "type": "author",
+    "title": "Konstantin Sofiiuk",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102779220",
+    "path": "/authors/A5102779220",
+    "type": "author",
+    "title": "Ilya A. Petrov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065787419",
+    "path": "/authors/A5065787419",
+    "type": "author",
+    "title": "Anton Konushin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101919615",
+    "path": "/authors/A5101919615",
+    "type": "author",
+    "title": "Ke Sun",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103218891",
+    "path": "/authors/A5103218891",
+    "type": "author",
+    "title": "Bin Xiao",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100407381",
+    "path": "/authors/A5100407381",
+    "type": "author",
+    "title": "Dong Liu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5075880303",
+    "path": "/authors/A5075880303",
+    "type": "author",
+    "title": "Jingdong Wang",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5056718303",
+    "path": "/authors/A5056718303",
+    "type": "author",
+    "title": "Yang Zhao",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5022898952",
+    "path": "/authors/A5022898952",
+    "type": "author",
+    "title": "Borui Jiang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5022657064",
+    "path": "/authors/A5022657064",
+    "type": "author",
+    "title": "Tianheng Cheng",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028877572",
+    "path": "/authors/A5028877572",
+    "type": "author",
+    "title": "Yadong Mu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5037191476",
+    "path": "/authors/A5037191476",
+    "type": "author",
+    "title": "Xinggang Wang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100665053",
+    "path": "/authors/A5100665053",
+    "type": "author",
+    "title": "Wenyu Liu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5027344351",
+    "path": "/authors/A5027344351",
+    "type": "author",
+    "title": "Chaorui Deng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100407437",
+    "path": "/authors/A5100407437",
+    "type": "author",
+    "title": "Dong Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032352025",
+    "path": "/authors/A5032352025",
+    "type": "author",
+    "title": "Mingkui Tan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057230698",
+    "path": "/authors/A5057230698",
+    "type": "author",
+    "title": "Chaoning Zhang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5053457390",
+    "path": "/authors/A5053457390",
+    "type": "author",
+    "title": "Dongshen Han",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100748135",
+    "path": "/authors/A5100748135",
+    "type": "author",
+    "title": "Yu Qiao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5036936141",
+    "path": "/authors/A5036936141",
+    "type": "author",
+    "title": "Jung Uk Kim",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005200603",
+    "path": "/authors/A5005200603",
+    "type": "author",
+    "title": "Sung‐Ho Bae",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101472509",
+    "path": "/authors/A5101472509",
+    "type": "author",
+    "title": "Seungkyu Lee",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5034052371",
+    "path": "/authors/A5034052371",
+    "type": "author",
+    "title": "Choong Seon Hong",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103437194",
+    "path": "/authors/A5103437194",
+    "type": "author",
+    "title": "Sheng Zheng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5042838206",
+    "path": "/authors/A5042838206",
+    "type": "author",
+    "title": "Jinwoo Choi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100452223",
+    "path": "/authors/A5100452223",
+    "type": "author",
+    "title": "Taeho Kim",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001789528",
+    "path": "/authors/A5001789528",
+    "type": "author",
+    "title": "Valentin Gabeur",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5015863645",
+    "path": "/authors/A5015863645",
+    "type": "author",
+    "title": "Yuan-Ting Hu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5072304825",
+    "path": "/authors/A5072304825",
+    "type": "author",
+    "title": "Ronghang Hu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028978530",
+    "path": "/authors/A5028978530",
+    "type": "author",
+    "title": "Chaitanya K. Ryali",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101821970",
+    "path": "/authors/A5101821970",
+    "type": "author",
+    "title": "Tengyu Ma",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090549040",
+    "path": "/authors/A5090549040",
+    "type": "author",
+    "title": "Haitham Khedr",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018955742",
+    "path": "/authors/A5018955742",
+    "type": "author",
+    "title": "Roman Rädle",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088732762",
+    "path": "/authors/A5088732762",
+    "type": "author",
+    "title": "Junting Pan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5078659702",
+    "path": "/authors/A5078659702",
+    "type": "author",
+    "title": "Kalyan Vasudev Alwala",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5029981206",
+    "path": "/authors/A5029981206",
+    "type": "author",
+    "title": "Nicolas Carion",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5023917342",
+    "path": "/authors/A5023917342",
+    "type": "author",
+    "title": "Chao-Yuan Wu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5036069974",
+    "path": "/authors/A5036069974",
+    "type": "author",
+    "title": "Christoph Feichtenhofer",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006168104",
+    "path": "/authors/A5006168104",
+    "type": "author",
+    "title": "Shoubhik Debnath",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120696483",
+    "path": "/authors/A5120696483",
+    "type": "author",
+    "title": "Didac Suris",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103370264",
+    "path": "/authors/A5103370264",
+    "type": "author",
+    "title": "Andrew C. Huang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004558416",
+    "path": "/authors/A5004558416",
+    "type": "author",
+    "title": "Jie Lei",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113082671",
+    "path": "/authors/A5113082671",
+    "type": "author",
+    "title": "Baishan Guo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120717410",
+    "path": "/authors/A5120717410",
+    "type": "author",
+    "title": "Arpit Kalla",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004354796",
+    "path": "/authors/A5004354796",
+    "type": "author",
+    "title": "M. David Marks",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120717411",
+    "path": "/authors/A5120717411",
+    "type": "author",
+    "title": "Joseph Greer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100377135",
+    "path": "/authors/A5100377135",
+    "type": "author",
+    "title": "Meng Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002942097",
+    "path": "/authors/A5002942097",
+    "type": "author",
+    "title": "Peize Sun",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018690028",
+    "path": "/authors/A5018690028",
+    "type": "author",
+    "title": "Triantafyllos Afouras",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120717412",
+    "path": "/authors/A5120717412",
+    "type": "author",
+    "title": "Effrosyni Mavroudi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100440745",
+    "path": "/authors/A5100440745",
+    "type": "author",
+    "title": "Kang Xu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005496541",
+    "path": "/authors/A5005496541",
+    "type": "author",
+    "title": "Tsung‐Han Wu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5027383183",
+    "path": "/authors/A5027383183",
+    "type": "author",
+    "title": "Yu Zhou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5033313836",
+    "path": "/authors/A5033313836",
+    "type": "author",
+    "title": "Liliane Momeni",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5070202776",
+    "path": "/authors/A5070202776",
+    "type": "author",
+    "title": "Rishi Hazra",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5013238521",
+    "path": "/authors/A5013238521",
+    "type": "author",
+    "title": "Shuangrui Ding",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5051831405",
+    "path": "/authors/A5051831405",
+    "type": "author",
+    "title": "Sagar Vaze",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120752431",
+    "path": "/authors/A5120752431",
+    "type": "author",
+    "title": "Francois Porcher",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100744913",
+    "path": "/authors/A5100744913",
+    "type": "author",
+    "title": "Li Feng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100406644",
+    "path": "/authors/A5100406644",
+    "type": "author",
+    "title": "Siyuan Li",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5077791956",
+    "path": "/authors/A5077791956",
+    "type": "author",
+    "title": "Aishwarya Kamath",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002932429",
+    "path": "/authors/A5002932429",
+    "type": "author",
+    "title": "Hao Cheng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5075906727",
+    "path": "/authors/A5075906727",
+    "type": "author",
+    "title": "Kate Saenko",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5120752432",
+    "path": "/authors/A5120752432",
+    "type": "author",
+    "title": "Pengchuan Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090113830",
+    "path": "/authors/A5090113830",
+    "type": "author",
+    "title": "Alexey Dosovitskiy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5055629014",
+    "path": "/authors/A5055629014",
+    "type": "author",
+    "title": "Lucas Beyer",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5000026575",
+    "path": "/authors/A5000026575",
+    "type": "author",
+    "title": "Alexander Kolesnikov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038019602",
+    "path": "/authors/A5038019602",
+    "type": "author",
+    "title": "Dirk Weissenborn",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071668416",
+    "path": "/authors/A5071668416",
+    "type": "author",
+    "title": "Xiaohua Zhai",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083016682",
+    "path": "/authors/A5083016682",
+    "type": "author",
+    "title": "Thomas Unterthiner",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102906366",
+    "path": "/authors/A5102906366",
+    "type": "author",
+    "title": "Mostafa Dehghani",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088239541",
+    "path": "/authors/A5088239541",
+    "type": "author",
+    "title": "Matthias Minderer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071956319",
+    "path": "/authors/A5071956319",
+    "type": "author",
+    "title": "Georg Heigold",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041958651",
+    "path": "/authors/A5041958651",
+    "type": "author",
+    "title": "Sylvain Gelly",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5022416424",
+    "path": "/authors/A5022416424",
+    "type": "author",
+    "title": "Jakob Uszkoreit",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5068878643",
+    "path": "/authors/A5068878643",
+    "type": "author",
+    "title": "Neil Houlsby",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032569443",
+    "path": "/authors/A5032569443",
+    "type": "author",
+    "title": "Francisco Massa",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041907084",
+    "path": "/authors/A5041907084",
+    "type": "author",
+    "title": "Gabriel Synnaeve",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5084360449",
+    "path": "/authors/A5084360449",
+    "type": "author",
+    "title": "Nicolas Usunier",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002668762",
+    "path": "/authors/A5002668762",
+    "type": "author",
+    "title": "Sergey Zagoruyko",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101589005",
+    "path": "/authors/A5101589005",
+    "type": "author",
+    "title": "Bowen Cheng",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049638480",
+    "path": "/authors/A5049638480",
+    "type": "author",
+    "title": "Alexander G. Schwing",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5000623592",
+    "path": "/authors/A5000623592",
+    "type": "author",
+    "title": "Ishan Misra",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006312307",
+    "path": "/authors/A5006312307",
+    "type": "author",
+    "title": "Rohit Girdhar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101507596",
+    "path": "/authors/A5101507596",
+    "type": "author",
+    "title": "Xinlei Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102416863",
+    "path": "/authors/A5102416863",
+    "type": "author",
+    "title": "Saining Xie",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5029760000",
+    "path": "/authors/A5029760000",
+    "type": "author",
+    "title": "Yanghao Li",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100329991",
+    "path": "/authors/A5100329991",
+    "type": "author",
+    "title": "Xi Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102204147",
+    "path": "/authors/A5102204147",
+    "type": "author",
+    "title": "Zhiyan Zhao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100694323",
+    "path": "/authors/A5100694323",
+    "type": "author",
+    "title": "Yilei Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5111517850",
+    "path": "/authors/A5111517850",
+    "type": "author",
+    "title": "Manni Duan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5066921930",
+    "path": "/authors/A5066921930",
+    "type": "author",
+    "title": "Donglian Qi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5078109015",
+    "path": "/authors/A5078109015",
+    "type": "author",
+    "title": "Hengshuang Zhao",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041031140",
+    "path": "/authors/A5041031140",
+    "type": "author",
+    "title": "Enze Xie",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101827340",
+    "path": "/authors/A5101827340",
+    "type": "author",
+    "title": "Wenhai Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5054586129",
+    "path": "/authors/A5054586129",
+    "type": "author",
+    "title": "Zhiding Yu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5014498545",
+    "path": "/authors/A5014498545",
+    "type": "author",
+    "title": "Anima Anandkumar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101540588",
+    "path": "/authors/A5101540588",
+    "type": "author",
+    "title": "Jose M. Álvarez",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100752686",
+    "path": "/authors/A5100752686",
+    "type": "author",
+    "title": "Ping Luo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5013651586",
+    "path": "/authors/A5013651586",
+    "type": "author",
+    "title": "Changqian Yu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100456762",
+    "path": "/authors/A5100456762",
+    "type": "author",
+    "title": "Jingbo Wang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5020100372",
+    "path": "/authors/A5020100372",
+    "type": "author",
+    "title": "Chao Peng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5035295689",
+    "path": "/authors/A5035295689",
+    "type": "author",
+    "title": "Changxin Gao",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5003400275",
+    "path": "/authors/A5003400275",
+    "type": "author",
+    "title": "Gang Yu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5013734579",
+    "path": "/authors/A5013734579",
+    "type": "author",
+    "title": "Nong Sang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006294869",
+    "path": "/authors/A5006294869",
+    "type": "author",
+    "title": "Chunhua Shen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021094235",
+    "path": "/authors/A5021094235",
+    "type": "author",
+    "title": "Rudra P. K. Poudel",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031510704",
+    "path": "/authors/A5031510704",
+    "type": "author",
+    "title": "Stephan Liwicki",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018207993",
+    "path": "/authors/A5018207993",
+    "type": "author",
+    "title": "Roberto Cipolla",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5037015491",
+    "path": "/authors/A5037015491",
+    "type": "author",
+    "title": "Andrew Howard",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103186114",
+    "path": "/authors/A5103186114",
+    "type": "author",
+    "title": "Mark Sandler",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100427253",
+    "path": "/authors/A5100427253",
+    "type": "author",
+    "title": "Bo Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100415460",
+    "path": "/authors/A5100415460",
+    "type": "author",
+    "title": "Weijun Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5110774377",
+    "path": "/authors/A5110774377",
+    "type": "author",
+    "title": "Mingxing Tan",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5041588414",
+    "path": "/authors/A5041588414",
+    "type": "author",
+    "title": "Grace Chu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004650249",
+    "path": "/authors/A5004650249",
+    "type": "author",
+    "title": "Vijay Vasudevan",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006455453",
+    "path": "/authors/A5006455453",
+    "type": "author",
+    "title": "Yukun Zhu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5112901893",
+    "path": "/authors/A5112901893",
+    "type": "author",
+    "title": "Ruoming Pang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5030402556",
+    "path": "/authors/A5030402556",
+    "type": "author",
+    "title": "Hartwig Adam",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088551093",
+    "path": "/authors/A5088551093",
+    "type": "author",
+    "title": "Quoc V. Le",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5004780312",
+    "path": "/authors/A5004780312",
+    "type": "author",
+    "title": "Menglong Zhu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5113984302",
+    "path": "/authors/A5113984302",
+    "type": "author",
+    "title": "Andrey Zhmoginov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100427270",
+    "path": "/authors/A5100427270",
+    "type": "author",
+    "title": "Bo Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5033265682",
+    "path": "/authors/A5033265682",
+    "type": "author",
+    "title": "Maxime Oquab",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076163068",
+    "path": "/authors/A5076163068",
+    "type": "author",
+    "title": "Timothée Darcet",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5015776030",
+    "path": "/authors/A5015776030",
+    "type": "author",
+    "title": "Théo Moutakanni",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5060502801",
+    "path": "/authors/A5060502801",
+    "type": "author",
+    "title": "Huy Vo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5072207220",
+    "path": "/authors/A5072207220",
+    "type": "author",
+    "title": "Marc Szafraniec",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5015609539",
+    "path": "/authors/A5015609539",
+    "type": "author",
+    "title": "Vasil Khalidov",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088495817",
+    "path": "/authors/A5088495817",
+    "type": "author",
+    "title": "Pierre Fernandez",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5063864170",
+    "path": "/authors/A5063864170",
+    "type": "author",
+    "title": "Daniel Haziza",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083505661",
+    "path": "/authors/A5083505661",
+    "type": "author",
+    "title": "Alaaeldin El-Nouby",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006611401",
+    "path": "/authors/A5006611401",
+    "type": "author",
+    "title": "Mahmoud Assran",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057065873",
+    "path": "/authors/A5057065873",
+    "type": "author",
+    "title": "Nicolas Ballas",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5022540761",
+    "path": "/authors/A5022540761",
+    "type": "author",
+    "title": "Wojciech Galuba",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5017248470",
+    "path": "/authors/A5017248470",
+    "type": "author",
+    "title": "Russell Howes",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5063149046",
+    "path": "/authors/A5063149046",
+    "type": "author",
+    "title": "Po-Yao Huang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5029566548",
+    "path": "/authors/A5029566548",
+    "type": "author",
+    "title": "Shang-Wen Li",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5089819604",
+    "path": "/authors/A5089819604",
+    "type": "author",
+    "title": "Michael Rabbat",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102320649",
+    "path": "/authors/A5102320649",
+    "type": "author",
+    "title": "Vasu Sharma",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101882561",
+    "path": "/authors/A5101882561",
+    "type": "author",
+    "title": "Hu Xu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5111802678",
+    "path": "/authors/A5111802678",
+    "type": "author",
+    "title": "Hervé Jégou",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062817741",
+    "path": "/authors/A5062817741",
+    "type": "author",
+    "title": "Julien Mairal",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5067188801",
+    "path": "/authors/A5067188801",
+    "type": "author",
+    "title": "Patrick Labatut",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5107859338",
+    "path": "/authors/A5107859338",
+    "type": "author",
+    "title": "Armand Joulin",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5035420035",
+    "path": "/authors/A5035420035",
+    "type": "author",
+    "title": "Piotr Bojanowski",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076203786",
+    "path": "/authors/A5076203786",
+    "type": "author",
+    "title": "René Ranftl",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5043127213",
+    "path": "/authors/A5043127213",
+    "type": "author",
+    "title": "Katrin Lasinger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100972569",
+    "path": "/authors/A5100972569",
+    "type": "author",
+    "title": "David Hafner",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005404030",
+    "path": "/authors/A5005404030",
+    "type": "author",
+    "title": "Konrad Schindler",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006181255",
+    "path": "/authors/A5006181255",
+    "type": "author",
+    "title": "Vladlen Koltun",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038009961",
+    "path": "/authors/A5038009961",
+    "type": "author",
+    "title": "Lihe Yang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032599820",
+    "path": "/authors/A5032599820",
+    "type": "author",
+    "title": "Bingyi Kang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5099137433",
+    "path": "/authors/A5099137433",
+    "type": "author",
+    "title": "Zilong Huang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101477980",
+    "path": "/authors/A5101477980",
+    "type": "author",
+    "title": "Xiaogang Xu",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100668696",
+    "path": "/authors/A5100668696",
+    "type": "author",
+    "title": "Jiashi Feng",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100423046",
+    "path": "/authors/A5100423046",
+    "type": "author",
+    "title": "Zhen Zhao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103227553",
+    "path": "/authors/A5103227553",
+    "type": "author",
+    "title": "Shuzhe Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102005758",
+    "path": "/authors/A5102005758",
+    "type": "author",
+    "title": "Vincent Leroy",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5070076119",
+    "path": "/authors/A5070076119",
+    "type": "author",
+    "title": "Yohann Cabon",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5046897413",
+    "path": "/authors/A5046897413",
+    "type": "author",
+    "title": "Boris Chidlovskii",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065291945",
+    "path": "/authors/A5065291945",
+    "type": "author",
+    "title": "Jérôme Revaud",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102021426",
+    "path": "/authors/A5102021426",
+    "type": "author",
+    "title": "Jianyuan Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100730802",
+    "path": "/authors/A5100730802",
+    "type": "author",
+    "title": "Minghao Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005136810",
+    "path": "/authors/A5005136810",
+    "type": "author",
+    "title": "Nikita Karaev",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5060511349",
+    "path": "/authors/A5060511349",
+    "type": "author",
+    "title": "Andrea Vedaldi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083153177",
+    "path": "/authors/A5083153177",
+    "type": "author",
+    "title": "Christian Rupprecht",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103131633",
+    "path": "/authors/A5103131633",
+    "type": "author",
+    "title": "David Novotný",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5043890037",
+    "path": "/authors/A5043890037",
+    "type": "author",
+    "title": "Charles Loop",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5040944275",
+    "path": "/authors/A5040944275",
+    "type": "author",
+    "title": "Reinhard Koch",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5066624955",
+    "path": "/authors/A5066624955",
+    "type": "author",
+    "title": "Andrea Fusiello",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5048954811",
+    "path": "/authors/A5048954811",
+    "type": "author",
+    "title": "Emanuele Trucco",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5036620304",
+    "path": "/authors/A5036620304",
+    "type": "author",
+    "title": "Alessandro Verri",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5060719444",
+    "path": "/authors/A5060719444",
+    "type": "author",
+    "title": "Kilian Batzner",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5025338546",
+    "path": "/authors/A5025338546",
+    "type": "author",
+    "title": "Lars Heckler",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5104029574",
+    "path": "/authors/A5104029574",
+    "type": "author",
+    "title": "Rebecca König",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5007868194",
+    "path": "/authors/A5007868194",
+    "type": "author",
+    "title": "Paul Bergmann",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5064821404",
+    "path": "/authors/A5064821404",
+    "type": "author",
+    "title": "Michael Fauser",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5059384741",
+    "path": "/authors/A5059384741",
+    "type": "author",
+    "title": "David Sattlegger",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5061476709",
+    "path": "/authors/A5061476709",
+    "type": "author",
+    "title": "Carsten Steger",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103125177",
+    "path": "/authors/A5103125177",
+    "type": "author",
+    "title": "Karsten Roth",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5110775281",
+    "path": "/authors/A5110775281",
+    "type": "author",
+    "title": "Latha Pemula",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5104090766",
+    "path": "/authors/A5104090766",
+    "type": "author",
+    "title": "Joaquin Zepeda",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5044005697",
+    "path": "/authors/A5044005697",
+    "type": "author",
+    "title": "Bernhard Schölkopf",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5055614518",
+    "path": "/authors/A5055614518",
+    "type": "author",
+    "title": "Peter Gehler",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5052140058",
+    "path": "/authors/A5052140058",
+    "type": "author",
+    "title": "Marco Rudolph",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5062321523",
+    "path": "/authors/A5062321523",
+    "type": "author",
+    "title": "Tom Wehrbein",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5040412734",
+    "path": "/authors/A5040412734",
+    "type": "author",
+    "title": "Bodo Rosenhahn",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102907822",
+    "path": "/authors/A5102907822",
+    "type": "author",
+    "title": "Bastian Wandt",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102871171",
+    "path": "/authors/A5102871171",
+    "type": "author",
+    "title": "Yang Zou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5045815823",
+    "path": "/authors/A5045815823",
+    "type": "author",
+    "title": "Jongheon Jeong",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5111643862",
+    "path": "/authors/A5111643862",
+    "type": "author",
+    "title": "Dongqing Zhang",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5107854671",
+    "path": "/authors/A5107854671",
+    "type": "author",
+    "title": "Onkar Dabeer",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103024730",
+    "path": "/authors/A5103024730",
+    "type": "author",
+    "title": "Ashish Vaswani",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021878400",
+    "path": "/authors/A5021878400",
+    "type": "author",
+    "title": "Noam Shazeer",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5005777963",
+    "path": "/authors/A5005777963",
+    "type": "author",
+    "title": "Niki Jitendra Parmar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5023448834",
+    "path": "/authors/A5023448834",
+    "type": "author",
+    "title": "Llion Jones",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5079288315",
+    "path": "/authors/A5079288315",
+    "type": "author",
+    "title": "Aidan N. Gomez",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031789995",
+    "path": "/authors/A5031789995",
+    "type": "author",
+    "title": "Łukasz Kaiser",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5045719436",
+    "path": "/authors/A5045719436",
+    "type": "author",
+    "title": "Illia Polosukhin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5010465328",
+    "path": "/authors/A5010465328",
+    "type": "author",
+    "title": "Dzmitry Bahdanau",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5091175785",
+    "path": "/authors/A5091175785",
+    "type": "author",
+    "title": "Kyunghyun Cho",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5086198262",
+    "path": "/authors/A5086198262",
+    "type": "author",
+    "title": "Yoshua Bengio",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031829458",
+    "path": "/authors/A5031829458",
+    "type": "author",
+    "title": "Angelos Katharopoulos",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108691882",
+    "path": "/authors/A5108691882",
+    "type": "author",
+    "title": "Apoorv Vyas",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5023518080",
+    "path": "/authors/A5023518080",
+    "type": "author",
+    "title": "Nikolaos Pappas",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5076094010",
+    "path": "/authors/A5076094010",
+    "type": "author",
+    "title": "François Fleuret",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5127845778",
+    "path": "/authors/A5127845778",
+    "type": "author",
+    "title": "Tri Dao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032865467",
+    "path": "/authors/A5032865467",
+    "type": "author",
+    "title": "Daniel Y. Fu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5091179481",
+    "path": "/authors/A5091179481",
+    "type": "author",
+    "title": "Stefano Ermon",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5001041485",
+    "path": "/authors/A5001041485",
+    "type": "author",
+    "title": "Atri Rudra",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103852640",
+    "path": "/authors/A5103852640",
+    "type": "author",
+    "title": "Christopher Ré",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5078222384",
+    "path": "/authors/A5078222384",
+    "type": "author",
+    "title": "Jianlin Su",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101645258",
+    "path": "/authors/A5101645258",
+    "type": "author",
+    "title": "Yu Lu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5049491241",
+    "path": "/authors/A5049491241",
+    "type": "author",
+    "title": "Shengfeng Pan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5087283637",
+    "path": "/authors/A5087283637",
+    "type": "author",
+    "title": "Murtadha Ahmed",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102000858",
+    "path": "/authors/A5102000858",
+    "type": "author",
+    "title": "Bo Wen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100357482",
+    "path": "/authors/A5100357482",
+    "type": "author",
+    "title": "Yunfeng Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5072605113",
+    "path": "/authors/A5072605113",
+    "type": "author",
+    "title": "Joshua Ainslie",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018339854",
+    "path": "/authors/A5018339854",
+    "type": "author",
+    "title": "James Lee-Thorp",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5021943393",
+    "path": "/authors/A5021943393",
+    "type": "author",
+    "title": "Michiel de Jong",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5036319063",
+    "path": "/authors/A5036319063",
+    "type": "author",
+    "title": "Yury Zemlyanskiy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5092005408",
+    "path": "/authors/A5092005408",
+    "type": "author",
+    "title": "Federico Lebrón",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5012884492",
+    "path": "/authors/A5012884492",
+    "type": "author",
+    "title": "Sumit Sanghai",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032800189",
+    "path": "/authors/A5032800189",
+    "type": "author",
+    "title": "Sergey Ioffe",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5012276327",
+    "path": "/authors/A5012276327",
+    "type": "author",
+    "title": "Jimmy Ba",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5065231880",
+    "path": "/authors/A5065231880",
+    "type": "author",
+    "title": "Jamie Kiros",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018369948",
+    "path": "/authors/A5018369948",
+    "type": "author",
+    "title": "Yuxin Wu",
+    "summary": "3 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071626315",
+    "path": "/authors/A5071626315",
+    "type": "author",
+    "title": "Mathilde Caron",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032644449",
+    "path": "/authors/A5032644449",
+    "type": "author",
+    "title": "Hugo Touvron",
+    "summary": "2 papers",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5003562101",
+    "path": "/authors/A5003562101",
+    "type": "author",
+    "title": "Oriol Vinyals",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108118084",
+    "path": "/authors/A5108118084",
+    "type": "author",
+    "title": "Matthieu Cord",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5053822883",
+    "path": "/authors/A5053822883",
+    "type": "author",
+    "title": "Matthijs Douze",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5067991583",
+    "path": "/authors/A5067991583",
+    "type": "author",
+    "title": "Alexandre Sablayrolles",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100349451",
+    "path": "/authors/A5100349451",
+    "type": "author",
+    "title": "Ze Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5102798361",
+    "path": "/authors/A5102798361",
+    "type": "author",
+    "title": "Yutong Lin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101593662",
+    "path": "/authors/A5101593662",
+    "type": "author",
+    "title": "Yue Cao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101867078",
+    "path": "/authors/A5101867078",
+    "type": "author",
+    "title": "Han Hu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5009248953",
+    "path": "/authors/A5009248953",
+    "type": "author",
+    "title": "Yixuan Wei",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100459168",
+    "path": "/authors/A5100459168",
+    "type": "author",
+    "title": "Zheng Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5025114648",
+    "path": "/authors/A5025114648",
+    "type": "author",
+    "title": "Stephen Lin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101666011",
+    "path": "/authors/A5101666011",
+    "type": "author",
+    "title": "Baining Guo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100443189",
+    "path": "/authors/A5100443189",
+    "type": "author",
+    "title": "Ting Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5042760897",
+    "path": "/authors/A5042760897",
+    "type": "author",
+    "title": "Simon Kornblith",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103947107",
+    "path": "/authors/A5103947107",
+    "type": "author",
+    "title": "Mohammad Norouzi",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5022792966",
+    "path": "/authors/A5022792966",
+    "type": "author",
+    "title": "Haoqi Fan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5052176965",
+    "path": "/authors/A5052176965",
+    "type": "author",
+    "title": "Jean-Bastien Grill",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5024394972",
+    "path": "/authors/A5024394972",
+    "type": "author",
+    "title": "Florian Strub",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5008927786",
+    "path": "/authors/A5008927786",
+    "type": "author",
+    "title": "Florent Altché",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5106745356",
+    "path": "/authors/A5106745356",
+    "type": "author",
+    "title": "Corentin Tallec",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5091349569",
+    "path": "/authors/A5091349569",
+    "type": "author",
+    "title": "Pierre H. Richemond",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5032652614",
+    "path": "/authors/A5032652614",
+    "type": "author",
+    "title": "Elena Buchatskaya",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081047759",
+    "path": "/authors/A5081047759",
+    "type": "author",
+    "title": "Carl Doersch",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038039948",
+    "path": "/authors/A5038039948",
+    "type": "author",
+    "title": "Bernardo Ávila Pires",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5089902230",
+    "path": "/authors/A5089902230",
+    "type": "author",
+    "title": "Zhaohan Daniel Guo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5043355670",
+    "path": "/authors/A5043355670",
+    "type": "author",
+    "title": "Mohammad Gheshlaghi Azar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103033215",
+    "path": "/authors/A5103033215",
+    "type": "author",
+    "title": "Bilal Piot",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5090341705",
+    "path": "/authors/A5090341705",
+    "type": "author",
+    "title": "Koray Kavukcuoglu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5006533777",
+    "path": "/authors/A5006533777",
+    "type": "author",
+    "title": "Rémi Munos",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5106038276",
+    "path": "/authors/A5106038276",
+    "type": "author",
+    "title": "Michal Valko",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5051250767",
+    "path": "/authors/A5051250767",
+    "type": "author",
+    "title": "Alec Radford",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100726106",
+    "path": "/authors/A5100726106",
+    "type": "author",
+    "title": "Jong Wook Kim",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5007406730",
+    "path": "/authors/A5007406730",
+    "type": "author",
+    "title": "Chris Hallacy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101696375",
+    "path": "/authors/A5101696375",
+    "type": "author",
+    "title": "Aditya Ramesh",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5108118480",
+    "path": "/authors/A5108118480",
+    "type": "author",
+    "title": "Gabriel Goh",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057289323",
+    "path": "/authors/A5057289323",
+    "type": "author",
+    "title": "Sandhini Agarwal",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5059260582",
+    "path": "/authors/A5059260582",
+    "type": "author",
+    "title": "Girish Sastry",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5030305998",
+    "path": "/authors/A5030305998",
+    "type": "author",
+    "title": "Amanda Askell",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028772381",
+    "path": "/authors/A5028772381",
+    "type": "author",
+    "title": "Pamela Mishkin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5031107879",
+    "path": "/authors/A5031107879",
+    "type": "author",
+    "title": "Jack Clark",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5064685592",
+    "path": "/authors/A5064685592",
+    "type": "author",
+    "title": "Gretchen Krueger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5088082340",
+    "path": "/authors/A5088082340",
+    "type": "author",
+    "title": "Michael Tschannen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083585691",
+    "path": "/authors/A5083585691",
+    "type": "author",
+    "title": "Alexey A. Gritsenko",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100411538",
+    "path": "/authors/A5100411538",
+    "type": "author",
+    "title": "Xiao Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5103091877",
+    "path": "/authors/A5103091877",
+    "type": "author",
+    "title": "Muhammad Ferjad Naeem",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5029133361",
+    "path": "/authors/A5029133361",
+    "type": "author",
+    "title": "Ibrahim Alabdulmohsin",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5026731149",
+    "path": "/authors/A5026731149",
+    "type": "author",
+    "title": "Nikhil Parthasarathy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5061487102",
+    "path": "/authors/A5061487102",
+    "type": "author",
+    "title": "Talfan Evans",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5053743638",
+    "path": "/authors/A5053743638",
+    "type": "author",
+    "title": "Ye Xia",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5072796087",
+    "path": "/authors/A5072796087",
+    "type": "author",
+    "title": "Basil Mustafa",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5081732358",
+    "path": "/authors/A5081732358",
+    "type": "author",
+    "title": "Olivier J. Hénaff",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5086126388",
+    "path": "/authors/A5086126388",
+    "type": "author",
+    "title": "Jeremiah Harmsen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5053094006",
+    "path": "/authors/A5053094006",
+    "type": "author",
+    "title": "Andreas Steiner",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100749028",
+    "path": "/authors/A5100749028",
+    "type": "author",
+    "title": "Yang Zou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100329542",
+    "path": "/authors/A5100329542",
+    "type": "author",
+    "title": "Taewan Kim",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5010126054",
+    "path": "/authors/A5010126054",
+    "type": "author",
+    "title": "Avinash Ravichandran",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5082733824",
+    "path": "/authors/A5082733824",
+    "type": "author",
+    "title": "Qihang Zhou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5039104219",
+    "path": "/authors/A5039104219",
+    "type": "author",
+    "title": "Guansong Pang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5007352440",
+    "path": "/authors/A5007352440",
+    "type": "author",
+    "title": "Yü Tian",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5068195118",
+    "path": "/authors/A5068195118",
+    "type": "author",
+    "title": "Shibo He",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100726041",
+    "path": "/authors/A5100726041",
+    "type": "author",
+    "title": "Jiming Chen",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5086921146",
+    "path": "/authors/A5086921146",
+    "type": "author",
+    "title": "Zhikang Liu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100711802",
+    "path": "/authors/A5100711802",
+    "type": "author",
+    "title": "Yiming Zhou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100546557",
+    "path": "/authors/A5100546557",
+    "type": "author",
+    "title": "Yuansheng Xu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5100376572",
+    "path": "/authors/A5100376572",
+    "type": "author",
+    "title": "Zilei Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018873548",
+    "path": "/authors/A5018873548",
+    "type": "author",
+    "title": "Zachary Teed",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101542158",
+    "path": "/authors/A5101542158",
+    "type": "author",
+    "title": "Jia Deng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5071944294",
+    "path": "/authors/A5071944294",
+    "type": "author",
+    "title": "Johannes L. Schönberger",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5057931031",
+    "path": "/authors/A5057931031",
+    "type": "author",
+    "title": "Juho Kannala",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5083670972",
+    "path": "/authors/A5083670972",
+    "type": "author",
+    "title": "Sami S. Brandt",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028209738",
+    "path": "/authors/A5028209738",
+    "type": "author",
+    "title": "Josef Kittler",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5101647390",
+    "path": "/authors/A5101647390",
+    "type": "author",
+    "title": "Bharath Hariharan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018609918",
+    "path": "/authors/A5018609918",
+    "type": "author",
+    "title": "Serge Belongie",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5028179581",
+    "path": "/authors/A5028179581",
+    "type": "author",
+    "title": "Alexey Bochkovskiy",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "paper:bennett2013-chess",
+    "path": "/papers/bennett2013-chess",
+    "type": "paper",
+    "title": "ChESS — Quick and Robust Detection of Chess-board Features",
+    "summary": "arXiv 2013",
+    "tags": [
+      "chess"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Bennett",
+      "J. Lasenby"
+    ],
+    "venue": "arXiv"
+  },
+  {
+    "slug": "paper:rosten2006-fast",
+    "path": "/papers/rosten2006-fast",
+    "type": "paper",
+    "title": "Machine Learning for High-Speed Corner Detection",
+    "summary": "ECCV 2006",
+    "tags": [
+      "fast"
+    ],
+    "headings": [],
+    "authors": [
+      "E. Rosten",
+      "T. Drummond"
+    ],
+    "venue": "ECCV"
+  },
+  {
+    "slug": "paper:harris1988-corner",
+    "path": "/papers/harris1988-corner",
+    "type": "paper",
+    "title": "A Combined Corner and Edge Detector",
+    "summary": "Alvey Vision Conference 1988",
+    "tags": [
+      "corner"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Harris",
+      "M. J. Stephens"
+    ],
+    "venue": "Alvey Vision Conference"
+  },
+  {
+    "slug": "paper:shi-tomasi1994-features",
+    "path": "/papers/shi-tomasi1994-features",
+    "type": "paper",
+    "title": "Good Features to Track",
+    "summary": "IEEE CVPR 1994",
+    "tags": [
+      "features"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Shi",
+      "C. Tomasi"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "paper:shu2009-topological",
+    "path": "/papers/shu2009-topological",
+    "type": "paper",
+    "title": "A topological approach to finding grids in calibration patterns",
+    "summary": "Machine Vision and Applications 2009",
+    "tags": [
+      "topological"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Shu",
+      "A. Brunton",
+      "M. A. Fiala"
+    ],
+    "venue": "Machine Vision and Applications"
+  },
+  {
+    "slug": "paper:stelldinger2024-puzzleboard",
+    "path": "/papers/stelldinger2024-puzzleboard",
+    "type": "paper",
+    "title": "PuzzleBoard: A New Camera Calibration Pattern with Position Encoding",
+    "summary": "arXiv 2024",
+    "tags": [
+      "puzzleboard"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Stelldinger",
+      "N. Schönherr",
+      "J. Biermann"
+    ],
+    "venue": "arXiv"
+  },
+  {
+    "slug": "paper:laureano2013-topological",
+    "path": "/papers/laureano2013-topological",
+    "type": "paper",
+    "title": "Topological Detection of Chessboard Pattern for Camera Calibration",
+    "summary": "IPCV (WorldComp) 2013",
+    "tags": [
+      "topological"
+    ],
+    "headings": [],
+    "authors": [
+      "G. T. Laureano",
+      "M. S. V. de Paiva",
+      "A. S. da Silva"
+    ],
+    "venue": "IPCV (WorldComp)"
+  },
+  {
+    "slug": "paper:fuersattel2016-ocpad",
+    "path": "/papers/fuersattel2016-ocpad",
+    "type": "paper",
+    "title": "OCPAD — Occluded Checkerboard Pattern Detector",
+    "summary": "IEEE WACV 2016",
+    "tags": [
+      "ocpad"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Fürsattel",
+      "S. Dotenco",
+      "S. Placht",
+      "M. Balda",
+      "A. Maier",
+      "C. Riess"
+    ],
+    "venue": "IEEE WACV"
+  },
+  {
+    "slug": "paper:placht2014-rochade",
+    "path": "/papers/placht2014-rochade",
+    "type": "paper",
+    "title": "ROCHADE: Robust Checkerboard Advanced Detection for Camera Calibration",
+    "summary": "ECCV 2014",
+    "tags": [
+      "rochade"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Placht",
+      "P. Fürsattel",
+      "E. A. Mengue",
+      "H. Hofmann",
+      "C. Schaller",
+      "M. Balda",
+      "E. Angelopoulou"
+    ],
+    "venue": "ECCV"
+  },
+  {
+    "slug": "paper:cordella2004-vf2",
+    "path": "/papers/cordella2004-vf2",
+    "type": "paper",
+    "title": "A (Sub)Graph Isomorphism Algorithm for Matching Large Graphs",
+    "summary": "IEEE TPAMI 2004",
+    "tags": [
+      "vf2"
+    ],
+    "headings": [],
+    "authors": [
+      "L. P. Cordella",
+      "P. Foggia",
+      "C. Sansone",
+      "M. Vento"
+    ],
+    "venue": "IEEE TPAMI"
+  },
+  {
+    "slug": "paper:lucchese2003-saddle",
+    "path": "/papers/lucchese2003-saddle",
+    "type": "paper",
+    "title": "Using saddle points for subpixel feature detection in camera calibration targets",
+    "summary": "Asia Pacific Conference on Circuits and Systems 2003",
+    "tags": [
+      "saddle"
+    ],
+    "headings": [],
+    "authors": [
+      "L. Lucchese",
+      "S. Mitra"
+    ],
+    "venue": "Asia Pacific Conference on Circuits and Systems"
+  },
+  {
+    "slug": "paper:chen2005-xcorner",
+    "path": "/papers/chen2005-xcorner",
+    "type": "paper",
+    "title": "A New Sub-Pixel Detector for X-Corners in Camera Calibration Targets",
+    "summary": "WSCG Short Papers 2005",
+    "tags": [
+      "xcorner"
+    ],
+    "headings": [],
+    "authors": [
+      "D. Chen",
+      "G. Zhang"
+    ],
+    "venue": "WSCG Short Papers"
+  },
+  {
+    "slug": "paper:rufli2008-blurred",
+    "path": "/papers/rufli2008-blurred",
+    "type": "paper",
+    "title": "Automatic detection of checkerboards on blurred and distorted images",
+    "summary": "IEEE/RSJ IROS 2008",
+    "tags": [
+      "blurred"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Rufli",
+      "D. Scaramuzza",
+      "R. Siegwart"
+    ],
+    "venue": "IEEE/RSJ IROS"
+  },
+  {
+    "slug": "paper:niblack1992-skeleton",
+    "path": "/papers/niblack1992-skeleton",
+    "type": "paper",
+    "title": "Generating skeletons and centerlines from the distance transform",
+    "summary": "CVGIP Graphical Models and Image Processing 1992",
+    "tags": [
+      "skeleton"
+    ],
+    "headings": [],
+    "authors": [
+      "C. W. Niblack",
+      "P. B. Gibbons",
+      "D. W. Capson"
+    ],
+    "venue": "CVGIP Graphical Models and Image Processing"
+  },
+  {
+    "slug": "paper:abeles2021-pyramidal",
+    "path": "/papers/abeles2021-pyramidal",
+    "type": "paper",
+    "title": "Pyramidal Blur Aware X-Corner Chessboard Detector",
+    "summary": "arXiv (Cornell University) 2021",
+    "tags": [
+      "pyramidal"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Abeles"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:chen2023-ccdn",
+    "path": "/papers/chen2023-ccdn",
+    "type": "paper",
+    "title": "CCDN: Checkerboard Corner Detection Network for Robust Camera Calibration",
+    "summary": "arXiv (Cornell University) 2023",
+    "tags": [
+      "ccdn"
+    ],
+    "headings": [],
+    "authors": [
+      "B. Chen",
+      "C. Xiong",
+      "Q. Zhang"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:donne2016-mate",
+    "path": "/papers/donne2016-mate",
+    "type": "paper",
+    "title": "MATE: Machine Learning for Adaptive Calibration Template Detection",
+    "summary": "Sensors 2016",
+    "tags": [
+      "mate"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Donné",
+      "J. De Vylder",
+      "B. Goossens",
+      "W. Philips"
+    ],
+    "venue": "Sensors"
+  },
+  {
+    "slug": "paper:potje2024-xfeat",
+    "path": "/papers/potje2024-xfeat",
+    "type": "paper",
+    "title": "XFeat: Accelerated Features for Lightweight Image Matching",
+    "summary": "CVPR 2024",
+    "tags": [
+      "xfeat"
+    ],
+    "headings": [],
+    "authors": [
+      "G. Potje",
+      "F. Cadar",
+      "A. Araujo",
+      "R. Martins",
+      "E. R. Nascimento"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:detone2018-superpoint",
+    "path": "/papers/detone2018-superpoint",
+    "type": "paper",
+    "title": "SuperPoint: Self-Supervised Interest Point Detection and Description",
+    "summary": "CVPR Workshop (Deep Learning for Visual SLAM) 2018",
+    "tags": [
+      "superpoint"
+    ],
+    "headings": [],
+    "authors": [
+      "D. DeTone",
+      "T. Malisiewicz",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR Workshop (Deep Learning for Visual SLAM)"
+  },
+  {
+    "slug": "paper:zhang2000-flexible",
+    "path": "/papers/zhang2000-flexible",
+    "type": "paper",
+    "title": "A Flexible New Technique for Camera Calibration",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 2000",
+    "tags": [
+      "flexible"
+    ],
+    "headings": [],
+    "authors": [
+      "Z. Zhang"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:tsai1987-versatile",
+    "path": "/papers/tsai1987-versatile",
+    "type": "paper",
+    "title": "A versatile camera calibration technique for high-accuracy 3D machine vision metrology using off-the-shelf TV cameras and lenses",
+    "summary": "IEEE Journal on Robotics and Automation 1987",
+    "tags": [
+      "versatile"
+    ],
+    "headings": [],
+    "authors": [
+      "R. Y. Tsai"
+    ],
+    "venue": "IEEE Journal on Robotics and Automation"
+  },
+  {
+    "slug": "paper:weng1992-camera",
+    "path": "/papers/weng1992-camera",
+    "type": "paper",
+    "title": "Camera calibration with distortion models and accuracy evaluation",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 1992",
+    "tags": [
+      "camera"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Weng",
+      "P. Cohen",
+      "M. Herniou"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:sturm2003-plane-based",
+    "path": "/papers/sturm2003-plane-based",
+    "type": "paper",
+    "title": "On plane-based camera calibration: A general algorithm, singularities, applications",
+    "summary": "IEEE CVPR 1999",
+    "tags": [
+      "plane",
+      "based"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Sturm",
+      "S. J. Maybank"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "paper:tsai1989-handeye",
+    "path": "/papers/tsai1989-handeye",
+    "type": "paper",
+    "title": "A new technique for fully autonomous and efficient 3D robotics hand/eye calibration",
+    "summary": "IEEE Transactions on Robotics and Automation 1989",
+    "tags": [
+      "handeye"
+    ],
+    "headings": [],
+    "authors": [
+      "R. Y. Tsai",
+      "R. K. Lenz"
+    ],
+    "venue": "IEEE Transactions on Robotics and Automation"
+  },
+  {
+    "slug": "paper:shiu1989-calibration",
+    "path": "/papers/shiu1989-calibration",
+    "type": "paper",
+    "title": "Calibration of wrist-mounted robotic sensors by solving homogeneous transform equations of the form AX=XB",
+    "summary": "IEEE Transactions on Robotics and Automation 1989",
+    "tags": [
+      "calibration"
+    ],
+    "headings": [],
+    "authors": [
+      "Y. C. Shiu",
+      "S. Ahmad"
+    ],
+    "venue": "IEEE Transactions on Robotics and Automation"
+  },
+  {
+    "slug": "paper:daniilidis1999-hand-eye",
+    "path": "/papers/daniilidis1999-hand-eye",
+    "type": "paper",
+    "title": "Hand-Eye Calibration Using Dual Quaternions",
+    "summary": "The International Journal of Robotics Research 1999",
+    "tags": [
+      "hand",
+      "eye"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Daniilidis"
+    ],
+    "venue": "The International Journal of Robotics Research"
+  },
+  {
+    "slug": "paper:kumar2014-grac",
+    "path": "/papers/kumar2014-grac",
+    "type": "paper",
+    "title": "Generalized Radial Alignment Constraint for Camera Calibration",
+    "summary": "International Conference on Pattern Recognition (ICPR) 2014",
+    "tags": [
+      "grac"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Kumar",
+      "N. Ahuja"
+    ],
+    "venue": "International Conference on Pattern Recognition (ICPR)"
+  },
+  {
+    "slug": "paper:duda2018-accurate",
+    "path": "/papers/duda2018-accurate",
+    "type": "paper",
+    "title": "Accurate Detection and Localization of Checkerboard Corners for Calibration",
+    "summary": "British Machine Vision Conference (BMVC) 2018",
+    "tags": [
+      "accurate"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Duda",
+      "U. Frese"
+    ],
+    "venue": "British Machine Vision Conference (BMVC)"
+  },
+  {
+    "slug": "paper:sinzinger2007-model-based",
+    "path": "/papers/sinzinger2007-model-based",
+    "type": "paper",
+    "title": "A model-based approach to junction detection using radial energy",
+    "summary": "Pattern Recognition 2008",
+    "tags": [
+      "model",
+      "based"
+    ],
+    "headings": [],
+    "authors": [
+      "E. D. Sinzinger"
+    ],
+    "venue": "Pattern Recognition"
+  },
+  {
+    "slug": "paper:zaragoza2013-apap",
+    "path": "/papers/zaragoza2013-apap",
+    "type": "paper",
+    "title": "As-Projective-As-Possible Image Stitching with Moving DLT",
+    "summary": "IEEE CVPR 2013",
+    "tags": [
+      "apap"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Zaragoza",
+      "T.-J. Chin",
+      "M. S. Brown",
+      "D. Suter"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "paper:hartley1997-eight-point",
+    "path": "/papers/hartley1997-eight-point",
+    "type": "paper",
+    "title": "In Defense of the Eight-Point Algorithm",
+    "summary": "IEEE TPAMI 1997",
+    "tags": [
+      "eight",
+      "point"
+    ],
+    "headings": [],
+    "authors": [
+      "R. I. Hartley"
+    ],
+    "venue": "IEEE TPAMI"
+  },
+  {
+    "slug": "paper:schaefer2006-mls",
+    "path": "/papers/schaefer2006-mls",
+    "type": "paper",
+    "title": "Image Deformation Using Moving Least Squares",
+    "summary": "ACM SIGGRAPH 2006",
+    "tags": [
+      "mls"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Schaefer",
+      "T. McPhail",
+      "J. Warren"
+    ],
+    "venue": "ACM SIGGRAPH"
+  },
+  {
+    "slug": "paper:gao2011-dual-homography",
+    "path": "/papers/gao2011-dual-homography",
+    "type": "paper",
+    "title": "Constructing Image Panoramas Using Dual-Homography Warping",
+    "summary": "IEEE CVPR 2011",
+    "tags": [
+      "dual",
+      "homography"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Gao",
+      "S. J. Kim",
+      "M. S. Brown"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "paper:lin2011-svastitching",
+    "path": "/papers/lin2011-svastitching",
+    "type": "paper",
+    "title": "Smoothly Varying Affine Stitching",
+    "summary": "IEEE CVPR 2011",
+    "tags": [
+      "svastitching"
+    ],
+    "headings": [],
+    "authors": [
+      "W.-Y. Lin",
+      "S. Liu",
+      "Y. Matsushita",
+      "T.-T. Ng",
+      "L.-F. Cheong"
+    ],
+    "venue": "IEEE CVPR"
+  },
+  {
+    "slug": "paper:igarashi2005-arap",
+    "path": "/papers/igarashi2005-arap",
+    "type": "paper",
+    "title": "As-Rigid-As-Possible Shape Manipulation",
+    "summary": "ACM SIGGRAPH 2005",
+    "tags": [
+      "arap"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Igarashi",
+      "T. Moscovich",
+      "J. F. Hughes"
+    ],
+    "venue": "ACM SIGGRAPH"
+  },
+  {
+    "slug": "paper:geiger2012-automatic",
+    "path": "/papers/geiger2012-automatic",
+    "type": "paper",
+    "title": "Automatic camera and range sensor calibration using a single shot",
+    "summary": "IEEE ICRA 2012",
+    "tags": [
+      "automatic"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Geiger",
+      "F. Moosmann",
+      "O. Car",
+      "B. Schuster"
+    ],
+    "venue": "IEEE ICRA"
+  },
+  {
+    "slug": "paper:rasmussen2006-gpml",
+    "path": "/papers/rasmussen2006-gpml",
+    "type": "paper",
+    "title": "Gaussian Processes for Machine Learning",
+    "summary": "MIT Press 2006",
+    "tags": [
+      "gpml"
+    ],
+    "headings": [],
+    "authors": [
+      "C. E. Rasmussen",
+      "C. K. I. Williams"
+    ],
+    "venue": "MIT Press"
+  },
+  {
+    "slug": "paper:hillen2023-enhanced",
+    "path": "/papers/hillen2023-enhanced",
+    "type": "paper",
+    "title": "Enhanced Checkerboard Detection Using Gaussian Processes",
+    "summary": "Mathematics (MDPI) 2023",
+    "tags": [
+      "enhanced"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Hillen",
+      "I. De Boi",
+      "T. De Kerf",
+      "S. Sels",
+      "E. Cardenas De La Hoz",
+      "J. Gladines",
+      "G. Steenackers",
+      "R. Penne",
+      "S. Vanlanduit"
+    ],
+    "venue": "Mathematics (MDPI)"
+  },
+  {
+    "slug": "paper:zhang2022-learning-based",
+    "path": "/papers/zhang2022-learning-based",
+    "type": "paper",
+    "title": "Learning-Based Distortion Correction and Feature Detection for High Precision and Robust Camera Calibration",
+    "summary": "IEEE Robotics and Automation Letters 2022",
+    "tags": [
+      "learning",
+      "based"
+    ],
+    "headings": [],
+    "authors": [
+      "Y. Zhang",
+      "X. Zhao",
+      "D. Qian"
+    ],
+    "venue": "IEEE Robotics and Automation Letters"
+  },
+  {
+    "slug": "paper:wu2021-highly",
+    "path": "/papers/wu2021-highly",
+    "type": "paper",
+    "title": "A highly accurate and robust deep checkerboard corner detector",
+    "summary": "Electronics Letters 2021",
+    "tags": [
+      "highly"
+    ],
+    "headings": [],
+    "authors": [
+      "Hao Wu",
+      "Yi Wan"
+    ],
+    "venue": "Electronics Letters"
+  },
+  {
+    "slug": "paper:loy2003-frst",
+    "path": "/papers/loy2003-frst",
+    "type": "paper",
+    "title": "Fast radial symmetry for detecting points of interest",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 2003",
+    "tags": [
+      "frst"
+    ],
+    "headings": [],
+    "authors": [
+      "Gareth Loy",
+      "Alexander Zelinsky"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:ni2012-gfrs",
+    "path": "/papers/ni2012-gfrs",
+    "type": "paper",
+    "title": "Fast radial symmetry detection under affine transformations",
+    "summary": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2012",
+    "tags": [
+      "gfrs"
+    ],
+    "headings": [],
+    "authors": [
+      "Jie Ni",
+      "Maneesh K. Singh",
+      "Claus Bahlmann"
+    ],
+    "venue": "IEEE Conference on Computer Vision and Pattern Recognition (CVPR)"
+  },
+  {
+    "slug": "paper:fischler1981-ransac",
+    "path": "/papers/fischler1981-ransac",
+    "type": "paper",
+    "title": "Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography",
+    "summary": "Communications of the ACM 1981",
+    "tags": [
+      "ransac"
+    ],
+    "headings": [],
+    "authors": [
+      "M. A. Fischler",
+      "R. C. Bolles"
+    ],
+    "venue": "Communications of the ACM"
+  },
+  {
+    "slug": "paper:raguram2013-usac",
+    "path": "/papers/raguram2013-usac",
+    "type": "paper",
+    "title": "USAC: A Universal Framework for Random Sample Consensus",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 2013",
+    "tags": [
+      "usac"
+    ],
+    "headings": [],
+    "authors": [
+      "R. Raguram",
+      "O. Chum",
+      "M. Pollefeys",
+      "J. Matas",
+      "J. Frahm"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:barath2019-magsac",
+    "path": "/papers/barath2019-magsac",
+    "type": "paper",
+    "title": "MAGSAC: marginalizing sample consensus",
+    "summary": "CVPR 2019",
+    "tags": [
+      "magsac"
+    ],
+    "headings": [],
+    "authors": [
+      "D. Barath",
+      "J. Matas",
+      "J. Noskova"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:lepetit2009-epnp",
+    "path": "/papers/lepetit2009-epnp",
+    "type": "paper",
+    "title": "EPnP: An Accurate O(n) Solution to the PnP Problem",
+    "summary": "International Journal of Computer Vision 2009",
+    "tags": [
+      "epnp"
+    ],
+    "headings": [],
+    "authors": [
+      "V. Lepetit",
+      "F. Moreno-Noguer",
+      "P. Fua"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "paper:scaramuzza2006-omni",
+    "path": "/papers/scaramuzza2006-omni",
+    "type": "paper",
+    "title": "A Toolbox for Easily Calibrating Omnidirectional Cameras",
+    "summary": "IEEE/RSJ IROS 2006",
+    "tags": [
+      "omni"
+    ],
+    "headings": [],
+    "authors": [
+      "D. Scaramuzza",
+      "A. Martinelli",
+      "R. Siegwart"
+    ],
+    "venue": "IEEE/RSJ IROS"
+  },
+  {
+    "slug": "paper:lowe2004-sift",
+    "path": "/papers/lowe2004-sift",
+    "type": "paper",
+    "title": "Distinctive Image Features from Scale-Invariant Keypoints",
+    "summary": "International Journal of Computer Vision 2004",
+    "tags": [
+      "sift"
+    ],
+    "headings": [],
+    "authors": [
+      "D. G. Lowe"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "paper:canny1986-edge",
+    "path": "/papers/canny1986-edge",
+    "type": "paper",
+    "title": "A Computational Approach to Edge Detection",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 1986",
+    "tags": [
+      "edge"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Canny"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:bay2006-surf",
+    "path": "/papers/bay2006-surf",
+    "type": "paper",
+    "title": "SURF: Speeded Up Robust Features",
+    "summary": "Lecture notes in computer science 2006",
+    "tags": [
+      "surf"
+    ],
+    "headings": [],
+    "authors": [
+      "H. Bay",
+      "T. Tuytelaars",
+      "L. V. Gool"
+    ],
+    "venue": "Lecture notes in computer science"
+  },
+  {
+    "slug": "paper:calonder2010-brief",
+    "path": "/papers/calonder2010-brief",
+    "type": "paper",
+    "title": "BRIEF: Binary Robust Independent Elementary Features",
+    "summary": "Lecture notes in computer science 2010",
+    "tags": [
+      "brief"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Calonder",
+      "V. Lepetit",
+      "C. Strecha",
+      "P. Fua"
+    ],
+    "venue": "Lecture notes in computer science"
+  },
+  {
+    "slug": "paper:rublee2011-orb",
+    "path": "/papers/rublee2011-orb",
+    "type": "paper",
+    "title": "ORB: An efficient alternative to SIFT or SURF",
+    "summary": "ICCV 2011",
+    "tags": [
+      "orb"
+    ],
+    "headings": [],
+    "authors": [
+      "E. Rublee",
+      "V. Rabaud",
+      "K. Konolige",
+      "G. Bradski"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:sarlin2020-superglue",
+    "path": "/papers/sarlin2020-superglue",
+    "type": "paper",
+    "title": "SuperGlue: Learning Feature Matching with Graph Neural Networks",
+    "summary": "CVPR 2020",
+    "tags": [
+      "superglue"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Sarlin",
+      "D. DeTone",
+      "T. Malisiewicz",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:sun2021-loftr",
+    "path": "/papers/sun2021-loftr",
+    "type": "paper",
+    "title": "LoFTR: Detector-Free Local Feature Matching with Transformers",
+    "summary": "CVPR 2021",
+    "tags": [
+      "loftr"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Sun",
+      "Z. Shen",
+      "Y. Wang",
+      "H. Bao",
+      "X. Zhou"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:lindenberger2023-lightglue",
+    "path": "/papers/lindenberger2023-lightglue",
+    "type": "paper",
+    "title": "LightGlue: Local Feature Matching at Light Speed",
+    "summary": "ICCV 2023",
+    "tags": [
+      "lightglue"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Lindenberger",
+      "P. Sarlin",
+      "M. Pollefeys"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:felzenszwalb2004-graph-segm",
+    "path": "/papers/felzenszwalb2004-graph-segm",
+    "type": "paper",
+    "title": "Efficient Graph-Based Image Segmentation",
+    "summary": "International Journal of Computer Vision 2004",
+    "tags": [
+      "graph",
+      "segm"
+    ],
+    "headings": [],
+    "authors": [
+      "P. F. Felzenszwalb",
+      "D. P. Huttenlocher"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "paper:boykov2001-graph-cut-segmentation",
+    "path": "/papers/boykov2001-graph-cut-segmentation",
+    "type": "paper",
+    "title": "Interactive Graph Cuts for Optimal Boundary & Region Segmentation of Objects in N-D Images",
+    "summary": "ICCV 2001",
+    "tags": [
+      "graph",
+      "cut",
+      "segmentation"
+    ],
+    "headings": [],
+    "authors": [
+      "Y. Boykov",
+      "M.-P. Jolly"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:yang2018-sub-pixel",
+    "path": "/papers/yang2018-sub-pixel",
+    "type": "paper",
+    "title": "Sub-Pixel Chessboard Corner Localization for Camera Calibration and Pose Estimation",
+    "summary": "Applied Sciences 2018",
+    "tags": [
+      "sub",
+      "pixel"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Yang",
+      "Q. Zhao",
+      "W. Xian",
+      "Q. Zhou"
+    ],
+    "venue": "Applied Sciences"
+  },
+  {
+    "slug": "paper:longuet-higgins1981-eight-point",
+    "path": "/papers/longuet-higgins1981-eight-point",
+    "type": "paper",
+    "title": "A computer algorithm for reconstructing a scene from two projections",
+    "summary": "Nature 1981",
+    "tags": [
+      "eight",
+      "point"
+    ],
+    "headings": [],
+    "authors": [
+      "H. C. Longuet-Higgins"
+    ],
+    "venue": "Nature"
+  },
+  {
+    "slug": "paper:rother2004-grabcut",
+    "path": "/papers/rother2004-grabcut",
+    "type": "paper",
+    "title": "GrabCut: Interactive Foreground Extraction using Iterated Graph Cuts",
+    "summary": "ACM Transactions on Graphics (SIGGRAPH) 2004",
+    "tags": [
+      "grabcut"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Rother",
+      "V. Kolmogorov",
+      "A. Blake"
+    ],
+    "venue": "ACM Transactions on Graphics (SIGGRAPH)"
+  },
+  {
+    "slug": "paper:long2015-fcn",
+    "path": "/papers/long2015-fcn",
+    "type": "paper",
+    "title": "Fully Convolutional Networks for Semantic Segmentation",
+    "summary": "CVPR 2015",
+    "tags": [
+      "fcn"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Long",
+      "E. Shelhamer",
+      "T. Darrell"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:ronneberger2015-unet",
+    "path": "/papers/ronneberger2015-unet",
+    "type": "paper",
+    "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+    "summary": "MICCAI (Lecture Notes in Computer Science) 2015",
+    "tags": [
+      "unet"
+    ],
+    "headings": [],
+    "authors": [
+      "O. Ronneberger",
+      "P. Fischer",
+      "T. Brox"
+    ],
+    "venue": "MICCAI (Lecture Notes in Computer Science)"
+  },
+  {
+    "slug": "paper:chen2018-deeplab",
+    "path": "/papers/chen2018-deeplab",
+    "type": "paper",
+    "title": "DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 2018",
+    "tags": [
+      "deeplab"
+    ],
+    "headings": [],
+    "authors": [
+      "L. Chen",
+      "G. Papandreou",
+      "I. Kokkinos",
+      "K. Murphy",
+      "A. Yuille"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:he2017-maskrcnn",
+    "path": "/papers/he2017-maskrcnn",
+    "type": "paper",
+    "title": "Mask R-CNN",
+    "summary": "ICCV 2017",
+    "tags": [
+      "maskrcnn"
+    ],
+    "headings": [],
+    "authors": [
+      "K. He",
+      "G. Gkioxari",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:kirillov2023-sam",
+    "path": "/papers/kirillov2023-sam",
+    "type": "paper",
+    "title": "Segment Anything",
+    "summary": "ICCV 2023",
+    "tags": [
+      "sam"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Kirillov",
+      "E. Mintun",
+      "N. Ravi",
+      "H. Mao",
+      "C. Rolland",
+      "L. Gustafson",
+      "T. Xiao",
+      "S. Whitehead",
+      "A. C. Berg",
+      "W. Lo",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:viola2001-detector",
+    "path": "/papers/viola2001-detector",
+    "type": "paper",
+    "title": "Rapid object detection using a boosted cascade of simple features",
+    "summary": "CVPR 2001",
+    "tags": [
+      "detector"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Viola",
+      "M. Jones"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:dalal2005-hog",
+    "path": "/papers/dalal2005-hog",
+    "type": "paper",
+    "title": "Histograms of Oriented Gradients for Human Detection",
+    "summary": "CVPR 2005",
+    "tags": [
+      "hog"
+    ],
+    "headings": [],
+    "authors": [
+      "N. Dalal",
+      "B. Triggs"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:felzenszwalb2010-detection",
+    "path": "/papers/felzenszwalb2010-detection",
+    "type": "paper",
+    "title": "Object Detection with Discriminatively Trained Part-Based Models",
+    "summary": "IEEE TPAMI 2010",
+    "tags": [
+      "detection"
+    ],
+    "headings": [],
+    "authors": [
+      "P. F. Felzenszwalb",
+      "R. B. Girshick",
+      "D. McAllester",
+      "D. Ramanan"
+    ],
+    "venue": "IEEE TPAMI"
+  },
+  {
+    "slug": "paper:krizhevsky2012-alexnet",
+    "path": "/papers/krizhevsky2012-alexnet",
+    "type": "paper",
+    "title": "ImageNet Classification with Deep Convolutional Neural Networks",
+    "summary": "NeurIPS 2012",
+    "tags": [
+      "alexnet"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Krizhevsky",
+      "I. Sutskever",
+      "G. E. Hinton"
+    ],
+    "venue": "NeurIPS"
+  },
+  {
+    "slug": "paper:simonyan2014-vgg",
+    "path": "/papers/simonyan2014-vgg",
+    "type": "paper",
+    "title": "Very Deep Convolutional Networks for Large-Scale Image Recognition",
+    "summary": "ICLR 2015 / arXiv 2014",
+    "tags": [
+      "vgg"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Simonyan",
+      "A. Zisserman"
+    ],
+    "venue": "ICLR 2015 / arXiv"
+  },
+  {
+    "slug": "paper:szegedy2015-inception",
+    "path": "/papers/szegedy2015-inception",
+    "type": "paper",
+    "title": "Going deeper with convolutions",
+    "summary": "CVPR 2015",
+    "tags": [
+      "inception"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Szegedy",
+      "W. Liu",
+      "Y. Jia",
+      "P. Sermanet",
+      "S. Reed",
+      "D. Anguelov",
+      "D. Erhan",
+      "V. Vanhoucke",
+      "A. Rabinovich"
+    ],
+    "venue": "CVPR 2015"
+  },
+  {
+    "slug": "paper:he2016-resnet",
+    "path": "/papers/he2016-resnet",
+    "type": "paper",
+    "title": "Deep Residual Learning for Image Recognition",
+    "summary": "CVPR 2016",
+    "tags": [
+      "resnet"
+    ],
+    "headings": [],
+    "authors": [
+      "K. He",
+      "X. Zhang",
+      "S. Ren",
+      "J. Sun"
+    ],
+    "venue": "CVPR 2016"
+  },
+  {
+    "slug": "paper:ren2015-faster",
+    "path": "/papers/ren2015-faster",
+    "type": "paper",
+    "title": "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks",
+    "summary": "NeurIPS 2015",
+    "tags": [
+      "faster"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Ren",
+      "K. He",
+      "R. Girshick",
+      "J. Sun"
+    ],
+    "venue": "NeurIPS 2015"
+  },
+  {
+    "slug": "paper:redmon2016-yolo",
+    "path": "/papers/redmon2016-yolo",
+    "type": "paper",
+    "title": "You Only Look Once: Unified, Real-Time Object Detection",
+    "summary": "CVPR 2016",
+    "tags": [
+      "yolo"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Redmon",
+      "S. Divvala",
+      "R. Girshick",
+      "A. Farhadi"
+    ],
+    "venue": "CVPR 2016"
+  },
+  {
+    "slug": "paper:lin2017-retinanet",
+    "path": "/papers/lin2017-retinanet",
+    "type": "paper",
+    "title": "Focal Loss for Dense Object Detection",
+    "summary": "ICCV 2017",
+    "tags": [
+      "retinanet"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Lin",
+      "P. Goyal",
+      "R. Girshick",
+      "K. He",
+      "P. Dollár"
+    ],
+    "venue": "ICCV 2017"
+  },
+  {
+    "slug": "paper:lucas1981-lucas-kanade",
+    "path": "/papers/lucas1981-lucas-kanade",
+    "type": "paper",
+    "title": "An Iterative Image Registration Technique with an Application to Stereo Vision",
+    "summary": "IJCAI 1981",
+    "tags": [
+      "lucas",
+      "kanade"
+    ],
+    "headings": [],
+    "authors": [
+      "B. D. Lucas",
+      "T. Kanade"
+    ],
+    "venue": "IJCAI 1981"
+  },
+  {
+    "slug": "paper:tomasi1991-detection-tracking",
+    "path": "/papers/tomasi1991-detection-tracking",
+    "type": "paper",
+    "title": "Detection and Tracking of Point Features",
+    "summary": "Carnegie Mellon University Technical Report CMU-CS-91-132 1991",
+    "tags": [
+      "detection",
+      "tracking"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Tomasi",
+      "T. Kanade"
+    ],
+    "venue": "Carnegie Mellon University Technical Report CMU-CS-91-132"
+  },
+  {
+    "slug": "paper:horn1981-horn-schunck",
+    "path": "/papers/horn1981-horn-schunck",
+    "type": "paper",
+    "title": "Determining optical flow",
+    "summary": "Artificial Intelligence 1981",
+    "tags": [
+      "horn",
+      "schunck"
+    ],
+    "headings": [],
+    "authors": [
+      "B. K. P. Horn",
+      "B. G. Schunck"
+    ],
+    "venue": "Artificial Intelligence"
+  },
+  {
+    "slug": "paper:black1996-robust",
+    "path": "/papers/black1996-robust",
+    "type": "paper",
+    "title": "The Robust Estimation of Multiple Motions: Parametric and Piecewise-Smooth Flow Fields",
+    "summary": "Computer Vision and Image Understanding 1996",
+    "tags": [
+      "robust"
+    ],
+    "headings": [],
+    "authors": [
+      "M. J. Black",
+      "P. Anandan"
+    ],
+    "venue": "Computer Vision and Image Understanding"
+  },
+  {
+    "slug": "paper:crow1984-summed-area",
+    "path": "/papers/crow1984-summed-area",
+    "type": "paper",
+    "title": "Summed-area tables for texture mapping",
+    "summary": "ACM SIGGRAPH Computer Graphics 1984",
+    "tags": [
+      "summed",
+      "area"
+    ],
+    "headings": [],
+    "authors": [
+      "F. C. Crow"
+    ],
+    "venue": "ACM SIGGRAPH Computer Graphics"
+  },
+  {
+    "slug": "paper:abbas2019-bev",
+    "path": "/papers/abbas2019-bev",
+    "type": "paper",
+    "title": "A Geometric Approach to Obtain a Bird's Eye View From an Image",
+    "summary": "ICCVW 2019",
+    "tags": [
+      "bev"
+    ],
+    "headings": [],
+    "authors": [
+      "S. A. Abbas",
+      "A. Zisserman"
+    ],
+    "venue": "ICCVW 2019"
+  },
+  {
+    "slug": "paper:sofiiuk2021-ritm",
+    "path": "/papers/sofiiuk2021-ritm",
+    "type": "paper",
+    "title": "Reviving Iterative Training with Mask Guidance for Interactive Segmentation",
+    "summary": "arXiv (Cornell University) 2021",
+    "tags": [
+      "ritm"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Sofiiuk",
+      "I. A. Petrov",
+      "A. Konushin"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:sun2019-hrnet",
+    "path": "/papers/sun2019-hrnet",
+    "type": "paper",
+    "title": "Deep High-Resolution Representation Learning for Human Pose Estimation",
+    "summary": "CVPR 2019",
+    "tags": [
+      "hrnet"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Sun",
+      "B. Xiao",
+      "D. Liu",
+      "J. Wang"
+    ],
+    "venue": "CVPR 2019"
+  },
+  {
+    "slug": "paper:sun2019-hrnetv2",
+    "path": "/papers/sun2019-hrnetv2",
+    "type": "paper",
+    "title": "High-Resolution Representations for Labeling Pixels and Regions",
+    "summary": "arXiv (Cornell University) 2019",
+    "tags": [
+      "hrnetv2"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Sun",
+      "Y. Zhao",
+      "B. Jiang",
+      "T. Cheng",
+      "B. Xiao",
+      "D. Liu",
+      "Y. Mu",
+      "X. Wang",
+      "W. Liu",
+      "J. Wang"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:wang2020-hrnet-journal",
+    "path": "/papers/wang2020-hrnet-journal",
+    "type": "paper",
+    "title": "Deep High-Resolution Representation Learning for Visual Recognition",
+    "summary": "TPAMI 2020 (arXiv 2019) 2020",
+    "tags": [
+      "hrnet",
+      "journal"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Wang",
+      "K. Sun",
+      "T. Cheng",
+      "B. Jiang",
+      "C. Deng",
+      "Y. Zhao",
+      "D. Liu",
+      "Y. Mu",
+      "M. Tan",
+      "X. Wang",
+      "W. Liu",
+      "B. Xiao"
+    ],
+    "venue": "TPAMI 2020 (arXiv 2019)"
+  },
+  {
+    "slug": "paper:zhang2023-mobilesam",
+    "path": "/papers/zhang2023-mobilesam",
+    "type": "paper",
+    "title": "Faster Segment Anything: Towards Lightweight SAM for Mobile Applications",
+    "summary": "arXiv (Cornell University) 2023",
+    "tags": [
+      "mobilesam"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Zhang",
+      "D. Han",
+      "Y. Qiao",
+      "J. U. Kim",
+      "S. Bae",
+      "S. Lee",
+      "C. S. Hong"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:zhang2023-mobilesamv2",
+    "path": "/papers/zhang2023-mobilesamv2",
+    "type": "paper",
+    "title": "MobileSAMv2: Faster Segment Anything to Everything",
+    "summary": "arXiv (Cornell University) 2023",
+    "tags": [
+      "mobilesamv2"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Zhang",
+      "D. Han",
+      "S. Zheng",
+      "J. Choi",
+      "T. Kim",
+      "C. S. Hong"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:ravi2024-sam2",
+    "path": "/papers/ravi2024-sam2",
+    "type": "paper",
+    "title": "SAM 2: Segment Anything in Images and Videos",
+    "summary": "arXiv (Cornell University) 2024",
+    "tags": [
+      "sam2"
+    ],
+    "headings": [],
+    "authors": [
+      "N. Ravi",
+      "V. Gabeur",
+      "Y. Hu",
+      "R. Hu",
+      "C. K. Ryali",
+      "T. Ma",
+      "H. Khedr",
+      "R. Rädle",
+      "C. Rolland",
+      "L. Gustafson",
+      "E. Mintun",
+      "J. Pan",
+      "K. V. Alwala",
+      "N. Carion",
+      "C. Wu",
+      "R. Girshick",
+      "P. Dollár",
+      "C. Feichtenhofer"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:carion2025-sam3",
+    "path": "/papers/carion2025-sam3",
+    "type": "paper",
+    "title": "SAM 3: Segment Anything with Concepts",
+    "summary": "arXiv (Cornell University) 2025",
+    "tags": [
+      "sam3"
+    ],
+    "headings": [],
+    "authors": [
+      "N. Carion",
+      "L. Gustafson",
+      "Y. Hu",
+      "S. Debnath",
+      "R. Hu",
+      "D. Suris",
+      "C. K. Ryali",
+      "K. V. Alwala",
+      "H. Khedr",
+      "A. C. Huang",
+      "J. Lei",
+      "T. Ma",
+      "B. Guo",
+      "A. Kalla",
+      "M. D. Marks",
+      "J. Greer",
+      "M. Wang",
+      "P. Sun",
+      "R. Rädle",
+      "T. Afouras",
+      "E. Mavroudi",
+      "K. Xu",
+      "T. Wu",
+      "Y. Zhou",
+      "L. Momeni",
+      "R. Hazra",
+      "S. Ding",
+      "S. Vaze",
+      "F. Porcher",
+      "L. Feng",
+      "S. Li",
+      "A. Kamath",
+      "H. Cheng",
+      "P. Dollár",
+      "N. Ravi",
+      "K. Saenko",
+      "P. Zhang",
+      "C. Feichtenhofer"
+    ],
+    "venue": "arXiv (Cornell University)"
+  },
+  {
+    "slug": "paper:dosovitskiy2020-vit",
+    "path": "/papers/dosovitskiy2020-vit",
+    "type": "paper",
+    "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+    "summary": "ICLR 2021 (arXiv 2020)",
+    "tags": [
+      "vit"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Dosovitskiy",
+      "L. Beyer",
+      "A. Kolesnikov",
+      "D. Weissenborn",
+      "X. Zhai",
+      "T. Unterthiner",
+      "M. Dehghani",
+      "M. Minderer",
+      "G. Heigold",
+      "S. Gelly",
+      "J. Uszkoreit",
+      "N. Houlsby"
+    ],
+    "venue": "ICLR 2021 (arXiv 2020)"
+  },
+  {
+    "slug": "paper:carion2020-detr",
+    "path": "/papers/carion2020-detr",
+    "type": "paper",
+    "title": "End-to-End Object Detection with Transformers",
+    "summary": "ECCV 2020",
+    "tags": [
+      "detr"
+    ],
+    "headings": [],
+    "authors": [
+      "N. Carion",
+      "F. Massa",
+      "G. Synnaeve",
+      "N. Usunier",
+      "A. Kirillov",
+      "S. Zagoruyko"
+    ],
+    "venue": "ECCV 2020"
+  },
+  {
+    "slug": "paper:cheng2021-maskformer",
+    "path": "/papers/cheng2021-maskformer",
+    "type": "paper",
+    "title": "Per-Pixel Classification is Not All You Need for Semantic Segmentation",
+    "summary": "NeurIPS 2021",
+    "tags": [
+      "maskformer"
+    ],
+    "headings": [],
+    "authors": [
+      "B. Cheng",
+      "A. G. Schwing",
+      "A. Kirillov"
+    ],
+    "venue": "NeurIPS 2021"
+  },
+  {
+    "slug": "paper:cheng2022-mask2former",
+    "path": "/papers/cheng2022-mask2former",
+    "type": "paper",
+    "title": "Masked-attention Mask Transformer for Universal Image Segmentation",
+    "summary": "CVPR 2022 (arXiv 2021) 2022",
+    "tags": [
+      "mask2former"
+    ],
+    "headings": [],
+    "authors": [
+      "B. Cheng",
+      "I. Misra",
+      "A. G. Schwing",
+      "A. Kirillov",
+      "R. Girdhar"
+    ],
+    "venue": "CVPR 2022 (arXiv 2021)"
+  },
+  {
+    "slug": "paper:he2021-mae",
+    "path": "/papers/he2021-mae",
+    "type": "paper",
+    "title": "Masked Autoencoders Are Scalable Vision Learners",
+    "summary": "CVPR 2022 (arXiv 2021)",
+    "tags": [
+      "mae"
+    ],
+    "headings": [],
+    "authors": [
+      "K. He",
+      "X. Chen",
+      "S. Xie",
+      "Y. Li",
+      "P. Dollár",
+      "R. Girshick"
+    ],
+    "venue": "CVPR 2022 (arXiv 2021)"
+  },
+  {
+    "slug": "paper:chen2022-focalclick",
+    "path": "/papers/chen2022-focalclick",
+    "type": "paper",
+    "title": "FocalClick: Towards Practical Interactive Image Segmentation",
+    "summary": "CVPR 2022 (arXiv 2022)",
+    "tags": [
+      "focalclick"
+    ],
+    "headings": [],
+    "authors": [
+      "X. Chen",
+      "Z. Zhao",
+      "Y. Zhang",
+      "M. Duan",
+      "D. Qi",
+      "H. Zhao"
+    ],
+    "venue": "CVPR 2022 (arXiv 2022)"
+  },
+  {
+    "slug": "paper:xie2021-segformer",
+    "path": "/papers/xie2021-segformer",
+    "type": "paper",
+    "title": "SegFormer: Simple and Efficient Design for Semantic Segmentation with Transformers",
+    "summary": "NeurIPS 2021 (arXiv 2021)",
+    "tags": [
+      "segformer"
+    ],
+    "headings": [],
+    "authors": [
+      "E. Xie",
+      "W. Wang",
+      "Z. Yu",
+      "A. Anandkumar",
+      "J. M. Alvarez",
+      "P. Luo"
+    ],
+    "venue": "NeurIPS 2021 (arXiv 2021)"
+  },
+  {
+    "slug": "paper:yu2018-bisenet",
+    "path": "/papers/yu2018-bisenet",
+    "type": "paper",
+    "title": "BiSeNet: Bilateral Segmentation Network for Real-time Semantic Segmentation",
+    "summary": "ECCV 2018 (arXiv 2018)",
+    "tags": [
+      "bisenet"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Yu",
+      "J. Wang",
+      "C. Peng",
+      "C. Gao",
+      "G. Yu",
+      "S. Nong"
+    ],
+    "venue": "ECCV 2018 (arXiv 2018)"
+  },
+  {
+    "slug": "paper:yu2020-bisenet",
+    "path": "/papers/yu2020-bisenet",
+    "type": "paper",
+    "title": "BiSeNet V2: Bilateral Network with Guided Aggregation for Real-time Semantic Segmentation",
+    "summary": "IJCV 2021 (arXiv 2020)",
+    "tags": [
+      "bisenet"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Yu",
+      "C. Gao",
+      "J. Wang",
+      "G. Yu",
+      "C. Shen",
+      "S. Nong"
+    ],
+    "venue": "IJCV 2021 (arXiv 2020)"
+  },
+  {
+    "slug": "paper:poudel2019-fast-scnn",
+    "path": "/papers/poudel2019-fast-scnn",
+    "type": "paper",
+    "title": "Fast-SCNN: Fast Semantic Segmentation Network",
+    "summary": "BMVC 2019 (arXiv 2019)",
+    "tags": [
+      "fast",
+      "scnn"
+    ],
+    "headings": [],
+    "authors": [
+      "R. P. K. Poudel",
+      "S. Liwicki",
+      "R. Cipolla"
+    ],
+    "venue": "BMVC 2019 (arXiv 2019)"
+  },
+  {
+    "slug": "paper:howard2019-mobilenetv3",
+    "path": "/papers/howard2019-mobilenetv3",
+    "type": "paper",
+    "title": "Searching for MobileNetV3",
+    "summary": "ICCV 2019 (arXiv 2019)",
+    "tags": [
+      "mobilenetv3"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Howard",
+      "M. Sandler",
+      "G. Chu",
+      "L. Chen",
+      "B. Chen",
+      "M. Tan",
+      "W. Wang",
+      "Y. Zhu",
+      "R. Pang",
+      "V. Vasudevan",
+      "Q. V. Le",
+      "H. Adam"
+    ],
+    "venue": "ICCV 2019 (arXiv 2019)"
+  },
+  {
+    "slug": "paper:sandler2018-mobilenetv2",
+    "path": "/papers/sandler2018-mobilenetv2",
+    "type": "paper",
+    "title": "MobileNetV2: Inverted Residuals and Linear Bottlenecks",
+    "summary": "CVPR 2018 (arXiv 2018)",
+    "tags": [
+      "mobilenetv2"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Sandler",
+      "A. Howard",
+      "M. Zhu",
+      "A. Zhmoginov",
+      "L. Chen"
+    ],
+    "venue": "CVPR 2018 (arXiv 2018)"
+  },
+  {
+    "slug": "paper:tan2019-mnasnet",
+    "path": "/papers/tan2019-mnasnet",
+    "type": "paper",
+    "title": "MnasNet: Platform-Aware Neural Architecture Search for Mobile",
+    "summary": "CVPR 2019 (arXiv 2018) 2019",
+    "tags": [
+      "mnasnet"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Tan",
+      "B. Chen",
+      "R. Pang",
+      "V. Vasudevan",
+      "M. Sandler",
+      "A. Howard",
+      "Q. V. Le"
+    ],
+    "venue": "CVPR 2019 (arXiv 2018)"
+  },
+  {
+    "slug": "paper:robinson2025-rf-detr",
+    "path": "/papers/robinson2025-rf-detr",
+    "type": "paper",
+    "title": "RF-DETR: Neural Architecture Search for Real-Time Detection Transformers",
+    "summary": "arXiv (2025)",
+    "tags": [
+      "rf",
+      "detr"
+    ],
+    "headings": [],
+    "authors": [
+      "I. Robinson",
+      "P. Robicheaux",
+      "M. Popov",
+      "D. Ramanan",
+      "N. Peri"
+    ],
+    "venue": "arXiv (2025)"
+  },
+  {
+    "slug": "paper:lin2025-depth-anything-3",
+    "path": "/papers/lin2025-depth-anything-3",
+    "type": "paper",
+    "title": "Depth Anything 3: Recovering the Visual Space from Any Views",
+    "summary": "arXiv (2025)",
+    "tags": [
+      "depth",
+      "anything",
+      "3"
+    ],
+    "headings": [],
+    "authors": [
+      "H. Lin",
+      "S. Chen",
+      "J. Liew",
+      "D. Y. Chen",
+      "Z. Li",
+      "G. Shi",
+      "J. Feng",
+      "B. Kang"
+    ],
+    "venue": "arXiv (2025)"
+  },
+  {
+    "slug": "paper:oquab2023-dinov2",
+    "path": "/papers/oquab2023-dinov2",
+    "type": "paper",
+    "title": "DINOv2: Learning Robust Visual Features without Supervision",
+    "summary": "TMLR 2024 (arXiv 2023)",
+    "tags": [
+      "dinov2"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Oquab",
+      "T. Darcet",
+      "T. Moutakanni",
+      "H. Vo",
+      "M. Szafraniec",
+      "V. Khalidov",
+      "P. Fernandez",
+      "D. Haziza",
+      "F. Massa",
+      "A. El-Nouby",
+      "M. Assran",
+      "N. Ballas",
+      "W. Galuba",
+      "R. Howes",
+      "P. Huang",
+      "S. Li",
+      "I. Misra",
+      "M. Rabbat",
+      "V. Sharma",
+      "G. Synnaeve",
+      "H. Xu",
+      "H. Jegou",
+      "J. Mairal",
+      "P. Labatut",
+      "A. Joulin",
+      "P. Bojanowski"
+    ],
+    "venue": "TMLR 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "paper:ranftl2019-midas",
+    "path": "/papers/ranftl2019-midas",
+    "type": "paper",
+    "title": "Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-shot Cross-dataset Transfer",
+    "summary": "TPAMI 2022 (arXiv 2019)",
+    "tags": [
+      "midas"
+    ],
+    "headings": [],
+    "authors": [
+      "R. Ranftl",
+      "K. Lasinger",
+      "D. Hafner",
+      "K. Schindler",
+      "V. Koltun"
+    ],
+    "venue": "TPAMI 2022 (arXiv 2019)"
+  },
+  {
+    "slug": "paper:yang2024-depth-anything",
+    "path": "/papers/yang2024-depth-anything",
+    "type": "paper",
+    "title": "Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data",
+    "summary": "CVPR 2024",
+    "tags": [
+      "depth",
+      "anything"
+    ],
+    "headings": [],
+    "authors": [
+      "L. Yang",
+      "B. Kang",
+      "Z. Huang",
+      "X. Xu",
+      "J. Feng",
+      "H. Zhao"
+    ],
+    "venue": "CVPR 2024"
+  },
+  {
+    "slug": "paper:yang2024-depth-anything-v2",
+    "path": "/papers/yang2024-depth-anything-v2",
+    "type": "paper",
+    "title": "Depth Anything V2",
+    "summary": "NeurIPS 2024",
+    "tags": [
+      "depth",
+      "anything",
+      "v2"
+    ],
+    "headings": [],
+    "authors": [
+      "L. Yang",
+      "B. Kang",
+      "Z. Huang",
+      "Z. Zhao",
+      "X. Xu",
+      "J. Feng",
+      "H. Zhao"
+    ],
+    "venue": "NeurIPS 2024"
+  },
+  {
+    "slug": "paper:wang2023-dust3r",
+    "path": "/papers/wang2023-dust3r",
+    "type": "paper",
+    "title": "DUSt3R: Geometric 3D Vision Made Easy",
+    "summary": "CVPR 2024 (arXiv 2023)",
+    "tags": [
+      "dust3r"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Wang",
+      "V. Leroy",
+      "Y. Cabon",
+      "B. Chidlovskii",
+      "J. Revaud"
+    ],
+    "venue": "CVPR 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "paper:leroy2024-mast3r",
+    "path": "/papers/leroy2024-mast3r",
+    "type": "paper",
+    "title": "Grounding Image Matching in 3D with MASt3R",
+    "summary": "ECCV 2024",
+    "tags": [
+      "mast3r"
+    ],
+    "headings": [],
+    "authors": [
+      "V. Leroy",
+      "Y. Cabon",
+      "J. Revaud"
+    ],
+    "venue": "ECCV 2024"
+  },
+  {
+    "slug": "paper:wang2025-vggt",
+    "path": "/papers/wang2025-vggt",
+    "type": "paper",
+    "title": "VGGT: Visual Geometry Grounded Transformer",
+    "summary": "CVPR 2025",
+    "tags": [
+      "vggt"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Wang",
+      "M. Chen",
+      "N. Karaev",
+      "A. Vedaldi",
+      "C. Rupprecht",
+      "D. Novotny"
+    ],
+    "venue": "CVPR 2025"
+  },
+  {
+    "slug": "paper:hartley1999-projective-rectification",
+    "path": "/papers/hartley1999-projective-rectification",
+    "type": "paper",
+    "title": "Theory and Practice of Projective Rectification",
+    "summary": "International Journal of Computer Vision 1999",
+    "tags": [
+      "projective",
+      "rectification"
+    ],
+    "headings": [],
+    "authors": [
+      "R. I. Hartley"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "paper:loop1999-rectifying-homographies",
+    "path": "/papers/loop1999-rectifying-homographies",
+    "type": "paper",
+    "title": "Computing Rectifying Homographies for Stereo Vision",
+    "summary": "IEEE CVPR 1999",
+    "tags": [
+      "rectifying",
+      "homographies"
+    ],
+    "headings": [],
+    "authors": [
+      "C. Loop",
+      "Z. Zhang"
+    ],
+    "venue": "IEEE CVPR 1999"
+  },
+  {
+    "slug": "paper:pollefeys1999-polar-rectification",
+    "path": "/papers/pollefeys1999-polar-rectification",
+    "type": "paper",
+    "title": "A Simple and Efficient Rectification Method for General Motion",
+    "summary": "IEEE ICCV 1999",
+    "tags": [
+      "polar",
+      "rectification"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Pollefeys",
+      "R. Koch",
+      "L. Van Gool"
+    ],
+    "venue": "IEEE ICCV 1999"
+  },
+  {
+    "slug": "paper:fusiello2000-compact-rectification",
+    "path": "/papers/fusiello2000-compact-rectification",
+    "type": "paper",
+    "title": "A Compact Algorithm for Rectification of Stereo Pairs",
+    "summary": "Machine Vision and Applications 2000",
+    "tags": [
+      "compact",
+      "rectification"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Fusiello",
+      "E. Trucco",
+      "A. Verri"
+    ],
+    "venue": "Machine Vision and Applications"
+  },
+  {
+    "slug": "paper:batzner2023-efficientad",
+    "path": "/papers/batzner2023-efficientad",
+    "type": "paper",
+    "title": "EfficientAD: Accurate Visual Anomaly Detection at Millisecond-Level Latencies",
+    "summary": "WACV 2024 (arXiv 2023)",
+    "tags": [
+      "efficientad"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Batzner",
+      "L. Heckler",
+      "R. König"
+    ],
+    "venue": "WACV 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "paper:bergmann2019-mvtec-ad",
+    "path": "/papers/bergmann2019-mvtec-ad",
+    "type": "paper",
+    "title": "MVTec AD — A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection",
+    "summary": "CVPR 2019",
+    "tags": [
+      "mvtec",
+      "ad"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Bergmann",
+      "M. Fauser",
+      "D. Sattlegger",
+      "C. Steger"
+    ],
+    "venue": "CVPR 2019"
+  },
+  {
+    "slug": "paper:bergmann2020-uninformed-students",
+    "path": "/papers/bergmann2020-uninformed-students",
+    "type": "paper",
+    "title": "Uninformed Students: Student-Teacher Anomaly Detection With Discriminative Latent Embeddings",
+    "summary": "CVPR 2020",
+    "tags": [
+      "uninformed",
+      "students"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Bergmann",
+      "M. Fauser",
+      "D. Sattlegger",
+      "C. Steger"
+    ],
+    "venue": "CVPR 2020"
+  },
+  {
+    "slug": "paper:bergmann2022-mvtec-loco",
+    "path": "/papers/bergmann2022-mvtec-loco",
+    "type": "paper",
+    "title": "Beyond Dents and Scratches: Logical Constraints in Unsupervised Anomaly Detection and Localization",
+    "summary": "International Journal of Computer Vision 2022",
+    "tags": [
+      "mvtec",
+      "loco"
+    ],
+    "headings": [],
+    "authors": [
+      "P. Bergmann",
+      "K. Batzner",
+      "M. Fauser",
+      "D. Sattlegger",
+      "C. Steger"
+    ],
+    "venue": "International Journal of Computer Vision"
+  },
+  {
+    "slug": "paper:roth2022-patchcore",
+    "path": "/papers/roth2022-patchcore",
+    "type": "paper",
+    "title": "Towards Total Recall in Industrial Anomaly Detection",
+    "summary": "CVPR 2022",
+    "tags": [
+      "patchcore"
+    ],
+    "headings": [],
+    "authors": [
+      "K. Roth",
+      "L. Pemula",
+      "J. Zepeda",
+      "B. Schölkopf",
+      "T. Brox",
+      "P. Gehler"
+    ],
+    "venue": "CVPR 2022"
+  },
+  {
+    "slug": "paper:rudolph2023-ast",
+    "path": "/papers/rudolph2023-ast",
+    "type": "paper",
+    "title": "Asymmetric Student-Teacher Networks for Industrial Anomaly Detection",
+    "summary": "WACV 2023",
+    "tags": [
+      "ast"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Rudolph",
+      "T. Wehrbein",
+      "B. Rosenhahn",
+      "B. Wandt"
+    ],
+    "venue": "WACV 2023"
+  },
+  {
+    "slug": "paper:zou2022-visa",
+    "path": "/papers/zou2022-visa",
+    "type": "paper",
+    "title": "SPot-the-Difference Self-Supervised Pre-training for Anomaly Detection and Segmentation",
+    "summary": "ECCV 2022",
+    "tags": [
+      "visa"
+    ],
+    "headings": [],
+    "authors": [
+      "Y. Zou",
+      "J. Jeong",
+      "L. Pemula",
+      "D. Zhang",
+      "O. Dabeer"
+    ],
+    "venue": "ECCV 2022"
+  },
+  {
+    "slug": "paper:vaswani2017-attention",
+    "path": "/papers/vaswani2017-attention",
+    "type": "paper",
+    "title": "Attention Is All You Need",
+    "summary": "NeurIPS 2017",
+    "tags": [
+      "attention"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Vaswani",
+      "N. Shazeer",
+      "N. Parmar",
+      "J. Uszkoreit",
+      "L. Jones",
+      "A. N. Gomez",
+      "Ł. Kaiser",
+      "I. Polosukhin"
+    ],
+    "venue": "NeurIPS 2017"
+  },
+  {
+    "slug": "paper:bahdanau2014-align",
+    "path": "/papers/bahdanau2014-align",
+    "type": "paper",
+    "title": "Neural Machine Translation by Jointly Learning to Align and Translate",
+    "summary": "ICLR 2015 2014",
+    "tags": [
+      "align"
+    ],
+    "headings": [],
+    "authors": [
+      "D. Bahdanau",
+      "K. Cho",
+      "Y. Bengio"
+    ],
+    "venue": "ICLR 2015"
+  },
+  {
+    "slug": "paper:katharopoulos2020-linear-attention",
+    "path": "/papers/katharopoulos2020-linear-attention",
+    "type": "paper",
+    "title": "Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention",
+    "summary": "ICML 2020",
+    "tags": [
+      "linear",
+      "attention"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Katharopoulos",
+      "A. Vyas",
+      "N. Pappas",
+      "F. Fleuret"
+    ],
+    "venue": "ICML 2020"
+  },
+  {
+    "slug": "paper:darcet2023-registers",
+    "path": "/papers/darcet2023-registers",
+    "type": "paper",
+    "title": "Vision Transformers Need Registers",
+    "summary": "ICLR 2024 2023",
+    "tags": [
+      "registers"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Darcet",
+      "M. Oquab",
+      "J. Mairal",
+      "P. Bojanowski"
+    ],
+    "venue": "ICLR 2024"
+  },
+  {
+    "slug": "paper:dao2022-flashattention",
+    "path": "/papers/dao2022-flashattention",
+    "type": "paper",
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "summary": "NeurIPS 2022",
+    "tags": [
+      "flashattention"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Dao",
+      "D. Y. Fu",
+      "S. Ermon",
+      "A. Rudra",
+      "C. Ré"
+    ],
+    "venue": "NeurIPS 2022"
+  },
+  {
+    "slug": "paper:su2021-roformer",
+    "path": "/papers/su2021-roformer",
+    "type": "paper",
+    "title": "RoFormer: Enhanced Transformer with Rotary Position Embedding",
+    "summary": "Neurocomputing 2024 2021",
+    "tags": [
+      "roformer"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Su",
+      "Y. Lu",
+      "S. Pan",
+      "A. Murtadha",
+      "B. Wen",
+      "Y. Liu"
+    ],
+    "venue": "Neurocomputing 2024"
+  },
+  {
+    "slug": "paper:ainslie2023-gqa",
+    "path": "/papers/ainslie2023-gqa",
+    "type": "paper",
+    "title": "GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints",
+    "summary": "EMNLP 2023",
+    "tags": [
+      "gqa"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Ainslie",
+      "J. Lee-Thorp",
+      "M. de Jong",
+      "Y. Zemlyanskiy",
+      "F. Lebrón",
+      "S. Sanghai"
+    ],
+    "venue": "EMNLP 2023"
+  },
+  {
+    "slug": "paper:ioffe2015-batchnorm",
+    "path": "/papers/ioffe2015-batchnorm",
+    "type": "paper",
+    "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+    "summary": "ICML 2015",
+    "tags": [
+      "batchnorm"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Ioffe",
+      "C. Szegedy"
+    ],
+    "venue": "ICML 2015"
+  },
+  {
+    "slug": "paper:ba2016-layernorm",
+    "path": "/papers/ba2016-layernorm",
+    "type": "paper",
+    "title": "Layer Normalization",
+    "summary": "arXiv preprint 2016",
+    "tags": [
+      "layernorm"
+    ],
+    "headings": [],
+    "authors": [
+      "J. L. Ba",
+      "J. R. Kiros",
+      "G. E. Hinton"
+    ],
+    "venue": "arXiv preprint"
+  },
+  {
+    "slug": "paper:wu2018-groupnorm",
+    "path": "/papers/wu2018-groupnorm",
+    "type": "paper",
+    "title": "Group Normalization",
+    "summary": "ECCV 2018",
+    "tags": [
+      "groupnorm"
+    ],
+    "headings": [],
+    "authors": [
+      "Y. Wu",
+      "K. He"
+    ],
+    "venue": "ECCV 2018"
+  },
+  {
+    "slug": "paper:caron2021-dino",
+    "path": "/papers/caron2021-dino",
+    "type": "paper",
+    "title": "Emerging Properties in Self-Supervised Vision Transformers",
+    "summary": "ICCV 2021",
+    "tags": [
+      "dino"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Caron",
+      "H. Touvron",
+      "I. Misra",
+      "H. Jégou",
+      "J. Mairal",
+      "P. Bojanowski",
+      "A. Joulin"
+    ],
+    "venue": "ICCV 2021"
+  },
+  {
+    "slug": "paper:simeoni2025-dinov3",
+    "path": "/papers/simeoni2025-dinov3",
+    "type": "paper",
+    "title": "DINOv3",
+    "summary": "arXiv preprint 2025",
+    "tags": [
+      "dinov3"
+    ],
+    "headings": [],
+    "authors": [
+      "O. Siméoni",
+      "H. V. Vo",
+      "M. Seitzer",
+      "F. Baldassarre",
+      "M. Oquab",
+      "C. Jose",
+      "V. Khalidov",
+      "M. Szafraniec",
+      "S. Yi",
+      "M. Ramamonjisoa",
+      "F. Massa",
+      "D. Haziza",
+      "L. Wehrstedt",
+      "J. Wang",
+      "T. Darcet",
+      "T. Moutakanni",
+      "L. Sentana",
+      "C. Roberts",
+      "A. Vedaldi",
+      "J. Tolan",
+      "J. Brandt",
+      "C. Couprie",
+      "J. Mairal",
+      "H. Jégou",
+      "P. Labatut",
+      "P. Bojanowski"
+    ],
+    "venue": "arXiv preprint"
+  },
+  {
+    "slug": "paper:hinton2015-distillation",
+    "path": "/papers/hinton2015-distillation",
+    "type": "paper",
+    "title": "Distilling the Knowledge in a Neural Network",
+    "summary": "NeurIPS 2014 Deep Learning Workshop (arXiv 2015)",
+    "tags": [
+      "distillation"
+    ],
+    "headings": [],
+    "authors": [
+      "G. E. Hinton",
+      "O. Vinyals",
+      "J. Dean"
+    ],
+    "venue": "NeurIPS 2014 Deep Learning Workshop (arXiv 2015)"
+  },
+  {
+    "slug": "paper:touvron2020-deit",
+    "path": "/papers/touvron2020-deit",
+    "type": "paper",
+    "title": "Training data-efficient image transformers & distillation through attention",
+    "summary": "ICML 2021 (arXiv 2020)",
+    "tags": [
+      "deit"
+    ],
+    "headings": [],
+    "authors": [
+      "H. Touvron",
+      "M. Cord",
+      "M. Douze",
+      "F. Massa",
+      "A. Sablayrolles",
+      "H. Jégou"
+    ],
+    "venue": "ICML 2021 (arXiv 2020)"
+  },
+  {
+    "slug": "paper:liu2021-swin",
+    "path": "/papers/liu2021-swin",
+    "type": "paper",
+    "title": "Swin Transformer: Hierarchical Vision Transformer using Shifted Windows",
+    "summary": "ICCV 2021",
+    "tags": [
+      "swin"
+    ],
+    "headings": [],
+    "authors": [
+      "Z. Liu",
+      "Y. Lin",
+      "Y. Cao",
+      "H. Hu",
+      "Y. Wei",
+      "Z. Zhang",
+      "S. Lin",
+      "B. Guo"
+    ],
+    "venue": "ICCV 2021"
+  },
+  {
+    "slug": "paper:chen2020-simclr",
+    "path": "/papers/chen2020-simclr",
+    "type": "paper",
+    "title": "A Simple Framework for Contrastive Learning of Visual Representations",
+    "summary": "ICML 2020",
+    "tags": [
+      "simclr"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Chen",
+      "S. Kornblith",
+      "M. Norouzi",
+      "G. E. Hinton"
+    ],
+    "venue": "ICML 2020"
+  },
+  {
+    "slug": "paper:he2019-moco",
+    "path": "/papers/he2019-moco",
+    "type": "paper",
+    "title": "Momentum Contrast for Unsupervised Visual Representation Learning",
+    "summary": "CVPR 2020 (arXiv 2019)",
+    "tags": [
+      "moco"
+    ],
+    "headings": [],
+    "authors": [
+      "K. He",
+      "H. Fan",
+      "Y. Wu",
+      "S. Xie",
+      "R. Girshick"
+    ],
+    "venue": "CVPR 2020 (arXiv 2019)"
+  },
+  {
+    "slug": "paper:grill2020-byol",
+    "path": "/papers/grill2020-byol",
+    "type": "paper",
+    "title": "Bootstrap your own latent: A new approach to self-supervised Learning",
+    "summary": "NeurIPS 2020",
+    "tags": [
+      "byol"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Grill",
+      "F. Strub",
+      "F. Altché",
+      "C. Tallec",
+      "P. H. Richemond",
+      "E. Buchatskaya",
+      "C. Doersch",
+      "B. Á. Pires",
+      "Z. D. Guo",
+      "M. G. Azar",
+      "B. Piot",
+      "K. Kavukcuoglu",
+      "R. Munos",
+      "M. Valko"
+    ],
+    "venue": "NeurIPS 2020"
+  },
+  {
+    "slug": "paper:radford2021-clip",
+    "path": "/papers/radford2021-clip",
+    "type": "paper",
+    "title": "Learning Transferable Visual Models From Natural Language Supervision",
+    "summary": "ICML 2021",
+    "tags": [
+      "clip"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Radford",
+      "J. W. Kim",
+      "C. Hallacy",
+      "A. Ramesh",
+      "G. Goh",
+      "S. Agarwal",
+      "G. Sastry",
+      "A. Askell",
+      "P. Mishkin",
+      "J. Clark",
+      "G. Krueger",
+      "I. Sutskever"
+    ],
+    "venue": "ICML 2021"
+  },
+  {
+    "slug": "paper:tschannen2025-siglip2",
+    "path": "/papers/tschannen2025-siglip2",
+    "type": "paper",
+    "title": "SigLIP 2: Multilingual Vision-Language Encoders with Improved Semantic Understanding, Localization, and Dense Features",
+    "summary": "arXiv preprint 2025",
+    "tags": [
+      "siglip2"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Tschannen",
+      "A. A. Gritsenko",
+      "X. Wang",
+      "M. F. Naeem",
+      "I. Alabdulmohsin",
+      "N. Parthasarathy",
+      "T. Evans",
+      "L. Beyer",
+      "Y. Xia",
+      "B. Mustafa",
+      "O. J. Hénaff",
+      "J. Harmsen",
+      "A. Steiner",
+      "X. Zhai"
+    ],
+    "venue": "arXiv preprint"
+  },
+  {
+    "slug": "paper:jeong2023-winclip",
+    "path": "/papers/jeong2023-winclip",
+    "type": "paper",
+    "title": "WinCLIP: Zero-/Few-Shot Anomaly Classification and Segmentation",
+    "summary": "CVPR 2023",
+    "tags": [
+      "winclip"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Jeong",
+      "Y. Zou",
+      "T. Kim",
+      "D. Zhang",
+      "A. Ravichandran",
+      "O. Dabeer"
+    ],
+    "venue": "CVPR 2023"
+  },
+  {
+    "slug": "paper:zhou2023-anomalyclip",
+    "path": "/papers/zhou2023-anomalyclip",
+    "type": "paper",
+    "title": "AnomalyCLIP: Object-agnostic Prompt Learning for Zero-shot Anomaly Detection",
+    "summary": "ICLR 2024 (arXiv 2023)",
+    "tags": [
+      "anomalyclip"
+    ],
+    "headings": [],
+    "authors": [
+      "Q. Zhou",
+      "G. Pang",
+      "Y. Tian",
+      "S. He",
+      "J. Chen"
+    ],
+    "venue": "ICLR 2024 (arXiv 2023)"
+  },
+  {
+    "slug": "paper:liu2023-simplenet",
+    "path": "/papers/liu2023-simplenet",
+    "type": "paper",
+    "title": "SimpleNet: A Simple Network for Image Anomaly Detection and Localization",
+    "summary": "CVPR 2023",
+    "tags": [
+      "simplenet"
+    ],
+    "headings": [],
+    "authors": [
+      "Z. Liu",
+      "Y. Zhou",
+      "Y. Xu",
+      "Z. Wang"
+    ],
+    "venue": "CVPR 2023"
+  },
+  {
+    "slug": "paper:teed2020-raft",
+    "path": "/papers/teed2020-raft",
+    "type": "paper",
+    "title": "RAFT: Recurrent All-Pairs Field Transforms for Optical Flow",
+    "summary": "ECCV 2020",
+    "tags": [
+      "raft"
+    ],
+    "headings": [],
+    "authors": [
+      "Z. Teed",
+      "J. Deng"
+    ],
+    "venue": "ECCV 2020"
+  },
+  {
+    "slug": "paper:schonberger2016-colmap",
+    "path": "/papers/schonberger2016-colmap",
+    "type": "paper",
+    "title": "Structure-from-Motion Revisited",
+    "summary": "CVPR 2016",
+    "tags": [
+      "colmap"
+    ],
+    "headings": [],
+    "authors": [
+      "J. L. Schönberger",
+      "J. Frahm"
+    ],
+    "venue": "CVPR 2016"
+  },
+  {
+    "slug": "paper:kannala2006-generic",
+    "path": "/papers/kannala2006-generic",
+    "type": "paper",
+    "title": "A Generic Camera Model and Calibration Method for Conventional, Wide-Angle, and Fish-Eye Lenses",
+    "summary": "IEEE Transactions on Pattern Analysis and Machine Intelligence 2006",
+    "tags": [
+      "generic"
+    ],
+    "headings": [],
+    "authors": [
+      "J. Kannala",
+      "S. S. Brandt"
+    ],
+    "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "slug": "paper:chum2003-lo-ransac",
+    "path": "/papers/chum2003-lo-ransac",
+    "type": "paper",
+    "title": "Locally Optimized RANSAC",
+    "summary": "DAGM 2003 (Lecture Notes in Computer Science) 2003",
+    "tags": [
+      "lo",
+      "ransac"
+    ],
+    "headings": [],
+    "authors": [
+      "O. Chum",
+      "J. Matas",
+      "J. Kittler"
+    ],
+    "venue": "DAGM 2003 (Lecture Notes in Computer Science)"
+  },
+  {
+    "slug": "paper:lin2017-fpn",
+    "path": "/papers/lin2017-fpn",
+    "type": "paper",
+    "title": "Feature Pyramid Networks for Object Detection",
+    "summary": "CVPR 2017",
+    "tags": [
+      "fpn"
+    ],
+    "headings": [],
+    "authors": [
+      "T. Lin",
+      "P. Dollár",
+      "R. Girshick",
+      "K. He",
+      "B. Hariharan",
+      "S. Belongie"
+    ],
+    "venue": "CVPR"
+  },
+  {
+    "slug": "paper:ranftl2021-dpt",
+    "path": "/papers/ranftl2021-dpt",
+    "type": "paper",
+    "title": "Vision Transformers for Dense Prediction",
+    "summary": "ICCV 2021",
+    "tags": [
+      "dpt"
+    ],
+    "headings": [],
+    "authors": [
+      "R. Ranftl",
+      "A. Bochkovskiy",
+      "V. Koltun"
+    ],
+    "venue": "ICCV"
+  },
+  {
+    "slug": "paper:kirillov2020-pointrend",
+    "path": "/papers/kirillov2020-pointrend",
+    "type": "paper",
+    "title": "PointRend: Image Segmentation As Rendering",
+    "summary": "CVPR 2020",
+    "tags": [
+      "pointrend"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Kirillov",
+      "Y. Wu",
+      "K. He",
+      "R. Girshick"
+    ],
+    "venue": "CVPR"
   }
 ];

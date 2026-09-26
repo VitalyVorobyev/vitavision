@@ -46,6 +46,27 @@ Resolve the canonical `source-id` from the input (same logic as Step 1 — for a
 
 Rationale: notes are hand-curated reasoning substrate. Auto-overwriting destroys human edits.
 
+### Refresh mode (v1 → v2)
+
+Step 0 blocks re-ingestion, not migration. When the user or an approved plan asks to bring an
+existing pre-pivot note up to v2 (WS-H; `bun run notes:status` lists v1 notes by page degree),
+skip Steps 1–5 and run the **Refresh contract** in `.claude/skills/_shared/subagent-prompts.md`
+instead of Extract. The refresh is insert-only:
+
+- `# Claimed contributions` goes directly after `# Core idea`; `# Stated relations` goes directly
+  after `# Applicability` — both in the template's format.
+- The frontmatter gains `refreshed: <today>`; `created:` is kept.
+- Every other line stays byte-identical, including the update plan and any recorded `Relations:`
+  lines. Corrections the subagent notices in existing prose go into its reply, not the file.
+
+The orchestrator checks `git diff` for insertions only, then runs Step 4b over the new
+Stated-relations table against the page's current `relations[]`: each existing edge is
+*supported*, *unsupported* (keep with lower confidence + caution, or drop), and each unstated
+row is a *new proposal* or *no edge* (Rule B / data-flow). The user confirms every change; only
+confirmed rows become `Relations:` lines. A paper with no Related Work / contributions structure
+still gets both headings, each holding a one-line reason why it is empty, so the note counts as
+migrated.
+
 ### Step 1 — Identify the paper
 
 Parse the input to canonical form (`arxiv:<id>` or `doi:<doi>`). For URLs, extract the arxiv id or DOI first. For local PDFs, extract what metadata is available from the PDF header; if the title or DOI is visible, resolve it.
@@ -58,6 +79,8 @@ Check whether the paper's id already exists in `docs/papers/index.yaml`. If not,
 - **`url`**: OpenAlex's best open-access link. If it looks fragile, run `curl -fLsI <url> | head -3` to confirm 200; replace with a stabler mirror if it 404s.
 
 Append the stanza to the end of `docs/papers/index.yaml`. Preserve inline `# <title>` comments on existing `<name><year>-???` lines. Show the user the diff.
+
+Then link the paper's authors: `bun run papers:backfill-authors --dry-run --only <id>`, review, `--write --only <id>`, and run `bun run authors:dupes` — if a new id collides with an existing identity, hand off to the `author-identity` skill (Workflow B/C) before continuing.
 
 ### Step 3 — Choose the `paper-id`
 
@@ -85,26 +108,17 @@ The orchestrator confirms the candidate list with the user before proceeding: "I
 
 ### Step 4b — Typed-relations check
 
-Before deciding the paper's role, the orchestrator surfaces the typed-relations question to the user **verbatim** (no auto-detection from title heuristics or year delta):
+Typed relations are never auto-committed. How the question is grounded depends on the paper:
 
-> "For each candidate slug above, is there a typed relationship between **this** paper and that page? The vocabulary is fixed (see CLAUDE.md → Relations field), in three categories:
->
-> *Lineage:*
-> - `generalized_by` — same problem, target strictly more general/robust.
-> - `alternative_formulation_of` — same problem, different mathematical formulation; both coexist.
-> - `parallel_foundation_with` — concurrent peers that founded the field together.
-> - `extended_by` — target builds on this method without replacing it.
->
-> *Practice:*
-> - `compared_with` — peer practitioner choice; reader picks one.
-> - `feeds_into` — intellectual/compositional lineage: B was conceived building on A, incorporating A as a named component. **Not** runtime data-flow. Must respect chronology: A's paper ≤ B's. Example: VGG → FCN; FAST → ORB.
->
-> *Cross-paradigm:*
-> - `learned_alternative_of` — this paper's deep-learning model replaces classical target algorithm. (Model→algorithm only.)
+**Modern papers with an explicit Related Work / contributions structure (the common case for deep-learning papers):** defer this step until after Step 6. The Extract subagent fills the note's `# Claimed contributions` and `# Stated relations` sections (see `docs/research/templates/source-note.md`) — the paper's own positioning statements, each with a quote + location and a *proposed* `relations[].type` mapped through the CLAUDE.md rules (Rule A supersession≠comparison, Rule B cross-domain→no edge, `feeds_into`≠data-flow). The orchestrator then presents that table to the user for confirmation, row by row, instead of the abstract vocabulary question below. Papers position themselves promotionally — "unlike X, we…" claims may be unfair to X — so a row is confirmed only against the counterpart's note (when it exists) and the user's or the approved plan's decision. Rows the user rejects or defers are left in the table unconfirmed; only confirmed rows become `Relations:` lines (recording format below).
+
+**Papers without such structure (most classical papers), or when the Stated-relations table came back empty:** surface the typed-relations question to the user **verbatim** (no auto-detection from title heuristics or year delta):
+
+> "For each candidate slug above, is there a typed relationship between **this** paper and that page? The vocabulary is fixed — see CLAUDE.md → 'Relations field' for the full list of types (`generalized_by`, `alternative_formulation_of`, `parallel_foundation_with`, `extended_by`, `compared_with`, `feeds_into`, `learned_alternative_of`) and → 'Comparison authoring discipline' Rules A–C for how to pick one (Rule A: supersession is not `compared_with`; Rule B: cross-domain pairs get no edge; Rule C: don't use `feeds_into` for a data-flow-only pipeline).
 >
 > For each relation, give: `(type, target-slug, confidence: high|medium|low, optional caution: <one line>)`. If any relation is `generalized_by` with `confidence: high` AND you intend the older page to render as preserved-for-lineage-only, also flag it as `quality: historical`. If unsure on any of these, answer 'no relation' — we can revisit at page-authoring time."
 
-The user's answer is recorded in the note's update plan:
+In both flows, the confirmed decisions are recorded in the note's update plan:
 
 - In an existing-page `## UPDATE: <slug>` block: append a `Relations:` block listing each relation as one line — `{ type: <type>, target: <slug>, confidence: <high|medium|low>, caution: <text or omit> }`. If the user also flagged the page historical, append `Quality: historical` on its own line.
 - In a `## NEW: <suggested-slug>` block: same shape, applied to the new page being authored.
@@ -119,7 +133,7 @@ The orchestrator does not edit any `content/**` file — `algo-page` reads the r
 
 **New page candidate** — neither of the above applies. Evaluate against the page-creation criterion:
 - Algorithm page: clear novel method with at least one substantive technical contribution not already described on an existing page.
-- Concept page: would be referenced by 3+ existing or planned public pages AND can support ≥500 words of substantive standalone content.
+- Concept page: a genuinely fundamental, cross-cutting CV concept that can support ≥500 words of substantive standalone content, synthesised from ≥3 distinct sources — referencing-page count is not a gate (see `docs/README.md` §2).
 
 If the criterion is met, write bullets under `## NEW: <suggested-slug>`. If not, still create the research note (preserves provenance), but leave the Atlas update plan section empty with a one-sentence explanation of why no page is warranted.
 
@@ -188,9 +202,9 @@ The distinction matters because primary-update notes are applied to a single pag
 - **Never invent paper IDs not in `docs/papers/index.yaml`.** If the ID is unknown, run `bun papers:fetch-meta` first.
 - **Never reference unresolved Atlas slugs in the update plan.** Verify a slug exists in `content/algorithms/`, `content/models/`, or `content/concepts/` before writing it under `## NEW:` or `## UPDATE:`.
 - **Never write `usedBy:` (or any reverse edge) anywhere.** Reverse edges are computed by the build from `src/generated/content-graph.ts`.
-- **Never overwrite an existing research note.** Step 0 enforces this. To re-author, delete the note first.
+- **Never overwrite an existing research note.** Step 0 enforces this. To re-author, delete the note first. The v1 → v2 Refresh mode is the one exception, and it only inserts.
 - **Never read the cache `.txt` / `.html` directly in the orchestrator.** Cache reads happen inside the delegated Extract contract; the orchestrator only sees Sonnet's reply.
-- **Never auto-detect typed relations or historical status from title heuristics, year delta, or any other signal.** Always ask the user (Step 4b). Even when the answer seems obvious — a paper from 1987 about a method later replaced by a 2000 paper that is already on the site — the orchestrator surfaces the question and records the user's answer verbatim, including the confidence level and any caution. The cost of one short question is far smaller than the cost of silently mislabelling a relation type or marking a page historical.
+- **Never auto-commit typed relations or historical status.** The Extract subagent may *propose* relations in the note's `# Stated relations` table — but only from the paper's own positioning statements, each anchored to a quote + location, never from title heuristics or year delta. Committing any relation (recording a `Relations:` line, marking a page historical) always requires the user's or the approved plan's explicit confirmation (Step 4b). Even when the answer seems obvious, the orchestrator surfaces the proposal and records the confirmed answer, including confidence and any caution. The cost of one short question is far smaller than the cost of silently mislabelling a relation type or marking a page historical.
 
 ## References
 

@@ -123,7 +123,7 @@ The renderer groups entries into three sidebar sections by category — **Lineag
 
 Frontmatter `sources.primary` and `sources.references[]` accept three source kinds, all registered in `docs/papers/index.yaml`:
 
-- `<bare-id>` or `paper:<id>` — a paper. Default kind; the 45+ existing entries use this form. Do not invent paper IDs.
+- `<bare-id>` or `paper:<id>` — a paper. Default kind; most existing entries use this form. Do not invent paper IDs.
 - `repo:<https-url>@<sha>` — a GitHub repo pinned at a 7–40-char commit SHA. The index entry must exist with `kind: repo` and matching commit. Use this for repos cited as background or comparison; for the page's own reference implementation use `sources.impl` (algo) or `implementations[]` (model) — those are richer-typed and license-verified.
 - `doc:<repo-relative-path>` — a markdown doc inside this repo. The path must exist under `docs/` or `content/`. Index entry has `kind: doc`.
 
@@ -133,18 +133,55 @@ Each registered source has a corresponding research note at `docs/research/notes
 
 Concept pages may omit `sources:` if no canonical source exists.
 
-### Validation
-Run `bun run scripts/validate-content.ts` **by path** before opening a PR. It checks slug
-resolution (including `relations[].target`), prerequisite cycles, source-id existence, and
-canonical-quality gates.
+### Narratives
 
-CI's `validate-content` job runs both scripts: `bun run content:validate` →
-`scripts/content-validate.ts` (narrower — blog/algorithm internal links and
-`relatedPosts` only), and `bun run scripts/validate-content.ts` by path (the real
-Atlas graph validator described above). The two script names are confusingly
-similar but cover different ground — don't assume one supersedes the other, and
-don't remove either without replacing its coverage. `bun run build` still does not
-run either validator, so a local build succeeding is not proof content is valid.
+`content/narratives/<slug>.md` — a curated argument told by moving through the atlas graph, not
+an encyclopedic page. Node kinds are XOR: an atlas slug (published, non-draft), a registered
+paper id, or a `question` (free-text, ≤200 chars, no year, no link, not counted as debt). Paper
+nodes are tracked page debt — `bun run narratives:debt` lists them; anything contributing to a
+narrative should eventually get a page. Edges use their own vocabulary
+(`prerequisite | evolution | bridge | contrast`), deliberately distinct from `relations[]` —
+narrative edges compress the graph at story altitude and must not contradict the pages' authored
+Atlas relations (the validator warns, does not error, on contradiction). Steps carry an optional
+`claim` (≤360 chars, the step headline) plus chapter-length prose in the body; `walkthrough:
+reveal` (narrative-level, default `focus`) hides not-yet-focused nodes/edges instead of dimming
+them. Author or update via the `narrative-page` skill.
+
+### Authors registry
+
+`docs/papers/authors.yaml` holds author identities keyed by OpenAlex id; `docs/papers/index.yaml`
+papers carry `authorIds`. Never hand-invent an id — resolve via OpenAlex. Duplicate identities
+merge via `mergedInto` (the build resolves aliases; `/authors/<old-id>` redirects); never delete a row
+to fix a split identity. Maintain via the `author-identity` skill: `bun run papers:backfill-authors --only <id>`
+after each ingest, `bun run authors:dupes` to find candidate splits, OpenAlex evidence before any merge.
+
+### Validation
+There is one validator: `scripts/validate-content.ts` (implementation in `scripts/validate/**` —
+a `ValidationContext` builder in `context.ts` plus one pure `(ctx) => Diagnostic[]` rule module
+per check under `rules/*.ts`, each with its own vitest fixtures). `bun run content:validate` runs
+it on published pages only; `INCLUDE_DRAFTS=true bun run content:validate` includes drafts. Run
+it (or `bun run build`, below) before opening a PR.
+
+It checks, across all content kinds it applies to: slug resolution (`prerequisites`,
+`failureModes`, `relations[].target`, including `relatedAlgorithms`'s legacy global-namespace
+form), prerequisite cycles, source-id existence, canonical-quality gates, typed-relation/historical
+gates, feeds_into chronology, model implementations requirements, domain/tag drift, prose
+references (warning only), narrative rules (node XOR, page/paper resolution, lens/step
+completeness, edge-vs-Atlas-relations warnings), blog/demo frontmatter schemas, image references
+(existence + empty-alt warning, all kinds), internal links (`/atlas/...`, `/blog/...`,
+`/demos/...`, `/authors/...`, `/papers/...`, static routes, legacy-redirect warnings, unresolved-anchor
+warnings), cross-content references (`relatedPosts`, `relatedDemos`, legacy
+`relatedAlgorithms`), and author registry integrity (`authorIds` resolve against
+`docs/papers/authors.yaml`, a paper missing `authorIds` warns, an `authorIds`/`authors`
+length mismatch warns, and a `mergedInto` target must exist and be acyclic).
+
+`bun run build` (`INCLUDE_DRAFTS=true bun run content:build && tsc -b && vite build`)
+already runs this same validator with drafts included, via `scripts/content-build.ts`, and
+throws on any validation error — a local build succeeding on its own IS proof the graph
+validates against the include-drafts set.
+
+CI's `validate-content` job runs `bun run content:validate` on published pages only
+(no `INCLUDE_DRAFTS`) — the one case `bun run build` doesn't cover.
 
 ### Research notes (unpublished reasoning substrate)
 

@@ -12,6 +12,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
 import { PapersProvider } from './lib/atlas/papersIndex.tsx';
+import { AuthorsProvider } from './lib/atlas/authorsIndex.tsx';
+import { ScholarlyProvider } from './lib/atlas/scholarlyIndex.tsx';
 import { StaticContentProvider, type StaticContentContextValue } from './lib/content/ssr-content.tsx';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
@@ -23,6 +25,9 @@ const Blog = lazy(() => import('./pages/Blog'));
 const BlogPost = lazy(() => import('./pages/BlogPost'));
 const AlgorithmIndex = lazy(() => import('./pages/AlgorithmIndex'));
 const AtlasPost = lazy(() => import('./pages/AtlasPost'));
+const NarrativePage = lazy(() => import('./pages/NarrativePage'));
+const AuthorPage = lazy(() => import('./pages/AuthorPage'));
+const PaperPage = lazy(() => import('./pages/PaperPage'));
 const DemoIndex = lazy(() => import('./pages/DemoIndex'));
 const DemoPage = lazy(() => import('./pages/DemoPage'));
 const Editor = lazy(() => import('./pages/Editor'));
@@ -59,7 +64,14 @@ function AppLayout() {
                         <Route path="/blog" element={<Blog />} />
                         <Route path="/blog/:slug" element={<BlogPost />} />
                         <Route path="/atlas" element={<AlgorithmIndex />} />
+                        {/* Static segment must be matched before the /atlas/:slug catch-all. */}
+                        <Route path="/atlas/narratives/:slug" element={<NarrativePage />} />
                         <Route path="/atlas/:slug" element={<AtlasPost />} />
+                        {/* The People view replaces the old unlisted author register. */}
+                        <Route path="/authors" element={<Navigate to="/atlas?view=people" replace />} />
+                        <Route path="/authors/:id" element={<AuthorPage />} />
+                        {/* Unlisted paper register — reached from source strips/bylines, not the navbar. */}
+                        <Route path="/papers/:id" element={<PaperPage />} />
                         {/* Legacy redirects — preserve inbound links and old SEO URLs. */}
                         <Route path="/algorithms" element={<Navigate to="/atlas" replace />} />
                         <Route path="/algorithms/models" element={<Navigate to="/atlas?kind=model" replace />} />
@@ -102,9 +114,13 @@ function App({ ssrSnapshot = {} }: { ssrSnapshot?: StaticContentContextValue }) 
                 <StaticContentProvider value={ssrSnapshot}>
                     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                         <PapersProvider>
+                        <AuthorsProvider>
+                        <ScholarlyProvider>
                             <Router>
                                 <AppLayout />
                             </Router>
+                        </ScholarlyProvider>
+                        </AuthorsProvider>
                         </PapersProvider>
                         <Toaster richColors closeButton position="bottom-right" />
                     </ThemeProvider>

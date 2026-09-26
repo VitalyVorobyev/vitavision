@@ -6,6 +6,7 @@ tags: ["deep-learning"]
 domain: features
 tasks: [image-classification]
 author: "Vitaly Vorobyev"
+quality: canonical
 difficulty: intermediate
 arch_family: cnn
 params: "11.7M (ResNet-18), 25.6M (ResNet-50), 44.5M (ResNet-101), 60.2M (ResNet-152) — torchvision"
@@ -13,6 +14,9 @@ flops: "1.8 GMAC (18), 3.8 GMAC (50), 7.6 GMAC (101), 11.3 GMAC (152) @ 224×224
 prerequisites: [convolutional-neural-network]
 failureModes: []
 relations:
+  - type: feeds_into
+    target: clip
+    confidence: high
   - type: compared_with
     target: googlenet
     confidence: high
@@ -33,6 +37,17 @@ relations:
     target: efficientad
     confidence: medium
     caution: "EfficientAD distils its patch description network from a WideResNet-101 teacher; the wide variant is not this page's subject, hence medium confidence."
+  - type: feeds_into
+    target: fpn
+    confidence: high
+  - type: feeds_into
+    target: hrnet
+    confidence: high
+    caution: "HRNet's first stage is built from ResNet-50 bottleneck units and follows ResNet's depth-per-stage rule (HRNet §3); the two also remain peer backbones."
+  - type: feeds_into
+    target: detr
+    confidence: high
+    caution: "DETR's CNN backbone is an ImageNet-pretrained ResNet-50/101 feeding the transformer encoder (DETR §3.2, §4)."
 sources:
   primary: he2016-resnet
   references:

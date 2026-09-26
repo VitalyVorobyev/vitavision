@@ -1,0 +1,251 @@
+import { describe, it, expect } from "vitest";
+import {
+    buildTimelineLens,
+    normalizeCoordsToUnitSquare,
+    sliceChapters,
+    violatesEvolutionChronology,
+    findLensOrderInversions,
+    resolveNode,
+    resolveNarrative,
+    buildNarrativeIndexEntry,
+} from "./narrative-build.ts";
+import type { AtlasPageLookup, PaperLookup } from "./narrative-build.ts";
+import type { NarrativeFrontmatter, ResolvedNarrative } from "../src/lib/content/schema.ts";
+
+describe("buildTimelineLens", () => {
+    it("gives one grid column per year for short ranges and sets y to the area's lane index", () => {
+        const lens = buildTimelineLens(
+            [
+                { id: "a", year: 2015, area: "foundations" },
+                { id: "b", year: 2020, area: "architectures" },
+                { id: "c", year: 2025, area: "foundations" },
+            ],
+            ["foundations", "architectures"],
+        );
+        expect(lens.id).toBe("timeline");
+        expect(lens.coords.a).toEqual([0, 0]);
+        expect(lens.coords.b).toEqual([5, 1]);
+        expect(lens.coords.c).toEqual([10, 0]);
+    });
+
+    it("compresses ranges wider than 14 years to 14 grid columns, staying linear in the year", () => {
+        const lens = buildTimelineLens(
+            [
+                { id: "a", year: 1990, area: "foundations" },
+                { id: "b", year: 2004, area: "foundations" },
+                { id: "c", year: 2018, area: "foundations" },
+            ],
+            ["foundations"],
+        );
+        expect(lens.coords.a[0]).toBe(0);
+        expect(lens.coords.b[0]).toBeCloseTo(7, 6);
+        expect(lens.coords.c[0]).toBeCloseTo(14, 6);
+    });
+
+    it("omits nodes with no derivable year", () => {
+        const lens = buildTimelineLens(
+            [
+                { id: "a", year: 2000, area: "foundations" },
+                { id: "b", area: "foundations" },
+            ],
+            ["foundations"],
+        );
+        expect(Object.keys(lens.coords)).toEqual(["a"]);
+    });
+
+    it("collapses a single-year range to x=0 (zero span)", () => {
+        const lens = buildTimelineLens(
+            [
+                { id: "a", year: 2015, area: "foundations" },
+                { id: "b", year: 2015, area: "foundations" },
+            ],
+            ["foundations"],
+        );
+        expect(lens.coords.a[0]).toBe(0);
+        expect(lens.coords.b[0]).toBe(0);
+    });
+
+    it("returns empty coords when no node has a derivable year", () => {
+        const lens = buildTimelineLens([{ id: "a", area: "foundations" }], ["foundations"]);
+        expect(lens.coords).toEqual({});
+    });
+});
+
+describe("normalizeCoordsToUnitSquare", () => {
+    it("min-max normalizes both axes independently into [0,1]", () => {
+        const out = normalizeCoordsToUnitSquare({
+            a: [0, 0],
+            b: [10, 5],
+            c: [5, 10],
+        });
+        expect(out.a).toEqual([0, 0]);
+        expect(out.b).toEqual([1, 0.5]);
+        expect(out.c).toEqual([0.5, 1]);
+    });
+
+    it("centers a zero-span axis at 0.5", () => {
+        const out = normalizeCoordsToUnitSquare({ a: [3, 0], b: [3, 10] });
+        expect(out.a).toEqual([0.5, 0]);
+        expect(out.b).toEqual([0.5, 1]);
+    });
+
+    it("returns an empty object for empty input", () => {
+        expect(normalizeCoordsToUnitSquare({})).toEqual({});
+    });
+});
+
+describe("sliceChapters", () => {
+    it("slices from each h2 heading (inclusive) up to the next h2 (exclusive)", () => {
+        const html =
+            '<p>intro</p><h2 id="alpha">Alpha</h2><p>alpha body</p>' +
+            '<h2 id="beta">Beta</h2><p>beta body</p>';
+        const chapters = sliceChapters(html);
+        expect(Object.keys(chapters)).toEqual(["alpha", "beta"]);
+        expect(chapters.alpha).toBe('<h2 id="alpha">Alpha</h2><p>alpha body</p>');
+        expect(chapters.beta).toBe('<h2 id="beta">Beta</h2><p>beta body</p>');
+    });
+
+    it("returns an empty map when there are no h2 headings", () => {
+        expect(sliceChapters("<p>no headings here</p>")).toEqual({});
+    });
+
+    it("ignores non-h2 headings", () => {
+        const html = '<h1 id="title">Title</h1><h2 id="a">A</h2><h3 id="sub">Sub</h3><p>x</p>';
+        const chapters = sliceChapters(html);
+        expect(Object.keys(chapters)).toEqual(["a"]);
+        expect(chapters.a).toContain('<h3 id="sub">Sub</h3>');
+    });
+});
+
+describe("violatesEvolutionChronology", () => {
+    it("is a violation when `from` postdates `to`", () => {
+        expect(violatesEvolutionChronology(2023, 2020)).toBe(true);
+    });
+
+    it("is not a violation when `from` predates or matches `to`", () => {
+        expect(violatesEvolutionChronology(2020, 2023)).toBe(false);
+        expect(violatesEvolutionChronology(2020, 2020)).toBe(false);
+    });
+
+    it("skips the check when either year is underivable", () => {
+        expect(violatesEvolutionChronology(undefined, 2020)).toBe(false);
+        expect(violatesEvolutionChronology(2020, undefined)).toBe(false);
+        expect(violatesEvolutionChronology(undefined, undefined)).toBe(false);
+    });
+});
+
+describe("resolveNode", () => {
+    const emptyAtlas = new Map<string, AtlasPageLookup>();
+    const emptyPapers = new Map<string, PaperLookup>();
+
+    it("resolves a question node with the question text as title and no year", () => {
+        const out = resolveNode(
+            { id: "q1", question: "Is X still needed?", area: "foundations" },
+            emptyAtlas,
+            emptyPapers,
+        );
+        expect(out).toEqual({
+            id: "q1",
+            kind: "question",
+            title: "Is X still needed?",
+            area: "foundations",
+        });
+        expect(out).not.toHaveProperty("year");
+        expect(out).not.toHaveProperty("page");
+        expect(out).not.toHaveProperty("paper");
+    });
+
+    it("carries optional role/takeaway/remark through for a question node", () => {
+        const out = resolveNode(
+            {
+                id: "q1",
+                question: "Is X still needed?",
+                area: "foundations",
+                role: "open",
+                takeaway: "takeaway text",
+                remark: "remark text",
+            },
+            emptyAtlas,
+            emptyPapers,
+        );
+        expect(out).toMatchObject({ role: "open", takeaway: "takeaway text", remark: "remark text" });
+    });
+});
+
+describe("resolveNarrative", () => {
+    it("omits question nodes from the generated timeline lens", () => {
+        const fm: Pick<NarrativeFrontmatter, "areas" | "nodes" | "edges" | "lenses"> = {
+            areas: [{ id: "a", label: "A" }],
+            nodes: [
+                { id: "p1", page: "some-page", area: "a" },
+                { id: "q1", question: "Open question?", area: "a" },
+            ],
+            edges: [],
+            lenses: [],
+        };
+        const atlasBySlug = new Map<string, AtlasPageLookup>([
+            ["some-page", { slug: "some-page", title: "Some Page", pageKind: "concept", year: 2020 }],
+        ]);
+        const resolved = resolveNarrative(fm, atlasBySlug, new Map<string, PaperLookup>());
+        const timeline = resolved.lenses.find((l) => l.id === "timeline");
+        expect(timeline).toBeDefined();
+        expect(Object.keys(timeline!.coords)).toEqual(["p1"]);
+    });
+});
+
+describe("buildNarrativeIndexEntry", () => {
+    it("excludes question nodes from the debt count but includes them in the node count", () => {
+        const resolved: ResolvedNarrative = {
+            areas: [{ id: "a", label: "A" }],
+            nodes: [
+                { id: "pg", kind: "page", slug: "pg", title: "Pg", pageKind: "concept", path: "/atlas/pg", area: "a" },
+                { id: "pp", kind: "paper", paperId: "pp", title: "Pp", authorsShort: "", year: 2020, url: "", debt: true, area: "a" },
+                { id: "q", kind: "question", title: "Open question?", area: "a" },
+            ],
+            edges: [],
+            lenses: [{ id: "overview", title: "Overview", coords: { pg: [0, 0], pp: [1, 0], q: [2, 0] } }],
+        };
+        const entry = buildNarrativeIndexEntry(
+            "slug",
+            { title: "T", summary: "S", date: "2024-01-01" },
+            resolved,
+            2,
+        );
+        expect(entry.stats.debt).toBe(1);
+        expect(entry.stats.nodes).toBe(3);
+    });
+});
+
+describe("findLensOrderInversions", () => {
+    it("flags a pair whose x-order contradicts a >=2 year gap", () => {
+        const inversions = findLensOrderInversions([
+            { id: "newer", x: 0, year: 2023 },
+            { id: "older", x: 1, year: 2020 },
+        ]);
+        expect(inversions).toEqual([["newer", "older"]]);
+    });
+
+    it("does not flag a pair whose x-order agrees with year order", () => {
+        const inversions = findLensOrderInversions([
+            { id: "older", x: 0, year: 2020 },
+            { id: "newer", x: 1, year: 2023 },
+        ]);
+        expect(inversions).toEqual([]);
+    });
+
+    it("allows free reordering for same/adjacent years (< 2 year gap)", () => {
+        const inversions = findLensOrderInversions([
+            { id: "b", x: 0, year: 2021 },
+            { id: "a", x: 1, year: 2020 },
+        ]);
+        expect(inversions).toEqual([]);
+    });
+
+    it("ignores nodes with no derivable year", () => {
+        const inversions = findLensOrderInversions([
+            { id: "a", x: 0, year: 2020 },
+            { id: "b", x: 1 },
+        ]);
+        expect(inversions).toEqual([]);
+    });
+});

@@ -24,6 +24,10 @@ relations:
     target: rf-detr
     confidence: high
     caution: "RF-DETR is a DETR-family set-prediction detector; built on the DETR paradigm via its parents LW-DETR/Deformable-DETR."
+  - type: feeds_into
+    target: mask2former
+    confidence: high
+    caution: "Mask2Former inherits DETR's set-prediction objective via MaskFormer and its zero-initialised learnable queries (Mask2Former §3.2.3)."
 sources:
   primary: carion2020-detr
   references:

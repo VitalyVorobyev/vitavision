@@ -100,13 +100,7 @@ where $m_{ij}$ is the observed pixel coordinate and $\hat{m}$ is the reprojectio
 5. Minimise $E$ by Levenberg–Marquardt, initialised from the linear result with $A = I$. Solve in two sequential sub-steps: extrinsics first, then intrinsics.
 :::
 
-```mermaid
-flowchart LR
-  A["Per-view linear extrinsics<br/>SVD on cross-product"] --> B["Global Taylor coefficients<br/>Pseudoinverse over views"]
-  B --> C["Two-pass linear refinement<br/>extrinsics ↔ intrinsics"]
-  C --> D["Image-center search<br/>iterative SSRE minimum"]
-  D --> E["Levenberg–Marquardt MLE<br/>final refinement"]
-```
+![scaramuzza-omni-calibration pipeline: 5-stage flow from per-view linear extrinsics via SVD on the cross-product constraint, through global Taylor-coefficient recovery by pseudoinverse, two-pass linear refinement alternating extrinsics and intrinsics, an iterative image-center search, to final Levenberg-Marquardt refinement.](./images/scaramuzza-omni-calibration/pipeline.svg)
 
 # Implementation
 
@@ -155,6 +149,7 @@ The intrinsic stage stacks $2KL$ rows from equations (10.1) and (10.2) into $\Ph
 - The central-projection assumption ($a_1 = 0$, single effective viewpoint) is a hard constraint. Non-central catadioptric systems with significant misalignment between mirror focus and camera optical centre violate it and produce irreducible systematic residuals that the Levenberg–Marquardt stage cannot eliminate.
 - Near-coplanar viewing geometries make $M_i$ ill-conditioned: the per-view SVD approaches rank deficiency when corner configurations across views span a low-dimensional subspace.
 - The algorithm does not recover pixel skew or non-unit aspect ratio in the linear phase — $A$ is initialised to the identity and refined only by Levenberg–Marquardt. Sensors with strong axis misalignment or large aspect ratio degrade the linear initialisation.
+- Compared with Kannala–Brandt: see [When to choose Kannala–Brandt over Scaramuzza](/atlas/kannala-brandt-model#when-to-choose-kannalabrandt-over-scaramuzza) on the Kannala–Brandt page, which hosts the comparison per the same-year, broader-scope tiebreaker.
 
 # References
 

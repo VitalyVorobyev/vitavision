@@ -1,15 +1,21 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from "node:fs";
 import { join } from "node:path";
 import { Feed } from "feed";
-import { blogPosts, algorithmPages, demoPages, modelPages, conceptPages } from "../src/generated/content-index.ts";
+import { blogPosts, algorithmPages, demoPages, modelPages, conceptPages, narrativePages } from "../src/generated/content-index.ts";
 import { blogHtmlLoaders } from "../src/generated/blog-loaders.ts";
 import { algorithmHtmlLoaders } from "../src/generated/algorithm-loaders.ts";
 import { demoHtmlLoaders } from "../src/generated/demo-loaders.ts";
 import { modelHtmlLoaders } from "../src/generated/model-loaders.ts";
 import { conceptHtmlLoaders } from "../src/generated/concept-loaders.ts";
+import { narrativeLoaders } from "../src/generated/narrative-loaders.ts";
 import { render } from "../src/entry-server.tsx";
 import type { StaticContentContextValue } from "../src/lib/content/ssr-content.tsx";
 import type { PapersById } from "../src/generated/papers-index.ts";
+import type { AuthorsIndex } from "../src/generated/authors-index.ts";
+import { EMPTY_AUTHORS_INDEX } from "../src/lib/atlas/authorsContext.ts";
+import type { ScholarlyIndex } from "../src/generated/scholarly-index.ts";
+import { paperSeoDescription } from "../src/lib/atlas/paperView.ts";
+import { authorSeoDescription } from "../src/lib/atlas/authorView.ts";
 import {
     buildAlgorithmJsonLd,
     buildBlogJsonLd,
@@ -73,9 +79,11 @@ function writePage(
     meta: SeoMeta,
     staticContent: StaticContentContextValue,
     papers: PapersById,
+    authors: AuthorsIndex,
+    scholarly: ScholarlyIndex | undefined,
     extraHead?: string,
 ): void {
-    const html = render(url, staticContent, papers);
+    const html = render(url, staticContent, papers, authors, scholarly);
     let page = template.replace(
         '<div id="root"></div>',
         `<div id="root">${html}</div>`,
@@ -117,12 +125,21 @@ function buildSitemap(paths: string[]): string {
 
 async function main(): Promise<void> {
     const template = readTemplate();
+    // Only non-draft narratives are prerendered; drafts (present only when the
+    // content build ran with INCLUDE_DRAFTS) never reach dist/.
+    const publishedNarratives = narrativePages.filter((n) => !n.draft);
+    const publishedNarrativeLoaders = Object.fromEntries(
+        publishedNarratives
+            .filter((n) => n.slug in narrativeLoaders)
+            .map((n) => [n.slug, narrativeLoaders[n.slug]]),
+    );
     const staticContent: StaticContentContextValue = {
         blogHtmlBySlug: await loadHtmlMap(blogHtmlLoaders),
         algorithmHtmlBySlug: await loadHtmlMap(algorithmHtmlLoaders),
         demoHtmlBySlug: await loadHtmlMap(demoHtmlLoaders),
         modelHtmlBySlug: await loadHtmlMap(modelHtmlLoaders),
         conceptHtmlBySlug: await loadHtmlMap(conceptHtmlLoaders),
+        narrativeHtmlBySlug: await loadHtmlMap(publishedNarrativeLoaders),
     };
     // Read the lazily-loaded papers index from disk so SSR can render the
     // SourceStrip on every prerendered page without an HTTP fetch.
@@ -130,6 +147,19 @@ async function main(): Promise<void> {
     const papers: PapersById = existsSync(papersJsonPath)
         ? (JSON.parse(readFileSync(papersJsonPath, "utf-8")) as PapersById)
         : {};
+    // Same treatment for the authors index — read once from disk so SSR has
+    // it synchronously on every prerendered page.
+    const authorsJsonPath = join(import.meta.dir, "..", "public", "authors-index.json");
+    const authors: AuthorsIndex = existsSync(authorsJsonPath)
+        ? (JSON.parse(readFileSync(authorsJsonPath, "utf-8")) as AuthorsIndex)
+        : EMPTY_AUTHORS_INDEX;
+    // Same treatment for the scholarly index — read once from disk so SSR has
+    // it synchronously on every prerendered paper page (the client otherwise
+    // lazy-fetches this ~440 kB asset only when a paper page mounts).
+    const scholarlyJsonPath = join(import.meta.dir, "..", "public", "scholarly-index.json");
+    const scholarly: ScholarlyIndex | undefined = existsSync(scholarlyJsonPath)
+        ? (JSON.parse(readFileSync(scholarlyJsonPath, "utf-8")) as ScholarlyIndex)
+        : undefined;
     let count = 0;
 
     // Blog index
@@ -137,7 +167,7 @@ async function main(): Promise<void> {
         title: "Blog",
         description:
             "Articles on computer vision algorithms, calibration, and building intelligent systems.",
-    }, staticContent, papers);
+    }, staticContent, papers, authors, scholarly);
     count++;
 
     // Individual blog posts
@@ -150,7 +180,7 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/blog/${post.slug}`,
-        }, staticContent, papers, jsonLd);
+        }, staticContent, papers, authors, scholarly, jsonLd);
         count++;
     }
 
@@ -158,7 +188,7 @@ async function main(): Promise<void> {
     writePage(template, "/atlas", "atlas", {
         title: "Atlas",
         description: "Computer vision atlas — algorithms, models, and concepts.",
-    }, staticContent, papers);
+    }, staticContent, papers, authors, scholarly);
     count++;
 
     // Individual algorithm pages
@@ -171,7 +201,7 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/atlas/${page.slug}`,
-        }, staticContent, papers, jsonLd);
+        }, staticContent, papers, authors, scholarly, jsonLd);
         count++;
     }
 
@@ -179,7 +209,7 @@ async function main(): Promise<void> {
     writePage(template, "/demos", "demos", {
         title: "Demos",
         description: "Interactive demos of computer vision algorithms.",
-    }, staticContent, papers);
+    }, staticContent, papers, authors, scholarly);
     count++;
 
     // Individual demo pages
@@ -191,7 +221,7 @@ async function main(): Promise<void> {
             description: frontmatter.summary,
             ogType: "article",
             url: `/demos/${demo.slug}`,
-        }, staticContent, papers, jsonLd);
+        }, staticContent, papers, authors, scholarly, jsonLd);
         count++;
     }
 
@@ -205,7 +235,7 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/atlas/${model.slug}`,
-        }, staticContent, papers, jsonLd);
+        }, staticContent, papers, authors, scholarly, jsonLd);
         count++;
     }
 
@@ -219,7 +249,53 @@ async function main(): Promise<void> {
             ogType: "article",
             ogImage: frontmatter.coverImage,
             url: `/atlas/${page.slug}`,
-        }, staticContent, papers, jsonLd);
+        }, staticContent, papers, authors, scholarly, jsonLd);
+        count++;
+    }
+
+    // Individual narrative pages (no RSS/Atom entry — narratives are not a feed kind)
+    for (const narrative of publishedNarratives) {
+        writePage(template, `/atlas/narratives/${narrative.slug}`, `atlas/narratives/${narrative.slug}`, {
+            title: narrative.title,
+            description: narrative.summary,
+            ogType: "article",
+            url: `/atlas/narratives/${narrative.slug}`,
+        }, staticContent, papers, authors, scholarly);
+        count++;
+    }
+
+    // Author register — unlisted (not in the navbar) but fully prerendered so
+    // every byline link resolves to static HTML and is crawlable. The index
+    // itself (`/authors`) is retired in favor of the People Atlas view
+    // (`/atlas?view=people`) — see the `/authors` redirect in App.tsx /
+    // entry-server.tsx and public/_redirects — but every `/authors/<id>`
+    // profile page keeps being prerendered.
+    const authorIds = Object.keys(authors.authors).sort();
+
+    for (const authorId of authorIds) {
+        const author = authors.authors[authorId];
+        const pageCount = scholarly?.authors[authorId]?.pageCount ?? 0;
+        writePage(template, `/authors/${authorId}`, `authors/${authorId}`, {
+            title: author.name,
+            description: authorSeoDescription(author.name, author.papers.length, pageCount),
+            ogType: "profile",
+            url: `/authors/${authorId}`,
+        }, staticContent, papers, authors, scholarly);
+        count++;
+    }
+
+    // Paper register — unlisted (not in the navbar), reached from source
+    // strips/bylines and the lineage graph. One page per registry paper.
+    const paperIds = Object.keys(papers).sort();
+    for (const paperId of paperIds) {
+        const paper = papers[paperId];
+        const primaryCount = scholarly?.papers[paperId]?.primaryPages.length ?? 0;
+        writePage(template, `/papers/${paperId}`, `papers/${paperId}`, {
+            title: paper.title,
+            description: paperSeoDescription(paper, primaryCount),
+            ogType: "article",
+            url: `/papers/${paperId}`,
+        }, staticContent, papers, authors, scholarly);
         count++;
     }
 
@@ -227,7 +303,7 @@ async function main(): Promise<void> {
     writePage(template, "/tools/target-generator", "tools/target-generator", {
         title: "Target Generator",
         description: "Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.",
-    }, staticContent, papers);
+    }, staticContent, papers, authors, scholarly);
     count++;
 
     // Generate sitemap
@@ -237,6 +313,9 @@ async function main(): Promise<void> {
         ...algorithmPages.map((p) => `/atlas/${p.slug}`),
         ...modelPages.map((m) => `/atlas/${m.slug}`),
         ...conceptPages.map((c) => `/atlas/${c.slug}`),
+        ...publishedNarratives.map((n) => `/atlas/narratives/${n.slug}`),
+        ...authorIds.map((a) => `/authors/${a}`),
+        ...paperIds.map((p) => `/papers/${p}`),
         "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
         "/tools/target-generator",
     ];

@@ -1,17 +1,14 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { parse as parseYaml } from "yaml";
 import matter from "gray-matter";
 
-const REPO_ROOT = join(import.meta.dir, "..");
-const INDEX_PATH = join(REPO_ROOT, "docs", "papers", "index.yaml");
-const ALGO_DIR = join(REPO_ROOT, "content", "algorithms");
+import { CONTENT_DIR, PAPERS_INDEX_PATH } from "./lib/paths.ts";
+import { loadIndexEntries } from "./lib/papers-index.ts";
+import type { RawIndexEntry } from "./lib/papers-index.ts";
 
-interface PaperEntry {
-    id: string;
-    title: string;
-    cites?: string[];
-}
+const ALGO_DIR = join(CONTENT_DIR, "algorithms");
+
+type PaperEntry = RawIndexEntry;
 
 interface AlgoSources {
     primary?: string;
@@ -19,17 +16,16 @@ interface AlgoSources {
 }
 
 function loadIndex(): PaperEntry[] {
-    if (!existsSync(INDEX_PATH)) {
-        process.stderr.write("papers:query — docs/papers/index.yaml not found\n");
-        process.exit(1);
-    }
-    const raw = readFileSync(INDEX_PATH, "utf-8");
-    const parsed = parseYaml(raw);
-    if (!Array.isArray(parsed)) {
-        process.stderr.write("papers:query — index.yaml is not a list\n");
-        process.exit(1);
-    }
-    return parsed as PaperEntry[];
+    return loadIndexEntries(PAPERS_INDEX_PATH, {
+        onMissing: () => {
+            process.stderr.write("papers:query — docs/papers/index.yaml not found\n");
+            process.exit(1);
+        },
+        onNotList: () => {
+            process.stderr.write("papers:query — index.yaml is not a list\n");
+            process.exit(1);
+        },
+    });
 }
 
 function queryCites(id: string, index: PaperEntry[]): void {

@@ -32,7 +32,10 @@ export interface MarkerBoardConfig {
     innerCols: number;
     squareSizeMm: number;
     circleDiameterRel: number;
-    circles: CircleSpec[];
+    // Both the Rust printable spec and the detector spec declare this as a
+    // fixed-size array ([MarkerCircleSpec; 3]) — the count of three circles
+    // is fixed by the library, not a UI choice.
+    circles: [CircleSpec, CircleSpec, CircleSpec];
     innerSquareRel: number;
 }
 
@@ -81,6 +84,18 @@ export interface PageConfig {
 export interface ValidationResult {
     errors: string[];
     warnings: string[];
+    /**
+     * Board bounding-box dimensions computed as a side effect of the fit
+     * check below. Populated for every target kind whenever `validateConfig`
+     * reaches the fit check (i.e. page dimensions/margins are sane) —
+     * consumed by `TargetPreview.tsx`'s `computeBoardDims` for the
+     * `"ringgrid"` kind, whose true printed footprint requires an async
+     * WASM round trip (`ringgridBoardSizeMmWasm`) rather than pure
+     * arithmetic, so the render path reads the value `validateConfig`
+     * already computed instead of calling WASM again synchronously.
+     */
+    boardWidthMm?: number;
+    boardHeightMm?: number;
 }
 
 // ── State ────────────────────────────────────────────────────────────────────

@@ -13,6 +13,7 @@ sources:
   references:
     - tsai1987-versatile
     - weng1992-camera
+    - schonberger2016-colmap
 ---
 
 # Definition
@@ -76,6 +77,7 @@ Bundle adjustment — in the restricted form of joint camera-parameter refinemen
 - [zhang-planar-calibration](/atlas/zhang-planar-calibration) — the nonlinear Levenberg-Marquardt refinement is the bundle-adjustment stage: all intrinsics, both distortion coefficients, and all per-view extrinsics refined jointly by minimising the total reprojection error, seeded by the closed-form IAC solve.
 - [tsai-versatile-calibration](/atlas/tsai-versatile-calibration) — stage 2 is a restricted bundle adjustment: with rotation and the lateral translation fixed from the linear stage, only focal length, depth translation, and one distortion coefficient are refined.
 - [scaramuzza-omni-calibration](/atlas/scaramuzza-omni-calibration) — the omnidirectional model's final nonlinear refinement minimises the same reprojection-error objective with the same solver, over the polynomial coefficients and per-view extrinsics.
+- [colmap](/atlas/colmap) — beyond fixed-target calibration, COLMAP's structure-from-motion pipeline groups highly overlapping "unaffected" images by visibility-vector Jaccard similarity and reparameterises each group by a single group-local pose composed with each image's fixed relative pose, reducing the effective camera count entering the direct solver and bounding its cubic cost on dense photo collections.
 
 Bundle adjustment is the numerical procedure that recovers the parameters of the [pinhole-camera-model](/atlas/pinhole-camera-model) to maximum-likelihood accuracy from image observations.
 
@@ -86,3 +88,4 @@ Bundle adjustment is the numerical procedure that recovers the parameters of the
 3. R. Y. Tsai. *A Versatile Camera Calibration Technique for High-Accuracy 3D Machine Vision Metrology.* IEEE Journal on Robotics and Automation, 3(4):323–344, 1987.
 4. J. Weng, P. Cohen, M. Herniou. *Camera Calibration with Distortion Models and Accuracy Evaluation.* IEEE TPAMI, 14(10):965–980, 1992.
 5. R. Hartley, A. Zisserman. *Multiple View Geometry in Computer Vision*, 2nd ed. Cambridge University Press, 2004.
+6. J. L. Schönberger, J.-M. Frahm. *Structure-from-Motion Revisited.* CVPR 2016. [demuc.de](https://demuc.de/papers/schoenberger2016sfm.pdf)

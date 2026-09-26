@@ -100,6 +100,10 @@
     --graph-kind-accent-algorithm: 191 70% 44%;
     --graph-kind-accent-model:     263 60% 60%;
     --graph-kind-accent-concept:   36 78% 48%;
+
+    /* Paper-page lineage strip: built-upon-by (filled, above axis) vs builds-on (hollow, below axis) */
+    --lineage-out:                 214 58% 47%;   /* blue */
+    --lineage-in:                  215 15% 35%;   /* slate */
   }
 
   .dark {
@@ -158,6 +162,10 @@
     --graph-kind-accent-algorithm: 191 65% 52%;
     --graph-kind-accent-model:     263 65% 70%;
     --graph-kind-accent-concept:   38 78% 56%;
+
+    /* Paper-page lineage strip: built-upon-by (filled, above axis) vs builds-on (hollow, below axis) */
+    --lineage-out:                 213 70% 68%;   /* lighter blue for dark surfaces */
+    --lineage-in:                  215 20% 62%;   /* lighter slate */
   }
 
   html, body {

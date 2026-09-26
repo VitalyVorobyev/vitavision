@@ -5,6 +5,7 @@ authors: ["S. Ren", "K. He", "R. Girshick", "J. Sun"]
 year: 2015
 url: https://arxiv.org/pdf/1506.01497
 created: 2026-05-13
+refreshed: 2026-09-24
 relevant_atlas_pages: [mask-rcnn, felzenszwalb-deformable-parts, viola-jones-detector, hog-descriptor, resnet, alexnet, vgg]
 ---
 
@@ -27,6 +28,16 @@ $$t_x = \frac{x - x_a}{w_a}, \quad t_y = \frac{y - y_a}{h_a}, \quad t_w = \log\f
 $$L(\{p_i\}, \{t_i\}) = \frac{1}{N_\text{cls}} \sum_i L_\text{cls}(p_i, p_i^*) + \lambda \frac{1}{N_\text{reg}} \sum_i p_i^* L_\text{reg}(t_i, t_i^*)$$
 
 (Eq. 1). Proposals are ranked by objectness score, deduplicated with NMS at IoU 0.7, and the top 300 are passed to the Fast R-CNN head which shares the same conv weights. Training follows a 4-step alternating optimisation: (1) train RPN from ImageNet init; (2) train Fast R-CNN detector on step-1 proposals; (3) fine-tune RPN with shared conv layers frozen; (4) fine-tune Fast R-CNN unique layers only (§3.2). An approximate joint training (25–50% faster) was later shown to converge to nearly the same accuracy.
+
+# Claimed contributions
+
+*(No itemized "key novelties" bullet list as in later papers; the paper states its contributions in prose across the Abstract and §1 Introduction. Claims below are verbatim-anchored to that prose.)*
+
+- C1: Region Proposal Network sharing conv features — "we introduce a Region Proposal Network (RPN) that shares full-image convolutional features with the detection network, thus enabling nearly cost-free region proposals." (Abstract)
+- C2: Novel anchor boxes as multi-scale/aspect-ratio references — "we introduce novel 'anchor' boxes that serve as references at multiple scales and aspect ratios... Our scheme can be thought of as a pyramid of regression references..., which avoids enumerating images or filters of multiple scales or aspect ratios." (§1 Introduction)
+- C3: Unification of RPN and Fast R-CNN into one network via shared features — "We further merge RPN and Fast R-CNN into a single network by sharing their convolutional features—using the recently popular terminology of neural networks with 'attention' mechanisms, the RPN component tells the unified network where to look." (Abstract)
+- C4: Headline speed/accuracy result — "For the very deep VGG-16 model [3], our detection system has a frame rate of 5fps (including all steps) on a GPU, while achieving state-of-the-art object detection accuracy on PASCAL VOC 2007, 2012, and MS COCO datasets with only 300 proposals per image." (Abstract)
+- C5: Competition impact — "In ILSVRC and COCO 2015 competitions, Faster R-CNN and RPN are the foundations of the 1st-place winning entries in several tracks." (Abstract)
 
 # Assumptions
 
@@ -63,6 +74,17 @@ $$L(\{p_i\}, \{t_i\}) = \frac{1}{N_\text{cls}} \sum_i L_\text{cls}(p_i, p_i^*) +
 - Don't use when: latency budget is below 30 ms per image and accuracy is non-negotiable (consider one-stage detectors: SSD, YOLO, RetinaNet); classes are heavily out-of-distribution from ImageNet natural images without large domain-specific datasets for fine-tuning; CPU-only deployment is required (sliding-window detectors or lightweight models are preferable).
 - Compared against: Selective Search + Fast R-CNN (the direct baseline; SS takes ~1.5 s/image CPU vs. RPN 10 ms GPU), EdgeBoxes + Fast R-CNN (similar mAP, slower proposals), OverFeat one-stage sliding-window detection (4.8% mAP gap in favour of Faster R-CNN's two-stage cascade on PASCAL VOC 2007 with ZF, Table X).
 
+# Stated relations
+
+| target (paper-id or slug) | paper's claim (quote + §) | proposed type | confidence | notes |
+|---|---|---|---|---|
+| `felzenszwalb-deformable-parts` (DPM, ref [8]) | "This way is often useful but is time-consuming" (re: DPM's image/feature-pyramid scheme) ... "As a comparison, our anchor-based method is built on a pyramid of anchors, which is more cost-efficient." | `learned_alternative_of` | medium | Existing Atlas page authors this edge at `confidence: high`; the paper's own text supports only a *qualitative* design-efficiency contrast (pyramid-of-filters vs. pyramid-of-anchors), not a benchmarked accuracy comparison against DPM — no table in this paper puts DPM and Faster R-CNN head-to-head. Paper text alone would justify `medium`, not `high`. |
+| MultiBox (Erhan/Szegedy et al., refs [26],[27]) | "our method has a (4 + 2) × 9-dimensional convolutional output layer... two orders of magnitude fewer than MultiBox's output layer" + "MultiBox does not guarantee that the same proposal is generated if an object is translated." | `generalized_by` (Rule A pattern) | medium | — (no Atlas page; MultiBox/Erhan2014/Szegedy2014 not registered in `docs/papers/index.yaml`). Textbook Rule A framing: same problem (class-agnostic proposal generation), RPN claimed strictly better — translation-invariance guarantee MultiBox lacks, ~2 orders of magnitude fewer parameters, and shared conv features MultiBox does not have. No edge can be authored until MultiBox is ingested and gets a page. |
+| OverFeat (Sermanet et al., ref [9]) | "OverFeat is a one-stage, class-specific detection pipeline, and ours is a two-stage cascade..." + Table 10: one-stage emulation of OverFeat = 53.9% mAP vs. two-stage RPN = 58.7% mAP, "This is lower than the two-stage system (58.7%) by 4.8%." | `compared_with` | medium | — (no Atlas page; OverFeat/Sermanet2013 not registered). Explicit quantitative ablation (§4.1, Table 10), but the paper "emulate[s]" OverFeat rather than benchmarking the real published system, so this is a peer architectural comparison, not a claim of full supersession. Ingest first. |
+| Selective Search (Uijlings et al., ref [4]) | "Selective Search is an order of magnitude slower, at 2 seconds per image in a CPU implementation." + "our method waives nearly all computational burdens of Selective Search at test-time—the effective running time for proposals is just 10 milliseconds." | `generalized_by` (Rule A pattern) | medium | — (no Atlas page; Selective Search/Uijlings2013 not registered). Same problem (region proposal generation); RPN claimed strictly faster (10 ms vs. ~1.5–2 s) with comparable-or-better downstream detection mAP (§1, Table results) and, unlike SS, shares features with the detector. Ingest first. |
+| EdgeBoxes (Zitnick & Dollár, ref [6]) | "EdgeBoxes [6] currently provides the best tradeoff between proposal quality and speed, at 0.2 seconds per image." | `compared_with` | low | — (no Atlas page; EdgeBoxes not registered). Acknowledged as the best prior speed/quality tradeoff but not put in a head-to-head results table anywhere in this paper's cached text — qualitative positioning only. Ingest first if a page is ever warranted. |
+| Fast R-CNN (Girshick, ref [2]) / SPPnet (He et al., ref [1]) | "Advances like SPPnet [1] and Fast R-CNN [2] have reduced the running time of these detection networks, exposing region proposal computation as a bottleneck." + "We further merge RPN and Fast R-CNN into a single network by sharing their convolutional features." | `extended_by` (authored on Fast R-CNN's side, target: this paper) | high | — (no Atlas page; Fast R-CNN/Girshick2015 and SPPnet/He2014 not registered — already flagged "not in index" in this note's `# Connections` section). Faster R-CNN keeps the Fast R-CNN detection head intact and adds the RPN — direct architectural extension of the same detector family, not a peer comparison. SPPnet is the more distant ancestor (already captured under "Builds on"). Ingest Fast R-CNN first. |
+
 # Connections
 
 - Builds on:
@@ -82,7 +104,7 @@ $$L(\{p_i\}, \{t_i\}) = \frac{1}{N_\text{cls}} \sum_i L_\text{cls}(p_i, p_i^*) +
   - Cascade R-CNN (Cai & Vasconcelos, CVPR 2018) — multi-stage refinement of Faster R-CNN IoU thresholds; not yet in index
 
 - Refutes / supersedes:
-  - Classical sliding-window + HOG/DPM detection pipelines (Felzenszwalb et al. [8] is cited explicitly as the DPM baseline)
+  - Classical sliding-window + HOG/DPM detection pipelines (Felzenszwalb et al. [8] is cited as the pyramid-of-filters exemplar in §3.1.1 — qualitative only, not a benchmark baseline)
   - Selective Search as an external proposal module (the entire motivation: §1, §Abstract)
 
 # Atlas update plan
@@ -119,7 +141,7 @@ Remarks:
 - One-stage detection (dense sliding windows, same ZF backbone) trails by 4.8% mAP (Table X), establishing the empirical case for two-stage cascades.
 
 Relations:
-- { type: learned_alternative_of, target: felzenszwalb-deformable-parts, confidence: high }
+- { type: learned_alternative_of, target: felzenszwalb-deformable-parts, confidence: medium, caution: "Paradigm-level replacement; the paper contrasts DPM only qualitatively (pyramid of filters vs pyramid of anchors, §3.1.1), with no DPM benchmark." }  # was high; lowered (WS-H audit 2026-09-24, user-confirmed against # Stated relations)
 - { type: learned_alternative_of, target: viola-jones-detector, confidence: medium, caution: "Viola-Jones targets real-time face detection on CPUs; Faster R-CNN is general multi-class detection on GPUs — replacement is paradigm-level, not drop-in." }
 - { type: extended_by, target: mask-rcnn, confidence: high }
 

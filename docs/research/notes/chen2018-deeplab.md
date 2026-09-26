@@ -5,6 +5,7 @@ authors: ["L. Chen", "G. Papandreou", "I. Kokkinos", "K. Murphy", "A. Yuille"]
 year: 2018
 url: https://arxiv.org/abs/1606.00915
 created: 2026-05-11
+refreshed: 2026-09-24
 relevant_atlas_pages: [fcn-semantic-segmentation, unet-segmentation, deeplab-semantic-segmentation]
 ---
 
@@ -23,6 +24,40 @@ DeepLab addresses three problems that arise when applying ImageNet-pretrained cl
 **Atrous Spatial Pyramid Pooling (ASPP)** runs four parallel atrous convolution branches on the same feature map at rates $r \in \{6, 12, 18, 24\}$ (ASPP-L variant; there is also ASPP-S with $r \in \{2, 4, 8, 12\}$). Each branch applies a $3 \times 3$ atrous conv followed by $1 \times 1$ projection to the number of classes; the four branch outputs are summed. This captures multi-scale context without rescaling the image.
 
 **Fully-connected CRF post-processing** refines the coarse CNN predictions using dense pairwise Gaussian potentials over all pixel pairs. The energy contains an appearance kernel weighted by $w_1$ (bilateral: position + RGB colour) and a smoothness kernel weighted by $w_2$ (spatial-only). Mean-field inference via the permutohedral lattice runs for 10 iterations and takes under 0.5 s on a CPU for a VOC image. This step is decoupled from DCNN training.
+
+# Claimed contributions
+
+- C1: Atrous convolution for dense feature extraction — "First, we highlight
+  convolution with upsampled filters, or 'atrous convolution', as a powerful
+  tool in dense prediction tasks. Atrous convolution allows us to explicitly
+  control the resolution at which feature responses are computed within Deep
+  Convolutional Neural Networks." (Abstract)
+- C2: Atrous Spatial Pyramid Pooling for multi-scale robustness — "Second, we
+  propose atrous spatial pyramid pooling (ASPP) to robustly segment objects
+  at multiple scales. ASPP probes an incoming convolutional feature layer
+  with filters at multiple sampling rates and effective fields-of-views,
+  thus capturing objects as well as image context at multiple scales."
+  (Abstract)
+- C3: Fully-connected CRF for boundary localization — "Third, we improve the
+  localization of object boundaries by combining methods from DCNNs and
+  probabilistic graphical models. ... We overcome this by combining the
+  responses at the final DCNN layer with a fully connected Conditional
+  Random Field (CRF), which is shown both qualitatively and quantitatively
+  to improve localization performance." (Abstract)
+- C4: State-of-the-art results across four benchmarks — "Our proposed
+  'DeepLab' system sets the new state-of-art at the PASCAL VOC-2012 semantic
+  image segmentation task, reaching 79.7% mIOU in the test set, and advances
+  the results on three other datasets: PASCAL-Context, PASCAL-Person-Part,
+  and Cityscapes." (Abstract)
+- C5: Speed/accuracy/simplicity as the paper's own claimed practical
+  advantages — "the three main advantages of our DeepLab system are: (1)
+  Speed: by virtue of atrous convolution, our dense DCNN operates at 8 FPS
+  on an NVidia Titan X GPU, while Mean Field Inference for the
+  fully-connected CRF requires 0.5 secs on a CPU. (2) Accuracy: we obtain
+  state-of-art results on several challenging datasets... (3) Simplicity:
+  our system is composed of a cascade of two very well-established modules,
+  DCNNs and CRFs." (§1 Introduction, paragraph beginning "From a practical
+  standpoint")
 
 # Assumptions
 
@@ -66,6 +101,17 @@ Fixed defaults: $w_2 = 3$, $\sigma_\gamma = 3$. Cross-validated search ranges: $
   - **U-Net**: same segmentation goal, different mechanism — DeepLab uses an atrous-dilated encoder with a multi-scale pooling head + CRF post-processor, while U-Net uses a symmetric encoder-decoder with skip concatenation for boundary recovery; the two approaches are contemporary peers rather than one superseding the other.
   - **SegNet**: another encoder-decoder approach using pooling-index unpooling rather than skip concatenation; DeepLab's atrous approach avoids the decoder stack entirely.
   - **CRF-RNN** (Zheng et al., contemporaneous): unrolls mean-field CRF into an end-to-end RNN layer, enabling joint DCNN+CRF training; DeepLab keeps them decoupled in v1/v2.
+
+# Stated relations
+
+| target (paper-id or slug) | paper's claim (quote + §) | proposed type | confidence | notes |
+|---|---|---|---|---|
+| `fcn-semantic-segmentation` (`long2015-fcn`) | "Our work builds on these works, and as described in the introduction extends them by exerting control on the feature resolution, introducing multi-scale pooling techniques and integrating the densely connected CRF of [22] on top of the DCNN." (§2 Related Work, "third family of works" paragraph) | `extended_by` (authored on the FCN page, `target: deeplab-semantic-segmentation`) | high | Matches the live reverse edge already on the page (`reverse.extending → fcn-semantic-segmentation`, confidence high, same caution text) — this note supports/confirms an already-authored edge, no new action needed. |
+| `resnet` (`he2016-resnet`) | "We have built a residual net variant of DeepLab by adapting the state-of-art ResNet [11] image classification DCNN, achieving better semantic segmentation performance compared to our original model based on VGG-16 [4]." (§1 Introduction, paragraph on the updated v2 system) | `feeds_into` (authored on the ResNet page, `target: deeplab-semantic-segmentation`) | high | Matches the live reverse edge (`reverse.fedBy → resnet`, confidence high) — confirmed, already authored. |
+| `vgg` (`simonyan2014-vgg`) | "A deep convolutional neural network (VGG-16 [4] or ResNet-101 [11] in this work) trained in the task of image classification is re-purposed to the task of semantic segmentation..." (§1 Introduction, Fig. 1 description paragraph) | `feeds_into` (authored on the VGG page, `target: deeplab-semantic-segmentation`) | high | Matches the live reverse edge (`reverse.fedBy → vgg`, confidence high) — confirmed, already authored. |
+| `unet-segmentation` (`ronneberger2015-unet`) | "We hypothesize the encoder-decoder structure of [100], [102] may alleviate the problem by exploiting the high resolution feature maps in the decoder path. How to efficiently incorporate the method is left as a future work." (§4.5 Failure Modes / §5 Conclusion) | `compared_with` (peer, different mechanism; DeepLab names this as a complementary weakness rather than a superiority claim, so Rule A supersession does not apply) | high | Matches the live forward edge (`forward → compared_with → unet-segmentation`, confidence high) — confirmed, already authored. |
+| none (no Atlas page — SegNet, Badrinarayanan et al., arXiv:1511.00561, ref [100]) | Same sentence as above: "[100], [102]" cited jointly for their encoder-decoder structure. | `compared_with` (peer) — not actionable | — | SegNet is cited alongside U-Net in the identical sentence but has no Atlas page and is not registered in `docs/papers/index.yaml`; no edge can be authored until it is ingested. (The live page's Applicability section already names SegNet in prose, consistent with this.) |
+| none (no Atlas page — CRF-as-RNN, Zheng et al. 2015, ref [59]) | "While we employ the CRF as a post-processing method, [40], [59], [62], [64], [65] have successfully pursued joint learning of the DCNN and CRF. In particular, [59], [65] unroll the CRF mean-field inference steps to convert the whole system into an end-to-end trainable feed-forward network..." (§2 Related Work, "End-to-end training for structured prediction" paragraph) | `compared_with` (peer, decoupled vs. joint CRF training) — not actionable | — | Zheng et al.'s CRF-as-RNN is named as the concurrent end-to-end alternative to DeepLab's decoupled CRF post-processing but is not registered in `docs/papers/index.yaml` and has no Atlas page; no edge can be authored until it is ingested. (The live page's Applicability section already names "CRF-RNN (Zheng et al., contemporaneous)" in prose, consistent with this.) |
 
 # Connections
 

@@ -43,6 +43,40 @@ $$M = \text{Linear}(C, N_\text{cls})(F) \tag{4d}$$
 
 where $M$ is the predicted mask. The MLP decoder works because Transformer encoders already produce a large effective receptive field (ERF) at deep stages (visualised in Figure 3/Figure 6 of the paper), making complex context modules (e.g. ASPP) unnecessary.
 
+# Claimed contributions
+
+- C1: A positional-encoding-free hierarchical encoder — "A novel
+  positional-encoding-free and hierarchical Transformer encoder." (§1, "key
+  novelties" bullet list)
+- C2: A lightweight decoder — "A lightweight All-MLP decoder design that
+  yields a powerful representation without complex and computationally
+  demanding modules." (§1, "key novelties" bullet list)
+- C3: State-of-the-art efficiency/accuracy/robustness jointly — "As shown in
+  Figure 1, SegFormer sets new a state-of-the-art in terms of efficiency,
+  accuracy and robustness in three publicly available semantic segmentation
+  datasets." (§1, "key novelties" bullet list; verbatim word order preserved)
+- C4: Headline quantitative wins — "SegFormer-B4 achieves 50.3% mIoU on
+  ADE20K with 64M parameters, being 5× smaller and 2.2% better than the
+  previous best method. Our best model, SegFormer-B5, achieves 84.0% mIoU on
+  Cityscapes validation set and shows excellent zero-shot robustness on
+  Cityscapes-C." (Abstract); "Our largest model, SegFormer-B5, yields 84.0%
+  mIoU, which represents a relative 1.8% mIoU improvement while being 5×
+  faster than SETR [7]. On ADE20K, this model sets a new state-of-the-art of
+  51.8% mIoU while being 4× smaller than SETR." (§1, headline-numbers
+  paragraph)
+- C5: Resolution-independent inference — "the proposed encoder avoids
+  interpolating positional codes when performing inference on images with
+  resolutions different from the training one. As a result, our encoder can
+  easily adapt to arbitrary test resolutions without impacting the
+  performance." (§1, "First" paragraph)
+- C6: MLP decoder exploits Transformer-induced local+global attention — "we
+  propose a lightweight MLP decoder where the key idea is to take advantage
+  of the Transformer-induced features where the attentions of lower layers
+  tend to stay local, whereas the ones of the highest layers are highly
+  non-local. By aggregating the information from different layers, the MLP
+  decoder combines both local and global attention." (§1, "Second"
+  paragraph)
+
 # Assumptions
 
 1. **ImageNet-1K pre-training** suffices for the MiT encoder; ViT-based competitors (SETR) require ImageNet-22K. Hard requirement; without pre-training performance degrades substantially.
@@ -69,6 +103,17 @@ where $M$ is the predicted mask. The MLP decoder works because Transformer encod
 - **Use when**: dense per-pixel semantic segmentation, especially when variable inference resolution is needed; when a parameter-efficient Transformer baseline is required; for safety-critical pipelines that need robustness to natural corruptions.
 - **Don't use when**: instance or panoptic segmentation is needed (SegFormer is semantic-only in this formulation); edge chips with $<1$M parameter budgets.
 - **Compared against in the paper**: SETR (ViT-Large + CNN decoders), DeepLabV3+ (ResNet-101 / MobileNetV2), OCRNet (HRNet-W48), FCN (ResNet-101 / MobileNetV2), PSPNet (ResNet-101 / MobileNetV2), GSCNN, Axial-DeepLab, Swin Transformer, PVT, Twins.
+
+# Stated relations
+
+| counterpart | quote | location | proposed type | target slug | rationale |
+|---|---|---|---|---|---|
+| SETR (Zheng et al. [7]) | "SegFormer's encoder has a hierarchical architecture, which is smaller than ViT and can capture both high-resolution coarse and low-resolution fine features. In contrast, SETR's ViT encoder can only generate single low-resolution feature map... Our MLP decoder is more compact and less computationally demanding than the one in SETR." + "being 5× faster than SETR [7]. On ADE20K, this model sets a new state-of-the-art of 51.8% mIoU while being 4× smaller than SETR." | §3.3 "Relationship to SETR"; §1 headline-numbers paragraph | `generalized_by` (SegFormer=B, SETR=A) pattern, Rule A | — (no Atlas page; SETR not registered in `docs/papers/index.yaml`) | SegFormer claims strict superiority over SETR on every axis it names — pretraining data (1K vs 22K), encoder resolution (multi-scale vs single-scale), positional encoding (none vs fixed, with a resolution-robustness cost), and decoder compute — plus quantitative wins (4× smaller, 5× faster, +1.6–1.8 mIoU). Textbook Rule A supersession; no edge can be authored until SETR is ingested and gets a page. |
+| PVT (Wang et al. [8]) | "Wang et al. [8] proposed a pyramid vision Transformer (PVT), a natural extension of ViT with pyramid structures for dense prediction. PVT shows considerable improvements over the ResNet counterpart on object detection and semantic segmentation." + "together with other emerging methods such as Swin Transformer [9] and Twins [10], these methods mainly consider the design of the Transformer encoder, neglecting the contribution of the decoder for further improvements." | §1 Introduction; §2 Related Work "Transformer backbones" | `compared_with` (peer, not supersession) | — (no Atlas page for PVT) | SegFormer frames PVT/Swin/Twins collectively as encoder-only improvements orthogonal to its own decoder contribution, and plots PVT-based models against SegFormer on ADE20K mIoU vs. efficiency (Fig. 1) — an empirical peer comparison, not a chronological replacement claim. |
+| Twins (Chu et al. [10]) | same collective sentence as PVT row: "...together with other emerging methods such as Swin Transformer [9] and Twins [10], these methods mainly consider the design of the Transformer encoder, neglecting the contribution of the decoder for further improvements." Plotted as "Twins" in Fig. 1's ADE20K mIoU-vs-efficiency scatter. | §1 Introduction (Fig. 1 + positioning sentence) | `compared_with` (peer) | — (no Atlas page for Twins) | Same reasoning as PVT: grouped as an encoder-design peer, empirically plotted, not superseded. |
+| swin | Same collective sentence: "...together with other emerging methods such as Swin Transformer [9] and Twins [10], these methods mainly consider the design of the Transformer encoder, neglecting the contribution of the decoder for further improvements." Fig. 1 plots "Swin Transformer" as an ADE20K mIoU/efficiency data point alongside SegFormer variants (§1, Fig. 1 caption: "SegFormer achieves a new state-of-the-art 51.0% mIoU while being significantly more efficient than previous methods."). | §1 Introduction (positioning sentence + Fig. 1) | `compared_with` | `swin` | Peer hierarchical-Transformer dense-prediction design, empirically plotted against SegFormer on ADE20K efficiency/accuracy; no per-model numeric table row for Swin was found in the cached text (only the Fig. 1 scatter label), so confidence should be `medium` pending a source with explicit SegFormer-vs-Swin numbers. Not supersession — the paper explicitly frames its own contribution (decoder redesign) as orthogonal to Swin's (encoder redesign only), so this is peer/contrast, not Rule A. |
+| vit | "Our design for MiT is partly inspired by ViT but tailored and optimized for semantic segmentation." + "Given an image of size H × W × 3, we first divide it into patches of size 4 × 4. Contrary to ViT that uses patches of size 16 × 16, using smaller patches favors the dense prediction task." | §3.1 "Hierarchical Transformer Encoder" (opening); §1 Introduction | `feeds_into` (authored on ViT's page per CLAUDE.md's upstream-authors convention, `target: segformer`) | `vit` | MiT explicitly names ViT as its design basis while modifying patch size, dropping positional encoding for Mix-FFN, and adding a 4-stage hierarchy — named-component lineage, chronological (ViT 2020 ≤ SegFormer 2021). Matches this note's existing "Atlas update plan → UPDATE: vit" bullet below, confirmed still unapplied: `content/models/vit.md`'s `relations[]` currently has `extended_by→deit` and `feeds_into→{clip,sam,mobilesam}` only, no entry targeting `segformer`. |
+| DPT (Ranftl et al.) | not mentioned anywhere in the cached text (`grep -i "DPT\|dense prediction transformer"` on `xie2021-segformer.txt` returns no hits) | — | — | — | No stated relation; DPT postdates this paper's related-work scan or was simply not cited. Omit — do not infer a relation from absence. |
 
 # Connections
 
@@ -135,12 +180,29 @@ relations:
   - { type: compared_with, target: mask2former, confidence: medium, caution: "Mask2Former 2022 adopts mask-classification paradigm vs SegFormer per-pixel; different formulation, not a peer per-pixel choice" }
 ```
 
+## UPDATE: segformer
+
+Section: Relations (published `content/models/segformer.md` — already live, `draft: false`)
+Bullets:
+- Read the live page's `relations[]` (2026-09-23): it currently has `feeds_into→focalclick` plus `compared_with→{fcn-semantic-segmentation, deeplab-semantic-segmentation, unet-segmentation, hrnet, mask2former}`. No entry targets `swin`.
+- The v2 Stated relations scan above found a genuine, previously-uncaptured positioning claim: SegFormer's own Introduction groups Swin Transformer with PVT/Twins as an encoder-design peer ("these methods mainly consider the design of the Transformer encoder, neglecting the contribution of the decoder") and Fig. 1 plots Swin head-to-head with SegFormer on ADE20K mIoU vs. efficiency. Proposal, now confirmed by user 2026-09-23 and committed to `content/models/swin.md` (older/same-year, more-general-scope host per the comparison tiebreaker — Swin hosts, SegFormer carries a single Assessment-bullet pointer to the anchor): `{ type: compared_with, target: segformer, confidence: medium, caution: "Swin is a general backbone (paired with a UperNet head for segmentation); SegFormer is a full segmenter with its own hierarchical encoder." }`, authored on the Swin page, plus a `## When to choose Swin over SegFormer` section on `content/models/swin.md`.
+
+Relations:
+- { type: compared_with, target: segformer, confidence: medium, caution: "Swin is a general backbone (paired with a UperNet head for segmentation); SegFormer is a full segmenter with its own hierarchical encoder." } — authored on swin.md
+Confirmed by user 2026-09-23.
+- PVT and Twins surfaced the same positioning claim but have no Atlas page yet — no edge can be authored until one of them is ingested; flagged as "no page" rows in Stated relations, not actioned here.
+- SETR surfaced a strong Rule-A supersession pattern (SegFormer claims 4× smaller / 5× faster / +1.6–1.8 mIoU over SETR on every named axis) but SETR is neither registered in `docs/papers/index.yaml` nor has an Atlas page — same "ingest first" gate.
+
 ## UPDATE: vit
 
 Section: Relations
 Bullets:
 - Add `{ type: feeds_into, target: segformer, confidence: high, caution: "MiT inherits ViT's patch tokenisation and multi-head self-attention but replaces positional encoding with Mix-FFN and adds a 4-stage hierarchy" }` to ViT's `relations[]`.
 - This edge must be authored on the ViT page (upstream), not the SegFormer page. The build will derive the reverse `fedBy: segformer` bucket on the SegFormer page.
+
+Relations:
+- { type: feeds_into, target: segformer, confidence: high }
+Confirmed by user 2026-09-23 (committed without the caution text proposed above — user-confirmed spec omitted it).
 
 ## UPDATE: focalclick
 
@@ -185,6 +247,7 @@ Bullets:
 
 All numerical values below are traceable to the paper text file (`xie2021-segformer.txt` lines referenced where possible) or the ar5iv HTML rendering.
 
+- **v2 refresh (2026-09-23)**: `# Claimed contributions` and `# Stated relations` sections added from the cached `xie2021-segformer.txt`/`.html` (structured-ingestion pivot); all quotes verified verbatim against the cache — `§1` bullet list and paragraph numbers (Introduction), `§3.1`/`§3.3` (Method), `§2` (Related Work), and Fig. 1's caption/scatter labels. DPT (Ranftl et al.) was checked and confirmed absent from the cache (`grep -i "DPT"` no hits).
 - **Abstract**: "SegFormer-B5, achieves 84.0% mIoU on Cityscapes validation set"; "SegFormer-B4 achieves 50.3% mIoU on ADE20K with 64M parameters, being 5× smaller and 2.2% better than the previous best method"; "Code will be released at: github.com/NVlabs/SegFormer" — txt lines 29, 27–28, 30.
 - **Abstract**: SegFormer-B5 ADE20K 51.8% = "our best model, SegFormer-B5 … 51.8% mIoU" — confirmed Table 2, line 470 of txt.
 - **Section 3**: patch size $4 \times 4$ — txt line 213; feature resolutions $\{1/4, 1/8, 1/16, 1/32\}$ — txt line 216.

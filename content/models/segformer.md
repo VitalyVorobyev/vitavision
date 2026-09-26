@@ -170,6 +170,7 @@ Official NVlabs PyTorch release, with widely-used community ports in HuggingFace
 - Zero-shot robustness: on Cityscapes-C, B5 shows up to 588% relative improvement over DeepLabV3+ variants on Gaussian noise (Table 5) — attributable to the encoder's attention-pooled features smoothing over local corruption patterns.
 - Resolution flexibility: no positional encoding means inference at any resolution without reinterpolation or accuracy penalty.
 - Adopted as a backbone in downstream tasks — SegFormer-B0 and B3 are explicit Segmentor backbone variants in FocalClick (2022).
+- For the segmentation-only vs. general-backbone trade-off against Swin Transformer, see [When to choose Swin over SegFormer](/atlas/swin#when-to-choose-swin-over-segformer).
 
 **Limitations.**
 

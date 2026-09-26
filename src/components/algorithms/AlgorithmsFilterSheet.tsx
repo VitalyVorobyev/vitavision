@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { LayoutGrid, List } from "lucide-react";
 import type {
     AlgorithmsFilters,
     AlgorithmsKind,
+    AlgorithmsView,
     FacetCounts,
 } from "../../hooks/useAlgorithmsFilters.ts";
 import { taskOrder, taskLabel } from "../../lib/content/taskLabels.ts";
@@ -17,6 +19,9 @@ interface Props {
     onKindChange: (k: AlgorithmsKind) => void;
     onProblemChange: (id: string) => void;
     onReset: () => void;
+    /** Catalog-only secondary toggle — grid vs. list layout. */
+    layout: "grid" | "list";
+    onLayoutChange: (view: AlgorithmsView) => void;
 }
 
 function usePrefersReducedMotion(): boolean {
@@ -42,6 +47,8 @@ export default function AlgorithmsFilterSheet({
     onKindChange,
     onProblemChange,
     onReset,
+    layout,
+    onLayoutChange,
 }: Props) {
     const reducedMotion = usePrefersReducedMotion();
     const sheetRef = useRef<HTMLDivElement>(null);
@@ -145,13 +152,43 @@ export default function AlgorithmsFilterSheet({
                             <span className="text-[17px] font-semibold text-foreground">
                                 Filters
                             </span>
-                            <button
-                                type="button"
-                                onClick={onReset}
-                                className="text-[13px] text-brand hover:underline"
-                            >
-                                Reset
-                            </button>
+                            <div className="flex items-center gap-3">
+                                <div
+                                    role="radiogroup"
+                                    aria-label="Layout"
+                                    className="flex gap-0.5 rounded-md border border-[hsl(var(--border)/0.7)] p-0.5"
+                                >
+                                    {(
+                                        [
+                                            ["grid", "Grid view", LayoutGrid],
+                                            ["list", "List view", List],
+                                        ] as const
+                                    ).map(([key, label, Icon]) => (
+                                        <button
+                                            key={key}
+                                            type="button"
+                                            role="radio"
+                                            aria-checked={layout === key}
+                                            aria-label={label}
+                                            onClick={() => onLayoutChange(key)}
+                                            className={`grid h-9 w-9 place-items-center rounded transition-colors ${
+                                                layout === key
+                                                    ? "bg-[hsl(var(--surface-hi))] text-foreground"
+                                                    : "text-muted-foreground"
+                                            }`}
+                                        >
+                                            <Icon size={15} />
+                                        </button>
+                                    ))}
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={onReset}
+                                    className="text-[13px] text-brand hover:underline"
+                                >
+                                    Reset
+                                </button>
+                            </div>
                         </div>
 
                         {/* Scrollable body */}

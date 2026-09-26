@@ -1,32 +1,25 @@
 import type { TargetConfig, PageConfig } from "../types";
 import { resolvePageDimensions } from "./paperConstants";
-import { chessboardSvg } from "./chessboardSvg";
-import { markerboardSvg } from "./markerboardSvg";
-import { charucoSvg } from "./charucoSvg";
-import { ringgridSvg } from "./ringgridSvg";
-import { puzzleboardSvg } from "./puzzleboardSvg";
 import { renderScaleLine } from "./scaleLine";
+import { renderTargetViaWasm } from "../renderViaWasm";
+import { toRinggridTarget, toRinggridRenderOptions } from "../ringgridTarget";
+import { renderRinggridBundleWasm } from "../../../lib/wasm/wasmWorkerProxy";
 
 export async function generatePreviewSvg(target: TargetConfig, page: PageConfig): Promise<string> {
     const dims = resolvePageDimensions(page);
 
+    // Ring grid renders via @vitavision/ringgrid's own WASM renderer
+    // (ringgridTarget.ts); every other kind goes through
+    // @vitavision/calib-targets via renderViaWasm.ts.
     let svg: string;
-    switch (target.targetType) {
-        case "chessboard":
-            svg = chessboardSvg(target.config, dims);
-            break;
-        case "markerboard":
-            svg = markerboardSvg(target.config, dims);
-            break;
-        case "charuco":
-            svg = await charucoSvg(target.config, dims);
-            break;
-        case "ringgrid":
-            svg = await ringgridSvg(target.config, dims);
-            break;
-        case "puzzleboard":
-            svg = puzzleboardSvg(target.config, dims);
-            break;
+    if (target.targetType === "ringgrid") {
+        const targetJson = JSON.stringify(toRinggridTarget(target.config));
+        const optionsJson = JSON.stringify(toRinggridRenderOptions(page));
+        const bundle = await renderRinggridBundleWasm(targetJson, optionsJson);
+        svg = bundle.svg;
+    } else {
+        const bundle = await renderTargetViaWasm(target, page);
+        svg = bundle.svg;
     }
 
     if (page.showScaleLine) {

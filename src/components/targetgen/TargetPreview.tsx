@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import type { TargetGeneratorState, TargetGeneratorAction } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
-import { generateMarkers, markerOuterDrawRadius, markerBounds } from "./ringgrid/layout";
 import { PUZZLEBOARD_QUIET_ZONE_MM } from "./puzzleboard/constants";
 import { isPreviewOverlayTarget } from "./previewInteractions";
 import ZoomControls from "../shared/ZoomControls";
@@ -29,12 +28,18 @@ function computeBoardDims(state: TargetGeneratorState) {
                 h: target.config.rows * target.config.squareSizeMm,
             };
         case "ringgrid": {
-            const markers = generateMarkers(target.config.rows, target.config.longRowCols, target.config.pitchMm);
-            const drawRadius = markerOuterDrawRadius(target.config.markerOuterRadiusMm, target.config.markerRingWidthMm);
-            const [minX, minY, maxX, maxY] = markerBounds(markers);
+            // Ring grid's true printed footprint (a square = max(boardW,
+            // boardH), per the library's `fit_content` page sizing) is only
+            // knowable via an async WASM round trip, so it can't be computed
+            // synchronously in this render path. `validateConfig` already
+            // makes that round trip on every config/page change (see
+            // `useTargetGenerator.ts`) and stores the result on
+            // `state.validation` — read it from there instead of calling
+            // WASM again here. Falls back to 0x0 before the first
+            // validation pass resolves (previewSvg is empty then too).
             return {
-                w: (maxX - minX) + 2 * drawRadius,
-                h: (maxY - minY) + 2 * drawRadius,
+                w: state.validation.boardWidthMm ?? 0,
+                h: state.validation.boardHeightMm ?? 0,
             };
         }
         case "puzzleboard": {
@@ -138,7 +143,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
         return new DOMPoint(clientX, clientY).matrixTransform(ctm.inverse());
     }, []);
 
-    const toggleMarkerboardCircle = useCallback((clientX: number, clientY: number) => {
+    const moveMarkerboardCircle = useCallback((clientX: number, clientY: number) => {
         if (state.target.targetType !== "markerboard") {
             return;
         }
@@ -166,10 +171,30 @@ export default function TargetPreview({ state, dispatch }: Props) {
 
         const col = Math.floor(bx / squareSize);
         const row = Math.floor(by / squareSize);
-        const existing = config.circles.findIndex((circle) => circle.cell.i === row && circle.cell.j === col);
-        const circles = existing >= 0
-            ? config.circles.filter((_, index) => index !== existing)
-            : [...config.circles, { cell: { i: row, j: col } }];
+
+        // Already occupied — nothing to move.
+        if (config.circles.some((circle) => circle.cell.i === row && circle.cell.j === col)) {
+            return;
+        }
+
+        // Move the nearest existing circle (smallest squared distance in
+        // (i, j) cell space) to the clicked cell — the library fixes the
+        // circle count at exactly three, so clicks relocate rather than add/remove.
+        let nearestIdx = 0;
+        let nearestDist = Infinity;
+        config.circles.forEach((circle, idx) => {
+            const di = circle.cell.i - row;
+            const dj = circle.cell.j - col;
+            const dist = di * di + dj * dj;
+            if (dist < nearestDist) {
+                nearestDist = dist;
+                nearestIdx = idx;
+            }
+        });
+
+        const circles = config.circles.map((circle, idx) =>
+            idx === nearestIdx ? { cell: { i: row, j: col } } : circle,
+        ) as typeof config.circles;
 
         dispatch({ type: "UPDATE_CONFIG", partial: { circles } });
     }, [dims.page, dispatch, getSvgPoint, state.target]);
@@ -203,8 +228,8 @@ export default function TargetPreview({ state, dispatch }: Props) {
         if (isTouchPrimary || isPreviewOverlayTarget(event.target)) {
             return;
         }
-        toggleMarkerboardCircle(event.clientX, event.clientY);
-    }, [isTouchPrimary, toggleMarkerboardCircle]);
+        moveMarkerboardCircle(event.clientX, event.clientY);
+    }, [isTouchPrimary, moveMarkerboardCircle]);
 
     const handleTouchStart = useCallback((event: React.TouchEvent) => {
         if (!isTouchPrimary) {
@@ -318,7 +343,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
             && !touchGesture.current.moved
             && touchGesture.current.lastTouchPoint
         ) {
-            toggleMarkerboardCircle(touchGesture.current.lastTouchPoint.x, touchGesture.current.lastTouchPoint.y);
+            moveMarkerboardCircle(touchGesture.current.lastTouchPoint.x, touchGesture.current.lastTouchPoint.y);
         }
 
         touchGesture.current = {
@@ -327,17 +352,17 @@ export default function TargetPreview({ state, dispatch }: Props) {
             moved: false,
             lastTouchPoint: null,
         };
-    }, [isTouchPrimary, toggleMarkerboardCircle]);
+    }, [isTouchPrimary, moveMarkerboardCircle]);
 
     const isMarkerboard = state.target.targetType === "markerboard";
     const controlHints = isTouchPrimary
         ? [
-            ...(isMarkerboard ? ["Tap toggles circles"] : []),
+            ...(isMarkerboard ? ["Tap moves nearest circle"] : []),
             "Drag pans",
             "Pinch zooms",
         ]
         : [
-            ...(isMarkerboard ? ["Left click toggles circles"] : []),
+            ...(isMarkerboard ? ["Left click moves nearest circle"] : []),
             "Right drag pans",
             "Wheel zooms",
         ];

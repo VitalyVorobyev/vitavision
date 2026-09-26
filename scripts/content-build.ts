@@ -1,850 +1,168 @@
-import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync, rmSync } from "node:fs";
-import { join, basename } from "node:path";
-import matter from "gray-matter";
-import { parse as parseYaml } from "yaml";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkGfm from "remark-gfm";
-import remarkDirective from "remark-directive";
-import remarkMath from "remark-math";
-import remarkRehype from "remark-rehype";
-import rehypeSlug from "rehype-slug";
-import rehypeKatex from "rehype-katex";
-import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
-import rehypeStringify from "rehype-stringify";
-import { createHighlighter } from "shiki";
-import { visit } from "unist-util-visit";
-import type { Element, Root as HastRoot } from "hast";
+/**
+ * content:build orchestration.
+ *
+ * Loads every content kind (blog, algorithm, demo, model, concept, narrative)
+ * from `content/**`, renders markdown to sanitized HTML, serializes frontmatter,
+ * resolves cross-content graphs (atlas relations, narratives), and emits
+ * everything under `src/generated/**` + `public/*-index.json`. The actual work
+ * is split across `scripts/build/**` (render pipeline, serialization,
+ * generated-output emission, atlas-entry mapping, build guards) plus the
+ * existing `content-graph.ts` / `content-search.ts` / `narrative-build.ts` /
+ * `authors-build.ts` modules — this file wires them together in order.
+ */
+import { join } from "node:path";
 
-import remarkVvEmbeds from "./remark-vv-embeds.ts";
-import remarkVvBlocks from "./remark-vv-blocks.ts";
-import remarkVvInline from "./remark-vv-inline.ts";
-import remarkVvDirectiveFallback from "./remark-vv-directive-fallback.ts";
-import { computeReadingTimeMinutes } from "./reading-time.ts";
-import remarkEquationReferences from "./remark-equation-references.ts";
-import rehypeNumberedEquations from "./rehype-numbered-equations.ts";
 import {
     blogFrontmatterSchema,
     algorithmFrontmatterSchema,
     demoFrontmatterSchema,
     modelFrontmatterSchema,
     conceptFrontmatterSchema,
+    narrativeFrontmatterSchema,
 } from "../src/lib/content/schema.ts";
-import type { BlogEntry, BlogIndexEntry, AlgorithmEntry, AlgorithmIndexEntry, DemoEntry, DemoIndexEntry, ModelEntry, ModelIndexEntry, ConceptEntry, ConceptIndexEntry, ConceptFrontmatterSerialized } from "../src/lib/content/schema.ts";
-import type { ZodType } from "zod";
+import type {
+    BlogEntry,
+    AlgorithmEntry,
+    DemoEntry,
+    ModelEntry,
+    ConceptEntry,
+    NarrativeEntry,
+    NarrativeFrontmatterSerialized,
+    NarrativePageNode,
+    NarrativePaperNode,
+} from "../src/lib/content/schema.ts";
+
+import { processDirectory, createShikiHighlighter } from "./build/render.ts";
+import { serializeFilterSort, serializeNarrativeFrontmatter, byTitleAsc, byDateDesc } from "./build/serialize.ts";
+import { checkEmptyDivGuard } from "./build/guards.ts";
+import { generateOutput, emitPapersIndex } from "./build/emit.ts";
+import {
+    buildAtlasBySlug,
+    buildAtlasGraphEntries,
+    buildAtlasSearchEntries,
+    buildAtlasAuthorPages,
+} from "./build/atlas-entries.ts";
+import { makePrimaryYearResolver, makePrimaryDisplayResolver, collectUsedPrimaryIds } from "./build/primary-source.ts";
+import { buildScholarlyIndex, emitScholarlyIndex } from "./build/scholarly.ts";
+import type { ScholarlyPageInput, ScholarlyPaperInput, ScholarlyNarrativeInput } from "./build/scholarly.ts";
+
 import { buildContentGraph, emitContentGraph } from "./content-graph.ts";
-import type { ContentEntry } from "./content-graph.ts";
-import { buildSearchRecords, emitContentSearch } from "./content-search.ts";
+import { buildAuthorSearchRecords, buildPaperSearchRecords, buildSearchRecords, emitContentSearch } from "./content-search.ts";
 import type { SearchEntry } from "./content-search.ts";
+import {
+    resolveNarrative,
+    sliceChapters,
+    buildNarrativeRefs,
+    emitNarrativeRefs,
+} from "./narrative-build.ts";
+import type { PaperLookup } from "./narrative-build.ts";
+import { emitAuthorsIndex } from "./authors-build.ts";
 
-const CONTENT_DIR = join(import.meta.dir, "..", "content");
-const GENERATED_DIR = join(import.meta.dir, "..", "src", "generated");
-const PAPERS_INDEX_PATH = join(import.meta.dir, "..", "docs", "papers", "index.yaml");
+import { CONTENT_DIR, GENERATED_DIR, PAPERS_INDEX_PATH } from "./lib/paths.ts";
+import { loadIndexEntries, paperRefRecords, paperCites } from "./lib/papers-index.ts";
+import type { PaperRefRecord } from "./lib/papers-index.ts";
+import { algoSlug, modelSlug, conceptSlug, narrativeSlug, demoSlug, blogSlug } from "./lib/content-kinds.ts";
 
-interface PaperIndexEntry {
-    id: string;
-    kind?: "paper" | "repo" | "doc";
-    title?: string;
-    authors?: string[];
-    year?: number;
-    venue?: string;
-    url?: string;
-    arxiv?: string;
-    doi?: string;
-}
-
-interface PaperRefRecord {
-    id: string;
-    title: string;
-    authors: string[];
-    year: number;
-    venue: string;
-    url: string;
-    arxiv?: string;
-    doi?: string;
-}
-
-function loadPapersIndex(): PaperRefRecord[] {
-    if (!existsSync(PAPERS_INDEX_PATH)) {
-        console.warn("content:build — docs/papers/index.yaml not found; papers-index will be empty");
-        return [];
-    }
-    const raw = readFileSync(PAPERS_INDEX_PATH, "utf-8");
-    const parsed = parseYaml(raw);
-    if (!Array.isArray(parsed)) {
-        console.warn("content:build — docs/papers/index.yaml is not a list; papers-index will be empty");
-        return [];
-    }
-    const entries = parsed as PaperIndexEntry[];
-    const papers: PaperRefRecord[] = [];
-    for (const entry of entries) {
-        const kind = entry.kind ?? "paper";
-        if (kind !== "paper") continue;
-        if (!entry.id) continue;
-        // Required-for-display fields. If any are missing we still emit a stub —
-        // the page UI guards on undefined and the strip is omitted gracefully.
-        papers.push({
-            id: entry.id,
-            title: entry.title ?? entry.id,
-            authors: entry.authors ?? [],
-            year: typeof entry.year === "number" ? entry.year : 0,
-            venue: entry.venue ?? "",
-            url: entry.url ?? "",
-            ...(entry.arxiv ? { arxiv: entry.arxiv } : {}),
-            ...(entry.doi ? { doi: entry.doi } : {}),
-        });
-    }
-    return papers;
-}
-
-function emitPapersIndex(papers: PaperRefRecord[], usedPrimaryIds: Set<string>): void {
-    const known = new Set(papers.map((p) => p.id));
-    const missing = [...usedPrimaryIds].filter((id) => !known.has(id)).sort();
-    if (missing.length > 0) {
-        console.warn(
-            `content:build — ${missing.length} primary source ID(s) referenced by pages are not in docs/papers/index.yaml: ${missing.join(", ")}`,
-        );
-    }
-
-    // Emit the lookup as a static JSON asset under public/ so Vite serves it
-    // verbatim from /papers-index.json. This keeps ~16 kB of paper metadata
-    // out of the main JS bundle; the client lazy-fetches it once on demand.
-    const PUBLIC_DIR = join(import.meta.dir, "..", "public");
-    const papersById = Object.fromEntries(papers.map((p) => [p.id, p]));
-    const jsonPath = join(PUBLIC_DIR, "papers-index.json");
-    writeFileSync(jsonPath, JSON.stringify(papersById, null, 2), "utf-8");
-
-    // Tiny TS shim: exports the type so the rest of the codebase has a single
-    // source of truth, but ships no data.
-    const tsLines = [
-        "// Auto-generated by scripts/content-build.ts — do not edit manually.",
-        "// The actual paper records live in /papers-index.json (loaded lazily).",
-        "",
-        "export interface PaperRef {",
-        "    id: string;",
-        "    title: string;",
-        "    authors: string[];",
-        "    year: number;",
-        "    venue: string;",
-        "    url: string;",
-        "    arxiv?: string;",
-        "    doi?: string;",
-        "}",
-        "",
-        "export type PapersById = Record<string, PaperRef>;",
-        "",
-        "/** Public URL of the JSON asset emitted by content:build. */",
-        'export const PAPERS_INDEX_URL = "/papers-index.json";',
-        "",
-    ];
-    writeFileSync(join(GENERATED_DIR, "papers-index.ts"), tsLines.join("\n"), "utf-8");
-}
-
-function blogSlug(filename: string): string {
-    // YYYY-MM-DD-title.md → title
-    return basename(filename, ".md").replace(/^\d{4}-\d{2}-\d{2}-/, "");
-}
-
-function algoSlug(filename: string): string {
-    return basename(filename, ".md");
-}
-
-function demoSlug(filename: string): string {
-    return basename(filename, ".md");
-}
-
-function modelSlug(filename: string): string {
-    return basename(filename, ".md");
-}
-
-function conceptSlug(filename: string): string {
-    return basename(filename, ".md");
-}
-
-/** Rewrite relative image paths (./images/*, ../images/*, images/*) to /content/images/*. */
-function resolveContentImagePaths(html: string): string {
-    return html.replace(/src="(?:\.{1,2}\/)?images\//g, 'src="/content/images/');
-}
-
-// Extended sanitization schema to allow custom blocks, Shiki, and KaTeX output.
-// clobberPrefix is disabled because all markdown content is authored in-repo (not user input),
-// so the DOM-clobbering protection is unnecessary and its prefix breaks in-page anchor links
-// (headings get `id="user-content-foo"` but `[link](#foo)` is not rewritten to match).
-const sanitizeSchema = {
-    ...defaultSchema,
-    clobberPrefix: "",
-    tagNames: [
-        ...(defaultSchema.tagNames ?? []),
-        "section",
-        "span",
-        "math",
-        "semantics",
-        "mrow",
-        "mi",
-        "mo",
-        "mn",
-        "msup",
-        "msub",
-        "mfrac",
-        "mover",
-        "munder",
-        "mtext",
-        "annotation",
-        "mtable",
-        "mtr",
-        "mtd",
-        "menclose",
-        "mspace",
-        "msqrt",
-        "mroot",
-        "mpadded",
-        "mstyle",
-        "mglyph",
-        "figure",
-        "figcaption",
-        // KaTeX SVG output for tall stretchy delimiters
-        "svg",
-        "path",
-    ],
-    attributes: {
-        ...defaultSchema.attributes,
-        a: [...(defaultSchema.attributes?.a ?? []), "target", "rel"],
-        h1: [...(defaultSchema.attributes?.h1 ?? []), "id"],
-        h2: [...(defaultSchema.attributes?.h2 ?? []), "id"],
-        h3: [...(defaultSchema.attributes?.h3 ?? []), "id"],
-        h4: [...(defaultSchema.attributes?.h4 ?? []), "id"],
-        h5: [...(defaultSchema.attributes?.h5 ?? []), "id"],
-        h6: [...(defaultSchema.attributes?.h6 ?? []), "id"],
-        p: [...(defaultSchema.attributes?.p ?? []), "className"],
-        section: ["className", "data-kind", "dataKind"],
-        div: [
-            ...(defaultSchema.attributes?.div ?? []),
-            "id",
-            "className",
-            "data-vv-illustration",
-            "data-vv-preset",
-            "data-vv-pattern",
-            "data-vv-rotation",
-            "data-vv-controls",
-            "data-vv-animate-rotation",
-            "data-vv-grid",
-            "data-vv-delaunay",
-            "data-vv-voronoi",
-            "data-vv-circumcircles",
-            "data-vv-legend",
-        ],
-        span: [...(defaultSchema.attributes?.span ?? []), "className", "style", "aria-label", "ariaLabel", "aria-hidden", "ariaHidden"],
-        code: [...(defaultSchema.attributes?.code ?? []), "className", "style"],
-        pre: [...(defaultSchema.attributes?.pre ?? []), "className", "style", "tabindex", "tabIndex"],
-        math: ["xmlns", "display"],
-        annotation: ["encoding"],
-        svg: ["xmlns", "viewBox", "preserveAspectRatio", "width", "height", "style", "aria-hidden", "ariaHidden"],
-        path: ["d"],
-        // Allow KaTeX classes on all elements
-        "*": ["className", "style"],
-    },
-};
-
-// Initialize Shiki highlighter
-async function createShikiHighlighter() {
-    return createHighlighter({
-        themes: ["vitesse-dark", "vitesse-light"],
-        langs: [
-            "python",
-            "typescript",
-            "javascript",
-            "rust",
-            "bash",
-            "json",
-            "yaml",
-            "toml",
-            "html",
-            "css",
-            "sql",
-            "c",
-            "cpp",
-            "markdown",
-            "latex",
-        ],
+/** Loads docs/papers/index.yaml once and projects it into both shapes
+ *  content-build.ts needs: the display records for papers-index.json, and the
+ *  raw `cites:` lists (unresolved ids) for the scholarly index. */
+function loadPapersRegistry(): { papers: PaperRefRecord[]; citesById: Map<string, string[]> } {
+    const entries = loadIndexEntries(PAPERS_INDEX_PATH, {
+        onMissing: () => {
+            console.warn("content:build — docs/papers/index.yaml not found; papers-index will be empty");
+            return [];
+        },
+        onNotList: () => {
+            console.warn("content:build — docs/papers/index.yaml is not a list; papers-index will be empty");
+            return [];
+        },
     });
-}
-
-async function renderMarkdown(content: string, highlighter: Awaited<ReturnType<typeof createShikiHighlighter>>): Promise<string> {
-    const result = await unified()
-        .use(remarkParse)
-        .use(remarkGfm)
-        .use(remarkDirective)
-        .use(remarkVvInline)
-        .use(remarkVvBlocks)
-        .use(remarkVvEmbeds)
-        .use(remarkVvDirectiveFallback)
-        .use(remarkMath)
-        .use(remarkEquationReferences)
-        .use(remarkRehype)
-        .use(rehypeSlug)
-        .use(rehypeNumberedEquations)
-        .use(rehypeKatex)
-        .use(() => {
-            // Add target="_blank" and rel="noopener noreferrer" to external links
-            return (tree: HastRoot) => {
-                visit(tree, "element", (node: Element) => {
-                    if (node.tagName !== "a") return;
-                    const href = node.properties?.href;
-                    if (typeof href === "string" && /^https?:\/\//.test(href)) {
-                        node.properties.target = "_blank";
-                        node.properties.rel = "noopener noreferrer";
-                    }
-                });
-            };
-        })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- rehype-sanitize schema type is complex
-        .use(rehypeSanitize, sanitizeSchema as any)
-        .use(() => {
-            // Custom Shiki transformer — runs AFTER sanitize to avoid style stripping
-            return (tree: HastRoot) => {
-                visit(tree, "element", (node: Element) => {
-                    if (
-                        node.tagName === "pre" &&
-                        (node.children?.[0] as Element)?.tagName === "code"
-                    ) {
-                        const codeNode = node.children[0] as Element;
-                        const classNames = codeNode.properties?.className as string[] | undefined;
-                        const className = classNames?.[0] ?? "";
-                        const langMatch = String(className).match(/language-(\w+)/);
-                        const lang = langMatch?.[1];
-
-                        // Skip mermaid — handled client-side
-                        if (lang === "mermaid") return;
-
-                        // Get raw text from code node
-                        const rawCode = codeNode.children
-                            ?.map((c) => ("value" in c ? c.value : ""))
-                            .join("");
-
-                        if (!rawCode || !lang) return;
-
-                        try {
-                            const loadedLangs = highlighter.getLoadedLanguages();
-                            if (!loadedLangs.includes(lang)) return;
-
-                            const highlighted = highlighter.codeToHtml(rawCode, {
-                                lang,
-                                themes: {
-                                    dark: "vitesse-dark",
-                                    light: "vitesse-light",
-                                },
-                                defaultColor: false,
-                            });
-
-                            // Replace the <pre> node with raw HTML
-                            (node as unknown as { type: string; value: string }).type = "raw";
-                            (node as unknown as { value: string }).value = highlighted;
-                            delete (node as Partial<Element>).tagName;
-                            delete (node as Partial<Element>).children;
-                            delete (node as Partial<Element>).properties;
-                        } catch {
-                            // If highlighting fails, leave the node as-is
-                        }
-                    }
-                });
-            };
-        })
-        .use(rehypeStringify, { allowDangerousHtml: true })
-        .process(content);
-    return resolveContentImagePaths(String(result));
-}
-
-async function processDirectory<T>(
-    dir: string,
-    schema: ZodType<T>,
-    slugFn: (filename: string) => string,
-    highlighter: Awaited<ReturnType<typeof createShikiHighlighter>>,
-): Promise<{ slug: string; frontmatter: T; html: string }[]> {
-    if (!existsSync(dir)) return [];
-
-    const files = readdirSync(dir).filter((f) => f.endsWith(".md"));
-    const entries: { slug: string; frontmatter: T; html: string }[] = [];
-
-    for (const file of files) {
-        const raw = readFileSync(join(dir, file), "utf-8");
-        const { data, content } = matter(raw);
-        if (data.readingTimeMinutes === undefined) {
-            data.readingTimeMinutes = computeReadingTimeMinutes(content);
-        }
-        const parsed = schema.parse(data);
-        const html = await renderMarkdown(content, highlighter);
-        entries.push({ slug: slugFn(file), frontmatter: parsed, html });
-    }
-
-    return entries;
-}
-
-function serializeDate(value: unknown): string {
-    if (value instanceof Date) return value.toISOString().split("T")[0];
-    return String(value);
-}
-
-function serializeBlogEntry(entry: { slug: string; frontmatter: Record<string, unknown>; html: string }): BlogEntry {
-    const { date, updated, ...rest } = entry.frontmatter;
-    return {
-        slug: entry.slug,
-        frontmatter: {
-            ...rest,
-            date: serializeDate(date),
-            ...(updated !== undefined ? { updated: serializeDate(updated) } : {}),
-        } as BlogEntry["frontmatter"],
-        html: entry.html,
-    };
-}
-
-function serializeAlgorithmEntry(entry: { slug: string; frontmatter: Record<string, unknown>; html: string }): AlgorithmEntry {
-    const { date, updated, ...rest } = entry.frontmatter;
-    return {
-        slug: entry.slug,
-        frontmatter: {
-            ...rest,
-            date: serializeDate(date),
-            ...(updated !== undefined ? { updated: serializeDate(updated) } : {}),
-        } as AlgorithmEntry["frontmatter"],
-        html: entry.html,
-    };
-}
-
-function serializeDemoEntry(entry: { slug: string; frontmatter: Record<string, unknown>; html: string }): DemoEntry {
-    const { date, updated, ...rest } = entry.frontmatter;
-    return {
-        slug: entry.slug,
-        frontmatter: {
-            ...rest,
-            date: serializeDate(date),
-            ...(updated !== undefined ? { updated: serializeDate(updated) } : {}),
-        } as DemoEntry["frontmatter"],
-        html: entry.html,
-    };
-}
-
-function serializeModelEntry(entry: { slug: string; frontmatter: Record<string, unknown>; html: string }): ModelEntry {
-    const { date, updated, ...rest } = entry.frontmatter;
-    return {
-        slug: entry.slug,
-        frontmatter: {
-            ...rest,
-            date: serializeDate(date),
-            ...(updated !== undefined ? { updated: serializeDate(updated) } : {}),
-        } as ModelEntry["frontmatter"],
-        html: entry.html,
-    };
-}
-
-function serializeConceptEntry(entry: { slug: string; frontmatter: Record<string, unknown>; html: string }): ConceptEntry {
-    const { date, updated, ...rest } = entry.frontmatter;
-    return {
-        slug: entry.slug,
-        frontmatter: {
-            ...rest,
-            date: serializeDate(date),
-            ...(updated !== undefined ? { updated: serializeDate(updated) } : {}),
-        } as ConceptFrontmatterSerialized,
-        html: entry.html,
-    };
-}
-
-function cleanGeneratedHtmlModules(dir: string): void {
-    if (!existsSync(dir)) return;
-    for (const file of readdirSync(dir)) {
-        if (file.endsWith(".ts")) {
-            rmSync(join(dir, file));
-        }
-    }
-}
-
-function generateOutput(
-    blogPosts: BlogEntry[],
-    algorithmPages: AlgorithmEntry[],
-    demoPages: DemoEntry[],
-    modelPages: ModelEntry[],
-    conceptPages: ConceptEntry[],
-    /** Published-only subsets (excludes dev:true pages). Used for index + search listings only. */
-    algorithmPublished: AlgorithmEntry[],
-    modelPublished: ModelEntry[],
-    conceptPublished: ConceptEntry[],
-): void {
-    if (!existsSync(GENERATED_DIR)) mkdirSync(GENERATED_DIR, { recursive: true });
-
-    // 1. Per-slug html modules for lazy client-side loading.
-    const blogHtmlDir = join(GENERATED_DIR, "content", "blog");
-    const algoHtmlDir = join(GENERATED_DIR, "content", "algorithms");
-    const demoHtmlDir = join(GENERATED_DIR, "content", "demos");
-    const modelHtmlDir = join(GENERATED_DIR, "content", "models");
-    const conceptHtmlDir = join(GENERATED_DIR, "content", "concepts");
-    if (!existsSync(blogHtmlDir)) mkdirSync(blogHtmlDir, { recursive: true });
-    if (!existsSync(algoHtmlDir)) mkdirSync(algoHtmlDir, { recursive: true });
-    if (!existsSync(demoHtmlDir)) mkdirSync(demoHtmlDir, { recursive: true });
-    if (!existsSync(modelHtmlDir)) mkdirSync(modelHtmlDir, { recursive: true });
-    if (!existsSync(conceptHtmlDir)) mkdirSync(conceptHtmlDir, { recursive: true });
-    cleanGeneratedHtmlModules(blogHtmlDir);
-    cleanGeneratedHtmlModules(algoHtmlDir);
-    cleanGeneratedHtmlModules(demoHtmlDir);
-    cleanGeneratedHtmlModules(modelHtmlDir);
-    cleanGeneratedHtmlModules(conceptHtmlDir);
-
-    for (const post of blogPosts) {
-        const file = join(blogHtmlDir, `${post.slug}.ts`);
-        writeFileSync(file, `// Auto-generated — do not edit manually.\nexport const html = ${JSON.stringify(post.html)};\n`, "utf-8");
-    }
-    for (const page of algorithmPages) {
-        const file = join(algoHtmlDir, `${page.slug}.ts`);
-        writeFileSync(file, `// Auto-generated — do not edit manually.\nexport const html = ${JSON.stringify(page.html)};\n`, "utf-8");
-    }
-    for (const demo of demoPages) {
-        const file = join(demoHtmlDir, `${demo.slug}.ts`);
-        writeFileSync(file, `// Auto-generated — do not edit manually.\nexport const html = ${JSON.stringify(demo.html)};\n`, "utf-8");
-    }
-    for (const model of modelPages) {
-        const file = join(modelHtmlDir, `${model.slug}.ts`);
-        writeFileSync(file, `// Auto-generated — do not edit manually.\nexport const html = ${JSON.stringify(model.html)};\n`, "utf-8");
-    }
-    for (const concept of conceptPages) {
-        const file = join(conceptHtmlDir, `${concept.slug}.ts`);
-        writeFileSync(file, `// Auto-generated — do not edit manually.\nexport const html = ${JSON.stringify(concept.html)};\n`, "utf-8");
-    }
-
-    // 2. Metadata-only index (no html) — dev:true pages excluded from all indexes.
-    const blogIndex: BlogIndexEntry[] = blogPosts.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
-    const algoIndex: AlgorithmIndexEntry[] = algorithmPublished.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
-    const demoIndex: DemoIndexEntry[] = demoPages.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
-    const modelIndex: ModelIndexEntry[] = modelPublished.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
-    const conceptIndex: ConceptIndexEntry[] = conceptPublished.map(({ slug, frontmatter }) => ({ slug, frontmatter }));
-
-    const indexLines = [
-        '// Auto-generated by scripts/content-build.ts — do not edit manually.',
-        'import type { BlogIndexEntry, AlgorithmIndexEntry, DemoIndexEntry, ModelIndexEntry, ConceptIndexEntry } from "../lib/content/schema.ts";',
-        "",
-        `export const blogPosts: BlogIndexEntry[] = ${JSON.stringify(blogIndex, null, 2)};`,
-        "",
-        `export const algorithmPages: AlgorithmIndexEntry[] = ${JSON.stringify(algoIndex, null, 2)};`,
-        "",
-        `export const demoPages: DemoIndexEntry[] = ${JSON.stringify(demoIndex, null, 2)};`,
-        "",
-        `export const modelPages: ModelIndexEntry[] = ${JSON.stringify(modelIndex, null, 2)};`,
-        "",
-        `export const conceptPages: ConceptIndexEntry[] = ${JSON.stringify(conceptIndex, null, 2)};`,
-        "",
-    ];
-    const indexFile = join(GENERATED_DIR, "content-index.ts");
-    writeFileSync(indexFile, indexLines.join("\n"), "utf-8");
-
-    // 3. Explicit slug-to-loader manifests so client code never relies on fragile glob keys.
-    const blogLoaderLines = [
-        '// Auto-generated by scripts/content-build.ts — do not edit manually.',
-        'export interface GeneratedHtmlModule { html: string; }',
-        "",
-        "export const blogHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {",
-        ...blogPosts.map((post) => `  ${JSON.stringify(post.slug)}: () => import(${JSON.stringify(`./content/blog/${post.slug}.ts`)}),`),
-        "};",
-        "",
-    ];
-    writeFileSync(join(GENERATED_DIR, "blog-loaders.ts"), blogLoaderLines.join("\n"), "utf-8");
-
-    const algorithmLoaderLines = [
-        '// Auto-generated by scripts/content-build.ts — do not edit manually.',
-        'export interface GeneratedHtmlModule { html: string; }',
-        "",
-        "export const algorithmHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {",
-        ...algorithmPages.map((page) => `  ${JSON.stringify(page.slug)}: () => import(${JSON.stringify(`./content/algorithms/${page.slug}.ts`)}),`),
-        "};",
-        "",
-    ];
-    writeFileSync(join(GENERATED_DIR, "algorithm-loaders.ts"), algorithmLoaderLines.join("\n"), "utf-8");
-
-    const demoLoaderLines = [
-        '// Auto-generated by scripts/content-build.ts — do not edit manually.',
-        'export interface GeneratedHtmlModule { html: string; }',
-        "",
-        "export const demoHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {",
-        ...demoPages.map((demo) => `  ${JSON.stringify(demo.slug)}: () => import(${JSON.stringify(`./content/demos/${demo.slug}.ts`)}),`),
-        "};",
-        "",
-    ];
-    writeFileSync(join(GENERATED_DIR, "demo-loaders.ts"), demoLoaderLines.join("\n"), "utf-8");
-
-    const modelLoaderLines = [
-        '// Auto-generated by scripts/content-build.ts — do not edit manually.',
-        'export interface GeneratedHtmlModule { html: string; }',
-        "",
-        "export const modelHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {",
-        ...modelPages.map((model) => `  ${JSON.stringify(model.slug)}: () => import(${JSON.stringify(`./content/models/${model.slug}.ts`)}),`),
-        "};",
-        "",
-    ];
-    writeFileSync(join(GENERATED_DIR, "model-loaders.ts"), modelLoaderLines.join("\n"), "utf-8");
-
-    const conceptLoaderLines = [
-        '// Auto-generated by scripts/content-build.ts — do not edit manually.',
-        'export interface GeneratedHtmlModule { html: string; }',
-        "",
-        "export const conceptHtmlLoaders: Record<string, () => Promise<GeneratedHtmlModule>> = {",
-        ...conceptPages.map((concept) => `  ${JSON.stringify(concept.slug)}: () => import(${JSON.stringify(`./content/concepts/${concept.slug}.ts`)}),`),
-        "};",
-        "",
-    ];
-    writeFileSync(join(GENERATED_DIR, "concept-loaders.ts"), conceptLoaderLines.join("\n"), "utf-8");
+    return { papers: paperRefRecords(entries), citesById: paperCites(entries) };
 }
 
 async function main(): Promise<void> {
     const highlighter = await createShikiHighlighter();
 
-    const rawBlogPosts = await processDirectory(
-        join(CONTENT_DIR, "blog"),
-        blogFrontmatterSchema,
-        blogSlug,
-        highlighter,
-    );
+    const rawBlogPosts = await processDirectory(join(CONTENT_DIR, "blog"), blogFrontmatterSchema, blogSlug, highlighter);
 
     const includeDrafts = process.env.INCLUDE_DRAFTS === "true";
+    const notDev = (e: { frontmatter: { dev?: boolean } }) => !e.frontmatter.dev;
 
     // Serialize dates, filter drafts, and sort by date descending
-    const blogPosts = rawBlogPosts
-        .map((e) => serializeBlogEntry(e as { slug: string; frontmatter: Record<string, unknown>; html: string }))
-        .filter((e) => includeDrafts || !e.frontmatter.draft)
-        .sort((a, b) => b.frontmatter.date.localeCompare(a.frontmatter.date));
+    const blogPosts = serializeFilterSort<BlogEntry>(rawBlogPosts, includeDrafts, byDateDesc);
 
-    const rawAlgorithmPages = await processDirectory(
-        join(CONTENT_DIR, "algorithms"),
-        algorithmFrontmatterSchema,
-        algoSlug,
-        highlighter,
-    );
+    const rawAlgorithmPages = await processDirectory(join(CONTENT_DIR, "algorithms"), algorithmFrontmatterSchema, algoSlug, highlighter);
 
     // algorithmPages: routable set (used for per-slug HTML loaders). Dev pages stay here.
-    const algorithmPages = rawAlgorithmPages
-        .map((e) => serializeAlgorithmEntry(e as { slug: string; frontmatter: Record<string, unknown>; html: string }))
-        .filter((e) => includeDrafts || !e.frontmatter.draft)
-        .sort((a, b) => a.frontmatter.title.localeCompare(b.frontmatter.title));
+    const algorithmPages = serializeFilterSort<AlgorithmEntry>(rawAlgorithmPages, includeDrafts, byTitleAsc);
     // algorithmPublished: published index/graph/search set — excludes dev: true pages.
-    const algorithmPublished = algorithmPages.filter(
-        (e) => !(e.frontmatter as { dev?: boolean }).dev,
-    );
+    const algorithmPublished = algorithmPages.filter(notDev);
 
-    const rawDemoPages = await processDirectory(
-        join(CONTENT_DIR, "demos"),
-        demoFrontmatterSchema,
-        demoSlug,
-        highlighter,
-    );
+    const rawDemoPages = await processDirectory(join(CONTENT_DIR, "demos"), demoFrontmatterSchema, demoSlug, highlighter);
+    const demoPages = serializeFilterSort<DemoEntry>(rawDemoPages, includeDrafts, byTitleAsc);
 
-    const demoPages = rawDemoPages
-        .map((e) => serializeDemoEntry(e as { slug: string; frontmatter: Record<string, unknown>; html: string }))
+    const rawModelPages = await processDirectory(join(CONTENT_DIR, "models"), modelFrontmatterSchema, modelSlug, highlighter);
+    const modelPages = serializeFilterSort<ModelEntry>(rawModelPages, includeDrafts, byTitleAsc);
+    const modelPublished = modelPages.filter(notDev);
+
+    const rawConceptPages = await processDirectory(join(CONTENT_DIR, "concepts"), conceptFrontmatterSchema, conceptSlug, highlighter);
+    const conceptPages = serializeFilterSort<ConceptEntry>(rawConceptPages, includeDrafts, byTitleAsc);
+    const conceptPublished = conceptPages.filter(notDev);
+
+    const rawNarrativePages = await processDirectory(join(CONTENT_DIR, "narratives"), narrativeFrontmatterSchema, narrativeSlug, highlighter);
+
+    // Serialize + draft-filter now; graph resolution (page/paper lookups, the
+    // generated timeline lens) happens below once atlas years are known.
+    const narrativeFrontmatters = rawNarrativePages
+        .map((e) => ({
+            slug: e.slug,
+            html: e.html,
+            frontmatter: serializeNarrativeFrontmatter<NarrativeFrontmatterSerialized>(e.frontmatter as Record<string, unknown>),
+        }))
         .filter((e) => includeDrafts || !e.frontmatter.draft)
-        .sort((a, b) => a.frontmatter.title.localeCompare(b.frontmatter.title));
-
-    const rawModelPages = await processDirectory(
-        join(CONTENT_DIR, "models"),
-        modelFrontmatterSchema,
-        modelSlug,
-        highlighter,
-    );
-
-    // Enforce: any non-draft, non-dev model page must have at least one implementations entry,
-    // unless `noPublicImpl: true` declares no public implementation exists for legitimate reasons.
-    // This check runs before the draft filter so draft pages can freely omit implementations.
-    for (const entry of rawModelPages) {
-        const fm = entry.frontmatter as {
-            draft?: boolean;
-            dev?: boolean;
-            noPublicImpl?: boolean;
-            implementations?: unknown[];
-        };
-        if (!fm.draft && !fm.dev && !fm.noPublicImpl) {
-            if (!fm.implementations || fm.implementations.length === 0) {
-                throw new Error(
-                    `content:build failed: model page "${entry.slug}" is not draft but has no implementations[] entry (and noPublicImpl is not set). See .claude/skills/deep-model-page/SKILL.md §Workflow B9a.`,
-                );
-            }
-        }
-    }
-
-    const modelPages = rawModelPages
-        .map((e) => serializeModelEntry(e as { slug: string; frontmatter: Record<string, unknown>; html: string }))
-        .filter((e) => includeDrafts || !e.frontmatter.draft)
-        .sort((a, b) => a.frontmatter.title.localeCompare(b.frontmatter.title));
-    const modelPublished = modelPages.filter(
-        (e) => !(e.frontmatter as { dev?: boolean }).dev,
-    );
-
-    const rawConceptPages = await processDirectory(
-        join(CONTENT_DIR, "concepts"),
-        conceptFrontmatterSchema,
-        conceptSlug,
-        highlighter,
-    );
-
-    const conceptPages = rawConceptPages
-        .map((e) => serializeConceptEntry(e as { slug: string; frontmatter: Record<string, unknown>; html: string }))
-        .filter((e) => includeDrafts || !e.frontmatter.draft)
-        .sort((a, b) => a.frontmatter.title.localeCompare(b.frontmatter.title));
-    const conceptPublished = conceptPages.filter(
-        (e) => !(e.frontmatter as { dev?: boolean }).dev,
-    );
+        .sort(byTitleAsc);
 
     // Load papers once, early, so we can derive `year` before emitting the index.
-    const papers = loadPapersIndex();
+    const { papers, citesById } = loadPapersRegistry();
     const papersById = new Map(papers.map((p) => [p.id, p]));
-    const resolvePrimaryYear = (fm: { sources?: { primary?: string } }): number | undefined => {
-        const raw = fm.sources?.primary;
-        if (!raw) return undefined;
-        const id = raw.startsWith("paper:") ? raw.slice("paper:".length) : raw;
-        if (id.startsWith("repo:") || id.startsWith("doc:")) return undefined;
-        const y = papersById.get(id)?.year;
-        return typeof y === "number" && y > 0 ? y : undefined;
-    };
+    const resolvePrimaryYear = makePrimaryYearResolver(papersById);
     for (const e of [...algorithmPages, ...modelPages, ...conceptPages]) {
         const y = resolvePrimaryYear(e.frontmatter as { sources?: { primary?: string } });
         if (y !== undefined) (e.frontmatter as { year?: number }).year = y;
     }
 
-    // ---- Build-time guard -------------------------------------------------------
-    // Fail if any rendered page still contains <div></div>: the exact signature of
-    // an unclaimed remark-directive node. Legitimate vv-block <div>s always carry
-    // a className and KaTeX output always has content — so this string is a zero-
-    // false-positive sentinel for stray prose colons that leaked through as directives.
-    const emptyDivViolations: { slug: string; count: number }[] = [];
-    for (const { slug, html } of [
+    // Resolve narrative graphs now that atlas page years are known. Uses the
+    // full (draft-inclusive under INCLUDE_DRAFTS=true) algorithm/model/concept
+    // sets so a narrative can reference any page; validate-content.ts is the
+    // gate that rejects a `page` node pointing at an unpublished/draft slug.
+    const atlasBySlug = buildAtlasBySlug(algorithmPages, modelPages, conceptPages);
+    const narrativePapersById = new Map<string, PaperLookup>(
+        papers.map((p) => [p.id, { id: p.id, title: p.title, authors: p.authors, year: p.year, url: p.url }]),
+    );
+
+    const narrativePages: NarrativeEntry[] = narrativeFrontmatters.map((e) => {
+        const chapters = sliceChapters(e.html);
+        const narrative = resolveNarrative(e.frontmatter, atlasBySlug, narrativePapersById);
+        return { slug: e.slug, frontmatter: e.frontmatter, html: e.html, chapters, narrative };
+    });
+
+    checkEmptyDivGuard([
         ...rawBlogPosts,
         ...rawAlgorithmPages,
         ...rawDemoPages,
         ...rawModelPages,
         ...rawConceptPages,
-    ]) {
-        const count = (html.match(/<div><\/div>/g) ?? []).length;
-        if (count > 0) emptyDivViolations.push({ slug, count });
-    }
-    if (emptyDivViolations.length > 0) {
-        const details = emptyDivViolations
-            .map(({ slug, count }) => `  ${slug}: ${count} occurrence(s)`)
-            .join("\n");
-        throw new Error(
-            `content:build — ${emptyDivViolations.length} page(s) contain <div></div> ` +
-            `(unclaimed remark-directive — a stray colon in prose triggers an empty div):\n${details}`,
-        );
-    }
-    // -----------------------------------------------------------------------------
-
-    generateOutput(blogPosts, algorithmPages, demoPages, modelPages, conceptPages, algorithmPublished, modelPublished, conceptPublished);
-
-    // Emit a typed lookup for paper IDs referenced by `sources.primary`.
-    // Source-strip rendering (Atlas page redesign) reads this on the client.
-    const usedPrimaryIds = new Set<string>();
-    const collectPrimary = (fm: { sources?: { primary?: string } }) => {
-        const p = fm.sources?.primary;
-        if (!p) return;
-        // Bare IDs are treated as `paper:<id>` for backward compat.
-        const id = p.startsWith("paper:") ? p.slice("paper:".length) : p;
-        if (!id.startsWith("repo:") && !id.startsWith("doc:")) {
-            usedPrimaryIds.add(id);
-        }
-    };
-    for (const e of algorithmPublished) collectPrimary(e.frontmatter);
-    for (const e of modelPublished) collectPrimary(e.frontmatter);
-    for (const e of conceptPublished) collectPrimary(e.frontmatter);
-    emitPapersIndex(papers, usedPrimaryIds);
-    const resolvePrimary = (
-        fm: { sources?: { primary?: string } },
-    ): { authors?: string[]; venue?: string } | undefined => {
-        const raw = fm.sources?.primary;
-        if (!raw) return undefined;
-        const id = raw.startsWith("paper:") ? raw.slice("paper:".length) : raw;
-        if (id.startsWith("repo:") || id.startsWith("doc:")) return undefined;
-        const paper = papersById.get(id);
-        if (!paper) return undefined;
-        return {
-            ...(paper.authors.length > 0 ? { authors: paper.authors } : {}),
-            ...(paper.venue ? { venue: paper.venue } : {}),
-        };
-    };
+        ...rawNarrativePages,
+    ]);
 
     // Build content graph from all non-draft, non-dev entries.
     // dev:true pages are excluded from relationship edges and slug lookups so
     // they do not appear in navigation. They remain routable via direct URL.
-    type FrontmatterRel = {
-        prerequisites?: string[];
-        failureModes?: string[];
-        relations?: ContentEntry["relations"];
-    };
-    const graphEntries: ContentEntry[] = [
-        ...algorithmPublished.map((e) => ({
-            slug: e.slug,
-            type: "algorithm" as const,
-            title: e.frontmatter.title,
-            summary: e.frontmatter.summary,
-            draft: e.frontmatter.draft === true,
-            prerequisites: (e.frontmatter as FrontmatterRel).prerequisites,
-            failureModes: (e.frontmatter as FrontmatterRel).failureModes,
-            relations: (e.frontmatter as FrontmatterRel).relations,
-        })),
-        ...modelPublished.map((e) => ({
-            slug: e.slug,
-            type: "model" as const,
-            title: e.frontmatter.title,
-            summary: e.frontmatter.summary,
-            draft: e.frontmatter.draft === true,
-            prerequisites: (e.frontmatter as FrontmatterRel).prerequisites,
-            failureModes: (e.frontmatter as FrontmatterRel).failureModes,
-            relations: (e.frontmatter as FrontmatterRel).relations,
-        })),
-        ...conceptPublished.map((e) => ({
-            slug: e.slug,
-            type: "concept" as const,
-            title: e.frontmatter.title,
-            summary: e.frontmatter.summary,
-            draft: e.frontmatter.draft === true,
-            prerequisites: (e.frontmatter as FrontmatterRel).prerequisites,
-            failureModes: (e.frontmatter as FrontmatterRel).failureModes,
-            relations: (e.frontmatter as FrontmatterRel).relations,
-        })),
-    ];
-
+    const graphEntries = buildAtlasGraphEntries(algorithmPublished, modelPublished, conceptPublished);
     const contentGraph = buildContentGraph(graphEntries);
-    emitContentGraph(contentGraph, GENERATED_DIR);
 
-    // Build search records from all non-draft, non-dev entries.
-    const searchEntries: SearchEntry[] = [
-        ...algorithmPublished.map((e) => ({
-            slug: e.slug,
-            type: "algorithm" as const,
-            title: e.frontmatter.title,
-            summary: e.frontmatter.summary,
-            tags: e.frontmatter.tags,
-            domain: (e.frontmatter as { domain?: string }).domain,
-            html: e.html,
-            primary: resolvePrimary(e.frontmatter),
-        })),
-        ...modelPublished.map((e) => ({
-            slug: e.slug,
-            type: "model" as const,
-            title: e.frontmatter.title,
-            summary: e.frontmatter.summary,
-            tags: e.frontmatter.tags,
-            domain: (e.frontmatter as { domain?: string }).domain,
-            html: e.html,
-            primary: resolvePrimary(e.frontmatter),
-        })),
-        ...conceptPublished.map((e) => ({
-            slug: e.slug,
-            type: "concept" as const,
-            title: e.frontmatter.title,
-            summary: e.frontmatter.summary,
-            tags: e.frontmatter.tags,
-            domain: (e.frontmatter as { domain?: string }).domain,
-            html: e.html,
-            primary: resolvePrimary(e.frontmatter),
-        })),
-    ];
-
-    const searchRecords = buildSearchRecords(searchEntries);
-    emitContentSearch(searchRecords, GENERATED_DIR);
-
-    // Run validation after all content is processed.
+    // Validate before writing anything: a failing build must not leave a
+    // half-updated src/generated/ behind.
     const { validateContent } = await import("./validate-content.ts");
     const validationErrors = await validateContent({
         includeDrafts,
@@ -858,14 +176,131 @@ async function main(): Promise<void> {
         throw new Error(`content:validate failed with ${validationErrors.length} error(s)`);
     }
 
+    generateOutput({
+        blogPosts,
+        algorithmPages,
+        demoPages,
+        modelPages,
+        conceptPages,
+        algorithmPublished,
+        modelPublished,
+        conceptPublished,
+        narrativePages,
+    });
+
+    // Draft narratives are excluded from every downstream reverse index (refs,
+    // search): unlike atlas pages, narratives are not content-graph nodes, so
+    // those consumers have no downstream draft flag to filter on themselves.
+    const publishedNarratives = narrativePages.filter((e) => e.frontmatter.draft !== true);
+
+    // Reverse index: which narratives reference a given atlas page. Small
+    // standalone module — not part of content-graph.ts (narratives are
+    // deliberately not content-graph nodes).
+    emitNarrativeRefs(
+        buildNarrativeRefs(publishedNarratives.map((e) => ({ slug: e.slug, title: e.frontmatter.title, narrative: e.narrative }))),
+        GENERATED_DIR,
+    );
+
+    // Emit a typed lookup for paper IDs referenced by `sources.primary`.
+    // Source-strip rendering (Atlas page redesign) reads this on the client.
+    const usedPrimaryIds = collectUsedPrimaryIds([algorithmPublished, modelPublished, conceptPublished]);
+    emitPapersIndex(papers, usedPrimaryIds);
+
+    // Emit the authors index: author metadata (once docs/papers/authors.yaml
+    // exists) plus a reverse lookup of which published atlas pages cite a
+    // given paper. Empty inputs (no authors.yaml, no authorIds yet) produce
+    // an empty-but-valid index — see scripts/authors-build.ts.
+    const authorsIndex = emitAuthorsIndex(buildAtlasAuthorPages(algorithmPublished, modelPublished, conceptPublished));
+    const resolvePrimary = makePrimaryDisplayResolver(papersById);
+
+    // Emit the scholarly index: derived people/papers/narratives relationships
+    // consumed lazily by the paper page, author page, and People/Papers Atlas
+    // views. Pure builder over published-only inputs — see scripts/build/scholarly.ts.
+    const toScholarlyPageInput = (
+        entries: { slug: string; frontmatter: { title: string; domain?: string; sources?: { primary?: string; references?: string[] } } }[],
+        kind: "algorithm" | "model" | "concept",
+    ): ScholarlyPageInput[] =>
+        entries.map((e) => ({
+            slug: e.slug,
+            title: e.frontmatter.title,
+            kind,
+            domain: e.frontmatter.domain,
+            sources: e.frontmatter.sources,
+        }));
+
+    const scholarlyPages: ScholarlyPageInput[] = [
+        ...toScholarlyPageInput(algorithmPublished, "algorithm"),
+        ...toScholarlyPageInput(modelPublished, "model"),
+        ...toScholarlyPageInput(conceptPublished, "concept"),
+    ];
+    const scholarlyPapers: ScholarlyPaperInput[] = papers.map((p) => ({
+        id: p.id,
+        year: p.year,
+        cites: citesById.get(p.id) ?? [],
+    }));
+    const scholarlyNarratives: ScholarlyNarrativeInput[] = publishedNarratives.map((e) => ({
+        slug: e.slug,
+        title: e.frontmatter.title,
+        pageSlugs: e.narrative.nodes
+            .filter((n): n is NarrativePageNode => n.kind === "page")
+            .map((n) => n.slug),
+        paperIds: e.narrative.nodes
+            .filter((n): n is NarrativePaperNode => n.kind === "paper")
+            .map((n) => n.paperId),
+    }));
+    emitScholarlyIndex(
+        buildScholarlyIndex({
+            pages: scholarlyPages,
+            papers: scholarlyPapers,
+            authorsIndex,
+            narratives: scholarlyNarratives,
+        }),
+    );
+
+    emitContentGraph(contentGraph, GENERATED_DIR);
+
+    // Build search records from all non-draft, non-dev entries.
+    const searchEntries: SearchEntry[] = [
+        ...buildAtlasSearchEntries(algorithmPublished, modelPublished, conceptPublished, resolvePrimary),
+        ...publishedNarratives.map((e) => ({
+            slug: e.slug,
+            type: "narrative" as const,
+            title: e.frontmatter.title,
+            summary: e.frontmatter.summary,
+            tags: e.frontmatter.tags,
+            html: e.html,
+        })),
+    ];
+
+    // Author register records live in the same index so a surname query can
+    // resolve to the person's page, not only to the pages citing their work.
+    // `authorsIndex.authors` is already alias-resolved (see buildAuthorsIndex
+    // in authors-build.ts) — a merged duplicate identity's id is never a key
+    // here, only its canonical id is — so no extra filtering is needed.
+    const authorSearchRecords = buildAuthorSearchRecords(
+        Object.entries(authorsIndex.authors).map(([id, ref]) => ({
+            id,
+            name: ref.name,
+            papers: ref.papers,
+        })),
+    );
+    // Paper register records (kind:paper only — `papers` already excludes
+    // repo:/doc: entries via `paperRefRecords`) live in the same index so a
+    // paper title/venue/nickname query can resolve straight to /papers/<id>.
+    const paperSearchRecords = buildPaperSearchRecords(papers);
+    const searchRecords = [...buildSearchRecords(searchEntries), ...authorSearchRecords, ...paperSearchRecords];
+    emitContentSearch(searchRecords, GENERATED_DIR);
+
     console.log(
-        `content:build — ${blogPosts.length} blog post(s), ${algorithmPages.length} algorithm page(s), ${demoPages.length} demo page(s), ${modelPages.length} model page(s), ${conceptPages.length} concept page(s) → ${GENERATED_DIR}`,
+        `content:build — ${blogPosts.length} blog post(s), ${algorithmPages.length} algorithm page(s), ${demoPages.length} demo page(s), ${modelPages.length} model page(s), ${conceptPages.length} concept page(s), ${narrativePages.length} narrative(s) → ${GENERATED_DIR}`,
     );
 
     highlighter.dispose();
 }
 
-main().catch((err) => {
-    console.error("content:build failed:", err);
-    process.exit(1);
-});
+if (import.meta.main) {
+    main().catch((err) => {
+        console.error("content:build failed:", err);
+        process.exit(1);
+    });
+}

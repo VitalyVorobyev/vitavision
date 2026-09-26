@@ -5,6 +5,7 @@ authors: ["B. Cheng", "I. Misra", "A. G. Schwing", "A. Kirillov", "R. Girdhar"]
 year: 2022
 url: https://arxiv.org/pdf/2112.01527
 created: 2026-05-27
+refreshed: 2026-09-24
 relevant_atlas_pages:
   - mask-rcnn
   - faster-rcnn
@@ -50,6 +51,15 @@ $\mathbf{M}_{l-1} \in \{0,1\}^{N \times H_l W_l}$ is the binarised (threshold 0.
 
 Three additional optimisation improvements (§3.2.3): (a) swap order of self-attention and cross-attention (masked attention first), (b) make initial query features $\mathbf{X}_0$ learnable (they predict $\mathbf{M}_0$ directly before the decoder), (c) remove dropout entirely.
 
+# Claimed contributions
+
+- C1: Masked attention — "First, we use masked attention in the Transformer decoder which restricts the attention to localized features centered around predicted segments, which can be either objects or regions depending on the specific semantic for grouping. Compared to the cross-attention used in a standard Transformer decoder which attends to all locations in an image, our masked attention leads to faster convergence and improved performance." (§1, "First" paragraph)
+- C2: Multi-scale high-resolution features — "Second, we use multi-scale high-resolution features which help the model to segment small objects/regions." (§1, "Second" paragraph)
+- C3: Optimization improvements — "Third, we propose optimization improvements such as switching the order of self and cross-attention, making query features learnable, and removing dropout; all of which improve performance without additional compute." (§1, "Third" paragraph)
+- C4: 3× training-memory reduction via point-sampled loss — "Finally, we save 3× training memory without affecting the performance by calculating mask loss on few randomly sampled points." (§1, "Finally" paragraph)
+- C5: First universal architecture to beat specialized SOTA on all three tasks — "To our knowledge, Mask2Former is the first architecture that outperforms state-of-the-art specialized architectures on all considered tasks and datasets." (§1, closing paragraph); headline numbers — "Mask2Former sets a new state-of-the-art for panoptic segmentation (57.8 PQ on COCO), instance segmentation (50.1 AP on COCO) and semantic segmentation (57.7 mIoU on ADE20K)." (Abstract)
+- C6: Reduced research effort via unification — "In addition to reducing the research effort by at least three times, it outperforms the best specialized architectures by a significant margin on four popular datasets." (Abstract)
+
 # Assumptions
 
 1. (Hard) A multi-scale feature pyramid is available from the backbone — the 1/32, 1/16, and 1/8 stride feature maps must all exist. Pure ViT backbones without an FPN require an adapter.
@@ -85,6 +95,18 @@ Three additional optimisation improvements (§3.2.3): (a) swap order of self-att
 - Don't use when: real-time inference is required — the Transformer decoder adds substantial latency relative to one-stage detectors.
 - Compared against: MaskFormer (predecessor), Mask R-CNN + HTC++ (specialised instance), K-Net (universal), SOLQ (instance), Panoptic-DeepLab (panoptic/semantic), BEiT (semantic).
 
+# Stated relations
+
+| target (paper-id or slug) | paper's claim (quote + §) | proposed type | confidence | notes |
+|---|---|---|---|---|
+| cheng2021-maskformer | "We build upon a simple meta architecture [14] consisting of a backbone feature extractor..., a pixel decoder..., and a Transformer decoder..." (§1); "training Mask-Former [14] takes 300 epochs to reach 40.1 AP and it can only fit a single image in a GPU with 32G memory." (§1); "Mask2Former consistently outperforms MaskFormer by more than 5 PQ across different backbones while converging 6× faster." (§4.3) | generalized_by (MaskFormer=A → Mask2Former=B), Rule A | high | Textbook Rule A supersession — Mask2Former recovers everything MaskFormer does plus strictly better instance-segmentation results, in far fewer epochs/memory. No `maskformer` Atlas page exists yet, so no edge can be authored today; when one is created it should carry `quality: "historical"` + `{ type: generalized_by, target: mask2former, confidence: high }`. Matches the note's existing "Refutes/supersedes" line in Connections. |
+| mask-rcnn | "The pioneering work, Mask R-CNN [24], generates masks from detected bounding boxes." (§2 Related Work); "Mask2Former outperforms a strong Mask R-CNN [24] baseline using large-scale jittering (LSJ) augmentation ... while requiring 8× fewer training iterations." (§4.2) | compared_with | high | Confirms the live page's existing `compared_with → mask-rcnn (high)` edge directly from this paper's own text, not just editorial framing — different formulation (per-RoI box-then-mask vs mask classification/set prediction), peer practitioner choice, not supersession. |
+| detr (carion2020-detr) | "Universal architectures have emerged with DETR [5] and show that mask classification architectures with an end-to-end set prediction objective are general enough for any image segmentation task." (§2 Related Work); "Following DETR [5], query features are zero-initialized..." (§3.2.3) | feeds_into (DETR=A → Mask2Former=B) | high | DETR's end-to-end set-prediction decoder is a named incorporated component (inherited via the MaskFormer meta-architecture Mask2Former explicitly builds on); chronology OK (DETR 2020 ≤ Mask2Former 2022). **Gap found**: the live page's forward `relations[]` has no `detr` entry at all — should be authored on the DETR page as `{ type: feeds_into, target: mask2former, confidence: high }` (upstream-authors convention, per CLAUDE.md/the SegFormer↔ViT precedent). |
+| pointrend | "Motivated by PointRend [30] and Implicit PointRend [13], which show a segmentation model can be trained with its mask loss calculated on K randomly sampled points instead of the whole mask, we calculate the mask loss with sampled points in both the matching and the final loss calculation." (§3.3) | feeds_into (PointRend=A → Mask2Former=B) | high | Already correctly authored — matches the live page's reverse `fedBy: pointrend (high)` bucket exactly. No action needed. |
+| segformer | "For semantic segmentation, Mask2Former with Swin-B backbone outperforms the state-of-the-art SegFormer [59]." (§4.4, Cityscapes results) | compared_with | medium | Confirms the live page's `compared_with → segformer (medium, mirrored)` edge is independently supported by Mask2Former's own text too, not solely by SegFormer's positioning claim. Per the Refresh contract, confidence is not upgraded just because support is now doubled — leave at medium as already recorded. |
+| — (no Atlas page; K-Net not registered in `docs/papers/index.yaml`) | "K-Net [62] further extends set prediction to instance segmentation. Unfortunately, these architectures fail to replace specialized models as their performance on particular tasks or datasets is still worse than the best specialized architecture..." (§1) | compared_with | low | Named in prose only — mentioned as a peer universal architecture but not benchmarked head-to-head in this paper's tables. No edge can be authored until K-Net is ingested and gets a page. |
+| — (no Atlas page; HTC/HTC++ not registered) | "the specialized Swin-HTC++ [6] obtains better performance in only 72 epochs." (§1); "Mask2Former outperforms the state-of-the-art HTC++ [6]." (§4.2) | compared_with | low | Named in prose only — no Atlas page or registered paper id for HTC++. |
+
 # Connections
 
 - Builds on: [cheng2021-maskformer, carion2020-detr]   # MaskFormer meta-architecture; DETR set-prediction objective and Hungarian matching
@@ -104,9 +126,13 @@ Sections to extend on the family page:
 - **Architecture.Training**: point-sampled mask loss ($K=12544$ points, importance sampling for final loss, uniform sampling for matching); AdamW, lr $10^{-4}$, weight decay $0.05$; 50 epochs on COCO, 160k iters on ADE20K; LSJ augmentation.
 - **Assessment.Strengths**: COCO panoptic val PQ 57.8 (Swin-L, Table 1 of the paper); COCO panoptic PQ^Th 64.2 / PQ^St 48.6 / mIoU 67.4 (Table 1); COCO instance val AP 50.1 (Swin-L, Table 2); ADE20K semantic val mIoU 57.7 m.s. (Swin-L + FaPN, Table 3); Cityscapes panoptic val PQ 66.6 multi-scale (Table 6, Swin-L). All Swin-L models: 216M parameters. Outperforms MaskFormer by >5 PQ on COCO panoptic across all backbones, converging 6× faster (50 vs 300 epochs).
 - **Assessment.Limitations**: still inherits DETR-class slow convergence relative to Mask R-CNN-family models (25–50 epochs vs 12–36 epochs); specialised single-task SOTA has since exceeded it on individual benchmarks; fails on very thin structures and densely packed small instances.
-- **References**: primary source cheng2022-mask2former; foundation cheng2021-maskformer; DETR carion2020-detr; PointRend (importance sampling) [kirillov2020-pointrend?].
+- **References**: primary source cheng2022-mask2former; foundation cheng2021-maskformer; DETR carion2020-detr; PointRend (importance sampling) [kirillov2020-pointrend].
 
-Relations: no new typed relations beyond what the family-page's foundation note (cheng2021-maskformer) already carries — the primary-source promotion from v1 to v2 is handled by updating `sources.primary` on the Atlas page.
+Relations (WS-H audit 2026-09-24, user-confirmed against # Stated relations):
+- { type: feeds_into, target: mask2former, confidence: high }  # authored on detr (DETR → Mask2Former), §2 + §3.2.3
+- sam ← mask2former caution corrected: SAM v1 cites MaskFormer [19] directly
+
+Original note: no new typed relations beyond what the family-page's foundation note (cheng2021-maskformer) already carries — the primary-source promotion from v1 to v2 is handled by updating `sources.primary` on the Atlas page.
 
 ## REFS:
 - cheng2021-maskformer: MaskFormer v1 (foundation, §1, §3.1)

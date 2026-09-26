@@ -6,6 +6,7 @@ tags: ["deep-learning", "dense-prediction"]
 domain: segmentation
 tasks: [image-segmentation]
 author: "Vitaly Vorobyev"
+quality: canonical
 difficulty: intermediate
 arch_family: vit
 prerequisites: [convolutional-neural-network, attention-mechanism]
@@ -20,10 +21,6 @@ relations:
   - type: learned_alternative_of
     target: felzenszwalb-graph-segmentation
     confidence: high
-  - type: compared_with
-    target: mask-rcnn
-    confidence: medium
-    caution: "Different problem classes — Mask R-CNN is closed-set instance detection with category labels; SAM is class-agnostic promptable segmentation."
   - type: compared_with
     target: ritm-interactive-segmentation
     confidence: medium

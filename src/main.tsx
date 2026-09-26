@@ -27,6 +27,7 @@ function readSSRSnapshot(): StaticContentContextValue {
     if (kind === 'algorithm') return { algorithmHtmlBySlug: { [slug]: html } }
     if (kind === 'model') return { modelHtmlBySlug: { [slug]: html } }
     if (kind === 'concept') return { conceptHtmlBySlug: { [slug]: html } }
+    if (kind === 'narrative') return { narrativeHtmlBySlug: { [slug]: html } }
     return {}
 }
 

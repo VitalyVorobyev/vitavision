@@ -8,26 +8,19 @@
  *   bun run sources:fetch-doc            # process all kind:doc entries
  *   bun run sources:fetch-doc <id>       # process one entry by source-id
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, isAbsolute } from "node:path";
-import { parse as parseYaml } from "yaml";
 
-const REPO_ROOT = join(import.meta.dir, "..");
-const INDEX_PATH = join(REPO_ROOT, "docs", "papers", "index.yaml");
-const NOTES_DIR = join(REPO_ROOT, "docs", "research", "notes");
+import { REPO_ROOT, PAPERS_INDEX_PATH, RESEARCH_NOTES_DIR } from "./lib/paths.ts";
+import { loadIndexEntries } from "./lib/papers-index.ts";
+import type { RawIndexEntry } from "./lib/papers-index.ts";
+
+const INDEX_PATH = PAPERS_INDEX_PATH;
+const NOTES_DIR = RESEARCH_NOTES_DIR;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type SourceKind = "paper" | "repo" | "doc";
-
-interface IndexEntry {
-    id: string;
-    kind?: SourceKind;
-    title?: string;
-    path?: string;
-    // paper / repo fields are present but irrelevant here
-    [key: string]: unknown;
-}
+type IndexEntry = RawIndexEntry;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -105,18 +98,16 @@ relevant_atlas_pages: []
 async function main(): Promise<void> {
     const filterId = process.argv[2];
 
-    if (!existsSync(INDEX_PATH)) {
-        process.stderr.write("sources:fetch-doc — docs/papers/index.yaml not found\n");
-        process.exit(1);
-    }
-
-    const raw = readFileSync(INDEX_PATH, "utf-8");
-    const allEntries = parseYaml(raw) as Array<IndexEntry>;
-
-    if (!Array.isArray(allEntries)) {
-        process.stderr.write("sources:fetch-doc — index.yaml is not a list\n");
-        process.exit(1);
-    }
+    const allEntries = loadIndexEntries(INDEX_PATH, {
+        onMissing: () => {
+            process.stderr.write("sources:fetch-doc — docs/papers/index.yaml not found\n");
+            process.exit(1);
+        },
+        onNotList: () => {
+            process.stderr.write("sources:fetch-doc — index.yaml is not a list\n");
+            process.exit(1);
+        },
+    });
 
     // Filter to kind:doc entries only
     const docEntries = allEntries.filter((e) => e.kind === "doc");

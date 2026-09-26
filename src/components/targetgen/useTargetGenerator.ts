@@ -15,9 +15,10 @@ export function useTargetGenerator(): {
         let cancelled = false;
 
         generatePreviewSvg(state.target, state.page)
-            .then((svg) => {
+            .then(async (svg) => {
                 if (cancelled) return;
-                const validation = validateConfig(state.target, state.page);
+                const validation = await validateConfig(state.target, state.page);
+                if (cancelled) return;
                 dispatch({ type: "SET_PREVIEW", svg, validation });
             })
             .catch((err) => {

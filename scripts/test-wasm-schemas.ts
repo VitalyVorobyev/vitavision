@@ -9,6 +9,18 @@
  */
 
 import { $ } from "bun";
+import { fileURLToPath } from "node:url";
+
+// Each test's `code` runs in its own `bun -e` subprocess (see the runner loop
+// below), so it can't `import` a sibling module by relative path the way the
+// rest of this file does. Resolve the shared worker helpers to an absolute
+// file path once, up front, and inject an import line into every test that
+// needs `deepMerge`/`unwrapMaps` — these must stay the exact same
+// implementations the worker itself uses (src/lib/wasm/worker/util.ts), not
+// private copies that can silently drift from them.
+const UTIL_PATH = fileURLToPath(new URL("../src/lib/wasm/worker/util.ts", import.meta.url));
+const IMPORT_DEEP_MERGE = `const { deepMerge } = await import(${JSON.stringify(UTIL_PATH)});`;
+const IMPORT_DEEP_MERGE_AND_UNWRAP_MAPS = `const { deepMerge, unwrapMaps } = await import(${JSON.stringify(UTIL_PATH)});`;
 
 const tests: Array<{ name: string; code: string }> = [
     {
@@ -121,6 +133,7 @@ process.exit(0);
         code: `
 const mod = await import('@vitavision/ringgrid');
 await mod.default();
+${IMPORT_DEEP_MERGE}
 
 // 1. Schema check: v6 (0.11.0), not v5 or the legacy flat v4. The board's
 // shape is unchanged across v5 -> v6; only the version string moved.
@@ -130,19 +143,10 @@ if (def.schema !== 'ringgrid.target.v6' || typeof def.name !== 'string')
 console.log('PASS: default board JSON has schema ringgrid.target.v6 + name');
 
 // 2. Build a board through the same nested-aware merge path the adapter/worker
-// use (wasmWorker.ts handleRinggrid), with non-default values, and assert the
-// nested structure is correct AND that untouched sibling keys (lattice.kind,
-// coding.kind) survive — a shallow {...target, ...source} merge would wipe them.
-function deepMerge(target, source) {
-    const out = { ...target };
-    for (const key of Object.keys(source)) {
-        const sv = source[key], tv = target[key];
-        if (sv !== null && typeof sv === 'object' && !Array.isArray(sv) && tv !== null && typeof tv === 'object' && !Array.isArray(tv))
-            out[key] = deepMerge(tv, sv);
-        else out[key] = sv;
-    }
-    return out;
-}
+// use (src/lib/wasm/worker/ringgrid.ts's handleRinggrid), with non-default
+// values, and assert the nested structure is correct AND that untouched
+// sibling keys (lattice.kind, coding.kind) survive — a shallow
+// {...target, ...source} merge would wipe them.
 const adapterBoardOverride = {
     lattice: { rows: 9, long_row_cols: 8, pitch_mm: 12 },
     marker: { outer_radius_mm: 5.6, inner_radius_mm: 3.2 },
@@ -204,16 +208,7 @@ process.exit(0);
     {
         name: "@vitavision/calib-targets: chessboard schema",
         code: `
-function deepMerge(t, s) {
-    const o = { ...t };
-    for (const k of Object.keys(s)) {
-        const sv = s[k], tv = t[k];
-        if (sv && typeof sv === 'object' && !Array.isArray(sv) && tv && typeof tv === 'object' && !Array.isArray(tv))
-            o[k] = deepMerge(tv, sv);
-        else o[k] = sv;
-    }
-    return o;
-}
+${IMPORT_DEEP_MERGE}
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
@@ -279,16 +274,7 @@ process.exit(0);
     {
         name: "@vitavision/calib-targets: charuco",
         code: `
-function deepMerge(t, s) {
-    const o = { ...t };
-    for (const k of Object.keys(s)) {
-        const sv = s[k], tv = t[k];
-        if (sv && typeof sv === 'object' && !Array.isArray(sv) && tv && typeof tv === 'object' && !Array.isArray(tv))
-            o[k] = deepMerge(tv, sv);
-        else o[k] = sv;
-    }
-    return o;
-}
+${IMPORT_DEEP_MERGE}
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
@@ -296,9 +282,37 @@ const gray = new Uint8Array(32 * 32).fill(128);
 // "chessboard schema" test above for why this can't be a plain deepMerge.
 const chessCfg = { ...mod.default_chess_config(), threshold: 15 };
 const cbDefaults = mod.default_chessboard_params();
+
+// calib-targets 0.14 added border_bits to CharucoBoardSpec and
+// CharucoDetector::new now derives scan.border_bits from the board on every
+// construction path — the adapter must send it under board, not scan. This is
+// the 0.14 contract the app's charucoAdapter.ts migration depends on; if a
+// later release moves the field again, this assertion is what catches it.
+const defaultCharucoParams = mod.default_charuco_params(5, 7, 0.75, 'DICT_4X4_50');
+if (!defaultCharucoParams || !defaultCharucoParams.board || !('border_bits' in defaultCharucoParams.board))
+    throw new Error('default_charuco_params().board has no border_bits key — has the 0.14 contract moved again?');
+console.log('PASS: default_charuco_params().board.border_bits = ' + defaultCharucoParams.board.border_bits);
+
+// 0.14 rejects border_bits = 0 ("a marker with no ring cannot be told from the
+// white square under it"), which is why the CharucoConfigForm field is min=1.
+let rejectedZeroBorder = false;
+try {
+    const p0 = mod.default_charuco_params(5, 7, 0.75, 'DICT_4X4_50');
+    p0.board.border_bits = 0;
+    mod.detect_charuco(32, 32, gray, chessCfg, p0);
+} catch(e) {
+    if (String(e).includes('border_bits')) rejectedZeroBorder = true; else throw e;
+}
+if (!rejectedZeroBorder)
+    throw new Error('expected board.border_bits = 0 to be rejected; the form min=1 depends on it');
+console.log('PASS: board.border_bits = 0 is rejected (form min=1 is justified)');
+
 const params = {
     px_per_square: 40,
-    board: { rows: 22, cols: 22, cell_size: 4.8, marker_size_rel: 0.75, dictionary: 'DICT_4X4_1000', marker_layout: 'opencv_charuco' },
+    board: {
+        rows: 22, cols: 22, cell_size: 4.8, marker_size_rel: 0.75, dictionary: 'DICT_4X4_1000',
+        marker_layout: 'opencv_charuco', border_bits: 1,
+    },
     chessboard: deepMerge(cbDefaults, {
         min_corner_strength: 15, expected_rows: 22, expected_cols: 22,
         completeness_threshold: 0.05,
@@ -307,7 +321,7 @@ const params = {
 };
 try {
     mod.detect_charuco(32, 32, gray, chessCfg, params);
-    console.log('PASS: detect_charuco accepts merged params');
+    console.log('PASS: detect_charuco accepts merged params with board.border_bits');
 } catch(e) {
     // "chessboard not detected" is expected on a blank image — that's a detection
     // failure, not a schema error. Schema was parsed successfully.
@@ -323,29 +337,117 @@ process.exit(0);
     {
         name: "@vitavision/calib-targets: markerboard",
         code: `
-function deepMerge(t, s) {
-    const o = { ...t };
-    for (const k of Object.keys(s)) {
-        const sv = s[k], tv = t[k];
-        if (sv && typeof sv === 'object' && !Array.isArray(sv) && tv && typeof tv === 'object' && !Array.isArray(tv))
-            o[k] = deepMerge(tv, sv);
-        else o[k] = sv;
-    }
-    return o;
-}
+${IMPORT_DEEP_MERGE_AND_UNWRAP_MAPS}
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const gray = new Uint8Array(32 * 32).fill(128);
 // threshold is a plain f32 absolute response floor as of 0.11 — see the
 // "chessboard schema" test above for why this can't be a plain deepMerge.
 const chessCfg = { ...mod.default_chess_config(), threshold: 15 };
+// The board block MUST be sent under "board". markerboardAdapter.ts sent it
+// under "layout" until this change; the struct has no such field, and the WASM
+// boundary drops unknown keys silently, so the user's rows/cols/circles never
+// reached the detector at all -- every run used the library default 6x8 board.
+// The guard below pins that: an invalid payload under "board" must throw, and
+// the very same payload under "layout" must be accepted exactly like a
+// made-up key. If a future release adds a real "layout" field, this fails.
+const badBoard = { rows: 'not-a-number', cols: 8 };
+let boardKeyIsLive = false;
+try {
+    const p = mod.default_marker_board_params();
+    p.board = { ...p.board, ...badBoard };
+    mod.detect_marker_board(32, 32, gray, chessCfg, p);
+} catch(e) {
+    if (String(e).includes('expected u32')) boardKeyIsLive = true; else throw e;
+}
+if (!boardKeyIsLive)
+    throw new Error('expected an invalid board.rows to be rejected -- is "board" still the schema key?');
+const pLayout = mod.default_marker_board_params();
+pLayout.layout = badBoard;
+pLayout.totally_made_up_key = badBoard;
+mod.detect_marker_board(32, 32, gray, chessCfg, pLayout);
+console.log('PASS: "board" is the live schema key; "layout" is dropped like any unknown key');
+
 const params = deepMerge(mod.default_marker_board_params(), {
-    layout: { rows: 22, cols: 22, circles: [{ cell: { i: 11, j: 11 }, polarity: 'black' }, { cell: { i: 12, j: 11 }, polarity: 'white' }, { cell: { i: 12, j: 12 }, polarity: 'white' }] },
+    board: { rows: 22, cols: 22, circles: [{ cell: { i: 11, j: 11 }, polarity: 'black' }, { cell: { i: 12, j: 11 }, polarity: 'white' }, { cell: { i: 12, j: 12 }, polarity: 'white' }] },
     chessboard: { min_corner_strength: 15, expected_rows: 22, expected_cols: 22, completeness_threshold: 0.05, graph: { min_spacing_pix: 20, max_spacing_pix: 160 } },
     circle_score: { patch_size: 64, min_contrast: 10 },
 });
 mod.detect_marker_board(32, 32, gray, chessCfg, params);
-console.log('PASS: detect_marker_board accepts merged params');
+console.log('PASS: detect_marker_board accepts merged params under board (3 circles)');
+
+// Probe the array-length contract on MarkerBoardSpec.circles directly.
+//
+// Measured directly against 0.14.0: fewer than 3 circles is rejected with a
+// serde "invalid length" error. MORE than 3 is, surprisingly, NOT rejected —
+// serde's generated Deserialize for a fixed-size array only checks that at
+// least N elements are present; trailing elements beyond the third are
+// silently dropped rather than erroring. So the runtime contract is "at
+// least 3, extras silently ignored", not "exactly 3, else reject" — the app
+// still constrains the UI/types to exactly 3 because a silently-truncated
+// 4th circle is a worse footgun than an outright error, not because the
+// library itself throws on it. Assert both halves of the real contract so a
+// future @vitavision/calib-targets release that tightens this (or loosens
+// the lower bound) is caught here.
+function circlesOfLength(n) {
+    const pool = [
+        { cell: { i: 11, j: 11 }, polarity: 'black' },
+        { cell: { i: 12, j: 11 }, polarity: 'white' },
+        { cell: { i: 12, j: 12 }, polarity: 'white' },
+        { cell: { i: 13, j: 12 }, polarity: 'black' },
+        { cell: { i: 14, j: 12 }, polarity: 'white' },
+    ];
+    return pool.slice(0, n);
+}
+function detectWithCircleCount(n) {
+    const p = mod.default_marker_board_params();
+    p.board.circles = circlesOfLength(n);
+    return mod.detect_marker_board(32, 32, gray, chessCfg, p);
+}
+
+let rejectedTwoCircles = false;
+try {
+    detectWithCircleCount(2);
+} catch(e) {
+    if (String(e).includes('invalid length 2') && String(e).includes('length 3')) {
+        rejectedTwoCircles = true;
+    } else {
+        throw e;
+    }
+}
+if (!rejectedTwoCircles)
+    throw new Error('expected detect_marker_board to reject board.circles with 2 elements as a schema error, but it did not throw');
+console.log('PASS: detect_marker_board rejects board.circles with fewer than 3 elements');
+
+// board.circles with exactly 3 elements (the realistic, app-enforced case).
+detectWithCircleCount(3);
+console.log('PASS: detect_marker_board accepts board.circles with exactly 3 elements');
+
+// board.circles with 4 elements must NOT throw (documented quirk above) —
+// assert this explicitly so the test fails loudly if a future release starts
+// rejecting it (in which case the app's runtime validation message can be
+// relaxed) or, worse, silently starts accepting a 4th circle's data.
+try {
+    detectWithCircleCount(4);
+} catch(e) {
+    throw new Error('expected detect_marker_board to silently accept 4 circles (extras ignored per the 0.14.0 array-deserialization quirk), but it threw: ' + String(e));
+}
+console.log('PASS: detect_marker_board silently ignores a 4th circle rather than rejecting it (matches measured 0.14.0 behavior — see comment above)');
+
+// The worker calls diagnose_marker_board (renamed from
+// detect_marker_board_with_diagnostics in 0.13) and must survive a MISS.
+// serde-wasm-bindgen serialises Rust None as *undefined*, not null, so the
+// key is present with an undefined value: a strict "=== null" check falls
+// through to the success branch and throws TypeError on result.corners.
+// That is invisible to tsc because the module is any-typed, so assert the
+// actual value here.
+const miss = unwrapMaps(mod.diagnose_marker_board(32, 32, gray, chessCfg, params));
+if (!('result' in miss))
+    throw new Error('diagnose_marker_board payload has no result key: ' + JSON.stringify(Object.keys(miss)));
+if (miss.result != null)
+    throw new Error('expected a miss on a blank image, got a detection: ' + JSON.stringify(miss.result));
+console.log('PASS: diagnose_marker_board returns a nullish result on a miss (value is '
+    + (miss.result === null ? 'null' : 'undefined') + ', so the worker must use loose == null)');
 process.exit(0);
 `,
     },
@@ -427,7 +529,7 @@ if (!c.grid || typeof c.grid.u !== 'number' || typeof c.grid.v !== 'number')
 console.log('PASS: corner has [x,y] position and {u,v} grid index');
 
 // Real-photo decode, via the exact path the worker uses. The plain
-// detect_puzzleboard throws on failure, but _with_diagnostics resolves
+// detect_puzzleboard throws on failure, but diagnose_puzzleboard resolves
 // \`result\` to *undefined* and still returns diagnostics — so the worker calls
 // the diagnostics variant (for observed_edges) and re-raises itself. Both
 // halves of that contract are asserted here.
@@ -441,7 +543,7 @@ const photoGray = mod.rgba_to_gray(new Uint8Array(photo.data), photo.width, phot
 const unwrap = (v) => v instanceof Map
     ? Object.fromEntries([...v].map(([k, x]) => [k, unwrap(x)]))
     : Array.isArray(v) ? v.map(unwrap) : v;
-const diag = unwrap(mod.detect_puzzleboard_with_diagnostics(photo.width, photo.height, photoGray, null, params));
+const diag = unwrap(mod.diagnose_puzzleboard(photo.width, photo.height, photoGray, null, params));
 if (diag?.result == null)
     throw new Error('public/author_like_oblique.png failed to decode (result is ' + diag?.result + ')');
 if (diag.result.corners.length !== 361)
@@ -449,6 +551,13 @@ if (diag.result.corners.length !== 361)
 if (diag.result.decode.bit_error_rate !== 0)
     throw new Error('expected a clean decode (bit_error_rate 0), got ' + diag.result.decode.bit_error_rate);
 console.log('PASS: real photo decodes to 361 corners at bit_error_rate 0');
+// 0.14 reshaped GridAlignment to { lattice, matrix: [[a,b],[c,d]], translation }.
+// wasmWorker.ts alignmentFromWasm() converts it for PuzzleboardOverlay.
+const al = diag.result.alignment;
+if (!Array.isArray(al?.matrix) || al.matrix.length !== 2 || !al.matrix.every((row) => Array.isArray(row) && row.length === 2)
+    || !Array.isArray(al.translation) || al.translation.length !== 2)
+    throw new Error('alignment is not { matrix: 2x2, translation: [tx, ty] }: ' + JSON.stringify(al));
+console.log('PASS: alignment is { matrix: 2x2, translation } (0.14 GridTransform)');
 // observed_edges backs PuzzleboardOverlay's edge-bit markers and lives ONLY on
 // the diagnostics side — an empty array here means the overlay renders nothing.
 const edges = diag.diagnostics?.observed_edges;

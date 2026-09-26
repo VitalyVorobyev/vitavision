@@ -13,13 +13,17 @@ failureModes: []
 relations:
   - type: learned_alternative_of
     target: felzenszwalb-deformable-parts
-    confidence: high
+    confidence: medium
+    caution: "Paradigm-level replacement; the paper contrasts DPM only qualitatively (pyramid of filters vs pyramid of anchors, §3.1.1), with no DPM benchmark."
   - type: learned_alternative_of
     target: viola-jones-detector
     confidence: medium
     caution: "Viola-Jones targets real-time face detection on CPUs; Faster R-CNN is general multi-class detection on GPUs — replacement is paradigm-level, not drop-in."
   - type: extended_by
     target: mask-rcnn
+    confidence: high
+  - type: feeds_into
+    target: fpn
     confidence: high
 sources:
   primary: ren2015-faster

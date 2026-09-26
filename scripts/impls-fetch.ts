@@ -7,27 +7,15 @@ import { join, dirname } from "node:path";
 import { readFileSync } from "node:fs";
 import matter from "gray-matter";
 
-const REPO_ROOT = join(import.meta.dir, "..");
-const CACHE_DIR = join(REPO_ROOT, "docs", "impls", ".cache");
+import { REPO_ROOT, IMPLS_CACHE_DIR } from "./lib/paths.ts";
+import { parseGitHubRepo, spawnAndWait } from "./lib/github.ts";
+
+const CACHE_DIR = IMPLS_CACHE_DIR;
 
 interface ImplSources {
     repo: string;
     commit: string;
     files: string[];
-}
-
-function parseGitHubRepo(url: string): { owner: string; repo: string } | null {
-    const cleaned = url.replace(/\.git$/, "");
-    const match = cleaned.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)$/);
-    if (!match) return null;
-    return { owner: match[1], repo: match[2] };
-}
-
-async function spawnAndWait(cmd: string[]): Promise<{ ok: boolean; stderr: string }> {
-    const proc = Bun.spawn(cmd, { stdout: "ignore", stderr: "pipe" });
-    const exitCode = await proc.exited;
-    const stderrText = await new Response(proc.stderr).text();
-    return { ok: exitCode === 0, stderr: stderrText.trim() };
 }
 
 async function main(): Promise<void> {

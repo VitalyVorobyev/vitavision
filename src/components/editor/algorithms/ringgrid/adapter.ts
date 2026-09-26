@@ -90,8 +90,8 @@ export const ringgridAlgorithm: AlgorithmDefinition = {
         const c = config as RinggridConfig;
         // ringgrid.target.v6 nests layout fields under lattice/marker/coding.
         // This is a partial override merged (nested-aware) onto the WASM
-        // module's default board in wasmWorker.ts — do not add `kind` here,
-        // it must come from the module defaults.
+        // module's default board in src/lib/wasm/worker/ringgrid.ts — do not
+        // add `kind` here, it must come from the module defaults.
         const boardJson = JSON.stringify({
             lattice: {
                 rows: c.rows,

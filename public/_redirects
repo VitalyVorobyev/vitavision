@@ -8,3 +8,7 @@
 /algorithms/models/:slug   /atlas/:slug            301
 /algorithms/:slug          /atlas/:slug            301
 /concepts/:slug            /atlas/:slug            301
+
+# The unlisted /authors index is retired in favor of the Atlas People view.
+# /authors/:id profile pages are unaffected.
+/authors                   /atlas?view=people      301

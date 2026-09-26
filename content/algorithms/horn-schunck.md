@@ -170,7 +170,8 @@ def hs_iteration(ex, ey, et, u, v, alpha2: float):
 - Brightness constancy fails under illumination changes, specular reflection, and non-Lambertian shading; the failure is silent — incorrect $E_t$ produces systematically wrong flow without any signal of error.
 - The linearised brightness constraint is valid only for sub-pixel to approximately 1-pixel inter-frame displacement; coarse-to-fine Gaussian pyramids extend the operating range.
 - The Jacobi update structure is parallel-safe: each pixel's new estimate depends only on the previous iteration's local averages, not on the same pixel's previous value.
-- Replacing the quadratic $\mathcal{E}_b^2$ and $\mathcal{E}_s^2$ terms with redescending M-estimators (Lorentzian or Geman-McClure) yields a piecewise-smooth robust variant that tolerates motion discontinuities and brightness-constancy outliers without an explicit line-process layer; see [black-anandan-robust-flow](../algorithms/black-anandan-robust-flow). Robustifying the smoothness term alone is insufficient — the data term must also be robust.
+- Replacing the quadratic $\mathcal{E}_b^2$ and $\mathcal{E}_s^2$ terms with redescending M-estimators (Lorentzian or Geman-McClure) yields a piecewise-smooth robust variant that tolerates motion discontinuities and brightness-constancy outliers without an explicit line-process layer; see [black-anandan-robust-flow](/atlas/black-anandan-robust-flow). Robustifying the smoothness term alone is insufficient — the data term must also be robust.
+- [RAFT](/atlas/raft) is a learned alternative that keeps this algorithm's single-flow-field, iteratively-refined structure but replaces the analytic Taylor-approximation data term and hand-derived gradient-descent step with a learned update operator querying an all-pairs correlation volume.
 
 # References
 

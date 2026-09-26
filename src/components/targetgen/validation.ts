@@ -1,12 +1,8 @@
 import type { TargetConfig, PageConfig, ValidationResult, CharucoConfig, RingGridConfig } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
 import { PUZZLEBOARD_QUIET_ZONE_MM } from "./puzzleboard/constants";
-import {
-    generateMarkers,
-    markerOuterDrawRadius,
-    hexRowSpacingMm,
-    markerBounds,
-} from "./ringgrid/layout";
+import { toRinggridTarget, toRinggridBoardSizeOptions } from "./ringgridTarget";
+import { ringgridBoardSizeMmWasm } from "../../lib/wasm/wasmWorkerProxy";
 
 /** Number of markers a ChArUco board requires (one per white square). */
 function charucoMarkerCount(c: CharucoConfig): number {
@@ -22,10 +18,10 @@ function dictionaryPoolSize(name: string): number | null {
     return null;
 }
 
-export function validateConfig(
+export async function validateConfig(
     target: TargetConfig,
     page: PageConfig,
-): ValidationResult {
+): Promise<ValidationResult> {
     const errors: string[] = [];
     const warnings: string[] = [];
     const dims = resolvePageDimensions(page);
@@ -63,7 +59,15 @@ export function validateConfig(
             boardH = totalRows * c.squareSizeMm;
             if (c.squareSizeMm < 5) smallFeatureWarning = true;
 
-            // Validate circles
+            // Validate circles. The type declares a 3-tuple, but a config can
+            // also arrive via JSON import (see TargetTypeSelector's handleImport),
+            // which bypasses the type checker at runtime.
+            if (c.circles.length !== 3) {
+                errors.push(
+                    `Marker board requires exactly 3 circles, got ${c.circles.length}. ` +
+                    `The @vitavision/calib-targets library fixes this count (MarkerCircleSpec is a [T; 3] array).`,
+                );
+            }
             const seen = new Set<string>();
             for (const circ of c.circles) {
                 const { i, j } = circ.cell;
@@ -99,8 +103,8 @@ export function validateConfig(
         }
         case "ringgrid": {
             const c = target.config;
-            [boardW, boardH] = validateRingGrid(c, errors, warnings);
             if (c.pitchMm < 4) smallFeatureWarning = true;
+            [boardW, boardH] = await validateRingGrid(c, errors);
             break;
         }
         case "puzzleboard": {
@@ -129,14 +133,24 @@ export function validateConfig(
         warnings.push("Very small features may be hard to detect reliably.");
     }
 
-    return { errors, warnings };
+    return { errors, warnings, boardWidthMm: boardW, boardHeightMm: boardH };
 }
 
-function validateRingGrid(
+/**
+ * Pure numeric checks (no lattice generation, no codebook) plus the board's
+ * true printed footprint, fetched from the library itself.
+ *
+ * `@vitavision/ringgrid` is authoritative on marker-count-vs-codebook
+ * capacity: building/sizing a target whose coded-cell count exceeds the
+ * embedded codebook throws `"coded target has N cells but the embedded
+ * codebook holds only M codewords"`. That throw is caught here and surfaced
+ * as a validation ERROR (with the library's own message) rather than this
+ * file re-deriving marker counts and hard-coded pool sizes in TypeScript.
+ */
+async function validateRingGrid(
     c: RingGridConfig,
     errors: string[],
-    warnings: string[],
-): [number, number] {
+): Promise<[number, number]> {
     if (c.rows < 1) errors.push("Rows must be at least 1.");
     if (c.longRowCols < 1) errors.push("Long row columns must be at least 1.");
     if (c.rows > 1 && c.longRowCols < 2) {
@@ -154,29 +168,29 @@ function validateRingGrid(
         errors.push("Ring width is too large — no space for the code band between rings.");
     }
 
-    const minSpacing = hexRowSpacingMm(c.pitchMm);
-    const drawDiam = 2 * markerOuterDrawRadius(c.markerOuterRadiusMm, c.markerRingWidthMm);
+    // Adjacent-marker overlap: the drawn marker diameter (outer radius +
+    // half the ring stroke width, doubled) must stay under the hex-lattice
+    // row spacing (`pitchMm * sqrt(3)`). Both are closed-form and need no
+    // lattice generation.
+    const minSpacing = c.pitchMm * Math.sqrt(3);
+    const drawDiam = 2 * (c.markerOuterRadiusMm + half);
     if (drawDiam >= minSpacing) {
         errors.push(
             `Marker draw diameter (${drawDiam.toFixed(1)} mm) exceeds minimum spacing (${minSpacing.toFixed(1)} mm).`,
         );
     }
 
-    // Marker count vs codebook pool
-    const markers = generateMarkers(c.rows, c.longRowCols, c.pitchMm);
-    const poolSize = c.profile === "extended" ? 2180 : 893;
-    if (markers.length > poolSize) {
-        warnings.push(
-            `Board has ${markers.length} markers but ${c.profile} codebook has ${poolSize}. ` +
-            `Markers beyond the pool will have no code.`,
+    try {
+        const targetJson = JSON.stringify(toRinggridTarget(c));
+        const optionsJson = JSON.stringify(toRinggridBoardSizeOptions());
+        const [boardW, boardH] = await ringgridBoardSizeMmWasm(targetJson, optionsJson);
+        return [boardW, boardH];
+    } catch (e) {
+        errors.push(
+            `Ring grid target is invalid: ${e instanceof Error ? e.message : String(e)}`,
         );
+        // No footprint to report — 0x0 keeps the "does it fit the page"
+        // check below from also firing a redundant/misleading error.
+        return [0, 0];
     }
-
-    // Compute board dimensions including draw radius
-    const [minX, minY, maxX, maxY] = markerBounds(markers);
-    const drawR = markerOuterDrawRadius(c.markerOuterRadiusMm, c.markerRingWidthMm);
-    const boardW = (maxX - minX) + 2 * drawR;
-    const boardH = (maxY - minY) + 2 * drawR;
-
-    return [boardW, boardH];
 }

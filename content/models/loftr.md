@@ -27,6 +27,7 @@ sources:
     - potje2024-xfeat
     - lindenberger2023-lightglue
     - he2016-resnet
+    - katharopoulos2020-linear-attention
   notes: |
     §3 four sub-modules: (1) FPN-ResNet backbone → coarse maps at 1/8,
     fine maps at 1/2; (2) Local Feature Transformer with $N_c$ interleaved
@@ -63,7 +64,7 @@ Produce dense, sub-pixel 2D-to-2D correspondences between an image pair without 
 
 1. **Local feature CNN.** A shared ResNet-like backbone with FPN structure extracts two feature-map pairs per image: coarse maps at $1/8$ resolution ($\tilde{F}^A$, $\tilde{F}^B$) and fine maps at $1/2$ resolution ($\hat{F}^A$, $\hat{F}^B$). 2D sinusoidal positional encoding (DETR-style) is added once to the coarse maps at backbone output.
 
-2. **Coarse-level Local Feature Transformer (LoFTR module).** The coarse maps are flattened to 1D sequences and processed by $N_c$ interleaved self-attention and cross-attention layers. To reduce complexity from $O(N^2)$ to $O(N)$, each attention operation uses the Linear Transformer kernel $\phi(\cdot) = \mathrm{elu}(\cdot) + 1$:
+2. **Coarse-level Local Feature Transformer (LoFTR module).** The coarse maps are flattened to 1D sequences and processed by $N_c$ interleaved self-attention and cross-attention layers. To reduce complexity from $O(N^2)$ to $O(N)$, each attention operation uses the linear-attention kernel $\phi(\cdot) = \mathrm{elu}(\cdot) + 1$ introduced by Katharopoulos et al. (the derivation is on [attention-mechanism](/atlas/attention-mechanism)):
 
 :::definition[Linear attention]
 The ELU+1 kernel substitutes vanilla softmax attention with a non-negative kernel that admits the associativity trick, reducing per-sequence complexity from $O(N^2)$ to $O(N)$ when the feature dimension $D \ll N$.

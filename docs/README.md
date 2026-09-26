@@ -8,13 +8,14 @@ If you only have time for one section, read **§6 Workflow at a glance**.
 
 ## 1. What the atlas is
 
-`vitavision.dev/algorithms` is a connected **practical computer vision atlas**: short reference cards for algorithms, models, and concepts, cross-linked by a typed relationship graph (prerequisites, typed `relations[]`, used-by, failure-modes). The atlas is intentionally curated — depth and correctness over coverage. Public pages are source-grounded and machine-checked; private research notes carry the reasoning substrate that backs the public content.
+`vitavision.dev/atlas` is a connected **practical computer vision atlas**: short reference cards for algorithms, models, and concepts, cross-linked by a typed relationship graph (prerequisites, typed `relations[]`, used-by, failure-modes). The atlas is intentionally curated — depth and correctness over coverage. Public pages are source-grounded and machine-checked; private research notes carry the reasoning substrate that backs the public content.
 
 Public site lives at:
-- `/algorithms` — the atlas index (heading: "Atlas"; URL kept stable for SEO).
-- `/algorithms/<slug>` — algorithm pages.
-- `/algorithms/models/<slug>` — model pages.
-- `/concepts/<slug>` — concept pages.
+- `/atlas` — the atlas index, with tabs for grid / list / graph / narratives views.
+- `/atlas/<slug>` — algorithms, models, and concepts share one URL namespace.
+- `/atlas/narratives/<slug>` — a narrative's canvas + reading view.
+- `/authors`, `/authors/:id` — the author register (unlisted: reached via search, SourceStrip, and index-footer discovery, not a Navbar item).
+- `/algorithms/<slug>`, `/algorithms/models/<slug>`, `/concepts/<slug>` — legacy redirects to `/atlas/<slug>`; kept for external links, not canonical.
 - `/blog`, `/blog/<slug>` — blog posts (separate from the atlas).
 
 ## 2. Content types
@@ -26,6 +27,8 @@ Public site lives at:
 | **Concept page** | `content/concepts/*.md` | Many-to-many. Cites multiple papers and textbooks. | A genuinely fundamental, cross-cutting mathematical/geometric object that supports **≥500 words** of substantive standalone content. Referencing-page count is **not** a gate; source-diversity (≥3 sources) still is. |
 | **Blog post** | `content/blog/*.md` | Free-form. | Long-form notes, write-ups, exploratory work. Not part of the atlas. |
 | **Research note** | `docs/research/notes/<paper-id>.md` | 1:1 with paper. | Always created during paper ingestion. Committed to GitHub but not deployed. |
+| **Narrative** | `content/narratives/*.md` | Many-to-many over pages and papers. | A curated argument told by moving through the graph; nodes are an atlas slug XOR a registered paper XOR a question — paper-only nodes are tracked debt. |
+| **Author record** | `docs/papers/authors.yaml` + `authorIds` in `docs/papers/index.yaml` | Many-to-many via papers. | Generated; never hand-authored beyond identity fixes. Powers `/authors/:id`, the People view (`/atlas?view=people`) and paper pages (`/papers/:id`). |
 
 ## 3. The relationship graph
 
@@ -80,7 +83,7 @@ For surveys: at least 3 of the surveyed methods' primary papers must have resear
 
 `feeds_into` is an intellectual-lineage edge (B was conceived building on A as a named component), not a runtime data-flow edge. It must respect chronology: A's primary-source year ≤ B's — the build validator enforces this. When the only link is "A's output can be piped to B" with no genuine build-on, omit the edge and let a shared concept page carry the pipeline relationship.
 
-## 5. The four authoring skills
+## 5. The authoring skills
 
 | Skill | Purpose | Touches |
 |---|---|---|
@@ -88,8 +91,11 @@ For surveys: at least 3 of the surveyed methods' primary papers must have resear
 | `algo-page` | Author or update an algorithm page. Reads research notes for the page's primary paper if present. | `content/algorithms/<slug>.md`, `docs/papers/index.yaml`. |
 | `deep-model-page` | Author or update a deep-learning model page. Family pages vs single-paper pages. | `content/models/<slug>.md`, `docs/papers/index.yaml`. |
 | `concept-page` | Author or update a concept page. Enforces the ≥500-words substance + ≥3-source-diversity criterion. Reads multiple research notes when synthesizing. | `content/concepts/<slug>.md`. |
+| `narrative-page` | Author or update a narrative. Enforces node existence/publication, lens/step completeness, and edge-vs-Atlas-relations sanity. | `content/narratives/<slug>.md`, `docs/atlas/roadmap.md`. |
+| `author-identity` | Maintain the authors registry: link a newly ingested paper's OpenAlex author ids, detect and merge split identities (`mergedInto`), fix misattributions. | `docs/papers/authors.yaml`, `authorIds` in `docs/papers/index.yaml`. |
+| `atlas-audit` | Page-quality audit: research-note fidelity, voice, section structure, relations completeness, validator warnings, figure placeholders, dead links. Produces findings only, no page edits. | `docs/atlas/backlog.md` only. |
 
-The four skills cover every authoring path. There is **no separate `atlas-update` skill** — page skills handle both create-from-scratch and apply-update-plan.
+These skills cover every authoring path. There is **no separate `atlas-update` skill** — page skills handle both create-from-scratch and apply-update-plan.
 
 ## 6. Workflow at a glance
 
@@ -98,7 +104,7 @@ The four skills cover every authoring path. There is **no separate `atlas-update
 ```
 new paper          paper-ingest                   review                 algo-page / deep-model-page / concept-page                 validate
 arxiv:2304.02643 → docs/research/notes/<id>.md →  read the           →  apply the "## NEW: <slug>" or "## UPDATE: <slug>" bullets → bun run build
-                                                  Atlas update plan      to the public page                                          + validate-content.ts
+                                                  Atlas update plan      to the public page                                          + content:validate
 ```
 
 Concrete:
@@ -113,12 +119,12 @@ You: Use algo-page on harris-corner-detector. Apply the bullets from
      docs/research/notes/<paper-id>.md.
 → updates content/algorithms/harris-corner-detector.md.
 
-You: bun run build && bun run scripts/validate-content.ts
+You: bun run build && bun run content:validate
 ```
 
 ### Path B — concept page (no single paper)
 
-Concepts span many sources. Don't go through `paper-ingest` first; start at the page skill:
+Concepts span many sources. Rather than running `paper-ingest` for a new source, a concept page synthesises ≥3 existing research notes (each already produced by `paper-ingest` for its own paper). Start at the page skill:
 
 ```text
 You: Use concept-page to evaluate whether "epipolar geometry" meets the
@@ -131,6 +137,19 @@ You: Use concept-page to evaluate whether "epipolar geometry" meets the
 ### Path C — blog post
 
 Blog is outside the atlas. Just create `content/blog/<slug>.md` with the standard frontmatter (`title`, `date`, `summary`, `tags`, `author`). See `docs/blog-authoring-guide.md` for the long form.
+
+### Path D — narrative
+
+```text
+You: Use narrative-page to draft "finding-a-chessboard" (N9 in docs/atlas/roadmap.md).
+→ skill checks every page node exists and is published, every paper node is registered
+  (and becomes tracked debt), then drafts chapters + edges + lenses + steps.
+
+You: bun run content:validate && bun run narratives:debt
+```
+
+Narrative edges use a story-altitude vocabulary (`prerequisite | evolution | bridge | contrast`)
+distinct from `relations[]`, and must not contradict the pages' authored Atlas relations.
 
 ## 7. Research notes — the reasoning substrate
 
@@ -160,18 +179,40 @@ Run before every commit:
 ```bash
 bun run build              # type-check + content-build + Vite + postbuild guard
 bun run lint               # ESLint
-npx vitest run             # 238 unit tests
-bun run scripts/validate-content.ts          # public pages only
-INCLUDE_DRAFTS=true bun run scripts/validate-content.ts   # public + drafts
+npx vitest run             # unit tests
+bun run content:validate          # public pages only
+INCLUDE_DRAFTS=true bun run content:validate   # public + drafts
 ```
 
-What validation catches:
-- Unknown slugs in `prerequisites` / `relations[].target` / `failureModes`.
+`content:validate` runs the one unified validator (`scripts/validate-content.ts`, implementation
+in `scripts/validate/**`). What it catches:
+- Unknown slugs in `prerequisites` / `relations[].target` / `failureModes` (including the legacy
+  `relatedAlgorithms` field's global-namespace form).
 - Cycles in the prerequisites graph.
 - Missing source IDs (any `sources.primary` or `sources.references` not in `docs/papers/index.yaml`).
 - `quality: canonical` pages missing the canonical-gate fields.
 - Non-draft model pages missing `implementations[]`.
 - `docs/research/` paths leaking into `dist/`.
+- Blog/demo frontmatter schema issues.
+- Broken image references (existence + empty-alt warning) across every content kind.
+- Broken internal links (`/atlas/...`, `/blog/...`, `/demos/...`, `/authors/...`, `/papers/...`, static routes)
+  across every content kind — unresolved fragment anchors and legacy-redirect links (`/algorithms/...`,
+  `/concepts/...`) are warnings, not errors.
+- Broken `relatedPosts` / `relatedDemos` references.
+- Author registry integrity: every paper's `authorIds` entries resolve in
+  `docs/papers/authors.yaml` (error if not); a paper with no `authorIds` warns; an
+  `authorIds`/`authors` length mismatch warns (names both counts); a `mergedInto` target
+  must exist and must not form a cycle (errors).
+
+Narrative-specific rules (same script):
+- Errors: every node is exactly one of page / paper / question (XOR); `page` nodes resolve to a
+  published atlas page; `paper` nodes resolve to a registered paper; the `overview` lens has
+  coordinates for every node; ≥2 steps, each with an anchor resolving to a `##` heading; `evolution`
+  edges respect chronology.
+- Warnings: `paper` nodes are page debt (see `bun run narratives:debt`); lens x-order inversions
+  ≥2 years; a narrative edge contradicting the pages' authored `relations[]` (e.g. a `contrast`
+  edge between pages linked by `generalized_by`/`extended_by`, or an `evolution` edge running
+  opposite an Atlas lineage edge) — warning only, story altitude may legitimately simplify.
 
 ## 9. Frontmatter quick reference
 
@@ -185,7 +226,7 @@ summary: "One sentence. Subject-first."
 tags: ["..."]
 author: "Vitaly Vorobyev"
 draft: true                # default: false (public). Hides until INCLUDE_DRAFTS=true.
-quality: stub | canonical  # optional. Stub = visible placeholder; canonical = strict gate.
+quality: stub | canonical | historical  # optional. Stub = visible placeholder; canonical = strict gate; historical = superseded, trimmed body.
 difficulty: beginner | intermediate | advanced
 
 # Relationship fields (all optional; all forward edges)
@@ -204,7 +245,7 @@ sources:
 ---
 ```
 
-Type-specific fields (`category` enum, `editorAlgorithmId`, model `implementations`, etc.) live in `src/lib/content/schema.ts`.
+Type-specific fields (`domain`/`tasks` enums, `editorAlgorithmId`, model `implementations`, etc.) live in `src/lib/content/schema.ts`. (`category` is a separate enum scoped to demo pages only — `interactive-figure | tool | playground` — not algorithms/models/concepts.)
 
 ## 10. What never gets deployed to the site
 
@@ -233,8 +274,10 @@ The vault is a derived artifact: never edit it by hand, never author from it. It
 - `.claude/skills/algo-page/SKILL.md` — algorithm page authoring rules.
 - `.claude/skills/deep-model-page/SKILL.md` — model page rules.
 - `.claude/skills/concept-page/SKILL.md` — concept page rules.
+- `.claude/skills/narrative-page/SKILL.md` — narrative authoring rules.
+- `.claude/skills/atlas-audit/SKILL.md` — page-quality audit rules.
 - `.claude/CLAUDE.md` — atlas authoring policy (machine-readable for Claude).
-- `.claude/AGENTS.md` — concise operating guide for agent sessions.
-- `~/.claude/plans/i-want-to-brainstorm-splendid-scott.md` — the original implementation plan, useful as historical context.
-
-`docs/practical-computer-vision-atlas-spec.md` is the **original spec from the brainstorming phase**, kept for posterity. The actual implementation diverged significantly through grilling — read this `README.md` and the skill SKILL.md files for what was built.
+- `AGENTS.md` — concise operating guide for agent sessions.
+- `docs/atlas/roadmap.md` — living state of the narratives/authors initiative.
+- `docs/atlas/backlog.md` — known page-quality and tech-debt issues.
+- `~/.claude/plans/i-want-you-to-tingly-matsumoto.md` — the current implementation plan (approved 2026-09-15), useful as historical context.

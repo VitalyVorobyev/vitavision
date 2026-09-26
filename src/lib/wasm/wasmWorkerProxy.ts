@@ -5,7 +5,7 @@
  * for zero-copy pixel transfer.
  */
 
-import type { AlgorithmType, WorkerCommand, WorkerResponse } from "./wasmWorker";
+import type { AlgorithmType, WorkerCommand, WorkerResponse } from "./worker/protocol";
 
 let worker: Worker | null = null;
 let nextId = 0;
@@ -44,7 +44,6 @@ function postDetection(
     width: number,
     height: number,
     config: unknown,
-    command?: WorkerCommand,
 ): Promise<unknown> {
     return new Promise((resolve, reject) => {
         const id = nextId++;
@@ -52,7 +51,28 @@ function postDetection(
 
         const w = getWorker();
         w.postMessage(
-            { id, command, algorithm, pixels, width, height, config },
+            { id, algorithm, pixels, width, height, config },
+            [pixels.buffer], // Transfer ownership for zero-copy
+        );
+    });
+}
+
+/** Post a non-detection command. Commands never carry `algorithm` — the
+ * command name alone selects the worker-side handler (see worker/protocol.ts). */
+function postCommand(
+    command: WorkerCommand,
+    pixels: Uint8Array,
+    width: number,
+    height: number,
+    config: unknown,
+): Promise<unknown> {
+    return new Promise((resolve, reject) => {
+        const id = nextId++;
+        pending.set(id, { resolve, reject });
+
+        const w = getWorker();
+        w.postMessage(
+            { id, command, pixels, width, height, config },
             [pixels.buffer], // Transfer ownership for zero-copy
         );
     });
@@ -129,14 +149,51 @@ export async function generatePuzzleboardPngWasm(
     cellSizeMm: number,
     pngDpi: number,
 ): Promise<{ png: Uint8Array; mimeType: string }> {
-    return postDetection(
-        "puzzleboard",
+    return postCommand(
+        "puzzleboard-gen-png",
         new Uint8Array(0),
         0,
         0,
         { rows, cols, cellSizeMm, pngDpi },
-        "puzzleboard-gen-png",
     ) as Promise<{ png: Uint8Array; mimeType: string }>;
+}
+
+export async function renderTargetBundleWasm(
+    doc: unknown,
+): Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }> {
+    return postCommand(
+        "render-target-bundle",
+        new Uint8Array(0),
+        0,
+        0,
+        doc,
+    ) as Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }>;
+}
+
+export async function renderRinggridBundleWasm(
+    targetJson: string,
+    optionsJson: string,
+): Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }> {
+    return postCommand(
+        "render-ringgrid-bundle",
+        new Uint8Array(0),
+        0,
+        0,
+        { targetJson, optionsJson },
+    ) as Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }>;
+}
+
+export async function ringgridBoardSizeMmWasm(
+    targetJson: string,
+    optionsJson: string,
+): Promise<[number, number]> {
+    return postCommand(
+        "ringgrid-page-size",
+        new Uint8Array(0),
+        0,
+        0,
+        { targetJson, optionsJson },
+    ) as Promise<[number, number]>;
 }
 
 export async function generateRadsymHeatmap(
@@ -145,7 +202,7 @@ export async function generateRadsymHeatmap(
     height: number,
     config: unknown,
 ): Promise<{ rgba: Uint8Array; width: number; height: number }> {
-    return postDetection("radsym", pixels, width, height, config, "radsym-heatmap") as Promise<{
+    return postCommand("radsym-heatmap", pixels, width, height, config) as Promise<{
         rgba: Uint8Array;
         width: number;
         height: number;

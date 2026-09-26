@@ -2,8 +2,8 @@
 Trimmed template for `quality: "historical"` algorithm pages.
 
 A historical page is preserved on the site for citation/lineage value; the
-method is superseded for practical use by another page on the site (named in
-the `successor:` frontmatter field). The body is intentionally minimal —
+method is superseded for practical use by another page on the site (named via
+a `relations[]` entry of type `generalized_by`, confidence `high`). The body is intentionally minimal —
 three sections only. The original paper's math lives in the cached PDF and
 the private research note at docs/research/notes/<paper-id>.md; do not
 duplicate it here.

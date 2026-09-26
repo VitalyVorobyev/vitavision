@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useElementWidth } from "../../hooks/useElementWidth.ts";
 import type { TimelineEntry } from "../../lib/atlas/authorView.ts";
 import { dotStyle } from "./authorTimelineDots.ts";

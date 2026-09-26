@@ -19,7 +19,7 @@ export const normalizeImportedFeatures = (value: unknown): Feature[] => {
     return value
         .map((item) => featureSchema.safeParse(item))
         .filter((result): result is { success: true; data: Feature } => result.success)
-        .map((result) => normalizeFeature(result.data as Feature));
+        .map((result) => normalizeFeature(result.data));
 };
 
 export const isReadonlyFeature = (feature: Feature): boolean => {

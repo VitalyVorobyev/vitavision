@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import SeoHead from "../components/seo/SeoHead.tsx";
 
 const SKILLS = ["Computer vision", "Machine learning", "Algorithms", "C++", "Rust", "Python", "TypeScript", "React"];

@@ -1,4 +1,4 @@
-import { deepMerge, mapTargetBundle, type TargetBundle, type RawTargetBundle } from "./util";
+import { deepMerge, mapTargetBundle, type TargetBundle } from "./util";
 import { getRinggridModule } from "./modules";
 
 export function adaptRinggridResult(
@@ -7,8 +7,8 @@ export function adaptRinggridResult(
     height: number,
     runtimeMs: number,
 ) {
-    const raw = JSON.parse(jsonStr);
-    const detectedMarkers = raw.detected_markers as Array<Record<string, unknown>> ?? [];
+    const raw = JSON.parse(jsonStr) as Record<string, unknown>;
+    const detectedMarkers = (raw.detected_markers as Array<Record<string, unknown>> | undefined) ?? [];
 
     const markers = detectedMarkers.map((m) => {
         const center = m.center as number[];
@@ -115,7 +115,7 @@ export async function handleRinggrid(
  */
 export async function handleRenderRinggridBundle(targetJson: string, optionsJson: string): Promise<TargetBundle> {
     const mod = await getRinggridModule();
-    const bundle = mod.render_target_bundle_json(targetJson, optionsJson) as RawTargetBundle;
+    const bundle = mod.render_target_bundle_json(targetJson, optionsJson);
     return mapTargetBundle(bundle);
 }
 

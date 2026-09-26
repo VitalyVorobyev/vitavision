@@ -14,6 +14,12 @@ import type { ChessCornersResult, CalibrationTargetResult } from "../../types";
 
 // ── Chess Corners ────────────────────────────────────────────────────────────
 
+function confidenceLevelFor(fraction: number): "low" | "medium" | "high" {
+    if (fraction < 0.33) return "low";
+    if (fraction < 0.66) return "medium";
+    return "high";
+}
+
 function mockChessCornersResult(cornerCount: number): ChessCornersResult {
     const corners = Array.from({ length: cornerCount }, (_, i) => {
         const axis0Angle = (i * Math.PI) / Math.max(cornerCount, 1);
@@ -40,11 +46,7 @@ function mockChessCornersResult(cornerCount: number): ChessCornersResult {
                 },
             ] as [ChessCornersResult["corners"][0]["axes"][0], ChessCornersResult["corners"][0]["axes"][0]],
             confidence: i / Math.max(cornerCount - 1, 1),
-            confidence_level: (i / Math.max(cornerCount - 1, 1) < 0.33
-                ? "low"
-                : i / Math.max(cornerCount - 1, 1) < 0.66
-                  ? "medium"
-                  : "high") as "low" | "medium" | "high",
+            confidence_level: confidenceLevelFor(i / Math.max(cornerCount - 1, 1)),
         };
     });
 
@@ -190,7 +192,7 @@ function mockCalibTargetResult(
             alignment_inliers: algorithm === "markerboard" ? 5 : null,
             runtime_ms: 150.3,
         },
-        detection: { kind: kind as CalibrationTargetResult["detection"]["kind"], corners },
+        detection: { kind, corners },
         markers: algorithm === "charuco"
             ? [{
                 id: 0,
@@ -408,10 +410,10 @@ describe("Ringgrid WASM result shape", () => {
         const result = mockRinggridWasmResult(1);
         const marker = result.markers[0];
         expect(marker.decode).not.toBeNull();
-        expect(marker.decode!.best_id).toBe(0);
-        expect(typeof marker.decode!.decode_confidence).toBe("number");
+        expect(marker.decode.best_id).toBe(0);
+        expect(typeof marker.decode.decode_confidence).toBe("number");
         expect(marker.fit).not.toBeNull();
-        expect(typeof marker.fit!.rms_residual_outer).toBe("number");
+        expect(typeof marker.fit.rms_residual_outer).toBe("number");
     });
 
     it("handles empty detection", () => {

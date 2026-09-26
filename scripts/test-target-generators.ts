@@ -64,6 +64,9 @@ import { resolvePageDimensions } from "../src/components/targetgen/svg/paperCons
 import { toRinggridTarget } from "../src/components/targetgen/ringgridTarget";
 import { deepMerge, unwrapMaps } from "../src/lib/wasm/worker/util";
 import { PNG } from "pngjs";
+import type { defaultCircles as DefaultCirclesFn } from "../src/components/targetgen/reducer";
+import type * as CalibTargetsModule from "@vitavision/calib-targets";
+import type * as RinggridModule from "@vitavision/ringgrid";
 
 /** Fixed rasterisation resolution for the round trip — real enough to feed a
  * real detector, low enough to keep the script fast. */
@@ -239,7 +242,7 @@ function page(overrides: Partial<PageConfig> = {}): PageConfig {
     };
 }
 
-function buildCases(defaultCircles: typeof import("../src/components/targetgen/reducer").defaultCircles): Case[] {
+function buildCases(defaultCircles: DefaultCirclesFn): Case[] {
     return [
         // ── chessboard ──────────────────────────────────────────────────────
         {
@@ -355,8 +358,8 @@ interface GeneratedBundle {
 }
 
 async function runHarness(
-    mod: typeof import("@vitavision/calib-targets"),
-    ringgridMod: typeof import("@vitavision/ringgrid"),
+    mod: typeof CalibTargetsModule,
+    ringgridMod: typeof RinggridModule,
 ): Promise<boolean> {
     const { defaultCircles } = await import("../src/components/targetgen/reducer.ts");
     const cases = buildCases(defaultCircles);

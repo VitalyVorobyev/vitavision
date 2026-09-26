@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import type { NarrativeIndexEntry } from "../../lib/content/schema.ts";
 import { areaColor } from "../../lib/narratives/narrativeLayout.ts";
 

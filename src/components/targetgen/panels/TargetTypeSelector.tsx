@@ -1,8 +1,16 @@
 import { useRef } from "react";
 import { toast } from "sonner";
 import { Grid3X3, QrCode, CircleDot, Target, Puzzle, Upload } from "lucide-react";
-import type { TargetType, TargetGeneratorAction } from "../types";
+import type { TargetType, TargetGeneratorAction, TargetConfig, PageConfig } from "../types";
 import { presetsForType } from "../presets";
+
+/** Shape of a config file previously exported via `exportFeaturesAsJson`-style
+ *  JSON download. `page` may be missing the fields added after older exports
+ *  were written (`pngDpi`, `showScaleLine`), which are defaulted below. */
+interface ImportedTargetConfig {
+    target?: TargetConfig;
+    page?: Partial<PageConfig>;
+}
 
 const TARGET_TYPES: {
     id: TargetType;
@@ -64,10 +72,10 @@ export default function TargetTypeSelector({
         const reader = new FileReader();
         reader.onload = (ev) => {
             try {
-                const data = JSON.parse(ev.target?.result as string);
-                if (data?.target?.targetType && data?.target?.config && data?.page) {
+                const data = JSON.parse(ev.target?.result as string) as ImportedTargetConfig;
+                if (data.target?.targetType && data.target.config && data.page) {
                     // Ensure new fields exist for configs from older versions
-                    const page = { pngDpi: 300, showScaleLine: true, ...data.page };
+                    const page = { pngDpi: 300, showScaleLine: true, ...data.page } as PageConfig;
                     dispatch({
                         type: "LOAD_PRESET",
                         target: data.target,

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import type { ConceptIndexEntry } from "../../lib/content/schema.ts";
 import { EntryIcon } from "../atlas/EntryIcon.tsx";
 import { domainLabels } from "../algorithms/domainLabels.ts";

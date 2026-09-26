@@ -75,9 +75,7 @@ export const chessCornersAlgorithm: AlgorithmDefinition = {
     presets,
     executionModes: ["wasm"],
     ConfigComponent: ChessCornersConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async () => {
-        throw new Error("ChESS corner detection is only available via client-side WASM.");
-    },
+    run: () => Promise.reject(new Error("ChESS corner detection is only available via client-side WASM.")),
     runWasm: async ({ pixels, width, height, config }) => {
         const typedConfig = config as ChessCornersConfig;
         return detectChessCornersWasm(pixels, width, height, {

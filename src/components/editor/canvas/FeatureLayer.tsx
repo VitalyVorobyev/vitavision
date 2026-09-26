@@ -8,7 +8,7 @@ import RingMarkerGlyph from "./primitives/RingMarkerGlyph";
 import CircleGlyph from "./primitives/CircleGlyph";
 import { isFeatureVisible } from "../../../store/editor/featureGroups";
 import { overlayTheme } from "./overlays/overlayTheme";
-import { isReadonlyFeature, type ArUcoMarkerFeature, type CircleFeature, type DirectedPointFeature, type Feature, type LabeledPointFeature, type OverlayToggles, type RingMarkerFeature, type ToolType } from "../../../store/editor/useEditorStore";
+import { isReadonlyFeature, type DirectedPointFeature, type Feature, type OverlayToggles, type ToolType } from "../../../store/editor/useEditorStore";
 
 interface FeatureLayerProps {
     features: Feature[];
@@ -136,7 +136,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                                 const dy = event.target.y();
                                 event.target.position({ x: 0, y: 0 });
                                 const points = feature.points.map((v, i) => v + (i % 2 === 0 ? dx : dy));
-                                updateFeature(feature.id, { points } as Partial<Feature>);
+                                updateFeature(feature.id, { points });
                             }}
                         />
                     );
@@ -157,7 +157,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                                 const dy = event.target.y();
                                 event.target.position({ x: 0, y: 0 });
                                 const points = feature.points.map((v, i) => v + (i % 2 === 0 ? dx : dy));
-                                updateFeature(feature.id, { points } as Partial<Feature>);
+                                updateFeature(feature.id, { points });
                             }}
                         />
                     );
@@ -181,7 +181,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                                 const dy = event.target.y();
                                 event.target.position({ x: 0, y: 0 });
                                 const points = feature.points.map((v, i) => v + (i % 2 === 0 ? dx : dy));
-                                updateFeature(feature.id, { points } as Partial<Feature>);
+                                updateFeature(feature.id, { points });
                             }}
                         />
                     );
@@ -252,7 +252,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                     return (
                         <RingMarkerGlyph
                             key={feature.id}
-                            feature={feature as RingMarkerFeature}
+                            feature={feature}
                             zoom={zoom}
                             selected={isSelected}
                             onSelect={selectFeature}
@@ -264,7 +264,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                     return (
                         <ArUcoMarkerGlyph
                             key={feature.id}
-                            feature={feature as ArUcoMarkerFeature}
+                            feature={feature}
                             zoom={zoom}
                             selected={isSelected}
                             onSelect={selectFeature}
@@ -276,7 +276,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                     return (
                         <CircleGlyph
                             key={feature.id}
-                            feature={feature as CircleFeature}
+                            feature={feature}
                             zoom={zoom}
                             selected={isSelected}
                             onSelect={selectFeature}
@@ -285,7 +285,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                 }
 
                 if (feature.type === "labeled_point") {
-                    const lp = feature as LabeledPointFeature;
+                    const lp = feature;
                     const pointRadius = 3 / zoom;
                     const hitRadius = 8 / zoom;
                     const color = isSelected ? "#00ffff" : feature.color || overlayTheme.cornerAccent;

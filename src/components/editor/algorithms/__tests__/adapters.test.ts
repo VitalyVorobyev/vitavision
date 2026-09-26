@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { ChessCornersResult, CalibrationTargetResult, CalibrationTargetAlgorithm, CalibrationTargetKind, RinggridDetectResult, RadsymResult, PuzzleBoardDetectResult } from "../../../../lib/types";
+import type { LabeledPointFeature } from "../../../../store/editor/useEditorStore";
 import { chessCornersAlgorithm } from "../chessCorners/adapter";
 import { chessboardAlgorithm } from "../calibrationTargets/chessboardAdapter";
 import { charucoAlgorithm } from "../calibrationTargets/charucoAdapter";
@@ -394,7 +395,12 @@ describe("ringgridAlgorithm", () => {
             marker_inner_radius_mm: config.markerInnerRadiusMm,
             marker_ring_width_mm: config.markerRingWidthMm,
         });
-        const parsed = JSON.parse(boardJson);
+        const parsed = JSON.parse(boardJson) as {
+            rows: number;
+            long_row_cols: number;
+            schema?: unknown;
+            name?: unknown;
+        };
         // User fields are present
         expect(parsed.rows).toBe(15);
         expect(parsed.long_row_cols).toBe(14);
@@ -574,7 +580,7 @@ describe("puzzleboardAlgorithm", () => {
             expect(f.runId).toBe("run-pb");
             expect(f.readonly).toBe(true);
         }
-        const first = features[0] as import("../../../../store/editor/useEditorStore").LabeledPointFeature;
+        const first = features[0] as LabeledPointFeature;
         expect(first.gridIndex).toEqual({ i: 0, j: 0 });
         expect(first.masterId).toBe(10);
     });

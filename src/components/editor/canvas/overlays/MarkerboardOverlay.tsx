@@ -38,7 +38,7 @@ export default function MarkerboardOverlay({
         const matches = data.circle_matches ?? [];
         const candidates = data.circle_candidates ?? [];
         return matches
-            .filter((m) => m.matched_index !== null && m.matched_index! < candidates.length)
+            .filter((m) => m.matched_index !== null && m.matched_index < candidates.length)
             .map((m) => ({
                 ...candidates[m.matched_index!],
                 expectedCell: m.expected.cell,

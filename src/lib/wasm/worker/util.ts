@@ -107,13 +107,13 @@ export function deepMerge(target: Record<string, unknown>, source: Record<string
 export function unwrapMaps(value: unknown): unknown {
     if (value instanceof Map) {
         const out: Record<string, unknown> = {};
-        for (const [key, v] of value.entries()) out[key] = unwrapMaps(v);
+        for (const [key, v] of value.entries()) out[key as string] = unwrapMaps(v);
         return out;
     }
     if (Array.isArray(value)) return value.map(unwrapMaps);
     if (value !== null && typeof value === "object") {
         const out: Record<string, unknown> = {};
-        for (const key of Object.keys(value as Record<string, unknown>)) {
+        for (const key of Object.keys(value)) {
             out[key] = unwrapMaps((value as Record<string, unknown>)[key]);
         }
         return out;

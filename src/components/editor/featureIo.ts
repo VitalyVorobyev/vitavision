@@ -36,7 +36,11 @@ function stripForExport(feature: Feature): Record<string, unknown> {
 // axis as the perpendicular of the first.
 function migrateLegacyFeatures(parsed: unknown): unknown {
     if (!Array.isArray(parsed)) return parsed;
-    return parsed.map((entry) => {
+    // `Array.isArray` narrows an `unknown` value to `any[]`, so route through
+    // an explicitly `unknown[]`-typed binding to keep `entry` (and the
+    // returns below) from silently becoming `any`.
+    const entries: unknown[] = parsed;
+    return entries.map((entry) => {
         if (!entry || typeof entry !== "object") return entry;
         const f = entry as Record<string, unknown>;
         if (f.type !== "directed_point" || f.axes !== undefined) return entry;
@@ -95,7 +99,7 @@ export function promptFeatureImport({
         const reader = new FileReader();
         reader.onload = (readerEvent) => {
             try {
-                const parsed = JSON.parse((readerEvent.target?.result as string) || "null");
+                const parsed: unknown = JSON.parse((readerEvent.target?.result as string) || "null");
                 const migrated = migrateLegacyFeatures(parsed);
                 const result = featuresArraySchema.safeParse(migrated);
                 if (!result.success) {

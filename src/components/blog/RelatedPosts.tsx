@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { blogPosts, algorithmPages, demoPages, modelPages } from "../../generated/content-index.ts";
 import { useIsAdmin } from "../../lib/auth/useIsAdmin.ts";
 

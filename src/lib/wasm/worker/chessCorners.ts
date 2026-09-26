@@ -1,5 +1,6 @@
 import { generateId } from "./util";
 import { getChessModule } from "./modules";
+import type * as ChessCornersModule from "@vitavision/chess-corners";
 
 export function adaptChessCornersResult(
     raw: Float32Array,
@@ -110,7 +111,7 @@ export function adaptChessCornersResult(
     };
 }
 
-type ChessModule = typeof import("@vitavision/chess-corners");
+type ChessModule = typeof ChessCornersModule;
 
 /**
  * Map the UI's refiner string to a chess-corners 0.11 `ChessRefiner`.

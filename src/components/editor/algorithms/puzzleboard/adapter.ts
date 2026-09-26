@@ -86,9 +86,7 @@ export const puzzleboardAlgorithm: AlgorithmDefinition = {
     presets,
     executionModes: ["wasm"],
     ConfigComponent: PuzzleboardConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async () => {
-        throw new Error("PuzzleBoard detection is only available via client-side WASM.");
-    },
+    run: () => Promise.reject(new Error("PuzzleBoard detection is only available via client-side WASM.")),
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as PuzzleboardConfig;
         return detectPuzzleboardWasm(pixels, width, height, {

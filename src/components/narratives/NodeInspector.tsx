@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { X } from "lucide-react";
 import type { NarrativeNode } from "../../lib/content/schema.ts";
 import { areaColor } from "../../lib/narratives/narrativeLayout.ts";

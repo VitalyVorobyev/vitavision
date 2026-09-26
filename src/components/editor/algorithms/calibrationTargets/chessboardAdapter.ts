@@ -50,9 +50,7 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
         },
     },
     ConfigComponent: ChessboardConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async () => {
-        throw new Error("Chessboard detection is only available via client-side WASM.");
-    },
+    run: () => Promise.reject(new Error("Chessboard detection is only available via client-side WASM.")),
     runWasm: async ({ pixels, width, height, config }) => {
         const c = config as ChessboardConfig;
         return detectChessboardWasm(pixels, width, height, {

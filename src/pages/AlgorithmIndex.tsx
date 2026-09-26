@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import useAlgorithmsFilters from "../hooks/useAlgorithmsFilters.ts";
 import AtlasCatalogView from "../components/algorithms/AtlasCatalogView.tsx";
 import AtlasGraphView from "../components/algorithms/AtlasGraphView.tsx";

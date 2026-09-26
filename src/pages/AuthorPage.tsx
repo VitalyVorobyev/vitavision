@@ -1,5 +1,5 @@
 import { useContext, useMemo } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import AuthorHeader from "../components/authors/AuthorHeader.tsx";
 import AuthorTimeline from "../components/authors/AuthorTimeline.tsx";

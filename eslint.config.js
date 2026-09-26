@@ -1,24 +1,33 @@
 import js from '@eslint/js'
 import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
-import { globalIgnores } from 'eslint/config'
+import { defineConfig, globalIgnores } from 'eslint/config'
+import { recommended } from '@vitavision/config-eslint'
 
-export default tseslint.config([
+export default defineConfig([
   // ds-bundle/ and .ds-sync/ hold generated /design-sync output (the compiled
   // bundle and the staged converter scripts). Both are gitignored, so CI never
   // sees them, but eslint flat config does not read .gitignore — without this
   // a local `bun run lint` fails on generated code.
-  globalIgnores(['dist', '.venv/**', 'py/**', 'ds-bundle/**', '.ds-sync/**']),
+  globalIgnores(['dist', '.venv/**', 'py/**', 'ds-bundle/**', '.ds-sync/**', 'e2e/.screens/**', 'test-results/**']),
+  js.configs.recommended,
+  // The shared vitavision config: type-aware typescript-eslint, @eslint-react and the
+  // hooks rules (@vitavision/config-eslint).
+  ...recommended({ tsconfigRootDir: import.meta.dirname }),
+  {
+    // Build scripts, root config files and the design-sync previews sit outside the tsc
+    // projects, so they get syntactic rules only (Node globals for the scripts).
+    files: ['scripts/**', '*.config.{js,ts}', 'e2e/**', '.design-sync/**'],
+    ...tseslint.configs.disableTypeChecked,
+    languageOptions: {
+      ...tseslint.configs.disableTypeChecked.languageOptions,
+      globals: { ...globals.node, Bun: 'readonly' },
+    },
+  },
   {
     files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat['recommended-latest'],
-      reactRefresh.configs.vite,
-    ],
+    extends: [reactRefresh.configs.vite],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,

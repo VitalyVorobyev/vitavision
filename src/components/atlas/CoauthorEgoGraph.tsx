@@ -1,5 +1,5 @@
 import type { KeyboardEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import type { CoAuthor } from "../../lib/atlas/authorStats.ts";
 import { graphKindAccent } from "../../lib/graph/graphTheme.ts";
 
@@ -54,7 +54,7 @@ export function CoauthorEgoGraph({ subjectName, coAuthors }: CoauthorEgoGraphPro
     const onKeyDown = (event: KeyboardEvent<SVGGElement>, id: string) => {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            goTo(id);
+            void goTo(id);
         }
     };
 
@@ -97,7 +97,7 @@ export function CoauthorEgoGraph({ subjectName, coAuthors }: CoauthorEgoGraphPro
                     role="link"
                     tabIndex={0}
                     aria-label={co.name}
-                    onClick={() => goTo(co.id)}
+                    onClick={() => void goTo(co.id)}
                     onKeyDown={(event) => onKeyDown(event, co.id)}
                     style={{ cursor: "pointer" }}
                 >

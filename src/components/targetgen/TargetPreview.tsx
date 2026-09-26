@@ -134,7 +134,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
         const container = containerRef.current;
         if (!container) return null;
 
-        const svg = container.querySelector("svg") as SVGSVGElement | null;
+        const svg = container.querySelector("svg");
         if (!svg) return null;
 
         const ctm = svg.getScreenCTM();

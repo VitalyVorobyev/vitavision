@@ -4,7 +4,7 @@
 // that were previously crammed into the in-canvas center card.
 // When isPreview=true the eyebrow reads "Preview" (muted) instead of "Focused" (brand).
 
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { getFocusEntry } from "../../lib/atlas/focusEntry.ts";
 import { EntryIcon } from "./EntryIcon.tsx";
 import { SourceCard } from "./SourceCard.tsx";

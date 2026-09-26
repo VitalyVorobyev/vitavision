@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { BookOpen } from "lucide-react";
 import TagBadge from "../blog/TagBadge.tsx";
 import SourceStrip from "./SourceStrip.tsx";

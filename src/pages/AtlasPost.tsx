@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { algorithmPages, modelPages, conceptPages } from "../generated/content-index.ts";
 import AlgorithmPost from "./AlgorithmPost.tsx";
 import ModelPost from "./ModelPost.tsx";

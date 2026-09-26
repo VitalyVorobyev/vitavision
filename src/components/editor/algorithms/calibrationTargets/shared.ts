@@ -153,7 +153,7 @@ export const calibrationCircleMatchFeatures = (
     if (!matches || !candidates) return [];
 
     return matches
-        .filter((m) => m.matched_index !== null && m.matched_index! < candidates.length)
+        .filter((m) => m.matched_index !== null && m.matched_index < candidates.length)
         .map((m) => {
             const candidate = candidates[m.matched_index!];
             return {

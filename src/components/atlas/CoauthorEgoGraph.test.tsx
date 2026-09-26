@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { describe, expect, it } from "vitest";
 import { CoauthorEgoGraph } from "./CoauthorEgoGraph.tsx";
 import type { CoAuthor } from "../../lib/atlas/authorStats.ts";

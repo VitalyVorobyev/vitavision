@@ -1,5 +1,5 @@
 import type { KeyboardEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { computeAuthorTimelineLayout, type TimelineEntry } from "../../lib/atlas/authorView.ts";
 import { dotStyle, tickLabel } from "./authorTimelineDots.ts";
 
@@ -15,7 +15,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
     const onKeyDown = (event: KeyboardEvent<SVGGElement>, id: string) => {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            goTo(id);
+            void goTo(id);
         }
     };
 
@@ -66,7 +66,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
                         role="link"
                         tabIndex={0}
                         aria-label={`${entry.label} (${entry.year})`}
-                        onClick={() => goTo(p.id)}
+                        onClick={() => void goTo(p.id)}
                         onKeyDown={(event) => onKeyDown(event, p.id)}
                         style={{ cursor: "pointer" }}
                     >

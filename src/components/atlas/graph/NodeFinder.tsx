@@ -74,8 +74,8 @@ export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }:
     return (
         <div className="absolute top-3 left-3 z-20 w-64">
             {/* Input */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border bg-surface/90 backdrop-blur shadow-sm">
-                <Search size={13} className="shrink-0 text-muted-foreground" />
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-control border border-line bg-surface/90 backdrop-blur shadow-sm">
+                <Search size={13} className="shrink-0 text-fg-muted" />
                 <input
                     ref={inputRef}
                     type="search"
@@ -85,13 +85,13 @@ export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }:
                     onFocus={() => setOpen(true)}
                     onBlur={() => setTimeout(() => setOpen(false), 120)}
                     onKeyDown={handleKeyDown}
-                    className="flex-1 bg-transparent outline-none text-xs placeholder:text-muted-foreground text-foreground min-w-0"
+                    className="flex-1 bg-transparent outline-none text-xs placeholder:text-fg-muted text-fg min-w-0"
                 />
             </div>
 
             {/* Dropdown */}
             {showDropdown && (
-                <div className="mt-1 rounded-lg border border-border bg-surface/90 backdrop-blur shadow-sm overflow-y-auto max-h-[280px]">
+                <div className="mt-1 rounded-panel border border-line bg-surface/90 backdrop-blur shadow-sm overflow-y-auto max-h-[280px]">
                     {results.map((item, idx) => {
                         const isHighlighted = idx === highlightIndex;
                         return (
@@ -101,13 +101,13 @@ export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }:
                                 onMouseDown={(e) => { e.preventDefault(); pick(item.id); }}
                                 onMouseEnter={() => setHighlightIndex(idx)}
                                 className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-left transition-colors ${
-                                    isHighlighted ? "bg-muted" : "hover:bg-muted/60"
+                                    isHighlighted ? "bg-raised" : "hover:bg-raised/60"
                                 }`}
                             >
                                 {item.icon}
-                                <span className="flex-1 min-w-0 text-xs text-foreground truncate">{item.title}</span>
+                                <span className="flex-1 min-w-0 text-xs text-fg truncate">{item.title}</span>
                                 {item.subtitle && (
-                                    <span className="shrink-0 text-[10px] text-muted-foreground">{item.subtitle}</span>
+                                    <span className="shrink-0 text-[10px] text-fg-muted">{item.subtitle}</span>
                                 )}
                             </button>
                         );

@@ -46,19 +46,19 @@ export default function ConfigModal({ open, onClose, title, ConfigComponent, con
             onClick={handleBackdropClick}
             className="backdrop:bg-black/60 bg-transparent p-0 m-auto max-w-2xl w-[calc(100vw-4rem)] max-h-[calc(100vh-4rem)] overflow-hidden rounded-xl"
         >
-            <div className="bg-background border border-border rounded-xl shadow-xl flex flex-col max-h-[calc(100vh-4rem)]">
-                <div className="flex items-center justify-between px-5 py-3.5 border-b border-border shrink-0">
-                    <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+            <div className="bg-ground border border-line rounded-xl shadow-xl flex flex-col max-h-[calc(100vh-4rem)]">
+                <div className="flex items-center justify-between px-5 py-3.5 border-b border-line shrink-0">
+                    <h2 className="text-sm font-semibold text-fg">{title}</h2>
                     <button
                         type="button"
                         onClick={onClose}
                         aria-label="Close"
-                        className="rounded-md p-1 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                        className="rounded-control p-1 text-fg-muted hover:text-fg hover:bg-raised/60 transition-colors"
                     >
                         <X size={16} />
                     </button>
                 </div>
-                <div className="overflow-y-auto p-5 space-y-3 [&_section]:bg-background">
+                <div className="overflow-y-auto p-5 space-y-3 [&_section]:bg-ground">
                     <ConfigComponent
                         config={config}
                         onChange={onChange}

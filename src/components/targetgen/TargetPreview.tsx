@@ -375,7 +375,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
         <div
             ref={containerRef}
             className={
-                "relative h-full flex-1 overflow-hidden bg-muted/20 " +
+                "relative h-full flex-1 overflow-hidden bg-raised/20 " +
                 (isMarkerboard ? "cursor-crosshair" : "cursor-default")
             }
             onWheel={handleWheel}
@@ -404,7 +404,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
 
             <div
                 data-preview-overlay
-                className="absolute bottom-3 left-3 rounded-md border border-border bg-background/80 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground backdrop-blur-sm"
+                className="absolute bottom-3 left-3 rounded-control border border-line bg-ground/80 px-2.5 py-1.5 text-[11px] leading-relaxed text-fg-muted backdrop-blur-sm"
             >
                 <div>
                     Board: {dims.board.w.toFixed(1)} x {dims.board.h.toFixed(1)} mm

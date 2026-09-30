@@ -27,7 +27,7 @@ function useConfiguredState(
 // Real desktop usage (src/pages/TargetGenerator.tsx): a `w-80` right rail.
 function Rail({ children }: { children: React.ReactNode }) {
     return (
-        <div style={{ width: 320 }} className="border-l border-border bg-muted/20">
+        <div style={{ width: 320 }} className="border-l border-line bg-raised/20">
             {children}
         </div>
     );

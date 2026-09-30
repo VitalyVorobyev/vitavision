@@ -228,7 +228,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             ref={svgRef}
             viewBox={`0 0 ${W} ${H}`}
             preserveAspectRatio="xMidYMid meet"
-            className="block h-full w-full outline-none focus-visible:ring-1 focus-visible:ring-primary"
+            className="block h-full w-full outline-none focus-visible:ring-1 focus-visible:ring-signal"
             style={{ cursor, display: "block", touchAction: "none" }}
             tabIndex={0}
             onPointerMove={onPointerMove}
@@ -258,8 +258,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                             <polygon
                                 key={i}
                                 points={poly.map(([px, py]) => `${px},${py}`).join(" ")}
-                                fill="hsl(var(--brand) / 0.08)"
-                                stroke="hsl(var(--border))"
+                                fill="color-mix(in oklab, var(--signal) 8%, transparent)"
+                                stroke="var(--line)"
                                 strokeWidth="0.75"
                             />
                         );
@@ -271,8 +271,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             {hoverPolygonPoints && (
                 <polygon
                     points={hoverPolygonPoints}
-                    fill="hsl(var(--brand) / 0.22)"
-                    stroke="hsl(var(--brand))"
+                    fill="color-mix(in oklab, var(--signal) 22%, transparent)"
+                    stroke="var(--signal)"
                     strokeWidth="1.5"
                     strokeOpacity="0.7"
                     pointerEvents="none"
@@ -300,7 +300,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                                 cy={cy}
                                 r={r}
                                 fill="none"
-                                stroke="hsl(var(--border))"
+                                stroke="var(--line)"
                                 strokeWidth="0.75"
                                 strokeDasharray="4 5"
                                 strokeOpacity="0.6"
@@ -331,7 +331,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                                         key={key}
                                         x1={a.x} y1={a.y}
                                         x2={b.x} y2={b.y}
-                                        stroke="hsl(var(--foreground))"
+                                        stroke="var(--fg)"
                                         strokeWidth="1"
                                         strokeOpacity="0.4"
                                     />,
@@ -359,8 +359,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                                 width={8}
                                 height={8}
                                 transform={`rotate(45, ${p.x}, ${p.y})`}
-                                fill="hsl(var(--foreground) / 0.7)"
-                                stroke={isSelected ? "hsl(var(--brand))" : "hsl(var(--background))"}
+                                fill="color-mix(in oklab, var(--fg) 70%, transparent)"
+                                stroke={isSelected ? "var(--signal)" : "var(--ground)"}
                                 strokeWidth={isSelected ? "2" : "1"}
                                 style={{ cursor: "grab" }}
                                 onPointerDown={(e) => onPointPointerDown(e, p.id)}
@@ -373,8 +373,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                             cx={p.x}
                             cy={p.y}
                             r={isSelected ? 6 : 4}
-                            fill="hsl(var(--foreground) / 0.85)"
-                            stroke={isSelected ? "hsl(var(--brand))" : "hsl(var(--background))"}
+                            fill="color-mix(in oklab, var(--fg) 85%, transparent)"
+                            stroke={isSelected ? "var(--signal)" : "var(--ground)"}
                             strokeWidth={isSelected ? "2.5" : "1.5"}
                             style={{ cursor: "grab" }}
                             onPointerDown={(e) => onPointPointerDown(e, p.id)}
@@ -394,8 +394,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                             width={14}
                             height={14}
                             rx={2}
-                            fill="hsl(var(--brand))"
-                            stroke="hsl(var(--background))"
+                            fill="var(--signal)"
+                            stroke="var(--ground)"
                             strokeWidth="1.5"
                             style={{ cursor: "grab" }}
                             onPointerDown={(e) => onPointPointerDown(e, c.id)}

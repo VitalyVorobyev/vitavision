@@ -29,7 +29,7 @@ export function HoverHighlight({ hoveredId, adjacency, positions }: HoverHighlig
                     x2={p1.x}
                     y2={p1.y}
                     stroke="currentColor"
-                    className="text-foreground"
+                    className="text-fg"
                     strokeOpacity={0.85}
                     strokeWidth={1 + shared * 0.4}
                 />,

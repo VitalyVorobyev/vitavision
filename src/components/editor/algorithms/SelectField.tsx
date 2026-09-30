@@ -41,7 +41,7 @@ export function SelectField<TValue extends string>(props: SelectFieldProps<TValu
             <div className="grid gap-1">
                 <FieldLabel label={label} tooltip={tooltip} />
                 <div
-                    className="grid gap-1 rounded-md border border-border bg-background p-1"
+                    className="grid gap-1 rounded-control border border-line bg-ground p-1"
                     style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
                     role="group"
                     aria-label={label}
@@ -57,10 +57,10 @@ export function SelectField<TValue extends string>(props: SelectFieldProps<TValu
                                 title={option.label}
                                 aria-pressed={active}
                                 aria-label={option.label}
-                                className={`min-w-0 rounded-[calc(var(--radius-md)-2px)] px-3 py-2 text-sm font-medium transition-colors ${
+                                className={`min-w-0 rounded-[calc(var(--radius-control)-2px)] px-3 py-2 text-sm font-medium transition-colors ${
                                     active
-                                        ? "bg-primary/12 text-foreground shadow-xs"
-                                        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                                        ? "bg-signal/12 text-fg shadow-xs"
+                                        : "text-fg-muted hover:bg-raised/60 hover:text-fg"
                                 } disabled:cursor-not-allowed disabled:opacity-40`}
                             >
                                 <span className="block truncate">{option.shortLabel ?? option.label}</span>

@@ -62,13 +62,13 @@ export default function AtlasPapersView({ isDesktop, view, setView, query, setQu
                 <div className={isDesktop ? "flex items-end justify-between gap-4" : "flex flex-col gap-3"}>
                     <div className="flex flex-col gap-1.5">
                         <h1 className="text-[28px] sm:text-[34px] font-bold -tracking-[0.5px]">Atlas</h1>
-                        <p className="text-[14px] sm:text-[15px] text-muted-foreground">{subtitle}</p>
+                        <p className="text-[14px] sm:text-[15px] text-fg-muted">{subtitle}</p>
                     </div>
                     <AtlasViewTabs view={view} onChange={setView} compact={!isDesktop} />
                 </div>
 
                 <div className={`flex gap-3 ${isDesktop ? "items-center justify-between" : "flex-col"}`}>
-                    <label className="flex h-11 w-full items-center gap-2 rounded-md border border-border bg-surface px-3.5 text-muted-foreground sm:w-[380px]">
+                    <label className="flex h-11 w-full items-center gap-2 rounded-control border border-line bg-surface px-3.5 text-fg-muted sm:w-[380px]">
                         <Search size={16} className="shrink-0" aria-hidden="true" />
                         <span className="sr-only">Search papers</span>
                         <input
@@ -76,22 +76,22 @@ export default function AtlasPapersView({ isDesktop, view, setView, query, setQu
                             placeholder="Search titles, authors, venues"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
-                            className="min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground"
+                            className="min-w-0 flex-1 bg-transparent text-[14px] text-fg outline-none placeholder:text-fg-muted"
                         />
                     </label>
 
                     <div className={`flex gap-3 ${isDesktop ? "items-center" : "flex-col"}`}>
-                        <div role="group" aria-label="Filter" className="inline-flex gap-0.5 rounded-lg border border-border bg-surface p-[3px]">
+                        <div role="group" aria-label="Filter" className="inline-flex gap-0.5 rounded-control border border-line bg-surface p-[3px]">
                             {FILTER_OPTIONS.map((opt) => (
                                 <button
                                     key={opt.key}
                                     type="button"
                                     aria-pressed={filter === opt.key}
                                     onClick={() => setFilter(opt.key)}
-                                    className={`h-9 rounded-md px-3.5 text-[13px] transition-colors ${
+                                    className={`h-9 rounded-control px-3.5 text-[13px] transition-colors ${
                                         filter === opt.key
-                                            ? "bg-[hsl(var(--surface-hi))] font-semibold text-foreground"
-                                            : "font-medium text-muted-foreground hover:text-foreground"
+                                            ? "bg-line font-semibold text-fg"
+                                            : "font-medium text-fg-muted hover:text-fg"
                                     }`}
                                 >
                                     {opt.label}
@@ -99,12 +99,12 @@ export default function AtlasPapersView({ isDesktop, view, setView, query, setQu
                             ))}
                         </div>
 
-                        <label className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                        <label className="flex items-center gap-2 text-[13px] text-fg-muted">
                             Sort
                             <select
                                 value={sort}
                                 onChange={(e) => setSort(e.target.value as PapersSort)}
-                                className="h-9 rounded-md border border-border bg-surface px-2.5 text-[13px] text-foreground"
+                                className="h-9 rounded-control border border-line bg-surface px-2.5 text-[13px] text-fg"
                             >
                                 {SORT_OPTIONS.map((opt) => (
                                     <option key={opt.key} value={opt.key}>
@@ -117,7 +117,7 @@ export default function AtlasPapersView({ isDesktop, view, setView, query, setQu
                 </div>
 
                 {rows.length === 0 ? (
-                    <p className="py-10 text-center text-[13px] text-muted-foreground">
+                    <p className="py-10 text-center text-[13px] text-fg-muted">
                         {status === "error" ? "The paper register failed to load." : "Loading the paper register…"}
                     </p>
                 ) : (

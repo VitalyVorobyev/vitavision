@@ -31,18 +31,18 @@ export default function PeopleEraBar({ firstYear, lastYear, width = 96 }: People
                 aria-label={`Active ${firstYear}–${lastYear}`}
                 role="img"
             >
-                <line x1={0} x2={width} y1={7} y2={7} stroke="hsl(var(--border))" strokeWidth={2} />
+                <line x1={0} x2={width} y1={7} y2={7} stroke="var(--line)" strokeWidth={2} />
                 <line
                     x1={x0}
                     x2={x1}
                     y1={7}
                     y2={7}
-                    stroke="hsl(var(--foreground)/0.55)"
+                    stroke="color-mix(in oklab, var(--fg) 55%, transparent)"
                     strokeWidth={5}
                     strokeLinecap="round"
                 />
             </svg>
-            <span className="font-mono text-[11px] text-muted-foreground whitespace-nowrap">{label}</span>
+            <span className="font-mono text-[11px] text-fg-muted whitespace-nowrap">{label}</span>
         </span>
     );
 }

@@ -9,7 +9,7 @@ export const Levels = () => (
 );
 
 export const InArticleMeta = () => (
-    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+    <div className="flex items-center gap-3 text-xs text-fg-muted">
         <span>Corner Detection with the Harris Response</span>
         <span aria-hidden="true">·</span>
         <DifficultyBadge level="intermediate" />
@@ -19,11 +19,11 @@ export const InArticleMeta = () => (
 export const AlgorithmCardRow = () => (
     <div className="space-y-2">
         <div className="flex items-center justify-between gap-4 text-sm">
-            <span className="font-medium text-foreground">Zhang's Planar Calibration</span>
+            <span className="font-medium text-fg">Zhang's Planar Calibration</span>
             <DifficultyBadge level="beginner" />
         </div>
         <div className="flex items-center justify-between gap-4 text-sm">
-            <span className="font-medium text-foreground">Hand-Eye Calibration (Tsai-Lenz)</span>
+            <span className="font-medium text-fg">Hand-Eye Calibration (Tsai-Lenz)</span>
             <DifficultyBadge level="advanced" />
         </div>
     </div>

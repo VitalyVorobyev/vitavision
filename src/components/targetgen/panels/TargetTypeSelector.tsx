@@ -95,7 +95,7 @@ export default function TargetTypeSelector({
 
     return (
         <div className="flex flex-col gap-2 p-3">
-            <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70 px-1">
+            <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted/70 px-1">
                 Target Type
             </h2>
             <div className={layout === "grid" ? "grid grid-cols-2 gap-2" : "flex flex-col gap-2"}>
@@ -105,23 +105,23 @@ export default function TargetTypeSelector({
                         onClick={() =>
                             dispatch({ type: "SET_TARGET_TYPE", targetType: t.id })
                         }
-                        className={`flex min-h-[7.25rem] flex-col items-center justify-center gap-1.5 rounded-lg border p-3 text-center transition-colors ${
+                        className={`flex min-h-[7.25rem] flex-col items-center justify-center gap-1.5 rounded-control border p-3 text-center transition-colors ${
                             selected === t.id
-                                ? "border-primary bg-primary/5 text-foreground"
-                                : "border-border bg-background hover:border-muted-foreground/40 text-muted-foreground"
+                                ? "border-signal bg-signal/5 text-fg"
+                                : "border-line bg-ground hover:border-fg-muted/40 text-fg-muted"
                         }`}
                     >
                         <span
                             className={
                                 selected === t.id
-                                    ? "text-primary"
-                                    : "text-muted-foreground"
+                                    ? "text-signal"
+                                    : "text-fg-muted"
                             }
                         >
                             {t.icon}
                         </span>
                         <span className="text-xs font-medium">{t.label}</span>
-                        <span className="text-[10px] leading-tight text-muted-foreground">
+                        <span className="text-[10px] leading-tight text-fg-muted">
                             {t.description}
                         </span>
                     </button>
@@ -130,7 +130,7 @@ export default function TargetTypeSelector({
 
             {showPresets && (
                 <div className="mt-2">
-                    <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70 px-1 mb-1.5">
+                    <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted/70 px-1 mb-1.5">
                         Presets
                     </h2>
                     <select
@@ -145,7 +145,7 @@ export default function TargetTypeSelector({
                                 });
                             }
                         }}
-                        className="w-full rounded-md border border-border bg-background px-3 py-1.5 text-sm transition-colors hover:border-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50"
+                        className="w-full rounded-control border border-line bg-ground px-3 py-1.5 text-sm transition-colors hover:border-fg-muted/40 focus:outline-none focus:ring-2 focus:ring-signal/20 focus:border-signal/50"
                     >
                         <option value="" disabled>
                             Choose a preset...
@@ -156,7 +156,7 @@ export default function TargetTypeSelector({
                             </option>
                         ))}
                     </select>
-                    <p className="text-[10px] text-muted-foreground/60 mt-1 px-1">
+                    <p className="text-[10px] text-fg-muted/60 mt-1 px-1">
                         Select a preset to auto-fill config
                     </p>
                 </div>
@@ -165,7 +165,7 @@ export default function TargetTypeSelector({
             {/* Import config */}
             <button
                 onClick={() => fileRef.current?.click()}
-                className="flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-muted-foreground/40 hover:bg-muted mt-1"
+                className="flex items-center justify-center gap-1.5 rounded-control border border-line px-3 py-1.5 text-xs font-medium transition-colors hover:border-fg-muted/40 hover:bg-raised mt-1"
             >
                 <Upload size={14} />
                 Import Config

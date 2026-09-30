@@ -110,7 +110,7 @@ export default function CharucoGenConfig({ config, dispatch }: Props) {
                 tooltip="White square inside black squares (0 = off). For laser calibration targets."
             />
         </Section>
-        <p className="text-[11px] text-muted-foreground mt-2">
+        <p className="text-[11px] text-fg-muted mt-2">
             Board layout is compatible with OpenCV ChArUco conventions.
         </p>
         </>

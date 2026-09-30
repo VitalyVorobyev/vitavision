@@ -9,17 +9,17 @@ const TOP_SHOWN = 8;
 
 function CoauthorRow({ row }: { row: CoAuthorRow }) {
     return (
-        <div className="grid grid-cols-1 gap-1.5 border-t border-border py-2.5 first:border-t-0 sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-4">
+        <div className="grid grid-cols-1 gap-1.5 border-t border-line py-2.5 first:border-t-0 sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-4">
             <Link to={`/authors/${row.id}`} className="flex flex-col gap-0.5 no-underline">
-                <span className="text-[14.5px] font-semibold text-foreground">{row.name}</span>
-                <span className="font-mono text-[11px] text-muted-foreground">
+                <span className="text-[14.5px] font-semibold text-fg">{row.name}</span>
+                <span className="font-mono text-[11px] text-fg-muted">
                     {row.shared} shared paper{row.shared === 1 ? "" : "s"}
                 </span>
             </Link>
             <div className="flex flex-wrap gap-x-3 gap-y-1 text-[13.5px]">
                 {row.sharedPapers.map((p) => (
-                    <Link key={p.id} to={`/papers/${p.id}`} className="font-serif text-foreground/85 no-underline hover:text-foreground">
-                        {p.title} <span className="font-mono text-[11px] text-muted-foreground">{p.year}</span>
+                    <Link key={p.id} to={`/papers/${p.id}`} className="font-serif text-fg/85 no-underline hover:text-fg">
+                        {p.title} <span className="font-mono text-[11px] text-fg-muted">{p.year}</span>
                     </Link>
                 ))}
             </div>
@@ -47,15 +47,15 @@ export default function AuthorCoauthors({ subjectId, subjectName, coAuthors, row
     return (
         <section className="grid grid-cols-1 gap-8 lg:grid-cols-[380px_minmax(0,1fr)] lg:items-start lg:gap-10">
             <div className="flex flex-col gap-2.5">
-                <h2 className="m-0 text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <h2 className="m-0 text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-fg-muted">
                     Co-authors · {rows.length}
                 </h2>
-                <div className="flex justify-center rounded-lg border border-border bg-surface p-2">
+                <div className="flex justify-center rounded-panel border border-line bg-surface p-2">
                     <CoauthorEgoGraph subjectName={subjectName} coAuthors={coAuthors} />
                 </div>
                 <Link
                     to={`/atlas?view=people&mode=network&person=${subjectId}`}
-                    className="flex items-center gap-1.5 text-[13px] font-medium text-foreground no-underline hover:text-primary"
+                    className="flex items-center gap-1.5 text-[13px] font-medium text-fg no-underline hover:text-signal"
                 >
                     Open in the people network
                     <ArrowRight size={14} aria-hidden="true" />
@@ -70,7 +70,7 @@ export default function AuthorCoauthors({ subjectId, subjectName, coAuthors, row
                     <button
                         type="button"
                         onClick={() => setExpanded(true)}
-                        className="flex h-11 items-center gap-1.5 border-t border-border text-[13px] font-medium text-foreground"
+                        className="flex h-11 items-center gap-1.5 border-t border-line text-[13px] font-medium text-fg"
                     >
                         All {rows.length} co-authors
                         <ArrowRight size={14} aria-hidden="true" />

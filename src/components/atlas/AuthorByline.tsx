@@ -37,7 +37,7 @@ export default function AuthorByline({ paperId, authors, linkClassName = "" }: A
                         {id ? (
                             <Link
                                 to={`/authors/${id}`}
-                                className={`hover:text-foreground hover:underline underline-offset-2 transition-colors ${linkClassName}`}
+                                className={`hover:text-fg hover:underline underline-offset-2 transition-colors ${linkClassName}`}
                             >
                                 {seg.lastName}
                             </Link>

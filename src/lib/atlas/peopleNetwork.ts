@@ -354,7 +354,7 @@ export interface PlacedLabel {
 type Box = [number, number, number, number];
 
 // Per-character width as a multiple of font size — a deliberately generous
-// estimate (real Inter glyphs average narrower) since this only feeds
+// estimate (real IBM Plex Sans glyphs average narrower) since this only feeds
 // collision math: overestimating wastes a little placement margin,
 // underestimating lets two labels render close enough to visually touch.
 const CHAR_WIDTH_FACTOR = 0.62;

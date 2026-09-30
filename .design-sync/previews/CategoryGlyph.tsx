@@ -1,6 +1,6 @@
 import { CategoryGlyph } from 'vitcv';
 
-const TILE = "w-16 h-16 rounded-lg border border-border overflow-hidden";
+const TILE = "w-16 h-16 rounded-panel border border-line overflow-hidden";
 
 export const CoreDomains = () => (
     <div className="flex gap-4">
@@ -14,7 +14,7 @@ export const CoreDomains = () => (
                 <div className={TILE}>
                     <CategoryGlyph domain={domain} />
                 </div>
-                <span className="text-[11px] text-muted-foreground font-mono">{label}</span>
+                <span className="text-[11px] text-fg-muted font-mono">{label}</span>
             </div>
         ))}
     </div>
@@ -32,7 +32,7 @@ export const RemainingDomains = () => (
                 <div className={TILE}>
                     <CategoryGlyph domain={domain} />
                 </div>
-                <span className="text-[11px] text-muted-foreground font-mono">{label}</span>
+                <span className="text-[11px] text-fg-muted font-mono">{label}</span>
             </div>
         ))}
     </div>
@@ -43,6 +43,6 @@ export const UndefinedDomain = () => (
         <div className={TILE}>
             <CategoryGlyph domain={undefined} />
         </div>
-        <span className="text-[11px] text-muted-foreground font-mono">No domain (ƒ fallback)</span>
+        <span className="text-[11px] text-fg-muted font-mono">No domain (ƒ fallback)</span>
     </div>
 );

@@ -37,13 +37,13 @@ function AlgorithmPicker({ value, onChange }: { value: string; onChange: (id: st
             <select
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-8 text-xs font-medium text-foreground transition-colors hover:bg-muted/60 focus:outline-none focus:ring-1 focus:ring-primary/40"
+                className="w-full appearance-none rounded-control border border-line bg-ground px-3 py-2 pr-8 text-xs font-medium text-fg transition-colors hover:bg-raised/60 focus:outline-none focus:ring-1 focus:ring-signal/40"
             >
                 {ALGORITHM_MANIFEST.map((algo) => (
                     <option key={algo.id} value={algo.id}>{algo.title}</option>
                 ))}
             </select>
-            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
+            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-fg-muted" />
         </div>
     );
 }
@@ -208,8 +208,8 @@ export default function ConfigurePanel() {
         <>
             {/* Section 1: No-image hint OR sample context card */}
             {imageSrc === null ? (
-                <div className="rounded-lg border border-dashed border-border/80 bg-background/40 p-4 text-center">
-                    <p className="text-xs text-muted-foreground leading-relaxed">
+                <div className="rounded-panel border border-dashed border-line/80 bg-ground/40 p-4 text-center">
+                    <p className="text-xs text-fg-muted leading-relaxed">
                         Open an image from the gallery to get started.
                     </p>
                 </div>
@@ -223,14 +223,14 @@ export default function ConfigurePanel() {
             {/* Section 2: Algorithm selector */}
             <RailSection label="Algorithm">
                 <AlgorithmPicker value={selectedAlgorithmId} onChange={handleSelectAlgorithm} />
-                <p className="text-xs text-muted-foreground leading-relaxed px-0.5">
+                <p className="text-xs text-fg-muted leading-relaxed px-0.5">
                     {manifestEntry.description}
                     {manifestEntry.blogSlug && (
                         <>
                             {" "}
                             <Link
                                 to={`/blog/${manifestEntry.blogSlug}`}
-                                className="text-primary underline hover:text-primary/80"
+                                className="text-signal underline hover:text-signal/80"
                             >
                                 Learn more
                             </Link>
@@ -256,7 +256,7 @@ export default function ConfigurePanel() {
                     <button
                         type="button"
                         onClick={() => setConfigModalOpen(true)}
-                        className="text-muted-foreground/50 hover:text-foreground transition-colors"
+                        className="text-fg-muted/50 hover:text-fg transition-colors"
                         title="Expand configuration"
                         disabled={algorithm === null}
                     >
@@ -271,7 +271,7 @@ export default function ConfigurePanel() {
                         disabled={runner.isRunning}
                     />
                 ) : (
-                    <p className="text-xs text-muted-foreground/60 animate-pulse">Loading…</p>
+                    <p className="text-xs text-fg-muted/60 animate-pulse">Loading…</p>
                 )}
             </RailSection>
 
@@ -314,7 +314,7 @@ function PresetPicker({
                     type="button"
                     onClick={() => onSelect(preset.config)}
                     title={preset.description}
-                    className="text-[11px] px-2.5 py-1 rounded-full border border-border bg-background text-foreground hover:bg-primary/10 hover:border-primary/40 hover:text-primary transition-colors"
+                    className="text-[11px] px-2.5 py-1 rounded-full border border-line bg-ground text-fg hover:bg-signal/10 hover:border-signal/40 hover:text-signal transition-colors"
                 >
                     {preset.label}
                 </button>
@@ -335,28 +335,28 @@ function HintCardInner({
     if (dismissed) return null;
 
     return (
-        <div className="rounded-lg border border-border bg-background p-3 space-y-2">
+        <div className="rounded-panel border border-line bg-ground p-3 space-y-2">
             <div className="flex items-start justify-between gap-2">
-                <p className="text-xs font-semibold text-foreground leading-tight">
+                <p className="text-xs font-semibold text-fg leading-tight">
                     {image.name}
                 </p>
                 <button
                     type="button"
                     onClick={() => setDismissed(true)}
-                    className="text-muted-foreground/50 hover:text-foreground transition-colors shrink-0 -mt-0.5 -mr-0.5 p-0.5"
+                    className="text-fg-muted/50 hover:text-fg transition-colors shrink-0 -mt-0.5 -mr-0.5 p-0.5"
                     title="Dismiss"
                 >
                     <X size={14} />
                 </button>
             </div>
             {image.description && (
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-xs text-fg-muted leading-relaxed">
                     {image.description}
                 </p>
             )}
             {(image.recommendedAlgorithms?.length ?? 0) > 0 && (
                 <div className="flex flex-wrap gap-1 pt-0.5">
-                    <span className="text-[10px] text-muted-foreground self-center">Try:</span>
+                    <span className="text-[10px] text-fg-muted self-center">Try:</span>
                     {image.recommendedAlgorithms!.map((name) => {
                         const match = ALGORITHM_MANIFEST.find((a) => a.title === name);
                         return (
@@ -364,7 +364,7 @@ function HintCardInner({
                                 key={name}
                                 type="button"
                                 onClick={() => match && onSelectAlgorithm(match.id)}
-                                className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors"
+                                className="text-[11px] px-2 py-0.5 rounded-full bg-signal/10 text-signal font-medium hover:bg-signal/20 transition-colors"
                             >
                                 {name}
                             </button>
@@ -399,7 +399,7 @@ function RunSection({
                 type="button"
                 onClick={onRun}
                 disabled={!canRun}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:bg-primary/90 transition-colors shadow-sm"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-control bg-signal text-signal-fg px-4 py-2.5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:bg-signal/90 transition-colors shadow-sm"
             >
                 {runner.isRunning
                     ? <LoaderCircle size={14} className="animate-spin" />
@@ -409,39 +409,39 @@ function RunSection({
             </button>
 
             {runner.isRunning && (
-                <p className="text-[11px] text-center text-muted-foreground">
+                <p className="text-[11px] text-center text-fg-muted">
                     {stageLabel(runner.stage)}
                 </p>
             )}
 
             {!canRun && !runner.isRunning && (
-                <p className="text-[10px] text-center text-muted-foreground/50">Load an image to run</p>
+                <p className="text-[10px] text-center text-fg-muted/50">Load an image to run</p>
             )}
 
             {!runner.isRunning && canRun && (
-                <p className="text-[10px] text-center text-muted-foreground/50">
+                <p className="text-[10px] text-center text-fg-muted/50">
                     Client-side (WASM)
                 </p>
             )}
 
             {runner.error && (
-                <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
-                    <AlertCircle size={13} className="text-destructive shrink-0 mt-0.5" />
-                    <p className="text-xs text-destructive leading-relaxed">{runner.error}</p>
+                <div className="flex items-start gap-2 rounded-panel border border-defect/30 bg-defect/5 px-3 py-2">
+                    <AlertCircle size={13} className="text-defect shrink-0 mt-0.5" />
+                    <p className="text-xs text-defect leading-relaxed">{runner.error}</p>
                 </div>
             )}
 
             {runner.summary.length > 0 && (
                 <div className="space-y-1.5">
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted/60">
                         Last Run
                     </span>
-                    <div className="rounded-lg border border-border/80 bg-background/60 px-4 py-3">
+                    <div className="rounded-panel border border-line/80 bg-ground/60 px-4 py-3">
                         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5">
                             {runner.summary.map((entry) => (
                                 <div key={entry.label} className="flex items-baseline gap-1.5">
-                                    <span className="text-[11px] text-muted-foreground">{entry.label}</span>
-                                    <span className="text-sm font-semibold text-foreground tabular-nums">{entry.value}</span>
+                                    <span className="text-[11px] text-fg-muted">{entry.label}</span>
+                                    <span className="text-sm font-semibold text-fg tabular-nums">{entry.value}</span>
                                 </div>
                             ))}
                         </div>

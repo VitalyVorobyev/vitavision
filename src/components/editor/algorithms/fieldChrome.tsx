@@ -40,10 +40,10 @@ export function InfoTooltip({ text }: { text: string }) {
             onMouseLeave={() => setOpen(false)}
             onClick={show}
         >
-            <Info size={12} className="cursor-help text-muted-foreground/50 hover:text-muted-foreground" />
+            <Info size={12} className="cursor-help text-fg-muted/50 hover:text-fg-muted" />
             {open && (
                 <div
-                    className="fixed z-[100] w-56 rounded-md border border-border bg-surface p-2 text-[11px] leading-relaxed text-foreground shadow-lg pointer-events-none"
+                    className="fixed z-[100] w-56 rounded-control border border-line bg-surface p-2 text-[11px] leading-relaxed text-fg shadow-lg pointer-events-none"
                     style={pos}
                 >
                     {text}
@@ -57,7 +57,7 @@ export function InfoTooltip({ text }: { text: string }) {
 
 export function FieldLabel({ label, tooltip }: { label: string; tooltip?: string }) {
     return (
-        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1 text-xs text-fg-muted">
             {label}
             {tooltip && <InfoTooltip text={tooltip} />}
         </span>

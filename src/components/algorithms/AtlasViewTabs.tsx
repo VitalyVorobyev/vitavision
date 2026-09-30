@@ -42,7 +42,7 @@ export default function AtlasViewTabs({ view, onChange, compact = false }: Atlas
         <div
             role="tablist"
             aria-label="Atlas views"
-            className={`inline-flex gap-0.5 rounded-lg border border-border bg-surface p-[3px] ${compact ? "w-full" : ""}`}
+            className={`inline-flex gap-0.5 rounded-control border border-line bg-surface p-[3px] ${compact ? "w-full" : ""}`}
         >
             {TABS.map(({ key, label, Icon }) => {
                 const active = key === "grid" ? isCatalog(view) : view === key;
@@ -54,12 +54,12 @@ export default function AtlasViewTabs({ view, onChange, compact = false }: Atlas
                         aria-selected={active}
                         aria-current={active ? "page" : undefined}
                         onClick={() => handleSelect(key)}
-                        className={`flex h-11 items-center justify-center rounded-md text-[13px] font-medium transition-colors ${
+                        className={`flex h-11 items-center justify-center rounded-control text-[13px] font-medium transition-colors ${
                             compact ? "flex-1 flex-col gap-0.5 text-[10.5px]" : "gap-1.5 px-3.5"
                         } ${
                             active
-                                ? "bg-[hsl(var(--surface-hi))] font-semibold text-foreground"
-                                : "text-muted-foreground hover:text-foreground"
+                                ? "bg-line font-semibold text-fg"
+                                : "text-fg-muted hover:text-fg"
                         }`}
                     >
                         <Icon size={compact ? 17 : 15} aria-hidden="true" />

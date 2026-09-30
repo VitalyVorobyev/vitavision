@@ -20,7 +20,7 @@ interface PaperAtlasImpactProps {
 }
 
 function labelSectionClass() {
-    return "text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-muted-foreground m-0";
+    return "text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-fg-muted m-0";
 }
 
 function DomainChips({ entries }: { entries: { slug: string; title: string; kind: ScholarlyPageMeta["kind"] }[] }) {
@@ -30,7 +30,7 @@ function DomainChips({ entries }: { entries: { slug: string; title: string; kind
                 <Link
                     key={entry.slug}
                     to={`/atlas/${entry.slug}`}
-                    className="inline-flex h-[26px] min-h-[26px] items-center gap-1.5 rounded border border-border bg-surface px-2.5 text-[13px] font-medium text-foreground no-underline transition-colors hover:border-border-strong"
+                    className="inline-flex h-[26px] min-h-[26px] items-center gap-1.5 rounded border border-line bg-surface px-2.5 text-[13px] font-medium text-fg no-underline transition-colors hover:border-line-strong"
                 >
                     <KindDot kind={entry.kind} />
                     {entry.title}
@@ -49,7 +49,7 @@ export default function PaperAtlasImpact({ primaryPages, citingPages, pages, isD
             <h2 className={labelSectionClass()}>In the Atlas</h2>
 
             {isEmpty && (
-                <p className="m-0 text-[13.5px] text-muted-foreground">
+                <p className="m-0 text-[13.5px] text-fg-muted">
                     No Atlas page is built on this paper yet.
                 </p>
             )}
@@ -61,20 +61,20 @@ export default function PaperAtlasImpact({ primaryPages, citingPages, pages, isD
                     <Link
                         key={slug}
                         to={`/atlas/${slug}`}
-                        className="flex flex-col gap-2 rounded-lg border border-[hsl(var(--graph-icon-border-model)/0.6)] bg-surface px-5 py-[18px] no-underline transition-colors hover:border-[hsl(var(--graph-icon-border-model))]"
+                        className="flex flex-col gap-2 rounded-panel border border-graph-icon-border-model/60 bg-surface px-5 py-[18px] no-underline transition-colors hover:border-graph-icon-border-model"
                     >
                         <div className="flex items-center gap-2.5">
                             <KindBadge kind={asBadgeKind(node.type)} />
-                            <span className="text-[10px] font-mono font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            <span className="text-[10px] font-mono font-semibold uppercase tracking-[0.14em] text-fg-muted">
                                 Primary source of
                             </span>
                         </div>
                         <div className="flex items-center justify-between gap-3">
-                            <span className="text-[20px] font-bold text-foreground">{node.title}</span>
-                            <ArrowRight size={14} className="shrink-0 text-primary" aria-hidden="true" />
+                            <span className="text-[20px] font-bold text-fg">{node.title}</span>
+                            <ArrowRight size={14} className="shrink-0 text-signal" aria-hidden="true" />
                         </div>
                         {node.summary && (
-                            <p className="m-0 text-[14px] leading-[1.5] text-foreground/85">
+                            <p className="m-0 text-[14px] leading-[1.5] text-fg/85">
                                 {firstSentence(node.summary)}
                             </p>
                         )}
@@ -84,7 +84,7 @@ export default function PaperAtlasImpact({ primaryPages, citingPages, pages, isD
 
             {groups.length > 0 && (
                 <div className="flex flex-col gap-3 pt-1.5">
-                    <p className="m-0 text-[14px] text-foreground">
+                    <p className="m-0 text-[14px] text-fg">
                         <strong className="font-semibold">
                             Cited as a reference by {citingPages.length} page{citingPages.length === 1 ? "" : "s"}
                         </strong>
@@ -97,9 +97,9 @@ export default function PaperAtlasImpact({ primaryPages, citingPages, pages, isD
                                   key={group.domain}
                                   className="grid grid-cols-[150px_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[170px_minmax(0,1fr)]"
                               >
-                                  <span className="pt-1 text-[13px] font-semibold text-foreground">
+                                  <span className="pt-1 text-[13px] font-semibold text-fg">
                                       {group.label}{" "}
-                                      <span className="font-mono font-normal text-muted-foreground">
+                                      <span className="font-mono font-normal text-fg-muted">
                                           {group.entries.length}
                                       </span>
                                   </span>
@@ -110,11 +110,11 @@ export default function PaperAtlasImpact({ primaryPages, citingPages, pages, isD
                               <details
                                   key={group.domain}
                                   open={i === 0}
-                                  className="rounded-lg border border-border bg-surface px-3.5"
+                                  className="rounded-panel border border-line bg-surface px-3.5"
                               >
-                                  <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between text-[14.5px] font-semibold text-foreground">
+                                  <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between text-[14.5px] font-semibold text-fg">
                                       {group.label}
-                                      <span className="font-mono text-[12px] font-normal text-muted-foreground">
+                                      <span className="font-mono text-[12px] font-normal text-fg-muted">
                                           {group.entries.length} page{group.entries.length === 1 ? "" : "s"}
                                       </span>
                                   </summary>

@@ -22,8 +22,8 @@ export function Section(props: SectionProps) {
     const { title, children, columns } = props;
     const controlMode = useFormControlMode();
     return (
-        <section className="space-y-2.5 rounded-xl border border-border/70 bg-background/60 p-3">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">
+        <section className="space-y-2.5 rounded-xl border border-line/70 bg-ground/60 p-3">
+            <h3 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted/70">
                 {title}
             </h3>
             <div className={getSectionGridClass(columns, controlMode)}>
@@ -46,17 +46,17 @@ export function CollapsibleSection(props: CollapsibleSectionProps) {
     const controlMode = useFormControlMode();
 
     return (
-        <section className="overflow-hidden rounded-xl border border-border/70 bg-background/60">
+        <section className="overflow-hidden rounded-xl border border-line/70 bg-ground/60">
             <button
                 type="button"
                 onClick={() => setOpen((value) => !value)}
-                className="flex w-full items-center gap-1.5 p-3 text-left transition-colors hover:bg-muted/30"
+                className="flex w-full items-center gap-1.5 p-3 text-left transition-colors hover:bg-raised/30"
             >
                 <ChevronRight
                     size={12}
-                    className={`text-muted-foreground/60 transition-transform duration-150 ${open ? "rotate-90" : ""}`}
+                    className={`text-fg-muted/60 transition-transform duration-150 ${open ? "rotate-90" : ""}`}
                 />
-                <h3 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">
+                <h3 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted/70">
                     {title}
                 </h3>
             </button>

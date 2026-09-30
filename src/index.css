@@ -1,171 +1,47 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+/* The vitavision design system (@vitavision/ui): the semantic colour tokens
+   (ground/surface/raised/overlay, line, fg, signal, the verdicts), the sans and mono families,
+   the radii (`rounded-control`, `rounded-panel`) and the `dark` variant. The stylesheet
+   declares its own `@source`, so the package's class names are found without one here.
+   Its fonts (`@vitavision/ui/fonts.css`, IBM Plex) are imported from main.tsx instead: see
+   the note there. */
+@import "@vitavision/ui/styles.css";
+/* What ui has no name for: the article reading colours and the editorial category palettes. */
+@import "./styles/editorial-tokens.css";
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-surface: hsl(var(--surface));
+  /* Editorial body text only (lab-ui visual-language §7): the sans and mono families are
+     ui's `--font-sans` / `--font-mono`. */
+  --font-serif: "Source Serif 4 Variable", Georgia, serif;
+}
 
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
+@theme inline {
+  /* The brand mark's cyan (logo pupil, wordmark dot): identity, not an accent. */
+  --color-brand-mark: var(--vv-brand-mark);
 
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-article-body: var(--article-body);
+  --color-article-heading: var(--article-heading);
+  --color-article-link: var(--article-link);
 
-  --color-border: hsl(var(--border));
-  --color-border-strong: hsl(var(--border-strong));
+  --color-lineage-out: var(--lineage-out);
+  --color-lineage-in: var(--lineage-in);
 
-  --color-accent: hsl(var(--accent));
-  --color-accent-soft: hsl(var(--accent-soft));
-  --color-accent-2: hsl(var(--accent-2));
-
-  --color-brand: hsl(var(--brand));
-
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-
-  --color-bg-soft:    hsl(var(--bg-soft));
-  --color-surface-hi: hsl(var(--surface-hi));
-
-  --font-sans: Inter, system-ui, sans-serif;
-  --font-serif: 'Source Serif 4 Variable', Georgia, serif;
-  --font-mono: Geist Mono, ui-monospace, monospace;
-  
-  /* Precision Radius: Sharp corners feel more engineered */
-  --radius-lg: 0.375rem; 
-  --radius-md: 0.25rem;
-  --radius-sm: 0.125rem;
+  --color-graph-icon-tint-algorithm: var(--graph-icon-tint-algorithm);
+  --color-graph-icon-tint-model: var(--graph-icon-tint-model);
+  --color-graph-icon-tint-concept: var(--graph-icon-tint-concept);
+  --color-graph-icon-bg-algorithm: var(--graph-icon-bg-algorithm);
+  --color-graph-icon-bg-model: var(--graph-icon-bg-model);
+  --color-graph-icon-bg-concept: var(--graph-icon-bg-concept);
+  --color-graph-icon-border-algorithm: var(--graph-icon-border-algorithm);
+  --color-graph-icon-border-model: var(--graph-icon-border-model);
+  --color-graph-icon-border-concept: var(--graph-icon-border-concept);
 }
 
 @layer base {
+  /* A bare `border` draws a hairline, not Tailwind's `currentColor`. */
   *, ::after, ::before, ::backdrop, ::file-selector-button {
-    border-color: var(--color-border);
-  }
-
-  :root {
-    /* LIGHT MODE: "The Technical Journal" */
-    --background:        210 40% 98%;   /* Soft Paper White */
-    --surface:           0 0% 100%;    /* Pure White */
-    --foreground:        215 25% 27%;   /* Deep Ink Blue-Grey */
-    --muted:             210 40% 96%;
-    --muted-foreground:  215 16% 47%;   /* Slate Grey */
-    --border:            214 32% 91%;   /* Subtle Blueprint Lines */
-    --border-strong:     214 32% 80%;  /* kbd outlines, stronger contrast */
-    --accent:            215 19% 35%;   /* Blueprint Blue */
-    --accent-soft:       214 32% 91%;
-    --accent-2:          215 19% 35%;
-    --primary:           215 19% 35%;
-    --primary-foreground: 210 40% 98%;
-
-    /* Destructive — errors, delete actions */
-    --destructive:            0 72% 45%;
-    --destructive-foreground: 0 0% 100%;
-
-    /* Brand accent — logo pupil */
-    --brand:             191 75% 55%;
-
-    /* Layered surface tokens */
-    --bg-soft:           210 40% 96%;   /* between --background and --muted */
-    --surface-hi:        214 32% 91%;   /* matches --border for a subtle "raised" feel */
-
-    /* Slightly elevated surface (used by HorizonViz and pose chrome) */
-    --surface-2:         214 32% 95%;
-
-    /* Article reading tokens */
-    --article-body:      215 25% 22%;
-    --article-heading:   215 30% 12%;
-    --article-link:      215 70% 38%;
-
-    /* Atlas graph view */
-    --graph-canvas-from:           0 0% 100%;
-    --graph-canvas-mid:            210 40% 98%;
-    --graph-canvas-to:             214 32% 95%;
-    --graph-pill-bg:               0 0% 100%;
-    --graph-rel-prereq:            215 25% 45%;
-    --graph-rel-extend:            215 19% 32%;
-    --graph-rel-compare:           215 16% 55%;
-    --graph-rel-flow:              215 25% 45%;
-    --graph-rel-learn:             191 55% 32%;
-    --graph-icon-tint-algorithm:   191 55% 32%;
-    --graph-icon-tint-model:       263 42% 48%;
-    --graph-icon-tint-concept:     32 60% 38%;
-    --graph-icon-bg-algorithm:     191 50% 95%;
-    --graph-icon-bg-model:         263 55% 96%;
-    --graph-icon-bg-concept:       40 80% 94%;
-    --graph-icon-border-algorithm: 191 40% 84%;
-    --graph-icon-border-model:     263 40% 88%;
-    --graph-icon-border-concept:   38 60% 82%;
-    --graph-kind-accent-algorithm: 191 70% 44%;
-    --graph-kind-accent-model:     263 60% 60%;
-    --graph-kind-accent-concept:   36 78% 48%;
-
-    /* Paper-page lineage strip: built-upon-by (filled, above axis) vs builds-on (hollow, below axis) */
-    --lineage-out:                 214 58% 47%;   /* blue */
-    --lineage-in:                  215 15% 35%;   /* slate */
-  }
-
-  .dark {
-    /* DARK MODE: "The Observatory" */
-    --background:        222 47% 11%;   /* Deep Midnight Slate */
-    --surface:           217 33% 17%;   /* Dark Slate Surface */
-    --foreground:        210 40% 96%;   /* Soft Silver Text */
-    --muted:             217 33% 17%;
-    --muted-foreground:  215 20% 65%;   /* Muted Slate */
-    --border:            215 25% 27%;   /* Subtle Depth Borders */
-    --border-strong:     222 18% 28%;  /* kbd outlines, stronger contrast */
-    --accent:            215 20% 65%;   /* Steel Blue Accent */
-    --accent-soft:       217 33% 17%;
-    --accent-2:          215 20% 65%;
-    --primary:           215 20% 65%;
-    --primary-foreground: 222 47% 11%;
-
-    /* Destructive — errors, delete actions */
-    --destructive:            0 70% 65%;
-    --destructive-foreground: 222 47% 11%;
-
-    /* Brand accent — logo pupil */
-    --brand:             191 75% 55%;
-
-    /* Layered surface tokens */
-    --bg-soft:           222 40% 13%;   /* between --background and --surface */
-    --surface-hi:        217 33% 21%;   /* one step brighter than --surface */
-
-    /* Slightly elevated surface (used by HorizonViz and pose chrome) */
-    --surface-2:         222 22% 14%;
-
-    /* Article reading tokens */
-    --article-body:      210 30% 83%;
-    --article-heading:   210 20% 95%;
-    --article-link:      205 70% 68%;
-
-    /* Atlas graph view */
-    --graph-canvas-from:           222 47% 13%;
-    --graph-canvas-mid:            222 40% 11%;
-    --graph-canvas-to:             222 30% 9%;
-    --graph-pill-bg:               217 33% 17%;
-    --graph-rel-prereq:            215 30% 72%;
-    --graph-rel-extend:            215 25% 70%;
-    --graph-rel-compare:           215 18% 62%;
-    --graph-rel-flow:              215 30% 72%;
-    --graph-rel-learn:             191 60% 62%;
-    --graph-icon-tint-algorithm:   191 55% 68%;
-    --graph-icon-tint-model:       263 60% 76%;
-    --graph-icon-tint-concept:     38 70% 62%;
-    --graph-icon-bg-algorithm:     191 38% 20%;
-    --graph-icon-bg-model:         263 32% 24%;
-    --graph-icon-bg-concept:       34 32% 21%;
-    --graph-icon-border-algorithm: 191 32% 34%;
-    --graph-icon-border-model:     263 28% 38%;
-    --graph-icon-border-concept:   36 30% 36%;
-    --graph-kind-accent-algorithm: 191 65% 52%;
-    --graph-kind-accent-model:     263 65% 70%;
-    --graph-kind-accent-concept:   38 78% 56%;
-
-    /* Paper-page lineage strip: built-upon-by (filled, above axis) vs builds-on (hollow, below axis) */
-    --lineage-out:                 213 70% 68%;   /* lighter blue for dark surfaces */
-    --lineage-in:                  215 20% 62%;   /* lighter slate */
+    border-color: var(--line);
   }
 
   html, body {
@@ -175,7 +51,8 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    background-color: var(--ground);
+    color: var(--fg);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -185,20 +62,45 @@
     letter-spacing: -0.02em;
   }
 
-  /* Refined Selection to match the blueprint aesthetic */
+  /*
+   * Editorial text keeps Source Serif's own figures. ui sets `tabular-nums` on <body> for
+   * readouts and tables; in running serif prose that spaces every digit to one width. The
+   * font's default is restored on the prose containers and any serif run, and inherited
+   * from there — `code`/`pre` inside keep ui's own tabular, slashed-zero rule.
+   */
+  .prose,
+  .font-serif {
+    font-variant-numeric: normal;
+  }
+
   ::selection {
-    background-color: hsl(var(--primary) / 0.15);
-    color: hsl(var(--foreground));
+    background-color: color-mix(in oklab, var(--signal) 15%, transparent);
+    color: var(--fg);
   }
 
   /* Mermaid diagram containers */
   .mermaid-diagram {
-    @apply my-8 rounded-md border border-border bg-surface p-4 overflow-x-auto;
+    @apply my-8 rounded-control border border-line bg-surface p-4 overflow-x-auto;
   }
 
   .mermaid-diagram svg {
     max-width: 100%;
     height: auto;
+  }
+
+  /*
+   * ui's reduced-motion rule gives every element `transition-duration: 0.01ms`, and with the
+   * initial `transition-property: all` that makes each style change land a frame later.
+   * Mermaid styles its labels and measures them in the same tick, so under reduced motion it
+   * laid a flowchart out from stale sizes (a 2146x2079 box for a 1508x201 diagram). Its
+   * render container (`d<id>`) and the diagram (`<id>`) take their changes at once again.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    [id^="dmermaid-"] *,
+    [id^="mermaid-"],
+    [id^="mermaid-"] * {
+      transition-duration: 0s !important;
+    }
   }
 
   .number-field-input {

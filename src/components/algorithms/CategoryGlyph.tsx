@@ -6,7 +6,7 @@ interface CategoryGlyphProps {
 
 export default function CategoryGlyph({ domain }: CategoryGlyphProps) {
     return (
-        <div className="w-full h-full bg-[linear-gradient(135deg,hsl(var(--surface)),hsl(var(--muted)))] flex items-center justify-center">
+        <div className="w-full h-full bg-[linear-gradient(135deg,var(--surface),var(--raised))] flex items-center justify-center">
             <Glyph domain={domain} />
         </div>
     );
@@ -14,7 +14,7 @@ export default function CategoryGlyph({ domain }: CategoryGlyphProps) {
 
 function Glyph({ domain }: { domain: Domain | undefined }) {
     const stroke = "currentColor";
-    const className = "text-muted-foreground/40 w-[60%] h-[60%]";
+    const className = "text-fg-muted/40 w-[60%] h-[60%]";
 
     if (domain === "features") {
         return (
@@ -74,7 +74,7 @@ function Glyph({ domain }: { domain: Domain | undefined }) {
 
     // calibration and all other domains
     return (
-        <span className="text-[clamp(1.5rem,60%,3rem)] font-serif italic text-muted-foreground/40 select-none leading-none" aria-hidden="true">
+        <span className="text-[clamp(1.5rem,60%,3rem)] font-serif italic text-fg-muted/40 select-none leading-none" aria-hidden="true">
             ƒ
         </span>
     );

@@ -11,7 +11,7 @@ import { isRecentlyAdded } from "../../lib/atlas/recency.ts";
 /** Reader-visible warning that a page is an unpublished draft. */
 export function DraftBadge() {
     return (
-        <span className="inline-block text-[9px] font-bold tracking-wider uppercase bg-[hsl(var(--border))] text-foreground px-1.5 py-px rounded-[3px] mr-1.5 align-[1px]">
+        <span className="inline-block text-[9px] font-bold tracking-wider uppercase bg-line text-fg px-1.5 py-px rounded-[3px] mr-1.5 align-[1px]">
             DRAFT
         </span>
     );
@@ -47,7 +47,7 @@ export function GraphChip({ slug }: { slug: string }) {
     return (
         <Link
             to={`/atlas?view=graph&focus=${slug}`}
-            className="relative z-[1] shrink-0 w-6 h-6 grid place-items-center rounded-md border border-border bg-surface text-muted-foreground transition-colors hover:text-brand hover:border-brand/40 hover:bg-brand/10"
+            className="relative z-[1] shrink-0 w-6 h-6 grid place-items-center rounded-control border border-line bg-surface text-fg-muted transition-colors hover:text-signal hover:border-signal/40 hover:bg-signal/10"
             title="Open in graph explorer"
             aria-label="Open in graph explorer"
             onClick={(e) => e.stopPropagation()}
@@ -74,13 +74,13 @@ export function GraphChip({ slug }: { slug: string }) {
 export function CardMeta({ kind, label, year }: { kind?: "algorithm" | "model" | "concept"; label?: string; year?: number }) {
     if (!kind && !label && year === undefined) return null;
     return (
-        <div className="flex items-center gap-1.5 mt-1 text-[10.5px] text-muted-foreground uppercase tracking-[0.06em]">
+        <div className="flex items-center gap-1.5 mt-1 text-[10.5px] text-fg-muted uppercase tracking-[0.06em]">
             {kind && (
                 <span className={KIND_TEXT_CLASSES[kind]}>{KIND_LABEL[kind]}</span>
             )}
-            {kind && (label || year !== undefined) && <span className="text-muted-foreground/60">·</span>}
+            {kind && (label || year !== undefined) && <span className="text-fg-muted/60">·</span>}
             {label && <span className="truncate">{label}</span>}
-            {label && year !== undefined && <span className="text-muted-foreground/60">·</span>}
+            {label && year !== undefined && <span className="text-fg-muted/60">·</span>}
             {year !== undefined && (
                 <span className="font-mono tabular-nums normal-case tracking-normal">{year}</span>
             )}
@@ -110,8 +110,8 @@ export function RelationLine({ slug }: { slug: string }) {
     const extra = targetSlugs.length - shown.length;
 
     return (
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground min-w-0">
-            <span className="font-mono text-muted-foreground/70 shrink-0">→</span>
+        <div className="flex items-center gap-1.5 text-[11px] text-fg-muted min-w-0">
+            <span className="font-mono text-fg-muted/70 shrink-0">→</span>
             <span className="shrink-0">{label}</span>
             <span className="flex items-center gap-1 min-w-0 overflow-hidden">
                 {shown.map((targetSlug, i) => {
@@ -120,19 +120,19 @@ export function RelationLine({ slug }: { slug: string }) {
                         <span key={targetSlug} className="flex items-center gap-1">
                             <Link
                                 to={`/atlas?view=graph&focus=${targetSlug}`}
-                                className="relative z-[1] text-foreground font-medium truncate hover:underline"
+                                className="relative z-[1] text-fg font-medium truncate hover:underline"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 {shortTitle(title)}
                             </Link>
                             {i < shown.length - 1 && (
-                                <span className="text-muted-foreground/50">·</span>
+                                <span className="text-fg-muted/50">·</span>
                             )}
                         </span>
                     );
                 })}
                 {extra > 0 && (
-                    <span className="text-muted-foreground/70 shrink-0">+{extra}</span>
+                    <span className="text-fg-muted/70 shrink-0">+{extra}</span>
                 )}
             </span>
         </div>

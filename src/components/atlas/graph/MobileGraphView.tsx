@@ -34,22 +34,22 @@ function MobileNeighborRow({ slug, onClick }: MobileNeighborRowProps) {
         <button
             type="button"
             onClick={() => onClick(slug)}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-surface border border-border rounded-lg text-left active:bg-muted relative overflow-hidden"
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-surface border border-line rounded-control text-left active:bg-raised relative overflow-hidden"
         >
             <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ background: KIND_ACCENT[kind] }} />
             <EntryIcon slug={slug} kind={kind} size={32} />
             <div className="min-w-0 flex-1">
-                <div className="text-[13.5px] font-semibold text-foreground leading-tight truncate -tracking-[0.1px]">
+                <div className="text-[13.5px] font-semibold text-fg leading-tight truncate -tracking-[0.1px]">
                     {shortTitle(node.title)}
                 </div>
-                <div className="text-[10.5px] text-muted-foreground uppercase tracking-[0.06em] truncate mt-0.5">
+                <div className="text-[10.5px] text-fg-muted uppercase tracking-[0.06em] truncate mt-0.5">
                     {rowDomainLabel ?? KIND_LABEL[kind]}
                     {year != null && (
                         <> · <span className="font-mono normal-case tracking-normal">{year}</span></>
                     )}
                 </div>
             </div>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground shrink-0">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg-muted shrink-0">
                 <polyline points="9 18 15 12 9 6" />
             </svg>
         </button>
@@ -115,62 +115,62 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
         <div className="flex flex-col min-h-0">
             {/* Trail breadcrumb */}
             {history.length > 0 && (
-                <div className="flex items-center gap-1.5 px-4 py-2 text-[11px] text-muted-foreground overflow-x-auto shrink-0 bg-bg-soft border border-border rounded-lg mb-3">
+                <div className="flex items-center gap-1.5 px-4 py-2 text-[11px] text-fg-muted overflow-x-auto shrink-0 bg-raised border border-line rounded-panel mb-3">
                     <button
                         type="button"
                         onClick={onBack}
                         disabled={history.length === 0}
                         className={`w-7 h-7 grid place-items-center rounded shrink-0 ${
                             history.length > 0
-                                ? "text-foreground active:bg-muted"
-                                : "text-muted-foreground/60"
+                                ? "text-fg active:bg-raised"
+                                : "text-fg-muted/60"
                         }`}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="15 18 9 12 15 6" />
                         </svg>
                     </button>
-                    <span className="font-mono uppercase tracking-wider text-[9px] text-muted-foreground/60 mr-1 shrink-0">Trail</span>
+                    <span className="font-mono uppercase tracking-wider text-[9px] text-fg-muted/60 mr-1 shrink-0">Trail</span>
                     {hidden > 0 && (
                         <>
-                            <span className="text-[10px] font-mono text-muted-foreground/60 whitespace-nowrap">+{hidden} earlier</span>
-                            <span className="text-muted-foreground/60">·</span>
+                            <span className="text-[10px] font-mono text-fg-muted/60 whitespace-nowrap">+{hidden} earlier</span>
+                            <span className="text-fg-muted/60">·</span>
                         </>
                     )}
                     {visible.map((s, i) => (
                         <span key={`m-${s}-${i}`} className="contents">
-                            <span className="text-foreground whitespace-nowrap">{nodeTitle(s)}</span>
-                            <span className="text-muted-foreground/60">›</span>
+                            <span className="text-fg whitespace-nowrap">{nodeTitle(s)}</span>
+                            <span className="text-fg-muted/60">›</span>
                         </span>
                     ))}
-                    <span className="text-foreground font-semibold whitespace-nowrap">{nodeTitle(current)}</span>
+                    <span className="text-fg font-semibold whitespace-nowrap">{nodeTitle(current)}</span>
                 </div>
             )}
 
             {/* Focused entry hero card */}
-            <div className="rounded-xl border-2 border-border-strong bg-surface p-4 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.18)] relative overflow-hidden">
+            <div className="rounded-xl border-2 border-line-strong bg-surface p-4 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.18)] relative overflow-hidden">
                 <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ background: KIND_ACCENT[kind] }} />
                 <div className="flex items-start gap-3">
                     <EntryIcon slug={current} kind={kind} size={44} />
                     <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 text-[9.5px] uppercase tracking-[0.12em] text-muted-foreground">
-                            <span className="text-brand font-semibold">Focused</span>
-                            <span className="text-muted-foreground/60">·</span>
+                        <div className="flex items-center gap-1.5 text-[9.5px] uppercase tracking-[0.12em] text-fg-muted">
+                            <span className="text-signal font-semibold">Focused</span>
+                            <span className="text-fg-muted/60">·</span>
                             <span>{KIND_LABEL[kind]}</span>
                             {year != null && (
-                                <><span className="text-muted-foreground/60">·</span><span className="font-mono normal-case tracking-normal">{year}</span></>
+                                <><span className="text-fg-muted/60">·</span><span className="font-mono normal-case tracking-normal">{year}</span></>
                             )}
                         </div>
-                        <div className="text-[16px] font-semibold leading-tight text-foreground -tracking-[0.2px] mt-0.5">
+                        <div className="text-[16px] font-semibold leading-tight text-fg -tracking-[0.2px] mt-0.5">
                             {node.title}
                         </div>
                     </div>
                 </div>
-                <p className="text-[12.5px] text-foreground leading-[1.5] mt-3">
+                <p className="text-[12.5px] text-fg leading-[1.5] mt-3">
                     {bodyText}
                 </p>
                 {citationText && (
-                    <div className="flex items-center gap-1.5 mt-2 text-[10.5px] text-muted-foreground">
+                    <div className="flex items-center gap-1.5 mt-2 text-[10.5px] text-fg-muted">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                             <path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z" />
                             <path d="M4 12h12" />
@@ -180,18 +180,18 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                 )}
                 {heroDomainLabel && (
                     <div className="mt-3">
-                        <div className="text-[9.5px] uppercase tracking-[0.12em] text-muted-foreground mb-1">Domain</div>
-                        <span className="inline-flex items-center rounded px-2 py-0.5 text-[11px] bg-muted text-muted-foreground">
+                        <div className="text-[9.5px] uppercase tracking-[0.12em] text-fg-muted mb-1">Domain</div>
+                        <span className="inline-flex items-center rounded px-2 py-0.5 text-[11px] bg-raised text-fg-muted">
                             {heroDomainLabel}
                         </span>
                     </div>
                 )}
                 {tasks.length > 0 && (
                     <div className="mt-3">
-                        <div className="text-[9.5px] uppercase tracking-[0.12em] text-muted-foreground mb-1">Problems</div>
+                        <div className="text-[9.5px] uppercase tracking-[0.12em] text-fg-muted mb-1">Problems</div>
                         <div className="flex flex-wrap gap-1.5">
                             {tasks.slice(0, 3).map((t) => (
-                                <span key={t} className="inline-flex items-center h-[20px] px-2 rounded-[3px] border border-brand/40 bg-brand/10 text-[10.5px] text-brand">
+                                <span key={t} className="inline-flex items-center h-[20px] px-2 rounded-[3px] border border-signal/40 bg-signal/10 text-[10.5px] text-signal">
                                     {taskLabel(t)}
                                 </span>
                             ))}
@@ -200,7 +200,7 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                 )}
                 {heroTags.length > 0 && (
                     <div className="mt-3">
-                        <div className="text-[9.5px] uppercase tracking-[0.12em] text-muted-foreground mb-1">Tags</div>
+                        <div className="text-[9.5px] uppercase tracking-[0.12em] text-fg-muted mb-1">Tags</div>
                         <div className="flex flex-wrap gap-1.5">
                             {heroTags.map((t) => (
                                 <TagBadge
@@ -214,7 +214,7 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                 )}
                 <Link
                     to={node.path}
-                    className="mt-4 flex items-center justify-center h-10 rounded-md bg-primary text-primary-foreground text-[13px] font-medium hover:opacity-90 active:opacity-90"
+                    className="mt-4 flex items-center justify-center h-10 rounded-control bg-signal text-signal-fg text-[13px] font-medium hover:opacity-90 active:opacity-90"
                 >
                     Open page →
                 </Link>
@@ -222,10 +222,10 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
 
             {/* Neighbor sections */}
             <div className="mt-5 flex items-baseline justify-between">
-                <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
                     Related · {totalNeighbors}
                 </h2>
-                <span className="text-[10.5px] text-muted-foreground">tap to navigate</span>
+                <span className="text-[10.5px] text-fg-muted">tap to navigate</span>
             </div>
 
             {LANES_V3.map((rel) => {
@@ -239,7 +239,7 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                             <span className="text-[11px] font-semibold" style={{ color: meta.color }}>
                                 {meta.label}
                             </span>
-                            <span className="text-[10.5px] text-muted-foreground/60 tabular-nums ml-auto">{list.length}</span>
+                            <span className="text-[10.5px] text-fg-muted/60 tabular-nums ml-auto">{list.length}</span>
                         </div>
                         <div className="flex flex-col gap-1.5">
                             {list.map((s) => (
@@ -250,7 +250,7 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                 );
             })}
 
-            <p className="mt-6 mb-2 px-1 text-[10.5px] text-muted-foreground leading-snug">
+            <p className="mt-6 mb-2 px-1 text-[10.5px] text-fg-muted leading-snug">
                 The visual graph from desktop is reshaped into a list here. Same data, same
                 navigation — tap any entry to recenter, back arrow in the trail to backtrack.
             </p>

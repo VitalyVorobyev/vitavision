@@ -17,7 +17,7 @@ export const CustomFallback = () => (
     <div className="w-80">
         <ErrorBoundary
             fallback={
-                <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+                <div className="rounded-control border border-defect/30 bg-defect/5 p-4 text-sm text-defect">
                     Detector crashed — try a different algorithm or reload the image.
                 </div>
             }
@@ -30,9 +30,9 @@ export const CustomFallback = () => (
 export const HealthyChildren = () => (
     <div className="w-80">
         <ErrorBoundary>
-            <div className="rounded-md border border-border bg-surface p-4">
-                <p className="text-sm text-foreground">Ring-grid detector</p>
-                <p className="mt-1 text-xs text-muted-foreground">32 rings detected, 0 outliers.</p>
+            <div className="rounded-control border border-line bg-surface p-4">
+                <p className="text-sm text-fg">Ring-grid detector</p>
+                <p className="mt-1 text-xs text-fg-muted">32 rings detected, 0 outliers.</p>
             </div>
         </ErrorBoundary>
     </div>

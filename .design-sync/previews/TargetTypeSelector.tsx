@@ -1,10 +1,10 @@
 import { TargetTypeSelector } from "vitcv";
 
 // Real desktop usage (src/pages/TargetGenerator.tsx): a `w-40 lg:w-56`
-// sidebar with `border-r border-border bg-muted/20`.
+// sidebar with `border-r border-line bg-raised/20`.
 function Rail({ children }: { children: React.ReactNode }) {
     return (
-        <div style={{ width: 224 }} className="border-r border-border bg-muted/20">
+        <div style={{ width: 224 }} className="border-r border-line bg-raised/20">
             {children}
         </div>
     );

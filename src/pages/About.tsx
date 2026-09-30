@@ -30,9 +30,9 @@ export default function About() {
                         src="/AIAvatar.jpg"
                         alt="AI-stylized portrait of Vitaly Vorobyev"
                         loading="lazy"
-                        className="w-52 md:w-64 aspect-square object-cover object-[50%_15%] rounded-2xl border border-border"
+                        className="w-52 md:w-64 aspect-square object-cover object-[50%_15%] rounded-2xl border border-line"
                     />
-                    <figcaption className="mt-3 max-w-52 md:max-w-64 text-center md:text-left text-xs leading-5 text-muted-foreground">
+                    <figcaption className="mt-3 max-w-52 md:max-w-64 text-center md:text-left text-xs leading-5 text-fg-muted">
                         Portrait based on a real photo, lightly stylized with AI.
                     </figcaption>
                 </figure>
@@ -42,16 +42,16 @@ export default function About() {
 
                     {/* Name + role */}
                     <div>
-                        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+                        <h1 className="text-3xl font-semibold tracking-tight text-fg">
                             Vitaly Vorobyev (PhD)
                         </h1>
-                        <p className="mt-1 text-accent font-medium">
+                        <p className="mt-1 text-fg-muted font-medium">
                             Team Lead · Computer Vision · QUISS GmbH
                         </p>
                     </div>
 
                     {/* Bio */}
-                    <div className="space-y-4 text-muted-foreground leading-7">
+                    <div className="space-y-4 text-fg-muted leading-7">
                         <p>
                             I build computer vision systems for industrial inspection. My path started
                             in particle physics research at the Budker Institute in Novosibirsk, where
@@ -70,7 +70,7 @@ export default function About() {
                         {SKILLS.map((skill) => (
                             <span
                                 key={skill}
-                                className="bg-accent-soft text-accent text-sm rounded-full px-3 py-1 font-medium"
+                                className="bg-raised text-fg-muted text-sm rounded-full px-3 py-1 font-medium"
                             >
                                 {skill}
                             </span>
@@ -81,10 +81,10 @@ export default function About() {
                     <ul className="space-y-2">
                         {CAREER.map(({ role, place, period }) => (
                             <li key={role} className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
-                                <span className="text-foreground text-sm font-medium">
+                                <span className="text-fg text-sm font-medium">
                                     {role} · {place}
                                 </span>
-                                <span className="text-accent-2 text-xs sm:ml-auto shrink-0">
+                                <span className="text-fg-subtle text-xs sm:ml-auto shrink-0">
                                     {period}
                                 </span>
                             </li>

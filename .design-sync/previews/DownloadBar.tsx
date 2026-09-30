@@ -18,7 +18,7 @@ const A4_LANDSCAPE = {
 // right rail (src/pages/TargetGenerator.tsx), with `p-3` around it.
 function Rail({ children }: { children: React.ReactNode }) {
     return (
-        <div style={{ width: 320 }} className="border-l border-border bg-muted/20 p-3">
+        <div style={{ width: 320 }} className="border-l border-line bg-raised/20 p-3">
             {children}
         </div>
     );

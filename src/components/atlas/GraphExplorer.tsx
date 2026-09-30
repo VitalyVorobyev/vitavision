@@ -81,7 +81,7 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
 
     if (!initialSlug || !current) {
         return (
-            <div className="flex items-center justify-center py-20 text-[13px] text-muted-foreground">
+            <div className="flex items-center justify-center py-20 text-[13px] text-fg-muted">
                 No graph data available.
             </div>
         );
@@ -104,7 +104,7 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
 
     if (!layout) {
         return (
-            <div className="flex items-center justify-center py-20 text-[13px] text-muted-foreground">
+            <div className="flex items-center justify-center py-20 text-[13px] text-fg-muted">
                 No graph data available.
             </div>
         );
@@ -171,7 +171,7 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
                 </PannableViewport>
 
                 {/* Right rail — focused entry details; previews hovered neighbour */}
-                <aside className="w-[300px] shrink-0 border-l border-border overflow-y-auto p-5 bg-surface">
+                <aside className="w-[300px] shrink-0 border-l border-line overflow-y-auto p-5 bg-surface">
                     <FocusedEntryPanel
                         slug={hover ?? current}
                         isPreview={hover != null && hover !== current}

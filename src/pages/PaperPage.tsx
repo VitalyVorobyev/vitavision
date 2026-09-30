@@ -27,11 +27,11 @@ function PaperPageSkeleton() {
     return (
         <div className="mx-auto max-w-[1100px] px-4 py-9 lg:px-8" aria-busy="true">
             <div className="flex max-w-[720px] animate-pulse flex-col gap-4">
-                <div className="h-3 w-40 rounded bg-muted" />
-                <div className="h-9 w-full rounded bg-muted" />
-                <div className="h-9 w-3/4 rounded bg-muted" />
-                <div className="h-5 w-1/2 rounded bg-muted" />
-                <div className="h-20 w-full rounded bg-muted" />
+                <div className="h-3 w-40 rounded bg-raised" />
+                <div className="h-9 w-full rounded bg-raised" />
+                <div className="h-9 w-3/4 rounded bg-raised" />
+                <div className="h-5 w-1/2 rounded bg-raised" />
+                <div className="h-20 w-full rounded bg-raised" />
             </div>
         </div>
     );
@@ -117,10 +117,10 @@ export default function PaperPage() {
 
                     <section className="flex flex-col gap-3">
                         <div className="flex items-center justify-between gap-3">
-                            <h2 className="m-0 text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            <h2 className="m-0 text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-fg-muted">
                                 Lineage
                             </h2>
-                            <span className="text-[12.5px] text-muted-foreground">
+                            <span className="text-[12.5px] text-fg-muted">
                                 Papers in the Atlas registry only · one dot per paper
                             </span>
                         </div>
@@ -142,7 +142,7 @@ export default function PaperPage() {
 function MobileLineageDisclosure({ cites, citedBy }: { cites: LineageColumnEntry[]; citedBy: LineageColumnEntry[] }) {
     return (
         <details className="group">
-            <summary className="flex h-11 cursor-pointer list-none items-center justify-center gap-1.5 rounded-md border border-border bg-surface px-3 text-[13px] font-medium text-foreground">
+            <summary className="flex h-11 cursor-pointer list-none items-center justify-center gap-1.5 rounded-control border border-line bg-surface px-3 text-[13px] font-medium text-fg">
                 Builds on {cites.length} · Built upon by {citedBy.length}
             </summary>
             <div className="pt-4">

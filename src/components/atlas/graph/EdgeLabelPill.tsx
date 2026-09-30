@@ -29,7 +29,7 @@ export function EdgeLabelPill({ label, width, transform, opacity, color, style }
                 x={0} y={3}
                 textAnchor="middle"
                 style={{
-                    font: "500 9.5px ui-monospace, Geist Mono, monospace",
+                    font: "500 9.5px var(--font-mono)",
                     letterSpacing: "0.04em",
                     fill: color,
                 }}

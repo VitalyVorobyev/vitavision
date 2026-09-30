@@ -37,10 +37,10 @@ function WizardStepCard({
     children: React.ReactNode;
 }) {
     return (
-        <section className="rounded-2xl border border-border bg-surface shadow-sm">
-            <div className="border-b border-border px-4 py-4 sm:px-5">
+        <section className="rounded-2xl border border-line bg-surface shadow-sm">
+            <div className="border-b border-line px-4 py-4 sm:px-5">
                 <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+                <p className="mt-1 text-sm text-fg-muted">{description}</p>
             </div>
             <div className="p-1 sm:p-2">
                 {children}
@@ -64,8 +64,8 @@ function PresetRow({
     const activePreset = presets.find((preset) => preset.id === activePresetId) ?? null;
 
     return (
-        <section className="rounded-xl border border-border/70 bg-background/60 p-3">
-            <div className="mb-2 px-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">
+        <section className="rounded-xl border border-line/70 bg-ground/60 p-3">
+            <div className="mb-2 px-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted/70">
                 Presets
             </div>
             <div className="grid grid-cols-3 gap-2">
@@ -80,10 +80,10 @@ function PresetRow({
                                 target: preset.target,
                                 page: preset.page,
                             })}
-                            className={`min-w-0 rounded-md border px-3 py-2.5 text-center text-sm font-medium transition-colors ${
+                            className={`min-w-0 rounded-control border px-3 py-2.5 text-center text-sm font-medium transition-colors ${
                                 active
-                                    ? "border-primary/30 bg-primary/10 text-foreground"
-                                    : "border-border bg-background text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                    ? "border-signal/30 bg-signal/10 text-fg"
+                                    : "border-line bg-ground text-fg-muted hover:bg-raised/50 hover:text-fg"
                             }`}
                             aria-pressed={active}
                             title={preset.label}
@@ -93,7 +93,7 @@ function PresetRow({
                     );
                 })}
             </div>
-            <div className="mt-2 px-0.5 text-[11px] leading-5 text-muted-foreground">
+            <div className="mt-2 px-0.5 text-[11px] leading-5 text-fg-muted">
                 {activePreset
                     ? `${activePreset.label}: ${activePreset.description}`
                     : "Pick a preset to load a ready-made starting point for this target type."}
@@ -129,19 +129,19 @@ export default function TargetGeneratorWizard({
     }, [state.page, state.target.targetType]);
 
     return (
-        <div className="flex h-[calc(100vh-64px)] flex-col overflow-hidden animate-in fade-in bg-background">
-            <div className="border-b border-border bg-muted/10 px-4 py-2 sm:py-4 sm:px-6">
+        <div className="flex h-[calc(100vh-64px)] flex-col overflow-hidden animate-in fade-in bg-ground">
+            <div className="border-b border-line bg-raised/10 px-4 py-2 sm:py-4 sm:px-6">
                 <div className="flex items-start justify-between gap-3">
                     <div>
                         <h1 className="text-xl font-semibold tracking-tight">Target Generator</h1>
-                        <p className="mt-1 hidden text-sm text-muted-foreground sm:block">
+                        <p className="mt-1 hidden text-sm text-fg-muted sm:block">
                             Progressive touch workflow with the live preview always within reach.
                         </p>
                     </div>
                     <button
                         type="button"
                         onClick={() => setPreviewOpen((open) => !open)}
-                        className="inline-flex min-h-10 sm:min-h-14 min-w-[8.75rem] shrink-0 items-center justify-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 sm:py-2 text-center text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                        className="inline-flex min-h-10 sm:min-h-14 min-w-[8.75rem] shrink-0 items-center justify-center gap-2 rounded-control border border-line bg-ground px-3 py-1.5 sm:py-2 text-center text-sm font-medium text-fg transition-colors hover:bg-raised"
                         aria-expanded={previewOpen}
                     >
                         {previewOpen ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -159,11 +159,11 @@ export default function TargetGeneratorWizard({
                                 onClick={() => setActiveStep(step.key)}
                                 className={`min-w-0 rounded-xl border px-2 py-1.5 text-left transition-colors sm:px-3 sm:py-2 ${
                                     active
-                                        ? "border-primary/30 bg-primary/10 text-foreground"
-                                        : "border-border bg-background text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                                        ? "border-signal/30 bg-signal/10 text-fg"
+                                        : "border-line bg-ground text-fg-muted hover:bg-raised/60 hover:text-fg"
                                 }`}
                             >
-                                <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">
+                                <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted/70">
                                     Step {index + 1}
                                 </div>
                                 <div className="mt-0.5 text-sm font-medium sm:mt-1">{step.label}</div>
@@ -172,7 +172,7 @@ export default function TargetGeneratorWizard({
                     })}
                 </div>
 
-                <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground sm:mt-3">
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-fg-muted sm:mt-3">
                     <span>{summaryLine}</span>
                     {(errorCount > 0 || warningCount > 0) && (
                         <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 ${
@@ -187,7 +187,7 @@ export default function TargetGeneratorWizard({
                 </div>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto bg-muted/10">
+            <div className="min-h-0 flex-1 overflow-y-auto bg-raised/10">
                 <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 py-4 sm:px-6">
                     {activeStep === "target" && (
                         <WizardStepCard
@@ -251,7 +251,7 @@ export default function TargetGeneratorWizard({
                             type="button"
                             onClick={() => canGoBack && setActiveStep(STEPS[activeIndex - 1].key)}
                             disabled={!canGoBack}
-                            className="inline-flex min-w-[7.5rem] items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+                            className="inline-flex min-w-[7.5rem] items-center justify-center gap-2 rounded-control border border-line bg-ground px-4 py-2 text-sm font-medium text-fg transition-colors hover:bg-raised disabled:cursor-not-allowed disabled:opacity-40"
                         >
                             <ChevronLeft size={16} />
                             Back
@@ -260,7 +260,7 @@ export default function TargetGeneratorWizard({
                             type="button"
                             onClick={() => canGoForward && setActiveStep(STEPS[activeIndex + 1].key)}
                             disabled={!canGoForward}
-                            className="inline-flex min-w-[7.5rem] items-center justify-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-40"
+                            className="inline-flex min-w-[7.5rem] items-center justify-center gap-2 rounded-control bg-fg px-4 py-2 text-sm font-medium text-ground transition-colors hover:bg-fg/90 disabled:cursor-not-allowed disabled:opacity-40"
                         >
                             Next
                             <ChevronRight size={16} />
@@ -269,26 +269,26 @@ export default function TargetGeneratorWizard({
                 </div>
             </div>
 
-            <div className="border-t border-border bg-background">
+            <div className="border-t border-line bg-ground">
                 <div className="flex items-center justify-between px-4 py-3 sm:px-6">
                     <div>
-                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-fg-muted/70">
                             Live Preview
                         </div>
-                        <div className="mt-1 text-sm text-muted-foreground">
+                        <div className="mt-1 text-sm text-fg-muted">
                             Current board, page, and printable area
                         </div>
                     </div>
                     <button
                         type="button"
                         onClick={() => setPreviewOpen((open) => !open)}
-                        className="rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                        className="rounded-control border border-line bg-ground px-3 py-2 text-sm font-medium text-fg transition-colors hover:bg-raised"
                     >
                         {previewOpen ? "Collapse" : "Expand"}
                     </button>
                 </div>
                 {previewOpen && (
-                    <div className={`${isPhone ? "h-[18rem]" : "h-[22rem]"} flex border-t border-border`}>
+                    <div className={`${isPhone ? "h-[18rem]" : "h-[22rem]"} flex border-t border-line`}>
                         <TargetPreview state={state} dispatch={dispatch} />
                     </div>
                 )}

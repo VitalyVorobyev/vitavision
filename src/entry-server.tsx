@@ -1,6 +1,6 @@
 import { renderToString } from "react-dom/server";
 import { MemoryRouter, Routes, Route, Navigate } from "react-router";
-import { ThemeProvider } from "next-themes";
+import { TooltipProvider } from "@vitavision/ui";
 import { ClerkProvider } from "@clerk/clerk-react";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
@@ -43,9 +43,13 @@ export function render(
         <PapersProvider initial={papers}>
         <AuthorsProvider initial={authors}>
         <ScholarlyProvider initial={scholarly}>
-            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+            {/* No theme provider: the theme is the `dark` class that the inline script in
+                index.html paints from the stored choice ("system" when there is none) before
+                the first paint, so the prerendered markup is the same for both themes.
+                TooltipProvider: ui's ThemeToggle (in Navbar) throws without it. */}
+            <TooltipProvider>
                 <MemoryRouter initialEntries={[url]}>
-                    <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
+                    <div className="min-h-screen flex flex-col font-sans bg-ground text-fg">
                         <Navbar />
                         <main className="flex-1">
                             <Routes>
@@ -63,7 +67,7 @@ export function render(
                                 <Route path="/tools/target-generator" element={
                                     <div className="max-w-3xl mx-auto px-6 py-16 text-center">
                                         <h1 className="text-3xl font-bold tracking-tight mb-4">Calibration Target Generator</h1>
-                                        <p className="text-muted-foreground">
+                                        <p className="text-fg-muted">
                                             Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.
                                         </p>
                                     </div>
@@ -73,7 +77,7 @@ export function render(
                         <Footer />
                     </div>
                 </MemoryRouter>
-            </ThemeProvider>
+            </TooltipProvider>
         </ScholarlyProvider>
         </AuthorsProvider>
         </PapersProvider>

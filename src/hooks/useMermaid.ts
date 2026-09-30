@@ -1,28 +1,5 @@
-import { useEffect, useState, type RefObject } from "react";
-
-/**
- * Observes the `dark` class on `<html>` and returns the current theme.
- */
-function useResolvedTheme(): "dark" | "light" {
-    const [dark, setDark] = useState(() =>
-        typeof document !== "undefined"
-            ? document.documentElement.classList.contains("dark")
-            : true,
-    );
-
-    useEffect(() => {
-        const observer = new MutationObserver(() => {
-            setDark(document.documentElement.classList.contains("dark"));
-        });
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ["class"],
-        });
-        return () => observer.disconnect();
-    }, []);
-
-    return dark ? "dark" : "light";
-}
+import { useEffect, type RefObject } from "react";
+import { useIsDark } from "../lib/theme.ts";
 
 /**
  * Finds `<pre><code class="language-mermaid">` blocks inside the referenced
@@ -35,7 +12,7 @@ export function useMermaid(
     ref: RefObject<HTMLElement | null>,
     deps: unknown[],
 ): void {
-    const theme = useResolvedTheme();
+    const theme = useIsDark() ? "dark" : "light";
 
     useEffect(() => {
         const el = ref.current;

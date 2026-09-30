@@ -8,7 +8,7 @@ export const Default = () => (
 
 export const InEditorHint = () => (
     <div className="w-64 space-y-2">
-        <p className="text-sm text-foreground">Ring-grid detector</p>
+        <p className="text-sm text-fg">Ring-grid detector</p>
         <Note>
             Requires at least 8 rings visible in-frame for a stable homography estimate.
         </Note>

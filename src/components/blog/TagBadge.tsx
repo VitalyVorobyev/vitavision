@@ -11,8 +11,8 @@ export default function TagBadge({ tag, active, onClick, to }: TagBadgeProps) {
     const base =
         "inline-block text-xs font-medium px-2.5 py-0.5 rounded-full transition-colors";
     const colors = active
-        ? "bg-foreground text-background"
-        : "bg-muted text-muted-foreground hover:bg-muted/80";
+        ? "bg-fg text-ground"
+        : "bg-raised text-fg-muted hover:bg-raised/80";
 
     if (to) {
         return (

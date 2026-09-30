@@ -33,9 +33,9 @@ interface AtlasPageHeaderProps {
 }
 
 const KIND_CLASSES: Record<PageKind, string> = {
-    algorithm: "text-brand border-brand/40",
+    algorithm: "text-signal border-signal/40",
     model:     "text-violet-600 dark:text-violet-400 border-violet-500/40",
-    concept:   "text-muted-foreground border-border",
+    concept:   "text-fg-muted border-line",
 };
 
 const DIFFICULTY_DOT: Record<Difficulty, string> = {
@@ -55,7 +55,7 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
         <header className="space-y-4 mb-8">
             <Link
                 to={backTo}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm text-fg-muted hover:text-fg transition-colors"
             >
                 &larr; {backLabel}
             </Link>
@@ -77,7 +77,7 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                 )}
                 {frontmatter.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-fg-muted">
                 <time>{frontmatter.date}</time>
                 {frontmatter.updated && (
                     <>
@@ -114,7 +114,7 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                         <span aria-hidden="true">·</span>
                         <Link
                             to={`/atlas?view=graph&focus=${slug}`}
-                            className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                            className="inline-flex items-center gap-1.5 text-fg-muted hover:text-fg transition-colors"
                         >
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                 <circle cx="12" cy="12" r="3" />
@@ -136,7 +136,7 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                         <span aria-hidden="true">·</span>
                         <Link
                             to={`/atlas/narratives/${ref.slug}`}
-                            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
+                            className="inline-flex items-center gap-1.5 text-fg-muted transition-colors hover:text-fg"
                         >
                             <BookOpen size={13} aria-hidden="true" />
                             In narrative: {ref.title}
@@ -152,7 +152,7 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                     ))}
                 </div>
             )}
-            <div className="border-t border-border" />
+            <div className="border-t border-line" />
         </header>
     );
 }

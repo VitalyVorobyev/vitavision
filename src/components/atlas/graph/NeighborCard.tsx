@@ -41,10 +41,10 @@ export function NeighborCard({ pos, isHovered, isDimmed, onClick, onHover }: Nei
             onMouseEnter={() => onHover(pos.slug)}
             onMouseLeave={() => onHover(null)}
             onPointerDown={handlePointerDown}
-            className={`absolute group rounded-md border bg-surface px-2.5 py-1.5 flex flex-col text-left transition-all overflow-hidden ${
+            className={`absolute group rounded-control border bg-surface px-2.5 py-1.5 flex flex-col text-left transition-all overflow-hidden ${
                 isHovered
-                    ? "border-border-strong shadow-[0_6px_18px_-8px_rgba(15,23,42,0.22)]"
-                    : "border-border"
+                    ? "border-line-strong shadow-[0_6px_18px_-8px_rgba(15,23,42,0.22)]"
+                    : "border-line"
             }`}
             style={{
                 left:    pos.x,
@@ -58,10 +58,10 @@ export function NeighborCard({ pos, isHovered, isDimmed, onClick, onHover }: Nei
             <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ background: KIND_ACCENT[kind] }} />
             <div className="flex items-center gap-1.5">
                 <EntryIcon slug={pos.slug} kind={kind} size={18} />
-                <span className="text-[11.5px] font-semibold text-foreground truncate -tracking-[0.1px] flex-1 min-w-0">
+                <span className="text-[11.5px] font-semibold text-fg truncate -tracking-[0.1px] flex-1 min-w-0">
                     {shortTitle(node.title)}
                 </span>
-                <span className="font-mono text-[9.5px] text-muted-foreground tabular-nums shrink-0">
+                <span className="font-mono text-[9.5px] text-fg-muted tabular-nums shrink-0">
                     {year ?? ""}
                 </span>
             </div>
@@ -71,7 +71,7 @@ export function NeighborCard({ pos, isHovered, isDimmed, onClick, onHover }: Nei
                     const nDomain = nfm?.domain as string | undefined;
                     const nDomainLabel = nDomain ? domainLabels[nDomain as keyof typeof domainLabels] : undefined;
                     return nDomainLabel ? (
-                        <span className="text-[9.5px] text-muted-foreground truncate">
+                        <span className="text-[9.5px] text-fg-muted truncate">
                             {nDomainLabel}
                         </span>
                     ) : null;

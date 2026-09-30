@@ -7,7 +7,7 @@ import Footer from './components/layout/Footer';
 import ScrollToTop from './components/layout/ScrollToTop';
 import './index.css';
 
-import { ThemeProvider } from 'next-themes';
+import { TooltipProvider } from '@vitavision/ui';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
@@ -48,17 +48,17 @@ function AppLayout() {
     const isEditor = pathname === '/editor' || pathname.startsWith('/tools/');
 
     return (
-        <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
+        <div className="min-h-screen flex flex-col font-sans bg-ground text-fg">
             <ScrollToTop />
             <a
                 href="#main-content"
-                className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:text-sm focus:font-medium focus:shadow-lg"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-control focus:bg-signal focus:px-4 focus:py-2 focus:text-signal-fg focus:text-sm focus:font-medium focus:shadow-lg"
             >
                 Skip to content
             </a>
             <Navbar />
             <main id="main-content" className="flex flex-1 flex-col">
-                <Suspense fallback={<div className="flex-1 flex items-center justify-center py-32"><div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>}>
+                <Suspense fallback={<div className="flex-1 flex items-center justify-center py-32"><div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" /></div>}>
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/blog" element={<Blog />} />
@@ -112,7 +112,8 @@ function App({ ssrSnapshot = {} }: { ssrSnapshot?: StaticContentContextValue }) 
         <ClerkProvider publishableKey={PUBLISHABLE_KEY!}>
             <HelmetProvider>
                 <StaticContentProvider value={ssrSnapshot}>
-                    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                    {/* ui's ThemeToggle, Tooltip and InfoHint throw without it. */}
+                    <TooltipProvider>
                         <PapersProvider>
                         <AuthorsProvider>
                         <ScholarlyProvider>
@@ -123,7 +124,7 @@ function App({ ssrSnapshot = {} }: { ssrSnapshot?: StaticContentContextValue }) 
                         </AuthorsProvider>
                         </PapersProvider>
                         <Toaster richColors closeButton position="bottom-right" />
-                    </ThemeProvider>
+                    </TooltipProvider>
                 </StaticContentProvider>
             </HelmetProvider>
         </ClerkProvider>

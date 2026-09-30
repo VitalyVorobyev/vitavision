@@ -21,7 +21,7 @@ function metaLabel(fm: ConceptIndexEntry["frontmatter"]): string | undefined {
 function CompactCard({ entry }: { entry: ConceptIndexEntry }) {
     const { slug, frontmatter: fm } = entry;
     return (
-        <div className="relative flex flex-col gap-2 min-h-[112px] rounded-lg border border-border bg-surface p-3 hover:border-foreground/20 transition-colors group">
+        <div className="relative flex flex-col gap-2 min-h-[112px] rounded-panel border border-line bg-surface p-3 hover:border-fg/20 transition-colors group">
             <div className="flex items-start gap-2.5">
                 <EntryIcon slug={slug} kind="concept" size={30} coverImage={fm.coverImage} />
                 <div className="min-w-0 flex-1">
@@ -29,7 +29,7 @@ function CompactCard({ entry }: { entry: ConceptIndexEntry }) {
                     {/* Stretched-link title — ::after covers the whole card */}
                     <Link
                         to={`/atlas/${slug}`}
-                        className="inline text-[13px] font-semibold leading-tight text-foreground -tracking-[0.1px] group-hover:underline after:absolute after:inset-0 after:content-['']"
+                        className="inline text-[13px] font-semibold leading-tight text-fg -tracking-[0.1px] group-hover:underline after:absolute after:inset-0 after:content-['']"
                     >
                         {fm.title}
                     </Link>
@@ -39,7 +39,7 @@ function CompactCard({ entry }: { entry: ConceptIndexEntry }) {
             </div>
 
             {cardBody(fm.tagline, fm.summary) && (
-                <p className="text-[11.5px] text-muted-foreground leading-[1.45] line-clamp-2">
+                <p className="text-[11.5px] text-fg-muted leading-[1.45] line-clamp-2">
                     {cardBody(fm.tagline, fm.summary)}
                 </p>
             )}
@@ -54,7 +54,7 @@ function CompactCard({ entry }: { entry: ConceptIndexEntry }) {
 function HorizontalCard({ entry }: { entry: ConceptIndexEntry }) {
     const { slug, frontmatter: fm } = entry;
     return (
-        <div className="relative flex items-start gap-3 rounded-[10px] border border-border bg-surface p-3.5 group transition-colors hover:border-foreground/20">
+        <div className="relative flex items-start gap-3 rounded-[10px] border border-line bg-surface p-3.5 group transition-colors hover:border-fg/20">
             <EntryIcon slug={slug} kind="concept" size={30} coverImage={fm.coverImage} />
             <div className="min-w-0 flex-1">
                 <div className="flex items-start gap-1.5">
@@ -62,7 +62,7 @@ function HorizontalCard({ entry }: { entry: ConceptIndexEntry }) {
                         <CardBadges draft={fm.draft} date={fm.date} />
                         <Link
                             to={`/atlas/${slug}`}
-                            className="text-[14px] font-semibold -tracking-[0.1px] truncate group-hover:underline text-foreground after:absolute after:inset-0 after:content-['']"
+                            className="text-[14px] font-semibold -tracking-[0.1px] truncate group-hover:underline text-fg after:absolute after:inset-0 after:content-['']"
                         >
                             {fm.title}
                         </Link>
@@ -71,7 +71,7 @@ function HorizontalCard({ entry }: { entry: ConceptIndexEntry }) {
                 </div>
                 <CardMeta kind="concept" label={metaLabel(fm)} year={fm.year} />
                 {cardBody(fm.tagline, fm.summary) && (
-                    <p className="text-xs text-muted-foreground leading-[1.4] line-clamp-2 mt-[3px]">
+                    <p className="text-xs text-fg-muted leading-[1.4] line-clamp-2 mt-[3px]">
                         {cardBody(fm.tagline, fm.summary)}
                     </p>
                 )}

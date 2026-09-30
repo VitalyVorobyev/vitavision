@@ -96,19 +96,19 @@ const _GLYPHS: Array<(s: string) => React.ReactNode> = [
 ];
 
 const KIND_TINT: Record<string, string> = {
-    algorithm: "hsl(var(--graph-icon-tint-algorithm))",
-    model:     "hsl(var(--graph-icon-tint-model))",
-    concept:   "hsl(var(--graph-icon-tint-concept))",
+    algorithm: "var(--graph-icon-tint-algorithm)",
+    model:     "var(--graph-icon-tint-model)",
+    concept:   "var(--graph-icon-tint-concept)",
 };
 const KIND_BG: Record<string, string> = {
-    algorithm: "hsl(var(--graph-icon-bg-algorithm))",
-    model:     "hsl(var(--graph-icon-bg-model))",
-    concept:   "hsl(var(--graph-icon-bg-concept))",
+    algorithm: "var(--graph-icon-bg-algorithm)",
+    model:     "var(--graph-icon-bg-model)",
+    concept:   "var(--graph-icon-bg-concept)",
 };
 const KIND_BORDER: Record<string, string> = {
-    algorithm: "hsl(var(--graph-icon-border-algorithm))",
-    model:     "hsl(var(--graph-icon-border-model))",
-    concept:   "hsl(var(--graph-icon-border-concept))",
+    algorithm: "var(--graph-icon-border-algorithm)",
+    model:     "var(--graph-icon-border-model)",
+    concept:   "var(--graph-icon-border-concept)",
 };
 
 export { KIND_TINT, KIND_BG, KIND_BORDER };

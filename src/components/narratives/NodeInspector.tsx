@@ -19,61 +19,61 @@ export default function NodeInspector({ node, areas, onClose }: NodeInspectorPro
     const areaLabel = areas.find((a) => a.id === node.area)?.label ?? node.area;
 
     return (
-        <div className="relative rounded-lg border border-border bg-surface p-3.5">
+        <div className="relative rounded-panel border border-line bg-surface p-3.5">
             <button
                 type="button"
                 onClick={onClose}
                 aria-label="Close node details"
-                className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded text-fg-muted hover:bg-raised hover:text-fg transition-colors"
             >
                 <X size={13} />
             </button>
 
-            <div className="flex items-center gap-1.5 pr-7 text-[9.5px] uppercase tracking-[0.12em] text-muted-foreground">
+            <div className="flex items-center gap-1.5 pr-7 text-[9.5px] uppercase tracking-[0.12em] text-fg-muted">
                 <span
                     aria-hidden="true"
                     className="h-2 w-2 shrink-0 rounded-full"
                     style={{ background: areaColor(areaIds, node.area) }}
                 />
                 <span className="truncate">{areaLabel}</span>
-                <span aria-hidden="true" className="text-muted-foreground/60">·</span>
+                <span aria-hidden="true" className="text-fg-muted/60">·</span>
                 <span>{node.kind === "paper" ? "Paper" : node.kind === "question" ? "Question" : node.pageKind}</span>
                 {"year" in node && node.year != null && (
                     <>
-                        <span aria-hidden="true" className="text-muted-foreground/60">·</span>
+                        <span aria-hidden="true" className="text-fg-muted/60">·</span>
                         <span className="font-mono normal-case tracking-normal">{node.year}</span>
                     </>
                 )}
             </div>
 
-            <p className="m-0 mt-1.5 text-[14px] font-semibold leading-snug text-foreground">
+            <p className="m-0 mt-1.5 text-[14px] font-semibold leading-snug text-fg">
                 {node.title}
             </p>
 
             {node.kind === "paper" && node.authorsShort && (
-                <p className="m-0 mt-1 font-mono text-[11px] leading-snug text-muted-foreground">
+                <p className="m-0 mt-1 font-mono text-[11px] leading-snug text-fg-muted">
                     {node.authorsShort}
                 </p>
             )}
 
             {node.role && (
-                <p className="m-0 mt-2 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                <p className="m-0 mt-2 text-[10px] uppercase tracking-[0.12em] text-fg-muted">
                     Role · <span className="normal-case tracking-normal">{node.role}</span>
                 </p>
             )}
 
             {node.takeaway && (
-                <p className="m-0 mt-2 text-[12.5px] leading-[1.55] text-foreground">{node.takeaway}</p>
+                <p className="m-0 mt-2 text-[12.5px] leading-[1.55] text-fg">{node.takeaway}</p>
             )}
 
             {node.remark && (
-                <p className="m-0 mt-2 text-[11.5px] italic leading-snug text-muted-foreground">{node.remark}</p>
+                <p className="m-0 mt-2 text-[11.5px] italic leading-snug text-fg-muted">{node.remark}</p>
             )}
 
             {node.kind === "page" && (
                 <Link
                     to={node.path}
-                    className="mt-3 inline-flex h-8 items-center justify-center rounded-md border border-border bg-muted px-3 text-[12px] font-medium text-foreground no-underline transition-colors hover:bg-surface"
+                    className="mt-3 inline-flex h-8 items-center justify-center rounded-control border border-line bg-raised px-3 text-[12px] font-medium text-fg no-underline transition-colors hover:bg-surface"
                 >
                     Open page →
                 </Link>
@@ -82,7 +82,7 @@ export default function NodeInspector({ node, areas, onClose }: NodeInspectorPro
                 <div className="mt-3 flex flex-wrap gap-2">
                     <Link
                         to={`/papers/${node.paperId}`}
-                        className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-muted px-3 text-[12px] font-medium text-foreground no-underline transition-colors hover:bg-surface"
+                        className="inline-flex h-8 items-center justify-center rounded-control border border-line bg-raised px-3 text-[12px] font-medium text-fg no-underline transition-colors hover:bg-surface"
                     >
                         Paper page →
                     </Link>
@@ -90,7 +90,7 @@ export default function NodeInspector({ node, areas, onClose }: NodeInspectorPro
                         href={node.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-muted px-3 font-mono text-[11px] text-foreground no-underline transition-colors hover:bg-surface"
+                        className="inline-flex h-8 items-center justify-center rounded-control border border-line bg-raised px-3 font-mono text-[11px] text-fg no-underline transition-colors hover:bg-surface"
                     >
                         Read the paper ↗
                     </a>

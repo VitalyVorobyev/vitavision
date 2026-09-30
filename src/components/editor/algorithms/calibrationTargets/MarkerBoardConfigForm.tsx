@@ -70,7 +70,7 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
             </Section>
             <Section title="Expected circles">
                 <div className="space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-fg-muted">
                         <span className="w-12">Row</span>
                         <span className="w-12">Col</span>
                         <span>Polarity</span>
@@ -82,7 +82,7 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                                 value={c.row}
                                 onChange={(e) => updateCircle(idx, { row: Number(e.target.value) })}
                                 disabled={disabled}
-                                className="w-12 rounded border border-border bg-background px-1.5 py-0.5 text-xs"
+                                className="w-12 rounded border border-line bg-ground px-1.5 py-0.5 text-xs"
                                 placeholder="row"
                                 min={0}
                                 aria-label={`Circle ${idx + 1} row`}
@@ -92,7 +92,7 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                                 value={c.col}
                                 onChange={(e) => updateCircle(idx, { col: Number(e.target.value) })}
                                 disabled={disabled}
-                                className="w-12 rounded border border-border bg-background px-1.5 py-0.5 text-xs"
+                                className="w-12 rounded border border-line bg-ground px-1.5 py-0.5 text-xs"
                                 placeholder="col"
                                 min={0}
                                 aria-label={`Circle ${idx + 1} column`}
@@ -101,7 +101,7 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                                 value={c.polarity}
                                 onChange={(e) => updateCircle(idx, { polarity: e.target.value as "white" | "black" })}
                                 disabled={disabled}
-                                className="rounded border border-border bg-background px-1 py-0.5 text-xs"
+                                className="rounded border border-line bg-ground px-1 py-0.5 text-xs"
                             >
                                 <option value="white">white</option>
                                 <option value="black">black</option>

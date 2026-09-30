@@ -30,15 +30,15 @@ export const RowOfEntries = () => (
     <div className="flex flex-col gap-2.5">
         <div className="flex items-center gap-2.5">
             <EntryIcon slug="orb" kind="algorithm" size={28} />
-            <span className="text-[13px] text-foreground">ORB — Oriented FAST and Rotated BRIEF</span>
+            <span className="text-[13px] text-fg">ORB — Oriented FAST and Rotated BRIEF</span>
         </div>
         <div className="flex items-center gap-2.5">
             <EntryIcon slug="lightglue" kind="model" size={28} />
-            <span className="text-[13px] text-foreground">LightGlue</span>
+            <span className="text-[13px] text-fg">LightGlue</span>
         </div>
         <div className="flex items-center gap-2.5">
             <EntryIcon slug="epipolar-geometry" kind="concept" size={28} />
-            <span className="text-[13px] text-foreground">Epipolar Geometry</span>
+            <span className="text-[13px] text-fg">Epipolar Geometry</span>
         </div>
     </div>
 );

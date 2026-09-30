@@ -73,20 +73,20 @@ export default function VitavisionLogo({
                 {animate ? (
                     <motion.circle
                         cx={102.7} cy={112} r={11.8}
-                        fill="hsl(var(--background))"
+                        fill="var(--ground)"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.25, ease: "easeOut", delay: 1.1 }}
                     />
                 ) : (
-                    <circle cx={102.7} cy={112} r={11.8} fill="hsl(var(--background))" />
+                    <circle cx={102.7} cy={112} r={11.8} fill="var(--ground)" />
                 )}
 
                 {/* PUPIL_CORE — brand dot resolves last with a spring pop */}
                 {animate ? (
                     <motion.circle
                         cx={102.6} cy={112} r={8.1}
-                        fill="hsl(var(--brand))"
+                        fill="var(--vv-brand-mark)"
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         style={{ transformBox: "fill-box", transformOrigin: "center" }}
@@ -96,7 +96,7 @@ export default function VitavisionLogo({
                         }}
                     />
                 ) : (
-                    <circle cx={102.6} cy={112} r={8.1} fill="hsl(var(--brand))" />
+                    <circle cx={102.6} cy={112} r={8.1} fill="var(--vv-brand-mark)" />
                 )}
             </g>
         </svg>

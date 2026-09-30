@@ -29,7 +29,7 @@ export default function FeatureTooltip(props: FeatureTooltipProps) {
 
     return (
         <div
-            className="absolute z-30 pointer-events-none rounded-md border border-border bg-background/95 backdrop-blur-sm px-1.5 py-1 text-[10px] font-mono leading-none shadow-xs whitespace-nowrap"
+            className="absolute z-30 pointer-events-none rounded-control border border-line bg-ground/95 backdrop-blur-sm px-1.5 py-1 text-[10px] font-mono leading-none shadow-xs whitespace-nowrap"
             style={{ left: tooltip.left, top: tooltip.top }}
         >
             x {feature.x.toFixed(2)} y {feature.y.toFixed(2)} s {feature.score.toFixed(3)}

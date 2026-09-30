@@ -22,23 +22,23 @@ export function SourceCard({ primary }: SourceCardProps) {
     const venueYear = [paper.venue, paper.year].filter(Boolean).join(" ");
 
     return (
-        <div className="rounded-lg border border-border bg-muted/40 p-3 flex flex-col gap-1.5">
+        <div className="rounded-panel border border-line bg-raised/40 p-3 flex flex-col gap-1.5">
             {/* Eyebrow */}
-            <span className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <span className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
                 Source
             </span>
 
             {/* Title — wraps; capped at 3 lines */}
             <Link
                 to={`/papers/${paper.id}`}
-                className="block text-[12.5px] font-medium text-foreground leading-snug line-clamp-3 m-0 no-underline hover:underline"
+                className="block text-[12.5px] font-medium text-fg leading-snug line-clamp-3 m-0 no-underline hover:underline"
             >
                 {paper.title}
             </Link>
 
             {/* Authors · Venue Year */}
             {(hasAuthors || venueYear) && (
-                <p className="text-[11px] text-muted-foreground font-mono leading-snug m-0">
+                <p className="text-[11px] text-fg-muted font-mono leading-snug m-0">
                     {hasAuthors && <AuthorByline paperId={paper.id} authors={paper.authors} />}
                     {hasAuthors && venueYear && " · "}
                     {venueYear}
@@ -50,7 +50,7 @@ export function SourceCard({ primary }: SourceCardProps) {
                 href={paper.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md border border-border bg-muted text-[11px] font-mono text-foreground hover:bg-surface hover:border-border transition-colors self-start mt-0.5"
+                className="inline-flex items-center gap-1 h-7 px-2.5 rounded-control border border-line bg-raised text-[11px] font-mono text-fg hover:bg-surface hover:border-line transition-colors self-start mt-0.5"
             >
                 {ctaLabel}
             </a>

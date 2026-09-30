@@ -163,14 +163,14 @@ export default function NarrativePage() {
             <header className="mb-6 space-y-3">
                 <Link
                     to="/atlas?view=narratives"
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    className="text-sm text-fg-muted transition-colors hover:text-fg"
                 >
                     &larr; Back to narratives
                 </Link>
                 <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold leading-[1.2] tracking-[-0.03em]">
                     <span
                         aria-hidden="true"
-                        className="mr-3 rounded border border-border px-2 py-1 align-middle font-mono text-sm uppercase tracking-wider text-muted-foreground"
+                        className="mr-3 rounded border border-line px-2 py-1 align-middle font-mono text-sm uppercase tracking-wider text-fg-muted"
                     >
                         narrative
                     </span>
@@ -185,11 +185,11 @@ export default function NarrativePage() {
                     {entry.title}
                 </h1>
                 {entry.tagline && (
-                    <p className="m-0 max-w-[68ch] text-[15px] leading-relaxed text-muted-foreground">
+                    <p className="m-0 max-w-[68ch] text-[15px] leading-relaxed text-fg-muted">
                         {entry.tagline}
                     </p>
                 )}
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-fg-muted">
                     <time>{entry.date}</time>
                     <span aria-hidden="true">·</span>
                     <span>
@@ -197,18 +197,18 @@ export default function NarrativePage() {
                         {entry.stats.steps} chapter{entry.stats.steps === 1 ? "" : "s"}
                     </span>
                 </div>
-                <div className="border-t border-border" />
+                <div className="border-t border-line" />
             </header>
 
             {/* Constellation */}
             {narrative === null ? (
-                <div className="flex items-center justify-center rounded-xl border border-border py-20">
+                <div className="flex items-center justify-center rounded-xl border border-line py-20">
                     {loadFailed ? (
-                        <span className="text-[13px] text-muted-foreground">
+                        <span className="text-[13px] text-fg-muted">
                             The constellation failed to load.
                         </span>
                     ) : (
-                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
                     )}
                 </div>
             ) : isDesktop ? (
@@ -219,7 +219,7 @@ export default function NarrativePage() {
                             activeId={lensId}
                             onChange={(id) => setParam({ lens: id })}
                         />
-                        <span className="text-[10.5px] text-muted-foreground">
+                        <span className="text-[10.5px] text-fg-muted">
                             drag to pan · wheel to zoom · click a node
                         </span>
                     </div>
@@ -265,15 +265,15 @@ export default function NarrativePage() {
             )}
 
             {/* Full essay */}
-            <div className="mt-10 border-t border-border pt-8">
+            <div className="mt-10 border-t border-line pt-8">
                 {html === null ? (
                     loadFailed ? (
-                        <div className="py-10 text-sm text-muted-foreground">
+                        <div className="py-10 text-sm text-fg-muted">
                             Narrative content failed to load.
                         </div>
                     ) : (
                         <div className="flex items-center justify-center py-16">
-                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
                         </div>
                     )
                 ) : (

@@ -22,9 +22,9 @@ function NarrativesList({ showDrafts }: { showDrafts: boolean }) {
 
     if (entries.length === 0) {
         return (
-            <div className="rounded-[10px] border border-dashed border-border px-6 py-12 text-center">
-                <p className="m-0 text-[14px] font-medium text-foreground">Narratives are coming soon</p>
-                <p className="m-0 mt-1.5 text-[13px] text-muted-foreground">
+            <div className="rounded-[10px] border border-dashed border-line px-6 py-12 text-center">
+                <p className="m-0 text-[14px] font-medium text-fg">Narratives are coming soon</p>
+                <p className="m-0 mt-1.5 text-[13px] text-fg-muted">
                     Guided walks through the atlas — a handful of pages read in the order they
                     actually build on each other.
                 </p>
@@ -62,7 +62,7 @@ export default function AtlasNarrativesView({ isDesktop, view, setView, isAdmin 
                         <h1 className="text-[22px] font-bold -tracking-[0.4px]">Narratives</h1>
                         <AtlasViewTabs view={view} onChange={setView} />
                     </div>
-                    <p className="mb-4 text-[13px] text-muted-foreground">
+                    <p className="mb-4 text-[13px] text-fg-muted">
                         Long-form walks through the atlas — a constellation of pages and papers,
                         read in the order they build on each other.
                     </p>

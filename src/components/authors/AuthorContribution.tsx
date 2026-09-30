@@ -10,13 +10,13 @@ interface AuthorContributionProps {
 
 function Legend() {
     return (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11.5px] text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11.5px] text-fg-muted">
             <span className="flex items-center gap-1.5">
-                <span className="h-3 w-3 rounded-[3px] border border-[hsl(var(--graph-icon-border-model)/0.6)] bg-[hsl(var(--graph-icon-bg-model))]" />
+                <span className="h-3 w-3 rounded-[3px] border border-graph-icon-border-model/60 bg-graph-icon-bg-model" />
                 primary source
             </span>
             <span className="flex items-center gap-1.5">
-                <span className="h-3 w-3 rounded-[3px] border border-border bg-surface" />
+                <span className="h-3 w-3 rounded-[3px] border border-line bg-surface" />
                 cited as a reference
             </span>
         </div>
@@ -33,9 +33,9 @@ function Chips({ group }: { group: ContributionGroup }) {
                         to={`/atlas/${entry.slug}`}
                         className="inline-flex h-[26px] items-center rounded px-2.5 text-[13px] font-semibold no-underline transition-colors"
                         style={{
-                            color: `hsl(var(--graph-icon-tint-${entry.kind}))`,
-                            background: `hsl(var(--graph-icon-bg-${entry.kind}))`,
-                            border: `1px solid hsl(var(--graph-icon-border-${entry.kind}))`,
+                            color: `var(--graph-icon-tint-${entry.kind})`,
+                            background: `var(--graph-icon-bg-${entry.kind})`,
+                            border: `1px solid var(--graph-icon-border-${entry.kind})`,
                         }}
                     >
                         {entry.title}
@@ -44,7 +44,7 @@ function Chips({ group }: { group: ContributionGroup }) {
                     <Link
                         key={entry.slug}
                         to={`/atlas/${entry.slug}`}
-                        className="inline-flex h-[26px] items-center gap-1.5 rounded border border-border bg-surface px-2.5 text-[13px] font-medium text-foreground no-underline transition-colors hover:border-border-strong"
+                        className="inline-flex h-[26px] items-center gap-1.5 rounded border border-line bg-surface px-2.5 text-[13px] font-medium text-fg no-underline transition-colors hover:border-line-strong"
                     >
                         <KindDot kind={entry.kind} />
                         {entry.title}
@@ -64,7 +64,7 @@ export default function AuthorContribution({ groups, isDesktop }: AuthorContribu
     return (
         <section className="flex flex-col gap-3.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-                <h2 className="m-0 text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <h2 className="m-0 text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-fg-muted">
                     Contribution to the Atlas
                 </h2>
                 {isDesktop && <Legend />}
@@ -75,11 +75,11 @@ export default function AuthorContribution({ groups, isDesktop }: AuthorContribu
                     {groups.map((group) => (
                         <div
                             key={group.domain}
-                            className="grid grid-cols-[170px_minmax(0,1fr)] items-start gap-4 border-t border-border py-3.5 first:border-t-0 first:pt-0"
+                            className="grid grid-cols-[170px_minmax(0,1fr)] items-start gap-4 border-t border-line py-3.5 first:border-t-0 first:pt-0"
                         >
                             <div className="flex flex-col gap-0.5 pt-0.5">
-                                <span className="text-[15px] font-semibold text-foreground">{group.label}</span>
-                                <span className="font-mono text-[11.5px] text-muted-foreground">
+                                <span className="text-[15px] font-semibold text-fg">{group.label}</span>
+                                <span className="font-mono text-[11.5px] text-fg-muted">
                                     {group.entries.length} page{group.entries.length === 1 ? "" : "s"}
                                 </span>
                             </div>
@@ -90,10 +90,10 @@ export default function AuthorContribution({ groups, isDesktop }: AuthorContribu
             ) : (
                 <div className="flex flex-col gap-2">
                     {groups.map((group, i) => (
-                        <details key={group.domain} open={i === 0} className="rounded-lg border border-border bg-surface px-3.5">
-                            <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between text-[14.5px] font-semibold text-foreground">
+                        <details key={group.domain} open={i === 0} className="rounded-panel border border-line bg-surface px-3.5">
+                            <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between text-[14.5px] font-semibold text-fg">
                                 {group.label}
-                                <span className="font-mono text-[12px] font-normal text-muted-foreground">
+                                <span className="font-mono text-[12px] font-normal text-fg-muted">
                                     {group.entries.length} page{group.entries.length === 1 ? "" : "s"}
                                 </span>
                             </summary>

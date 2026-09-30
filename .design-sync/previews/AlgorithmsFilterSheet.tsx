@@ -27,7 +27,7 @@ export const OpenAllAlgorithms = () => {
         problem: "all",
     });
     return (
-        <div className="relative w-full bg-background" style={{ height: 560 }}>
+        <div className="relative w-full bg-ground" style={{ height: 560 }}>
             <AlgorithmsFilterSheet
                 open
                 onClose={() => {}}
@@ -52,7 +52,7 @@ export const OpenWithCameraCalibrationSelected = () => {
         problem: "camera-calibration",
     });
     return (
-        <div className="relative w-full bg-background" style={{ height: 560 }}>
+        <div className="relative w-full bg-ground" style={{ height: 560 }}>
             <AlgorithmsFilterSheet
                 open
                 onClose={() => {}}

@@ -17,10 +17,10 @@ export default function Tooltip({ children, content, side = "right", delayDurati
                 <TooltipPrimitive.Content
                     side={side}
                     sideOffset={8}
-                    className="z-50 rounded-md bg-foreground px-2.5 py-1.5 text-xs text-background shadow-md animate-in fade-in-0 zoom-in-95"
+                    className="z-50 rounded-control bg-fg px-2.5 py-1.5 text-xs text-ground shadow-md animate-in fade-in-0 zoom-in-95"
                 >
                     {content}
-                    <TooltipPrimitive.Arrow className="fill-foreground" />
+                    <TooltipPrimitive.Arrow className="fill-fg" />
                 </TooltipPrimitive.Content>
             </TooltipPrimitive.Portal>
         </TooltipPrimitive.Root>

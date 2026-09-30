@@ -6,7 +6,7 @@ export const GridSelected = () => {
     return (
         <div className="flex flex-col items-start gap-2">
             <AlgorithmsViewToggle view={view} onChange={setView} />
-            <span className="text-[11px] text-muted-foreground font-mono">view: {view}</span>
+            <span className="text-[11px] text-fg-muted font-mono">view: {view}</span>
         </div>
     );
 };
@@ -16,7 +16,7 @@ export const ListSelected = () => {
     return (
         <div className="flex flex-col items-start gap-2">
             <AlgorithmsViewToggle view={view} onChange={setView} />
-            <span className="text-[11px] text-muted-foreground font-mono">view: {view}</span>
+            <span className="text-[11px] text-fg-muted font-mono">view: {view}</span>
         </div>
     );
 };
@@ -26,7 +26,7 @@ export const GraphSelected = () => {
     return (
         <div className="flex flex-col items-start gap-2">
             <AlgorithmsViewToggle view={view} onChange={setView} />
-            <span className="text-[11px] text-muted-foreground font-mono">view: {view}</span>
+            <span className="text-[11px] text-fg-muted font-mono">view: {view}</span>
         </div>
     );
 };
@@ -34,8 +34,8 @@ export const GraphSelected = () => {
 export const InToolbar = () => {
     const [view, setView] = useState("grid");
     return (
-        <div className="flex items-center justify-between w-80 px-3 py-2 border border-border rounded-lg bg-surface">
-            <span className="text-sm font-semibold text-foreground">Algorithms register</span>
+        <div className="flex items-center justify-between w-80 px-3 py-2 border border-line rounded-panel bg-surface">
+            <span className="text-sm font-semibold text-fg">Algorithms register</span>
             <AlgorithmsViewToggle view={view} onChange={setView} />
         </div>
     );

@@ -36,7 +36,7 @@ interface AtlasPeopleViewProps {
 
 function NetworkFallback() {
     return (
-        <div className="flex h-[600px] items-center justify-center rounded-lg border border-border text-[13px] text-muted-foreground">
+        <div className="flex h-[600px] items-center justify-center rounded-panel border border-line text-[13px] text-fg-muted">
             Loading the co-author network…
         </div>
     );
@@ -89,7 +89,7 @@ export default function AtlasPeopleView({
                     <div className={isDesktop ? "flex items-end justify-between gap-4" : "flex flex-col gap-3"}>
                         <div className="flex flex-col gap-1.5">
                             <h1 className="text-[28px] sm:text-[34px] font-bold -tracking-[0.5px]">Atlas</h1>
-                            <p className="text-[14px] sm:text-[15px] text-muted-foreground">{subtitle}</p>
+                            <p className="text-[14px] sm:text-[15px] text-fg-muted">{subtitle}</p>
                         </div>
                         <AtlasViewTabs view={view} onChange={setView} compact={!isDesktop} />
                     </div>
@@ -97,7 +97,7 @@ export default function AtlasPeopleView({
 
                 <div className={`flex gap-3 ${isDesktop ? "items-center justify-between" : "flex-col"}`}>
                     <div className={`flex gap-3 ${isDesktop ? "items-center" : "flex-col"}`}>
-                        <label className="flex h-11 w-full items-center gap-2 rounded-md border border-border bg-surface px-3.5 text-muted-foreground sm:w-[320px]">
+                        <label className="flex h-11 w-full items-center gap-2 rounded-control border border-line bg-surface px-3.5 text-fg-muted sm:w-[320px]">
                             <Search size={16} className="shrink-0" aria-hidden="true" />
                             <span className="sr-only">Search people</span>
                             <input
@@ -105,11 +105,11 @@ export default function AtlasPeopleView({
                                 placeholder={`Search ${peopleCount || ""} people or a paper title`}
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                className="min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground"
+                                className="min-w-0 flex-1 bg-transparent text-[14px] text-fg outline-none placeholder:text-fg-muted"
                             />
                         </label>
 
-                        <div role="tablist" aria-label="People view" className="inline-flex gap-0.5 rounded-lg border border-border bg-surface p-[3px]">
+                        <div role="tablist" aria-label="People view" className="inline-flex gap-0.5 rounded-control border border-line bg-surface p-[3px]">
                             {(["directory", "network"] as const).map((m) => (
                                 <button
                                     key={m}
@@ -117,10 +117,10 @@ export default function AtlasPeopleView({
                                     role="tab"
                                     aria-selected={mode === m}
                                     onClick={() => setMode(m)}
-                                    className={`h-9 rounded-md px-4 text-[13px] transition-colors ${
+                                    className={`h-9 rounded-control px-4 text-[13px] transition-colors ${
                                         mode === m
-                                            ? "bg-[hsl(var(--surface-hi))] font-semibold text-foreground"
-                                            : "font-medium text-muted-foreground hover:text-foreground"
+                                            ? "bg-line font-semibold text-fg"
+                                            : "font-medium text-fg-muted hover:text-fg"
                                     }`}
                                 >
                                     {m === "directory" ? "Directory" : "Network"}
@@ -130,12 +130,12 @@ export default function AtlasPeopleView({
                     </div>
 
                     {mode === "directory" && (
-                        <label className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                        <label className="flex items-center gap-2 text-[13px] text-fg-muted">
                             Sort
                             <select
                                 value={sort}
                                 onChange={(e) => setSort(e.target.value as PeopleSort)}
-                                className="h-9 rounded-md border border-border bg-surface px-2.5 text-[13px] text-foreground"
+                                className="h-9 rounded-control border border-line bg-surface px-2.5 text-[13px] text-fg"
                             >
                                 {SORT_OPTIONS.map((opt) => (
                                     <option key={opt.key} value={opt.key}>
@@ -149,7 +149,7 @@ export default function AtlasPeopleView({
 
                 {mode === "directory" ? (
                     status !== "ready" ? (
-                        <p className="py-10 text-center text-[13px] text-muted-foreground">
+                        <p className="py-10 text-center text-[13px] text-fg-muted">
                             {status === "error" ? "Couldn't load the researcher register." : "Loading the researcher register…"}
                         </p>
                     ) : (

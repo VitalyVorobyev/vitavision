@@ -14,7 +14,7 @@ export const StatusRow = () => (
 
 export const WithIcon = () => (
     <Pill>
-        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+        <span className="h-1.5 w-1.5 rounded-full bg-signal" />
         Detector active
     </Pill>
 );

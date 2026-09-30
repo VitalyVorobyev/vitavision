@@ -9,7 +9,7 @@ export interface ZoomControlsProps {
 }
 
 export function ZoomControls({ onZoomIn, onZoomOut, onFit }: ZoomControlsProps) {
-    const btnCls = "w-7 h-7 grid place-items-center rounded-md border border-border bg-surface text-muted-foreground hover:text-foreground hover:bg-muted shadow-sm transition-colors";
+    const btnCls = "w-7 h-7 grid place-items-center rounded-control border border-line bg-surface text-fg-muted hover:text-fg hover:bg-raised shadow-sm transition-colors";
     return (
         <div className="absolute bottom-3 right-3 flex flex-col gap-1">
             <button type="button" onClick={onZoomIn}  className={btnCls} title="Zoom in">

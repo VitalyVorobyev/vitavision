@@ -10,14 +10,14 @@ function Article() {
             <h1 id="zhang-calibration" className="text-lg font-serif font-semibold">
                 Zhang&rsquo;s planar calibration
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-fg-muted">
                 A closed-form solution from at least three views of a planar target,
                 refined by nonlinear least squares.
             </p>
             <h2 id="homography" className="text-base font-serif font-semibold">
                 Estimating the homography
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-fg-muted">
                 Each view gives a homography between the model plane and the image.
             </p>
             <h3 id="normalisation" className="text-sm font-serif font-semibold">

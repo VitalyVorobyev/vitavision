@@ -15,7 +15,7 @@ export default function UnifiedResults({ groups, layout, isMobile = false }: Uni
 
     if (groups.length === 0) {
         return (
-            <p className="text-[13px] text-muted-foreground py-6">
+            <p className="text-[13px] text-fg-muted py-6">
                 No entries match the current filters.
             </p>
         );

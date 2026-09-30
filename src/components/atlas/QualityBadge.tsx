@@ -20,7 +20,7 @@ export default function QualityBadge({ quality }: QualityBadgeProps) {
         return (
             <span
                 title="Reviewed flagship page."
-                className="inline-flex items-center gap-1 rounded border border-primary/30 bg-primary/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-primary"
+                className="inline-flex items-center gap-1 rounded border border-signal/30 bg-signal/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-signal"
             >
                 Canonical
             </span>

@@ -75,7 +75,7 @@ export default function ReadingProgress({ articleRef }: ReadingProgressProps) {
             className="fixed left-0 top-16 z-30 h-[2px] w-full"
         >
             <div
-                className="h-full w-full origin-left bg-[hsl(var(--brand))]"
+                className="h-full w-full origin-left bg-signal"
                 style={{
                     transform: `scaleX(${progress})`,
                     transition: prefersReducedMotion ? "none" : undefined,

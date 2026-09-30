@@ -175,7 +175,7 @@ export function NumberField(props: NumberFieldProps) {
     return (
         <div className="grid gap-1">
             <FieldLabel label={label} tooltip={tooltip} />
-            <div className="overflow-hidden rounded-md border border-border bg-background transition-colors hover:border-muted-foreground/40 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20">
+            <div className="overflow-hidden rounded-control border border-line bg-ground transition-colors hover:border-fg-muted/40 focus-within:border-signal/50 focus-within:ring-2 focus-within:ring-signal/20">
                 <div className="flex items-stretch">
                     <button
                         type="button"
@@ -186,7 +186,7 @@ export function NumberField(props: NumberFieldProps) {
                         onPointerCancel={stopHold}
                         disabled={disabled}
                         aria-label={`Decrease ${label}`}
-                        className="flex w-10 shrink-0 items-center justify-center border-r border-border text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+                        className="flex w-10 shrink-0 items-center justify-center border-r border-line text-fg-muted transition-colors hover:bg-raised/60 hover:text-fg disabled:cursor-not-allowed disabled:opacity-40"
                     >
                         <Minus size={14} />
                     </button>
@@ -212,7 +212,7 @@ export function NumberField(props: NumberFieldProps) {
                                 onChange(parsed);
                             }
                         }}
-                        className="number-field-input min-w-0 flex-1 bg-transparent px-3 py-2 text-center text-sm font-medium text-foreground outline-none"
+                        className="number-field-input min-w-0 flex-1 bg-transparent px-3 py-2 text-center text-sm font-medium text-fg outline-none"
                     />
                     <button
                         type="button"
@@ -223,12 +223,12 @@ export function NumberField(props: NumberFieldProps) {
                         onPointerCancel={stopHold}
                         disabled={disabled}
                         aria-label={`Increase ${label}`}
-                        className="flex w-10 shrink-0 items-center justify-center border-l border-border text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+                        className="flex w-10 shrink-0 items-center justify-center border-l border-line text-fg-muted transition-colors hover:bg-raised/60 hover:text-fg disabled:cursor-not-allowed disabled:opacity-40"
                     >
                         <Plus size={14} />
                     </button>
                 </div>
-                <div className="border-t border-border/70 px-2 py-1">
+                <div className="border-t border-line/70 px-2 py-1">
                     <button
                         type="button"
                         disabled={disabled}
@@ -241,11 +241,11 @@ export function NumberField(props: NumberFieldProps) {
                         aria-label={`Adjust ${label} by dragging horizontally`}
                         title="Drag horizontally to adjust"
                     >
-                        <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-border/80" />
-                        <span className="absolute left-1/2 top-1/2 h-2.5 w-px -translate-x-1/2 -translate-y-1/2 bg-muted-foreground/50" />
+                        <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-line/80" />
+                        <span className="absolute left-1/2 top-1/2 h-2.5 w-px -translate-x-1/2 -translate-y-1/2 bg-fg-muted/50" />
                         <span
                             className={`absolute top-1/2 h-1.5 w-7 -translate-y-1/2 rounded-full transition-colors ${
-                                scrubbing ? "bg-primary/45" : "bg-muted-foreground/25"
+                                scrubbing ? "bg-signal/45" : "bg-fg-muted/25"
                             }`}
                             style={{ left: `calc(50% - 0.875rem + ${scrubOffset}px)` }}
                         />

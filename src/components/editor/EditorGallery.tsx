@@ -62,16 +62,16 @@ export default function EditorGallery() {
     };
 
     return (
-        <div className="flex-1 bg-muted/10 p-8 overflow-y-auto">
+        <div className="flex-1 bg-raised/10 p-8 overflow-y-auto">
             <div className="max-w-5xl mx-auto space-y-8">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight">Image Gallery</h1>
-                        <p className="text-muted-foreground mt-1">Select an image to start exploring algorithms.</p>
+                        <p className="text-fg-muted mt-1">Select an image to start exploring algorithms.</p>
                     </div>
                     <button
                         onClick={handleFileUpload}
-                        className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium hover:bg-primary/90 transition-colors shadow-xs"
+                        className="flex items-center gap-2 bg-signal text-signal-fg px-4 py-2 rounded-control font-medium hover:bg-signal/90 transition-colors shadow-xs"
                     >
                         <Plus size={18} />
                         Upload Image
@@ -83,9 +83,9 @@ export default function EditorGallery() {
                         <div
                             key={img.id}
                             onClick={() => handleSelectImage(img.src, img.name, img.sampleId)}
-                            className="group cursor-pointer rounded-xl border border-border bg-background overflow-hidden hover:shadow-md transition-all hover:border-primary/50 flex flex-col"
+                            className="group cursor-pointer rounded-xl border border-line bg-ground overflow-hidden hover:shadow-md transition-all hover:border-signal/50 flex flex-col"
                         >
-                            <div className="aspect-video relative overflow-hidden bg-muted flex items-center justify-center">
+                            <div className="aspect-video relative overflow-hidden bg-raised flex items-center justify-center">
                                 <img
                                     src={img.src}
                                     alt={img.name}
@@ -95,13 +95,13 @@ export default function EditorGallery() {
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                             </div>
                             <div className="p-4 flex items-start gap-3">
-                                <div className="p-2 bg-primary/10 rounded-md text-primary shrink-0 mt-0.5">
+                                <div className="p-2 bg-signal/10 rounded-control text-signal shrink-0 mt-0.5">
                                     <ImageIcon size={18} />
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <span className="font-medium truncate block">{img.name}</span>
                                     {img.description && (
-                                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{img.description}</p>
+                                        <p className="text-xs text-fg-muted mt-1 line-clamp-2">{img.description}</p>
                                     )}
                                 </div>
                             </div>

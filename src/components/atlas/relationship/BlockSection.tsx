@@ -19,7 +19,7 @@ export default function BlockSection({ heading, slugs }: BlockSectionProps) {
 
     return (
         <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-fg-muted mb-2">
                 {heading}
             </h3>
             <div className="flex flex-wrap gap-2">

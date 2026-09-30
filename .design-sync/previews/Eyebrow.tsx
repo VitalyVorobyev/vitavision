@@ -7,7 +7,7 @@ export const Default = () => (
 export const AbovePanelHeading = () => (
     <div>
         <Eyebrow>ChArUco board</Eyebrow>
-        <h3 className="mt-1 text-lg font-semibold text-foreground">Marker detection results</h3>
+        <h3 className="mt-1 text-lg font-semibold text-fg">Marker detection results</h3>
     </div>
 );
 

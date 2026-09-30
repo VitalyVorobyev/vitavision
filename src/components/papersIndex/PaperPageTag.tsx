@@ -8,9 +8,9 @@ export function PaperPageTag({ page }: { page: PaperPageTagData }) {
         <span
             className="inline-flex h-[22px] max-w-[220px] items-center truncate rounded-[3px] px-1.5 text-[12px] font-semibold"
             style={{
-                color: `hsl(var(--graph-icon-tint-${page.kind}))`,
-                background: `hsl(var(--graph-icon-bg-${page.kind}))`,
-                border: `1px solid hsl(var(--graph-icon-border-${page.kind}))`,
+                color: `var(--graph-icon-tint-${page.kind})`,
+                background: `var(--graph-icon-bg-${page.kind})`,
+                border: `1px solid var(--graph-icon-border-${page.kind})`,
             }}
             title={page.title}
         >

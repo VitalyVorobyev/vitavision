@@ -17,7 +17,7 @@ export function CheckboxField(props: CheckboxFieldProps) {
                 checked={checked ?? false}
                 disabled={disabled}
                 onChange={(event) => onChange(event.target.checked)}
-                className="accent-primary disabled:cursor-not-allowed disabled:opacity-50"
+                className="accent-signal disabled:cursor-not-allowed disabled:opacity-50"
             />
             <FieldLabel label={label} tooltip={tooltip} />
         </label>

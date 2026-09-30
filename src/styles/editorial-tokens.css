@@ -1,0 +1,142 @@
+/*
+ * The editorial token layer.
+ *
+ * Everything else the site paints comes from @vitavision/ui's tokens (ground, surface,
+ * raised, line, fg, signal, ... in `@vitavision/ui/styles.css`). What is left here is what
+ * the instrument system has no name for: the reading colours of the article pages, and the
+ * category palettes of the Atlas graph, the paper lineage strip and the article blocks.
+ *
+ * - Chrome is defined in terms of ui tokens, so it follows the system when it changes.
+ * - Data (a relation type, an entry kind, a block family) is a literal colour: a category
+ *   has to keep its hue whatever the chrome does.
+ *
+ * Every colour used as text is held at >= 4.5:1 against the surfaces it sits on (ground,
+ * surface, raised, and its own block tint) in both themes. Decorative rules and fills
+ * (block borders, kind accent bars) are exempt.
+ *
+ * Registered as Tailwind colours in `src/index.css` (`text-article-body`, ...).
+ */
+
+:root {
+    /* The brand mark's pupil (docs/brand_identity.md, the favicons). An identity colour,
+       not an accent: it never means "you can act here". */
+    --vv-brand-mark: #33c6e3;
+
+    /* ── Article reading ──────────────────────────────────────────────────── */
+    --article-body: color-mix(in oklab, var(--fg) 88%, var(--fg-muted));
+    --article-heading: var(--fg);
+    --article-link: var(--signal);
+
+    /* ── Atlas graph: chrome ──────────────────────────────────────────────── */
+    --graph-canvas-from: var(--surface);
+    --graph-canvas-mid: color-mix(in oklab, var(--surface) 50%, var(--ground));
+    --graph-canvas-to: var(--ground);
+    --graph-pill-bg: var(--surface);
+
+    /* ── Atlas graph: relation types (edge strokes and their labels) ─────── */
+    --graph-rel-prereq: hsl(215 25% 45%);
+    --graph-rel-extend: hsl(215 19% 32%);
+    --graph-rel-compare: hsl(215 16% 44%);
+    --graph-rel-flow: hsl(215 25% 45%);
+    --graph-rel-learn: hsl(191 55% 32%);
+
+    /* ── Atlas graph: entry kinds ─────────────────────────────────────────── */
+    --graph-icon-tint-algorithm: hsl(191 55% 32%);
+    --graph-icon-tint-model: hsl(263 42% 48%);
+    --graph-icon-tint-concept: hsl(32 60% 36%);
+    --graph-icon-bg-algorithm: hsl(191 50% 95%);
+    --graph-icon-bg-model: hsl(263 55% 96%);
+    --graph-icon-bg-concept: hsl(40 80% 94%);
+    --graph-icon-border-algorithm: hsl(191 40% 84%);
+    --graph-icon-border-model: hsl(263 40% 88%);
+    --graph-icon-border-concept: hsl(38 60% 82%);
+    --graph-kind-accent-algorithm: hsl(191 70% 44%);
+    --graph-kind-accent-model: hsl(263 60% 60%);
+    --graph-kind-accent-concept: hsl(36 78% 48%);
+
+    /* ── Paper lineage strip: built-upon-by (filled) vs builds-on (hollow) ── */
+    --lineage-out: hsl(214 58% 45%);
+    --lineage-in: hsl(215 15% 35%);
+
+    /* ── Article blocks (article.css): rule, tint and title per family ───── */
+    --vv-formal-rule: hsl(215 60% 55%);
+    --vv-formal-rule-soft: hsl(215 40% 55%);
+    --vv-formal-rule-softer: hsl(215 30% 55%);
+    --vv-formal-bg: hsl(215 30% 96%);
+    --vv-formal-title: hsl(215 60% 46%);
+    --vv-note-rule: hsl(200 60% 50%);
+    --vv-note-bg: hsl(200 60% 96%);
+    --vv-note-title: hsl(200 60% 37%);
+    --vv-warning-rule: hsl(38 85% 50%);
+    --vv-warning-bg: hsl(38 85% 96%);
+    --vv-warning-title: hsl(38 85% 31%);
+    --vv-definition-rule: hsl(260 40% 55%);
+    --vv-definition-bg: hsl(260 30% 97%);
+    --vv-definition-title: hsl(260 40% 50%);
+    --vv-example-rule: hsl(140 40% 45%);
+    --vv-example-bg: hsl(140 30% 96%);
+    --vv-example-title: hsl(140 40% 34%);
+    --vv-algorithm-rule: hsl(215 20% 80%);
+    --vv-algorithm-bg: hsl(215 15% 97%);
+    --vv-algorithm-meta: hsl(215 20% 46%);
+    --vv-proof-rule: hsl(215 25% 80%);
+    --vv-quote-rule: hsl(215 30% 75%);
+
+    /* ── Inline coloured text (:color[name]{text}) ───────────────────────── */
+    --vv-color-blue: hsl(215 60% 45%);
+    --vv-color-amber: hsl(38 85% 31%);
+    --vv-color-green: hsl(140 40% 34%);
+    --vv-color-violet: hsl(260 40% 50%);
+}
+
+.dark {
+    --graph-rel-prereq: hsl(215 30% 72%);
+    --graph-rel-extend: hsl(215 25% 70%);
+    --graph-rel-compare: hsl(215 18% 62%);
+    --graph-rel-flow: hsl(215 30% 72%);
+    --graph-rel-learn: hsl(191 60% 62%);
+
+    --graph-icon-tint-algorithm: hsl(191 55% 68%);
+    --graph-icon-tint-model: hsl(263 60% 76%);
+    --graph-icon-tint-concept: hsl(38 70% 62%);
+    --graph-icon-bg-algorithm: hsl(191 38% 20%);
+    --graph-icon-bg-model: hsl(263 32% 24%);
+    --graph-icon-bg-concept: hsl(34 32% 21%);
+    --graph-icon-border-algorithm: hsl(191 32% 34%);
+    --graph-icon-border-model: hsl(263 28% 38%);
+    --graph-icon-border-concept: hsl(36 30% 36%);
+    --graph-kind-accent-algorithm: hsl(191 65% 52%);
+    --graph-kind-accent-model: hsl(263 65% 70%);
+    --graph-kind-accent-concept: hsl(38 78% 56%);
+
+    --lineage-out: hsl(213 70% 68%);
+    --lineage-in: hsl(215 20% 62%);
+
+    --vv-formal-rule: hsl(215 45% 55%);
+    --vv-formal-rule-soft: hsl(215 35% 55%);
+    --vv-formal-rule-softer: hsl(215 25% 55%);
+    --vv-formal-bg: hsl(215 33% 15%);
+    --vv-formal-title: hsl(215 45% 65%);
+    --vv-note-rule: hsl(200 50% 55%);
+    --vv-note-bg: hsl(200 30% 14%);
+    --vv-note-title: hsl(200 50% 65%);
+    --vv-warning-rule: hsl(38 70% 55%);
+    --vv-warning-bg: hsl(38 40% 13%);
+    --vv-warning-title: hsl(38 70% 62%);
+    --vv-definition-rule: hsl(260 35% 60%);
+    --vv-definition-bg: hsl(260 20% 13%);
+    --vv-definition-title: hsl(260 35% 68%);
+    --vv-example-rule: hsl(140 35% 52%);
+    --vv-example-bg: hsl(140 15% 13%);
+    --vv-example-title: hsl(140 35% 58%);
+    --vv-algorithm-rule: hsl(215 20% 30%);
+    --vv-algorithm-bg: hsl(215 20% 13%);
+    --vv-algorithm-meta: hsl(215 20% 65%);
+    --vv-proof-rule: hsl(215 25% 30%);
+    --vv-quote-rule: hsl(215 30% 35%);
+
+    --vv-color-blue: hsl(215 60% 70%);
+    --vv-color-amber: hsl(38 70% 68%);
+    --vv-color-green: hsl(140 35% 62%);
+    --vv-color-violet: hsl(260 35% 70%);
+}

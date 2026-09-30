@@ -1,5 +1,6 @@
 import { useEffect, type RefObject } from "react";
 import { createRoot, type Root } from "react-dom/client";
+import { TooltipProvider } from "@vitavision/ui";
 import ChessResponseIllustration from "../../components/illustrations/ChessResponseIllustration.tsx";
 import DelaunayVoronoiInlineIllustration from "../../components/illustrations/DelaunayVoronoiInlineIllustration.tsx";
 import type { ChessResponsePattern, ChessResponsePreset } from "../../components/illustrations/chess-response/types";
@@ -38,6 +39,8 @@ export function useArticleIllustrations(
         const hosts = element.querySelectorAll<HTMLElement>("[data-vv-illustration]");
         if (hosts.length === 0) return;
 
+        // Each illustration is a React root of its own, outside the app tree, so it needs its
+        // own TooltipProvider: ui's Tooltip and InfoHint throw without one.
         const roots: Root[] = [];
 
         hosts.forEach((host) => {
@@ -46,27 +49,31 @@ export function useArticleIllustrations(
                 const root = createRoot(host);
                 roots.push(root);
                 root.render(
-                    <ChessResponseIllustration
-                        preset={parsePreset(host.dataset.vvPreset)}
-                        initialPattern={parsePattern(host.dataset.vvPattern)}
-                        initialRotation={parseNumber(host.dataset.vvRotation, 22.5)}
-                        showControls={parseBoolean(host.dataset.vvControls, true)}
-                        initialAnimateRotation={parseBoolean(host.dataset.vvAnimateRotation, false)}
-                    />,
+                    <TooltipProvider>
+                        <ChessResponseIllustration
+                            preset={parsePreset(host.dataset.vvPreset)}
+                            initialPattern={parsePattern(host.dataset.vvPattern)}
+                            initialRotation={parseNumber(host.dataset.vvRotation, 22.5)}
+                            showControls={parseBoolean(host.dataset.vvControls, true)}
+                            initialAnimateRotation={parseBoolean(host.dataset.vvAnimateRotation, false)}
+                        />
+                    </TooltipProvider>,
                 );
             } else if (kind === "delaunay-voronoi") {
                 const root = createRoot(host);
                 roots.push(root);
                 root.render(
-                    <DelaunayVoronoiInlineIllustration
-                        showLegend={parseBoolean(host.dataset.vvLegend, false)}
-                        initialLayers={{
-                            grid:          parseBoolean(host.dataset.vvGrid, true),
-                            delaunay:      parseBoolean(host.dataset.vvDelaunay, true),
-                            voronoi:       parseBoolean(host.dataset.vvVoronoi, false),
-                            circumcircles: parseBoolean(host.dataset.vvCircumcircles, false),
-                        }}
-                    />,
+                    <TooltipProvider>
+                        <DelaunayVoronoiInlineIllustration
+                            showLegend={parseBoolean(host.dataset.vvLegend, false)}
+                            initialLayers={{
+                                grid:          parseBoolean(host.dataset.vvGrid, true),
+                                delaunay:      parseBoolean(host.dataset.vvDelaunay, true),
+                                voronoi:       parseBoolean(host.dataset.vvVoronoi, false),
+                                circumcircles: parseBoolean(host.dataset.vvCircumcircles, false),
+                            }}
+                        />
+                    </TooltipProvider>,
                 );
             }
         });

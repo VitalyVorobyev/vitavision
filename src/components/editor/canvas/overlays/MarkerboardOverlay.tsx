@@ -6,7 +6,8 @@ import type { Feature, OverlayToggles } from "../../../../store/editor/useEditor
 import { toCanvasCoordinate } from "../../algorithms/calibrationTargets/shared";
 import { buildCornerGrid, buildGridEdges, buildFeatureIdByGrid } from "../../algorithms/calibrationTargets/overlayData";
 import GridEdgesGroup from "./GridEdgesGroup";
-import { overlayTheme } from "./overlayTheme";
+import { useCanvasTokens, withAlpha } from "../../../../lib/canvasTokens";
+import { POLARITY_COLORS } from "../../../../store/editor/featureColors";
 
 interface MarkerboardOverlayProps {
     result: unknown;
@@ -26,6 +27,8 @@ export default function MarkerboardOverlay({
     features,
 }: MarkerboardOverlayProps) {
     const data = result as CalibrationTargetResult;
+    // Drawn on the photograph, so in the image well's palette (see canvasTokens.ts).
+    const tokens = useCanvasTokens("well");
 
     const grid = useMemo(() => buildCornerGrid(data.detection.corners), [data]);
     const edges = useMemo(() => buildGridEdges(grid), [grid]);
@@ -66,7 +69,7 @@ export default function MarkerboardOverlay({
                     {matchedCircles.map((c, i) => {
                         const cx = toCanvasCoordinate(c.center_img.x);
                         const cy = toCanvasCoordinate(c.center_img.y);
-                        const color = c.polarity === "white" ? overlayTheme.circleLight : overlayTheme.circleDark;
+                        const color = c.polarity === "white" ? POLARITY_COLORS.white : POLARITY_COLORS.black;
                         const circleKey = `${c.expectedCell.i}:${c.expectedCell.j}`;
                         const featureId = featureIdMap.get(circleKey);
                         return (
@@ -75,7 +78,7 @@ export default function MarkerboardOverlay({
                                     x={cx}
                                     y={cy}
                                     radius={circleRadius}
-                                    stroke={overlayTheme.cornerHalo}
+                                    stroke={withAlpha(tokens.canvas, 0.82)}
                                     strokeWidth={3.2 / zoom}
                                     opacity={0.75}
                                     listening={false}
@@ -85,7 +88,7 @@ export default function MarkerboardOverlay({
                                     y={cy}
                                     radius={circleRadius}
                                     stroke={color}
-                                    fill="rgba(248, 250, 252, 0.06)"
+                                    fill={withAlpha(POLARITY_COLORS.white, 0.06)}
                                     strokeWidth={1.6 / zoom}
                                     opacity={0.95}
                                     listening={false}
@@ -107,11 +110,11 @@ export default function MarkerboardOverlay({
                                         y={cy - fontSize / 2}
                                         listening={false}
                                     >
-                                        <Tag fill={overlayTheme.labelBg} cornerRadius={2 / zoom} />
+                                        <Tag fill={withAlpha(tokens.overlay, 0.86)} cornerRadius={2 / zoom} />
                                         <Text
                                             text={`(${c.expectedCell.i}, ${c.expectedCell.j})`}
                                             fontSize={fontSize}
-                                            fill={overlayTheme.labelText}
+                                            fill={tokens.fg}
                                             padding={labelPad}
                                         />
                                     </Label>
@@ -144,11 +147,11 @@ export default function MarkerboardOverlay({
                                     y={node.y - fontSize - 2 / zoom}
                                     listening={false}
                                 >
-                                    <Tag fill={overlayTheme.labelBg} cornerRadius={2 / zoom} />
+                                    <Tag fill={withAlpha(tokens.overlay, 0.86)} cornerRadius={2 / zoom} />
                                     <Text
                                         text={`${node.i},${node.j}`}
                                         fontSize={fontSize}
-                                        fill={overlayTheme.labelText}
+                                        fill={tokens.fg}
                                         padding={labelPad}
                                     />
                                 </Label>

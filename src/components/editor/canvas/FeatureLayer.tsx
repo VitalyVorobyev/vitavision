@@ -7,7 +7,8 @@ import DirectedPointGlyph from "./primitives/DirectedPointGlyph";
 import RingMarkerGlyph from "./primitives/RingMarkerGlyph";
 import CircleGlyph from "./primitives/CircleGlyph";
 import { isFeatureVisible } from "../../../store/editor/featureGroups";
-import { overlayTheme } from "./overlays/overlayTheme";
+import { useCanvasTokens, withAlpha } from "../../../lib/canvasTokens";
+import { ANNOTATION_COLORS, DETECTION_COLORS } from "../../../store/editor/featureColors";
 import { isReadonlyFeature, type DirectedPointFeature, type Feature, type OverlayToggles, type ToolType } from "../../../store/editor/useEditorStore";
 
 interface FeatureLayerProps {
@@ -50,6 +51,8 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
         onDirectedPointHover,
         onDirectedPointLeave,
     } = props;
+    // Drawn on the photograph, so in the image well's palette (see canvasTokens.ts).
+    const tokens = useCanvasTokens("well");
 
     if (!showFeatures) {
         return null;
@@ -79,7 +82,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                 if (feature.type === "point") {
                     const pointRadius = 3 / zoom;
                     const hitRadius = 8 / zoom;
-                    const color = isSelected ? "#00ffff" : feature.color || "#ff0000";
+                    const color = isSelected ? tokens.signal : feature.color || ANNOTATION_COLORS.point;
                     return (
                         <Group
                             key={feature.id}
@@ -105,8 +108,8 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                                     x={feature.x}
                                     y={feature.y}
                                     radius={10 / zoom}
-                                    fill="rgba(0, 255, 255, 0.18)"
-                                    stroke="#00ffff"
+                                    fill={withAlpha(tokens.signal, 0.18)}
+                                    stroke={tokens.signal}
                                     strokeWidth={1.2 / zoom}
                                     opacity={0.9}
                                 />
@@ -126,7 +129,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                         <Line
                             key={feature.id}
                             points={feature.points}
-                            stroke={isSelected ? "#00ffff" : feature.color || "#00ffff"}
+                            stroke={isSelected ? tokens.signal : feature.color || ANNOTATION_COLORS.line}
                             strokeWidth={isSelected ? 3 / zoom : 2 / zoom}
                             draggable={canEditGeometry}
                             onClick={selectFeature}
@@ -147,7 +150,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                         <Line
                             key={feature.id}
                             points={feature.points}
-                            stroke={isSelected ? "#00ffff" : feature.color || "#00ff00"}
+                            stroke={isSelected ? tokens.signal : feature.color || ANNOTATION_COLORS.polyline}
                             strokeWidth={isSelected ? 3 / zoom : 2 / zoom}
                             draggable={canEditGeometry}
                             onClick={selectFeature}
@@ -164,14 +167,14 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                 }
 
                 if (feature.type === "polygon") {
-                    const fillColor = isSelected ? "rgba(0,255,255,0.15)" : "rgba(139,92,246,0.15)";
+                    const fillColor = isSelected ? withAlpha(tokens.signal, 0.15) : withAlpha(ANNOTATION_COLORS.polygon, 0.15);
                     return (
                         <Line
                             key={feature.id}
                             points={feature.points}
                             closed={feature.closed}
                             fill={fillColor}
-                            stroke={isSelected ? "#00ffff" : feature.color || "#8b5cf6"}
+                            stroke={isSelected ? tokens.signal : feature.color || ANNOTATION_COLORS.polygon}
                             strokeWidth={isSelected ? 3 / zoom : 2 / zoom}
                             draggable={canEditGeometry}
                             onClick={selectFeature}
@@ -197,7 +200,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                             width={feature.width}
                             height={feature.height}
                             rotation={feature.rotation || 0}
-                            stroke={feature.color || "#ffaa00"}
+                            stroke={feature.color || ANNOTATION_COLORS.bbox}
                             strokeWidth={isSelected ? 3 / zoom : 2 / zoom}
                             draggable={canEditGeometry}
                             onClick={selectFeature}
@@ -220,7 +223,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                             radiusX={feature.radiusX}
                             radiusY={feature.radiusY}
                             rotation={feature.rotation || 0}
-                            stroke={feature.color || "#ff00ff"}
+                            stroke={feature.color || ANNOTATION_COLORS.ellipse}
                             strokeWidth={isSelected ? 3 / zoom : 2 / zoom}
                             draggable={canEditGeometry}
                             onClick={selectFeature}
@@ -237,6 +240,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                     return (
                         <DirectedPointGlyph
                             key={feature.id}
+                            tokens={tokens}
                             feature={feature}
                             zoom={zoom}
                             selected={isSelected}
@@ -252,6 +256,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                     return (
                         <RingMarkerGlyph
                             key={feature.id}
+                            tokens={tokens}
                             feature={feature}
                             zoom={zoom}
                             selected={isSelected}
@@ -264,6 +269,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                     return (
                         <ArUcoMarkerGlyph
                             key={feature.id}
+                            tokens={tokens}
                             feature={feature}
                             zoom={zoom}
                             selected={isSelected}
@@ -276,6 +282,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                     return (
                         <CircleGlyph
                             key={feature.id}
+                            tokens={tokens}
                             feature={feature}
                             zoom={zoom}
                             selected={isSelected}
@@ -288,7 +295,7 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                     const lp = feature;
                     const pointRadius = 3 / zoom;
                     const hitRadius = 8 / zoom;
-                    const color = isSelected ? "#00ffff" : feature.color || overlayTheme.cornerAccent;
+                    const color = isSelected ? tokens.signal : feature.color || DETECTION_COLORS.corner;
                     const showLabel = (overlayToggles?.labels ?? false) && zoom >= LABEL_MIN_ZOOM;
                     const fontSize = 9 / zoom;
                     const labelPad = 2 / zoom;
@@ -309,8 +316,8 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                                     x={lp.x}
                                     y={lp.y}
                                     radius={10 / zoom}
-                                    fill="rgba(0, 255, 255, 0.18)"
-                                    stroke="#00ffff"
+                                    fill={withAlpha(tokens.signal, 0.18)}
+                                    stroke={tokens.signal}
                                     strokeWidth={1.2 / zoom}
                                     opacity={0.9}
                                 />
@@ -327,11 +334,11 @@ export default memo(function FeatureLayer(props: FeatureLayerProps) {
                                     y={lp.y - fontSize - 2 / zoom}
                                     listening={false}
                                 >
-                                    <Tag fill={overlayTheme.labelBg} cornerRadius={2 / zoom} />
+                                    <Tag fill={withAlpha(tokens.overlay, 0.86)} cornerRadius={2 / zoom} />
                                     <Text
                                         text={`(${lp.gridIndex.i},${lp.gridIndex.j})`}
                                         fontSize={fontSize}
-                                        fill={overlayTheme.labelText}
+                                        fill={tokens.fg}
                                         padding={labelPad}
                                     />
                                 </Label>

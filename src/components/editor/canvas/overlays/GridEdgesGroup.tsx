@@ -1,7 +1,8 @@
 import { Group, Line } from "react-konva";
 
 import type { GridEdge } from "../../algorithms/calibrationTargets/overlayData";
-import { overlayTheme } from "./overlayTheme";
+import { useCanvasTokens, withAlpha } from "../../../../lib/canvasTokens";
+import { DETECTION_COLORS } from "../../../../store/editor/featureColors";
 
 interface GridEdgesGroupProps {
     rowEdges: GridEdge[];
@@ -15,9 +16,11 @@ export default function GridEdgesGroup({
     rowEdges,
     colEdges,
     zoom,
-    rowColor = overlayTheme.rowEdge,
-    colColor = overlayTheme.colEdge,
+    rowColor = DETECTION_COLORS.gridRow,
+    colColor = DETECTION_COLORS.gridCol,
 }: GridEdgesGroupProps) {
+    const tokens = useCanvasTokens("well");
+    const halo = withAlpha(tokens.canvas, 0.5);
     const strokeWidth = 1.5 / zoom;
     const haloWidth = 3.2 / zoom;
 
@@ -27,7 +30,7 @@ export default function GridEdgesGroup({
                 <Group key={`r-${i}`}>
                     <Line
                         points={[e.x1, e.y1, e.x2, e.y2]}
-                        stroke={overlayTheme.edgeHalo}
+                        stroke={halo}
                         strokeWidth={haloWidth}
                         opacity={0.72}
                     />
@@ -43,7 +46,7 @@ export default function GridEdgesGroup({
                 <Group key={`c-${i}`}>
                     <Line
                         points={[e.x1, e.y1, e.x2, e.y2]}
-                        stroke={overlayTheme.edgeHalo}
+                        stroke={halo}
                         strokeWidth={haloWidth}
                         opacity={0.72}
                     />

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Stage, Layer, Image as KonvaImage, Line, Rect, Ellipse, Transformer } from "react-konva";
 import useImage from "use-image";
 import type Konva from "konva";
+import { Button } from "@vitavision/ui";
 
 import FeatureLayer from "./canvas/FeatureLayer";
 import HeatmapLayer from "./canvas/HeatmapLayer";
@@ -12,6 +13,8 @@ import { useShallow } from "zustand/react/shallow";
 import { getLoadedAlgorithm } from "./algorithms/registry";
 import CanvasControlsHint from "../shared/CanvasControlsHint";
 import useViewportMode from "../../hooks/useViewportMode";
+import { withAlpha } from "../../lib/canvasTokens";
+import { ANNOTATION_COLORS } from "../../store/editor/featureColors";
 import { usePixelSampler } from "./hooks/usePixelSampler";
 import { useCanvasGestures } from "./hooks/useCanvasGestures";
 import { useDrawingHandlers } from "./hooks/useDrawingHandlers";
@@ -312,13 +315,9 @@ export default function CanvasWorkspace() {
 
             {isTouchPrimary && (activeTool === "POLYLINE" || activeTool === "POLYGON") && isDrawing && (
                 <div className="absolute bottom-4 left-4 z-20">
-                    <button
-                        type="button"
-                        onClick={finishCurrentShape}
-                        className="rounded-control border border-line bg-ground/90 px-3 py-2 text-sm font-medium text-fg shadow-xs backdrop-blur-sm transition-colors hover:bg-ground"
-                    >
+                    <Button onClick={finishCurrentShape} className="shadow-xs">
                         Finish shape
-                    </button>
+                    </Button>
                 </div>
             )}
 
@@ -369,7 +368,7 @@ export default function CanvasWorkspace() {
                         {activeTool === "POLYLINE" && isDrawing && currentLinePoints.length > 0 && (
                             <Line
                                 points={currentLinePoints}
-                                stroke="#00ff00"
+                                stroke={ANNOTATION_COLORS.polyline}
                                 strokeWidth={2 / zoom}
                                 tension={0}
                                 lineCap="round"
@@ -381,8 +380,8 @@ export default function CanvasWorkspace() {
                             <Line
                                 points={currentLinePoints}
                                 closed={currentLinePoints.length >= 6}
-                                fill={currentLinePoints.length >= 6 ? "rgba(139,92,246,0.1)" : undefined}
-                                stroke="#8b5cf6"
+                                fill={currentLinePoints.length >= 6 ? withAlpha(ANNOTATION_COLORS.polygon, 0.1) : undefined}
+                                stroke={ANNOTATION_COLORS.polygon}
                                 strokeWidth={2 / zoom}
                                 dash={[5 / zoom, 5 / zoom]}
                                 tension={0}
@@ -394,7 +393,7 @@ export default function CanvasWorkspace() {
                         {activeTool === "LINE" && isDrawing && currentLinePos && (
                             <Line
                                 points={[currentLinePos.x1, currentLinePos.y1, currentLinePos.x2, currentLinePos.y2]}
-                                stroke="#00ffff"
+                                stroke={ANNOTATION_COLORS.line}
                                 strokeWidth={2 / zoom}
                             />
                         )}
@@ -405,7 +404,7 @@ export default function CanvasWorkspace() {
                                 y={currentBBoxDims.h < 0 ? currentBBoxPos.y + currentBBoxDims.h : currentBBoxPos.y}
                                 width={Math.abs(currentBBoxDims.w)}
                                 height={Math.abs(currentBBoxDims.h)}
-                                stroke="#ffaa00"
+                                stroke={ANNOTATION_COLORS.bbox}
                                 strokeWidth={2 / zoom}
                                 dash={[5 / zoom, 5 / zoom]}
                             />
@@ -417,7 +416,7 @@ export default function CanvasWorkspace() {
                                 y={currentBBoxPos.y + currentBBoxDims.h / 2}
                                 radiusX={Math.abs(currentBBoxDims.w) / 2}
                                 radiusY={Math.abs(currentBBoxDims.h) / 2}
-                                stroke="#ff00ff"
+                                stroke={ANNOTATION_COLORS.ellipse}
                                 strokeWidth={2 / zoom}
                                 dash={[5 / zoom, 5 / zoom]}
                             />

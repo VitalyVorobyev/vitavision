@@ -5,7 +5,7 @@ import type { CalibrationTargetResult } from "../../../../lib/types";
 import type { Feature, OverlayToggles } from "../../../../store/editor/useEditorStore";
 import { buildCornerGrid, buildGridEdges, buildFeatureIdByGrid } from "../../algorithms/calibrationTargets/overlayData";
 import GridEdgesGroup from "./GridEdgesGroup";
-import { overlayTheme } from "./overlayTheme";
+import { useCanvasTokens, withAlpha } from "../../../../lib/canvasTokens";
 
 interface CharucoOverlayProps {
     result: unknown;
@@ -25,6 +25,8 @@ export default function CharucoOverlay({
     features,
 }: CharucoOverlayProps) {
     const data = result as CalibrationTargetResult;
+    // Drawn on the photograph, so in the image well's palette (see canvasTokens.ts).
+    const tokens = useCanvasTokens("well");
 
     const grid = useMemo(() => buildCornerGrid(data.detection.corners), [data]);
     const edges = useMemo(() => buildGridEdges(grid), [grid]);
@@ -70,11 +72,11 @@ export default function CharucoOverlay({
                                     y={node.y - fontSize - 2 / zoom}
                                     listening={false}
                                 >
-                                    <Tag fill={overlayTheme.labelBg} cornerRadius={2 / zoom} />
+                                    <Tag fill={withAlpha(tokens.overlay, 0.86)} cornerRadius={2 / zoom} />
                                     <Text
                                         text={`${node.i},${node.j}`}
                                         fontSize={fontSize}
-                                        fill={overlayTheme.labelText}
+                                        fill={tokens.fg}
                                         padding={labelPad}
                                     />
                                 </Label>

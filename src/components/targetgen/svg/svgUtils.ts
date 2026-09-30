@@ -1,3 +1,5 @@
+import { PRINT_COLORS } from "../printColors";
+
 export function svgDocument(
     widthMm: number,
     heightMm: number,
@@ -33,7 +35,7 @@ export function text(
     opts: { fontSize?: number; fill?: string; anchor?: string } = {},
 ): string {
     const fs = opts.fontSize ?? 3;
-    const fill = opts.fill ?? "#999";
+    const fill = opts.fill ?? PRINT_COLORS.caption;
     const anchor = opts.anchor ?? "middle";
     return `<text x="${x}" y="${y}" font-size="${fs}" fill="${fill}" text-anchor="${anchor}" font-family="sans-serif">${content}</text>`;
 }

@@ -5,7 +5,8 @@ import type { PuzzleBoardDetectResult, PuzzleBoardLabeledCorner, PuzzleBoardObse
 import type { Feature, OverlayToggles } from "../../../../store/editor/useEditorStore";
 import type { GridEdge, GridNode } from "../../algorithms/calibrationTargets/overlayData";
 import GridEdgesGroup from "../../canvas/overlays/GridEdgesGroup";
-import { overlayTheme } from "../../canvas/overlays/overlayTheme";
+import { useCanvasTokens, withAlpha } from "../../../../lib/canvasTokens";
+import { POLARITY_COLORS } from "../../../../store/editor/featureColors";
 
 interface PuzzleboardOverlayProps {
     result: unknown;
@@ -17,8 +18,6 @@ interface PuzzleboardOverlayProps {
 
 const LABEL_MIN_ZOOM = 0.5;
 const MASTER_PERIOD = 501;
-const WHITE_BIT_STROKE = "#38bdf8"; // sky-400 — outlines white puzzle dots (bit=1)
-const BLACK_BIT_STROKE = "#f97316"; // orange-500 — outlines black puzzle dots (bit=0)
 
 interface EdgeMarker {
     key: string;
@@ -81,7 +80,7 @@ function buildEdgeMarkers(
             x: mx,
             y: my,
             radius,
-            stroke: e.bit === 1 ? WHITE_BIT_STROKE : BLACK_BIT_STROKE,
+            stroke: e.bit === 1 ? POLARITY_COLORS.whiteBit : POLARITY_COLORS.blackBit,
             opacity: 0.35 + 0.65 * conf,
         });
     }
@@ -152,6 +151,8 @@ export default function PuzzleboardOverlay({
     features,
 }: PuzzleboardOverlayProps) {
     const data = result as PuzzleBoardDetectResult;
+    // Drawn on the photograph, so in the image well's palette (see canvasTokens.ts).
+    const tokens = useCanvasTokens("well");
 
     const { nodes, rowEdges, colEdges } = useMemo(
         () => buildPuzzleGrid(data.detection.corners),
@@ -218,11 +219,11 @@ export default function PuzzleboardOverlay({
                                     y={node.y - fontSize - 2 / zoom}
                                     listening={false}
                                 >
-                                    <Tag fill={overlayTheme.labelBg} cornerRadius={2 / zoom} />
+                                    <Tag fill={withAlpha(tokens.overlay, 0.86)} cornerRadius={2 / zoom} />
                                     <Text
                                         text={`(${node.i},${node.j})`}
                                         fontSize={fontSize}
-                                        fill={overlayTheme.labelText}
+                                        fill={tokens.fg}
                                         padding={labelPad}
                                     />
                                 </Label>

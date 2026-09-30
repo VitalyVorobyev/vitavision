@@ -15,7 +15,7 @@ export default function OrcidLink({ orcid, size = 13, className = "" }: OrcidLin
             rel="noopener noreferrer"
             title={`ORCID ${orcid}`}
             aria-label={`ORCID record ${orcid}`}
-            className={`inline-flex shrink-0 self-center text-[#A6CE39] hover:opacity-75 transition-opacity ${className}`}
+            className={`inline-flex shrink-0 self-center text-orcid-green hover:opacity-75 transition-opacity ${className}`}
         >
             <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <circle cx="12" cy="12" r="12" fill="currentColor" />
@@ -26,7 +26,7 @@ export default function OrcidLink({ orcid, size = 13, className = "" }: OrcidLin
                     fontSize="12"
                     fontWeight="bold"
                     fontFamily="Arial, Helvetica, sans-serif"
-                    fill="#ffffff"
+                    style={{ fill: "var(--orcid-ink)" }}
                 >
                     iD
                 </text>

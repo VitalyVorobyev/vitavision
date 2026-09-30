@@ -1,3 +1,5 @@
+import { PRINT_COLORS } from "../printColors";
+
 /**
  * Minimal reference bar (scale line) rendered at the bottom of the page.
  * Returns SVG elements as a string, or empty string if insufficient space.
@@ -28,23 +30,23 @@ export function renderScaleLine(
 
     // Horizontal bar
     parts.push(
-        `<line x1="${x1}" y1="${barY}" x2="${x2}" y2="${barY}" stroke="#333" stroke-width="${strokeW}"/>`,
+        `<line x1="${x1}" y1="${barY}" x2="${x2}" y2="${barY}" stroke="${PRINT_COLORS.annotation}" stroke-width="${strokeW}"/>`,
     );
 
     // Left end cap
     parts.push(
-        `<line x1="${x1}" y1="${barY - capH / 2}" x2="${x1}" y2="${barY + capH / 2}" stroke="#333" stroke-width="${strokeW}"/>`,
+        `<line x1="${x1}" y1="${barY - capH / 2}" x2="${x1}" y2="${barY + capH / 2}" stroke="${PRINT_COLORS.annotation}" stroke-width="${strokeW}"/>`,
     );
 
     // Right end cap
     parts.push(
-        `<line x1="${x2}" y1="${barY - capH / 2}" x2="${x2}" y2="${barY + capH / 2}" stroke="#333" stroke-width="${strokeW}"/>`,
+        `<line x1="${x2}" y1="${barY - capH / 2}" x2="${x2}" y2="${barY + capH / 2}" stroke="${PRINT_COLORS.annotation}" stroke-width="${strokeW}"/>`,
     );
 
     // Label
     const midX = (x1 + x2) / 2;
     parts.push(
-        `<text x="${midX}" y="${barY + textOffset}" font-size="2" fill="#333" text-anchor="middle" font-family="sans-serif">${barLen} mm</text>`,
+        `<text x="${midX}" y="${barY + textOffset}" font-size="2" fill="${PRINT_COLORS.annotation}" text-anchor="middle" font-family="sans-serif">${barLen} mm</text>`,
     );
 
     return parts.join("");

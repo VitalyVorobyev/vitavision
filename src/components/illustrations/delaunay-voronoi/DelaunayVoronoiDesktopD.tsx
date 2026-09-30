@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Minus, Plus, RotateCcw, X } from "lucide-react";
+import { Button, cn, DensityProvider, NumberInput, ToggleChip } from "@vitavision/ui";
 import {
     Panel, FloatingPanel, TinyBrow, MetricCell, Kbd, Pill, Note,
 } from "../_shared/primitives";
@@ -18,13 +20,15 @@ function Stepper({
         <div className="flex items-center justify-between">
             <span className="text-xs">{label}</span>
             <div className="flex items-center gap-1">
-                <button
-                    type="button"
+                <Button
+                    variant="secondary"
+                    className="size-6 px-0"
+                    aria-label={`Fewer ${label.toLowerCase()}`}
                     onClick={() => onChange(Math.max(min, value - 1))}
-                    className="w-[22px] h-[22px] flex items-center justify-center rounded-control border border-line text-sm leading-none hover:bg-raised/40"
-                >−</button>
-                <input
-                    type="number"
+                    icon={<Minus />}
+                />
+                <NumberInput
+                    aria-label={label}
                     value={value}
                     min={min}
                     max={max}
@@ -33,13 +37,15 @@ function Stepper({
                         const v = Math.max(min, Math.min(max, Number(e.target.value)));
                         if (Number.isFinite(v)) onChange(v);
                     }}
-                    className="w-11 text-center text-xs font-mono rounded border border-line bg-ground py-0.5 focus:outline-none focus:ring-1 focus:ring-signal"
+                    className="h-6 w-11 px-1 text-center text-xs"
                 />
-                <button
-                    type="button"
+                <Button
+                    variant="secondary"
+                    className="size-6 px-0"
+                    aria-label={`More ${label.toLowerCase()}`}
                     onClick={() => onChange(Math.min(max, value + 1))}
-                    className="w-[22px] h-[22px] flex items-center justify-center rounded-control border border-line text-sm leading-none hover:bg-raised/40"
-                >+</button>
+                    icon={<Plus />}
+                />
             </div>
         </div>
     );
@@ -67,6 +73,10 @@ const LAYER_LABELS: { key: keyof Layers; label: string }[] = [
     { key: "grid",          label: "Grid" },
 ];
 
+// ── Tool palette ─────────────────────────────────────────────────────────────
+const TOOL_BUTTON = "size-10 px-0 text-base";
+const ACTIVE_TOOL = "bg-signal/15 text-signal ring-1 ring-inset ring-signal/40 hover:bg-signal/15 hover:text-signal";
+
 // ── Tool palette entries ─────────────────────────────────────────────────────
 const TOOLS: { tool: ActiveTool; icon: string; title: string; key: string }[] = [
     { tool: "add",    icon: "+",  title: "Add point",   key: "A" },
@@ -88,6 +98,7 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
     const [hintVisible, setHintVisible] = useState(true);
 
     return (
+        <DensityProvider value="compact">
         <div className="flex flex-col gap-3">
             {/* Canvas panel — position:relative so overlays can be absolute */}
             <Panel className="relative overflow-hidden p-0" style={{ minHeight: 480 }}>
@@ -101,51 +112,39 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                     {TOOLS.map(({ tool, icon, title, key }) => {
                         const isActive = activeTool === tool;
                         return (
-                            <button
+                            <Button
                                 key={tool}
-                                type="button"
+                                variant="ghost"
                                 title={`${title} (${key})`}
+                                aria-label={title}
                                 aria-pressed={isActive}
                                 onClick={() => setTool(tool)}
-                                className={`w-10 h-10 flex items-center justify-center rounded-xl text-base transition-colors ${
-                                    isActive
-                                        ? "bg-signal/15 border border-signal/40 text-signal"
-                                        : "hover:bg-raised/40 text-fg-muted hover:text-fg"
-                                }`}
+                                className={cn(TOOL_BUTTON, isActive && ACTIVE_TOOL)}
                             >
                                 {icon}
-                            </button>
+                            </Button>
                         );
                     })}
                     <div className="h-px bg-line mx-1.5 my-0.5" />
-                    <button
-                        type="button"
+                    <Button
+                        variant="ghost"
                         title="Undo (⌘Z)"
                         aria-label="Undo"
                         onClick={undo}
                         disabled={!canUndo}
-                        className={`w-10 h-10 flex items-center justify-center rounded-xl text-base transition-colors ${
-                            canUndo
-                                ? "hover:bg-raised/40 text-fg-muted hover:text-fg"
-                                : "opacity-40 cursor-not-allowed text-fg-muted"
-                        }`}
-                    >↶</button>
-                    <button
-                        type="button"
+                        className={TOOL_BUTTON}
+                    >↶</Button>
+                    <Button
+                        variant="ghost"
                         title="Redo (⇧⌘Z)"
                         aria-label="Redo"
                         onClick={redo}
                         disabled={!canRedo}
-                        className={`w-10 h-10 flex items-center justify-center rounded-xl text-base transition-colors ${
-                            canRedo
-                                ? "hover:bg-raised/40 text-fg-muted hover:text-fg"
-                                : "opacity-40 cursor-not-allowed text-fg-muted"
-                        }`}
-                    >↷</button>
+                        className={TOOL_BUTTON}
+                    >↷</Button>
                     <div className="h-px bg-line mx-1.5 my-0.5" />
                     <div className="flex flex-col items-center gap-1 py-0.5">
-                        <input
-                            type="number"
+                        <NumberInput
                             value={randomN}
                             min={3}
                             max={500}
@@ -153,23 +152,25 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                                 const v = Math.max(3, Math.min(500, Number(e.target.value)));
                                 if (Number.isFinite(v)) setRandomN(v);
                             }}
-                            className="w-10 text-center text-[11px] font-mono rounded border border-line bg-ground py-0.5 focus:outline-none focus:ring-1 focus:ring-signal"
+                            className="h-6 w-10 px-0.5 text-center text-[11px]"
                             aria-label="Random point count"
                             title="Random point count"
                         />
-                        <button
-                            type="button"
+                        <Button
+                            variant="ghost"
                             title={`Random ${randomN} points (R)`}
+                            aria-label={`Add ${randomN} random points`}
                             onClick={() => randomPoints(randomN)}
-                            className="w-10 h-8 flex items-center justify-center rounded-xl text-base hover:bg-raised/40 text-fg-muted hover:text-fg"
-                        >⚂</button>
+                            className={cn(TOOL_BUTTON, "h-8")}
+                        >⚂</Button>
                     </div>
-                    <button
-                        type="button"
+                    <Button
+                        variant="ghost"
                         title="Clear all points"
+                        aria-label="Clear all points"
                         onClick={clearPoints}
-                        className="w-10 h-10 flex items-center justify-center rounded-xl text-base hover:bg-raised/40 text-fg-muted hover:text-rose-400"
-                    >⌫</button>
+                        className={cn(TOOL_BUTTON, "hover:text-defect")}
+                    >⌫</Button>
                 </FloatingPanel>
 
                 {/* ── Grid config popover (anchored right of Grid tool) ── */}
@@ -180,11 +181,13 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                     >
                         <div className="flex items-center justify-between mb-2">
                             <TinyBrow>Grid · {state.grid.rows} × {state.grid.cols}</TinyBrow>
-                            <button
-                                type="button"
+                            <Button
+                                variant="ghost"
+                                aria-label="Close grid settings"
                                 onClick={() => setGridPopoverOpen(false)}
-                                className="text-[10px] px-1.5 py-0.5 rounded border border-line hover:bg-raised/40 text-fg-muted"
-                            >×</button>
+                                className="size-6 px-0"
+                                icon={<X />}
+                            />
                         </div>
                         <div className="flex flex-col gap-2">
                             <Stepper
@@ -201,50 +204,37 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                                 max={20}
                                 onChange={(v) => setGridDims(undefined, v)}
                             />
-                            <button
-                                type="button"
-                                onClick={resetGrid}
-                                className="text-xs rounded-control border border-line py-1 hover:bg-raised/40 text-fg-muted hover:text-fg"
-                            >Reset corners</button>
+                            <Button variant="secondary" onClick={resetGrid}>
+                                Reset corners
+                            </Button>
                         </div>
                     </FloatingPanel>
                 )}
 
                 {/* ── Layer chips (top-center) ── */}
                 <FloatingPanel className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-1.5 p-1.5 rounded-full">
-                    {LAYER_LABELS.map(({ key, label }) => {
-                        const on = layers[key];
-                        return (
-                            <button
-                                key={key}
-                                type="button"
-                                aria-pressed={on}
-                                onClick={() => toggleLayer(key)}
-                                className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs transition-colors ${
-                                    on
-                                        ? "border border-signal/40 bg-signal/10 text-fg"
-                                        : "text-fg-muted hover:text-fg"
-                                }`}
-                            >
-                                <span
-                                    className="inline-block w-2 h-2 rounded-xs shrink-0"
-                                    style={{ background: LAYER_SWATCHES[key] }}
-                                />
-                                {label}
-                            </button>
-                        );
-                    })}
+                    {LAYER_LABELS.map(({ key, label }) => (
+                        <ToggleChip
+                            key={key}
+                            checked={layers[key]}
+                            onCheckedChange={() => toggleLayer(key)}
+                            swatch={LAYER_SWATCHES[key]}
+                            className="rounded-full"
+                        >
+                            {label}
+                        </ToggleChip>
+                    ))}
                 </FloatingPanel>
 
                 {/* ── Reset corners chip (top-center, below layer chips, only when grid is on) ── */}
                 {layers.grid && (
-                    <FloatingPanel className="absolute top-[58px] left-1/2 -translate-x-1/2 px-2.5 py-1 text-[11px] flex items-center">
-                        <button
-                            type="button"
+                    <FloatingPanel className="absolute top-[58px] left-1/2 -translate-x-1/2 p-0.5 flex items-center">
+                        <Button
+                            variant="ghost"
                             onClick={resetGrid}
-                            className="text-fg-muted hover:text-fg transition-colors"
                             title="Reset grid corners to defaults"
-                        >↺ Reset corners</button>
+                            icon={<RotateCcw />}
+                        >Reset corners</Button>
                     </FloatingPanel>
                 )}
 
@@ -277,12 +267,13 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                         <span className="text-[11px] leading-snug text-fg-muted">
                             Click an empty area to add a point. Drag any point to move it. Select a point and press <Kbd>⌫</Kbd> to remove it.
                         </span>
-                        <button
-                            type="button"
+                        <Button
+                            variant="ghost"
                             aria-label="Dismiss hint"
                             onClick={() => setHintVisible(false)}
-                            className="-mt-0.5 -mr-0.5 w-5 h-5 flex items-center justify-center rounded-control text-fg-muted hover:bg-raised/40 hover:text-fg shrink-0"
-                        >×</button>
+                            className="-mt-0.5 -mr-0.5 size-5 shrink-0 px-0"
+                            icon={<X />}
+                        />
                     </FloatingPanel>
                 )}
 
@@ -297,11 +288,11 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                         {hover.kind === "triangle" && (() => {
                             const tone = minAngleTone(hover.minAngleDeg);
                             const toneClass = tone === "good"
-                                ? "text-emerald-400"
+                                ? "text-normal"
                                 : tone === "warn"
-                                    ? "text-amber-400"
+                                    ? "text-warn"
                                     : tone === "bad"
-                                        ? "text-rose-400"
+                                        ? "text-defect"
                                         : "text-fg-muted";
                             return (
                                 <div className="flex justify-between text-xs mt-1">
@@ -330,5 +321,6 @@ export default function DelaunayVoronoiDesktopD({ demo }: Props) {
                 <strong className="text-signal">D — Floating tool palette.</strong> Modal tools, layer chips, HUD. The canvas owns the screen.
             </Note>
         </div>
+        </DensityProvider>
     );
 }

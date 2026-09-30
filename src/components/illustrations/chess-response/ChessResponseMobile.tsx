@@ -1,4 +1,5 @@
 import { Pause, Play } from "lucide-react";
+import { Button, SegmentedControl, Slider, ToggleChip } from "@vitavision/ui";
 import ChessResponseSvg from "./ChessResponseSvg";
 import { formatValue } from "./readoutHelpers";
 import {
@@ -9,9 +10,8 @@ import {
     TinyBrow,
 } from "../_shared/primitives";
 import type { ChessDemoProps } from "./ChessDemoProps";
-import type { ChessResponsePattern } from "./types";
-
-const PATTERNS: ChessResponsePattern[] = ["corner", "edge", "stripe"];
+import { PATTERN_OPTIONS, toPattern } from "./patternOptions";
+import { CHESS_DR_COLOR, CHESS_MR_COLOR, CHESS_PHASE_COLORS } from "../_shared/dataColors";
 
 function MobileSliderRow({
     label,
@@ -32,28 +32,15 @@ function MobileSliderRow({
 }) {
     return (
         <div className="mb-2.5 last:mb-0">
-            <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-fg">{label}</span>
-                <span className="text-[11px] font-mono text-fg-muted">{display}</span>
-            </div>
-            <input
-                type="range"
+            <div className="mb-1 text-xs text-fg">{label}</div>
+            <Slider
+                aria-label={label}
+                value={value}
                 min={min}
                 max={max}
                 step={step}
-                value={value}
-                onChange={(e) => onChange(Number(e.target.value))}
-                aria-label={label}
-                className={[
-                    "w-full accent-signal appearance-none bg-[hsl(222_18%_22%)] h-1.5 rounded-full",
-                    "[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-[18px]",
-                    "[&::-webkit-slider-thumb]:h-[18px] [&::-webkit-slider-thumb]:rounded-full",
-                    "[&::-webkit-slider-thumb]:bg-fg [&::-webkit-slider-thumb]:border-2",
-                    "[&::-webkit-slider-thumb]:border-signal",
-                    "[&::-moz-range-thumb]:w-[18px] [&::-moz-range-thumb]:h-[18px]",
-                    "[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-fg",
-                    "[&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-signal",
-                ].join(" ")}
+                onValueChange={onChange}
+                readout={<span className="inline-block w-12 text-right text-[11px] text-fg-muted">{display}</span>}
             />
         </div>
     );
@@ -103,8 +90,8 @@ export default function ChessResponseMobile({
                         className={[
                             "inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium",
                             statusIsPositive
-                                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-                                : "border-amber-500/30 bg-amber-500/10 text-amber-300",
+                                ? "border-normal/30 bg-normal/10 text-normal"
+                                : "border-warn/30 bg-warn/10 text-warn",
                         ].join(" ")}
                     >
                         {response.status.label}
@@ -124,23 +111,16 @@ export default function ChessResponseMobile({
             {/* 3. Pattern segmented */}
             <div>
                 <TinyBrow className="block mb-1.5">Pattern</TinyBrow>
-                <div className="grid grid-cols-3 gap-2">
-                    {PATTERNS.map((p) => (
-                        <button
-                            key={p}
-                            type="button"
-                            onClick={() => onPatternChange(p)}
-                            className={[
-                                "min-h-[44px] rounded-xl border text-sm font-medium capitalize transition-colors",
-                                pattern === p
-                                    ? "border-signal/30 bg-signal/10 text-fg"
-                                    : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
-                            ].join(" ")}
-                        >
-                            {p}
-                        </button>
-                    ))}
-                </div>
+                <SegmentedControl
+                    aria-label="Pattern"
+                    className="w-full [&>label]:flex-1 [&>label]:py-2 [&>label]:text-center [&>label]:text-sm"
+                    value={pattern}
+                    options={PATTERN_OPTIONS}
+                    onValueChange={(next) => {
+                        const p = toPattern(next);
+                        if (p) onPatternChange(p);
+                    }}
+                />
             </div>
 
             {/* 4. Sliders card */}
@@ -175,20 +155,15 @@ export default function ChessResponseMobile({
             </PanelFlat>
 
             {/* 5. Play / Pause button */}
-            <button
-                type="button"
+            <Button
+                variant={playing ? "secondary" : "primary"}
+                className="h-11 w-full"
                 aria-label={playing ? "Pause rotation" : "Play rotation"}
                 onClick={() => onPlayingChange(!playing)}
-                className={[
-                    "min-h-[44px] w-full flex items-center justify-center gap-2 rounded-xl border text-sm font-medium transition-colors",
-                    playing
-                        ? "border-signal/50 bg-signal/20 text-fg"
-                        : "border-signal/30 bg-signal text-ground hover:bg-signal/90",
-                ].join(" ")}
+                icon={playing ? <Pause /> : <Play />}
             >
-                {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                {playing ? "Pause" : "▶ Play rotation"}
-            </button>
+                {playing ? "Pause" : "Play rotation"}
+            </Button>
 
             {/* 6. Overlays — collapsible details */}
             <details className="rounded-xl border border-line bg-surface overflow-hidden">
@@ -196,30 +171,19 @@ export default function ChessResponseMobile({
                     <span className="text-sm font-medium">Overlays</span>
                     <span className="text-[11px] text-fg-muted">4 toggles ▾</span>
                 </summary>
-                <div className="grid grid-cols-2 gap-1.5 px-3 pb-3">
-                    {(
-                        [
-                            { label: "Samples", pressed: showSampleLabels, onChange: onShowSampleLabelsChange },
-                            { label: "SR", pressed: showSrPairs, onChange: onShowSrPairsChange },
-                            { label: "DR", pressed: showDrPairs, onChange: onShowDrPairsChange },
-                            { label: "MR", pressed: showMrRegions, onChange: onShowMrRegionsChange },
-                        ] as const
-                    ).map(({ label, pressed, onChange }) => (
-                        <button
-                            key={label}
-                            type="button"
-                            aria-pressed={pressed}
-                            onClick={() => onChange(!pressed)}
-                            className={[
-                                "min-h-[40px] rounded-xl border text-sm font-medium transition-colors",
-                                pressed
-                                    ? "border-signal/30 bg-signal/10 text-fg"
-                                    : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
-                            ].join(" ")}
-                        >
-                            {label}
-                        </button>
-                    ))}
+                <div className="flex flex-wrap gap-1.5 px-3 pb-3">
+                    <ToggleChip checked={showSampleLabels} onCheckedChange={onShowSampleLabelsChange}>
+                        Samples
+                    </ToggleChip>
+                    <ToggleChip checked={showSrPairs} onCheckedChange={onShowSrPairsChange} swatch={CHESS_PHASE_COLORS[1]}>
+                        SR
+                    </ToggleChip>
+                    <ToggleChip checked={showDrPairs} onCheckedChange={onShowDrPairsChange} swatch={CHESS_DR_COLOR}>
+                        DR
+                    </ToggleChip>
+                    <ToggleChip checked={showMrRegions} onCheckedChange={onShowMrRegionsChange} swatch={CHESS_MR_COLOR}>
+                        MR
+                    </ToggleChip>
                 </div>
             </details>
         </div>

@@ -1,17 +1,15 @@
 import { Circle, Group, Line } from "react-konva";
 import type Konva from "konva";
 
+import { scoreTone, type CanvasTokens } from "../../../../lib/canvasTokens";
 import type { DirectedPointFeature } from "../../../../store/editor/useEditorStore";
 
 const ARROW_LENGTH_PX = 20;
 
-const scoreColor = (score: number, selected: boolean, hovered: boolean): string => {
-    if (selected) return "#f97316";
-    if (hovered) return "#38bdf8";
-
-    if (score >= 0.66) return "#22c55e";
-    if (score >= 0.33) return "#f59e0b";
-    return "#ef4444";
+const scoreColor = (tokens: CanvasTokens, score: number, selected: boolean, hovered: boolean): string => {
+    if (selected) return tokens.signal;
+    if (hovered) return tokens.signalStrong;
+    return tokens[scoreTone(score)];
 };
 
 interface DirectedPointGlyphProps {
@@ -19,14 +17,16 @@ interface DirectedPointGlyphProps {
     zoom: number;
     selected: boolean;
     hovered: boolean;
+    /** The canvas palette (the image well's tokens), from the layer. */
+    tokens: CanvasTokens;
     onSelect: (event: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => void;
     onHover: (feature: DirectedPointFeature, event: Konva.KonvaEventObject<MouseEvent>) => void;
     onHoverEnd: () => void;
 }
 
 export default function DirectedPointGlyph(props: DirectedPointGlyphProps) {
-    const { feature, zoom, selected, hovered, onSelect, onHover, onHoverEnd } = props;
-    const color = scoreColor(feature.score, selected, hovered);
+    const { feature, zoom, selected, hovered, tokens, onSelect, onHover, onHoverEnd } = props;
+    const color = scoreColor(tokens, feature.score, selected, hovered);
     const strokeWidth = selected ? 2.4 / zoom : 1.4 / zoom;
     const opacity = selected ? 1 : 0.85;
 

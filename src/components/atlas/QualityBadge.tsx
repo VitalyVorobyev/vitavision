@@ -9,7 +9,7 @@ export default function QualityBadge({ quality }: QualityBadgeProps) {
         return (
             <span
                 title="This page is a short placeholder and may be expanded later."
-                className="inline-flex items-center gap-1 rounded border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400"
+                className="inline-flex items-center gap-1 rounded border border-ink-amber/40 bg-ink-amber/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-ink-amber"
             >
                 Stub
             </span>
@@ -31,7 +31,7 @@ export default function QualityBadge({ quality }: QualityBadgeProps) {
         return (
             <span
                 title="This page describes a method that has been superseded. See the Superseded by link in the sidebar."
-                className="inline-flex items-center gap-1 rounded border border-slate-500/40 bg-slate-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400"
+                className="inline-flex items-center gap-1 rounded border border-ink-slate/40 bg-ink-slate/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-ink-slate"
             >
                 Historical
             </span>

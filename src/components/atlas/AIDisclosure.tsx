@@ -4,8 +4,8 @@
  */
 export default function AIDisclosure() {
     return (
-        <div className="mt-3 px-3.5 py-2.5 border border-dashed border-white/10 rounded-panel font-mono text-[11px] leading-[1.5] text-fg-muted">
-            <span aria-hidden="true" className="text-purple-300 mr-1">
+        <div className="mt-3 px-3.5 py-2.5 border border-dashed border-line rounded-panel font-mono text-[11px] leading-[1.5] text-fg-muted">
+            <span aria-hidden="true" className="text-ink-violet mr-1">
                 ✦
             </span>
             This page was distilled from the source paper by Claude Opus and reviewed by an editor.

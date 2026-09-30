@@ -1,3 +1,4 @@
+import { DETECTION_COLORS, RING_COLORS } from "./featureColors";
 import type { Feature } from "./useEditorStore";
 
 export interface FeatureGroup {
@@ -36,15 +37,15 @@ export const featureSwatch = (feature: Feature): string => {
         return feature.color;
     }
     if (feature.type === "directed_point") {
-        return "#60a5fa";
+        return DETECTION_COLORS.directedPoint;
     }
     if (feature.type === "ring_marker") {
-        return "#0f766e";
+        return RING_COLORS.outer;
     }
     if (feature.type === "aruco_marker") {
-        return "#b45309";
+        return DETECTION_COLORS.marker;
     }
-    return "#94a3b8";
+    return DETECTION_COLORS.fallback;
 };
 
 export function getFeatureGroupKey(feature: Feature): string {

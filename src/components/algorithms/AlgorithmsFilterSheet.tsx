@@ -275,12 +275,12 @@ export default function AlgorithmsFilterSheet({
                                                 onClick={() => onProblemChange(task)}
                                                 className={`flex justify-between items-center px-2.5 py-2 rounded-control text-[13px] w-full text-left transition-colors ${
                                                     active
-                                                        ? "bg-[hsl(191_70%_94%)] text-[hsl(191_55%_22%)] font-medium"
+                                                        ? "bg-signal/10 text-signal font-medium"
                                                         : "text-fg/80 hover:bg-line/50"
                                                 }`}
                                             >
                                                 <span className="truncate">{taskLabel(task)}</span>
-                                                <span className={`text-[11px] font-normal ml-2 shrink-0 ${active ? "text-[hsl(191_55%_22%)]" : "text-fg-muted"}`}>
+                                                <span className={`text-[11px] font-normal ml-2 shrink-0 ${active ? "text-signal" : "text-fg-muted"}`}>
                                                     {facets.problems[task]}
                                                 </span>
                                             </button>

@@ -4,7 +4,7 @@ import type {
     CalibrationMarker,
     CalibrationTargetResult,
 } from "../../../../lib/types";
-import { overlayTheme } from "../../canvas/overlays/overlayTheme";
+import { DETECTION_COLORS } from "../../../../store/editor/featureColors";
 import type { ArUcoMarkerFeature, Feature } from "../../../../store/editor/useEditorStore";
 
 export const toCanvasCoordinate = (value: number): number => value + 0.5;
@@ -44,7 +44,7 @@ export const calibrationCornerFeatures = (
     result: CalibrationTargetResult,
     runId: string,
     algorithmId: string,
-    color = overlayTheme.cornerAccent,
+    color = DETECTION_COLORS.corner,
 ): Feature[] => {
     return result.detection.corners.map((corner, index) => ({
         id: corner.id,
@@ -116,7 +116,7 @@ export const calibrationCircleCandidateFeatures = (
     candidates: CalibrationCircleCandidate[] | null,
     runId: string,
     algorithmId: string,
-    color = overlayTheme.markerStroke,
+    color = DETECTION_COLORS.marker,
 ): Feature[] => {
     if (!candidates) {
         return [];
@@ -148,7 +148,7 @@ export const calibrationCircleMatchFeatures = (
     candidates: CalibrationCircleCandidate[] | null,
     runId: string,
     algorithmId: string,
-    color = overlayTheme.markerStroke,
+    color = DETECTION_COLORS.marker,
 ): Feature[] => {
     if (!matches || !candidates) return [];
 

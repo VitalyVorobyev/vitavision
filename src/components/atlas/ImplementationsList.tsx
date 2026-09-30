@@ -11,15 +11,15 @@ const roleStyles: Record<
 > = {
     official: {
         label: "Official",
-        chip: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+        chip: "border-ink-green/40 bg-ink-green/10 text-ink-green",
     },
     community: {
         label: "Community",
-        chip: "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+        chip: "border-ink-amber/40 bg-ink-amber/10 text-ink-amber",
     },
     port: {
         label: "Port",
-        chip: "border-violet-500/40 bg-violet-500/10 text-violet-600 dark:text-violet-400",
+        chip: "border-ink-violet/40 bg-ink-violet/10 text-ink-violet",
     },
 };
 

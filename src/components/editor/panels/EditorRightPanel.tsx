@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useEditorStore, type OverlayToggles, type PanelMode } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
+import { DensityProvider, Panel, SegmentedControl, ToggleChip } from "@vitavision/ui";
 import { getLoadedAlgorithm } from "../algorithms/registry";
 
 import ConfigurePanel from "./ConfigurePanel";
 import FeatureListPanel from "./FeatureListPanel";
-import RailSection from "./RailSection";
 import ResultsPanel from "./ResultsPanel";
 
 const MODES: { key: PanelMode; label: string }[] = [
@@ -19,24 +19,21 @@ const MAX_WIDTH = 600;
 const DEFAULT_WIDTH = 320;
 type TouchPanelTab = PanelMode | "features";
 
+/** A segmented strip that fills its row, one equal segment per option. */
+const FULL_WIDTH_SEGMENTS = "flex w-full [&>label]:flex-1 [&>label]:text-center";
+
 function ModeToggle({ value, onChange }: { value: PanelMode; onChange: (m: PanelMode) => void }) {
     return (
-        <div className="flex rounded-panel border border-line overflow-hidden">
-            {MODES.map(({ key, label }) => (
-                <button
-                    key={key}
-                    type="button"
-                    onClick={() => onChange(key)}
-                    className={`flex-1 text-xs py-1.5 font-medium transition-colors ${
-                        value === key
-                            ? "bg-signal/10 text-signal"
-                            : "bg-ground text-fg-muted hover:bg-raised/60"
-                    }`}
-                >
-                    {label}
-                </button>
-            ))}
-        </div>
+        <SegmentedControl
+            aria-label="Panel"
+            value={value}
+            options={MODES.map(({ key, label }) => ({ value: key, label }))}
+            onValueChange={(next) => {
+                const mode = MODES.find(({ key }) => key === next);
+                if (mode) onChange(mode.key);
+            }}
+            className={FULL_WIDTH_SEGMENTS}
+        />
     );
 }
 
@@ -56,18 +53,13 @@ function OverlayTogglePanel() {
     return (
         <div className="flex flex-wrap gap-1.5">
             {TOGGLE_ITEMS.map(({ key, label }) => (
-                <button
+                <ToggleChip
                     key={key}
-                    type="button"
-                    onClick={() => setOverlayToggle(key, !overlayToggles[key])}
-                    className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
-                        overlayToggles[key]
-                            ? "border-signal/40 bg-signal/10 text-signal"
-                            : "border-line text-fg-muted hover:bg-raised/30"
-                    }`}
+                    checked={overlayToggles[key]}
+                    onCheckedChange={(checked) => setOverlayToggle(key, checked)}
                 >
                     {label}
-                </button>
+                </ToggleChip>
             ))}
         </div>
     );
@@ -133,47 +125,39 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
         ];
 
         return (
-            <div className="flex h-full flex-col overflow-hidden bg-raised/10">
+            // Touch keeps ui's comfortable density: its controls are finger-sized.
+            <div className="flex h-full flex-col overflow-hidden">
                 <div className="border-b border-line px-4 py-3">
-                    <div className="grid grid-cols-3 gap-2">
-                        {tabs.map(({ key, label }) => (
-                            <button
-                                key={key}
-                                type="button"
-                                onClick={() => {
-                                    if (key === "features") {
-                                        setTouchTabOverride("features");
-                                    } else {
-                                        setTouchTabOverride(null);
-                                        setPanelMode(key);
-                                    }
-                                }}
-                                className={`rounded-control px-3 py-2 text-sm font-medium transition-colors ${
-                                    touchTab === key
-                                        ? "bg-signal text-signal-fg shadow-xs"
-                                        : "border border-line bg-ground text-fg-muted hover:bg-raised/60 hover:text-fg"
-                                }`}
-                            >
-                                {label}
-                            </button>
-                        ))}
-                    </div>
+                    <SegmentedControl
+                        aria-label="Panel"
+                        value={touchTab}
+                        options={tabs.map(({ key, label }) => ({ value: key, label }))}
+                        onValueChange={(next) => {
+                            if (next === "features") {
+                                setTouchTabOverride("features");
+                            } else if (next === "configure" || next === "results") {
+                                setTouchTabOverride(null);
+                                setPanelMode(next);
+                            }
+                        }}
+                        className={FULL_WIDTH_SEGMENTS}
+                    />
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-4 py-4">
-                    <div className="space-y-5">
+                    <div className="space-y-4">
                         {touchTab === "configure" && <ConfigurePanel />}
                         {touchTab === "results" && <ResultsPanel />}
                         {touchTab === "features" && (
                             <>
                                 {hasOverlay && (
-                                    <RailSection label="Overlay">
+                                    <Panel title="Overlay">
                                         <OverlayTogglePanel />
-                                    </RailSection>
+                                    </Panel>
                                 )}
-                                <RailSection label="Features">
+                                <Panel title="Features">
                                     <FeatureListPanel />
-                                </RailSection>
+                                </Panel>
                             </>
                         )}
                     </div>
@@ -184,7 +168,7 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
 
     return (
         <div
-            className="border-l border-line bg-raised/20 shrink-0 flex h-full overflow-hidden relative"
+            className="border-l border-line bg-ground shrink-0 flex h-full overflow-hidden relative"
             style={{ width }}
         >
             {/* resize handle */}
@@ -195,25 +179,27 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
                 <div className="absolute inset-y-0 left-0 w-1 bg-transparent group-hover:bg-signal/20 group-active:bg-signal/30 transition-colors" />
             </div>
 
+            <DensityProvider value="compact">
             <div className="flex flex-col h-full w-full p-4 pl-3">
                 <div className="mb-4 shrink-0">
                     <ModeToggle value={panelMode} onChange={setPanelMode} />
                 </div>
-                <div className="flex-1 overflow-y-auto space-y-5 pr-0.5">
+                <div className="flex-1 overflow-y-auto space-y-4 pr-0.5">
                     {panelMode === "configure" && <ConfigurePanel />}
                     {panelMode === "results" && <ResultsPanel />}
 
                     {hasOverlay && (
-                        <RailSection label="Overlay">
+                        <Panel title="Overlay">
                             <OverlayTogglePanel />
-                        </RailSection>
+                        </Panel>
                     )}
 
-                    <RailSection label="Features">
+                    <Panel title="Features">
                         <FeatureListPanel />
-                    </RailSection>
+                    </Panel>
                 </div>
             </div>
+            </DensityProvider>
         </div>
     );
 }

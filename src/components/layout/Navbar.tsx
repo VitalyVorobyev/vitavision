@@ -104,7 +104,7 @@ export default function Navbar() {
                         <SignInButton mode="modal">
                             <button
                                 type="button"
-                                className="rounded-control px-3 py-1.5 text-sm font-medium text-fg-muted transition-colors hover:bg-raised hover:text-fg"
+                                className="rounded-control px-3 py-1.5 text-sm font-medium text-fg-muted transition-colors hover:bg-line/60 hover:text-fg"
                             >
                                 Sign in
                             </button>
@@ -120,7 +120,7 @@ export default function Navbar() {
                     <button
                         type="button"
                         onClick={openMobileNav}
-                        className="rounded-control p-2 text-fg-muted transition-colors hover:bg-raised hover:text-fg"
+                        className="rounded-control p-2 text-fg-muted transition-colors hover:bg-line/60 hover:text-fg"
                         aria-label="Open navigation"
                         aria-expanded={mobileOpen}
                         aria-controls="mobile-navigation"
@@ -158,7 +158,7 @@ export default function Navbar() {
                                 ref={closeButtonRef}
                                 type="button"
                                 onClick={closeMobileNav}
-                                className="rounded-control p-2 text-fg-muted transition-colors hover:bg-raised hover:text-fg"
+                                className="rounded-control p-2 text-fg-muted transition-colors hover:bg-line/60 hover:text-fg"
                                 aria-label="Close navigation"
                             >
                                 <X size={18} />
@@ -174,7 +174,7 @@ export default function Navbar() {
                                     className={`rounded-xl border px-4 py-3 text-sm font-medium transition-colors ${
                                         item.active
                                             ? "border-signal/30 bg-signal/10 text-fg"
-                                            : "border-line/70 bg-ground text-fg hover:bg-raised/60"
+                                            : "border-line/70 bg-ground text-fg hover:bg-line/60"
                                     }`}
                                 >
                                     {item.label}
@@ -185,7 +185,7 @@ export default function Navbar() {
                                     <SignInButton mode="modal">
                                         <button
                                             type="button"
-                                            className="w-full rounded-xl border border-line/70 bg-ground px-4 py-3 text-left text-sm font-medium text-fg transition-colors hover:bg-raised/60"
+                                            className="w-full rounded-xl border border-line/70 bg-ground px-4 py-3 text-left text-sm font-medium text-fg transition-colors hover:bg-line/60"
                                         >
                                             Sign in
                                         </button>

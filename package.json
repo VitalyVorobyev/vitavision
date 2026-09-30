@@ -31,7 +31,6 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.61.9",
     "@fontsource-variable/source-serif-4": "^5.3.0",
-    "@radix-ui/react-tooltip": "^1.2.16",
     "@vitavision/calib-targets": "^0.14.1",
     "@vitavision/chess-corners": "^1.2.0",
     "@vitavision/radsym": "^0.4.1",

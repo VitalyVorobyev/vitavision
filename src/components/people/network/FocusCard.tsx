@@ -38,7 +38,7 @@ export function FocusCard({ id, name, paperCount, pageCount, ties, unlabelledCou
                     type="button"
                     onClick={onClose}
                     aria-label="Clear focus"
-                    className="w-8 h-8 -m-1.5 grid place-items-center rounded-control text-fg-muted hover:text-fg hover:bg-raised"
+                    className="w-8 h-8 -m-1.5 grid place-items-center rounded-control text-fg-muted hover:text-fg hover:bg-line/60"
                 >
                     <X size={16} />
                 </button>
@@ -65,7 +65,7 @@ export function FocusCard({ id, name, paperCount, pageCount, ties, unlabelledCou
             )}
             <Link
                 to={`/authors/${id}`}
-                className="mt-1 inline-flex items-center justify-center gap-1.5 h-9 rounded-control border border-line bg-surface text-sm font-medium text-fg hover:bg-raised transition-colors"
+                className="mt-1 inline-flex items-center justify-center gap-1.5 h-9 rounded-control border border-line bg-surface text-sm font-medium text-fg hover:bg-line/60 transition-colors"
             >
                 Open profile <ArrowRight size={14} />
             </Link>

@@ -87,6 +87,38 @@
     --vv-color-amber: hsl(38 85% 31%);
     --vv-color-green: hsl(140 40% 34%);
     --vv-color-violet: hsl(260 40% 50%);
+
+    /* ── Editorial inks: category and status labels on the reading pages ─── */
+    /* A kind (model), a page status (draft, stub, historical, superseded), an
+       implementation role, a "based on" source. Text colours, used plain or on a
+       /10 tint of themselves (`bg-ink-amber/10 text-ink-amber`); a category keeps
+       its hue in both themes. Not verdicts: the interactive surfaces use ui's
+       `normal` / `warn` / `defect`. */
+    --ink-blue: hsl(215 65% 40%);
+    --ink-amber: hsl(30 90% 29%);
+    --ink-green: hsl(160 75% 23%);
+    --ink-violet: hsl(263 45% 47%);
+    --ink-slate: hsl(215 18% 37%);
+
+    /* ── Difficulty dots (decorative: the label beside them carries the level) */
+    --difficulty-beginner: hsl(140 50% 45%);
+    --difficulty-intermediate: hsl(38 85% 50%);
+    --difficulty-advanced: hsl(350 60% 55%);
+
+    /* ── People network: the five research communities (data: node fills and
+       legend swatches; the hues must stay apart, and differ in lightness too) ── */
+    --scholar-recognition: #2f6fb5;
+    --scholar-representation: #7b52c4;
+    --scholar-features: #12817f;
+    --scholar-geometry: #c2630f;
+    --scholar-calibration: #b0406f;
+    --scholar-other: #94a3b8;
+
+    /* ── Third-party marks ─────────────────────────────────────────────────── */
+    /* ORCID's iD mark, in ORCID's own green with its white "iD" (their brand
+       guidelines; identity, not a theme colour). */
+    --orcid-green: #a6ce39;
+    --orcid-ink: #ffffff;
 }
 
 .dark {
@@ -139,4 +171,10 @@
     --vv-color-amber: hsl(38 70% 68%);
     --vv-color-green: hsl(140 35% 62%);
     --vv-color-violet: hsl(260 35% 70%);
+
+    --ink-blue: hsl(213 85% 72%);
+    --ink-amber: hsl(40 90% 60%);
+    --ink-green: hsl(156 60% 55%);
+    --ink-violet: hsl(263 70% 77%);
+    --ink-slate: hsl(215 20% 66%);
 }

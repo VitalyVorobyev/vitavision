@@ -65,7 +65,7 @@ export default function StoryRail({
                     onClick={() => onStep(clamped - 1)}
                     disabled={clamped === 0}
                     aria-label="Previous step"
-                    className="grid h-7 w-7 place-items-center rounded border border-line text-fg-muted transition-colors enabled:hover:bg-raised enabled:hover:text-fg disabled:opacity-40"
+                    className="grid h-7 w-7 place-items-center rounded border border-line text-fg-muted transition-colors enabled:hover:bg-line/60 enabled:hover:text-fg disabled:opacity-40"
                 >
                     <ChevronLeft size={14} />
                 </button>
@@ -74,7 +74,7 @@ export default function StoryRail({
                     onClick={() => onStep(clamped + 1)}
                     disabled={clamped === steps.length - 1}
                     aria-label="Next step"
-                    className="grid h-7 w-7 place-items-center rounded border border-line text-fg-muted transition-colors enabled:hover:bg-raised enabled:hover:text-fg disabled:opacity-40"
+                    className="grid h-7 w-7 place-items-center rounded border border-line text-fg-muted transition-colors enabled:hover:bg-line/60 enabled:hover:text-fg disabled:opacity-40"
                 >
                     <ChevronRight size={14} />
                 </button>
@@ -132,7 +132,7 @@ export default function StoryRail({
                                 key={id}
                                 type="button"
                                 onClick={() => onSelectNode(id)}
-                                className="flex items-center gap-2 rounded-control border border-line bg-raised/40 px-2.5 py-1.5 text-left transition-colors hover:bg-raised"
+                                className="flex items-center gap-2 rounded-control border border-line bg-raised/40 px-2.5 py-1.5 text-left transition-colors hover:bg-line/60"
                             >
                                 <span
                                     aria-hidden="true"

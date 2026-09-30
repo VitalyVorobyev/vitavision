@@ -16,7 +16,7 @@ export default function ActiveTagChips({ tags, onRemove, onClearAll }: ActiveTag
                     key={tag}
                     type="button"
                     onClick={() => onRemove(tag)}
-                    className="inline-flex items-center gap-1 rounded-full border border-line bg-raised/60 px-2 py-0.5 text-xs text-fg hover:bg-raised transition-colors"
+                    className="inline-flex items-center gap-1 rounded-full border border-line bg-raised/60 px-2 py-0.5 text-xs text-fg hover:bg-line/60 transition-colors"
                 >
                     {tag}
                     <X size={12} aria-hidden="true" />

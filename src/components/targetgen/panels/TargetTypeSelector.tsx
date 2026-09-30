@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Grid3X3, QrCode, CircleDot, Target, Puzzle, Upload } from "lucide-react";
 import type { TargetType, TargetGeneratorAction, TargetConfig, PageConfig } from "../types";
 import { presetsForType } from "../presets";
+import { Button, cn, Select } from "@vitavision/ui";
 
 /** Shape of a config file previously exported via `exportFeaturesAsJson`-style
  *  JSON download. `page` may be missing the fields added after older exports
@@ -95,21 +96,22 @@ export default function TargetTypeSelector({
 
     return (
         <div className="flex flex-col gap-2 p-3">
-            <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted/70 px-1">
+            <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted px-1">
                 Target Type
             </h2>
             <div className={layout === "grid" ? "grid grid-cols-2 gap-2" : "flex flex-col gap-2"}>
                 {TARGET_TYPES.map((t) => (
-                    <button
+                    <Button
                         key={t.id}
+                        variant="secondary"
+                        aria-pressed={selected === t.id}
                         onClick={() =>
                             dispatch({ type: "SET_TARGET_TYPE", targetType: t.id })
                         }
-                        className={`flex min-h-[7.25rem] flex-col items-center justify-center gap-1.5 rounded-control border p-3 text-center transition-colors ${
-                            selected === t.id
-                                ? "border-signal bg-signal/5 text-fg"
-                                : "border-line bg-ground hover:border-fg-muted/40 text-fg-muted"
-                        }`}
+                        className={cn(
+                            "h-auto min-h-[7.25rem] flex-col gap-1.5 whitespace-normal p-3 text-center",
+                            selected === t.id ? "bg-signal/5 ring-signal" : "text-fg-muted",
+                        )}
                     >
                         <span
                             className={
@@ -124,19 +126,23 @@ export default function TargetTypeSelector({
                         <span className="text-[10px] leading-tight text-fg-muted">
                             {t.description}
                         </span>
-                    </button>
+                    </Button>
                 ))}
             </div>
 
             {showPresets && (
                 <div className="mt-2">
-                    <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted/70 px-1 mb-1.5">
+                    <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted px-1 mb-1.5">
                         Presets
                     </h2>
-                    <select
+                    {/* Always unset: choosing a preset loads it, and the picker is ready for the next. */}
+                    <Select
+                        aria-label="Presets"
                         value=""
-                        onChange={(e) => {
-                            const preset = presets.find((p) => p.id === e.target.value);
+                        placeholder="Choose a preset…"
+                        options={presets.map((p) => ({ value: p.id, label: p.label }))}
+                        onValueChange={(id) => {
+                            const preset = presets.find((p) => p.id === id);
                             if (preset) {
                                 dispatch({
                                     type: "LOAD_PRESET",
@@ -145,31 +151,22 @@ export default function TargetTypeSelector({
                                 });
                             }
                         }}
-                        className="w-full rounded-control border border-line bg-ground px-3 py-1.5 text-sm transition-colors hover:border-fg-muted/40 focus:outline-none focus:ring-2 focus:ring-signal/20 focus:border-signal/50"
-                    >
-                        <option value="" disabled>
-                            Choose a preset...
-                        </option>
-                        {presets.map((p) => (
-                            <option key={p.id} value={p.id}>
-                                {p.label}
-                            </option>
-                        ))}
-                    </select>
-                    <p className="text-[10px] text-fg-muted/60 mt-1 px-1">
+                    />
+                    <p className="text-[10px] text-fg-muted mt-1 px-1">
                         Select a preset to auto-fill config
                     </p>
                 </div>
             )}
 
             {/* Import config */}
-            <button
+            <Button
+                size="sm"
+                className="mt-1"
                 onClick={() => fileRef.current?.click()}
-                className="flex items-center justify-center gap-1.5 rounded-control border border-line px-3 py-1.5 text-xs font-medium transition-colors hover:border-fg-muted/40 hover:bg-raised mt-1"
+                icon={<Upload />}
             >
-                <Upload size={14} />
                 Import Config
-            </button>
+            </Button>
             <input
                 ref={fileRef}
                 type="file"

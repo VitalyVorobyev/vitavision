@@ -1,4 +1,5 @@
-import { CheckboxField, CollapsibleSection, NumberField, Section, SelectField } from "../formFields";
+import { Checkbox, Disclosure, Field, InfoHint, NumberInput, Section, Select } from "@vitavision/ui";
+import { choiceProps, fieldGridClass, numberInputProps } from "../../../../lib/fieldBindings";
 import type { AlgorithmConfigFormProps } from "../types";
 
 export interface ChessCornersConfig {
@@ -13,9 +14,9 @@ export interface ChessCornersConfig {
 }
 
 const refinerOptions = [
-    { value: "center_of_mass" as const, label: "Center of mass", shortLabel: "CoM" },
-    { value: "forstner" as const, label: "Förstner", shortLabel: "Fstr" },
-    { value: "saddle_point" as const, label: "Saddle point", shortLabel: "Saddle" },
+    { value: "center_of_mass" as const, label: "Center of mass" },
+    { value: "forstner" as const, label: "Förstner" },
+    { value: "saddle_point" as const, label: "Saddle point" },
 ];
 
 const upscaleOptions = [
@@ -33,87 +34,119 @@ const ChessCornersConfigForm = (props: AlgorithmConfigFormProps<ChessCornersConf
 
     return (
         <>
-            <Section title="Detection" columns={modal ? 2 : undefined}>
-                <NumberField
-                    label="Response threshold"
-                    tooltip="Absolute floor on the raw ChESS response (detector default 30). Lower values detect more corners but may increase false positives."
-                    value={config.threshold}
-                    onChange={(v) => set("threshold", v ?? 30)}
-                    disabled={disabled}
-                    min={0}
-                    max={500}
-                    step={1}
-                />
-                <NumberField
-                    label="NMS radius"
-                    tooltip="Non-maximum suppression radius in pixels. Prevents duplicate detections."
-                    value={config.nmsRadius}
-                    onChange={(v) => set("nmsRadius", v ?? 2)}
-                    disabled={disabled}
-                    min={1}
-                    max={10}
-                    step={1}
-                />
-                <NumberField
-                    label="Min cluster size"
-                    tooltip="Minimum number of pixels in a detected cluster to accept a corner candidate."
-                    value={config.minClusterSize}
-                    onChange={(v) => set("minClusterSize", v ?? 2)}
-                    disabled={disabled}
-                    min={1}
-                    max={10}
-                    step={1}
-                />
-                <CheckboxField
-                    label="Broad mode"
-                    tooltip="Enable broader search window for better recall at the cost of more false positives."
-                    checked={config.broadMode}
-                    onChange={(v) => set("broadMode", v)}
-                    disabled={disabled}
-                />
+            <Section title="Detection">
+                <div className={fieldGridClass(modal ? 2 : undefined)}>
+                    <Field
+                        label="Response threshold"
+                        as="group"
+                        annotation={<InfoHint label="About response threshold">Absolute floor on the raw ChESS response (detector default 30). Lower values detect more corners but may increase false positives.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Response threshold"
+                            {...numberInputProps(config.threshold, (v) => set("threshold", v ?? 30))}
+                            disabled={disabled}
+                            min={0}
+                            max={500}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="NMS radius"
+                        as="group"
+                        annotation={<InfoHint label="About NMS radius">Non-maximum suppression radius in pixels. Prevents duplicate detections.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="NMS radius"
+                            {...numberInputProps(config.nmsRadius, (v) => set("nmsRadius", v ?? 2))}
+                            disabled={disabled}
+                            min={1}
+                            max={10}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Min cluster size"
+                        as="group"
+                        annotation={<InfoHint label="About min cluster size">Minimum number of pixels in a detected cluster to accept a corner candidate.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Min cluster size"
+                            {...numberInputProps(config.minClusterSize, (v) => set("minClusterSize", v ?? 2))}
+                            disabled={disabled}
+                            min={1}
+                            max={10}
+                            step={1}
+                        />
+                    </Field>
+                    <div className="flex items-center gap-1.5">
+                        <Checkbox
+                            label="Broad mode"
+                            checked={config.broadMode}
+                            onCheckedChange={(v) => set("broadMode", v)}
+                            disabled={disabled}
+                        />
+                        <InfoHint label="About broad mode">Enable broader search window for better recall at the cost of more false positives.</InfoHint>
+                    </div>
+                </div>
             </Section>
-            <CollapsibleSection title="Pyramid" columns={modal ? 2 : undefined}>
-                <NumberField
-                    label="Pyramid levels"
-                    tooltip="Number of image pyramid levels for multiscale detection."
-                    value={config.pyramidLevels}
-                    onChange={(v) => set("pyramidLevels", v ?? 4)}
-                    disabled={disabled}
-                    min={1}
-                    max={6}
-                    step={1}
-                />
-                <NumberField
-                    label="Pyramid min size"
-                    tooltip="Minimum image dimension at the coarsest pyramid level (pixels)."
-                    value={config.pyramidMinSize}
-                    onChange={(v) => set("pyramidMinSize", v ?? 128)}
-                    disabled={disabled}
-                    min={32}
-                    max={1024}
-                    step={16}
-                />
-            </CollapsibleSection>
-            <CollapsibleSection title="Advanced" columns={modal ? 2 : undefined}>
-                <SelectField
-                    label="Upscale factor"
-                    tooltip="Optional upscaling before detection. 0 = off; 2/3/4× for detecting corners in very small images."
-                    value={String(config.upscaleFactor) as "0" | "2" | "3" | "4"}
-                    onChange={(v) => set("upscaleFactor", Number(v))}
-                    disabled={disabled}
-                    options={upscaleOptions}
-                    presentation="select"
-                />
-                <SelectField
-                    label="Refiner"
-                    tooltip="Subpixel refinement method applied after initial corner detection."
-                    value={config.refiner}
-                    onChange={(v) => set("refiner", v)}
-                    disabled={disabled}
-                    options={refinerOptions}
-                    presentation="select"
-                />
-            </CollapsibleSection>
+            <Disclosure summary="Pyramid">
+                <div className={fieldGridClass(modal ? 2 : undefined)}>
+                    <Field
+                        label="Pyramid levels"
+                        as="group"
+                        annotation={<InfoHint label="About pyramid levels">Number of image pyramid levels for multiscale detection.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Pyramid levels"
+                            {...numberInputProps(config.pyramidLevels, (v) => set("pyramidLevels", v ?? 4))}
+                            disabled={disabled}
+                            min={1}
+                            max={6}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Pyramid min size"
+                        as="group"
+                        annotation={<InfoHint label="About pyramid min size">Minimum image dimension at the coarsest pyramid level (pixels).</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Pyramid min size"
+                            {...numberInputProps(config.pyramidMinSize, (v) => set("pyramidMinSize", v ?? 128))}
+                            disabled={disabled}
+                            min={32}
+                            max={1024}
+                            step={16}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
+            <Disclosure summary="Advanced">
+                <div className={fieldGridClass(modal ? 2 : undefined)}>
+                    <Field
+                        label="Upscale factor"
+                        as="group"
+                        annotation={<InfoHint label="About upscale factor">Optional upscaling before detection. 0 = off; 2/3/4× for detecting corners in very small images.</InfoHint>}
+                    >
+                        <Select
+                            aria-label="Upscale factor"
+                            {...choiceProps(String(config.upscaleFactor) as "0" | "2" | "3" | "4", upscaleOptions, (v) => set("upscaleFactor", Number(v)))}
+                            disabled={disabled}
+                        />
+                    </Field>
+                    <Field
+                        label="Refiner"
+                        as="group"
+                        annotation={<InfoHint label="About refiner">Subpixel refinement method applied after initial corner detection.</InfoHint>}
+                    >
+                        <Select
+                            aria-label="Refiner"
+                            {...choiceProps(config.refiner, refinerOptions, (v) => set("refiner", v))}
+                            disabled={disabled}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
         </>
     );
 };

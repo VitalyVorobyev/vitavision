@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Pause, Play } from "lucide-react";
+import { Minus, Pause, Play, Plus } from "lucide-react";
+import { Button, DensityProvider, SegmentedControl, Slider, ToggleChip } from "@vitavision/ui";
 import ChessResponseSvg from "./ChessResponseSvg";
 import { formatValue } from "./readoutHelpers";
 import {
@@ -8,9 +9,8 @@ import {
     TinyBrow,
 } from "../_shared/primitives";
 import type { ChessDemoProps } from "./ChessDemoProps";
-import type { ChessResponsePattern } from "./types";
-
-const PATTERNS: ChessResponsePattern[] = ["corner", "edge", "stripe"];
+import { PATTERN_OPTIONS, toPattern } from "./patternOptions";
+import { CHESS_DR_COLOR, CHESS_MR_COLOR, CHESS_PHASE_COLORS } from "../_shared/dataColors";
 
 function SliderRow({
     label,
@@ -29,61 +29,19 @@ function SliderRow({
     onChange: (v: number) => void;
     display: string;
 }) {
-    const pct = ((value - min) / (max - min)) * 100;
     return (
         <div>
-            <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-fg">{label}</span>
-                <span className="text-[11px] font-mono text-fg-muted">{display}</span>
-            </div>
-            {/* custom styled track */}
-            <div className="relative h-1 rounded-full bg-[hsl(222_18%_22%)]">
-                <div
-                    className="absolute left-0 top-0 h-1 rounded-full bg-signal"
-                    style={{ width: `${pct}%` }}
-                />
-                <div
-                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-fg border-2 border-signal"
-                    style={{ left: `${pct}%` }}
-                />
-                <input
-                    type="range"
-                    min={min}
-                    max={max}
-                    step={step}
-                    value={value}
-                    onChange={(e) => onChange(Number(e.target.value))}
-                    className="absolute inset-0 w-full opacity-0 cursor-pointer"
-                    aria-label={label}
-                />
-            </div>
+            <div className="mb-1 text-xs text-fg">{label}</div>
+            <Slider
+                aria-label={label}
+                value={value}
+                min={min}
+                max={max}
+                step={step}
+                onValueChange={onChange}
+                readout={<span className="inline-block w-9 text-right text-[11px] text-fg-muted">{display}</span>}
+            />
         </div>
-    );
-}
-
-function OverlayToggle({
-    label,
-    pressed,
-    onChange,
-}: {
-    label: string;
-    pressed: boolean;
-    onChange: (v: boolean) => void;
-}) {
-    return (
-        <button
-            type="button"
-            aria-pressed={pressed}
-            onClick={() => onChange(!pressed)}
-            className={[
-                "rounded-xl border px-2 py-1.5 text-xs font-medium transition-colors text-center",
-                pressed
-                    ? "border-signal/30 bg-signal/10 text-fg"
-                    : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
-            ].join(" ")}
-        >
-            {label}
-        </button>
     );
 }
 
@@ -113,6 +71,7 @@ export default function ChessResponseDesktopA({
     const rTone = response.response > 0 ? "good" : "warn";
 
     return (
+        <DensityProvider value="compact">
         <div className="w-full max-w-screen-2xl mx-auto px-4 lg:px-8 py-2 space-y-4">
             {/* Hero canvas panel */}
             <div
@@ -140,14 +99,14 @@ export default function ChessResponseDesktopA({
                     <div className="flex items-center justify-between mb-2.5">
                         <TinyBrow>Inspector</TinyBrow>
                         <div className="flex gap-1">
-                            <button
-                                type="button"
+                            <Button
+                                variant="ghost"
+                                className="h-6 px-1.5"
                                 aria-label={inspectorOpen ? "Collapse inspector" : "Expand inspector"}
+                                aria-expanded={inspectorOpen}
                                 onClick={() => setInspectorOpen((v) => !v)}
-                                className="rounded-control border border-line/80 bg-ground/80 px-1.5 py-0.5 text-[11px] text-fg-muted hover:text-fg transition-colors"
-                            >
-                                {inspectorOpen ? "—" : "+"}
-                            </button>
+                                icon={inspectorOpen ? <Minus /> : <Plus />}
+                            />
                         </div>
                     </div>
 
@@ -174,27 +133,19 @@ export default function ChessResponseDesktopA({
 
                             <div>
                                 <TinyBrow className="block mb-1.5">Overlays</TinyBrow>
-                                <div className="grid grid-cols-2 gap-1.5">
-                                    <OverlayToggle
-                                        label="Samples"
-                                        pressed={showSampleLabels}
-                                        onChange={onShowSampleLabelsChange}
-                                    />
-                                    <OverlayToggle
-                                        label="SR"
-                                        pressed={showSrPairs}
-                                        onChange={onShowSrPairsChange}
-                                    />
-                                    <OverlayToggle
-                                        label="DR"
-                                        pressed={showDrPairs}
-                                        onChange={onShowDrPairsChange}
-                                    />
-                                    <OverlayToggle
-                                        label="MR"
-                                        pressed={showMrRegions}
-                                        onChange={onShowMrRegionsChange}
-                                    />
+                                <div className="flex flex-wrap gap-1.5">
+                                    <ToggleChip checked={showSampleLabels} onCheckedChange={onShowSampleLabelsChange}>
+                                        Samples
+                                    </ToggleChip>
+                                    <ToggleChip checked={showSrPairs} onCheckedChange={onShowSrPairsChange} swatch={CHESS_PHASE_COLORS[1]}>
+                                        SR
+                                    </ToggleChip>
+                                    <ToggleChip checked={showDrPairs} onCheckedChange={onShowDrPairsChange} swatch={CHESS_DR_COLOR}>
+                                        DR
+                                    </ToggleChip>
+                                    <ToggleChip checked={showMrRegions} onCheckedChange={onShowMrRegionsChange} swatch={CHESS_MR_COLOR}>
+                                        MR
+                                    </ToggleChip>
                                 </div>
                             </div>
                         </div>
@@ -218,53 +169,38 @@ export default function ChessResponseDesktopA({
                 {/* Bottom dock — centered */}
                 <FloatingPanel className="absolute left-1/2 bottom-3.5 -translate-x-1/2 flex items-center gap-2.5 px-2 py-1.5 rounded-full">
                     {/* Pattern segmented */}
-                    <div className="flex gap-1">
-                        {PATTERNS.map((p) => (
-                            <button
-                                key={p}
-                                type="button"
-                                onClick={() => onPatternChange(p)}
-                                className={[
-                                    "rounded-full border px-2.5 py-1 text-xs font-medium capitalize transition-colors",
-                                    pattern === p
-                                        ? "border-signal/30 bg-signal/10 text-fg"
-                                        : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
-                                ].join(" ")}
-                            >
-                                {p}
-                            </button>
-                        ))}
-                    </div>
+                    <SegmentedControl
+                        aria-label="Pattern"
+                        value={pattern}
+                        options={PATTERN_OPTIONS}
+                        onValueChange={(next) => {
+                            const p = toPattern(next);
+                            if (p) onPatternChange(p);
+                        }}
+                    />
 
                     {/* Divider */}
                     <div className="w-px h-5 bg-line" />
 
                     {/* Play / Pause */}
-                    <button
-                        type="button"
+                    <Button
+                        variant={playing ? "secondary" : "primary"}
                         aria-label={playing ? "Pause rotation" : "Play rotation"}
                         onClick={() => onPlayingChange(!playing)}
-                        className={[
-                            "flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-                            playing
-                                ? "border-signal/30 bg-signal/10 text-fg"
-                                : "border-line/80 bg-signal text-ground hover:bg-signal/90",
-                        ].join(" ")}
+                        icon={playing ? <Pause /> : <Play />}
                     >
-                        {playing ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
                         {playing ? "Pause" : "Play"}
-                    </button>
+                    </Button>
 
                     {/* θ scrub slider */}
-                    <input
-                        type="range"
+                    <Slider
+                        aria-label="Rotation angle"
+                        className="w-[220px] flex-none"
+                        value={rotationDeg}
                         min={0}
                         max={360}
                         step={0.5}
-                        value={rotationDeg}
-                        onChange={(e) => onRotationChange(Number(e.target.value))}
-                        className="w-[220px] accent-signal"
-                        aria-label="Rotation angle"
+                        onValueChange={onRotationChange}
                     />
 
                     {/* θ readout */}
@@ -274,5 +210,6 @@ export default function ChessResponseDesktopA({
                 </FloatingPanel>
             </div>
         </div>
+        </DensityProvider>
     );
 }

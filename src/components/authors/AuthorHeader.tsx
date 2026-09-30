@@ -10,7 +10,7 @@ interface AuthorHeaderProps {
 }
 
 const btnClass =
-    "inline-flex h-9 items-center gap-1.5 rounded-control border border-line bg-surface px-3.5 text-[13px] font-medium text-fg no-underline transition-colors hover:border-line-strong hover:bg-raised";
+    "inline-flex h-9 items-center gap-1.5 rounded-control border border-line bg-surface px-3.5 text-[13px] font-medium text-fg no-underline transition-colors hover:border-line-strong hover:bg-line/60";
 
 /** Breadcrumb, name, ORCID/OpenAlex links, and the one/two-sentence Atlas
  *  footprint summary — the top of the author page, in the same visual

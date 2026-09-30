@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import type Konva from "konva";
 import type { Feature, ToolType } from "../../../store/editor/useEditorStore";
+import { ANNOTATION_COLORS } from "../../../store/editor/featureColors";
 
 interface DrawingParams {
     activeTool: ToolType;
@@ -104,7 +105,7 @@ export function useDrawingHandlers({
                         width,
                         height,
                         rotation: 0,
-                        color: "#ffaa00",
+                        color: ANNOTATION_COLORS.bbox,
                     });
                 } else {
                     addFeature({
@@ -116,7 +117,7 @@ export function useDrawingHandlers({
                         radiusX: width / 2,
                         radiusY: height / 2,
                         rotation: 0,
-                        color: "#ff00ff",
+                        color: ANNOTATION_COLORS.ellipse,
                     });
                 }
             }
@@ -136,7 +137,7 @@ export function useDrawingHandlers({
                     type: "line",
                     source: "manual",
                     points: [currentLinePos.x1, currentLinePos.y1, currentLinePos.x2, currentLinePos.y2],
-                    color: "#00ffff",
+                    color: ANNOTATION_COLORS.line,
                 });
             }
             setCurrentLinePos(null);
@@ -173,7 +174,7 @@ export function useDrawingHandlers({
                 source: "manual",
                 x: pos.x,
                 y: pos.y,
-                color: "#ff0000",
+                color: ANNOTATION_COLORS.point,
             });
             return;
         }
@@ -202,7 +203,7 @@ export function useDrawingHandlers({
                 type: "polyline",
                 source: "manual",
                 points: currentLinePoints,
-                color: "#00ff00",
+                color: ANNOTATION_COLORS.polyline,
             });
             setCurrentLinePoints([]);
         }
@@ -215,7 +216,7 @@ export function useDrawingHandlers({
                 source: "manual",
                 points: currentLinePoints,
                 closed: true,
-                color: "#8b5cf6",
+                color: ANNOTATION_COLORS.polygon,
             });
             setCurrentLinePoints([]);
         }

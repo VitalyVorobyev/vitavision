@@ -177,7 +177,7 @@ export default function NarrativePage() {
                     {entry.draft && (
                         <span
                             aria-hidden="true"
-                            className="mr-3 rounded border border-amber-500/40 px-2 py-1 align-middle font-mono text-sm uppercase tracking-wider text-amber-500"
+                            className="mr-3 rounded border border-ink-amber/40 px-2 py-1 align-middle font-mono text-sm uppercase tracking-wider text-ink-amber"
                         >
                             draft
                         </span>

@@ -1,5 +1,6 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
 import { ChevronLeft, ChevronRight, Download, Eye, EyeOff, Lock, Trash2, Upload } from "lucide-react";
+import { Button, cn } from "@vitavision/ui";
 
 import { exportFeaturesAsJson, promptFeatureImport } from "../featureIo";
 import {
@@ -151,32 +152,30 @@ function FeatureNavigator({
             ref={containerRef}
             tabIndex={0}
             onKeyDown={handleKeyDown}
-            className="flex items-center justify-center gap-3 outline-none focus:ring-1 focus:ring-signal/30 rounded-control py-1"
+            className="flex items-center justify-center gap-3 rounded-control py-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
         >
-            <button
-                type="button"
+            <Button
+                variant="ghost"
+                className="px-1.5"
                 onClick={goPrev}
                 disabled={total === 0}
-                className="p-1 rounded-control text-fg-muted hover:text-fg hover:bg-raised/30 transition-colors disabled:opacity-30"
-                title="Previous feature"
-            >
-                <ChevronLeft size={16} />
-            </button>
+                aria-label="Previous feature"
+                icon={<ChevronLeft />}
+            />
             <span className="text-xs text-fg font-medium text-center">
                 {group && (
                     <span className="text-fg-muted">{group.label} </span>
                 )}
                 <span className="tabular-nums">{display}</span>
             </span>
-            <button
-                type="button"
+            <Button
+                variant="ghost"
+                className="px-1.5"
                 onClick={goNext}
                 disabled={total === 0}
-                className="p-1 rounded-control text-fg-muted hover:text-fg hover:bg-raised/30 transition-colors disabled:opacity-30"
-                title="Next feature"
-            >
-                <ChevronRight size={16} />
-            </button>
+                aria-label="Next feature"
+                icon={<ChevronRight />}
+            />
         </div>
     );
 }
@@ -287,40 +286,11 @@ function SelectedFeatureCard({
             </dl>
 
             {!readonly && (
-                <button
-                    onClick={onDelete}
-                    className="flex items-center gap-1 text-[11px] text-defect hover:text-defect/70 transition-colors"
-                >
-                    <Trash2 size={11} /> Delete
-                </button>
+                <Button variant="danger" onClick={onDelete} icon={<Trash2 />}>
+                    Delete
+                </Button>
             )}
         </div>
-    );
-}
-
-function ActionButton({
-    children,
-    className,
-    disabled,
-    onClick,
-    title,
-}: {
-    children: React.ReactNode;
-    className?: string;
-    disabled?: boolean;
-    onClick: () => void;
-    title: string;
-}) {
-    return (
-        <button
-            type="button"
-            onClick={onClick}
-            disabled={disabled}
-            title={title}
-            className={`inline-flex items-center gap-1.5 rounded-control border px-2.5 py-1.5 text-[11px] font-medium transition-colors disabled:opacity-45 disabled:cursor-not-allowed ${className ?? "border-line bg-ground text-fg hover:bg-raised/50"}`}
-        >
-            {children}
-        </button>
     );
 }
 
@@ -384,27 +354,26 @@ export default function FeatureListPanel() {
     return (
         <div className="flex flex-col gap-3">
             <div className="grid grid-cols-3 gap-1.5">
-                <ActionButton title="Import feature JSON" onClick={handleImport}>
-                    <Upload size={12} />
+                <Button title="Import feature JSON" onClick={handleImport} icon={<Upload />}>
                     Import
-                </ActionButton>
-                <ActionButton
+                </Button>
+                <Button
                     title="Export current features"
                     onClick={handleExport}
                     disabled={features.length === 0}
+                    icon={<Download />}
                 >
-                    <Download size={12} />
                     Export
-                </ActionButton>
-                <ActionButton
+                </Button>
+                <Button
+                    variant="danger"
                     title="Clear all features"
                     onClick={handleClear}
                     disabled={features.length === 0}
-                    className="border-defect/20 bg-defect/5 text-defect hover:bg-defect/10"
+                    icon={<Trash2 />}
                 >
-                    <Trash2 size={12} />
                     Clear
-                </ActionButton>
+                </Button>
             </div>
 
             {selectedFeature && (
@@ -429,43 +398,32 @@ export default function FeatureListPanel() {
                         const isActive = group.key === activeGroupKey;
                         const isVisible = isFeatureGroupVisible(group.key, featureGroupVisibility);
                         return (
-                            <div
-                                key={group.key}
-                                className={`inline-flex items-center rounded-full border text-[11px] transition-colors ${
-                                    isActive
-                                        ? "border-signal/40 bg-signal/8 text-signal"
-                                        : isVisible
-                                            ? "border-line bg-ground text-fg"
-                                            : "border-line/50 bg-raised/20 text-fg-muted/60"
-                                }`}
-                            >
-                                {/* Main clickable area — selects group */}
-                                <button
-                                    type="button"
+                            <div key={group.key} className="inline-flex items-center">
+                                {/* Selects the group: the navigator then steps through it. */}
+                                <Button
+                                    variant={isActive ? "secondary" : "ghost"}
+                                    aria-pressed={isActive}
+                                    className={cn("gap-1.5 px-2", !isVisible && "text-fg-subtle")}
                                     onClick={() => setSelectedFeatureId(group.features[0].id)}
-                                    className="inline-flex items-center gap-1.5 pl-2 pr-1 py-1 hover:opacity-80 transition-opacity"
                                 >
-                                    <div
-                                        className="w-2 h-2 rounded-full shrink-0"
+                                    <span
+                                        aria-hidden
+                                        className="size-2 shrink-0 rounded-full"
                                         style={{ backgroundColor: group.color, opacity: isVisible ? 1 : 0.4 }}
                                     />
-                                    <span className="font-medium">{group.label}</span>
-                                    <span className="text-[10px] text-fg-muted tabular-nums">
+                                    <span>{group.label}</span>
+                                    <span className="font-mono text-[10px] text-fg-muted tabular-nums">
                                         {group.features.length}
                                     </span>
-                                </button>
-                                {/* Visibility toggle */}
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setFeatureGroupVisibility(group.key, !isVisible);
-                                    }}
-                                    className="pr-2 pl-0.5 py-1 text-fg-muted hover:text-fg transition-colors"
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    className="px-1.5"
+                                    aria-label={isVisible ? `Hide ${group.label}` : `Show ${group.label}`}
                                     title={isVisible ? `Hide ${group.label}` : `Show ${group.label}`}
-                                >
-                                    {isVisible ? <Eye size={10} /> : <EyeOff size={10} />}
-                                </button>
+                                    onClick={() => setFeatureGroupVisibility(group.key, !isVisible)}
+                                    icon={isVisible ? <Eye /> : <EyeOff />}
+                                />
                             </div>
                         );
                     })}
@@ -473,7 +431,7 @@ export default function FeatureListPanel() {
             )}
 
             {features.length === 0 && (
-                <div className="rounded-panel border border-dashed border-line/60 py-6 text-center">
+                <div className="rounded-panel border border-dashed border-line py-6 text-center">
                     <p className="text-xs text-fg-muted">No features yet</p>
                 </div>
             )}

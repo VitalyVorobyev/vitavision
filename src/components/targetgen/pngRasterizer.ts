@@ -1,3 +1,5 @@
+import { PRINT_COLORS } from "./printColors";
+
 /**
  * Rasterizes an SVG string (with mm units) to a PNG Blob via an offscreen canvas.
  */
@@ -30,7 +32,7 @@ export async function rasterizeSvgToPng(
         canvas.width = widthPx;
         canvas.height = heightPx;
         const ctx = canvas.getContext("2d")!;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = PRINT_COLORS.paper;
         ctx.fillRect(0, 0, widthPx, heightPx);
         ctx.drawImage(img, 0, 0, widthPx, heightPx);
 

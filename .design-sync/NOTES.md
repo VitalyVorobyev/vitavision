@@ -78,11 +78,11 @@ preview card **and every design built with this system**. It currently provides 
 things, each for a concrete reason — do not trim it without re-checking these:
 
 - `MemoryRouter` — several components render `<Link>`.
-- `TooltipPrimitive.Provider` — `Tooltip` renders `TooltipPrimitive.Root`, which reads
-  Radix's provider context unconditionally. Radix gives that context no default, so
-  without an ancestor Provider it throws during render. In the app every call site
-  (`src/pages/Editor.tsx`, `src/pages/Home.tsx`) supplies its own local Provider and
-  there is no global one, so the requirement is invisible until you extract the component.
+- ui's `TooltipProvider` — `Tooltip` (re-exported from `@vitavision/ui`; its
+  `componentSrcMap` entry points into `node_modules/@vitavision/ui/src`) and `InfoHint`
+  render `TooltipPrimitive.Root`, which reads Radix's provider context unconditionally.
+  Radix gives that context no default, so without an ancestor Provider it throws during
+  render. The app mounts one at its root; a design render has none, so this brings it.
 - `PapersContext` seeded from `public/papers-index.json` — `SourceCard` / `SourceStrip`
   resolve papers through `usePaperById`, which the app fills by lazily fetching
   `/papers-index.json`. Nothing serves that during a design render.

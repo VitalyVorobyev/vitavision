@@ -23,7 +23,7 @@ function AdminSidebar() {
                                 "rounded-control px-3 py-2 text-sm font-medium transition-colors",
                                 isActive
                                     ? "bg-signal/10 text-fg"
-                                    : "text-fg-muted hover:text-fg hover:bg-raised",
+                                    : "text-fg-muted hover:text-fg hover:bg-line/60",
                             ].join(" ")
                         }
                     >

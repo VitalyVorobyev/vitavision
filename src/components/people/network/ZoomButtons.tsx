@@ -16,7 +16,7 @@ export interface ZoomButtonsProps {
 
 export function ZoomButtons({ onZoomIn, onZoomOut, onFit }: ZoomButtonsProps) {
     const btnCls =
-        "w-11 h-11 grid place-items-center rounded-control border border-line bg-surface text-fg-muted hover:text-fg hover:bg-raised shadow-sm transition-colors";
+        "w-11 h-11 grid place-items-center rounded-control border border-line bg-surface text-fg-muted hover:text-fg hover:bg-line/60 shadow-sm transition-colors";
     return (
         <div className="absolute bottom-3 right-3 flex flex-col gap-1.5">
             <button type="button" onClick={onZoomIn} className={btnCls} aria-label="Zoom in" title="Zoom in">

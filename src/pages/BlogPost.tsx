@@ -138,7 +138,7 @@ export default function BlogPost() {
                 </Link>
                 <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
                     {frontmatter.draft && (
-                        <span className="text-sm font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-2 py-1 mr-3 align-middle">
+                        <span className="text-sm font-mono uppercase tracking-wider text-ink-amber border border-ink-amber/40 rounded px-2 py-1 mr-3 align-middle">
                             draft
                         </span>
                     )}

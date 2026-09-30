@@ -1,4 +1,5 @@
-import { CollapsibleSection, NumberField, Section } from "../formFields";
+import { Disclosure, Field, InfoHint, NumberInput, Section } from "@vitavision/ui";
+import { fieldGridClass, numberInputProps } from "../../../../lib/fieldBindings";
 import type { AlgorithmConfigFormProps } from "../types";
 
 export interface ChessboardConfig {
@@ -19,80 +20,115 @@ const ChessboardConfigForm = (props: AlgorithmConfigFormProps<ChessboardConfig>)
 
     return (
         <>
-            <Section title="Board size" columns={modal ? 2 : undefined}>
-                <NumberField
-                    label="Expected rows"
-                    tooltip="Number of internal corner rows in the chessboard pattern (squares minus one)."
-                    value={config.expectedRows}
-                    onChange={(v) => set("expectedRows", v ?? 7)}
-                    disabled={disabled}
-                    min={2}
-                    step={1}
-                />
-                <NumberField
-                    label="Expected cols"
-                    tooltip="Number of internal corner columns in the chessboard pattern (squares minus one)."
-                    value={config.expectedCols}
-                    onChange={(v) => set("expectedCols", v ?? 11)}
-                    disabled={disabled}
-                    min={2}
-                    step={1}
-                />
+            <Section title="Board size">
+                <div className={fieldGridClass(modal ? 2 : undefined)}>
+                    <Field
+                        label="Expected rows"
+                        as="group"
+                        annotation={<InfoHint label="About expected rows">Number of internal corner rows in the chessboard pattern (squares minus one).</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Expected rows"
+                            {...numberInputProps(config.expectedRows, (v) => set("expectedRows", v ?? 7))}
+                            disabled={disabled}
+                            min={2}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Expected cols"
+                        as="group"
+                        annotation={<InfoHint label="About expected cols">Number of internal corner columns in the chessboard pattern (squares minus one).</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Expected cols"
+                            {...numberInputProps(config.expectedCols, (v) => set("expectedCols", v ?? 11))}
+                            disabled={disabled}
+                            min={2}
+                            step={1}
+                        />
+                    </Field>
+                </div>
             </Section>
-            <CollapsibleSection title="Detector tuning" columns={modal ? 2 : undefined}>
-                <NumberField
-                    label="Min corner strength"
-                    tooltip="Absolute floor on the raw ChESS response (detector default 15). Lower values detect weaker corners but may increase false positives."
-                    value={config.minCornerStrength}
-                    onChange={(v) => set("minCornerStrength", v ?? 15)}
-                    disabled={disabled}
-                    min={0}
-                    max={500}
-                    step={1}
-                />
-                <NumberField
-                    label="Completeness threshold"
-                    tooltip="Fraction of expected corners that must be detected for the board to be accepted (0-1)."
-                    value={config.completenessThreshold}
-                    onChange={(v) => set("completenessThreshold", v ?? 0.1)}
-                    disabled={disabled}
-                    min={0}
-                    max={1}
-                    step={0.05}
-                />
-            </CollapsibleSection>
-            <CollapsibleSection title="Advanced" columns={modal ? 2 : undefined}>
-                <NumberField
-                    label="Max fit RMS ratio"
-                    tooltip="Maximum RMS residual (relative to board scale) for a corner-fit cluster to be accepted. Lower → stricter; raise if the detector rejects clearly-good boards. WASM default: 0.5."
-                    value={config.maxFitRmsRatio}
-                    onChange={(v) => set("maxFitRmsRatio", v ?? 0.5)}
-                    disabled={disabled}
-                    min={0.05}
-                    max={2}
-                    step={0.05}
-                />
-                <NumberField
-                    label="Peak min separation (°)"
-                    tooltip="Minimum angular separation between dominant edge orientations. Higher → only well-separated grid axes accepted. WASM default: 60."
-                    value={config.peakMinSeparationDeg}
-                    onChange={(v) => set("peakMinSeparationDeg", v ?? 60)}
-                    disabled={disabled}
-                    min={10}
-                    max={90}
-                    step={1}
-                />
-                <NumberField
-                    label="Min peak weight fraction"
-                    tooltip="Minimum fractional weight a peak must carry in the orientation histogram. Lower → accept weaker peaks (helps with low-contrast boards). WASM default: 0.02."
-                    value={config.minPeakWeightFraction}
-                    onChange={(v) => set("minPeakWeightFraction", v ?? 0.02)}
-                    disabled={disabled}
-                    min={0}
-                    max={1}
-                    step={0.005}
-                />
-            </CollapsibleSection>
+            <Disclosure summary="Detector tuning">
+                <div className={fieldGridClass(modal ? 2 : undefined)}>
+                    <Field
+                        label="Min corner strength"
+                        as="group"
+                        annotation={<InfoHint label="About min corner strength">Absolute floor on the raw ChESS response (detector default 15). Lower values detect weaker corners but may increase false positives.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Min corner strength"
+                            {...numberInputProps(config.minCornerStrength, (v) => set("minCornerStrength", v ?? 15))}
+                            disabled={disabled}
+                            min={0}
+                            max={500}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Completeness threshold"
+                        as="group"
+                        annotation={<InfoHint label="About completeness threshold">Fraction of expected corners that must be detected for the board to be accepted (0-1).</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Completeness threshold"
+                            {...numberInputProps(config.completenessThreshold, (v) => set("completenessThreshold", v ?? 0.1))}
+                            disabled={disabled}
+                            min={0}
+                            max={1}
+                            step={0.05}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
+            <Disclosure summary="Advanced">
+                <div className={fieldGridClass(modal ? 2 : undefined)}>
+                    <Field
+                        label="Max fit RMS ratio"
+                        as="group"
+                        annotation={<InfoHint label="About max fit RMS ratio">Maximum RMS residual (relative to board scale) for a corner-fit cluster to be accepted. Lower → stricter; raise if the detector rejects clearly-good boards. WASM default: 0.5.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Max fit RMS ratio"
+                            {...numberInputProps(config.maxFitRmsRatio, (v) => set("maxFitRmsRatio", v ?? 0.5))}
+                            disabled={disabled}
+                            min={0.05}
+                            max={2}
+                            step={0.05}
+                        />
+                    </Field>
+                    <Field
+                        label="Peak min separation"
+                        as="group"
+                        annotation={<InfoHint label="About peak min separation">Minimum angular separation between dominant edge orientations. Higher → only well-separated grid axes accepted. WASM default: 60.</InfoHint>}
+                    >
+                        <NumberInput
+                            unit="°"
+                            aria-label="Peak min separation"
+                            {...numberInputProps(config.peakMinSeparationDeg, (v) => set("peakMinSeparationDeg", v ?? 60))}
+                            disabled={disabled}
+                            min={10}
+                            max={90}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Min peak weight fraction"
+                        as="group"
+                        annotation={<InfoHint label="About min peak weight fraction">Minimum fractional weight a peak must carry in the orientation histogram. Lower → accept weaker peaks (helps with low-contrast boards). WASM default: 0.02.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Min peak weight fraction"
+                            {...numberInputProps(config.minPeakWeightFraction, (v) => set("minPeakWeightFraction", v ?? 0.02))}
+                            disabled={disabled}
+                            min={0}
+                            max={1}
+                            step={0.005}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
         </>
     );
 };

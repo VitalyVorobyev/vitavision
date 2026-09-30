@@ -1,5 +1,6 @@
 import type { AlgorithmDefinition, AlgorithmPreset, AlgorithmSummaryEntry, DiagnosticEntry } from "../types";
 import type { Feature, PointFeature } from "../../../../store/editor/useEditorStore";
+import { readCanvasTokens, scoreTone } from "../../../../lib/canvasTokens";
 import type { RadsymResult } from "../../../../lib/types";
 import { detectRadsymWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 
@@ -39,11 +40,12 @@ const toDiagnostics = (result: RadsymResult): DiagnosticEntry[] => {
     return [];
 };
 
-/** Map score [0,1] to a color for point rendering. */
+/**
+ * The verdict colour of a proposal's score, stored on the point it becomes: the ui verdict
+ * tokens as the image well resolves them (the point is drawn on the photograph).
+ */
 function scoreColor(score: number): string {
-    if (score >= 0.66) return "#22c55e";
-    if (score >= 0.33) return "#f59e0b";
-    return "#ef4444";
+    return readCanvasTokens("well")[scoreTone(score)];
 }
 
 const toFeatures = (result: RadsymResult, runId: string): Feature[] => {

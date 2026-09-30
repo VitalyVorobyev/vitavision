@@ -55,7 +55,7 @@ export default function RelationshipSidebar({
             <SidebarSection
                 heading="Used by"
                 slugs={result.usedBy}
-                itemColor="text-blue-600 dark:text-blue-400"
+                itemColor="text-ink-blue"
                 maxItems={4}
                 defaultOpen={sectionsOpen}
             />

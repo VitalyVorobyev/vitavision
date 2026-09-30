@@ -117,9 +117,9 @@ type Tone = "neutral" | "good" | "warn" | "bad";
 
 const toneStyles: Record<Tone, { cell: string; value: string }> = {
     neutral: { cell: "", value: "text-fg" },
-    good:    { cell: "border-emerald-500/40 bg-emerald-500/10", value: "text-emerald-400" },
-    warn:    { cell: "border-amber-500/40   bg-amber-500/10",   value: "text-amber-400"   },
-    bad:     { cell: "border-rose-500/40    bg-rose-500/10",    value: "text-rose-400"    },
+    good:    { cell: "border-normal/40 bg-normal/10", value: "text-normal" },
+    warn:    { cell: "border-warn/40 bg-warn/10",     value: "text-warn"   },
+    bad:     { cell: "border-defect/40 bg-defect/10", value: "text-defect" },
 };
 
 interface MetricCellProps {

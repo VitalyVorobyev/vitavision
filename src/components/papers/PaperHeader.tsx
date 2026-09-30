@@ -13,7 +13,7 @@ interface PaperHeaderProps {
 }
 
 const btnClass =
-    "inline-flex h-9 items-center gap-1.5 rounded-control border border-line bg-surface px-3.5 text-[13px] font-medium text-fg no-underline transition-colors hover:border-line-strong hover:bg-raised";
+    "inline-flex h-9 items-center gap-1.5 rounded-control border border-line bg-surface px-3.5 text-[13px] font-medium text-fg no-underline transition-colors hover:border-line-strong hover:bg-line/60";
 
 export default function PaperHeader({ paper, authorsIndex, primarySlug }: PaperHeaderProps) {
     const authorIds = resolveAuthorIds(paper.authors, authorsIndex.paperAuthors[paper.id], authorsIndex.authors);

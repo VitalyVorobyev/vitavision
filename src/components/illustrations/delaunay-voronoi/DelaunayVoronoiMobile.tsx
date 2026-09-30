@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Minus, MoreHorizontal, Plus, Redo2, RotateCcw, Undo2, X } from "lucide-react";
+import { Button, cn, NumberInput, ToggleChip } from "@vitavision/ui";
 import { Panel, PanelFlat, FloatingPanel, TinyBrow } from "../_shared/primitives";
 import DelaunayVoronoiCanvas from "./DelaunayVoronoiCanvas";
 import type { DelaunayVoronoiState } from "./useDelaunayVoronoi";
@@ -25,9 +27,9 @@ const LAYER_LABELS: { key: keyof Layers; label: string }[] = [
 
 function minAngleColor(deg: number): string {
     if (deg <= 0) return "";
-    if (deg >= 20) return "text-emerald-400";
-    if (deg >= 10) return "text-amber-400";
-    return "text-rose-400";
+    if (deg >= 20) return "text-normal";
+    if (deg >= 10) return "text-warn";
+    return "text-defect";
 }
 
 function formatMinAngle(deg: number): string {
@@ -50,13 +52,14 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                 <DelaunayVoronoiCanvas demo={demo} />
 
                 {/* More kebab (top-right) — opens the bottom sheet */}
-                <FloatingPanel className="absolute top-2.5 right-2.5 px-2 py-1.5">
-                    <button
-                        type="button"
+                <FloatingPanel className="absolute top-2.5 right-2.5 p-0.5">
+                    <Button
+                        variant="ghost"
                         aria-label="More options"
                         onClick={() => setTool("more")}
-                        className="text-fg-muted hover:text-fg transition-colors text-base leading-none"
-                    >⋯</button>
+                        className="size-8 px-0"
+                        icon={<MoreHorizontal />}
+                    />
                 </FloatingPanel>
 
                 {/* Stats chip (top-right, below kebab) */}
@@ -66,12 +69,10 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
 
                 {/* Reset corners chip — appears below stats when grid layer is on */}
                 {layers.grid && (
-                    <FloatingPanel className="absolute top-2.5 left-2.5 px-2.5 py-1 text-[11px]">
-                        <button
-                            type="button"
-                            onClick={resetGrid}
-                            className="text-fg-muted hover:text-fg transition-colors"
-                        >↺ Reset corners</button>
+                    <FloatingPanel className="absolute top-2.5 left-2.5 p-0.5">
+                        <Button variant="ghost" size="sm" onClick={resetGrid} icon={<RotateCcw />}>
+                            Reset corners
+                        </Button>
                     </FloatingPanel>
                 )}
 
@@ -81,12 +82,13 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                         <span className="text-[11px] leading-snug text-fg-muted">
                             Tap to add a point. Drag to move. Inspect tool: tap a triangle or cell to see its area.
                         </span>
-                        <button
-                            type="button"
+                        <Button
+                            variant="ghost"
                             aria-label="Dismiss hint"
                             onClick={() => setHintVisible(false)}
-                            className="-mt-0.5 -mr-0.5 w-5 h-5 flex items-center justify-center rounded-control text-fg-muted hover:bg-raised/40 hover:text-fg shrink-0"
-                        >×</button>
+                            className="-mt-0.5 -mr-0.5 size-6 shrink-0 px-0"
+                            icon={<X />}
+                        />
                     </FloatingPanel>
                 )}
             </Panel>
@@ -96,44 +98,35 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                 {DOCK_TOOLS.map(({ tool, icon, label }) => {
                     const isActive = activeTool === tool;
                     return (
-                        <button
+                        <Button
                             key={tool}
-                            type="button"
+                            variant="ghost"
                             aria-pressed={isActive}
                             onClick={() => setTool(tool)}
-                            className={`flex flex-col items-center justify-center min-h-[56px] gap-1 rounded-xl transition-colors ${
-                                isActive
-                                    ? "bg-signal/15 border border-signal/40 text-signal"
-                                    : "hover:bg-raised/40 text-fg-muted hover:text-fg"
-                            }`}
+                            className={cn(
+                                "h-14 flex-col gap-1 px-0",
+                                isActive && "bg-signal/15 text-signal ring-1 ring-inset ring-signal/40 hover:bg-signal/15 hover:text-signal",
+                            )}
                         >
-                            <span style={{ fontSize: 18 }}>{icon}</span>
-                            <span style={{ fontSize: 10 }}>{label}</span>
-                        </button>
+                            <span aria-hidden className="text-lg leading-none">{icon}</span>
+                            <span className="text-[10px] leading-none">{label}</span>
+                        </Button>
                     );
                 })}
             </PanelFlat>
 
             {/* Layer pill row */}
             <div className="flex flex-wrap gap-2">
-                {LAYER_LABELS.map(({ key, label }) => {
-                    const on = layers[key];
-                    return (
-                        <button
-                            key={key}
-                            type="button"
-                            aria-pressed={on}
-                            onClick={() => toggleLayer(key)}
-                            className={`rounded-full px-3 py-1.5 text-[11px] border transition-colors ${
-                                on
-                                    ? "border-signal/40 bg-signal/10 text-fg"
-                                    : "border-line text-fg-muted hover:text-fg"
-                            }`}
-                        >
-                            {label}
-                        </button>
-                    );
-                })}
+                {LAYER_LABELS.map(({ key, label }) => (
+                    <ToggleChip
+                        key={key}
+                        checked={layers[key]}
+                        onCheckedChange={() => toggleLayer(key)}
+                        className="rounded-full px-3 py-1.5"
+                    >
+                        {label}
+                    </ToggleChip>
+                ))}
             </div>
 
             {/* More sheet */}
@@ -148,72 +141,60 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                         <div className="flex flex-col gap-3">
                             {/* History */}
                             <div className="grid grid-cols-2 gap-2">
-                                <button
-                                    type="button"
-                                    onClick={undo}
-                                    disabled={!canUndo}
-                                    className={`rounded-xl border border-line py-2.5 text-sm transition-colors ${
-                                        canUndo
-                                            ? "text-fg-muted hover:text-fg"
-                                            : "opacity-40 cursor-not-allowed text-fg-muted"
-                                    }`}
-                                >↶ Undo</button>
-                                <button
-                                    type="button"
-                                    onClick={redo}
-                                    disabled={!canRedo}
-                                    className={`rounded-xl border border-line py-2.5 text-sm transition-colors ${
-                                        canRedo
-                                            ? "text-fg-muted hover:text-fg"
-                                            : "opacity-40 cursor-not-allowed text-fg-muted"
-                                    }`}
-                                >↷ Redo</button>
+                                <Button onClick={undo} disabled={!canUndo} icon={<Undo2 />}>
+                                    Undo
+                                </Button>
+                                <Button onClick={redo} disabled={!canRedo} icon={<Redo2 />}>
+                                    Redo
+                                </Button>
                             </div>
                             {/* Grid size */}
                             <div className="flex flex-col gap-2">
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm">Rows</span>
                                     <div className="flex items-center gap-2">
-                                        <button
-                                            type="button"
+                                        <Button
+                                            className="size-8 px-0"
+                                            aria-label="Fewer rows"
                                             onClick={() => setGridDims(Math.max(2, state.grid.rows - 1), undefined)}
-                                            className="w-8 h-8 flex items-center justify-center rounded-control border border-line hover:bg-raised/40 text-sm"
-                                        >−</button>
+                                            icon={<Minus />}
+                                        />
                                         <span className="w-8 text-center font-mono text-sm">{state.grid.rows}</span>
-                                        <button
-                                            type="button"
+                                        <Button
+                                            className="size-8 px-0"
+                                            aria-label="More rows"
                                             onClick={() => setGridDims(Math.min(20, state.grid.rows + 1), undefined)}
-                                            className="w-8 h-8 flex items-center justify-center rounded-control border border-line hover:bg-raised/40 text-sm"
-                                        >+</button>
+                                            icon={<Plus />}
+                                        />
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm">Cols</span>
                                     <div className="flex items-center gap-2">
-                                        <button
-                                            type="button"
+                                        <Button
+                                            className="size-8 px-0"
+                                            aria-label="Fewer cols"
                                             onClick={() => setGridDims(undefined, Math.max(2, state.grid.cols - 1))}
-                                            className="w-8 h-8 flex items-center justify-center rounded-control border border-line hover:bg-raised/40 text-sm"
-                                        >−</button>
+                                            icon={<Minus />}
+                                        />
                                         <span className="w-8 text-center font-mono text-sm">{state.grid.cols}</span>
-                                        <button
-                                            type="button"
+                                        <Button
+                                            className="size-8 px-0"
+                                            aria-label="More cols"
                                             onClick={() => setGridDims(undefined, Math.min(20, state.grid.cols + 1))}
-                                            className="w-8 h-8 flex items-center justify-center rounded-control border border-line hover:bg-raised/40 text-sm"
-                                        >+</button>
+                                            icon={<Plus />}
+                                        />
                                     </div>
                                 </div>
                             </div>
-                            <button
-                                type="button"
-                                onClick={resetGrid}
-                                className="rounded-xl border border-line py-2.5 text-sm text-fg-muted hover:text-fg"
-                            >Reset corners</button>
+                            <Button onClick={resetGrid} icon={<RotateCcw />}>
+                                Reset corners
+                            </Button>
                             {/* Random N */}
                             <div className="flex items-center gap-2">
                                 <span className="text-sm flex-1">Random</span>
-                                <input
-                                    type="number"
+                                <NumberInput
+                                    aria-label="Random point count"
                                     value={randomN}
                                     min={3}
                                     max={500}
@@ -221,27 +202,17 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                                         const v = Number(e.target.value);
                                         if (Number.isFinite(v) && v >= 3) setRandomN(v);
                                     }}
-                                    className="w-16 text-center text-sm font-mono rounded border border-line bg-ground py-1 focus:outline-none focus:ring-1 focus:ring-signal"
+                                    className="w-16 text-center"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => randomPoints(randomN)}
-                                    className="rounded-xl border border-line px-3 py-2 text-sm hover:bg-raised/40 text-fg-muted hover:text-fg"
-                                >Go</button>
+                                <Button onClick={() => randomPoints(randomN)}>Go</Button>
                             </div>
-                            <button
-                                type="button"
-                                onClick={clearPoints}
-                                className="rounded-xl border border-rose-500/40 py-2.5 text-sm text-rose-400 hover:bg-rose-500/10"
-                            >Clear all</button>
+                            <Button variant="danger" onClick={clearPoints}>
+                                Clear all
+                            </Button>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => setTool("add")}
-                            className="mt-4 w-full rounded-xl border border-line py-2.5 text-sm text-fg-muted hover:text-fg"
-                        >
+                        <Button variant="ghost" className="mt-4 w-full" onClick={() => setTool("add")}>
                             Close
-                        </button>
+                        </Button>
                     </div>
                 </>
             )}

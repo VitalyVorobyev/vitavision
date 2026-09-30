@@ -93,17 +93,17 @@ export function responseStatus(value: number): {
     if (value > 150) {
         return {
             label: "strong corner response",
-            className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+            className: "border-normal/30 bg-normal/10 text-normal",
         };
     }
     if (value > 0) {
         return {
             label: "weak positive response",
-            className: "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300",
+            className: "border-signal/30 bg-signal/10 text-signal",
         };
     }
     return {
         label: "suppressed response",
-        className: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+        className: "border-warn/30 bg-warn/10 text-warn",
     };
 }

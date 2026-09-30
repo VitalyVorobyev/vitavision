@@ -1,6 +1,8 @@
 import { Circle, Group, Text } from "react-konva";
 
+import { useCanvasTokens, withAlpha } from "../../../../lib/canvasTokens";
 import type { RadsymResult } from "../../../../lib/types";
+import { DETECTION_COLORS } from "../../../../store/editor/featureColors";
 import type { Feature, OverlayToggles } from "../../../../store/editor/useEditorStore";
 
 interface RadsymOverlayProps {
@@ -11,10 +13,12 @@ interface RadsymOverlayProps {
     features?: Feature[];
 }
 
-const RADIUS_COLOR = "rgba(59, 130, 246, 0.6)";
+const RADIUS_COLOR = withAlpha(DETECTION_COLORS.symmetryRadius, 0.6);
 
 export default function RadsymOverlay({ result, zoom, toggles, onSelectFeature }: RadsymOverlayProps) {
     const r = result as RadsymResult;
+    // Drawn on the photograph, so in the image well's palette (see canvasTokens.ts).
+    const tokens = useCanvasTokens("well");
     if (!r.circles || r.circles.length === 0) return null;
 
     const showLabels = toggles.labels && zoom >= 0.3;
@@ -56,7 +60,7 @@ export default function RadsymOverlay({ result, zoom, toggles, onSelectFeature }
                     y={circle.y - fontSize / 2}
                     text={`r=${circle.radius.toFixed(1)}`}
                     fontSize={fontSize}
-                    fill="#e2e8f0"
+                    fill={tokens.fg}
                     padding={2 / zoom}
                     listening={false}
                 />

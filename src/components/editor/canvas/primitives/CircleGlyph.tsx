@@ -1,25 +1,26 @@
 import { Circle, Group } from "react-konva";
 import type Konva from "konva";
 
+import { scoreTone, withAlpha, type CanvasTokens } from "../../../../lib/canvasTokens";
 import type { CircleFeature } from "../../../../store/editor/useEditorStore";
 
-const scoreColor = (score: number | undefined, selected: boolean): string => {
-    if (selected) return "#f97316";
-    if (score === undefined) return "#3b82f6";
-    if (score >= 0.66) return "#22c55e";
-    if (score >= 0.33) return "#f59e0b";
-    return "#ef4444";
+const scoreColor = (tokens: CanvasTokens, score: number | undefined, selected: boolean): string => {
+    if (selected) return tokens.signal;
+    if (score === undefined) return tokens.fg;
+    return tokens[scoreTone(score)];
 };
 
 interface CircleGlyphProps {
     feature: CircleFeature;
     zoom: number;
     selected: boolean;
+    /** The canvas palette (the image well's tokens), from the layer. */
+    tokens: CanvasTokens;
     onSelect: (event: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => void;
 }
 
-export default function CircleGlyph({ feature, zoom, selected, onSelect }: CircleGlyphProps) {
-    const color = scoreColor(feature.score, selected);
+export default function CircleGlyph({ feature, zoom, selected, tokens, onSelect }: CircleGlyphProps) {
+    const color = scoreColor(tokens, feature.score, selected);
     const strokeWidth = (selected ? 2.4 : 1.4) / zoom;
 
     return (
@@ -29,7 +30,7 @@ export default function CircleGlyph({ feature, zoom, selected, onSelect }: Circl
                 x={feature.x}
                 y={feature.y}
                 radius={feature.radius}
-                stroke="rgba(0,0,0,0.4)"
+                stroke={withAlpha(tokens.canvas, 0.4)}
                 strokeWidth={(strokeWidth + 2 / zoom)}
                 listening={false}
             />
@@ -57,7 +58,7 @@ export default function CircleGlyph({ feature, zoom, selected, onSelect }: Circl
                     x={feature.x}
                     y={feature.y}
                     radius={feature.radius + 4 / zoom}
-                    stroke="#00ffff"
+                    stroke={tokens.signal}
                     strokeWidth={1 / zoom}
                     dash={[4 / zoom, 3 / zoom]}
                     listening={false}

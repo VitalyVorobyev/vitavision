@@ -18,7 +18,7 @@ export default function PostCard({ post }: PostCardProps) {
         >
             <h2 className="text-2xl font-semibold group-hover:underline flex items-center gap-2">
                 {frontmatter.draft && (
-                    <span className="text-xs font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-1.5 py-0.5 align-middle">
+                    <span className="text-xs font-mono uppercase tracking-wider text-ink-amber border border-ink-amber/40 rounded px-1.5 py-0.5 align-middle">
                         draft
                     </span>
                 )}

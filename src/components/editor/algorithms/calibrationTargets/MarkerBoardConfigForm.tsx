@@ -1,4 +1,5 @@
-import { CollapsibleSection, NumberField, Section } from "../formFields";
+import { Disclosure, Field, InfoHint, NumberInput, Section, SegmentedControl } from "@vitavision/ui";
+import { choiceProps, fieldGridClass, numberInputProps, type ChoiceOption } from "../../../../lib/fieldBindings";
 import type { AlgorithmConfigFormProps } from "../types";
 import type { MarkerCircleCell } from "../../../../lib/types";
 
@@ -34,6 +35,11 @@ export interface MarkerBoardConfig {
     matchMinOffsetInliers: number;
 }
 
+const POLARITY_OPTIONS: ChoiceOption<"white" | "black">[] = [
+    { value: "white", label: "white" },
+    { value: "black", label: "black" },
+];
+
 const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig>) => {
     const { config, onChange, disabled, modal } = props;
     const cols = modal ? 2 : undefined;
@@ -48,240 +54,327 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
 
     return (
         <>
-            <Section title="Board" columns={cols}>
-                <NumberField
-                    label="Rows"
-                    tooltip="Total number of rows of squares on the marker board."
-                    value={config.boardRows}
-                    onChange={(v) => set("boardRows", v ?? 22)}
-                    disabled={disabled}
-                    min={2}
-                    step={1}
-                />
-                <NumberField
-                    label="Cols"
-                    tooltip="Total number of columns of squares on the marker board."
-                    value={config.boardCols}
-                    onChange={(v) => set("boardCols", v ?? 22)}
-                    disabled={disabled}
-                    min={2}
-                    step={1}
-                />
-            </Section>
-            <Section title="Expected circles">
-                <div className="space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-fg-muted">
-                        <span className="w-12">Row</span>
-                        <span className="w-12">Col</span>
-                        <span>Polarity</span>
-                    </div>
-                    {config.circles.map((c, idx) => (
-                        <div key={idx} className="flex items-center gap-1.5 text-xs">
-                            <input
-                                type="number"
-                                value={c.row}
-                                onChange={(e) => updateCircle(idx, { row: Number(e.target.value) })}
-                                disabled={disabled}
-                                className="w-12 rounded border border-line bg-ground px-1.5 py-0.5 text-xs"
-                                placeholder="row"
-                                min={0}
-                                aria-label={`Circle ${idx + 1} row`}
-                            />
-                            <input
-                                type="number"
-                                value={c.col}
-                                onChange={(e) => updateCircle(idx, { col: Number(e.target.value) })}
-                                disabled={disabled}
-                                className="w-12 rounded border border-line bg-ground px-1.5 py-0.5 text-xs"
-                                placeholder="col"
-                                min={0}
-                                aria-label={`Circle ${idx + 1} column`}
-                            />
-                            <select
-                                value={c.polarity}
-                                onChange={(e) => updateCircle(idx, { polarity: e.target.value as "white" | "black" })}
-                                disabled={disabled}
-                                className="rounded border border-line bg-ground px-1 py-0.5 text-xs"
-                            >
-                                <option value="white">white</option>
-                                <option value="black">black</option>
-                            </select>
-                        </div>
-                    ))}
+            <Section title="Board">
+                <div className={fieldGridClass(cols)}>
+                    <Field
+                        label="Rows"
+                        as="group"
+                        annotation={<InfoHint label="About rows">Total number of rows of squares on the marker board.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Rows"
+                            {...numberInputProps(config.boardRows, (v) => set("boardRows", v ?? 22))}
+                            disabled={disabled}
+                            min={2}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Cols"
+                        as="group"
+                        annotation={<InfoHint label="About cols">Total number of columns of squares on the marker board.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Cols"
+                            {...numberInputProps(config.boardCols, (v) => set("boardCols", v ?? 22))}
+                            disabled={disabled}
+                            min={2}
+                            step={1}
+                        />
+                    </Field>
                 </div>
             </Section>
-            <CollapsibleSection title="Chessboard detector" columns={cols}>
-                <NumberField
-                    label="Expected rows"
-                    tooltip="Number of internal corner rows expected (squares minus one)."
-                    value={config.expectedRows}
-                    onChange={(v) => set("expectedRows", v ?? 22)}
-                    disabled={disabled}
-                    min={2}
-                    step={1}
-                />
-                <NumberField
-                    label="Expected cols"
-                    tooltip="Number of internal corner columns expected (squares minus one)."
-                    value={config.expectedCols}
-                    onChange={(v) => set("expectedCols", v ?? 22)}
-                    disabled={disabled}
-                    min={2}
-                    step={1}
-                />
-                <NumberField
-                    label="Min corner strength"
-                    tooltip="Absolute floor on the raw ChESS response (detector default 15). Lower values detect weaker corners but may increase false positives."
-                    value={config.minCornerStrength}
-                    onChange={(v) => set("minCornerStrength", v ?? 15)}
-                    disabled={disabled}
-                    min={0}
-                    max={500}
-                    step={1}
-                />
-                <NumberField
-                    label="Completeness threshold"
-                    tooltip="Fraction of expected corners that must be detected for the board to be accepted."
-                    value={config.completenessThreshold}
-                    onChange={(v) => set("completenessThreshold", v ?? 0.05)}
-                    disabled={disabled}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                />
-            </CollapsibleSection>
-            <CollapsibleSection title="Grid graph" columns={cols}>
-                <NumberField
-                    label="Min spacing (px)"
-                    tooltip="Minimum distance between adjacent corners in pixels."
-                    value={config.graphMinSpacingPix}
-                    onChange={(v) => set("graphMinSpacingPix", v ?? 20)}
-                    disabled={disabled}
-                    min={1}
-                    step={1}
-                />
-                <NumberField
-                    label="Max spacing (px)"
-                    tooltip="Maximum distance between adjacent corners in pixels."
-                    value={config.graphMaxSpacingPix}
-                    onChange={(v) => set("graphMaxSpacingPix", v ?? 160)}
-                    disabled={disabled}
-                    min={1}
-                    step={1}
-                />
-                <NumberField
-                    label="K neighbors"
-                    tooltip="Number of nearest neighbors for graph construction. Higher handles irregular boards better."
-                    value={config.graphKNeighbors}
-                    onChange={(v) => set("graphKNeighbors", v ?? 8)}
-                    disabled={disabled}
-                    min={1}
-                    max={64}
-                    step={1}
-                />
-                <NumberField
-                    label="Orientation tolerance (°)"
-                    tooltip="Maximum angle deviation from grid directions when connecting corners."
-                    value={config.graphOrientationToleranceDeg}
-                    onChange={(v) => set("graphOrientationToleranceDeg", v ?? 12.5)}
-                    disabled={disabled}
-                    min={0}
-                    max={180}
-                    step={0.5}
-                />
-            </CollapsibleSection>
-            <CollapsibleSection title="Circle score" columns={cols}>
-                <NumberField
-                    label="Patch size (px)"
-                    tooltip="Size of the image patch extracted around each candidate circle for scoring."
-                    value={config.circleScorePatchSize}
-                    onChange={(v) => set("circleScorePatchSize", v ?? 64)}
-                    disabled={disabled}
-                    min={1}
-                    step={1}
-                />
-                <NumberField
-                    label="Diameter fraction"
-                    tooltip="Expected circle diameter as a fraction of the patch size."
-                    value={config.circleScoreDiameterFrac}
-                    onChange={(v) => set("circleScoreDiameterFrac", v ?? 0.5)}
-                    disabled={disabled}
-                    min={0.01}
-                    max={2}
-                    step={0.05}
-                />
-                <NumberField
-                    label="Ring thickness fraction"
-                    tooltip="Thickness of the scoring ring as a fraction of the circle radius."
-                    value={config.circleScoreRingThicknessFrac}
-                    onChange={(v) => set("circleScoreRingThicknessFrac", v ?? 0.35)}
-                    disabled={disabled}
-                    min={0.01}
-                    max={2}
-                    step={0.05}
-                />
-                <NumberField
-                    label="Ring radius multiplier"
-                    tooltip="Multiplier for the outer scoring ring radius relative to the circle edge."
-                    value={config.circleScoreRingRadiusMul}
-                    onChange={(v) => set("circleScoreRingRadiusMul", v ?? 1.6)}
-                    disabled={disabled}
-                    min={0.01}
-                    max={10}
-                    step={0.1}
-                />
-                <NumberField
-                    label="Min contrast"
-                    tooltip="Minimum intensity contrast between circle and background to accept a candidate."
-                    value={config.circleScoreMinContrast}
-                    onChange={(v) => set("circleScoreMinContrast", v ?? 10)}
-                    disabled={disabled}
-                    min={0}
-                    step={1}
-                />
-                <NumberField
-                    label="Samples"
-                    tooltip="Number of angular samples taken along the scoring ring."
-                    value={config.circleScoreSamples}
-                    onChange={(v) => set("circleScoreSamples", v ?? 48)}
-                    disabled={disabled}
-                    min={1}
-                    max={1024}
-                    step={1}
-                />
-                <NumberField
-                    label="Center search (px)"
-                    tooltip="Pixel radius for subpixel circle center refinement search."
-                    value={config.circleScoreCenterSearchPx}
-                    onChange={(v) => set("circleScoreCenterSearchPx", v ?? 2)}
-                    disabled={disabled}
-                    min={0}
-                    max={256}
-                    step={1}
-                />
-            </CollapsibleSection>
-            <CollapsibleSection title="Advanced" columns={cols}>
-                <NumberField
-                    label="Max candidates per polarity"
-                    tooltip="Maximum number of circle candidates kept per polarity (white/black) before matching. Higher → more thorough but slower. WASM default: 6."
-                    value={config.matchMaxCandidatesPerPolarity}
-                    onChange={(v) => set("matchMaxCandidatesPerPolarity", v ?? 6)}
-                    disabled={disabled}
-                    min={1}
-                    max={32}
-                    step={1}
-                />
-                <NumberField
-                    label="Min offset inliers"
-                    tooltip="Minimum number of circle-pair offsets that must agree for the alignment to be accepted. WASM default: 1."
-                    value={config.matchMinOffsetInliers}
-                    onChange={(v) => set("matchMinOffsetInliers", v ?? 1)}
-                    disabled={disabled}
-                    min={1}
-                    max={16}
-                    step={1}
-                />
-            </CollapsibleSection>
+            <Section title="Expected circles">
+                <div className={fieldGridClass()}>
+                    <div className="space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-fg-muted">
+                            <span className="w-14">Row</span>
+                            <span className="w-14">Col</span>
+                            <span>Polarity</span>
+                        </div>
+                        {config.circles.map((c, idx) => (
+                            <div key={idx} className="flex items-center gap-1.5 text-xs">
+                                <NumberInput
+                                    className="w-14"
+                                    {...numberInputProps(c.row, (v) => updateCircle(idx, { row: v ?? 0 }))}
+                                    disabled={disabled}
+                                    placeholder="row"
+                                    min={0}
+                                    step={1}
+                                    aria-label={`Circle ${idx + 1} row`}
+                                />
+                                <NumberInput
+                                    className="w-14"
+                                    {...numberInputProps(c.col, (v) => updateCircle(idx, { col: v ?? 0 }))}
+                                    disabled={disabled}
+                                    placeholder="col"
+                                    min={0}
+                                    step={1}
+                                    aria-label={`Circle ${idx + 1} column`}
+                                />
+                                <SegmentedControl
+                                    aria-label={`Circle ${idx + 1} polarity`}
+                                    {...choiceProps(c.polarity, POLARITY_OPTIONS, (polarity) => updateCircle(idx, { polarity }))}
+                                    disabled={disabled}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </Section>
+            <Disclosure summary="Chessboard detector">
+                <div className={fieldGridClass(cols)}>
+                    <Field
+                        label="Expected rows"
+                        as="group"
+                        annotation={<InfoHint label="About expected rows">Number of internal corner rows expected (squares minus one).</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Expected rows"
+                            {...numberInputProps(config.expectedRows, (v) => set("expectedRows", v ?? 22))}
+                            disabled={disabled}
+                            min={2}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Expected cols"
+                        as="group"
+                        annotation={<InfoHint label="About expected cols">Number of internal corner columns expected (squares minus one).</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Expected cols"
+                            {...numberInputProps(config.expectedCols, (v) => set("expectedCols", v ?? 22))}
+                            disabled={disabled}
+                            min={2}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Min corner strength"
+                        as="group"
+                        annotation={<InfoHint label="About min corner strength">Absolute floor on the raw ChESS response (detector default 15). Lower values detect weaker corners but may increase false positives.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Min corner strength"
+                            {...numberInputProps(config.minCornerStrength, (v) => set("minCornerStrength", v ?? 15))}
+                            disabled={disabled}
+                            min={0}
+                            max={500}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Completeness threshold"
+                        as="group"
+                        annotation={<InfoHint label="About completeness threshold">Fraction of expected corners that must be detected for the board to be accepted.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Completeness threshold"
+                            {...numberInputProps(config.completenessThreshold, (v) => set("completenessThreshold", v ?? 0.05))}
+                            disabled={disabled}
+                            min={0}
+                            max={1}
+                            step={0.01}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
+            <Disclosure summary="Grid graph">
+                <div className={fieldGridClass(cols)}>
+                    <Field
+                        label="Min spacing"
+                        as="group"
+                        annotation={<InfoHint label="About min spacing">Minimum distance between adjacent corners in pixels.</InfoHint>}
+                    >
+                        <NumberInput
+                            unit="px"
+                            aria-label="Min spacing"
+                            {...numberInputProps(config.graphMinSpacingPix, (v) => set("graphMinSpacingPix", v ?? 20))}
+                            disabled={disabled}
+                            min={1}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Max spacing"
+                        as="group"
+                        annotation={<InfoHint label="About max spacing">Maximum distance between adjacent corners in pixels.</InfoHint>}
+                    >
+                        <NumberInput
+                            unit="px"
+                            aria-label="Max spacing"
+                            {...numberInputProps(config.graphMaxSpacingPix, (v) => set("graphMaxSpacingPix", v ?? 160))}
+                            disabled={disabled}
+                            min={1}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="K neighbors"
+                        as="group"
+                        annotation={<InfoHint label="About k neighbors">Number of nearest neighbors for graph construction. Higher handles irregular boards better.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="K neighbors"
+                            {...numberInputProps(config.graphKNeighbors, (v) => set("graphKNeighbors", v ?? 8))}
+                            disabled={disabled}
+                            min={1}
+                            max={64}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Orientation tolerance"
+                        as="group"
+                        annotation={<InfoHint label="About orientation tolerance">Maximum angle deviation from grid directions when connecting corners.</InfoHint>}
+                    >
+                        <NumberInput
+                            unit="°"
+                            aria-label="Orientation tolerance"
+                            {...numberInputProps(config.graphOrientationToleranceDeg, (v) => set("graphOrientationToleranceDeg", v ?? 12.5))}
+                            disabled={disabled}
+                            min={0}
+                            max={180}
+                            step={0.5}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
+            <Disclosure summary="Circle score">
+                <div className={fieldGridClass(cols)}>
+                    <Field
+                        label="Patch size"
+                        as="group"
+                        annotation={<InfoHint label="About patch size">Size of the image patch extracted around each candidate circle for scoring.</InfoHint>}
+                    >
+                        <NumberInput
+                            unit="px"
+                            aria-label="Patch size"
+                            {...numberInputProps(config.circleScorePatchSize, (v) => set("circleScorePatchSize", v ?? 64))}
+                            disabled={disabled}
+                            min={1}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Diameter fraction"
+                        as="group"
+                        annotation={<InfoHint label="About diameter fraction">Expected circle diameter as a fraction of the patch size.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Diameter fraction"
+                            {...numberInputProps(config.circleScoreDiameterFrac, (v) => set("circleScoreDiameterFrac", v ?? 0.5))}
+                            disabled={disabled}
+                            min={0.01}
+                            max={2}
+                            step={0.05}
+                        />
+                    </Field>
+                    <Field
+                        label="Ring thickness fraction"
+                        as="group"
+                        annotation={<InfoHint label="About ring thickness fraction">Thickness of the scoring ring as a fraction of the circle radius.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Ring thickness fraction"
+                            {...numberInputProps(config.circleScoreRingThicknessFrac, (v) => set("circleScoreRingThicknessFrac", v ?? 0.35))}
+                            disabled={disabled}
+                            min={0.01}
+                            max={2}
+                            step={0.05}
+                        />
+                    </Field>
+                    <Field
+                        label="Ring radius multiplier"
+                        as="group"
+                        annotation={<InfoHint label="About ring radius multiplier">Multiplier for the outer scoring ring radius relative to the circle edge.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Ring radius multiplier"
+                            {...numberInputProps(config.circleScoreRingRadiusMul, (v) => set("circleScoreRingRadiusMul", v ?? 1.6))}
+                            disabled={disabled}
+                            min={0.01}
+                            max={10}
+                            step={0.1}
+                        />
+                    </Field>
+                    <Field
+                        label="Min contrast"
+                        as="group"
+                        annotation={<InfoHint label="About min contrast">Minimum intensity contrast between circle and background to accept a candidate.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Min contrast"
+                            {...numberInputProps(config.circleScoreMinContrast, (v) => set("circleScoreMinContrast", v ?? 10))}
+                            disabled={disabled}
+                            min={0}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Samples"
+                        as="group"
+                        annotation={<InfoHint label="About samples">Number of angular samples taken along the scoring ring.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Samples"
+                            {...numberInputProps(config.circleScoreSamples, (v) => set("circleScoreSamples", v ?? 48))}
+                            disabled={disabled}
+                            min={1}
+                            max={1024}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Center search"
+                        as="group"
+                        annotation={<InfoHint label="About center search">Pixel radius for subpixel circle center refinement search.</InfoHint>}
+                    >
+                        <NumberInput
+                            unit="px"
+                            aria-label="Center search"
+                            {...numberInputProps(config.circleScoreCenterSearchPx, (v) => set("circleScoreCenterSearchPx", v ?? 2))}
+                            disabled={disabled}
+                            min={0}
+                            max={256}
+                            step={1}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
+            <Disclosure summary="Advanced">
+                <div className={fieldGridClass(cols)}>
+                    <Field
+                        label="Max candidates per polarity"
+                        as="group"
+                        annotation={<InfoHint label="About max candidates per polarity">Maximum number of circle candidates kept per polarity (white/black) before matching. Higher → more thorough but slower. WASM default: 6.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Max candidates per polarity"
+                            {...numberInputProps(config.matchMaxCandidatesPerPolarity, (v) => set("matchMaxCandidatesPerPolarity", v ?? 6))}
+                            disabled={disabled}
+                            min={1}
+                            max={32}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Min offset inliers"
+                        as="group"
+                        annotation={<InfoHint label="About min offset inliers">Minimum number of circle-pair offsets that must agree for the alignment to be accepted. WASM default: 1.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Min offset inliers"
+                            {...numberInputProps(config.matchMinOffsetInliers, (v) => set("matchMinOffsetInliers", v ?? 1))}
+                            disabled={disabled}
+                            min={1}
+                            max={16}
+                            step={1}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
         </>
     );
 };

@@ -75,6 +75,28 @@ shared vitavision design system (lab-ui PLAN L3-3):
   theme with `useIsDark()`, never from storage. ui's `ThemeToggle`, `Tooltip` and
   `InfoHint` need a `TooltipProvider` above them: the app root, the prerender tree in
   `entry-server.tsx` and each article-illustration island have one.
+- **Controls.** Everything interactive (the editor, the target generator, the article
+  illustrations) is built from ui's components: `Button`, `Field` with `NumberInput`,
+  `Select`, `SegmentedControl`, `Checkbox`, `Switch`, `Slider`, `ToggleChip`, `Section`,
+  `Disclosure`, `Panel`, `Dialog`, `Callout`, `Tooltip` and `InfoHint`. The seams to the
+  typed configs are in `src/lib/fieldBindings.ts`: `numberInputProps` (text ↔ an optional
+  number), `choiceProps` (a string union ↔ ui's string options) and `fieldGridClass`. A
+  field with a help mark is a `Field as="group"` with an `InfoHint` annotation and an
+  `aria-label` on its control: a button must not sit inside the field's `<label>`. The
+  editor rail and the target generator's side panel are `DensityProvider value="compact"`;
+  touch layouts keep the comfortable density. Editorial pages keep their own markup
+  (visual-language §7).
+- **Tokens only (G5.1).** `eslint.config.js` runs `tokensOnly(["src/**"])`: no raw
+  Tailwind palette class, no hex literal. Konva and Canvas 2D cannot resolve `var(--x)`,
+  so canvas code takes resolved colours from `useCanvasTokens()` in
+  `src/lib/canvasTokens.ts` (re-read on a theme change; `"well"` resolves them as in the
+  always-dark image well the editor overlays are drawn in). Colours that are data sit in
+  a few allowlisted modules, each exempted in `eslint.config.js` with its reason:
+  `src/store/editor/featureColors.ts`, `src/components/targetgen/printColors.ts`,
+  `src/components/illustrations/_shared/dataColors.ts` (and Shiki's output in
+  `src/generated/`).
+- **Toasts.** sonner stays (ui has none); `SiteToaster` follows the painted theme and
+  paints with the ui tokens.
 - **CSP.** The inline theme script is allowed by its sha256 in the CSP of `index.html`
   and `public/_headers`. Any edit to the script's text changes the hash: recompute it
   from the built page (`dist/index.html`) and update both.

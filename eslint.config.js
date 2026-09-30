@@ -3,7 +3,7 @@ import globals from 'globals'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
-import { recommended } from '@vitavision/config-eslint'
+import { recommended, tokensOnly } from '@vitavision/config-eslint'
 
 export default defineConfig([
   // ds-bundle/ and .ds-sync/ hold generated /design-sync output (the compiled
@@ -38,12 +38,25 @@ export default defineConfig([
         argsIgnorePattern: '^_',
         caughtErrorsIgnorePattern: '^_',
       }],
-      // useThemeVariant / useFormControlMode are hooks (not components) but
-      // live alongside their *Provider component — explicitly allow them.
-      'react-refresh/only-export-components': ['error', {
-        allowConstantExport: true,
-        allowExportNames: ['useThemeVariant', 'useFormControlMode'],
-      }],
+      'react-refresh/only-export-components': ['error', { allowConstantExport: true }],
     },
+  },
+  // Gate G5.1 (lab-ui PLAN §5, visual-language §7): in src/, colour comes from the
+  // @vitavision/ui tokens or the editorial token layer (src/styles/editorial-tokens.css) —
+  // no raw Tailwind palette classes, no hex literals. Tests are exempt by the rule.
+  tokensOnly(['src/**']),
+  {
+    // Literal colours on purpose, one reason each:
+    files: [
+      // Build output of scripts/content-build.ts: Shiki writes its theme's colours inline.
+      'src/generated/**',
+      // Feature colours are data: stored on each feature, exported with it, shown as its swatch.
+      'src/store/editor/featureColors.ts',
+      // A printed target is black ink on white paper whatever the viewer's theme.
+      'src/components/targetgen/printColors.ts',
+      // The ChESS figure's SR/DR/MR hues: the article text names the terms by these colours.
+      'src/components/illustrations/_shared/dataColors.ts',
+    ],
+    rules: { 'vitavision/tokens-only': 'off' },
   },
 ])

@@ -1,4 +1,5 @@
-import { Section, NumberField } from "../../editor/algorithms/formFields";
+import { Button, Field, InfoHint, NumberInput, Section } from "@vitavision/ui";
+import { fieldGridClass, numberInputProps } from "../../../lib/fieldBindings";
 import type { MarkerBoardConfig, CircleSpec, TargetGeneratorAction } from "../types";
 import { defaultCircles } from "../reducer";
 
@@ -31,87 +32,98 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
 
     return (
         <>
-            <Section title="Marker Board" columns={2}>
-                <NumberField
-                    label="Inner rows"
-                    value={config.innerRows}
-                    onChange={(v) => update({ innerRows: v ?? 7 })}
-                    disabled={false}
-                    min={1}
-                    max={100}
-                    step={1}
-                    tooltip="Number of inner corner rows"
-                />
-                <NumberField
-                    label="Inner cols"
-                    value={config.innerCols}
-                    onChange={(v) => update({ innerCols: v ?? 10 })}
-                    disabled={false}
-                    min={1}
-                    max={100}
-                    step={1}
-                    tooltip="Number of inner corner columns"
-                />
-                <NumberField
-                    label="Square size (mm)"
-                    value={config.squareSizeMm}
-                    onChange={(v) => update({ squareSizeMm: v ?? 20 })}
-                    disabled={false}
-                    min={1}
-                    max={500}
-                    step={0.5}
-                    tooltip="Physical size of each square in millimeters"
-                />
-                <NumberField
-                    label="Circle diameter"
-                    value={config.circleDiameterRel}
-                    onChange={(v) => update({ circleDiameterRel: v ?? 0.5 })}
-                    disabled={false}
-                    min={0.1}
-                    max={0.99}
-                    step={0.05}
-                    tooltip="Circle diameter relative to square size"
-                />
+            <Section title="Marker Board">
+                <div className={fieldGridClass(2)}>
+                    <Field
+                        label="Inner rows"
+                        as="group"
+                        annotation={<InfoHint label="About inner rows">Number of inner corner rows</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Inner rows"
+                            {...numberInputProps(config.innerRows, (v) => update({ innerRows: v ?? 7 }))}
+                            min={1}
+                            max={100}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Inner cols"
+                        as="group"
+                        annotation={<InfoHint label="About inner cols">Number of inner corner columns</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Inner cols"
+                            {...numberInputProps(config.innerCols, (v) => update({ innerCols: v ?? 10 }))}
+                            min={1}
+                            max={100}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Square size"
+                        as="group"
+                        annotation={<InfoHint label="About square size">Physical size of each square in millimeters</InfoHint>}
+                    >
+                        <NumberInput
+                            unit="mm"
+                            aria-label="Square size"
+                            {...numberInputProps(config.squareSizeMm, (v) => update({ squareSizeMm: v ?? 20 }))}
+                            min={1}
+                            max={500}
+                            step={0.5}
+                        />
+                    </Field>
+                    <Field
+                        label="Circle diameter"
+                        as="group"
+                        annotation={<InfoHint label="About circle diameter">Circle diameter relative to square size</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Circle diameter"
+                            {...numberInputProps(config.circleDiameterRel, (v) => update({ circleDiameterRel: v ?? 0.5 }))}
+                            min={0.1}
+                            max={0.99}
+                            step={0.05}
+                        />
+                    </Field>
+                </div>
             </Section>
 
             <Section title="Circle Markers">
-                <div className="col-span-full space-y-2">
-                    <p className="text-[10px] text-fg-muted">
-                        Click a square on the preview to move the nearest circle there. Polarity is automatic (contrasts with square color).
-                    </p>
-                    {config.circles.map((circ, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                            <NumberField
-                                label="Row"
-                                value={circ.cell.i}
-                                onChange={(v) => updateCircleCell(idx, "i", v ?? 0)}
-                                disabled={false}
-                                min={0}
-                                max={totalRows - 1}
-                                step={1}
-                            />
-                            <NumberField
-                                label="Col"
-                                value={circ.cell.j}
-                                onChange={(v) => updateCircleCell(idx, "j", v ?? 0)}
-                                disabled={false}
-                                min={0}
-                                max={totalCols - 1}
-                                step={1}
-                            />
-                            <span className="mt-5 text-[10px] text-fg-muted w-10 shrink-0">
-                                {polarityLabel(circ)}
-                            </span>
+                <div className={fieldGridClass()}>
+                    <div className="col-span-full space-y-2">
+                        <p className="text-[10px] text-fg-muted">
+                            Click a square on the preview to move the nearest circle there. Polarity is automatic (contrasts with square color).
+                        </p>
+                        {config.circles.map((circ, idx) => (
+                            <div key={idx} className="flex items-center gap-2">
+                                <Field label="Row">
+                                    <NumberInput
+                                        {...numberInputProps(circ.cell.i, (v) => updateCircleCell(idx, "i", v ?? 0))}
+                                        min={0}
+                                        max={totalRows - 1}
+                                        step={1}
+                                    />
+                                </Field>
+                                <Field label="Col">
+                                    <NumberInput
+                                        {...numberInputProps(circ.cell.j, (v) => updateCircleCell(idx, "j", v ?? 0))}
+                                        min={0}
+                                        max={totalCols - 1}
+                                        step={1}
+                                    />
+                                </Field>
+                                <span className="mt-5 text-[10px] text-fg-muted w-10 shrink-0">
+                                    {polarityLabel(circ)}
+                                </span>
+                            </div>
+                        ))}
+                        <div className="flex gap-2">
+                            <Button size="sm" onClick={resetCircles}>
+                                Reset to default
+                            </Button>
                         </div>
-                    ))}
-                    <div className="flex gap-2">
-                        <button
-                            type="button"
-                            className="rounded-control border border-line px-2 py-1 text-xs font-medium hover:bg-raised transition-colors text-fg-muted"
-                            onClick={resetCircles}
-                        >
-                            Reset to default
-                        </button>
                     </div>
                 </div>
             </Section>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Download, Archive } from "lucide-react";
 import JSZip from "jszip";
+import { Button } from "@vitavision/ui";
 import { rasterizeSvgToPng } from "../pngRasterizer";
 import type { TargetConfig, PageConfig, TargetGeneratorState } from "../types";
 
@@ -135,44 +136,38 @@ export default function DownloadBar({ state, generateDxf }: Props) {
     // DXF and the ZIP bundle both need the injected generator.
     const dxfDisabled = disabled || !generateDxf;
 
-    const btnClass =
-        "flex items-center gap-1.5 rounded-control border border-line px-3 py-1.5 text-xs font-medium transition-colors " +
-        "hover:border-fg-muted/40 hover:bg-raised disabled:opacity-40 disabled:cursor-not-allowed";
-
     return (
         <div className="space-y-2">
             <div className="grid grid-cols-2 gap-2">
-                <button className={btnClass} onClick={handleSvg} disabled={disabled} title="Download SVG">
-                    <Download size={14} />
+                <Button onClick={handleSvg} disabled={disabled} title="Download SVG" icon={<Download />}>
                     SVG
-                </button>
-                <button className={btnClass} onClick={() => void handlePng()} disabled={disabled} title="Download PNG">
-                    <Download size={14} />
+                </Button>
+                <Button onClick={() => void handlePng()} disabled={disabled} title="Download PNG" icon={<Download />}>
                     PNG
-                </button>
-                <button className={btnClass} onClick={handleJson} disabled={disabled} title="Download config JSON">
-                    <Download size={14} />
+                </Button>
+                <Button onClick={handleJson} disabled={disabled} title="Download config JSON" icon={<Download />}>
                     JSON
-                </button>
-                <button
-                    className={btnClass}
+                </Button>
+                <Button
                     onClick={() => void handleDxf()}
                     disabled={dxfDisabled}
                     title="Download DXF"
+                    icon={<Download />}
                 >
-                    <Download size={14} />
                     DXF
-                </button>
+                </Button>
             </div>
-            <button
-                className={`${btnClass} w-full justify-center`}
+            <Button
+                variant="primary"
+                className="w-full"
                 onClick={() => void handleZip()}
                 disabled={dxfDisabled}
+                loading={zipping}
                 title="Download all formats as ZIP"
+                icon={<Archive />}
             >
-                <Archive size={14} />
                 {zipping ? "Bundling…" : "Download All (ZIP)"}
-            </button>
+            </Button>
         </div>
     );
 }

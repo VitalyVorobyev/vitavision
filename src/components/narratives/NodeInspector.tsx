@@ -24,7 +24,7 @@ export default function NodeInspector({ node, areas, onClose }: NodeInspectorPro
                 type="button"
                 onClick={onClose}
                 aria-label="Close node details"
-                className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded text-fg-muted hover:bg-raised hover:text-fg transition-colors"
+                className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded text-fg-muted hover:bg-line/60 hover:text-fg transition-colors"
             >
                 <X size={13} />
             </button>

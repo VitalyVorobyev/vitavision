@@ -30,7 +30,7 @@ function LineageColumn({ label, accentClass, entries }: LineageColumnProps) {
                 <Link
                     key={entry.id}
                     to={`/papers/${entry.id}`}
-                    className="grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 border-t border-line py-[7px] no-underline transition-colors hover:bg-raised/40"
+                    className="grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 border-t border-line py-[7px] no-underline transition-colors hover:bg-line/60"
                 >
                     <span className="pt-0.5 font-mono text-[12px] tabular-nums text-fg-muted">
                         {entry.year}

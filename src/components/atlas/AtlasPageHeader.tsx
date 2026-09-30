@@ -34,14 +34,14 @@ interface AtlasPageHeaderProps {
 
 const KIND_CLASSES: Record<PageKind, string> = {
     algorithm: "text-signal border-signal/40",
-    model:     "text-violet-600 dark:text-violet-400 border-violet-500/40",
+    model:     "text-ink-violet border-ink-violet/40",
     concept:   "text-fg-muted border-line",
 };
 
 const DIFFICULTY_DOT: Record<Difficulty, string> = {
-    advanced:     "bg-red-500",
-    intermediate: "bg-amber-500",
-    beginner:     "bg-emerald-500",
+    advanced:     "bg-difficulty-advanced",
+    intermediate: "bg-difficulty-intermediate",
+    beginner:     "bg-difficulty-beginner",
 };
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = {
@@ -66,12 +66,12 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                     </span>
                 )}
                 {frontmatter.dev && (
-                    <span aria-hidden="true" className="text-sm font-mono uppercase tracking-wider text-blue-500 border border-blue-500/40 rounded px-2 py-1 mr-3 align-middle">
+                    <span aria-hidden="true" className="text-sm font-mono uppercase tracking-wider text-ink-blue border border-ink-blue/40 rounded px-2 py-1 mr-3 align-middle">
                         dev sample
                     </span>
                 )}
                 {frontmatter.draft && (
-                    <span aria-hidden="true" className="text-sm font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-2 py-1 mr-3 align-middle">
+                    <span aria-hidden="true" className="text-sm font-mono uppercase tracking-wider text-ink-amber border border-ink-amber/40 rounded px-2 py-1 mr-3 align-middle">
                         draft
                     </span>
                 )}

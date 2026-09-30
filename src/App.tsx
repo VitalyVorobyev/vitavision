@@ -5,11 +5,11 @@ import NotFound from './pages/NotFound';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ScrollToTop from './components/layout/ScrollToTop';
+import SiteToaster from './components/layout/SiteToaster';
 import './index.css';
 
 import { TooltipProvider } from '@vitavision/ui';
 import { HelmetProvider } from 'react-helmet-async';
-import { Toaster } from 'sonner';
 import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
 import { PapersProvider } from './lib/atlas/papersIndex.tsx';
 import { AuthorsProvider } from './lib/atlas/authorsIndex.tsx';
@@ -123,7 +123,7 @@ function App({ ssrSnapshot = {} }: { ssrSnapshot?: StaticContentContextValue }) 
                         </ScholarlyProvider>
                         </AuthorsProvider>
                         </PapersProvider>
-                        <Toaster richColors closeButton position="bottom-right" />
+                        <SiteToaster />
                     </TooltipProvider>
                 </StaticContentProvider>
             </HelmetProvider>

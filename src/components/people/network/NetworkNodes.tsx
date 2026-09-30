@@ -53,7 +53,7 @@ export function NetworkNodes({ nodes, labels, hoveredId, onHover, onSelect, scal
                     fill={n.color}
                     fillOpacity={n.opacity}
                     stroke={n.isFocus ? "currentColor" : "#ffffff"}
-                    className={n.isFocus ? "text-foreground" : undefined}
+                    className={n.isFocus ? "text-fg" : undefined}
                     strokeWidth={n.isFocus ? 2.5 : hoveredId === n.id ? 2 : 1}
                     style={{ pointerEvents: "auto", cursor: "pointer" }}
                     data-person-id={n.id}
@@ -85,9 +85,9 @@ export function NetworkNodes({ nodes, labels, hoveredId, onHover, onSelect, scal
                     fontSize={l.fontSize / scale}
                     fontWeight={l.mandatory ? 600 : 500}
                     fill={l.mandatory ? "currentColor" : "#5b6b80"}
-                    className={l.mandatory ? "text-foreground" : undefined}
+                    className={l.mandatory ? "text-fg" : undefined}
                     paintOrder="stroke"
-                    style={{ stroke: "hsl(var(--surface))" }}
+                    style={{ stroke: "var(--surface)" }}
                     strokeWidth={3.5 / scale}
                 >
                     {l.text}

@@ -19,22 +19,22 @@ export default function TypedBucket({
 
     return (
         <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-fg-muted mb-2">
                 {heading}
             </h3>
             <ul className="m-0 p-0 list-none space-y-3">
                 {resolved.map(({ rel, node }, i) => (
                     <li key={`${rel.label}:${rel.target}:${i}`}>
                         {rel.confidence !== "high" && (
-                            <div className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground/70 mb-1">
+                            <div className="text-[11px] font-mono uppercase tracking-wider text-fg-muted/70 mb-1">
                                 {rel.confidence}
                             </div>
                         )}
-                        <Link to={node.path} className="text-sm font-medium text-foreground hover:underline">
+                        <Link to={node.path} className="text-sm font-medium text-fg hover:underline">
                             {node.title}
                         </Link>
                         {rel.caution && (
-                            <p className="m-0 mt-1 text-xs text-muted-foreground italic">{rel.caution}</p>
+                            <p className="m-0 mt-1 text-xs text-fg-muted italic">{rel.caution}</p>
                         )}
                     </li>
                 ))}

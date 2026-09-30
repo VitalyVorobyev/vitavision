@@ -13,7 +13,7 @@ export default function RelationshipBlock({ result, supersededBy }: Relationship
     if (!result.hasGraphContent && !result.hasSuccessor) return null;
 
     return (
-        <section className="mt-12 pt-6 border-t border-border space-y-5">
+        <section className="mt-12 pt-6 border-t border-line space-y-5">
             {result.hasSuccessor && <SupersededBy successor={supersededBy!} variant="block" />}
             <BlockSection heading="Prerequisites" slugs={result.prerequisites} />
             {SECTION_ORDER.map((label) => {

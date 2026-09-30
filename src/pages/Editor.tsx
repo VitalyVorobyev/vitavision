@@ -37,7 +37,7 @@ const OVERLAY_LAYERS: { key: OverlayVisibilityKey; label: string }[] = [
 ];
 
 const TOOL_BUTTON =
-    "min-w-[44px] min-h-[44px] rounded-md flex items-center justify-center transition-colors";
+    "min-w-[44px] min-h-[44px] rounded-control flex items-center justify-center transition-colors";
 
 function OverlayVisibilityPopover({ horizontal }: { horizontal: boolean }) {
     const { overlayVisibility, setOverlayVisibility } = useEditorStore(useShallow((s) => ({
@@ -71,7 +71,7 @@ function OverlayVisibilityPopover({ horizontal }: { horizontal: boolean }) {
                     type="button"
                     onClick={() => setOpen((value) => !value)}
                     className={`${TOOL_BUTTON} ${
-                        open ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted"
+                        open ? "bg-raised text-fg" : "text-fg-muted hover:bg-raised"
                     }`}
                 >
                     {allVisible ? <Layers size={18} /> : <EyeOff size={18} />}
@@ -79,7 +79,7 @@ function OverlayVisibilityPopover({ horizontal }: { horizontal: boolean }) {
             </Tooltip>
             {open && (
                 <div
-                    className={`absolute z-50 w-44 rounded-lg border border-border bg-surface py-1 shadow-lg ${
+                    className={`absolute z-50 w-44 rounded-panel border border-line bg-surface py-1 shadow-lg ${
                         horizontal
                             ? "bottom-full right-0 mb-2"
                             : "left-full top-0 ml-2"
@@ -90,13 +90,13 @@ function OverlayVisibilityPopover({ horizontal }: { horizontal: boolean }) {
                             key={key}
                             type="button"
                             onClick={() => setOverlayVisibility(key, !overlayVisibility[key])}
-                            className="flex w-full items-center gap-2 px-3 py-1.5 text-xs transition-colors hover:bg-muted/60"
+                            className="flex w-full items-center gap-2 px-3 py-1.5 text-xs transition-colors hover:bg-raised/60"
                         >
                             {overlayVisibility[key]
-                                ? <Eye size={14} className="text-primary" />
-                                : <EyeOff size={14} className="text-muted-foreground/50" />
+                                ? <Eye size={14} className="text-signal" />
+                                : <EyeOff size={14} className="text-fg-muted/50" />
                             }
-                            <span className={overlayVisibility[key] ? "text-foreground" : "text-muted-foreground"}>
+                            <span className={overlayVisibility[key] ? "text-fg" : "text-fg-muted"}>
                                 {label}
                             </span>
                         </button>
@@ -109,24 +109,24 @@ function OverlayVisibilityPopover({ horizontal }: { horizontal: boolean }) {
 
 function EditorPhoneNotice() {
     return (
-        <div className="flex h-[calc(100vh-64px)] items-center justify-center bg-muted/10 px-4 animate-in fade-in">
+        <div className="flex h-[calc(100vh-64px)] items-center justify-center bg-raised/10 px-4 animate-in fade-in">
             <SeoHead
                 title="Editor"
                 description="Interactive image annotation editor with computer vision algorithm runner."
             />
-            <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-sm">
-                <div className="inline-flex rounded-full border border-border bg-background p-3 text-primary">
+            <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-6 shadow-sm">
+                <div className="inline-flex rounded-full border border-line bg-ground p-3 text-signal">
                     <Monitor size={22} />
                 </div>
                 <h1 className="mt-5 text-2xl font-semibold tracking-tight">Editor works best on a larger screen</h1>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                <p className="mt-3 text-sm leading-6 text-fg-muted">
                     The editor stays desktop-first because image review, algorithm tuning, and manual annotation
                     become cramped on phone-sized screens. Open it on a tablet or desktop for the full workflow.
                 </p>
                 <div className="mt-6">
                     <Link
                         to="/"
-                        className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                        className="inline-flex items-center gap-2 rounded-control border border-line bg-ground px-4 py-2 text-sm font-medium text-fg transition-colors hover:bg-raised"
                     >
                         <ArrowLeft size={16} />
                         Back to Home
@@ -287,13 +287,13 @@ export default function Editor() {
                 <button
                     type="button"
                     onClick={() => setGalleryMode(true)}
-                    className={`${TOOL_BUTTON} font-bold text-primary hover:bg-muted`}
+                    className={`${TOOL_BUTTON} font-bold text-signal hover:bg-raised`}
                 >
                     <ImageIcon size={20} />
                 </button>
             </Tooltip>
 
-            <div className={horizontalToolbar ? "h-full border-l border-border" : "w-full border-t border-border"} />
+            <div className={horizontalToolbar ? "h-full border-l border-line" : "w-full border-t border-line"} />
 
             <Tooltip content="Select" side={horizontalToolbar ? "top" : "right"}>
                 <button
@@ -301,8 +301,8 @@ export default function Editor() {
                     onClick={() => setActiveTool("SELECT")}
                     className={`${TOOL_BUTTON} ${
                         activeTool === "SELECT"
-                            ? "bg-primary text-primary-foreground shadow-xs"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            ? "bg-signal text-signal-fg shadow-xs"
+                            : "text-fg-muted hover:bg-raised hover:text-fg"
                     }`}
                 >
                     <MousePointer2 size={18} />
@@ -314,7 +314,7 @@ export default function Editor() {
             <div className={horizontalToolbar ? "flex items-center" : "flex-1 overflow-y-auto px-2 py-4"}>
                 <div className={horizontalToolbar
                     ? "flex items-center gap-1 px-1"
-                    : "w-full overflow-hidden rounded-xl border border-border/70 bg-background/70 shadow-xs"
+                    : "w-full overflow-hidden rounded-xl border border-line/70 bg-ground/70 shadow-xs"
                 }>
                     <Tooltip content={annotationToolsOpen ? "Collapse tools" : "Annotation tools"} side={horizontalToolbar ? "top" : "right"}>
                         <button
@@ -323,8 +323,8 @@ export default function Editor() {
                             aria-expanded={annotationToolsOpen}
                             aria-controls={annotationToolsPanelId}
                             className={horizontalToolbar
-                                ? `${TOOL_BUTTON} text-muted-foreground hover:bg-muted/40 hover:text-foreground`
-                                : "flex min-h-[58px] w-full flex-col items-center justify-center gap-1 px-2 py-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+                                ? `${TOOL_BUTTON} text-fg-muted hover:bg-raised/40 hover:text-fg`
+                                : "flex min-h-[58px] w-full flex-col items-center justify-center gap-1 px-2 py-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-fg-muted transition-colors hover:bg-raised/40 hover:text-fg"
                             }
                         >
                             {horizontalToolbar ? (
@@ -376,8 +376,8 @@ export default function Editor() {
                                         tabIndex={annotationToolsOpen ? 0 : -1}
                                         className={`${TOOL_BUTTON} ${
                                             activeTool === tool.id
-                                                ? "bg-primary text-primary-foreground shadow-xs"
-                                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                                ? "bg-signal text-signal-fg shadow-xs"
+                                                : "text-fg-muted hover:bg-raised hover:text-fg"
                                         }`}
                                     >
                                         {tool.icon}
@@ -423,11 +423,11 @@ export default function Editor() {
                     <div className="min-h-0 flex-1 flex flex-col">
                         {canvasArea}
                     </div>
-                    <div className="flex h-12 items-center gap-1 overflow-x-auto border-t border-border bg-muted/20 px-2">
+                    <div className="flex h-12 items-center gap-1 overflow-x-auto border-t border-line bg-raised/20 px-2">
                         {toolbarContent}
                     </div>
                 </div>
-                <div className="w-80 shrink-0 overflow-y-auto border-l border-border bg-background/70">
+                <div className="w-80 shrink-0 overflow-y-auto border-l border-line bg-ground/70">
                     <EditorRightPanel variant="touch" />
                 </div>
             </div>
@@ -441,11 +441,11 @@ export default function Editor() {
                     {canvasArea}
                 </div>
 
-                <div className="border-t border-border bg-muted/20">
+                <div className="border-t border-line bg-raised/20">
                     <div className="flex h-16 items-center gap-1 overflow-x-auto px-2">
                         {toolbarContent}
                     </div>
-                    <div className="h-[20rem] border-t border-border bg-background/70">
+                    <div className="h-[20rem] border-t border-line bg-ground/70">
                         <EditorRightPanel variant="touch" />
                     </div>
                 </div>
@@ -468,7 +468,7 @@ export default function Editor() {
                     title="Editor"
                     description="Interactive image annotation editor with computer vision algorithm runner."
                 />
-                <div className="flex h-full w-16 shrink-0 flex-col items-center gap-3 border-r border-border bg-muted/20 px-2 pt-4">
+                <div className="flex h-full w-16 shrink-0 flex-col items-center gap-3 border-r border-line bg-raised/20 px-2 pt-4">
                     {toolbarContent}
                 </div>
 

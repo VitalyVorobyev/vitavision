@@ -5,9 +5,9 @@ import { useDelaunayVoronoi } from "./delaunay-voronoi/useDelaunayVoronoi";
 import type { Layers, ActiveTool } from "./delaunay-voronoi/types";
 
 const LAYER_LABELS: { key: keyof Layers; label: string; swatch: string }[] = [
-    { key: "delaunay",      label: "Delaunay",      swatch: "hsl(var(--foreground))" },
+    { key: "delaunay",      label: "Delaunay",      swatch: "var(--fg)" },
     { key: "voronoi",       label: "Voronoi",       swatch: "hsl(180 60% 55%)" },
-    { key: "circumcircles", label: "Circumcircles", swatch: "hsl(var(--primary))" },
+    { key: "circumcircles", label: "Circumcircles", swatch: "var(--signal)" },
 ];
 
 const MODES: { tool: ActiveTool; label: string }[] = [
@@ -60,8 +60,8 @@ export default function DelaunayVoronoiInlineIllustration({
                                 onClick={() => setTool(tool)}
                                 className={`rounded-full px-2.5 py-1 text-[11px] border transition-colors ${
                                     on
-                                        ? "border-primary/40 bg-primary/10 text-foreground"
-                                        : "border-border text-muted-foreground hover:text-foreground"
+                                        ? "border-signal/40 bg-signal/10 text-fg"
+                                        : "border-line text-fg-muted hover:text-fg"
                                 }`}
                             >
                                 {label}
@@ -69,7 +69,7 @@ export default function DelaunayVoronoiInlineIllustration({
                         );
                     })}
                 </div>
-                <div className="hidden sm:block w-px h-4 bg-border" />
+                <div className="hidden sm:block w-px h-4 bg-line" />
                 <div className="flex items-center gap-1">
                     <TinyBrow className="mr-1 hidden sm:inline">Layers</TinyBrow>
                     {LAYER_LABELS.map(({ key, label, swatch }) => {
@@ -82,12 +82,12 @@ export default function DelaunayVoronoiInlineIllustration({
                                 onClick={() => toggleLayer(key)}
                                 className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] border transition-colors ${
                                     on
-                                        ? "border-primary/40 bg-primary/10 text-foreground"
-                                        : "border-border text-muted-foreground hover:text-foreground"
+                                        ? "border-signal/40 bg-signal/10 text-fg"
+                                        : "border-line text-fg-muted hover:text-fg"
                                 }`}
                             >
                                 <span
-                                    className="inline-block w-2 h-2 rounded-sm shrink-0"
+                                    className="inline-block w-2 h-2 rounded-xs shrink-0"
                                     style={{ background: swatch }}
                                 />
                                 {label}
@@ -98,7 +98,7 @@ export default function DelaunayVoronoiInlineIllustration({
                 <button
                     type="button"
                     onClick={reset}
-                    className="ml-auto rounded-full px-3 py-1 text-[11px] border border-border text-muted-foreground hover:text-foreground"
+                    className="ml-auto rounded-full px-3 py-1 text-[11px] border border-line text-fg-muted hover:text-fg"
                 >
                     Reset
                 </button>
@@ -110,7 +110,7 @@ export default function DelaunayVoronoiInlineIllustration({
             </Panel>
 
             {showLegend && (
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[11px] text-fg-muted">
                     Drag any corner handle to warp the grid. Drag a node to displace it. Switch to <em>Erase</em> and tap a node to remove it.
                 </p>
             )}

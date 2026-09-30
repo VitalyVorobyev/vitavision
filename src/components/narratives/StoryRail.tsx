@@ -32,18 +32,18 @@ export default function StoryRail({
 
     if (index === null) {
         return (
-            <div className="rounded-lg border border-border bg-surface p-3.5">
-                <h2 className="m-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <div className="rounded-panel border border-line bg-surface p-3.5">
+                <h2 className="m-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
                     Walkthrough
                 </h2>
-                <p className="m-0 mt-1.5 text-[12.5px] leading-[1.55] text-muted-foreground">
+                <p className="m-0 mt-1.5 text-[12.5px] leading-[1.55] text-fg-muted">
                     {steps.length} stops through the constellation. Each one dims the map to the
                     nodes it is about and pulls up that chapter.
                 </p>
                 <button
                     type="button"
                     onClick={() => onStep(0)}
-                    className="mt-3 inline-flex h-8 items-center rounded-md bg-primary px-3 text-[12px] font-medium text-primary-foreground transition-opacity hover:opacity-90"
+                    className="mt-3 inline-flex h-8 items-center rounded-control bg-signal px-3 text-[12px] font-medium text-signal-fg transition-opacity hover:opacity-90"
                 >
                     Start the walkthrough
                 </button>
@@ -57,15 +57,15 @@ export default function StoryRail({
     const areaIds = areas.map((a) => a.id);
 
     return (
-        <div className="rounded-lg border border-border bg-surface">
+        <div className="rounded-panel border border-line bg-surface">
             {/* Stepper — navigation only */}
-            <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+            <div className="flex items-center gap-2 border-b border-line px-3 py-2">
                 <button
                     type="button"
                     onClick={() => onStep(clamped - 1)}
                     disabled={clamped === 0}
                     aria-label="Previous step"
-                    className="grid h-7 w-7 place-items-center rounded border border-border text-muted-foreground transition-colors enabled:hover:bg-muted enabled:hover:text-foreground disabled:opacity-40"
+                    className="grid h-7 w-7 place-items-center rounded border border-line text-fg-muted transition-colors enabled:hover:bg-raised enabled:hover:text-fg disabled:opacity-40"
                 >
                     <ChevronLeft size={14} />
                 </button>
@@ -74,37 +74,37 @@ export default function StoryRail({
                     onClick={() => onStep(clamped + 1)}
                     disabled={clamped === steps.length - 1}
                     aria-label="Next step"
-                    className="grid h-7 w-7 place-items-center rounded border border-border text-muted-foreground transition-colors enabled:hover:bg-muted enabled:hover:text-foreground disabled:opacity-40"
+                    className="grid h-7 w-7 place-items-center rounded border border-line text-fg-muted transition-colors enabled:hover:bg-raised enabled:hover:text-fg disabled:opacity-40"
                 >
                     <ChevronRight size={14} />
                 </button>
-                <span className="font-mono text-[10.5px] tabular-nums text-muted-foreground">
+                <span className="font-mono text-[10.5px] tabular-nums text-fg-muted">
                     Step {clamped + 1}/{steps.length}
                 </span>
                 <button
                     type="button"
                     onClick={() => onStep(null)}
-                    className="ml-auto text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+                    className="ml-auto text-[11px] text-fg-muted transition-colors hover:text-fg"
                 >
                     Exit
                 </button>
             </div>
 
             {/* Progress bar */}
-            <div className="h-[2px] w-full bg-muted">
+            <div className="h-[2px] w-full bg-raised">
                 <div
-                    className="h-full bg-brand transition-[width] duration-300"
+                    className="h-full bg-signal transition-[width] duration-300"
                     style={{ width: `${((clamped + 1) / steps.length) * 100}%` }}
                 />
             </div>
 
             <div className="max-h-[46vh] overflow-y-auto p-3.5">
-                <h2 className="m-0 text-[14px] font-semibold leading-snug -tracking-[0.2px] text-foreground">
+                <h2 className="m-0 text-[14px] font-semibold leading-snug -tracking-[0.2px] text-fg">
                     {step.title}
                 </h2>
 
                 {step.claim && (
-                    <p className="m-0 mt-1.5 text-[14px] leading-[1.5] text-muted-foreground">{step.claim}</p>
+                    <p className="m-0 mt-1.5 text-[14px] leading-[1.5] text-fg-muted">{step.claim}</p>
                 )}
 
                 {chapter ? (
@@ -115,12 +115,12 @@ export default function StoryRail({
                         dangerouslySetInnerHTML={{ __html: chapter }}
                     />
                 ) : (
-                    <p className="m-0 mt-2 text-[12.5px] text-muted-foreground">
+                    <p className="m-0 mt-2 text-[12.5px] text-fg-muted">
                         This step has no chapter text.
                     </p>
                 )}
 
-                <h3 className="mb-1.5 mt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <h3 className="mb-1.5 mt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
                     In focus
                 </h3>
                 <div className="flex flex-col gap-1.5">
@@ -132,17 +132,17 @@ export default function StoryRail({
                                 key={id}
                                 type="button"
                                 onClick={() => onSelectNode(id)}
-                                className="flex items-center gap-2 rounded-md border border-border bg-muted/40 px-2.5 py-1.5 text-left transition-colors hover:bg-muted"
+                                className="flex items-center gap-2 rounded-control border border-line bg-raised/40 px-2.5 py-1.5 text-left transition-colors hover:bg-raised"
                             >
                                 <span
                                     aria-hidden="true"
                                     className="h-2 w-2 shrink-0 rounded-full"
                                     style={{ background: areaColor(areaIds, node.area) }}
                                 />
-                                <span className="min-w-0 flex-1 truncate text-[12px] text-foreground">
+                                <span className="min-w-0 flex-1 truncate text-[12px] text-fg">
                                     {node.title}
                                 </span>
-                                <span className="shrink-0 font-mono text-[9.5px] tabular-nums text-muted-foreground">
+                                <span className="shrink-0 font-mono text-[9.5px] tabular-nums text-fg-muted">
                                     {("year" in node ? node.year : undefined) ?? ""}
                                 </span>
                             </button>

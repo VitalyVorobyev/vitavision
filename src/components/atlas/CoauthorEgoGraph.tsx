@@ -86,7 +86,7 @@ export function CoauthorEgoGraph({ subjectName, coAuthors }: CoauthorEgoGraphPro
                     y1={CENTER}
                     x2={x}
                     y2={y}
-                    stroke="hsl(var(--border-strong))"
+                    stroke="var(--line-strong)"
                     strokeWidth={strokeWidth}
                 />
             ))}
@@ -101,27 +101,27 @@ export function CoauthorEgoGraph({ subjectName, coAuthors }: CoauthorEgoGraphPro
                     onKeyDown={(event) => onKeyDown(event, co.id)}
                     style={{ cursor: "pointer" }}
                 >
-                    <circle cx={x} cy={y} r={radius} fill="hsl(var(--surface))" stroke={ringColor} strokeWidth={1.6} />
+                    <circle cx={x} cy={y} r={radius} fill="var(--surface)" stroke={ringColor} strokeWidth={1.6} />
                     <text
                         x={x}
                         y={y + radius + 13}
                         textAnchor="middle"
                         fontSize={11.5}
-                        style={{ fill: "hsl(var(--foreground))" }}
+                        style={{ fill: "var(--fg)" }}
                     >
                         {shortLabel(co.name)}
                     </text>
                 </g>
             ))}
 
-            <circle cx={CENTER} cy={CENTER} r={SUBJECT_RADIUS} fill="hsl(var(--foreground))" />
+            <circle cx={CENTER} cy={CENTER} r={SUBJECT_RADIUS} fill="var(--fg)" />
             <text
                 x={CENTER}
                 y={CENTER + 4}
                 textAnchor="middle"
                 fontSize={12}
                 fontWeight={600}
-                style={{ fill: "hsl(var(--background))" }}
+                style={{ fill: "var(--ground)" }}
             >
                 {shortLabel(subjectName, 12)}
             </text>
@@ -132,7 +132,7 @@ export function CoauthorEgoGraph({ subjectName, coAuthors }: CoauthorEgoGraphPro
                     y={SIZE - 6}
                     textAnchor="middle"
                     fontSize={11}
-                    style={{ fill: "hsl(var(--muted-foreground))" }}
+                    style={{ fill: "var(--fg-muted)" }}
                 >
                     +{overflow} more
                 </text>

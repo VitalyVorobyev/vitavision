@@ -30,7 +30,7 @@ export default function DemoIndex() {
             />
             <div className="space-y-4">
                 <h1 className="text-4xl font-bold tracking-tight">Demos</h1>
-                <p className="text-muted-foreground text-lg">
+                <p className="text-fg-muted text-lg">
                     Interactive demos of computer vision algorithms.
                 </p>
             </div>

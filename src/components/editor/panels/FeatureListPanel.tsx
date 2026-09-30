@@ -151,20 +151,20 @@ function FeatureNavigator({
             ref={containerRef}
             tabIndex={0}
             onKeyDown={handleKeyDown}
-            className="flex items-center justify-center gap-3 outline-none focus:ring-1 focus:ring-primary/30 rounded-md py-1"
+            className="flex items-center justify-center gap-3 outline-none focus:ring-1 focus:ring-signal/30 rounded-control py-1"
         >
             <button
                 type="button"
                 onClick={goPrev}
                 disabled={total === 0}
-                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-30"
+                className="p-1 rounded-control text-fg-muted hover:text-fg hover:bg-raised/30 transition-colors disabled:opacity-30"
                 title="Previous feature"
             >
                 <ChevronLeft size={16} />
             </button>
-            <span className="text-xs text-foreground font-medium text-center">
+            <span className="text-xs text-fg font-medium text-center">
                 {group && (
-                    <span className="text-muted-foreground">{group.label} </span>
+                    <span className="text-fg-muted">{group.label} </span>
                 )}
                 <span className="tabular-nums">{display}</span>
             </span>
@@ -172,7 +172,7 @@ function FeatureNavigator({
                 type="button"
                 onClick={goNext}
                 disabled={total === 0}
-                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-30"
+                className="p-1 rounded-control text-fg-muted hover:text-fg hover:bg-raised/30 transition-colors disabled:opacity-30"
                 title="Next feature"
             >
                 <ChevronRight size={16} />
@@ -212,20 +212,20 @@ function SelectedFeatureCard({
         : null;
 
     return (
-        <div className="rounded-lg border border-primary/30 bg-primary/6 px-4 py-3 space-y-2.5">
+        <div className="rounded-panel border border-signal/30 bg-signal/6 px-4 py-3 space-y-2.5">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-signal">
                     Selected
                 </span>
                 <div className="flex items-center gap-1.5">
                     {hidden && (
-                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-raised text-fg-muted">
                             <EyeOff size={9} /> hidden
                         </span>
                     )}
                     {readonly && (
-                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-raised text-fg-muted">
                             <Lock size={9} /> read-only
                         </span>
                     )}
@@ -236,7 +236,7 @@ function SelectedFeatureCard({
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
                 {xy && (
                     <>
-                        <dt className="text-muted-foreground whitespace-nowrap">Position</dt>
+                        <dt className="text-fg-muted whitespace-nowrap">Position</dt>
                         <dd className="font-medium tabular-nums text-right">
                             {fmtCoord(xy.x)}, {fmtCoord(xy.y)}
                         </dd>
@@ -244,33 +244,33 @@ function SelectedFeatureCard({
                 )}
                 {score !== null && (
                     <>
-                        <dt className="text-muted-foreground">Score</dt>
+                        <dt className="text-fg-muted">Score</dt>
                         <dd className="font-medium tabular-nums text-right">{fmtScore(score)}</dd>
                     </>
                 )}
                 {meta?.grid && (
                     <>
-                        <dt className="text-muted-foreground">Grid</dt>
+                        <dt className="text-fg-muted">Grid</dt>
                         <dd className="font-medium tabular-nums text-right">({meta.grid.i}, {meta.grid.j})</dd>
                     </>
                 )}
                 {meta?.gridCell && !meta?.grid && (
                     <>
-                        <dt className="text-muted-foreground">Cell</dt>
+                        <dt className="text-fg-muted">Cell</dt>
                         <dd className="font-medium tabular-nums text-right">({meta.gridCell.gx}, {meta.gridCell.gy})</dd>
                     </>
                 )}
                 {labeledPointInfo && (
                     <>
-                        <dt className="text-muted-foreground whitespace-nowrap">Master idx</dt>
+                        <dt className="text-fg-muted whitespace-nowrap">Master idx</dt>
                         <dd className="font-medium tabular-nums text-right">
                             ({labeledPointInfo.gridIndex.i}, {labeledPointInfo.gridIndex.j})
                         </dd>
-                        <dt className="text-muted-foreground whitespace-nowrap">Master ID</dt>
+                        <dt className="text-fg-muted whitespace-nowrap">Master ID</dt>
                         <dd className="font-medium tabular-nums text-right">{labeledPointInfo.masterId}</dd>
                         {labeledPointInfo.targetPosMm && (
                             <>
-                                <dt className="text-muted-foreground whitespace-nowrap">Target (mm)</dt>
+                                <dt className="text-fg-muted whitespace-nowrap">Target (mm)</dt>
                                 <dd className="font-medium tabular-nums text-right">
                                     {fmtCoord(labeledPointInfo.targetPosMm.x)}, {fmtCoord(labeledPointInfo.targetPosMm.y)}
                                 </dd>
@@ -280,7 +280,7 @@ function SelectedFeatureCard({
                 )}
                 {detailRows.map((row) => (
                     <Fragment key={row.label}>
-                        <dt className="text-muted-foreground whitespace-nowrap">{row.label}</dt>
+                        <dt className="text-fg-muted whitespace-nowrap">{row.label}</dt>
                         <dd className="font-medium tabular-nums text-right">{row.value}</dd>
                     </Fragment>
                 ))}
@@ -289,7 +289,7 @@ function SelectedFeatureCard({
             {!readonly && (
                 <button
                     onClick={onDelete}
-                    className="flex items-center gap-1 text-[11px] text-destructive hover:text-destructive/70 transition-colors"
+                    className="flex items-center gap-1 text-[11px] text-defect hover:text-defect/70 transition-colors"
                 >
                     <Trash2 size={11} /> Delete
                 </button>
@@ -317,7 +317,7 @@ function ActionButton({
             onClick={onClick}
             disabled={disabled}
             title={title}
-            className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-medium transition-colors disabled:opacity-45 disabled:cursor-not-allowed ${className ?? "border-border bg-background text-foreground hover:bg-muted/50"}`}
+            className={`inline-flex items-center gap-1.5 rounded-control border px-2.5 py-1.5 text-[11px] font-medium transition-colors disabled:opacity-45 disabled:cursor-not-allowed ${className ?? "border-line bg-ground text-fg hover:bg-raised/50"}`}
         >
             {children}
         </button>
@@ -400,7 +400,7 @@ export default function FeatureListPanel() {
                     title="Clear all features"
                     onClick={handleClear}
                     disabled={features.length === 0}
-                    className="border-destructive/20 bg-destructive/5 text-destructive hover:bg-destructive/10"
+                    className="border-defect/20 bg-defect/5 text-defect hover:bg-defect/10"
                 >
                     <Trash2 size={12} />
                     Clear
@@ -433,10 +433,10 @@ export default function FeatureListPanel() {
                                 key={group.key}
                                 className={`inline-flex items-center rounded-full border text-[11px] transition-colors ${
                                     isActive
-                                        ? "border-primary/40 bg-primary/8 text-primary"
+                                        ? "border-signal/40 bg-signal/8 text-signal"
                                         : isVisible
-                                            ? "border-border bg-background text-foreground"
-                                            : "border-border/50 bg-muted/20 text-muted-foreground/60"
+                                            ? "border-line bg-ground text-fg"
+                                            : "border-line/50 bg-raised/20 text-fg-muted/60"
                                 }`}
                             >
                                 {/* Main clickable area — selects group */}
@@ -450,7 +450,7 @@ export default function FeatureListPanel() {
                                         style={{ backgroundColor: group.color, opacity: isVisible ? 1 : 0.4 }}
                                     />
                                     <span className="font-medium">{group.label}</span>
-                                    <span className="text-[10px] text-muted-foreground tabular-nums">
+                                    <span className="text-[10px] text-fg-muted tabular-nums">
                                         {group.features.length}
                                     </span>
                                 </button>
@@ -461,7 +461,7 @@ export default function FeatureListPanel() {
                                         e.stopPropagation();
                                         setFeatureGroupVisibility(group.key, !isVisible);
                                     }}
-                                    className="pr-2 pl-0.5 py-1 text-muted-foreground hover:text-foreground transition-colors"
+                                    className="pr-2 pl-0.5 py-1 text-fg-muted hover:text-fg transition-colors"
                                     title={isVisible ? `Hide ${group.label}` : `Show ${group.label}`}
                                 >
                                     {isVisible ? <Eye size={10} /> : <EyeOff size={10} />}
@@ -473,8 +473,8 @@ export default function FeatureListPanel() {
             )}
 
             {features.length === 0 && (
-                <div className="rounded-lg border border-dashed border-border/60 py-6 text-center">
-                    <p className="text-xs text-muted-foreground">No features yet</p>
+                <div className="rounded-panel border border-dashed border-line/60 py-6 text-center">
+                    <p className="text-xs text-fg-muted">No features yet</p>
                 </div>
             )}
         </div>

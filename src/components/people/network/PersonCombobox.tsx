@@ -55,7 +55,7 @@ export function PersonCombobox({ scholarly, authorsIdx, onSelect }: PersonCombob
 
     return (
         <div className="relative w-full sm:w-64">
-            <label className="flex items-center gap-2 h-10 px-3 rounded-md border border-border bg-surface text-muted-foreground">
+            <label className="flex items-center gap-2 h-10 px-3 rounded-control border border-line bg-surface text-fg-muted">
                 <Search size={14} className="shrink-0" />
                 <span className="sr-only">Find a person</span>
                 <input
@@ -75,7 +75,7 @@ export function PersonCombobox({ scholarly, authorsIdx, onSelect }: PersonCombob
                     onFocus={() => setOpen(true)}
                     onBlur={() => setTimeout(() => setOpen(false), 120)}
                     onKeyDown={handleKeyDown}
-                    className="flex-1 min-w-0 bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground"
+                    className="flex-1 min-w-0 bg-transparent outline-none text-sm text-fg placeholder:text-fg-muted"
                 />
             </label>
 
@@ -84,7 +84,7 @@ export function PersonCombobox({ scholarly, authorsIdx, onSelect }: PersonCombob
                     id={listboxId}
                     role="listbox"
                     aria-label="Matching people"
-                    className="absolute z-20 mt-1 w-full max-h-64 overflow-y-auto rounded-md border border-border bg-surface shadow-lg"
+                    className="absolute z-20 mt-1 w-full max-h-64 overflow-y-auto rounded-control border border-line bg-surface shadow-lg"
                 >
                     {results.map((r, idx) => (
                         <li key={r.id} role="presentation">
@@ -98,11 +98,11 @@ export function PersonCombobox({ scholarly, authorsIdx, onSelect }: PersonCombob
                                 }}
                                 onMouseEnter={() => setHighlightIndex(idx)}
                                 className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left text-sm transition-colors ${
-                                    idx === highlightIndex ? "bg-muted" : "hover:bg-muted/60"
+                                    idx === highlightIndex ? "bg-raised" : "hover:bg-raised/60"
                                 }`}
                             >
-                                <span className="truncate text-foreground">{r.name}</span>
-                                <span className="shrink-0 text-[11px] text-muted-foreground">{r.pageCount} pages</span>
+                                <span className="truncate text-fg">{r.name}</span>
+                                <span className="shrink-0 text-[11px] text-fg-muted">{r.pageCount} pages</span>
                             </button>
                         </li>
                     ))}

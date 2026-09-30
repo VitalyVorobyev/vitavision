@@ -57,7 +57,7 @@ export const NARRATIVE_EDGE_DASH: Record<NarrativeEdgeType, string | undefined> 
     contrast:     "1.5 4",
 };
 
-/** Resolved `hsl(var(--graph-rel-*))` colour for a narrative edge type. */
+/** Resolved `var(--graph-rel-*)` colour for a narrative edge type. */
 export function narrativeEdgeColor(type: NarrativeEdgeType): string {
     return graphRelColor(NARRATIVE_EDGE_REL[type]);
 }

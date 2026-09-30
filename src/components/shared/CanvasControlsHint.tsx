@@ -18,17 +18,17 @@ export default function CanvasControlsHint({ lines, className }: CanvasControlsH
     return (
         <div
             className={classNames(
-                "absolute z-20 rounded-md border border-border bg-background/90 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground shadow-xs backdrop-blur-sm",
+                "absolute z-20 rounded-control border border-line bg-ground/90 px-2.5 py-1.5 text-[11px] leading-relaxed text-fg-muted shadow-xs backdrop-blur-sm",
                 className,
             )}
         >
             <div className="mb-1 flex items-start justify-between gap-2">
-                <div className="text-foreground/80 font-medium">Controls</div>
+                <div className="text-fg/80 font-medium">Controls</div>
                 <button
                     type="button"
                     aria-label="Close controls"
                     onClick={() => setDismissed(true)}
-                    className="rounded-sm p-0.5 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+                    className="rounded-xs p-0.5 text-fg-muted transition-colors hover:bg-raised/60 hover:text-fg"
                 >
                     <X size={12} />
                 </button>

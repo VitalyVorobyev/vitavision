@@ -20,21 +20,21 @@ function TileCard({ label, children }: { label: string; children: React.ReactNod
             <a
                 href="/blog"
                 aria-label={`${label} — Long-form notes and engineering write-ups`}
-                className="group relative flex min-h-[116px] w-full flex-col overflow-hidden rounded-xl border border-border/70 bg-surface/80 px-3.5 pb-3.5 pt-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/45 focus-visible:border-brand/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                className="group relative flex min-h-[116px] w-full flex-col overflow-hidden rounded-xl border border-line/70 bg-surface/80 px-3.5 pb-3.5 pt-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-signal/45 focus-visible:border-signal/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal/40"
             >
                 <span
                     aria-hidden
                     className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
-                    style={{ background: "radial-gradient(120% 80% at 100% 0%, hsl(var(--brand) / 0.14), transparent 60%)" }}
+                    style={{ background: "radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--signal) 14%, transparent), transparent 60%)" }}
                 />
                 <div className="relative flex h-10 items-center">{children}</div>
                 <div className="relative mt-auto flex items-end justify-between pt-3">
-                    <span className="text-[13px] font-semibold tracking-tight text-foreground">{label}</span>
+                    <span className="text-[13px] font-semibold tracking-tight text-fg">{label}</span>
                     <ArrowRight
                         size={14}
                         strokeWidth={2}
                         aria-hidden
-                        className="-translate-x-1 text-muted-foreground/80 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:text-brand group-hover:opacity-100"
+                        className="-translate-x-1 text-fg-muted/80 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:text-signal group-hover:opacity-100"
                     />
                 </div>
             </a>
@@ -47,7 +47,7 @@ function TileCard({ label, children }: { label: string; children: React.ReactNod
 // to it lets a reviewer actually inspect the stacked-line glyph.
 function DetailCrop({ children }: { children: React.ReactNode }) {
     return (
-        <div style={{ width: 192, height: 128 }} className="overflow-hidden rounded-md border border-border bg-background p-2">
+        <div style={{ width: 192, height: 128 }} className="overflow-hidden rounded-control border border-line bg-ground p-2">
             <div style={{ transform: "scale(4)", transformOrigin: "top left" }}>{children}</div>
         </div>
     );

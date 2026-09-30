@@ -13,7 +13,7 @@ interface PaperHeaderProps {
 }
 
 const btnClass =
-    "inline-flex h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-3.5 text-[13px] font-medium text-foreground no-underline transition-colors hover:border-border-strong hover:bg-muted";
+    "inline-flex h-9 items-center gap-1.5 rounded-control border border-line bg-surface px-3.5 text-[13px] font-medium text-fg no-underline transition-colors hover:border-line-strong hover:bg-raised";
 
 export default function PaperHeader({ paper, authorsIndex, primarySlug }: PaperHeaderProps) {
     const authorIds = resolveAuthorIds(paper.authors, authorsIndex.paperAuthors[paper.id], authorsIndex.authors);
@@ -23,13 +23,13 @@ export default function PaperHeader({ paper, authorsIndex, primarySlug }: PaperH
         <header className="flex flex-col gap-4">
             <nav
                 aria-label="Breadcrumb"
-                className="flex items-center gap-2 font-mono text-[12px] text-muted-foreground"
+                className="flex items-center gap-2 font-mono text-[12px] text-fg-muted"
             >
-                <Link to="/atlas" className="hover:text-foreground transition-colors">
+                <Link to="/atlas" className="hover:text-fg transition-colors">
                     Atlas
                 </Link>
                 <span aria-hidden="true">/</span>
-                <Link to="/atlas?view=papers" className="hover:text-foreground transition-colors">
+                <Link to="/atlas?view=papers" className="hover:text-fg transition-colors">
                     Papers
                 </Link>
                 <span aria-hidden="true">/</span>
@@ -37,13 +37,13 @@ export default function PaperHeader({ paper, authorsIndex, primarySlug }: PaperH
             </nav>
 
             <div className="flex items-center gap-2">
-                <span className="inline-flex h-[18px] items-center rounded-[3px] border border-border bg-muted px-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                <span className="inline-flex h-[18px] items-center rounded-[3px] border border-line bg-raised px-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-fg-muted">
                     Paper
                 </span>
-                {venueYear && <span className="font-mono text-[12.5px] text-foreground">{venueYear}</span>}
+                {venueYear && <span className="font-mono text-[12.5px] text-fg">{venueYear}</span>}
             </div>
 
-            <h1 className="font-serif text-[clamp(1.75rem,4.5vw,2.625rem)] font-bold leading-[1.15] tracking-[-0.5px] text-foreground text-balance">
+            <h1 className="font-serif text-[clamp(1.75rem,4.5vw,2.625rem)] font-bold leading-[1.15] tracking-[-0.5px] text-fg text-balance">
                 {paper.title}
             </h1>
 
@@ -57,12 +57,12 @@ export default function PaperHeader({ paper, authorsIndex, primarySlug }: PaperH
                                 {id ? (
                                     <Link
                                         to={`/authors/${id}`}
-                                        className="font-medium text-foreground underline decoration-border decoration-2 underline-offset-4 transition-colors hover:decoration-foreground"
+                                        className="font-medium text-fg underline decoration-line decoration-2 underline-offset-4 transition-colors hover:decoration-fg"
                                     >
                                         {name}
                                     </Link>
                                 ) : (
-                                    <span className="font-medium text-foreground">{name}</span>
+                                    <span className="font-medium text-fg">{name}</span>
                                 )}
                             </Fragment>
                         );

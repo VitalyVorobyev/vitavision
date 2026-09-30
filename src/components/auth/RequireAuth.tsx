@@ -16,7 +16,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 function AuthLoading() {
     return (
         <div className="flex flex-1 items-center justify-center py-20">
-            <span className="text-sm text-muted-foreground">Loading…</span>
+            <span className="text-sm text-fg-muted">Loading…</span>
         </div>
     );
 }

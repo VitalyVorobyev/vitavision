@@ -18,7 +18,7 @@ export interface NetworkToolbarProps {
 }
 
 const selectCls =
-    "h-9 rounded-md border border-border bg-surface px-2.5 text-sm text-foreground";
+    "h-9 rounded-control border border-line bg-surface px-2.5 text-sm text-fg";
 
 export function NetworkToolbar({
     scholarly,
@@ -30,10 +30,10 @@ export function NetworkToolbar({
     onLabelModeChange,
 }: NetworkToolbarProps) {
     return (
-        <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2.5 border-b border-border">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2.5 border-b border-line">
             <PersonCombobox scholarly={scholarly} authorsIdx={authorsIdx} onSelect={onSelectPerson} />
             <div className="flex items-center gap-3">
-                <label className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <label className="flex items-center gap-1.5 text-sm text-fg-muted">
                     Era
                     <select
                         value={era}
@@ -47,7 +47,7 @@ export function NetworkToolbar({
                         ))}
                     </select>
                 </label>
-                <label className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <label className="flex items-center gap-1.5 text-sm text-fg-muted">
                     Labels
                     <select
                         value={labelMode}

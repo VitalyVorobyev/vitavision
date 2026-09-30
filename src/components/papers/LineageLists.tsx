@@ -30,17 +30,17 @@ function LineageColumn({ label, accentClass, entries }: LineageColumnProps) {
                 <Link
                     key={entry.id}
                     to={`/papers/${entry.id}`}
-                    className="grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 border-t border-border py-[7px] no-underline transition-colors hover:bg-muted/40"
+                    className="grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 border-t border-line py-[7px] no-underline transition-colors hover:bg-raised/40"
                 >
-                    <span className="pt-0.5 font-mono text-[12px] tabular-nums text-muted-foreground">
+                    <span className="pt-0.5 font-mono text-[12px] tabular-nums text-fg-muted">
                         {entry.year}
                     </span>
                     <span className="flex flex-col gap-px min-w-0">
-                        <span className="line-clamp-2 font-serif text-[15px] leading-[1.3] text-foreground">
+                        <span className="line-clamp-2 font-serif text-[15px] leading-[1.3] text-fg">
                             {entry.title}
                         </span>
                         {entry.authors.length > 0 && (
-                            <span className="truncate text-[12px] text-muted-foreground">
+                            <span className="truncate text-[12px] text-fg-muted">
                                 {shortAuthorList(entry.authors)}
                             </span>
                         )}
@@ -51,7 +51,7 @@ function LineageColumn({ label, accentClass, entries }: LineageColumnProps) {
                 <button
                     type="button"
                     onClick={() => setExpanded(true)}
-                    className="flex h-10 w-full items-center gap-1.5 border-t border-border text-[13px] font-medium text-foreground"
+                    className="flex h-10 w-full items-center gap-1.5 border-t border-line text-[13px] font-medium text-fg"
                 >
                     Show all {entries.length}
                     <ChevronRight size={14} aria-hidden="true" />
@@ -70,8 +70,8 @@ interface LineageListsProps {
 export default function LineageLists({ cites, citedBy }: LineageListsProps) {
     return (
         <div className="grid grid-cols-1 gap-7 sm:grid-cols-2">
-            <LineageColumn label="Builds on" accentClass="text-muted-foreground" entries={cites} />
-            <LineageColumn label="Built upon by" accentClass="text-[hsl(var(--lineage-out))]" entries={citedBy} />
+            <LineageColumn label="Builds on" accentClass="text-fg-muted" entries={cites} />
+            <LineageColumn label="Built upon by" accentClass="text-lineage-out" entries={citedBy} />
         </div>
     );
 }

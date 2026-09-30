@@ -12,7 +12,7 @@ export const Keys = () => (
 );
 
 export const InHintText = () => (
-    <div className="space-y-2 text-xs text-muted-foreground">
+    <div className="space-y-2 text-xs text-fg-muted">
         <p>
             Hold <Kbd>Space</Kbd> and drag to pan the canvas.
         </p>
@@ -26,7 +26,7 @@ export const InHintText = () => (
 );
 
 export const Chord = () => (
-    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+    <div className="flex items-center gap-1.5 text-xs text-fg-muted">
         <Kbd>Ctrl</Kbd>
         <span>+</span>
         <Kbd>Z</Kbd>

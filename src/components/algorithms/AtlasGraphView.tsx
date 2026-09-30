@@ -13,7 +13,7 @@ const GRAPH_BOX_CLASS = "flex flex-col h-[calc(100vh-11rem)] min-h-[460px]";
 
 function GraphFallback() {
     return (
-        <div className={`${GRAPH_BOX_CLASS} items-center justify-center text-[13px] text-muted-foreground`}>
+        <div className={`${GRAPH_BOX_CLASS} items-center justify-center text-[13px] text-fg-muted`}>
             Loading graph…
         </div>
     );

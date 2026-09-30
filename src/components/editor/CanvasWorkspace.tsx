@@ -286,22 +286,22 @@ export default function CanvasWorkspace() {
         >
             {!imageSrc && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/40">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-fg-muted/40">
                         <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
                         <circle cx="9" cy="9" r="2" />
                         <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                     </svg>
-                    <p className="text-sm text-muted-foreground/60">Drop an image here or use the gallery</p>
+                    <p className="text-sm text-fg-muted/60">Drop an image here or use the gallery</p>
                 </div>
             )}
 
             {hoverPixel && hoveredDirectedPoint === null && (
-                <div className="absolute top-4 left-4 z-20 bg-background/90 border border-border backdrop-blur-sm p-2 rounded-md shadow-xs text-xs font-mono flex items-center space-x-4 pointer-events-none">
+                <div className="absolute top-4 left-4 z-20 bg-ground/90 border border-line backdrop-blur-sm p-2 rounded-control shadow-xs text-xs font-mono flex items-center space-x-4 pointer-events-none">
                     <div>
-                        <span className="text-muted-foreground">X:</span> {hoverPixel.x.toFixed(2)} <span className="text-muted-foreground">Y:</span> {hoverPixel.y.toFixed(2)}
+                        <span className="text-fg-muted">X:</span> {hoverPixel.x.toFixed(2)} <span className="text-fg-muted">Y:</span> {hoverPixel.y.toFixed(2)}
                     </div>
                     <div className="flex items-center space-x-2">
-                        <span className="text-muted-foreground">|</span>
+                        <span className="text-fg-muted">|</span>
                         <span>{Math.round(0.299 * hoverPixel.r + 0.587 * hoverPixel.g + 0.114 * hoverPixel.b)}</span>
                     </div>
                 </div>
@@ -315,7 +315,7 @@ export default function CanvasWorkspace() {
                     <button
                         type="button"
                         onClick={finishCurrentShape}
-                        className="rounded-md border border-border bg-background/90 px-3 py-2 text-sm font-medium text-foreground shadow-xs backdrop-blur-sm transition-colors hover:bg-background"
+                        className="rounded-control border border-line bg-ground/90 px-3 py-2 text-sm font-medium text-fg shadow-xs backdrop-blur-sm transition-colors hover:bg-ground"
                     >
                         Finish shape
                     </button>

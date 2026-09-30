@@ -18,7 +18,7 @@ export default function ZoomControls({
     touchFriendly = false,
 }: ZoomControlsProps) {
     const btn =
-        `rounded-md border border-border bg-background/80 text-muted-foreground backdrop-blur-sm transition-colors hover:bg-background hover:text-foreground ${
+        `rounded-control border border-line bg-ground/80 text-fg-muted backdrop-blur-sm transition-colors hover:bg-ground hover:text-fg ${
             touchFriendly ? "p-2.5" : "p-1.5"
         }`;
     const iconSize = touchFriendly ? 18 : 14;
@@ -37,7 +37,7 @@ export default function ZoomControls({
             <button
                 type="button"
                 onClick={onActual}
-                className={`rounded-md border border-border bg-background/80 font-medium text-muted-foreground backdrop-blur-sm transition-colors hover:bg-background hover:text-foreground ${
+                className={`rounded-control border border-line bg-ground/80 font-medium text-fg-muted backdrop-blur-sm transition-colors hover:bg-ground hover:text-fg ${
                     touchFriendly ? "px-2.5 py-2 text-xs" : "px-1.5 py-1 text-[11px]"
                 }`}
                 title="Zoom to 100%"
@@ -45,7 +45,7 @@ export default function ZoomControls({
                 1:1
             </button>
             {zoomPercent !== undefined && (
-                <div className={`min-w-[3.5rem] rounded-md border border-border bg-background/80 text-center text-muted-foreground backdrop-blur-sm ${
+                <div className={`min-w-[3.5rem] rounded-control border border-line bg-ground/80 text-center text-fg-muted backdrop-blur-sm ${
                     touchFriendly ? "px-3 py-2 text-xs" : "px-2 py-1 text-[11px]"
                 }`}>
                     {zoomPercent}%

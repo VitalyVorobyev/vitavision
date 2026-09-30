@@ -182,7 +182,7 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
     // ── Render ───────────────────────────────────────────────────────────────
 
     return (
-        <div className="w-full h-[min(72vh,620px)] md:h-[700px] rounded-lg border border-border bg-surface overflow-hidden flex flex-col">
+        <div className="w-full h-[min(72vh,620px)] md:h-[700px] rounded-panel border border-line bg-surface overflow-hidden flex flex-col">
             <NetworkToolbar
                 scholarly={{ authors: scholarly?.authors ?? {} }}
                 authorsIdx={{ authors: authorsIdx.authors }}
@@ -268,12 +268,12 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
                     }
                 />
                 {status === "error" && (
-                    <div className="absolute inset-0 grid place-items-center bg-surface/80 text-sm text-muted-foreground">
+                    <div className="absolute inset-0 grid place-items-center bg-surface/80 text-sm text-fg-muted">
                         Couldn&apos;t load the co-author network.
                     </div>
                 )}
                 {status !== "ready" && status !== "error" && (
-                    <div className="absolute inset-0 grid place-items-center bg-surface/80 text-sm text-muted-foreground">
+                    <div className="absolute inset-0 grid place-items-center bg-surface/80 text-sm text-fg-muted">
                         Loading co-author network…
                     </div>
                 )}

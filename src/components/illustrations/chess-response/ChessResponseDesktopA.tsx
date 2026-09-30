@@ -33,17 +33,17 @@ function SliderRow({
     return (
         <div>
             <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-foreground">{label}</span>
-                <span className="text-[11px] font-mono text-muted-foreground">{display}</span>
+                <span className="text-xs text-fg">{label}</span>
+                <span className="text-[11px] font-mono text-fg-muted">{display}</span>
             </div>
             {/* custom styled track */}
             <div className="relative h-1 rounded-full bg-[hsl(222_18%_22%)]">
                 <div
-                    className="absolute left-0 top-0 h-1 rounded-full bg-primary"
+                    className="absolute left-0 top-0 h-1 rounded-full bg-signal"
                     style={{ width: `${pct}%` }}
                 />
                 <div
-                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-foreground border-2 border-primary"
+                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-fg border-2 border-signal"
                     style={{ left: `${pct}%` }}
                 />
                 <input
@@ -78,8 +78,8 @@ function OverlayToggle({
             className={[
                 "rounded-xl border px-2 py-1.5 text-xs font-medium transition-colors text-center",
                 pressed
-                    ? "border-primary/30 bg-primary/10 text-foreground"
-                    : "border-border/80 bg-background/80 text-muted-foreground hover:text-foreground",
+                    ? "border-signal/30 bg-signal/10 text-fg"
+                    : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
             ].join(" ")}
         >
             {label}
@@ -116,7 +116,7 @@ export default function ChessResponseDesktopA({
         <div className="w-full max-w-screen-2xl mx-auto px-4 lg:px-8 py-2 space-y-4">
             {/* Hero canvas panel */}
             <div
-                className="rounded-[1.5rem] border border-border bg-[linear-gradient(180deg,hsl(var(--surface)),hsl(var(--background)))] p-3.5 relative overflow-hidden"
+                className="rounded-[1.5rem] border border-line bg-[linear-gradient(180deg,var(--surface),var(--ground))] p-3.5 relative overflow-hidden"
                 style={{ minHeight: 480 }}
             >
                 {/* SVG canvas centred */}
@@ -144,7 +144,7 @@ export default function ChessResponseDesktopA({
                                 type="button"
                                 aria-label={inspectorOpen ? "Collapse inspector" : "Expand inspector"}
                                 onClick={() => setInspectorOpen((v) => !v)}
-                                className="rounded-lg border border-border/80 bg-background/80 px-1.5 py-0.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                                className="rounded-control border border-line/80 bg-ground/80 px-1.5 py-0.5 text-[11px] text-fg-muted hover:text-fg transition-colors"
                             >
                                 {inspectorOpen ? "—" : "+"}
                             </button>
@@ -210,7 +210,7 @@ export default function ChessResponseDesktopA({
                         <MetricCell label="MR" value={formatValue(response.mr)} />
                         <MetricCell label="R" value={formatValue(response.response)} tone={rTone} />
                     </div>
-                    <div className="mt-2 font-mono text-[10px] text-muted-foreground">
+                    <div className="mt-2 font-mono text-[10px] text-fg-muted">
                         R = SR − DR − 16·MR
                     </div>
                 </FloatingPanel>
@@ -227,8 +227,8 @@ export default function ChessResponseDesktopA({
                                 className={[
                                     "rounded-full border px-2.5 py-1 text-xs font-medium capitalize transition-colors",
                                     pattern === p
-                                        ? "border-primary/30 bg-primary/10 text-foreground"
-                                        : "border-border/80 bg-background/80 text-muted-foreground hover:text-foreground",
+                                        ? "border-signal/30 bg-signal/10 text-fg"
+                                        : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
                                 ].join(" ")}
                             >
                                 {p}
@@ -237,7 +237,7 @@ export default function ChessResponseDesktopA({
                     </div>
 
                     {/* Divider */}
-                    <div className="w-px h-5 bg-border" />
+                    <div className="w-px h-5 bg-line" />
 
                     {/* Play / Pause */}
                     <button
@@ -247,8 +247,8 @@ export default function ChessResponseDesktopA({
                         className={[
                             "flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
                             playing
-                                ? "border-primary/30 bg-primary/10 text-foreground"
-                                : "border-border/80 bg-primary text-background hover:bg-primary/90",
+                                ? "border-signal/30 bg-signal/10 text-fg"
+                                : "border-line/80 bg-signal text-ground hover:bg-signal/90",
                         ].join(" ")}
                     >
                         {playing ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
@@ -263,12 +263,12 @@ export default function ChessResponseDesktopA({
                         step={0.5}
                         value={rotationDeg}
                         onChange={(e) => onRotationChange(Number(e.target.value))}
-                        className="w-[220px] accent-primary"
+                        className="w-[220px] accent-signal"
                         aria-label="Rotation angle"
                     />
 
                     {/* θ readout */}
-                    <span className="font-mono text-[11px] text-muted-foreground whitespace-nowrap">
+                    <span className="font-mono text-[11px] text-fg-muted whitespace-nowrap">
                         θ = {rotationDeg.toFixed(1)}°
                     </span>
                 </FloatingPanel>

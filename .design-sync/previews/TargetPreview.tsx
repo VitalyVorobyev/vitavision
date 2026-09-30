@@ -73,7 +73,7 @@ function useGeneratedState(target: TargetConfig, page: PageConfig) {
 
 function Frame({ children }: { children: React.ReactNode }) {
     return (
-        <div style={{ width: 640, height: 420 }} className="overflow-hidden rounded-lg border border-border">
+        <div style={{ width: 640, height: 420 }} className="overflow-hidden rounded-panel border border-line">
             {children}
         </div>
     );

@@ -32,12 +32,12 @@ export default function RelationshipSidebar({
     const postsFirst = !narrativesFirst && resolvedPosts.length > 0;
 
     return (
-        <div className="border border-border rounded-[10px] bg-card p-[18px]">
+        <div className="border border-line rounded-[10px] bg-card p-[18px]">
             {result.hasSuccessor && <SupersededBy successor={supersededBy!} variant="sidebar" />}
             <SidebarSection
                 heading="Prerequisites"
                 slugs={result.prerequisites}
-                itemColor="text-foreground"
+                itemColor="text-fg"
                 defaultOpen={sectionsOpen}
             />
             {SECTION_ORDER.map((label) => {

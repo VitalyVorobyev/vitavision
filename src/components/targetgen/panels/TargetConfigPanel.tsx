@@ -50,7 +50,7 @@ export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECT
 
             {/* Validation messages */}
             {visibleSections.has("validation") && validation.errors.length > 0 && (
-                <div className="flex flex-col gap-1 rounded-lg border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-2.5">
+                <div className="flex flex-col gap-1 rounded-panel border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-2.5">
                     {validation.errors.map((e) => (
                         <div key={e} className="flex items-start gap-1.5 text-xs text-red-700 dark:text-red-400">
                             <AlertCircle size={13} className="mt-0.5 shrink-0" />
@@ -60,7 +60,7 @@ export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECT
                 </div>
             )}
             {visibleSections.has("validation") && validation.warnings.length > 0 && (
-                <div className="flex flex-col gap-1 rounded-lg border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-2.5">
+                <div className="flex flex-col gap-1 rounded-panel border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-2.5">
                     {validation.warnings.map((w) => (
                         <div key={w} className="flex items-start gap-1.5 text-xs text-amber-700 dark:text-amber-400">
                             <AlertTriangle size={13} className="mt-0.5 shrink-0" />

@@ -19,20 +19,20 @@ export default function PeopleRow({ row, bordered = false }: PeopleRowProps) {
     return (
         <Link
             to={`/authors/${row.id}`}
-            className={`${COLUMNS} min-h-[48px] py-1.5 text-decoration-none hover:bg-[hsl(var(--surface-hi)/0.4)] ${
-                bordered ? "border-t border-border" : ""
+            className={`${COLUMNS} min-h-[48px] py-1.5 text-decoration-none hover:bg-line/40 ${
+                bordered ? "border-t border-line" : ""
             }`}
         >
             <span className="flex min-w-0 items-center gap-2">
-                <span className="truncate text-[14px] sm:text-[15px] font-semibold text-foreground">{row.name}</span>
+                <span className="truncate text-[14px] sm:text-[15px] font-semibold text-fg">{row.name}</span>
                 {row.orcid && <OrcidLink orcid={row.orcid} size={12} />}
             </span>
-            <span className="hidden sm:block truncate text-[12.5px] text-muted-foreground">{domains}</span>
+            <span className="hidden sm:block truncate text-[12.5px] text-fg-muted">{domains}</span>
             <span className="hidden sm:block">
                 <PeopleEraBar firstYear={row.firstYear} lastYear={row.lastYear} />
             </span>
-            <span className="text-right font-mono text-[13px] text-foreground/80 tabular-nums">{row.papers}</span>
-            <span className="text-right font-mono text-[13px] font-semibold text-foreground tabular-nums">{row.pages}</span>
+            <span className="text-right font-mono text-[13px] text-fg/80 tabular-nums">{row.papers}</span>
+            <span className="text-right font-mono text-[13px] font-semibold text-fg tabular-nums">{row.pages}</span>
         </Link>
     );
 }

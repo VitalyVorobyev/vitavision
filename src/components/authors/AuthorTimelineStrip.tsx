@@ -32,7 +32,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
                 x2={layout.axisX2}
                 y1={layout.axisY}
                 y2={layout.axisY}
-                stroke="hsl(var(--border-strong))"
+                stroke="var(--line-strong)"
                 strokeWidth={1.5}
             />
             {layout.ticks.map((tick) => (
@@ -43,7 +43,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
                     textAnchor="middle"
                     fontFamily="var(--font-mono, ui-monospace)"
                     fontSize={11}
-                    fill="hsl(var(--muted-foreground))"
+                    fill="var(--fg-muted)"
                 >
                     {tickLabel(tick.year)}
                 </text>
@@ -76,7 +76,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
                                 x2={p.x}
                                 y1={p.labelY + 8}
                                 y2={p.y - 8}
-                                stroke="hsl(var(--border))"
+                                stroke="var(--line)"
                                 strokeWidth={1}
                             />
                         )}
@@ -86,7 +86,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
                             textAnchor={anchor}
                             fontSize={12}
                             fontWeight={600}
-                            fill="hsl(var(--foreground))"
+                            fill="var(--fg)"
                         >
                             {entry.label}
                         </text>

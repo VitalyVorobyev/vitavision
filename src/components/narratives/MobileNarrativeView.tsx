@@ -25,7 +25,7 @@ export default function MobileNarrativeView({ narrative, steps, chapters }: Mobi
 
     return (
         <div className="flex flex-col">
-            <div className="rounded-lg border border-border bg-surface px-3 py-2.5">
+            <div className="rounded-panel border border-line bg-surface px-3 py-2.5">
                 <NarrativeLegend
                     edgeTypes={edgeTypes}
                     areas={narrative.areas}
@@ -34,7 +34,7 @@ export default function MobileNarrativeView({ narrative, steps, chapters }: Mobi
                 />
             </div>
 
-            <p className="mt-3 px-1 text-[10.5px] leading-snug text-muted-foreground">
+            <p className="mt-3 px-1 text-[10.5px] leading-snug text-fg-muted">
                 The constellation map from desktop is reshaped into a reading list here — same
                 stops, same order. Tap any node to see what it contributes.
             </p>
@@ -42,16 +42,16 @@ export default function MobileNarrativeView({ narrative, steps, chapters }: Mobi
             {steps.map((step, i) => (
                 <section key={step.anchor} className="mt-5">
                     <div className="mb-1.5 flex items-baseline gap-2">
-                        <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+                        <span className="font-mono text-[10px] tabular-nums text-fg-muted">
                             {String(i + 1).padStart(2, "0")}
                         </span>
-                        <h2 className="m-0 text-[15px] font-semibold leading-tight -tracking-[0.2px] text-foreground">
+                        <h2 className="m-0 text-[15px] font-semibold leading-tight -tracking-[0.2px] text-fg">
                             {step.title}
                         </h2>
                     </div>
 
                     {step.claim && (
-                        <p className="mt-1.5 px-1 text-[14px] leading-[1.5] text-muted-foreground">{step.claim}</p>
+                        <p className="mt-1.5 px-1 text-[14px] leading-[1.5] text-fg-muted">{step.claim}</p>
                     )}
 
                     {chapters[step.anchor] && (
@@ -87,10 +87,10 @@ function MobileNodeCard({ node, areaIds }: { node: NarrativeNode; areaIds: strin
 
     return (
         <div
-            className={`relative overflow-hidden rounded-lg bg-surface ${
+            className={`relative overflow-hidden rounded-panel bg-surface ${
                 node.kind === "paper" || node.kind === "question"
-                    ? "border border-dashed border-border"
-                    : "border border-border"
+                    ? "border border-dashed border-line"
+                    : "border border-line"
             }`}
         >
             <span aria-hidden="true" className="absolute inset-y-0 left-0 w-[3px]" style={{ background: accent }} />
@@ -101,34 +101,34 @@ function MobileNodeCard({ node, areaIds }: { node: NarrativeNode; areaIds: strin
                 className="flex w-full items-center gap-2 px-3 py-2.5 text-left"
             >
                 <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13px] font-semibold text-foreground">
+                    <span className="block truncate text-[13px] font-semibold text-fg">
                         {node.kind === "question" && <span aria-hidden="true">? </span>}
                         {node.title}
                     </span>
-                    <span className="block truncate text-[10px] text-muted-foreground">{meta}</span>
+                    <span className="block truncate text-[10px] text-fg-muted">{meta}</span>
                 </span>
                 <span
                     aria-hidden="true"
-                    className={`shrink-0 text-[10px] text-muted-foreground transition-transform ${open ? "rotate-90" : ""}`}
+                    className={`shrink-0 text-[10px] text-fg-muted transition-transform ${open ? "rotate-90" : ""}`}
                 >
                     ▸
                 </span>
             </button>
 
             {open && (
-                <div className="border-t border-border px-3 py-2.5">
+                <div className="border-t border-line px-3 py-2.5">
                     {node.takeaway && (
-                        <p className="m-0 text-[12.5px] leading-[1.55] text-foreground">{node.takeaway}</p>
+                        <p className="m-0 text-[12.5px] leading-[1.55] text-fg">{node.takeaway}</p>
                     )}
                     {node.remark && (
-                        <p className="m-0 mt-1.5 text-[11.5px] italic leading-snug text-muted-foreground">
+                        <p className="m-0 mt-1.5 text-[11.5px] italic leading-snug text-fg-muted">
                             {node.remark}
                         </p>
                     )}
                     {node.kind === "page" && (
                         <Link
                             to={node.path}
-                            className="mt-2.5 flex h-9 items-center justify-center rounded-md bg-primary text-[13px] font-medium text-primary-foreground no-underline active:opacity-90"
+                            className="mt-2.5 flex h-9 items-center justify-center rounded-control bg-signal text-[13px] font-medium text-signal-fg no-underline active:opacity-90"
                         >
                             Open page →
                         </Link>
@@ -138,7 +138,7 @@ function MobileNodeCard({ node, areaIds }: { node: NarrativeNode; areaIds: strin
                             href={node.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="mt-2.5 flex h-9 items-center justify-center rounded-md border border-border bg-muted font-mono text-[12px] text-foreground no-underline active:opacity-90"
+                            className="mt-2.5 flex h-9 items-center justify-center rounded-control border border-line bg-raised font-mono text-[12px] text-fg no-underline active:opacity-90"
                         >
                             Read the paper ↗
                         </a>

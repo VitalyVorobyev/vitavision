@@ -55,7 +55,7 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                         type="button"
                         aria-label="More options"
                         onClick={() => setTool("more")}
-                        className="text-muted-foreground hover:text-foreground transition-colors text-base leading-none"
+                        className="text-fg-muted hover:text-fg transition-colors text-base leading-none"
                     >⋯</button>
                 </FloatingPanel>
 
@@ -70,7 +70,7 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                         <button
                             type="button"
                             onClick={resetGrid}
-                            className="text-muted-foreground hover:text-foreground transition-colors"
+                            className="text-fg-muted hover:text-fg transition-colors"
                         >↺ Reset corners</button>
                     </FloatingPanel>
                 )}
@@ -78,14 +78,14 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                 {/* Usage hint (bottom, dismissable) */}
                 {hintVisible && (
                     <FloatingPanel className="absolute bottom-2.5 left-2.5 right-2.5 px-2.5 py-2 flex items-start gap-2">
-                        <span className="text-[11px] leading-snug text-muted-foreground">
+                        <span className="text-[11px] leading-snug text-fg-muted">
                             Tap to add a point. Drag to move. Inspect tool: tap a triangle or cell to see its area.
                         </span>
                         <button
                             type="button"
                             aria-label="Dismiss hint"
                             onClick={() => setHintVisible(false)}
-                            className="-mt-0.5 -mr-0.5 w-5 h-5 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted/40 hover:text-foreground shrink-0"
+                            className="-mt-0.5 -mr-0.5 w-5 h-5 flex items-center justify-center rounded-control text-fg-muted hover:bg-raised/40 hover:text-fg shrink-0"
                         >×</button>
                     </FloatingPanel>
                 )}
@@ -103,8 +103,8 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                             onClick={() => setTool(tool)}
                             className={`flex flex-col items-center justify-center min-h-[56px] gap-1 rounded-xl transition-colors ${
                                 isActive
-                                    ? "bg-primary/15 border border-primary/40 text-primary"
-                                    : "hover:bg-muted/40 text-muted-foreground hover:text-foreground"
+                                    ? "bg-signal/15 border border-signal/40 text-signal"
+                                    : "hover:bg-raised/40 text-fg-muted hover:text-fg"
                             }`}
                         >
                             <span style={{ fontSize: 18 }}>{icon}</span>
@@ -126,8 +126,8 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                             onClick={() => toggleLayer(key)}
                             className={`rounded-full px-3 py-1.5 text-[11px] border transition-colors ${
                                 on
-                                    ? "border-primary/40 bg-primary/10 text-foreground"
-                                    : "border-border text-muted-foreground hover:text-foreground"
+                                    ? "border-signal/40 bg-signal/10 text-fg"
+                                    : "border-line text-fg-muted hover:text-fg"
                             }`}
                         >
                             {label}
@@ -143,7 +143,7 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                         className="fixed inset-0 z-40 bg-black/40"
                         onClick={() => setTool("add")}
                     />
-                    <div className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-border p-4 max-h-[60vh] overflow-y-auto bg-[hsl(var(--surface))]">
+                    <div className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-line p-4 max-h-[60vh] overflow-y-auto bg-surface">
                         <TinyBrow className="mb-3">More options</TinyBrow>
                         <div className="flex flex-col gap-3">
                             {/* History */}
@@ -152,20 +152,20 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                                     type="button"
                                     onClick={undo}
                                     disabled={!canUndo}
-                                    className={`rounded-xl border border-border py-2.5 text-sm transition-colors ${
+                                    className={`rounded-xl border border-line py-2.5 text-sm transition-colors ${
                                         canUndo
-                                            ? "text-muted-foreground hover:text-foreground"
-                                            : "opacity-40 cursor-not-allowed text-muted-foreground"
+                                            ? "text-fg-muted hover:text-fg"
+                                            : "opacity-40 cursor-not-allowed text-fg-muted"
                                     }`}
                                 >↶ Undo</button>
                                 <button
                                     type="button"
                                     onClick={redo}
                                     disabled={!canRedo}
-                                    className={`rounded-xl border border-border py-2.5 text-sm transition-colors ${
+                                    className={`rounded-xl border border-line py-2.5 text-sm transition-colors ${
                                         canRedo
-                                            ? "text-muted-foreground hover:text-foreground"
-                                            : "opacity-40 cursor-not-allowed text-muted-foreground"
+                                            ? "text-fg-muted hover:text-fg"
+                                            : "opacity-40 cursor-not-allowed text-fg-muted"
                                     }`}
                                 >↷ Redo</button>
                             </div>
@@ -177,13 +177,13 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                                         <button
                                             type="button"
                                             onClick={() => setGridDims(Math.max(2, state.grid.rows - 1), undefined)}
-                                            className="w-8 h-8 flex items-center justify-center rounded-lg border border-border hover:bg-muted/40 text-sm"
+                                            className="w-8 h-8 flex items-center justify-center rounded-control border border-line hover:bg-raised/40 text-sm"
                                         >−</button>
                                         <span className="w-8 text-center font-mono text-sm">{state.grid.rows}</span>
                                         <button
                                             type="button"
                                             onClick={() => setGridDims(Math.min(20, state.grid.rows + 1), undefined)}
-                                            className="w-8 h-8 flex items-center justify-center rounded-lg border border-border hover:bg-muted/40 text-sm"
+                                            className="w-8 h-8 flex items-center justify-center rounded-control border border-line hover:bg-raised/40 text-sm"
                                         >+</button>
                                     </div>
                                 </div>
@@ -193,13 +193,13 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                                         <button
                                             type="button"
                                             onClick={() => setGridDims(undefined, Math.max(2, state.grid.cols - 1))}
-                                            className="w-8 h-8 flex items-center justify-center rounded-lg border border-border hover:bg-muted/40 text-sm"
+                                            className="w-8 h-8 flex items-center justify-center rounded-control border border-line hover:bg-raised/40 text-sm"
                                         >−</button>
                                         <span className="w-8 text-center font-mono text-sm">{state.grid.cols}</span>
                                         <button
                                             type="button"
                                             onClick={() => setGridDims(undefined, Math.min(20, state.grid.cols + 1))}
-                                            className="w-8 h-8 flex items-center justify-center rounded-lg border border-border hover:bg-muted/40 text-sm"
+                                            className="w-8 h-8 flex items-center justify-center rounded-control border border-line hover:bg-raised/40 text-sm"
                                         >+</button>
                                     </div>
                                 </div>
@@ -207,7 +207,7 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                             <button
                                 type="button"
                                 onClick={resetGrid}
-                                className="rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground"
+                                className="rounded-xl border border-line py-2.5 text-sm text-fg-muted hover:text-fg"
                             >Reset corners</button>
                             {/* Random N */}
                             <div className="flex items-center gap-2">
@@ -221,12 +221,12 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                                         const v = Number(e.target.value);
                                         if (Number.isFinite(v) && v >= 3) setRandomN(v);
                                     }}
-                                    className="w-16 text-center text-sm font-mono rounded border border-border bg-background py-1 focus:outline-none focus:ring-1 focus:ring-primary"
+                                    className="w-16 text-center text-sm font-mono rounded border border-line bg-ground py-1 focus:outline-none focus:ring-1 focus:ring-signal"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => randomPoints(randomN)}
-                                    className="rounded-xl border border-border px-3 py-2 text-sm hover:bg-muted/40 text-muted-foreground hover:text-foreground"
+                                    className="rounded-xl border border-line px-3 py-2 text-sm hover:bg-raised/40 text-fg-muted hover:text-fg"
                                 >Go</button>
                             </div>
                             <button
@@ -238,7 +238,7 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                         <button
                             type="button"
                             onClick={() => setTool("add")}
-                            className="mt-4 w-full rounded-xl border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground"
+                            className="mt-4 w-full rounded-xl border border-line py-2.5 text-sm text-fg-muted hover:text-fg"
                         >
                             Close
                         </button>

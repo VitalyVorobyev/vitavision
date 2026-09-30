@@ -24,11 +24,11 @@ export default function CollapsibleSection({ heading, count, open, onToggle, cla
             className={className}
         >
             <summary className="flex items-center justify-between gap-2 cursor-pointer list-none mb-2.5 [&::-webkit-details-marker]:hidden">
-                <h3 className="flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.12em] uppercase text-muted-foreground">
+                <h3 className="flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.12em] uppercase text-fg-muted">
                     <span>{heading}</span>
-                    <span className="text-muted-foreground/70 font-mono">{count}</span>
+                    <span className="text-fg-muted/70 font-mono">{count}</span>
                 </h3>
-                <span aria-hidden="true" className="text-muted-foreground/50 text-[10px] transition-transform group-open:rotate-90">
+                <span aria-hidden="true" className="text-fg-muted/50 text-[10px] transition-transform group-open:rotate-90">
                     ▸
                 </span>
             </summary>

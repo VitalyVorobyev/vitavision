@@ -14,7 +14,7 @@ export default function PostCard({ post }: PostCardProps) {
     return (
         <Link
             to={`/blog/${slug}`}
-            className="block p-6 rounded-xl border border-border hover:border-foreground/20 transition-colors group"
+            className="block p-6 rounded-xl border border-line hover:border-fg/20 transition-colors group"
         >
             <h2 className="text-2xl font-semibold group-hover:underline flex items-center gap-2">
                 {frontmatter.draft && (
@@ -24,10 +24,10 @@ export default function PostCard({ post }: PostCardProps) {
                 )}
                 {frontmatter.title}
                 {frontmatter.access === "members" && (
-                    <Lock className="inline-block h-4 w-4 text-muted-foreground shrink-0" aria-label="Members only" />
+                    <Lock className="inline-block h-4 w-4 text-fg-muted shrink-0" aria-label="Members only" />
                 )}
             </h2>
-            <p className="text-muted-foreground mt-2">{frontmatter.summary}</p>
+            <p className="text-fg-muted mt-2">{frontmatter.summary}</p>
             <div className="flex items-center justify-between mt-4">
                 <div className="flex flex-wrap items-center gap-1.5">
                     {frontmatter.difficulty && <DifficultyBadge level={frontmatter.difficulty} />}
@@ -35,7 +35,7 @@ export default function PostCard({ post }: PostCardProps) {
                         <TagBadge key={tag} tag={tag} />
                     ))}
                 </div>
-                <time className="text-sm font-mono text-muted-foreground">
+                <time className="text-sm font-mono text-fg-muted">
                     {frontmatter.date}
                     {frontmatter.readingTimeMinutes ? ` · ${frontmatter.readingTimeMinutes} min` : ""}
                 </time>

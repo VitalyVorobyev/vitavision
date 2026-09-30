@@ -45,7 +45,7 @@ export function render(
         <ScholarlyProvider initial={scholarly}>
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
                 <MemoryRouter initialEntries={[url]}>
-                    <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
+                    <div className="min-h-screen flex flex-col font-sans bg-ground text-fg">
                         <Navbar />
                         <main className="flex-1">
                             <Routes>
@@ -63,7 +63,7 @@ export function render(
                                 <Route path="/tools/target-generator" element={
                                     <div className="max-w-3xl mx-auto px-6 py-16 text-center">
                                         <h1 className="text-3xl font-bold tracking-tight mb-4">Calibration Target Generator</h1>
-                                        <p className="text-muted-foreground">
+                                        <p className="text-fg-muted">
                                             Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.
                                         </p>
                                     </div>

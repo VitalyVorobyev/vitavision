@@ -29,7 +29,7 @@ interface PeopleDirectoryProps {
 function ColumnHeader() {
     return (
         <div
-            className={`${PEOPLE_ROW_COLUMNS} font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground`}
+            className={`${PEOPLE_ROW_COLUMNS} font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted`}
         >
             <span>Name</span>
             <span className="hidden sm:block">Domains</span>
@@ -84,8 +84,8 @@ export default function PeopleDirectory({
                         onClick={() => onSelectDomain(null)}
                         className={`inline-flex h-8 items-center gap-1.5 rounded-[5px] px-2.5 text-[13px] font-medium transition-colors ${
                             selectedDomain === null
-                                ? "bg-[hsl(var(--foreground)/0.85)] text-background"
-                                : "border border-border bg-surface text-foreground hover:bg-[hsl(var(--surface-hi)/0.5)]"
+                                ? "bg-fg/85 text-ground"
+                                : "border border-line bg-surface text-fg hover:bg-line/50"
                         }`}
                     >
                         All domains
@@ -98,12 +98,12 @@ export default function PeopleDirectory({
                             onClick={() => onSelectDomain(chip.domain)}
                             className={`inline-flex h-8 items-center gap-1.5 rounded-[5px] px-2.5 text-[13px] font-medium transition-colors ${
                                 selectedDomain === chip.domain
-                                    ? "bg-[hsl(var(--foreground)/0.85)] text-background"
-                                    : "border border-border bg-surface text-foreground hover:bg-[hsl(var(--surface-hi)/0.5)]"
+                                    ? "bg-fg/85 text-ground"
+                                    : "border border-line bg-surface text-fg hover:bg-line/50"
                             }`}
                         >
                             {chip.label}
-                            <span className="font-mono tabular-nums text-muted-foreground">{chip.count}</span>
+                            <span className="font-mono tabular-nums text-fg-muted">{chip.count}</span>
                         </button>
                     ))}
                 </div>
@@ -112,9 +112,9 @@ export default function PeopleDirectory({
             <ColumnHeader />
 
             {searching && (
-                <div className="rounded-lg border border-border bg-surface">
+                <div className="rounded-panel border border-line bg-surface">
                     {searchResults.length === 0 ? (
-                        <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">
+                        <p className="px-4 py-8 text-center text-[13px] text-fg-muted">
                             No person or paper matches “{query}”.
                         </p>
                     ) : (
@@ -125,13 +125,13 @@ export default function PeopleDirectory({
 
             {!searching && selectedDomain && (
                 <section className="flex flex-col gap-2">
-                    <h2 className="text-[17px] font-bold text-foreground">
+                    <h2 className="text-[17px] font-bold text-fg">
                         {chips.find((c) => c.domain === selectedDomain)?.label ?? selectedDomain}{" "}
-                        <span className="font-mono text-[13px] font-normal text-muted-foreground">
+                        <span className="font-mono text-[13px] font-normal text-fg-muted">
                             {domainFiltered.length}
                         </span>
                     </h2>
-                    <div className="rounded-lg border border-border bg-surface">
+                    <div className="rounded-panel border border-line bg-surface">
                         {domainFiltered.map((row, i) => (
                             <PeopleRow key={row.id} row={row} bordered={i > 0} />
                         ))}
@@ -144,9 +144,9 @@ export default function PeopleDirectory({
                 groups.map((group) => (
                     <section key={group.domain} className="flex flex-col gap-2">
                         <div className="flex items-baseline justify-between">
-                            <h2 className="text-[17px] font-bold text-foreground">
+                            <h2 className="text-[17px] font-bold text-fg">
                                 {group.label}{" "}
-                                <span className="font-mono text-[13px] font-normal text-muted-foreground">
+                                <span className="font-mono text-[13px] font-normal text-fg-muted">
                                     {group.rows.length}
                                 </span>
                             </h2>
@@ -154,14 +154,14 @@ export default function PeopleDirectory({
                                 <button
                                     type="button"
                                     onClick={() => onSelectDomain(group.domain)}
-                                    className="flex items-center gap-1.5 text-[13px] font-medium text-foreground hover:underline"
+                                    className="flex items-center gap-1.5 text-[13px] font-medium text-fg hover:underline"
                                 >
                                     All {group.rows.length} in {group.label.toLowerCase()}
                                     <ArrowRight size={14} />
                                 </button>
                             )}
                         </div>
-                        <div className="rounded-lg border border-border bg-surface">
+                        <div className="rounded-panel border border-line bg-surface">
                             {group.rows.slice(0, GROUP_PREVIEW_SIZE).map((row, i) => (
                                 <PeopleRow key={row.id} row={row} bordered={i > 0} />
                             ))}

@@ -74,12 +74,12 @@ export default function AlgorithmPost() {
                 <h1 className="text-4xl font-bold tracking-tight">
                     Algorithm not found
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-fg-muted">
                     The algorithm page you're looking for doesn't exist.
                 </p>
                 <Link
                     to="/atlas"
-                    className="inline-block text-primary underline hover:text-primary/80"
+                    className="inline-block text-signal underline hover:text-signal/80"
                 >
                     Back to atlas
                 </Link>
@@ -129,12 +129,12 @@ export default function AlgorithmPost() {
 
                 {html === null ? (
                     loadFailed ? (
-                        <div className="py-10 text-sm text-muted-foreground">
+                        <div className="py-10 text-sm text-fg-muted">
                             Algorithm content failed to load.
                         </div>
                     ) : (
                         <div className="flex items-center justify-center py-16">
-                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
                         </div>
                     )
                 ) : (
@@ -168,7 +168,7 @@ export default function AlgorithmPost() {
                         <div className="mt-10">
                             <Link
                                 to={`/editor?${qs}`}
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-control bg-signal text-signal-fg hover:bg-signal/90 transition-colors text-sm font-medium"
                             >
                                 Try in the editor →
                             </Link>
@@ -186,14 +186,14 @@ export default function AlgorithmPost() {
                 </div>
 
                 {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (
-                    <footer className="mt-12 pt-6 border-t border-border space-y-3">
+                    <footer className="mt-12 pt-6 border-t border-line space-y-3">
                         {frontmatter.demoLinks?.map((url) => (
                             <a
                                 key={url}
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block text-primary underline hover:text-primary/80 text-sm"
+                                className="block text-signal underline hover:text-signal/80 text-sm"
                             >
                                 Demo: {url}
                             </a>
@@ -204,7 +204,7 @@ export default function AlgorithmPost() {
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block text-primary underline hover:text-primary/80 text-sm"
+                                className="block text-signal underline hover:text-signal/80 text-sm"
                             >
                                 Repository: {url}
                             </a>

@@ -26,7 +26,7 @@ function ConstellationThumb({ entry }: { entry: NarrativeIndexEntry }) {
             height={H}
             viewBox={`0 0 ${W} ${H}`}
             aria-hidden="true"
-            className="shrink-0 rounded border border-border bg-muted/40"
+            className="shrink-0 rounded border border-line bg-raised/40"
         >
             {ids.map((id, i) => {
                 const [nx, ny] = entry.preview[id];
@@ -51,14 +51,14 @@ export default function NarrativeCard({ entry }: NarrativeCardProps) {
     return (
         <Link
             to={`/atlas/narratives/${entry.slug}`}
-            className="group flex flex-col gap-2.5 rounded-[10px] border border-border bg-card p-4 no-underline transition-colors hover:border-border-strong"
+            className="group flex flex-col gap-2.5 rounded-[10px] border border-line bg-card p-4 no-underline transition-colors hover:border-line-strong"
         >
             <div className="flex items-start gap-3">
                 <div className="min-w-0 flex-1">
-                    <h3 className="m-0 text-[15px] font-semibold leading-snug -tracking-[0.2px] text-foreground">
+                    <h3 className="m-0 text-[15px] font-semibold leading-snug -tracking-[0.2px] text-fg">
                         {entry.title}
                     </h3>
-                    <p className="m-0 mt-1 text-[12.5px] leading-[1.5] text-muted-foreground line-clamp-3">
+                    <p className="m-0 mt-1 text-[12.5px] leading-[1.5] text-fg-muted line-clamp-3">
                         {entry.tagline ?? entry.summary}
                     </p>
                 </div>
@@ -70,7 +70,7 @@ export default function NarrativeCard({ entry }: NarrativeCardProps) {
                     {entry.areas.map((a) => (
                         <span
                             key={a.id}
-                            className="inline-flex items-center gap-1.5 rounded-full border border-border px-2 py-[2px] text-[10.5px] text-muted-foreground"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-line px-2 py-[2px] text-[10.5px] text-fg-muted"
                         >
                             <span
                                 aria-hidden="true"
@@ -83,7 +83,7 @@ export default function NarrativeCard({ entry }: NarrativeCardProps) {
                 </div>
             )}
 
-            <div className="font-mono text-[10.5px] tabular-nums text-muted-foreground">
+            <div className="font-mono text-[10.5px] tabular-nums text-fg-muted">
                 {entry.stats.nodes} stop{entry.stats.nodes === 1 ? "" : "s"} · {entry.stats.steps} chapter
                 {entry.stats.steps === 1 ? "" : "s"}
             </div>

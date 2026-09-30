@@ -17,12 +17,12 @@ export function SpecBlog({ className }: SpecProps) {
         >
             <rect
                 x="0" y="2" width="32" height="3" rx="1"
-                className="fill-foreground/85 transition-colors duration-300 group-hover:fill-brand group-focus-visible:fill-brand"
+                className="fill-fg/85 transition-colors duration-300 group-hover:fill-signal group-focus-visible:fill-signal"
             />
-            <rect x="0" y="9"  width="44" height="1.5" rx="0.75" className="fill-muted-foreground/80" />
-            <rect x="0" y="14" width="40" height="1.5" rx="0.75" className="fill-muted-foreground/60" />
-            <rect x="0" y="19" width="36" height="1.5" rx="0.75" className="fill-muted-foreground/45" />
-            <rect x="0" y="24" width="22" height="1.5" rx="0.75" className="fill-muted-foreground/30" />
+            <rect x="0" y="9"  width="44" height="1.5" rx="0.75" className="fill-fg-muted/80" />
+            <rect x="0" y="14" width="40" height="1.5" rx="0.75" className="fill-fg-muted/60" />
+            <rect x="0" y="19" width="36" height="1.5" rx="0.75" className="fill-fg-muted/45" />
+            <rect x="0" y="24" width="22" height="1.5" rx="0.75" className="fill-fg-muted/30" />
         </svg>
     );
 }
@@ -45,7 +45,7 @@ export function SpecAlgorithms({ className }: SpecProps) {
                     x1={nodes[a][0]} y1={nodes[a][1]}
                     x2={nodes[b][0]} y2={nodes[b][1]}
                     strokeWidth={1}
-                    className="stroke-muted-foreground/55 transition-colors duration-300 group-hover:stroke-brand/70 group-focus-visible:stroke-brand/70"
+                    className="stroke-fg-muted/55 transition-colors duration-300 group-hover:stroke-signal/70 group-focus-visible:stroke-signal/70"
                 />
             ))}
             {nodes.map(([x, y], i) => {
@@ -57,8 +57,8 @@ export function SpecAlgorithms({ className }: SpecProps) {
                         strokeWidth={1.2}
                         className={
                             isEntry
-                                ? "fill-foreground stroke-foreground transition-colors duration-300 group-hover:fill-brand group-hover:stroke-brand group-focus-visible:fill-brand group-focus-visible:stroke-brand"
-                                : "fill-background stroke-muted-foreground transition-colors duration-300 group-hover:stroke-brand group-focus-visible:stroke-brand"
+                                ? "fill-fg stroke-fg transition-colors duration-300 group-hover:fill-signal group-hover:stroke-signal group-focus-visible:fill-signal group-focus-visible:stroke-signal"
+                                : "fill-ground stroke-fg-muted transition-colors duration-300 group-hover:stroke-signal group-focus-visible:stroke-signal"
                         }
                     />
                 );
@@ -84,20 +84,20 @@ export function SpecEditor({ className }: SpecProps) {
             <rect
                 x="0.5" y="0.5" width="43" height="29" rx="2"
                 fill="none" strokeWidth={1}
-                className="stroke-muted-foreground/60 transition-colors duration-300 group-hover:stroke-brand group-focus-visible:stroke-brand"
+                className="stroke-fg-muted/60 transition-colors duration-300 group-hover:stroke-signal group-focus-visible:stroke-signal"
             />
-            <line x1="2" y1="20" x2="42" y2="18" strokeWidth="0.8" className="stroke-muted-foreground/30" />
+            <line x1="2" y1="20" x2="42" y2="18" strokeWidth="0.8" className="stroke-fg-muted/30" />
             {pts.map(([x, y], i) => (
                 <circle
                     key={i}
                     cx={x} cy={y} r={1}
-                    className="fill-foreground/80 transition-colors duration-300 group-hover:fill-brand group-focus-visible:fill-brand"
+                    className="fill-fg/80 transition-colors duration-300 group-hover:fill-signal group-focus-visible:fill-signal"
                 />
             ))}
             <rect
                 x="16" y="6" width="18" height="10"
                 fill="none" strokeWidth="0.8" strokeDasharray="2 1.5"
-                className="stroke-foreground/70 transition-colors duration-300 group-hover:stroke-brand group-focus-visible:stroke-brand"
+                className="stroke-fg/70 transition-colors duration-300 group-hover:stroke-signal group-focus-visible:stroke-signal"
             />
         </svg>
     );
@@ -131,8 +131,8 @@ export function SpecTargets({ className }: SpecProps) {
                                 x={c * cw} y={r * ch} width={cw} height={ch}
                                 className={
                                     dark
-                                        ? "fill-foreground/85 transition-colors duration-300 group-hover:fill-brand group-focus-visible:fill-brand"
-                                        : "fill-transparent transition-colors duration-300 group-hover:fill-brand group-focus-visible:fill-brand"
+                                        ? "fill-fg/85 transition-colors duration-300 group-hover:fill-signal group-focus-visible:fill-signal"
+                                        : "fill-transparent transition-colors duration-300 group-hover:fill-signal group-focus-visible:fill-signal"
                                 }
                             />
                         );
@@ -141,14 +141,14 @@ export function SpecTargets({ className }: SpecProps) {
                         <rect
                             key={i}
                             x={c * cw} y={r * ch} width={cw} height={ch}
-                            className="fill-foreground/85"
+                            className="fill-fg/85"
                         />
                     ) : null;
                 })}
                 <rect
                     x="0" y="0" width={cols * cw} height={rows * ch}
                     fill="none" strokeWidth="0.8"
-                    className="stroke-muted-foreground/55 transition-colors duration-300 group-hover:stroke-brand group-focus-visible:stroke-brand"
+                    className="stroke-fg-muted/55 transition-colors duration-300 group-hover:stroke-signal group-focus-visible:stroke-signal"
                 />
             </g>
         </svg>

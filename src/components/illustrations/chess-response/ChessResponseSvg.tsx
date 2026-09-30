@@ -25,11 +25,11 @@ export interface ChessResponseSvgFonts {
 }
 
 const DEFAULT_PALETTE: ChessResponseSvgPalette = {
-    surface: "hsl(var(--surface))",
-    background: "hsl(var(--background))",
-    border: "hsl(var(--border))",
-    foreground: "hsl(var(--foreground))",
-    muted: "hsl(var(--muted-foreground))",
+    surface: "var(--surface)",
+    background: "var(--ground)",
+    border: "var(--line)",
+    foreground: "var(--fg)",
+    muted: "var(--fg-muted)",
     pixelStroke: "rgb(148 163 184 / 0.22)",
 };
 
@@ -76,7 +76,7 @@ export default function ChessResponseSvg({
     showMrRegions,
     palette = DEFAULT_PALETTE,
     fonts = DEFAULT_FONTS,
-    svgClassName = "h-auto w-full text-foreground",
+    svgClassName = "h-auto w-full text-fg",
     width,
     height,
 }: ChessResponseSvgProps) {

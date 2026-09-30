@@ -23,7 +23,7 @@ export default function SourceStrip({ primary }: SourceStripProps) {
     // overlay (`absolute inset-0`) rather than the strip's outer element, and
     // the author links + external CTA sit above it on `z-10`.
     return (
-        <div className="relative flex items-stretch border border-blue-500/25 rounded-lg overflow-hidden bg-gradient-to-r from-blue-500/[0.06] to-blue-500/[0.02] no-underline hover:border-blue-500/40 transition-colors">
+        <div className="relative flex items-stretch border border-blue-500/25 rounded-panel overflow-hidden bg-gradient-to-r from-blue-500/[0.06] to-blue-500/[0.02] no-underline hover:border-blue-500/40 transition-colors">
             <Link
                 to={`/papers/${paper.id}`}
                 aria-label={`Open paper page: ${paper.title}`}
@@ -35,11 +35,11 @@ export default function SourceStrip({ primary }: SourceStripProps) {
                 </span>
             </div>
             <div className="flex-1 min-w-0 px-3.5 py-2.5">
-                <div className="text-[13.5px] text-foreground font-medium leading-[1.35] truncate">
+                <div className="text-[13.5px] text-fg font-medium leading-[1.35] truncate">
                     {paper.title}
                 </div>
                 {(hasAuthors || venueYear) && (
-                    <div className="text-[11.5px] text-muted-foreground font-mono mt-0.5 truncate">
+                    <div className="text-[11.5px] text-fg-muted font-mono mt-0.5 truncate">
                         {hasAuthors && (
                             <AuthorByline
                                 paperId={paper.id}

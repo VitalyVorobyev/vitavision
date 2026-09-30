@@ -39,9 +39,9 @@ export default function LineageStrip({ paperYear, cites, citedBy }: LineageStrip
     const bandBottom = layout.height - 22;
 
     return (
-        <div ref={boxRef} className="rounded-lg border border-border bg-surface">
+        <div ref={boxRef} className="rounded-panel border border-line bg-surface">
             <div className="flex items-center justify-between px-4 pb-1 pt-3">
-                <span className="text-[10px] font-mono font-semibold uppercase tracking-[0.14em] text-[hsl(var(--lineage-out))]">
+                <span className="text-[10px] font-mono font-semibold uppercase tracking-[0.14em] text-lineage-out">
                     Built upon by · {citedBy.length}
                 </span>
             </div>
@@ -58,7 +58,7 @@ export default function LineageStrip({ paperYear, cites, citedBy }: LineageStrip
                     y={bandTop}
                     width={Math.max(0, layout.axisX2 - layout.paperX)}
                     height={Math.max(0, layout.axisY - bandTop)}
-                    fill="hsl(var(--lineage-out) / 0.08)"
+                    fill="color-mix(in oklab, var(--lineage-out) 8%, transparent)"
                     rx={4}
                 />
                 <rect
@@ -66,7 +66,7 @@ export default function LineageStrip({ paperYear, cites, citedBy }: LineageStrip
                     y={layout.axisY + 4}
                     width={Math.max(0, layout.paperX - (layout.axisX1 - 6))}
                     height={Math.max(0, bandBottom - (layout.axisY + 4))}
-                    fill="hsl(var(--lineage-in) / 0.08)"
+                    fill="color-mix(in oklab, var(--lineage-in) 8%, transparent)"
                     rx={4}
                 />
 
@@ -76,7 +76,7 @@ export default function LineageStrip({ paperYear, cites, citedBy }: LineageStrip
                     x2={layout.axisX2}
                     y1={layout.axisY}
                     y2={layout.axisY}
-                    stroke="hsl(var(--border-strong))"
+                    stroke="var(--line-strong)"
                     strokeWidth={1.5}
                 />
                 {layout.ticks.map((tick) => (
@@ -86,7 +86,7 @@ export default function LineageStrip({ paperYear, cites, citedBy }: LineageStrip
                             x2={tick.x}
                             y1={layout.axisY - 3}
                             y2={layout.axisY + 3}
-                            stroke="hsl(var(--border-strong))"
+                            stroke="var(--line-strong)"
                         />
                         <text
                             x={tick.x}
@@ -95,7 +95,7 @@ export default function LineageStrip({ paperYear, cites, citedBy }: LineageStrip
                             fontFamily="var(--font-mono, ui-monospace)"
                             fontSize={10}
                             fontWeight={tick.isPaperYear ? 600 : 400}
-                            fill={tick.isPaperYear ? "hsl(var(--foreground))" : "hsl(var(--muted-foreground))"}
+                            fill={tick.isPaperYear ? "var(--fg)" : "var(--fg-muted)"}
                         >
                             {tickLabel(tick.year)}
                         </text>
@@ -104,21 +104,21 @@ export default function LineageStrip({ paperYear, cites, citedBy }: LineageStrip
 
                 {/* Built-upon-by dots (filled, above the axis) */}
                 {layout.citedBy.map((p) => (
-                    <circle key={p.id} cx={p.x} cy={p.y} r={5} fill="hsl(var(--lineage-out))" stroke="hsl(var(--lineage-out))" strokeWidth={1.5}>
+                    <circle key={p.id} cx={p.x} cy={p.y} r={5} fill="var(--lineage-out)" stroke="var(--lineage-out)" strokeWidth={1.5}>
                         <title>{titleById.get(p.id) ?? p.id}</title>
                     </circle>
                 ))}
 
                 {/* Builds-on dots (hollow, below the axis) */}
                 {layout.cites.map((p) => (
-                    <circle key={p.id} cx={p.x} cy={p.y} r={5} fill="hsl(var(--surface))" stroke="hsl(var(--lineage-in))" strokeWidth={1.5}>
+                    <circle key={p.id} cx={p.x} cy={p.y} r={5} fill="var(--surface)" stroke="var(--lineage-in)" strokeWidth={1.5}>
                         <title>{titleById.get(p.id) ?? p.id}</title>
                     </circle>
                 ))}
 
                 {/* The paper itself, on the axis */}
-                <circle cx={layout.paperX} cy={layout.axisY} r={9} fill="hsl(var(--foreground))" />
-                <circle cx={layout.paperX} cy={layout.axisY} r={14} fill="none" stroke="hsl(var(--foreground))" strokeWidth={1.5} />
+                <circle cx={layout.paperX} cy={layout.axisY} r={9} fill="var(--fg)" />
+                <circle cx={layout.paperX} cy={layout.axisY} r={14} fill="none" stroke="var(--fg)" strokeWidth={1.5} />
             </svg>
             <div className="h-3" aria-hidden="true" />
         </div>

@@ -7,6 +7,6 @@ Radix-backed tooltip. Wraps its `children` as the trigger and shows `content` on
 
 ```jsx
 <Tooltip content="Reset the view" side="bottom">
-  <button className="rounded-md border border-border p-2">Reset</button>
+  <button className="rounded-control border border-line p-2">Reset</button>
 </Tooltip>
 ```

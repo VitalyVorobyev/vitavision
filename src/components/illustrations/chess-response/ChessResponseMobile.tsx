@@ -33,8 +33,8 @@ function MobileSliderRow({
     return (
         <div className="mb-2.5 last:mb-0">
             <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-foreground">{label}</span>
-                <span className="text-[11px] font-mono text-muted-foreground">{display}</span>
+                <span className="text-xs text-fg">{label}</span>
+                <span className="text-[11px] font-mono text-fg-muted">{display}</span>
             </div>
             <input
                 type="range"
@@ -45,14 +45,14 @@ function MobileSliderRow({
                 onChange={(e) => onChange(Number(e.target.value))}
                 aria-label={label}
                 className={[
-                    "w-full accent-primary appearance-none bg-[hsl(222_18%_22%)] h-1.5 rounded-full",
+                    "w-full accent-signal appearance-none bg-[hsl(222_18%_22%)] h-1.5 rounded-full",
                     "[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-[18px]",
                     "[&::-webkit-slider-thumb]:h-[18px] [&::-webkit-slider-thumb]:rounded-full",
-                    "[&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2",
-                    "[&::-webkit-slider-thumb]:border-primary",
+                    "[&::-webkit-slider-thumb]:bg-fg [&::-webkit-slider-thumb]:border-2",
+                    "[&::-webkit-slider-thumb]:border-signal",
                     "[&::-moz-range-thumb]:w-[18px] [&::-moz-range-thumb]:h-[18px]",
-                    "[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-foreground",
-                    "[&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary",
+                    "[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-fg",
+                    "[&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-signal",
                 ].join(" ")}
             />
         </div>
@@ -133,8 +133,8 @@ export default function ChessResponseMobile({
                             className={[
                                 "min-h-[44px] rounded-xl border text-sm font-medium capitalize transition-colors",
                                 pattern === p
-                                    ? "border-primary/30 bg-primary/10 text-foreground"
-                                    : "border-border/80 bg-background/80 text-muted-foreground hover:text-foreground",
+                                    ? "border-signal/30 bg-signal/10 text-fg"
+                                    : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
                             ].join(" ")}
                         >
                             {p}
@@ -182,8 +182,8 @@ export default function ChessResponseMobile({
                 className={[
                     "min-h-[44px] w-full flex items-center justify-center gap-2 rounded-xl border text-sm font-medium transition-colors",
                     playing
-                        ? "border-primary/50 bg-primary/20 text-foreground"
-                        : "border-primary/30 bg-primary text-background hover:bg-primary/90",
+                        ? "border-signal/50 bg-signal/20 text-fg"
+                        : "border-signal/30 bg-signal text-ground hover:bg-signal/90",
                 ].join(" ")}
             >
                 {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
@@ -191,10 +191,10 @@ export default function ChessResponseMobile({
             </button>
 
             {/* 6. Overlays — collapsible details */}
-            <details className="rounded-xl border border-border bg-surface overflow-hidden">
+            <details className="rounded-xl border border-line bg-surface overflow-hidden">
                 <summary className="flex items-center justify-between px-3 py-2.5 cursor-pointer list-none select-none">
                     <span className="text-sm font-medium">Overlays</span>
-                    <span className="text-[11px] text-muted-foreground">4 toggles ▾</span>
+                    <span className="text-[11px] text-fg-muted">4 toggles ▾</span>
                 </summary>
                 <div className="grid grid-cols-2 gap-1.5 px-3 pb-3">
                     {(
@@ -213,8 +213,8 @@ export default function ChessResponseMobile({
                             className={[
                                 "min-h-[40px] rounded-xl border text-sm font-medium transition-colors",
                                 pressed
-                                    ? "border-primary/30 bg-primary/10 text-foreground"
-                                    : "border-border/80 bg-background/80 text-muted-foreground hover:text-foreground",
+                                    ? "border-signal/30 bg-signal/10 text-fg"
+                                    : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
                             ].join(" ")}
                         >
                             {label}

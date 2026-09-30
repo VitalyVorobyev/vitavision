@@ -48,8 +48,8 @@ export default function RelatedPosts({ slugs, type }: RelatedPostsProps) {
         "Related Algorithms";
 
     return (
-        <section className="mt-12 pt-6 border-t border-border">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+        <section className="mt-12 pt-6 border-t border-line">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-fg-muted mb-3">
                 {heading}
             </h3>
             <ul className="space-y-1.5">
@@ -57,7 +57,7 @@ export default function RelatedPosts({ slugs, type }: RelatedPostsProps) {
                     <li key={item.slug}>
                         <Link
                             to={item.path}
-                            className="text-primary underline hover:text-primary/80 text-sm"
+                            className="text-signal underline hover:text-signal/80 text-sm"
                         >
                             {item.title}
                         </Link>

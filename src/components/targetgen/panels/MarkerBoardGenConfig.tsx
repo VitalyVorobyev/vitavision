@@ -76,7 +76,7 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
 
             <Section title="Circle Markers">
                 <div className="col-span-full space-y-2">
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-[10px] text-fg-muted">
                         Click a square on the preview to move the nearest circle there. Polarity is automatic (contrasts with square color).
                     </p>
                     {config.circles.map((circ, idx) => (
@@ -99,7 +99,7 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
                                 max={totalCols - 1}
                                 step={1}
                             />
-                            <span className="mt-5 text-[10px] text-muted-foreground w-10 shrink-0">
+                            <span className="mt-5 text-[10px] text-fg-muted w-10 shrink-0">
                                 {polarityLabel(circ)}
                             </span>
                         </div>
@@ -107,7 +107,7 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
                     <div className="flex gap-2">
                         <button
                             type="button"
-                            className="rounded-md border border-border px-2 py-1 text-xs font-medium hover:bg-muted transition-colors text-muted-foreground"
+                            className="rounded-control border border-line px-2 py-1 text-xs font-medium hover:bg-raised transition-colors text-fg-muted"
                             onClick={resetCircles}
                         >
                             Reset to default

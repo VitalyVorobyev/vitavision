@@ -86,14 +86,14 @@ export default function DemoPage() {
                 </Helmet>
                 <Link
                     to="/demos"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-fg-muted hover:text-fg transition-colors"
                 >
                     &larr; Demos
                 </Link>
                 <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
                     {frontmatter.title}
                 </h1>
-                <p className="text-muted-foreground">{frontmatter.summary}</p>
+                <p className="text-fg-muted">{frontmatter.summary}</p>
                 <div className="flex flex-wrap gap-1.5">
                     {frontmatter.tags.map((tag) => (
                         <TagBadge key={tag} tag={tag} />
@@ -106,7 +106,7 @@ export default function DemoPage() {
                 <Suspense
                     fallback={
                         <div className="flex items-center justify-center py-16">
-                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
                         </div>
                     }
                 >
@@ -118,12 +118,12 @@ export default function DemoPage() {
             <div className="max-w-[760px] mx-auto px-4 sm:px-8 pb-16">
                 {html === null ? (
                     loadFailed ? (
-                        <div className="py-10 text-sm text-muted-foreground">
+                        <div className="py-10 text-sm text-fg-muted">
                             Demo content failed to load.
                         </div>
                     ) : (
                         <div className="flex items-center justify-center py-16">
-                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
                         </div>
                     )
                 ) : html.trim() ? (
@@ -140,14 +140,14 @@ export default function DemoPage() {
                 <RelatedPosts slugs={frontmatter.relatedPosts} type="blog" />
 
                 {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (
-                    <footer className="mt-12 pt-6 border-t border-border space-y-3">
+                    <footer className="mt-12 pt-6 border-t border-line space-y-3">
                         {frontmatter.demoLinks?.map((url) => (
                             <a
                                 key={url}
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block text-primary underline hover:text-primary/80 text-sm"
+                                className="block text-signal underline hover:text-signal/80 text-sm"
                             >
                                 Demo: {url}
                             </a>
@@ -158,7 +158,7 @@ export default function DemoPage() {
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block text-primary underline hover:text-primary/80 text-sm"
+                                className="block text-signal underline hover:text-signal/80 text-sm"
                             >
                                 Repository: {url}
                             </a>

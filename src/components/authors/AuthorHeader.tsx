@@ -10,7 +10,7 @@ interface AuthorHeaderProps {
 }
 
 const btnClass =
-    "inline-flex h-9 items-center gap-1.5 rounded-md border border-border bg-surface px-3.5 text-[13px] font-medium text-foreground no-underline transition-colors hover:border-border-strong hover:bg-muted";
+    "inline-flex h-9 items-center gap-1.5 rounded-control border border-line bg-surface px-3.5 text-[13px] font-medium text-fg no-underline transition-colors hover:border-line-strong hover:bg-raised";
 
 /** Breadcrumb, name, ORCID/OpenAlex links, and the one/two-sentence Atlas
  *  footprint summary — the top of the author page, in the same visual
@@ -18,18 +18,18 @@ const btnClass =
 export default function AuthorHeader({ id, name, orcid, summary }: AuthorHeaderProps) {
     return (
         <header className="flex flex-col gap-4">
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono text-[12px] text-muted-foreground">
-                <Link to="/atlas" className="transition-colors hover:text-foreground">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono text-[12px] text-fg-muted">
+                <Link to="/atlas" className="transition-colors hover:text-fg">
                     Atlas
                 </Link>
                 <span aria-hidden="true">/</span>
-                <Link to="/atlas?view=people" className="transition-colors hover:text-foreground">
+                <Link to="/atlas?view=people" className="transition-colors hover:text-fg">
                     People
                 </Link>
             </nav>
 
             <div className="flex flex-wrap items-center gap-3">
-                <h1 className="m-0 text-[clamp(1.75rem,4.5vw,2.5rem)] font-bold tracking-[-0.4px] text-foreground">
+                <h1 className="m-0 text-[clamp(1.75rem,4.5vw,2.5rem)] font-bold tracking-[-0.4px] text-fg">
                     {name}
                 </h1>
                 <div className="flex flex-wrap items-center gap-2">
@@ -56,13 +56,13 @@ export default function AuthorHeader({ id, name, orcid, summary }: AuthorHeaderP
                 </div>
             </div>
 
-            <p className="m-0 max-w-[760px] text-[15.5px] leading-[1.55] text-foreground/85 sm:text-[16px]">
+            <p className="m-0 max-w-[760px] text-[15.5px] leading-[1.55] text-fg/85 sm:text-[16px]">
                 {summary.first}
                 {summary.second && (
                     <>
                         {" "}
                         {summary.second.before}
-                        <strong className="font-semibold text-foreground">{summary.second.bold}</strong>
+                        <strong className="font-semibold text-fg">{summary.second.bold}</strong>
                         {summary.second.after}
                     </>
                 )}

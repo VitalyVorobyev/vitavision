@@ -44,7 +44,7 @@ export default function PuzzleboardGenConfig({ config, dispatch }: Props) {
                     tooltip="Side length of each square cell in millimeters"
                 />
             </Section>
-            <p className="text-xs text-muted-foreground px-1">
+            <p className="text-xs text-fg-muted px-1">
                 Margin (5 mm) and dot diameter (1/3 edge) are fixed by the upstream pattern.
             </p>
         </>

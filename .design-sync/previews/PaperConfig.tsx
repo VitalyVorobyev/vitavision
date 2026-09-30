@@ -20,10 +20,10 @@ function useConfiguredPage(page: TargetGeneratorState["page"]) {
 }
 
 // Real desktop usage nests this inside TargetConfigPanel's right rail
-// (`w-80 border-l border-border bg-muted/20`, `p-3` inner gap).
+// (`w-80 border-l border-line bg-raised/20`, `p-3` inner gap).
 function Rail({ children }: { children: React.ReactNode }) {
     return (
-        <div style={{ width: 320 }} className="border-l border-border bg-muted/20 p-3">
+        <div style={{ width: 320 }} className="border-l border-line bg-raised/20 p-3">
             {children}
         </div>
     );

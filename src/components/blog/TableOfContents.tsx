@@ -71,7 +71,7 @@ export default function TableOfContents({ articleRef, deps }: TableOfContentsPro
 
     return (
         <nav aria-label="Table of contents">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground font-sans font-medium mb-3">
+            <p className="text-xs uppercase tracking-wider text-fg-muted font-sans font-medium mb-3">
                 Contents
             </p>
             <ol className="space-y-0.5">
@@ -86,8 +86,8 @@ export default function TableOfContents({ articleRef, deps }: TableOfContentsPro
                                 ? "text-sm pl-6"
                                 : "text-xs pl-9";
                     const stateClasses = isActive
-                        ? "text-[hsl(var(--article-heading))] font-medium border-[hsl(var(--accent))]"
-                        : "text-muted-foreground border-transparent hover:text-foreground";
+                        ? "text-article-heading font-medium border-signal"
+                        : "text-fg-muted border-transparent hover:text-fg";
 
                     return (
                         <li key={id}>

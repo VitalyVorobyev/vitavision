@@ -6,7 +6,7 @@ interface Props {
     className?: string;
 }
 
-const bg = "bg-[linear-gradient(135deg,hsl(var(--surface)),hsl(var(--muted)))]";
+const bg = "bg-[linear-gradient(135deg,var(--surface),var(--raised))]";
 
 function ChessResponseCover() {
     const cols = 4;
@@ -48,16 +48,16 @@ function ChessResponseCover() {
                     y={c.y}
                     width={cell}
                     height={cell}
-                    className={c.filled ? "text-foreground/55" : "text-foreground/8"}
+                    className={c.filled ? "text-fg/55" : "text-fg/8"}
                     fill="currentColor"
                 />
             ))}
             {saddles.map((s, i) => (
                 <g key={i}>
-                    <circle cx={s.x} cy={s.y} r="20" className="text-brand" fill="currentColor" fillOpacity="0.12" />
-                    <circle cx={s.x} cy={s.y} r="12" className="text-brand" fill="currentColor" fillOpacity="0.28" />
-                    <circle cx={s.x} cy={s.y} r="6" className="text-brand" fill="currentColor" fillOpacity="0.85" />
-                    <circle cx={s.x} cy={s.y} r="2" className="text-background" fill="currentColor" />
+                    <circle cx={s.x} cy={s.y} r="20" className="text-signal" fill="currentColor" fillOpacity="0.12" />
+                    <circle cx={s.x} cy={s.y} r="12" className="text-signal" fill="currentColor" fillOpacity="0.28" />
+                    <circle cx={s.x} cy={s.y} r="6" className="text-signal" fill="currentColor" fillOpacity="0.85" />
+                    <circle cx={s.x} cy={s.y} r="2" className="text-ground" fill="currentColor" />
                 </g>
             ))}
         </svg>
@@ -98,7 +98,7 @@ function DelaunayVoronoiCover() {
             {/* Voronoi cell tint (the dual region around the centre) */}
             <path
                 d={centerCell}
-                className="text-brand"
+                className="text-signal"
                 fill="currentColor"
                 fillOpacity="0.10"
                 stroke="currentColor"
@@ -113,7 +113,7 @@ function DelaunayVoronoiCover() {
                     <polygon
                         key={i}
                         points={`${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}`}
-                        className="text-foreground"
+                        className="text-fg"
                         stroke="currentColor"
                         strokeOpacity="0.25"
                         strokeWidth="0.7"
@@ -129,7 +129,7 @@ function DelaunayVoronoiCover() {
                     <line
                         key={i}
                         x1={A.x} y1={A.y} x2={B.x} y2={B.y}
-                        className="text-brand"
+                        className="text-signal"
                         stroke="currentColor"
                         strokeOpacity="0.55"
                         strokeWidth="1.2"
@@ -142,13 +142,13 @@ function DelaunayVoronoiCover() {
                 <g key={i}>
                     <circle
                         cx={p.x} cy={p.y} r="6"
-                        className="text-brand"
+                        className="text-signal"
                         fill="currentColor"
                         fillOpacity={i === 4 ? 0.22 : 0.14}
                     />
                     <circle
                         cx={p.x} cy={p.y} r={i === 4 ? 3.2 : 2.6}
-                        className={i === 4 ? "text-brand" : "text-foreground"}
+                        className={i === 4 ? "text-signal" : "text-fg"}
                         fill="currentColor"
                     />
                 </g>

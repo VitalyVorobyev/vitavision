@@ -7,11 +7,11 @@ interface Props {
     domain?: Domain;
 }
 
-const bg = "bg-[linear-gradient(135deg,hsl(var(--surface)),hsl(var(--muted)))]";
+const bg = "bg-[linear-gradient(135deg,var(--surface),var(--raised))]";
 const svgClass = "w-[78%] h-[78%]";
 
 function CornerMark({ cx, cy, accent = false }: { cx: number; cy: number; accent?: boolean }) {
-    const klass = accent ? "text-brand" : "text-foreground/70";
+    const klass = accent ? "text-signal" : "text-fg/70";
     return (
         <g className={klass} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
             <line x1={cx - 3} y1={cy} x2={cx + 3} y2={cy} />
@@ -23,8 +23,8 @@ function CornerMark({ cx, cy, accent = false }: { cx: number; cy: number; accent
 function HarrisGlyph() {
     return (
         <svg viewBox="0 0 64 64" className={svgClass} fill="none" aria-hidden="true">
-            <rect x="14" y="14" width="36" height="36" className="text-foreground/45" stroke="currentColor" strokeWidth="1.3" rx="1.5" />
-            <g className="text-foreground/20" stroke="currentColor" strokeWidth="0.8" strokeDasharray="2 2">
+            <rect x="14" y="14" width="36" height="36" className="text-fg/45" stroke="currentColor" strokeWidth="1.3" rx="1.5" />
+            <g className="text-fg/20" stroke="currentColor" strokeWidth="0.8" strokeDasharray="2 2">
                 <line x1="14" y1="22" x2="50" y2="22" />
                 <line x1="14" y1="42" x2="50" y2="42" />
             </g>
@@ -47,8 +47,8 @@ function ShiTomasiGlyph() {
     ];
     return (
         <svg viewBox="0 0 64 64" className={svgClass} fill="none" aria-hidden="true">
-            <rect x="10" y="10" width="44" height="44" className="text-foreground/35" stroke="currentColor" strokeWidth="1" strokeDasharray="3 2" rx="2" />
-            <g className="text-foreground/15" stroke="currentColor" strokeWidth="0.7">
+            <rect x="10" y="10" width="44" height="44" className="text-fg/35" stroke="currentColor" strokeWidth="1" strokeDasharray="3 2" rx="2" />
+            <g className="text-fg/15" stroke="currentColor" strokeWidth="0.7">
                 <line x1="14" y1="24" x2="50" y2="18" />
                 <line x1="14" y1="38" x2="50" y2="44" />
                 <line x1="22" y1="14" x2="28" y2="50" />
@@ -73,7 +73,7 @@ function FastGlyph() {
     });
     return (
         <svg viewBox="0 0 64 64" className={svgClass} fill="none" aria-hidden="true">
-            <circle cx={cx} cy={cy} r={r} className="text-foreground/15" stroke="currentColor" strokeWidth="0.6" strokeDasharray="1 2" />
+            <circle cx={cx} cy={cy} r={r} className="text-fg/15" stroke="currentColor" strokeWidth="0.6" strokeDasharray="1 2" />
             {dots.map((d, i) => (
                 <rect
                     key={i}
@@ -81,12 +81,12 @@ function FastGlyph() {
                     y={d.y - 1.8}
                     width={3.6}
                     height={3.6}
-                    className={d.on ? "text-brand" : "text-foreground/40"}
+                    className={d.on ? "text-signal" : "text-fg/40"}
                     fill="currentColor"
                 />
             ))}
-            <rect x={cx - 2.5} y={cy - 2.5} width="5" height="5" className="text-foreground/80" fill="currentColor" />
-            <rect x={cx - 1} y={cy - 1} width="2" height="2" className="text-background" fill="currentColor" />
+            <rect x={cx - 2.5} y={cy - 2.5} width="5" height="5" className="text-fg/80" fill="currentColor" />
+            <rect x={cx - 1} y={cy - 1} width="2" height="2" className="text-ground" fill="currentColor" />
         </svg>
     );
 }
@@ -115,12 +115,12 @@ function ChessCornersGlyph() {
                     y={cell.y}
                     width="12"
                     height="12"
-                    className={cell.filled ? "text-foreground/65" : "text-foreground/8"}
+                    className={cell.filled ? "text-fg/65" : "text-fg/8"}
                     fill="currentColor"
                 />
             ))}
             {saddles.map((s, i) => (
-                <g key={i} className="text-brand" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                <g key={i} className="text-signal" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                     <line x1={s.x - 2.5} y1={s.y - 2.5} x2={s.x + 2.5} y2={s.y + 2.5} />
                     <line x1={s.x + 2.5} y1={s.y - 2.5} x2={s.x - 2.5} y2={s.y + 2.5} />
                 </g>
@@ -132,9 +132,9 @@ function ChessCornersGlyph() {
 function DemoBlocksGlyph() {
     return (
         <svg viewBox="0 0 64 64" className={svgClass} fill="none" aria-hidden="true">
-            <rect x="10" y="8" width="44" height="48" rx="3" className="text-foreground/25" stroke="currentColor" strokeWidth="1.2" />
-            <rect x="16" y="14" width="32" height="14" rx="1" className="text-brand" fill="currentColor" fillOpacity="0.25" stroke="currentColor" strokeWidth="0.8" />
-            <g className="text-foreground/45" stroke="currentColor" strokeWidth="1" strokeLinecap="round">
+            <rect x="10" y="8" width="44" height="48" rx="3" className="text-fg/25" stroke="currentColor" strokeWidth="1.2" />
+            <rect x="16" y="14" width="32" height="14" rx="1" className="text-signal" fill="currentColor" fillOpacity="0.25" stroke="currentColor" strokeWidth="0.8" />
+            <g className="text-fg/45" stroke="currentColor" strokeWidth="1" strokeLinecap="round">
                 <line x1="16" y1="34" x2="48" y2="34" />
                 <line x1="16" y1="40" x2="40" y2="40" />
                 <line x1="16" y1="46" x2="44" y2="46" />

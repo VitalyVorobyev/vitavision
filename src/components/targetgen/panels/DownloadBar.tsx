@@ -136,8 +136,8 @@ export default function DownloadBar({ state, generateDxf }: Props) {
     const dxfDisabled = disabled || !generateDxf;
 
     const btnClass =
-        "flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium transition-colors " +
-        "hover:border-muted-foreground/40 hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed";
+        "flex items-center gap-1.5 rounded-control border border-line px-3 py-1.5 text-xs font-medium transition-colors " +
+        "hover:border-fg-muted/40 hover:bg-raised disabled:opacity-40 disabled:cursor-not-allowed";
 
     return (
         <div className="space-y-2">

@@ -34,7 +34,7 @@ export default function Blog() {
             />
             <div className="space-y-4">
                 <h1 className="text-4xl font-bold tracking-tight">Blog</h1>
-                <p className="text-muted-foreground text-lg">
+                <p className="text-fg-muted text-lg">
                     Thoughts on algorithms, computer vision, and building
                     intelligent systems.
                 </p>
@@ -52,11 +52,11 @@ export default function Blog() {
                         <PostCard key={post.slug} post={post} />
                     ))
                 ) : visiblePosts.length === 0 ? (
-                    <p className="text-muted-foreground">
+                    <p className="text-fg-muted">
                         No posts yet. Stay tuned!
                     </p>
                 ) : (
-                    <p className="text-muted-foreground">
+                    <p className="text-fg-muted">
                         No posts match the selected tag.
                     </p>
                 )}

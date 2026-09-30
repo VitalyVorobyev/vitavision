@@ -1,11 +1,12 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import '@fontsource/inter/400.css'
-import '@fontsource/inter/500.css'
-import '@fontsource/inter/600.css'
-import '@fontsource/inter/700.css'
-import '@fontsource/geist-mono/400.css'
-import '@fontsource/geist-mono/600.css'
+// IBM Plex Sans and Plex Mono, the vitavision type pair (lab-ui ADR-0003). Imported here
+// rather than with `@import` in index.css: under @tailwindcss/postcss, Vite inlines a CSS
+// @import before Tailwind runs and Tailwind's AST round-trip drops the source file, so the
+// font files' relative url()s would resolve against src/ and ship broken. As a module of
+// its own the stylesheet keeps its location and Vite emits the fonts.
+import '@vitavision/ui/fonts.css'
+// Source Serif 4: the body face of the editorial pages only (lab-ui visual-language §7).
 import '@fontsource-variable/source-serif-4/index.css'
 import 'katex/dist/katex.min.css'
 import './styles/article.css'

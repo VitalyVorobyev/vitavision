@@ -79,9 +79,9 @@ function NodeChip({ node, pos, areaIds, dimmed, hidden, selected, onSelect }: No
             aria-pressed={selected}
             data-narrative-node={node.id}
             onClick={() => onSelect(selected ? null : node.id)}
-            className={`absolute left-0 top-0 flex flex-col justify-center gap-0.5 overflow-hidden rounded-lg bg-surface px-2.5 py-1.5 text-left shadow-sm ${
+            className={`absolute left-0 top-0 flex flex-col justify-center gap-0.5 overflow-hidden rounded-control bg-surface px-2.5 py-1.5 text-left shadow-sm ${
                 node.kind === "paper" || node.kind === "question" ? "border border-dashed" : "border"
-            } ${selected ? "border-border-strong ring-2 ring-brand/50" : "border-border hover:border-border-strong"}`}
+            } ${selected ? "border-line-strong ring-2 ring-signal/50" : "border-line hover:border-line-strong"}`}
             style={{
                 width:       NARRATIVE_NODE_W,
                 height:      NARRATIVE_NODE_H,
@@ -93,13 +93,13 @@ function NodeChip({ node, pos, areaIds, dimmed, hidden, selected, onSelect }: No
             }}
         >
             <span aria-hidden="true" className="absolute inset-y-0 left-0 w-[3px]" style={{ background: accent }} />
-            <span className="text-[12px] font-semibold leading-tight text-foreground line-clamp-2 -tracking-[0.1px]">
+            <span className="text-[12px] font-semibold leading-tight text-fg line-clamp-2 -tracking-[0.1px]">
                 {node.kind === "question" && <span aria-hidden="true">? </span>}
                 {node.title}
             </span>
-            <span className="flex items-center gap-1.5 text-[9.5px] text-muted-foreground truncate">
+            <span className="flex items-center gap-1.5 text-[9.5px] text-fg-muted truncate">
                 {node.kind === "paper" && (
-                    <span className="font-mono uppercase tracking-[0.1em] text-muted-foreground/80">paper</span>
+                    <span className="font-mono uppercase tracking-[0.1em] text-fg-muted/80">paper</span>
                 )}
                 <span className="truncate">{meta}</span>
             </span>
@@ -128,17 +128,17 @@ function YearRuler({ minYear, maxYear, width }: { minYear: number; maxYear: numb
         >
             <line
                 x1={left} y1={baseY} x2={right} y2={baseY}
-                stroke="hsl(var(--border))" strokeWidth="1"
+                stroke="var(--line)" strokeWidth="1"
             />
             {ticks.map((year) => (
                 <g key={year} transform={`translate(${at(year)} 0)`}>
-                    <line x1={0} y1={baseY - 4} x2={0} y2={baseY} stroke="hsl(var(--border))" strokeWidth="1" />
+                    <line x1={0} y1={baseY - 4} x2={0} y2={baseY} stroke="var(--line)" strokeWidth="1" />
                     <text
                         x={0} y={baseY - 8}
                         textAnchor="middle"
                         style={{
-                            font: "500 9.5px ui-monospace, Geist Mono, monospace",
-                            fill: "hsl(var(--muted-foreground))",
+                            font: "500 9.5px var(--font-mono)",
+                            fill: "var(--fg-muted)",
                         }}
                     >
                         {year}
@@ -277,7 +277,7 @@ export default function NarrativeCanvas({
 
     if (!lens || nodes.length === 0) {
         return (
-            <div className="flex items-center justify-center py-20 text-[13px] text-muted-foreground">
+            <div className="flex items-center justify-center py-20 text-[13px] text-fg-muted">
                 This narrative has no layout to draw.
             </div>
         );
@@ -291,7 +291,7 @@ export default function NarrativeCanvas({
         <PannableViewport
             viewportRef={viewportRef}
             planeRef={planeRef}
-            viewportClassName="relative h-full w-full overflow-hidden rounded-xl border border-border"
+            viewportClassName="relative h-full w-full overflow-hidden rounded-xl border border-line"
             planeClassName="absolute left-0 top-0"
             view={view}
             animate={animate}

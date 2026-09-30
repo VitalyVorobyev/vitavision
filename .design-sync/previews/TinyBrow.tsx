@@ -15,6 +15,6 @@ export const Row = () => (
 export const AboveValue = () => (
     <div>
         <TinyBrow>Board size</TinyBrow>
-        <p className="mt-0.5 text-sm text-foreground">9 × 6 squares</p>
+        <p className="mt-0.5 text-sm text-fg">9 × 6 squares</p>
     </div>
 );

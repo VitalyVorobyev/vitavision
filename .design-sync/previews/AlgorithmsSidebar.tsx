@@ -27,7 +27,7 @@ export const AllAlgorithms = () => {
         problem: "all",
     });
     return (
-        <div className="border border-border rounded-lg overflow-hidden bg-background" style={{ width: 220, height: 420 }}>
+        <div className="border border-line rounded-panel overflow-hidden bg-ground" style={{ width: 220, height: 420 }}>
             <AlgorithmsSidebar
                 filters={filters}
                 facets={FACETS}
@@ -48,7 +48,7 @@ export const ProblemSelected = () => {
         problem: "camera-calibration",
     });
     return (
-        <div className="border border-border rounded-lg overflow-hidden bg-background" style={{ width: 220, height: 420 }}>
+        <div className="border border-line rounded-panel overflow-hidden bg-ground" style={{ width: 220, height: 420 }}>
             <AlgorithmsSidebar
                 filters={filters}
                 facets={FACETS}
@@ -69,7 +69,7 @@ export const ModelsOnly = () => {
         problem: "all",
     });
     return (
-        <div className="border border-border rounded-lg overflow-hidden bg-background" style={{ width: 220, height: 420 }}>
+        <div className="border border-line rounded-panel overflow-hidden bg-ground" style={{ width: 220, height: 420 }}>
             <AlgorithmsSidebar
                 filters={filters}
                 facets={FACETS}

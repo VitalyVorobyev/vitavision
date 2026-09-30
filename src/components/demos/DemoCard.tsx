@@ -14,7 +14,7 @@ export default function DemoCard({ slug, frontmatter }: DemoCardProps) {
         <Link
             to={`/demos/${slug}`}
             className={classNames(
-                "block rounded-xl border border-border hover:border-foreground/20 transition-colors overflow-hidden",
+                "block rounded-xl border border-line hover:border-fg/20 transition-colors overflow-hidden",
                 "group",
             )}
         >
@@ -32,7 +32,7 @@ export default function DemoCard({ slug, frontmatter }: DemoCardProps) {
                     {frontmatter.title}
                 </h2>
                 {frontmatter.summary && (
-                    <p className="text-muted-foreground text-sm line-clamp-2">
+                    <p className="text-fg-muted text-sm line-clamp-2">
                         {frontmatter.summary}
                     </p>
                 )}

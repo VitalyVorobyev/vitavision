@@ -16,7 +16,7 @@ export default function DifficultyBadge({ level }: Props) {
     return (
         <span className="inline-flex items-center gap-1.5">
             <span className={`inline-block w-1.5 h-1.5 rounded-full ${DOT_COLOR[level]}`} />
-            <span className="text-xs text-muted-foreground">{LABEL[level]}</span>
+            <span className="text-xs text-fg-muted">{LABEL[level]}</span>
         </span>
     );
 }

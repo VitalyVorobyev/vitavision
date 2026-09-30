@@ -23,14 +23,14 @@ import TableOfContents from "../components/blog/TableOfContents.tsx";
 
 function MembersGate() {
     return (
-        <div className="border border-border rounded-xl p-8 text-center space-y-4 my-10">
-            <Lock className="mx-auto h-8 w-8 text-muted-foreground" />
+        <div className="border border-line rounded-xl p-8 text-center space-y-4 my-10">
+            <Lock className="mx-auto h-8 w-8 text-fg-muted" />
             <h2 className="text-xl font-semibold">This post is for members</h2>
-            <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+            <p className="text-fg-muted text-sm max-w-sm mx-auto">
                 Sign in to read the full article. Membership is by invitation.
             </p>
             <SignInButton mode="modal">
-                <button className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+                <button className="inline-flex items-center justify-center rounded-control bg-signal px-5 py-2.5 text-sm font-medium text-signal-fg hover:bg-signal/90 transition-colors">
                     Sign in to continue
                 </button>
             </SignInButton>
@@ -93,12 +93,12 @@ export default function BlogPost() {
                 <h1 className="text-4xl font-bold tracking-tight">
                     Post not found
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-fg-muted">
                     The post you're looking for doesn't exist.
                 </p>
                 <Link
                     to="/blog"
-                    className="inline-block text-primary underline hover:text-primary/80"
+                    className="inline-block text-signal underline hover:text-signal/80"
                 >
                     Back to blog
                 </Link>
@@ -132,7 +132,7 @@ export default function BlogPost() {
             <header className="space-y-4 mb-8">
                 <Link
                     to="/blog"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-fg-muted hover:text-fg transition-colors"
                 >
                     &larr; Back to blog
                 </Link>
@@ -144,7 +144,7 @@ export default function BlogPost() {
                     )}
                     {frontmatter.title}
                 </h1>
-                <div className="flex items-center gap-3 text-sm text-muted-foreground font-sans">
+                <div className="flex items-center gap-3 text-sm text-fg-muted font-sans">
                     <span>{frontmatter.author}</span>
                     <span>&middot;</span>
                     <time>{frontmatter.date}</time>
@@ -171,22 +171,22 @@ export default function BlogPost() {
                 </div>
             </header>
 
-            <div className="border-t border-border mb-10" />
+            <div className="border-t border-line mb-10" />
 
             {frontmatter.access === "members" && !isLoaded ? (
                 <div className="flex items-center justify-center py-16">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
                 </div>
             ) : frontmatter.access === "members" && !isSignedIn ? (
                 <MembersGate />
             ) : html === null ? (
                 loadFailed ? (
-                    <div className="py-10 text-sm text-muted-foreground">
+                    <div className="py-10 text-sm text-fg-muted">
                         Post content failed to load.
                     </div>
                 ) : (
                     <div className="flex items-center justify-center py-16">
-                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
                     </div>
                 )
             ) : (
@@ -203,14 +203,14 @@ export default function BlogPost() {
             <RelatedPosts slugs={frontmatter.relatedDemos} type="demo" />
 
             {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (
-                <footer className="mt-12 pt-6 border-t border-border space-y-3">
+                <footer className="mt-12 pt-6 border-t border-line space-y-3">
                     {frontmatter.repoLinks?.map((url) => (
                         <a
                             key={url}
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block text-primary underline hover:text-primary/80 text-sm"
+                            className="block text-signal underline hover:text-signal/80 text-sm"
                         >
                             Repository: {url}
                         </a>
@@ -221,7 +221,7 @@ export default function BlogPost() {
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block text-primary underline hover:text-primary/80 text-sm"
+                            className="block text-signal underline hover:text-signal/80 text-sm"
                         >
                             Demo: {url}
                         </a>

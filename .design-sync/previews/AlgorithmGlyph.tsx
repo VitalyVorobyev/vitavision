@@ -1,6 +1,6 @@
 import { AlgorithmGlyph } from 'vitcv';
 
-const TILE = "w-16 h-16 rounded-lg border border-border overflow-hidden";
+const TILE = "w-16 h-16 rounded-panel border border-line overflow-hidden";
 
 export const CornerDetectors = () => (
     <div className="flex gap-4">
@@ -14,7 +14,7 @@ export const CornerDetectors = () => (
                 <div className={TILE}>
                     <AlgorithmGlyph slug={slug} />
                 </div>
-                <span className="text-[11px] text-muted-foreground font-mono">{label}</span>
+                <span className="text-[11px] text-fg-muted font-mono">{label}</span>
             </div>
         ))}
     </div>
@@ -32,14 +32,14 @@ export const DomainFallback = () => (
                 <div className={TILE}>
                     <AlgorithmGlyph slug={slug} domain={domain} />
                 </div>
-                <span className="text-[11px] text-muted-foreground font-mono">{label}</span>
+                <span className="text-[11px] text-fg-muted font-mono">{label}</span>
             </div>
         ))}
     </div>
 );
 
 export const RegisterRow = () => (
-    <div className="flex gap-3 p-3 bg-background rounded-lg border border-border">
+    <div className="flex gap-3 p-3 bg-ground rounded-panel border border-line">
         {[
             { slug: "chess-corners", domain: "detection", label: "Chess corners" },
             { slug: "harris-corner-detector", domain: "features", label: "Harris" },
@@ -48,10 +48,10 @@ export const RegisterRow = () => (
             { slug: "zhang-planar-calibration", domain: "calibration", label: "Zhang" },
         ].map(({ slug, domain, label }) => (
             <div key={slug} className="flex flex-col items-center gap-1">
-                <div className="w-12 h-12 rounded-md border border-border overflow-hidden">
+                <div className="w-12 h-12 rounded-control border border-line overflow-hidden">
                     <AlgorithmGlyph slug={slug} domain={domain} />
                 </div>
-                <span className="text-[10px] text-muted-foreground">{label}</span>
+                <span className="text-[10px] text-fg-muted">{label}</span>
             </div>
         ))}
     </div>

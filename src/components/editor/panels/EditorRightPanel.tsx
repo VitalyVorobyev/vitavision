@@ -21,7 +21,7 @@ type TouchPanelTab = PanelMode | "features";
 
 function ModeToggle({ value, onChange }: { value: PanelMode; onChange: (m: PanelMode) => void }) {
     return (
-        <div className="flex rounded-lg border border-border overflow-hidden">
+        <div className="flex rounded-panel border border-line overflow-hidden">
             {MODES.map(({ key, label }) => (
                 <button
                     key={key}
@@ -29,8 +29,8 @@ function ModeToggle({ value, onChange }: { value: PanelMode; onChange: (m: Panel
                     onClick={() => onChange(key)}
                     className={`flex-1 text-xs py-1.5 font-medium transition-colors ${
                         value === key
-                            ? "bg-primary/10 text-primary"
-                            : "bg-background text-muted-foreground hover:bg-muted/60"
+                            ? "bg-signal/10 text-signal"
+                            : "bg-ground text-fg-muted hover:bg-raised/60"
                     }`}
                 >
                     {label}
@@ -62,8 +62,8 @@ function OverlayTogglePanel() {
                     onClick={() => setOverlayToggle(key, !overlayToggles[key])}
                     className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
                         overlayToggles[key]
-                            ? "border-primary/40 bg-primary/10 text-primary"
-                            : "border-border text-muted-foreground hover:bg-muted/30"
+                            ? "border-signal/40 bg-signal/10 text-signal"
+                            : "border-line text-fg-muted hover:bg-raised/30"
                     }`}
                 >
                     {label}
@@ -133,8 +133,8 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
         ];
 
         return (
-            <div className="flex h-full flex-col overflow-hidden bg-muted/10">
-                <div className="border-b border-border px-4 py-3">
+            <div className="flex h-full flex-col overflow-hidden bg-raised/10">
+                <div className="border-b border-line px-4 py-3">
                     <div className="grid grid-cols-3 gap-2">
                         {tabs.map(({ key, label }) => (
                             <button
@@ -148,10 +148,10 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
                                         setPanelMode(key);
                                     }
                                 }}
-                                className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                                className={`rounded-control px-3 py-2 text-sm font-medium transition-colors ${
                                     touchTab === key
-                                        ? "bg-primary text-primary-foreground shadow-xs"
-                                        : "border border-border bg-background text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                                        ? "bg-signal text-signal-fg shadow-xs"
+                                        : "border border-line bg-ground text-fg-muted hover:bg-raised/60 hover:text-fg"
                                 }`}
                             >
                                 {label}
@@ -184,7 +184,7 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
 
     return (
         <div
-            className="border-l border-border bg-muted/20 shrink-0 flex h-full overflow-hidden relative"
+            className="border-l border-line bg-raised/20 shrink-0 flex h-full overflow-hidden relative"
             style={{ width }}
         >
             {/* resize handle */}
@@ -192,7 +192,7 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
                 onPointerDown={handlePointerDown}
                 className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize z-10 group"
             >
-                <div className="absolute inset-y-0 left-0 w-1 bg-transparent group-hover:bg-primary/20 group-active:bg-primary/30 transition-colors" />
+                <div className="absolute inset-y-0 left-0 w-1 bg-transparent group-hover:bg-signal/20 group-active:bg-signal/30 transition-colors" />
             </div>
 
             <div className="flex flex-col h-full w-full p-4 pl-3">

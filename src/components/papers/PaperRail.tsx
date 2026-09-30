@@ -25,30 +25,30 @@ function citeLine(paper: PaperRef): string {
     return `${authorsPart}. ${paper.title}. ${venueYear}.`;
 }
 
-const labelClass = "m-0 text-[10px] font-mono font-semibold uppercase tracking-[0.14em] text-muted-foreground";
+const labelClass = "m-0 text-[10px] font-mono font-semibold uppercase tracking-[0.14em] text-fg-muted";
 
 export default function PaperRail({ paper, authors, sameAuthorPapers, nameOf }: PaperRailProps) {
     return (
         <aside className="flex flex-col gap-7">
             {authors.length > 0 && (
-                <section className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4">
+                <section className="flex flex-col gap-2 rounded-panel border border-line bg-surface p-4">
                     <h2 className={labelClass}>Authors</h2>
                     {authors.map((author) => (
-                        <div key={author.id ?? author.name} className="border-t border-border pt-0">
+                        <div key={author.id ?? author.name} className="border-t border-line pt-0">
                             {author.id ? (
                                 <Link
                                     to={`/authors/${author.id}`}
                                     className="flex min-h-9 items-center justify-between gap-2 py-1.5 no-underline"
                                 >
-                                    <span className="text-[14px] font-medium text-foreground">{author.name}</span>
-                                    <span className="whitespace-nowrap font-mono text-[11.5px] text-muted-foreground">
+                                    <span className="text-[14px] font-medium text-fg">{author.name}</span>
+                                    <span className="whitespace-nowrap font-mono text-[11.5px] text-fg-muted">
                                         {author.paperCount ?? 0} paper{(author.paperCount ?? 0) === 1 ? "" : "s"} ·{" "}
                                         {author.pageCount ?? 0} page{(author.pageCount ?? 0) === 1 ? "" : "s"}
                                     </span>
                                 </Link>
                             ) : (
                                 <div className="flex min-h-9 items-center py-1.5">
-                                    <span className="text-[14px] font-medium text-foreground">{author.name}</span>
+                                    <span className="text-[14px] font-medium text-fg">{author.name}</span>
                                 </div>
                             )}
                         </div>
@@ -63,10 +63,10 @@ export default function PaperRail({ paper, authors, sameAuthorPapers, nameOf }: 
                         <Link
                             key={row.id}
                             to={`/papers/${row.id}`}
-                            className="flex flex-col gap-px border-t border-border py-[7px] no-underline"
+                            className="flex flex-col gap-px border-t border-line py-[7px] no-underline"
                         >
-                            <span className="font-serif text-[14.5px] leading-[1.3] text-foreground">{row.title}</span>
-                            <span className="font-mono text-[11px] text-muted-foreground">
+                            <span className="font-serif text-[14.5px] leading-[1.3] text-fg">{row.title}</span>
+                            <span className="font-mono text-[11px] text-fg-muted">
                                 {row.year} · {row.authorIds.map(nameOf).join(", ")}
                             </span>
                         </Link>
@@ -76,7 +76,7 @@ export default function PaperRail({ paper, authors, sameAuthorPapers, nameOf }: 
 
             <section className="flex flex-col gap-1.5">
                 <h2 className={labelClass}>Cite</h2>
-                <p className="m-0 font-mono text-[11.5px] leading-[1.6] text-foreground">{citeLine(paper)}</p>
+                <p className="m-0 font-mono text-[11.5px] leading-[1.6] text-fg">{citeLine(paper)}</p>
             </section>
         </aside>
     );

@@ -32,8 +32,8 @@ function ToggleButton({
             className={classNames(
                 "rounded-xl border px-3 py-2 text-sm font-medium transition-colors text-left",
                 pressed
-                    ? "border-primary/30 bg-primary/10 text-foreground"
-                    : "border-border/80 bg-background/80 text-muted-foreground hover:text-foreground",
+                    ? "border-signal/30 bg-signal/10 text-fg"
+                    : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
             )}
         >
             {label}
@@ -61,8 +61,8 @@ function RangeRow({
     return (
         <label className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-                <span className="text-foreground">{label}</span>
-                <span className="font-mono text-xs text-muted-foreground">{formatter(value)}</span>
+                <span className="text-fg">{label}</span>
+                <span className="font-mono text-xs text-fg-muted">{formatter(value)}</span>
             </div>
             <input
                 type="range"
@@ -71,7 +71,7 @@ function RangeRow({
                 step={step}
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
-                className="w-full accent-primary"
+                className="w-full accent-signal"
             />
         </label>
     );
@@ -125,7 +125,7 @@ function ArticleControls({
     return (
         <div className="space-y-4">
             <div className="space-y-2.5">
-                <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-muted-foreground">
+                <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">
                     Pattern
                 </div>
                 <div className="grid grid-cols-3 gap-2">
@@ -137,8 +137,8 @@ function ArticleControls({
                             className={classNames(
                                 "rounded-xl border px-3 py-2 text-sm font-medium capitalize transition-colors",
                                 pattern === opt
-                                    ? "border-primary/30 bg-primary/10 text-foreground"
-                                    : "border-border/80 bg-background/80 text-muted-foreground hover:text-foreground",
+                                    ? "border-signal/30 bg-signal/10 text-fg"
+                                    : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
                             )}
                         >
                             {opt}
@@ -148,7 +148,7 @@ function ArticleControls({
             </div>
 
             <div className="space-y-2.5">
-                <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-muted-foreground">
+                <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">
                     Animation
                 </div>
                 <div className="flex items-center gap-3">
@@ -159,8 +159,8 @@ function ArticleControls({
                         className={classNames(
                             "flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
                             playing
-                                ? "border-primary/30 bg-primary/10 text-foreground"
-                                : "border-border/80 bg-background/80 text-muted-foreground hover:text-foreground",
+                                ? "border-signal/30 bg-signal/10 text-fg"
+                                : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
                         )}
                     >
                         {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
@@ -178,7 +178,7 @@ function ArticleControls({
                 />
             </div>
 
-            <div className="space-y-4 rounded-2xl border border-border/80 bg-muted/25 px-4 py-4">
+            <div className="space-y-4 rounded-2xl border border-line/80 bg-raised/25 px-4 py-4">
                 <RangeRow
                     label="Rotation"
                     value={rotationDeg}
@@ -209,7 +209,7 @@ function ArticleControls({
             </div>
 
             <div className="space-y-2">
-                <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-muted-foreground">
+                <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">
                     Overlays
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -238,14 +238,14 @@ function MetricChip({
     return (
         <div
             className={classNames(
-                "flex flex-col items-center justify-center rounded-lg border border-border/80 bg-background/80 px-2 py-1.5 min-w-0",
+                "flex flex-col items-center justify-center rounded-control border border-line/80 bg-ground/80 px-2 py-1.5 min-w-0",
                 accentClassName,
             )}
         >
-            <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-muted-foreground leading-none">
+            <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-fg-muted leading-none">
                 {label}
             </div>
-            <div className="mt-1 font-mono text-sm font-semibold tracking-tight text-foreground leading-none truncate">
+            <div className="mt-1 font-mono text-sm font-semibold tracking-tight text-fg leading-none truncate">
                 {value}
             </div>
         </div>
@@ -271,14 +271,14 @@ function ArticleReadouts({ response }: { response: ReturnType<typeof UseChessRes
             </div>
 
             <section className="space-y-1.5">
-                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted">
                     Sum Response
                 </div>
                 <div className="grid grid-cols-2 gap-1.5">
                     {response.srTerms.map((term) => (
                         <div
                             key={term.phase}
-                            className="rounded-md border border-border/80 bg-background/80 px-2 py-1.5"
+                            className="rounded-control border border-line/80 bg-ground/80 px-2 py-1.5"
                         >
                             <div className="flex items-center justify-between gap-2">
                                 <span
@@ -290,11 +290,11 @@ function ArticleReadouts({ response }: { response: ReturnType<typeof UseChessRes
                                 >
                                     φ{term.phase}
                                 </span>
-                                <span className="font-mono text-xs text-foreground">
+                                <span className="font-mono text-xs text-fg">
                                     {formatValue(term.value)}
                                 </span>
                             </div>
-                            <div className="mt-1 font-mono text-[10px] leading-4 text-muted-foreground truncate">
+                            <div className="mt-1 font-mono text-[10px] leading-4 text-fg-muted truncate">
                                 |(I{term.pairA[0]}+I{term.pairA[1]})−(I{term.pairB[0]}+I{term.pairB[1]})|
                             </div>
                         </div>
@@ -303,19 +303,19 @@ function ArticleReadouts({ response }: { response: ReturnType<typeof UseChessRes
             </section>
 
             <section className="space-y-1.5">
-                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted">
                     Diff Response
                 </div>
                 <div className="grid grid-cols-2 gap-1.5">
                     {response.drTerms.map((term) => (
                         <div
                             key={term.index}
-                            className="rounded-md border border-border/80 bg-background/80 px-2 py-1 flex items-center justify-between gap-2"
+                            className="rounded-control border border-line/80 bg-ground/80 px-2 py-1 flex items-center justify-between gap-2"
                         >
-                            <span className="font-mono text-[10px] text-muted-foreground">
+                            <span className="font-mono text-[10px] text-fg-muted">
                                 Δ{term.index} |I{term.pair[0]}−I{term.pair[1]}|
                             </span>
-                            <span className="font-mono text-xs text-foreground">
+                            <span className="font-mono text-xs text-fg">
                                 {formatValue(term.value)}
                             </span>
                         </div>
@@ -324,21 +324,21 @@ function ArticleReadouts({ response }: { response: ReturnType<typeof UseChessRes
             </section>
 
             <section className="space-y-1.5">
-                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted">
                     Mean Response
                 </div>
-                <div className="rounded-md border border-border/80 bg-background/80 divide-y divide-border/60">
+                <div className="rounded-control border border-line/80 bg-ground/80 divide-y divide-line/60">
                     <div className="flex items-center justify-between px-2 py-1.5">
-                        <span className="font-mono text-[10px] text-muted-foreground">local mean (center patch)</span>
-                        <span className="font-mono text-xs text-foreground">{formatValue(response.localMean)}</span>
+                        <span className="font-mono text-[10px] text-fg-muted">local mean (center patch)</span>
+                        <span className="font-mono text-xs text-fg">{formatValue(response.localMean)}</span>
                     </div>
                     <div className="flex items-center justify-between px-2 py-1.5">
-                        <span className="font-mono text-[10px] text-muted-foreground">ring mean</span>
-                        <span className="font-mono text-xs text-foreground">{formatValue(response.neighborMean)}</span>
+                        <span className="font-mono text-[10px] text-fg-muted">ring mean</span>
+                        <span className="font-mono text-xs text-fg">{formatValue(response.neighborMean)}</span>
                     </div>
                     <div className="flex items-center justify-between px-2 py-1.5">
-                        <span className="font-mono text-[10px] text-muted-foreground">penalty = 16·MR</span>
-                        <span className="font-mono text-xs text-foreground">{formatValue(16 * response.mr)}</span>
+                        <span className="font-mono text-[10px] text-fg-muted">penalty = 16·MR</span>
+                        <span className="font-mono text-xs text-fg">{formatValue(16 * response.mr)}</span>
                     </div>
                 </div>
             </section>
@@ -451,25 +451,25 @@ function ArticleLayout({
     return (
         <section
             className={classNames(
-                "not-prose overflow-hidden rounded-[1.5rem] border border-border bg-[linear-gradient(180deg,hsl(var(--surface)),hsl(var(--background)))] shadow-[0_24px_60px_-48px_rgba(15,23,42,0.55)]",
+                "not-prose overflow-hidden rounded-[1.5rem] border border-line bg-[linear-gradient(180deg,var(--surface),var(--ground))] shadow-[0_24px_60px_-48px_rgba(15,23,42,0.55)]",
                 className,
             )}
         >
-            <div className="border-b border-border/80 px-4 py-4 sm:px-5">
+            <div className="border-b border-line/80 px-4 py-4 sm:px-5">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
                     <div className="space-y-1.5">
-                        <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-muted-foreground">
+                        <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">
                             Interactive Figure
                         </div>
-                        <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+                        <h2 className="text-xl font-semibold tracking-tight text-fg sm:text-2xl">
                             ChESS detector response design
                         </h2>
-                        <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-[0.95rem]">
+                        <p className="max-w-2xl text-sm leading-6 text-fg-muted sm:text-[0.95rem]">
                             Switch between a true corner, a plain edge, and a stripe. The pixel grid, 16-sample ring,
                             and response terms update together so the final score stays tied to the visual evidence.
                         </p>
                     </div>
-                    <div className="rounded-full border border-border/80 bg-background/80 px-4 py-2 font-mono text-sm text-foreground">
+                    <div className="rounded-full border border-line/80 bg-ground/80 px-4 py-2 font-mono text-sm text-fg">
                         R = SR - DR - 16 × MR
                     </div>
                 </div>
@@ -496,20 +496,20 @@ function ArticleLayout({
                         >
                             {response.status.label}
                         </span>
-                        <span className="rounded-full border border-border/80 bg-background/80 px-3 py-1.5 text-xs font-mono text-muted-foreground">
+                        <span className="rounded-full border border-line/80 bg-ground/80 px-3 py-1.5 text-xs font-mono text-fg-muted">
                             pattern = {pattern}
                         </span>
-                        <span className="rounded-full border border-border/80 bg-background/80 px-3 py-1.5 text-xs font-mono text-muted-foreground">
+                        <span className="rounded-full border border-line/80 bg-ground/80 px-3 py-1.5 text-xs font-mono text-fg-muted">
                             θ = {rotationDeg.toFixed(1)}°
                         </span>
                     </div>
 
-                    <p className="text-sm leading-6 text-muted-foreground">
+                    <p className="text-sm leading-6 text-fg-muted">
                         {response.explanation}
                     </p>
                 </div>
 
-                <aside className="border-t border-border/80 px-4 py-4 sm:px-5 sm:py-5 xl:border-l xl:border-t-0">
+                <aside className="border-t border-line/80 px-4 py-4 sm:px-5 sm:py-5 xl:border-l xl:border-t-0">
                     {showControls && (
                         <div className="mb-5">
                             <ArticleControls

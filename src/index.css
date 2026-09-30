@@ -115,14 +115,4 @@
       transition-duration: 0s !important;
     }
   }
-
-  .number-field-input {
-    appearance: textfield;
-  }
-
-  .number-field-input::-webkit-outer-spin-button,
-  .number-field-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
 }

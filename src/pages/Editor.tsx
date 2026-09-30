@@ -13,7 +13,6 @@ import { useEditorStore, type OverlayVisibilityKey, type ToolType } from "../sto
 import { useShallow } from "zustand/react/shallow";
 import { readDeepLink } from "../hooks/useEditorDeepLink";
 import useViewportMode from "../hooks/useViewportMode";
-import { FormControlModeProvider } from "../components/editor/algorithms/formFields";
 import {
     ArrowLeft,
     ChevronDown,
@@ -454,9 +453,7 @@ export default function Editor() {
 
         return (
             <TooltipPrimitive.Provider delayDuration={200}>
-                <FormControlModeProvider mode="touch">
-                    {touchTabletContent}
-                </FormControlModeProvider>
+                {touchTabletContent}
             </TooltipPrimitive.Provider>
         );
     }

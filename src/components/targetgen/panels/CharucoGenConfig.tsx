@@ -1,4 +1,5 @@
-import { Section, NumberField, SelectField } from "../../editor/algorithms/formFields";
+import { Field, InfoHint, NumberInput, Section, Select } from "@vitavision/ui";
+import { choiceProps, fieldGridClass, numberInputProps } from "../../../lib/fieldBindings";
 import type { CharucoConfig, TargetGeneratorAction } from "../types";
 import type { DictionaryName } from "../../../lib/types";
 
@@ -38,77 +39,100 @@ export default function CharucoGenConfig({ config, dispatch }: Props) {
 
     return (
         <>
-        <Section title="ChArUco Board" columns={2}>
-            <NumberField
-                label="Rows"
-                value={config.rows}
-                onChange={(v) => update({ rows: v ?? 8 })}
-                disabled={false}
-                min={2}
-                max={100}
-                step={1}
-                tooltip="Total board rows (squares)"
-            />
-            <NumberField
-                label="Cols"
-                value={config.cols}
-                onChange={(v) => update({ cols: v ?? 11 })}
-                disabled={false}
-                min={2}
-                max={100}
-                step={1}
-                tooltip="Total board columns (squares)"
-            />
-            <NumberField
-                label="Square size (mm)"
-                value={config.squareSizeMm}
-                onChange={(v) => update({ squareSizeMm: v ?? 20 })}
-                disabled={false}
-                min={1}
-                max={500}
-                step={0.5}
-                tooltip="Physical size of each square in millimeters"
-            />
-            <NumberField
-                label="Marker ratio"
-                value={config.markerSizeRel}
-                onChange={(v) => update({ markerSizeRel: v ?? 0.75 })}
-                disabled={false}
-                min={0.1}
-                max={0.99}
-                step={0.05}
-                tooltip="Marker size relative to square"
-            />
-            <div className="col-span-2">
-                <SelectField
-                    label="Dictionary"
-                    value={config.dictionary}
-                    onChange={(v) => update({ dictionary: v })}
-                    disabled={false}
-                    options={DICTIONARY_OPTIONS}
-                    tooltip="ArUco marker dictionary — NxN is the bit grid size, number is the pool size"
-                />
+        <Section title="ChArUco Board">
+            <div className={fieldGridClass(2)}>
+                <Field
+                    label="Rows"
+                    as="group"
+                    annotation={<InfoHint label="About rows">Total board rows (squares)</InfoHint>}
+                >
+                    <NumberInput
+                        aria-label="Rows"
+                        {...numberInputProps(config.rows, (v) => update({ rows: v ?? 8 }))}
+                        min={2}
+                        max={100}
+                        step={1}
+                    />
+                </Field>
+                <Field
+                    label="Cols"
+                    as="group"
+                    annotation={<InfoHint label="About cols">Total board columns (squares)</InfoHint>}
+                >
+                    <NumberInput
+                        aria-label="Cols"
+                        {...numberInputProps(config.cols, (v) => update({ cols: v ?? 11 }))}
+                        min={2}
+                        max={100}
+                        step={1}
+                    />
+                </Field>
+                <Field
+                    label="Square size"
+                    as="group"
+                    annotation={<InfoHint label="About square size">Physical size of each square in millimeters</InfoHint>}
+                >
+                    <NumberInput
+                        unit="mm"
+                        aria-label="Square size"
+                        {...numberInputProps(config.squareSizeMm, (v) => update({ squareSizeMm: v ?? 20 }))}
+                        min={1}
+                        max={500}
+                        step={0.5}
+                    />
+                </Field>
+                <Field
+                    label="Marker ratio"
+                    as="group"
+                    annotation={<InfoHint label="About marker ratio">Marker size relative to square</InfoHint>}
+                >
+                    <NumberInput
+                        aria-label="Marker ratio"
+                        {...numberInputProps(config.markerSizeRel, (v) => update({ markerSizeRel: v ?? 0.75 }))}
+                        min={0.1}
+                        max={0.99}
+                        step={0.05}
+                    />
+                </Field>
+                <div className="col-span-2">
+                    <Field
+                        label="Dictionary"
+                        as="group"
+                        annotation={<InfoHint label="About dictionary">ArUco marker dictionary — NxN is the bit grid size, number is the pool size</InfoHint>}
+                    >
+                        <Select
+                            aria-label="Dictionary"
+                            {...choiceProps(config.dictionary, DICTIONARY_OPTIONS, (v) => update({ dictionary: v }))}
+                        />
+                    </Field>
+                </div>
+                <Field
+                    label="Border bits"
+                    as="group"
+                    annotation={<InfoHint label="About border bits">Black border width around each marker in bits</InfoHint>}
+                >
+                    <NumberInput
+                        aria-label="Border bits"
+                        {...numberInputProps(config.borderBits, (v) => update({ borderBits: v ?? 1 }))}
+                        min={0}
+                        max={16}
+                        step={1}
+                    />
+                </Field>
+                <Field
+                    label="Inner square"
+                    as="group"
+                    annotation={<InfoHint label="About inner square">White square inside black squares (0 = off). For laser calibration targets.</InfoHint>}
+                >
+                    <NumberInput
+                        aria-label="Inner square"
+                        {...numberInputProps(config.innerSquareRel, (v) => update({ innerSquareRel: v ?? 0 }))}
+                        min={0}
+                        max={0.95}
+                        step={0.05}
+                    />
+                </Field>
             </div>
-            <NumberField
-                label="Border bits"
-                value={config.borderBits}
-                onChange={(v) => update({ borderBits: v ?? 1 })}
-                disabled={false}
-                min={0}
-                max={16}
-                step={1}
-                tooltip="Black border width around each marker in bits"
-            />
-            <NumberField
-                label="Inner square"
-                value={config.innerSquareRel}
-                onChange={(v) => update({ innerSquareRel: v ?? 0 })}
-                disabled={false}
-                min={0}
-                max={0.95}
-                step={0.05}
-                tooltip="White square inside black squares (0 = off). For laser calibration targets."
-            />
         </Section>
         <p className="text-[11px] text-fg-muted mt-2">
             Board layout is compatible with OpenCV ChArUco conventions.

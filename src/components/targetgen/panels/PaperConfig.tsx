@@ -1,13 +1,14 @@
-import { Section, NumberField, SelectField, type FieldOption } from "../../editor/algorithms/formFields";
+import { Checkbox, Field, InfoHint, NumberInput, Section, SegmentedControl } from "@vitavision/ui";
+import { choiceProps, fieldGridClass, numberInputProps, type ChoiceOption } from "../../../lib/fieldBindings";
 import type { PageConfig, Orientation, PageSizeKind, TargetGeneratorAction } from "../types";
 
-const PAGE_SIZE_OPTIONS: FieldOption<PageSizeKind>[] = [
-    { value: "a4", label: "A4 (210 x 297 mm)", shortLabel: "A4" },
-    { value: "letter", label: "Letter (8.5 x 11 in)", shortLabel: "Letter" },
-    { value: "custom", label: "Custom", shortLabel: "Custom" },
+const PAGE_SIZE_OPTIONS: ChoiceOption<PageSizeKind>[] = [
+    { value: "a4", label: "A4" },
+    { value: "letter", label: "Letter" },
+    { value: "custom", label: "Custom" },
 ];
 
-const ORIENTATION_OPTIONS: FieldOption<Orientation>[] = [
+const ORIENTATION_OPTIONS: ChoiceOption<Orientation>[] = [
     { value: "portrait", label: "Portrait" },
     { value: "landscape", label: "Landscape" },
 ];
@@ -23,75 +24,92 @@ export default function PaperConfig({ page, dispatch }: Props) {
 
     return (
         <Section title="Page">
-            <SelectField
-                label="Size"
-                value={page.sizeKind}
-                onChange={(v) => update({ sizeKind: v })}
-                disabled={false}
-                options={PAGE_SIZE_OPTIONS}
-                tooltip="Paper size for the printed target"
-            />
-            {page.sizeKind === "custom" && (
-                <>
-                    <NumberField
-                        label="Width (mm)"
-                        value={page.customWidthMm}
-                        onChange={(v) => update({ customWidthMm: v ?? 210 })}
-                        disabled={false}
-                        min={10}
-                        max={2000}
-                        step={1}
-                        tooltip="Custom page width in millimeters"
+            <div className={fieldGridClass()}>
+                <Field
+                    label="Size"
+                    as="group"
+                    annotation={<InfoHint label="About size">Paper size for the printed target: A4 is 210 × 297 mm, Letter 8.5 × 11 in.</InfoHint>}
+                >
+                    <SegmentedControl
+                        aria-label="Size"
+                        {...choiceProps(page.sizeKind, PAGE_SIZE_OPTIONS, (v) => update({ sizeKind: v }))}
                     />
-                    <NumberField
-                        label="Height (mm)"
-                        value={page.customHeightMm}
-                        onChange={(v) => update({ customHeightMm: v ?? 297 })}
-                        disabled={false}
-                        min={10}
-                        max={2000}
-                        step={1}
-                        tooltip="Custom page height in millimeters"
+                </Field>
+                {page.sizeKind === "custom" && (
+                    <>
+                        <Field
+                            label="Width"
+                            as="group"
+                            annotation={<InfoHint label="About width">Custom page width in millimeters</InfoHint>}
+                        >
+                            <NumberInput
+                                unit="mm"
+                                aria-label="Width"
+                                {...numberInputProps(page.customWidthMm, (v) => update({ customWidthMm: v ?? 210 }))}
+                                min={10}
+                                max={2000}
+                                step={1}
+                            />
+                        </Field>
+                        <Field
+                            label="Height"
+                            as="group"
+                            annotation={<InfoHint label="About height">Custom page height in millimeters</InfoHint>}
+                        >
+                            <NumberInput
+                                unit="mm"
+                                aria-label="Height"
+                                {...numberInputProps(page.customHeightMm, (v) => update({ customHeightMm: v ?? 297 }))}
+                                min={10}
+                                max={2000}
+                                step={1}
+                            />
+                        </Field>
+                    </>
+                )}
+                <Field
+                    label="Orientation"
+                    as="group"
+                    annotation={<InfoHint label="About orientation">Portrait (tall) or landscape (wide) page layout</InfoHint>}
+                >
+                    <SegmentedControl
+                        aria-label="Orientation"
+                        {...choiceProps(page.orientation, ORIENTATION_OPTIONS, (v) => update({ orientation: v }))}
                     />
-                </>
-            )}
-            <SelectField
-                label="Orientation"
-                value={page.orientation}
-                onChange={(v) => update({ orientation: v })}
-                disabled={false}
-                options={ORIENTATION_OPTIONS}
-                tooltip="Portrait (tall) or landscape (wide) page layout"
-            />
-            <NumberField
-                label="Margin (mm)"
-                value={page.marginMm}
-                onChange={(v) => update({ marginMm: v ?? 10 })}
-                disabled={false}
-                min={0}
-                max={100}
-                step={1}
-                tooltip="Minimum margin around the board on all sides"
-            />
-            <NumberField
-                label="PNG DPI"
-                value={page.pngDpi}
-                onChange={(v) => update({ pngDpi: v ?? 300 })}
-                disabled={false}
-                min={72}
-                max={1200}
-                step={1}
-                tooltip="Resolution for PNG export (dots per inch)"
-            />
-            <label className="flex items-center gap-2 text-xs text-fg-muted cursor-pointer">
-                <input
-                    type="checkbox"
+                </Field>
+                <Field
+                    label="Margin"
+                    as="group"
+                    annotation={<InfoHint label="About margin">Minimum margin around the board on all sides</InfoHint>}
+                >
+                    <NumberInput
+                        unit="mm"
+                        aria-label="Margin"
+                        {...numberInputProps(page.marginMm, (v) => update({ marginMm: v ?? 10 }))}
+                        min={0}
+                        max={100}
+                        step={1}
+                    />
+                </Field>
+                <Field
+                    label="PNG DPI"
+                    as="group"
+                    annotation={<InfoHint label="About PNG DPI">Resolution for PNG export (dots per inch)</InfoHint>}
+                >
+                    <NumberInput
+                        aria-label="PNG DPI"
+                        {...numberInputProps(page.pngDpi, (v) => update({ pngDpi: v ?? 300 }))}
+                        min={72}
+                        max={1200}
+                        step={1}
+                    />
+                </Field>
+                <Checkbox
+                    label="Show scale line"
                     checked={page.showScaleLine}
-                    onChange={(e) => update({ showScaleLine: e.target.checked })}
-                    className="rounded border-line"
+                    onCheckedChange={(checked) => update({ showScaleLine: checked })}
                 />
-                Show scale line
-            </label>
+            </div>
         </Section>
     );
 }

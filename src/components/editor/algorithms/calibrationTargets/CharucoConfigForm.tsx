@@ -1,4 +1,5 @@
-import { CheckboxField, CollapsibleSection, NumberField, Section, SelectField } from "../formFields";
+import { Checkbox, Disclosure, Field, InfoHint, NumberInput, Section, Select } from "@vitavision/ui";
+import { choiceProps, fieldGridClass, numberInputProps } from "../../../../lib/fieldBindings";
 import type { AlgorithmConfigFormProps } from "../types";
 import type { DictionaryName } from "../../../../lib/types";
 
@@ -52,210 +53,303 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
 
     return (
         <>
-            <Section title="Board" columns={cols}>
-                <NumberField
-                    label="Rows"
-                    tooltip="Total number of rows of squares on the ChArUco board."
-                    value={config.rows}
-                    onChange={(v) => set("rows", v ?? 22)}
-                    disabled={disabled}
-                    min={2}
-                    step={1}
-                />
-                <NumberField
-                    label="Cols"
-                    tooltip="Total number of columns of squares on the ChArUco board."
-                    value={config.cols}
-                    onChange={(v) => set("cols", v ?? 22)}
-                    disabled={disabled}
-                    min={2}
-                    step={1}
-                />
-                <NumberField
-                    label="Cell size (mm)"
-                    tooltip="Physical size of one board square in millimeters. Used for metric calibration."
-                    value={config.cellSize}
-                    onChange={(v) => set("cellSize", v ?? 4.8)}
-                    disabled={disabled}
-                    min={0.1}
-                    step={0.1}
-                />
-                <NumberField
-                    label="Marker size (relative)"
-                    tooltip="ArUco marker size as a fraction of the cell size (0.1-0.99). Larger markers are easier to detect."
-                    value={config.markerSizeRel}
-                    onChange={(v) => set("markerSizeRel", v ?? 0.75)}
-                    disabled={disabled}
-                    min={0.1}
-                    max={0.99}
-                    step={0.05}
-                />
-                <SelectField
-                    label="Dictionary"
-                    tooltip="ArUco marker dictionary encoding. Must match the dictionary used to print the board."
-                    value={config.dictionary}
-                    onChange={(v) => set("dictionary", v)}
-                    disabled={disabled}
-                    options={DICTIONARY_OPTIONS}
-                />
-                <NumberField
-                    label="Border bits"
-                    tooltip="ArUco quiet-zone width in marker bits, as printed on the physical board. This describes the board, not a scan-time tuning knob — the detector derives its scan border width from this value. WASM default: 1."
-                    value={config.borderBits}
-                    onChange={(v) => set("borderBits", v ?? 1)}
-                    disabled={disabled}
-                    min={1}
-                    max={4}
-                    step={1}
-                />
+            <Section title="Board">
+                <div className={fieldGridClass(cols)}>
+                    <Field
+                        label="Rows"
+                        as="group"
+                        annotation={<InfoHint label="About rows">Total number of rows of squares on the ChArUco board.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Rows"
+                            {...numberInputProps(config.rows, (v) => set("rows", v ?? 22))}
+                            disabled={disabled}
+                            min={2}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Cols"
+                        as="group"
+                        annotation={<InfoHint label="About cols">Total number of columns of squares on the ChArUco board.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Cols"
+                            {...numberInputProps(config.cols, (v) => set("cols", v ?? 22))}
+                            disabled={disabled}
+                            min={2}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Cell size"
+                        as="group"
+                        annotation={<InfoHint label="About cell size">Physical size of one board square in millimeters. Used for metric calibration.</InfoHint>}
+                    >
+                        <NumberInput
+                            unit="mm"
+                            aria-label="Cell size"
+                            {...numberInputProps(config.cellSize, (v) => set("cellSize", v ?? 4.8))}
+                            disabled={disabled}
+                            min={0.1}
+                            step={0.1}
+                        />
+                    </Field>
+                    <Field
+                        label="Marker size (relative)"
+                        as="group"
+                        annotation={<InfoHint label="About marker size (relative)">ArUco marker size as a fraction of the cell size (0.1-0.99). Larger markers are easier to detect.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Marker size (relative)"
+                            {...numberInputProps(config.markerSizeRel, (v) => set("markerSizeRel", v ?? 0.75))}
+                            disabled={disabled}
+                            min={0.1}
+                            max={0.99}
+                            step={0.05}
+                        />
+                    </Field>
+                    <Field
+                        label="Dictionary"
+                        as="group"
+                        annotation={<InfoHint label="About dictionary">ArUco marker dictionary encoding. Must match the dictionary used to print the board.</InfoHint>}
+                    >
+                        <Select
+                            aria-label="Dictionary"
+                            {...choiceProps(config.dictionary, DICTIONARY_OPTIONS, (v) => set("dictionary", v))}
+                            disabled={disabled}
+                        />
+                    </Field>
+                    <Field
+                        label="Border bits"
+                        as="group"
+                        annotation={<InfoHint label="About border bits">ArUco quiet-zone width in marker bits, as printed on the physical board. This describes the board, not a scan-time tuning knob — the detector derives its scan border width from this value. WASM default: 1.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Border bits"
+                            {...numberInputProps(config.borderBits, (v) => set("borderBits", v ?? 1))}
+                            disabled={disabled}
+                            min={1}
+                            max={4}
+                            step={1}
+                        />
+                    </Field>
+                </div>
             </Section>
-            <CollapsibleSection title="Marker decoding">
-                <NumberField
-                    label="Pixels per square"
-                    tooltip="Size of the rectified cell (in pixels) used to read ArUco marker codes. Higher values improve decode accuracy at the cost of speed."
-                    value={config.pxPerSquare}
-                    onChange={(v) => set("pxPerSquare", v ?? 40)}
-                    disabled={disabled}
-                    min={4}
-                    step={1}
-                />
-            </CollapsibleSection>
-            <CollapsibleSection title="Chessboard detector" columns={cols}>
-                <NumberField
-                    label="Expected rows"
-                    tooltip="Number of internal corner rows expected on the board (squares minus one)."
-                    value={config.chessExpectedRows}
-                    onChange={(v) => set("chessExpectedRows", v ?? 22)}
-                    disabled={disabled}
-                    min={2}
-                    step={1}
-                />
-                <NumberField
-                    label="Expected cols"
-                    tooltip="Number of internal corner columns expected on the board (squares minus one)."
-                    value={config.chessExpectedCols}
-                    onChange={(v) => set("chessExpectedCols", v ?? 22)}
-                    disabled={disabled}
-                    min={2}
-                    step={1}
-                />
-                <NumberField
-                    label="Min corner strength"
-                    tooltip="Absolute floor on the raw ChESS response (detector default 15). Lower values detect weaker corners but may increase false positives."
-                    value={config.chessMinCornerStrength}
-                    onChange={(v) => set("chessMinCornerStrength", v ?? 15)}
-                    disabled={disabled}
-                    min={0}
-                    max={500}
-                    step={1}
-                />
-                <NumberField
-                    label="Completeness threshold"
-                    tooltip="Fraction of expected corners that must be detected for the board to be accepted."
-                    value={config.chessCompletenessThreshold}
-                    onChange={(v) => set("chessCompletenessThreshold", v ?? 0.05)}
-                    disabled={disabled}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                />
-            </CollapsibleSection>
-            <CollapsibleSection title="Grid graph" columns={cols}>
-                <NumberField
-                    label="Min spacing (px)"
-                    tooltip="Minimum distance between adjacent corners in pixels. Filters out noise from too-close detections."
-                    value={config.graphMinSpacingPix}
-                    onChange={(v) => set("graphMinSpacingPix", v ?? 40)}
-                    disabled={disabled}
-                    min={1}
-                    step={1}
-                />
-                <NumberField
-                    label="Max spacing (px)"
-                    tooltip="Maximum distance between adjacent corners in pixels. Limits graph edge length."
-                    value={config.graphMaxSpacingPix}
-                    onChange={(v) => set("graphMaxSpacingPix", v ?? 160)}
-                    disabled={disabled}
-                    min={1}
-                    step={1}
-                />
-                <NumberField
-                    label="K neighbors"
-                    tooltip="Number of nearest neighbors considered when building the corner graph. Higher values handle irregular boards better."
-                    value={config.graphKNeighbors}
-                    onChange={(v) => set("graphKNeighbors", v ?? 8)}
-                    disabled={disabled}
-                    min={1}
-                    max={64}
-                    step={1}
-                />
-                <NumberField
-                    label="Orientation tolerance (°)"
-                    tooltip="Maximum angle deviation from grid directions when connecting corners. Handles perspective distortion."
-                    value={config.graphOrientationToleranceDeg}
-                    onChange={(v) => set("graphOrientationToleranceDeg", v ?? 12.5)}
-                    disabled={disabled}
-                    min={0}
-                    max={180}
-                    step={0.5}
-                />
-            </CollapsibleSection>
-            <CollapsibleSection title="Advanced" columns={modal ? 2 : undefined}>
-                <NumberField
-                    label="Scan: inset fraction"
-                    tooltip="Fraction of the cell inset before sampling marker pixels. Higher → safer sampling, less likely to overlap chessboard ink. WASM default: 0.06."
-                    value={config.scanInsetFrac}
-                    onChange={(v) => set("scanInsetFrac", v ?? 0.06)}
-                    disabled={disabled}
-                    min={0}
-                    max={0.4}
-                    step={0.01}
-                />
-                <NumberField
-                    label="Scan: min border score"
-                    tooltip="Minimum quiet-zone score required to accept a candidate marker (0–1). Lower → more permissive. WASM default: 0.75."
-                    value={config.scanMinBorderScore}
-                    onChange={(v) => set("scanMinBorderScore", v ?? 0.75)}
-                    disabled={disabled}
-                    min={0}
-                    max={1}
-                    step={0.05}
-                />
-                <CheckboxField
-                    label="Scan: dedup by ID"
-                    tooltip="Drop duplicate detections sharing the same marker ID. WASM default: on."
-                    checked={config.scanDedupById}
-                    onChange={(v) => set("scanDedupById", v)}
-                    disabled={disabled}
-                />
-                <CheckboxField
-                    label="Scan: multi-threshold"
-                    tooltip="Try several adaptive thresholds when scanning marker bits — slower but more robust. WASM default: on."
-                    checked={config.scanMultiThreshold}
-                    onChange={(v) => set("scanMultiThreshold", v)}
-                    disabled={disabled}
-                />
-                <NumberField
-                    label="Max hamming"
-                    tooltip="Maximum Hamming distance allowed when matching a candidate against the dictionary. Higher → tolerates more bit errors. WASM default: 1."
-                    value={config.maxHamming}
-                    onChange={(v) => set("maxHamming", v ?? 1)}
-                    disabled={disabled}
-                    min={0}
-                    max={8}
-                    step={1}
-                />
-                <NumberField
-                    label="Min marker inliers"
-                    tooltip="Minimum number of decoded markers required to accept the board. WASM default: 8."
-                    value={config.minMarkerInliers}
-                    onChange={(v) => set("minMarkerInliers", v ?? 8)}
-                    disabled={disabled}
-                    min={1}
-                    max={64}
-                    step={1}
-                />
-            </CollapsibleSection>
+            <Disclosure summary="Marker decoding">
+                <div className={fieldGridClass()}>
+                    <Field
+                        label="Pixels per square"
+                        as="group"
+                        annotation={<InfoHint label="About pixels per square">Size of the rectified cell (in pixels) used to read ArUco marker codes. Higher values improve decode accuracy at the cost of speed.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Pixels per square"
+                            {...numberInputProps(config.pxPerSquare, (v) => set("pxPerSquare", v ?? 40))}
+                            disabled={disabled}
+                            min={4}
+                            step={1}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
+            <Disclosure summary="Chessboard detector">
+                <div className={fieldGridClass(cols)}>
+                    <Field
+                        label="Expected rows"
+                        as="group"
+                        annotation={<InfoHint label="About expected rows">Number of internal corner rows expected on the board (squares minus one).</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Expected rows"
+                            {...numberInputProps(config.chessExpectedRows, (v) => set("chessExpectedRows", v ?? 22))}
+                            disabled={disabled}
+                            min={2}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Expected cols"
+                        as="group"
+                        annotation={<InfoHint label="About expected cols">Number of internal corner columns expected on the board (squares minus one).</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Expected cols"
+                            {...numberInputProps(config.chessExpectedCols, (v) => set("chessExpectedCols", v ?? 22))}
+                            disabled={disabled}
+                            min={2}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Min corner strength"
+                        as="group"
+                        annotation={<InfoHint label="About min corner strength">Absolute floor on the raw ChESS response (detector default 15). Lower values detect weaker corners but may increase false positives.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Min corner strength"
+                            {...numberInputProps(config.chessMinCornerStrength, (v) => set("chessMinCornerStrength", v ?? 15))}
+                            disabled={disabled}
+                            min={0}
+                            max={500}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Completeness threshold"
+                        as="group"
+                        annotation={<InfoHint label="About completeness threshold">Fraction of expected corners that must be detected for the board to be accepted.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Completeness threshold"
+                            {...numberInputProps(config.chessCompletenessThreshold, (v) => set("chessCompletenessThreshold", v ?? 0.05))}
+                            disabled={disabled}
+                            min={0}
+                            max={1}
+                            step={0.01}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
+            <Disclosure summary="Grid graph">
+                <div className={fieldGridClass(cols)}>
+                    <Field
+                        label="Min spacing"
+                        as="group"
+                        annotation={<InfoHint label="About min spacing">Minimum distance between adjacent corners in pixels. Filters out noise from too-close detections.</InfoHint>}
+                    >
+                        <NumberInput
+                            unit="px"
+                            aria-label="Min spacing"
+                            {...numberInputProps(config.graphMinSpacingPix, (v) => set("graphMinSpacingPix", v ?? 40))}
+                            disabled={disabled}
+                            min={1}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Max spacing"
+                        as="group"
+                        annotation={<InfoHint label="About max spacing">Maximum distance between adjacent corners in pixels. Limits graph edge length.</InfoHint>}
+                    >
+                        <NumberInput
+                            unit="px"
+                            aria-label="Max spacing"
+                            {...numberInputProps(config.graphMaxSpacingPix, (v) => set("graphMaxSpacingPix", v ?? 160))}
+                            disabled={disabled}
+                            min={1}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="K neighbors"
+                        as="group"
+                        annotation={<InfoHint label="About k neighbors">Number of nearest neighbors considered when building the corner graph. Higher values handle irregular boards better.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="K neighbors"
+                            {...numberInputProps(config.graphKNeighbors, (v) => set("graphKNeighbors", v ?? 8))}
+                            disabled={disabled}
+                            min={1}
+                            max={64}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Orientation tolerance"
+                        as="group"
+                        annotation={<InfoHint label="About orientation tolerance">Maximum angle deviation from grid directions when connecting corners. Handles perspective distortion.</InfoHint>}
+                    >
+                        <NumberInput
+                            unit="°"
+                            aria-label="Orientation tolerance"
+                            {...numberInputProps(config.graphOrientationToleranceDeg, (v) => set("graphOrientationToleranceDeg", v ?? 12.5))}
+                            disabled={disabled}
+                            min={0}
+                            max={180}
+                            step={0.5}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
+            <Disclosure summary="Advanced">
+                <div className={fieldGridClass(modal ? 2 : undefined)}>
+                    <Field
+                        label="Scan: inset fraction"
+                        as="group"
+                        annotation={<InfoHint label="About scan: inset fraction">Fraction of the cell inset before sampling marker pixels. Higher → safer sampling, less likely to overlap chessboard ink. WASM default: 0.06.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Scan: inset fraction"
+                            {...numberInputProps(config.scanInsetFrac, (v) => set("scanInsetFrac", v ?? 0.06))}
+                            disabled={disabled}
+                            min={0}
+                            max={0.4}
+                            step={0.01}
+                        />
+                    </Field>
+                    <Field
+                        label="Scan: min border score"
+                        as="group"
+                        annotation={<InfoHint label="About scan: min border score">Minimum quiet-zone score required to accept a candidate marker (0–1). Lower → more permissive. WASM default: 0.75.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Scan: min border score"
+                            {...numberInputProps(config.scanMinBorderScore, (v) => set("scanMinBorderScore", v ?? 0.75))}
+                            disabled={disabled}
+                            min={0}
+                            max={1}
+                            step={0.05}
+                        />
+                    </Field>
+                    <div className="flex items-center gap-1.5">
+                        <Checkbox
+                            label="Scan: dedup by ID"
+                            checked={config.scanDedupById}
+                            onCheckedChange={(v) => set("scanDedupById", v)}
+                            disabled={disabled}
+                        />
+                        <InfoHint label="About scan: dedup by ID">Drop duplicate detections sharing the same marker ID. WASM default: on.</InfoHint>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <Checkbox
+                            label="Scan: multi-threshold"
+                            checked={config.scanMultiThreshold}
+                            onCheckedChange={(v) => set("scanMultiThreshold", v)}
+                            disabled={disabled}
+                        />
+                        <InfoHint label="About scan: multi-threshold">Try several adaptive thresholds when scanning marker bits — slower but more robust. WASM default: on.</InfoHint>
+                    </div>
+                    <Field
+                        label="Max hamming"
+                        as="group"
+                        annotation={<InfoHint label="About max hamming">Maximum Hamming distance allowed when matching a candidate against the dictionary. Higher → tolerates more bit errors. WASM default: 1.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Max hamming"
+                            {...numberInputProps(config.maxHamming, (v) => set("maxHamming", v ?? 1))}
+                            disabled={disabled}
+                            min={0}
+                            max={8}
+                            step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Min marker inliers"
+                        as="group"
+                        annotation={<InfoHint label="About min marker inliers">Minimum number of decoded markers required to accept the board. WASM default: 8.</InfoHint>}
+                    >
+                        <NumberInput
+                            aria-label="Min marker inliers"
+                            {...numberInputProps(config.minMarkerInliers, (v) => set("minMarkerInliers", v ?? 8))}
+                            disabled={disabled}
+                            min={1}
+                            max={64}
+                            step={1}
+                        />
+                    </Field>
+                </div>
+            </Disclosure>
         </>
     );
 };

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
-import { LoaderCircle, Sparkles, AlertCircle, Maximize2, ChevronDown, X } from "lucide-react";
+import { Sparkles, Maximize2, X } from "lucide-react";
+import { Button, Callout, Dialog, DialogClose, Panel, Select, SkeletonRows } from "@vitavision/ui";
 
 import { useEditorStore } from "../../../store/editor/useEditorStore";
 import type { SampleId } from "../../../store/editor/useEditorStore";
@@ -11,8 +12,6 @@ import { ALGORITHM_MANIFEST, loadAlgorithm, getLoadedAlgorithm } from "../algori
 import useAlgorithmRunner, { stageLabel } from "../algorithms/useAlgorithmRunner";
 import { useDeepLinkSync } from "../../../hooks/useEditorDeepLink";
 
-import RailSection from "./RailSection";
-import ConfigModal from "./ConfigModal";
 
 type ConfigEntry = { value: unknown; sampleId: SampleId };
 
@@ -31,20 +30,22 @@ const resolveConfig = (
     return defaults !== undefined ? { ...initialConfig as object, ...defaults as object } : initialConfig;
 };
 
+/**
+ * Focuses the element once, when it mounts. Module-level so the ref is stable: an inline
+ * callback would be called again on every render and pull focus out of the fields.
+ */
+const focusOnMount = (node: HTMLElement | null) => node?.focus();
+
+const ALGORITHM_OPTIONS = ALGORITHM_MANIFEST.map((algo) => ({ value: algo.id, label: algo.title }));
+
 function AlgorithmPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
     return (
-        <div className="relative">
-            <select
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className="w-full appearance-none rounded-control border border-line bg-ground px-3 py-2 pr-8 text-xs font-medium text-fg transition-colors hover:bg-raised/60 focus:outline-none focus:ring-1 focus:ring-signal/40"
-            >
-                {ALGORITHM_MANIFEST.map((algo) => (
-                    <option key={algo.id} value={algo.id}>{algo.title}</option>
-                ))}
-            </select>
-            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-fg-muted" />
-        </div>
+        <Select
+            aria-label="Algorithm"
+            value={value}
+            options={ALGORITHM_OPTIONS}
+            onValueChange={onChange}
+        />
     );
 }
 
@@ -208,7 +209,7 @@ export default function ConfigurePanel() {
         <>
             {/* Section 1: No-image hint OR sample context card */}
             {imageSrc === null ? (
-                <div className="rounded-panel border border-dashed border-line/80 bg-ground/40 p-4 text-center">
+                <div className="rounded-panel border border-dashed border-line p-4 text-center">
                     <p className="text-xs text-fg-muted leading-relaxed">
                         Open an image from the gallery to get started.
                     </p>
@@ -221,47 +222,48 @@ export default function ConfigurePanel() {
             )}
 
             {/* Section 2: Algorithm selector */}
-            <RailSection label="Algorithm">
+            <Panel title="Algorithm" bodyClassName="space-y-2">
                 <AlgorithmPicker value={selectedAlgorithmId} onChange={handleSelectAlgorithm} />
-                <p className="text-xs text-fg-muted leading-relaxed px-0.5">
+                <p className="text-xs text-fg-muted leading-relaxed">
                     {manifestEntry.description}
                     {manifestEntry.blogSlug && (
                         <>
                             {" "}
                             <Link
                                 to={`/blog/${manifestEntry.blogSlug}`}
-                                className="text-signal underline hover:text-signal/80"
+                                className="text-signal underline hover:text-signal-strong"
                             >
                                 Learn more
                             </Link>
                         </>
                     )}
                 </p>
-            </RailSection>
+            </Panel>
 
             {/* Section 3: Presets (if available) */}
             {algorithm?.presets && algorithm.presets.length > 0 && (
-                <RailSection label="Presets">
+                <Panel title="Presets">
                     <PresetPicker
                         presets={algorithm.presets}
                         onSelect={handleConfigChange}
                     />
-                </RailSection>
+                </Panel>
             )}
 
             {/* Section 4: Config */}
-            <RailSection
-                label="Configuration"
-                action={
-                    <button
-                        type="button"
+            <Panel
+                title="Configuration"
+                bodyClassName="flex flex-col gap-3"
+                actions={
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="size-6 px-0"
                         onClick={() => setConfigModalOpen(true)}
-                        className="text-fg-muted/50 hover:text-fg transition-colors"
-                        title="Expand configuration"
+                        aria-label="Expand configuration"
                         disabled={algorithm === null}
-                    >
-                        <Maximize2 size={11} />
-                    </button>
+                        icon={<Maximize2 />}
+                    />
                 }
             >
                 {ConfigComponent && config !== undefined ? (
@@ -271,26 +273,47 @@ export default function ConfigurePanel() {
                         disabled={runner.isRunning}
                     />
                 ) : (
-                    <p className="text-xs text-fg-muted/60 animate-pulse">Loading…</p>
+                    <SkeletonRows rows={4} />
                 )}
-            </RailSection>
+            </Panel>
 
+            {/* The same form with room for two columns: it edits the same config, so every
+                change applies at once and closing is the only action. */}
             {ConfigComponent && config !== undefined && (
-                <ConfigModal
+                <Dialog
                     open={configModalOpen}
-                    onClose={() => setConfigModalOpen(false)}
+                    onOpenChange={setConfigModalOpen}
                     title={`${manifestEntry.title} Configuration`}
-                    ConfigComponent={ConfigComponent}
-                    config={config}
-                    onChange={handleConfigChange}
-                    disabled={runner.isRunning}
-                />
+                    description="Changes apply as you make them."
+                    className="w-[min(42rem,calc(100vw-2rem))]"
+                    footer={
+                        <DialogClose asChild>
+                            <Button variant="primary">Done</Button>
+                        </DialogClose>
+                    }
+                >
+                    {/* Focus lands on the form itself, not on its first field's help mark: a
+                        tooltip opening with the dialog would cover the description, and the
+                        first Escape would close the tooltip instead of the dialog. */}
+                    <div
+                        ref={focusOnMount}
+                        tabIndex={-1}
+                        className="mt-4 flex flex-col gap-3 pr-1 outline-none"
+                    >
+                        <ConfigComponent
+                            config={config}
+                            onChange={handleConfigChange}
+                            disabled={runner.isRunning}
+                            modal
+                        />
+                    </div>
+                </Dialog>
             )}
 
             {/* Section 5: Run + status + summary */}
-            <RailSection label="Run">
+            <Panel title="Run">
                 <RunSection runner={runner} canRun={canRun} onRun={() => void handleRun()} />
-            </RailSection>
+            </Panel>
         </>
     );
 }
@@ -309,15 +332,14 @@ function PresetPicker({
     return (
         <div className="flex flex-wrap gap-1.5">
             {presets.map((preset) => (
-                <button
+                <Button
                     key={preset.label}
-                    type="button"
+                    size="sm"
                     onClick={() => onSelect(preset.config)}
                     title={preset.description}
-                    className="text-[11px] px-2.5 py-1 rounded-full border border-line bg-ground text-fg hover:bg-signal/10 hover:border-signal/40 hover:text-signal transition-colors"
                 >
                     {preset.label}
-                </button>
+                </Button>
             ))}
         </div>
     );
@@ -335,19 +357,19 @@ function HintCardInner({
     if (dismissed) return null;
 
     return (
-        <div className="rounded-panel border border-line bg-ground p-3 space-y-2">
+        <div className="rounded-panel border border-line bg-surface p-3 space-y-2">
             <div className="flex items-start justify-between gap-2">
                 <p className="text-xs font-semibold text-fg leading-tight">
                     {image.name}
                 </p>
-                <button
-                    type="button"
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="-mt-1 -mr-1 size-6 px-0"
                     onClick={() => setDismissed(true)}
-                    className="text-fg-muted/50 hover:text-fg transition-colors shrink-0 -mt-0.5 -mr-0.5 p-0.5"
-                    title="Dismiss"
-                >
-                    <X size={14} />
-                </button>
+                    aria-label="Dismiss"
+                    icon={<X />}
+                />
             </div>
             {image.description && (
                 <p className="text-xs text-fg-muted leading-relaxed">
@@ -360,14 +382,16 @@ function HintCardInner({
                     {image.recommendedAlgorithms!.map((name) => {
                         const match = ALGORITHM_MANIFEST.find((a) => a.title === name);
                         return (
-                            <button
+                            <Button
                                 key={name}
-                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 px-2 text-signal hover:text-signal-strong"
                                 onClick={() => match && onSelectAlgorithm(match.id)}
-                                className="text-[11px] px-2 py-0.5 rounded-full bg-signal/10 text-signal font-medium hover:bg-signal/20 transition-colors"
+                                disabled={!match}
                             >
                                 {name}
-                            </button>
+                            </Button>
                         );
                     })}
                 </div>
@@ -395,18 +419,17 @@ function RunSection({
 }) {
     return (
         <div className="space-y-2.5">
-            <button
-                type="button"
+            <Button
+                variant="primary"
+                size="md"
+                className="w-full"
                 onClick={onRun}
                 disabled={!canRun}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-control bg-signal text-signal-fg px-4 py-2.5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:bg-signal/90 transition-colors shadow-sm"
+                loading={runner.isRunning}
+                icon={<Sparkles />}
             >
-                {runner.isRunning
-                    ? <LoaderCircle size={14} className="animate-spin" />
-                    : <Sparkles size={14} />
-                }
                 {runner.isRunning ? "Running…" : "Run Algorithm"}
-            </button>
+            </Button>
 
             {runner.isRunning && (
                 <p className="text-[11px] text-center text-fg-muted">
@@ -415,28 +438,25 @@ function RunSection({
             )}
 
             {!canRun && !runner.isRunning && (
-                <p className="text-[10px] text-center text-fg-muted/50">Load an image to run</p>
+                <p className="text-[10px] text-center text-fg-muted">Load an image to run</p>
             )}
 
             {!runner.isRunning && canRun && (
-                <p className="text-[10px] text-center text-fg-muted/50">
+                <p className="text-[10px] text-center text-fg-muted">
                     Client-side (WASM)
                 </p>
             )}
 
             {runner.error && (
-                <div className="flex items-start gap-2 rounded-panel border border-defect/30 bg-defect/5 px-3 py-2">
-                    <AlertCircle size={13} className="text-defect shrink-0 mt-0.5" />
-                    <p className="text-xs text-defect leading-relaxed">{runner.error}</p>
-                </div>
+                <Callout tone="error" className="text-xs">{runner.error}</Callout>
             )}
 
             {runner.summary.length > 0 && (
                 <div className="space-y-1.5">
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted/60">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
                         Last Run
                     </span>
-                    <div className="rounded-panel border border-line/80 bg-ground/60 px-4 py-3">
+                    <div className="rounded-panel border border-line bg-raised px-3 py-2">
                         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5">
                             {runner.summary.map((entry) => (
                                 <div key={entry.label} className="flex items-baseline gap-1.5">

@@ -2,6 +2,7 @@ import { useEditorStore } from "../../store/editor/useEditorStore";
 import type { SampleId } from "../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
 import { Plus, Image as ImageIcon } from "lucide-react";
+import { Button } from "@vitavision/ui";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 
@@ -69,13 +70,9 @@ export default function EditorGallery() {
                         <h1 className="text-3xl font-bold tracking-tight">Image Gallery</h1>
                         <p className="text-fg-muted mt-1">Select an image to start exploring algorithms.</p>
                     </div>
-                    <button
-                        onClick={handleFileUpload}
-                        className="flex items-center gap-2 bg-signal text-signal-fg px-4 py-2 rounded-control font-medium hover:bg-signal/90 transition-colors shadow-xs"
-                    >
-                        <Plus size={18} />
+                    <Button variant="primary" onClick={handleFileUpload} icon={<Plus />}>
                         Upload Image
-                    </button>
+                    </Button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -83,7 +80,7 @@ export default function EditorGallery() {
                         <div
                             key={img.id}
                             onClick={() => handleSelectImage(img.src, img.name, img.sampleId)}
-                            className="group cursor-pointer rounded-xl border border-line bg-ground overflow-hidden hover:shadow-md transition-all hover:border-signal/50 flex flex-col"
+                            className="group cursor-pointer rounded-panel border border-line bg-surface overflow-hidden hover:shadow-md transition-all hover:border-signal/50 flex flex-col"
                         >
                             <div className="aspect-video relative overflow-hidden bg-raised flex items-center justify-center">
                                 <img

@@ -14,7 +14,7 @@
     "component": "DesignPreviewProvider"
   },
   "componentSrcMap": {
-    "Tooltip": "src/components/ui/Tooltip.tsx",
+    "Tooltip": "node_modules/@vitavision/ui/src/components/ui/Tooltip.tsx",
     "ErrorBoundary": "src/components/ui/ErrorBoundary.tsx",
 
     "VitavisionLogo": "src/components/shared/VitavisionLogo.tsx",

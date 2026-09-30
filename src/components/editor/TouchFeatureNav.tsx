@@ -1,13 +1,12 @@
 import { useCallback, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
+import { Button } from "@vitavision/ui";
 import { useShallow } from "zustand/react/shallow";
 
 import { useEditorStore } from "../../store/editor/useEditorStore";
 import { buildFeatureGroups } from "../../store/editor/featureGroups";
 import useViewportMode from "../../hooks/useViewportMode";
 
-const NAV_BTN =
-    "flex min-w-[44px] min-h-[44px] items-center justify-center rounded-control text-fg-muted transition-colors hover:text-fg hover:bg-raised/30 active:bg-raised/50";
 
 export default function TouchFeatureNav() {
     const { isTouchPrimary } = useViewportMode();
@@ -62,30 +61,19 @@ export default function TouchFeatureNav() {
         : `— / ${total}`;
 
     return (
-        <div className="absolute bottom-14 left-3 z-20 flex items-center gap-0.5 rounded-control border border-line bg-ground/90 px-1 py-0.5 shadow-xs backdrop-blur-sm">
-            <button type="button" onClick={goPrev} className={NAV_BTN} title="Previous feature">
-                <ChevronLeft size={18} />
-            </button>
+        <div className="absolute bottom-14 left-3 z-20 flex items-center gap-0.5 rounded-control border border-line bg-surface/90 px-1 py-0.5 shadow-xs backdrop-blur-sm">
+            <Button variant="ghost" size="md" className="size-11 px-0" onClick={goPrev} aria-label="Previous feature" icon={<ChevronLeft />} />
 
             <span className="min-w-[5rem] text-center text-xs font-medium select-none">
                 {group && <span className="text-fg-muted">{group.label} </span>}
                 <span className="tabular-nums">{display}</span>
             </span>
 
-            <button type="button" onClick={goNext} className={NAV_BTN} title="Next feature">
-                <ChevronRight size={18} />
-            </button>
+            <Button variant="ghost" size="md" className="size-11 px-0" onClick={goNext} aria-label="Next feature" icon={<ChevronRight />} />
 
             <div className="mx-0.5 h-5 w-px bg-line" />
 
-            <button
-                type="button"
-                onClick={handleClear}
-                className={`${NAV_BTN} text-defect hover:text-defect hover:bg-defect/10 active:bg-defect/20`}
-                title="Clear all features"
-            >
-                <Trash2 size={16} />
-            </button>
+            <Button variant="danger" size="md" className="size-11 px-0" onClick={handleClear} aria-label="Clear all features" icon={<Trash2 />} />
         </div>
     );
 }

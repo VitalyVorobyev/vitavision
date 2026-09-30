@@ -32,7 +32,7 @@ import type { PapersById } from '../src/generated/papers-index.ts';
  *   context from source (rather than through the bundle) is what keeps the
  *   provider and the components on ONE context instance.
  *
- * - **Tooltip** — `Tooltip` renders `TooltipPrimitive.Root`, which reads
+ * - **Tooltip** — `Tooltip` (@vitavision/ui's) renders `TooltipPrimitive.Root`, which reads
  *   Radix's provider context unconditionally. Radix gives that context no
  *   default value, so without an ancestor `Provider` the component throws and
  *   React swallows it — the card just goes blank, with no page error. The app
@@ -56,7 +56,9 @@ export function DesignPreviewProvider({ children }: { children?: ReactNode }) {
 }
 
 /* ── UI primitives ─────────────────────────────────────────────────────── */
-export { default as Tooltip } from '../src/components/ui/Tooltip.tsx';
+// The tooltip is @vitavision/ui's (the site's own was retired in lab-ui L3-3); re-exported
+// so designs keep the name. Its hover delay comes from the `TooltipProvider` above.
+export { Tooltip } from '@vitavision/ui';
 export { default as ErrorBoundary } from '../src/components/ui/ErrorBoundary.tsx';
 
 /* ── Brand / shared chrome ─────────────────────────────────────────────── */

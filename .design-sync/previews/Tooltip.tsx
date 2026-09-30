@@ -8,24 +8,13 @@ export const Default = () => (
     </Tooltip>
 );
 
-export const Sides = () => (
-    <div className="flex items-center gap-4 p-6">
-        <Tooltip content="Pans the canvas" side="top">
-            <span className="rounded-control border border-line px-2 py-1 text-xs text-fg">Top</span>
-        </Tooltip>
-        <Tooltip content="Zooms to fit the image" side="bottom">
-            <span className="rounded-control border border-line px-2 py-1 text-xs text-fg">Bottom</span>
-        </Tooltip>
-        <Tooltip content="Toggles the heatmap overlay" side="left">
-            <span className="rounded-control border border-line px-2 py-1 text-xs text-fg">Left</span>
-        </Tooltip>
-    </div>
-);
-
 export const OnIconButton = () => (
-    <Tooltip content="Reprojection RMS: 0.184 px across 14 views" delayDuration={100}>
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-line text-xs font-mono text-fg-muted">
+    <Tooltip content="Reprojection RMS: 0.184 px across 14 views">
+        <button
+            aria-label="Reprojection error"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-line font-mono text-xs text-fg-muted"
+        >
             i
-        </span>
+        </button>
     </Tooltip>
 );

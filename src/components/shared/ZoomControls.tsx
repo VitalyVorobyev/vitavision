@@ -1,4 +1,5 @@
 import { ZoomIn, ZoomOut, Maximize } from "lucide-react";
+import { Button, cn } from "@vitavision/ui";
 
 interface ZoomControlsProps {
     onZoomIn: () => void;
@@ -17,37 +18,25 @@ export default function ZoomControls({
     zoomPercent,
     touchFriendly = false,
 }: ZoomControlsProps) {
-    const btn =
-        `rounded-control border border-line bg-ground/80 text-fg-muted backdrop-blur-sm transition-colors hover:bg-ground hover:text-fg ${
-            touchFriendly ? "p-2.5" : "p-1.5"
-        }`;
-    const iconSize = touchFriendly ? 18 : 14;
+    // Floating over the image: ui's secondary buttons, one size up for touch.
+    const size = touchFriendly ? "md" : "sm";
+    const iconOnly = touchFriendly ? "px-2" : "px-1.5";
 
     return (
         <div className="flex items-center gap-1">
-            <button type="button" onClick={onZoomIn} className={btn} title="Zoom In">
-                <ZoomIn size={iconSize} />
-            </button>
-            <button type="button" onClick={onZoomOut} className={btn} title="Zoom Out">
-                <ZoomOut size={iconSize} />
-            </button>
-            <button type="button" onClick={onFit} className={btn} title="Fit to Screen">
-                <Maximize size={iconSize} />
-            </button>
-            <button
-                type="button"
-                onClick={onActual}
-                className={`rounded-control border border-line bg-ground/80 font-medium text-fg-muted backdrop-blur-sm transition-colors hover:bg-ground hover:text-fg ${
-                    touchFriendly ? "px-2.5 py-2 text-xs" : "px-1.5 py-1 text-[11px]"
-                }`}
-                title="Zoom to 100%"
-            >
+            <Button size={size} className={iconOnly} onClick={onZoomIn} aria-label="Zoom in" title="Zoom in" icon={<ZoomIn />} />
+            <Button size={size} className={iconOnly} onClick={onZoomOut} aria-label="Zoom out" title="Zoom out" icon={<ZoomOut />} />
+            <Button size={size} className={iconOnly} onClick={onFit} aria-label="Fit to screen" title="Fit to screen" icon={<Maximize />} />
+            <Button size={size} className="px-2 font-mono" onClick={onActual} aria-label="Zoom to 100%" title="Zoom to 100%">
                 1:1
-            </button>
+            </Button>
             {zoomPercent !== undefined && (
-                <div className={`min-w-[3.5rem] rounded-control border border-line bg-ground/80 text-center text-fg-muted backdrop-blur-sm ${
-                    touchFriendly ? "px-3 py-2 text-xs" : "px-2 py-1 text-[11px]"
-                }`}>
+                <div
+                    className={cn(
+                        "flex min-w-[3.5rem] items-center justify-center rounded-control border border-line bg-surface font-mono text-fg-muted tabular-nums",
+                        touchFriendly ? "h-8 px-3 text-xs" : "h-7 px-2 text-[11px]",
+                    )}
+                >
                     {zoomPercent}%
                 </div>
             )}

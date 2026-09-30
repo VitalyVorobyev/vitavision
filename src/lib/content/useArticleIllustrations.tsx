@@ -40,7 +40,9 @@ export function useArticleIllustrations(
         if (hosts.length === 0) return;
 
         // Each illustration is a React root of its own, outside the app tree, so it needs its
-        // own TooltipProvider: ui's Tooltip and InfoHint throw without one.
+        // own TooltipProvider: ui's Tooltip and InfoHint throw without one. It sits in the
+        // article's serif prose, but it is an instrument, not prose: its controls are set in
+        // ui's sans like every other control on the site.
         const roots: Root[] = [];
 
         hosts.forEach((host) => {
@@ -50,13 +52,15 @@ export function useArticleIllustrations(
                 roots.push(root);
                 root.render(
                     <TooltipProvider>
-                        <ChessResponseIllustration
-                            preset={parsePreset(host.dataset.vvPreset)}
-                            initialPattern={parsePattern(host.dataset.vvPattern)}
-                            initialRotation={parseNumber(host.dataset.vvRotation, 22.5)}
-                            showControls={parseBoolean(host.dataset.vvControls, true)}
-                            initialAnimateRotation={parseBoolean(host.dataset.vvAnimateRotation, false)}
-                        />
+                        <div className="font-sans">
+                            <ChessResponseIllustration
+                                preset={parsePreset(host.dataset.vvPreset)}
+                                initialPattern={parsePattern(host.dataset.vvPattern)}
+                                initialRotation={parseNumber(host.dataset.vvRotation, 22.5)}
+                                showControls={parseBoolean(host.dataset.vvControls, true)}
+                                initialAnimateRotation={parseBoolean(host.dataset.vvAnimateRotation, false)}
+                            />
+                        </div>
                     </TooltipProvider>,
                 );
             } else if (kind === "delaunay-voronoi") {
@@ -64,15 +68,17 @@ export function useArticleIllustrations(
                 roots.push(root);
                 root.render(
                     <TooltipProvider>
-                        <DelaunayVoronoiInlineIllustration
-                            showLegend={parseBoolean(host.dataset.vvLegend, false)}
-                            initialLayers={{
-                                grid:          parseBoolean(host.dataset.vvGrid, true),
-                                delaunay:      parseBoolean(host.dataset.vvDelaunay, true),
-                                voronoi:       parseBoolean(host.dataset.vvVoronoi, false),
-                                circumcircles: parseBoolean(host.dataset.vvCircumcircles, false),
-                            }}
-                        />
+                        <div className="font-sans">
+                            <DelaunayVoronoiInlineIllustration
+                                showLegend={parseBoolean(host.dataset.vvLegend, false)}
+                                initialLayers={{
+                                    grid:          parseBoolean(host.dataset.vvGrid, true),
+                                    delaunay:      parseBoolean(host.dataset.vvDelaunay, true),
+                                    voronoi:       parseBoolean(host.dataset.vvVoronoi, false),
+                                    circumcircles: parseBoolean(host.dataset.vvCircumcircles, false),
+                                }}
+                            />
+                        </div>
                     </TooltipProvider>,
                 );
             }

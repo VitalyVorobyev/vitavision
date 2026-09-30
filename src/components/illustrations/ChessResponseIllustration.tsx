@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Pause, Play } from "lucide-react";
+import { Button, DensityProvider, SegmentedControl, Slider, ToggleChip } from "@vitavision/ui";
 import { classNames } from "../../utils/helpers";
 import ChessResponseSvg from "./chess-response/ChessResponseSvg";
 import { useChessResponse } from "./chess-response/useChessResponse";
 import useChessResponseAnimation from "./chess-response/useChessResponseAnimation";
 import ChessResponseInlinePreview from "./ChessResponseInlinePreview";
 import { PHASE_COLORS, formatValue } from "./chess-response/readoutHelpers";
+import { PATTERN_OPTIONS, toPattern } from "./chess-response/patternOptions";
+import { CHESS_DR_COLOR, CHESS_MR_COLOR } from "./_shared/dataColors";
 import type {
     ChessResponsePattern,
     ChessResponsePreset,
@@ -15,32 +18,6 @@ import type { useChessResponse as UseChessResponse } from "./chess-response/useC
 // ---------------------------------------------------------------------------
 // Inline Controls (replaces deleted ChessResponseControls.tsx)
 // ---------------------------------------------------------------------------
-function ToggleButton({
-    label,
-    pressed,
-    onChange,
-}: {
-    label: string;
-    pressed: boolean;
-    onChange: (next: boolean) => void;
-}) {
-    return (
-        <button
-            type="button"
-            aria-pressed={pressed}
-            onClick={() => onChange(!pressed)}
-            className={classNames(
-                "rounded-xl border px-3 py-2 text-sm font-medium transition-colors text-left",
-                pressed
-                    ? "border-signal/30 bg-signal/10 text-fg"
-                    : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
-            )}
-        >
-            {label}
-        </button>
-    );
-}
-
 function RangeRow({
     label,
     value,
@@ -59,21 +36,18 @@ function RangeRow({
     formatter: (v: number) => string;
 }) {
     return (
-        <label className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-                <span className="text-fg">{label}</span>
-                <span className="font-mono text-xs text-fg-muted">{formatter(value)}</span>
-            </div>
-            <input
-                type="range"
+        <div className="space-y-1.5">
+            <div className="text-sm text-fg">{label}</div>
+            <Slider
+                aria-label={label}
+                value={value}
                 min={min}
                 max={max}
                 step={step}
-                value={value}
-                onChange={(e) => onChange(Number(e.target.value))}
-                className="w-full accent-signal"
+                onValueChange={onChange}
+                readout={<span className="inline-block w-14 text-right">{formatter(value)}</span>}
             />
-        </label>
+        </div>
     );
 }
 
@@ -123,28 +97,21 @@ function ArticleControls({
     onSpeedChange,
 }: ArticleControlsProps) {
     return (
+        <DensityProvider value="compact">
         <div className="space-y-4">
             <div className="space-y-2.5">
                 <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">
                     Pattern
                 </div>
-                <div className="grid grid-cols-3 gap-2">
-                    {(["corner", "edge", "stripe"] as ChessResponsePattern[]).map((opt) => (
-                        <button
-                            key={opt}
-                            type="button"
-                            onClick={() => onPatternChange(opt)}
-                            className={classNames(
-                                "rounded-xl border px-3 py-2 text-sm font-medium capitalize transition-colors",
-                                pattern === opt
-                                    ? "border-signal/30 bg-signal/10 text-fg"
-                                    : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
-                            )}
-                        >
-                            {opt}
-                        </button>
-                    ))}
-                </div>
+                <SegmentedControl
+                    aria-label="Pattern"
+                    value={pattern}
+                    options={PATTERN_OPTIONS}
+                    onValueChange={(next) => {
+                        const p = toPattern(next);
+                        if (p) onPatternChange(p);
+                    }}
+                />
             </div>
 
             <div className="space-y-2.5">
@@ -152,20 +119,13 @@ function ArticleControls({
                     Animation
                 </div>
                 <div className="flex items-center gap-3">
-                    <button
-                        type="button"
+                    <Button
                         aria-label={playing ? "Pause rotation" : "Play rotation"}
                         onClick={() => onPlayingChange(!playing)}
-                        className={classNames(
-                            "flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
-                            playing
-                                ? "border-signal/30 bg-signal/10 text-fg"
-                                : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
-                        )}
+                        icon={playing ? <Pause /> : <Play />}
                     >
-                        {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                         {playing ? "Pause" : "Play"}
-                    </button>
+                    </Button>
                 </div>
                 <RangeRow
                     label="Speed"
@@ -212,14 +172,15 @@ function ArticleControls({
                 <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">
                     Overlays
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                    <ToggleButton label="Sample labels" pressed={showSampleLabels} onChange={onShowSampleLabelsChange} />
-                    <ToggleButton label="SR pairs" pressed={showSrPairs} onChange={onShowSrPairsChange} />
-                    <ToggleButton label="DR pairs" pressed={showDrPairs} onChange={onShowDrPairsChange} />
-                    <ToggleButton label="MR regions" pressed={showMrRegions} onChange={onShowMrRegionsChange} />
+                <div className="flex flex-wrap gap-1.5">
+                    <ToggleChip checked={showSampleLabels} onCheckedChange={onShowSampleLabelsChange}>Sample labels</ToggleChip>
+                    <ToggleChip checked={showSrPairs} onCheckedChange={onShowSrPairsChange} swatch={PHASE_COLORS[1]}>SR pairs</ToggleChip>
+                    <ToggleChip checked={showDrPairs} onCheckedChange={onShowDrPairsChange} swatch={CHESS_DR_COLOR}>DR pairs</ToggleChip>
+                    <ToggleChip checked={showMrRegions} onCheckedChange={onShowMrRegionsChange} swatch={CHESS_MR_COLOR}>MR regions</ToggleChip>
                 </div>
             </div>
         </div>
+        </DensityProvider>
     );
 }
 
@@ -264,8 +225,8 @@ function ArticleReadouts({ response }: { response: ReturnType<typeof UseChessRes
                     value={formatValue(response.response)}
                     accentClassName={
                         response.response > 0
-                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-                            : "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                            ? "border-normal/30 bg-normal/10 text-normal"
+                            : "border-warn/30 bg-warn/10 text-warn"
                     }
                 />
             </div>

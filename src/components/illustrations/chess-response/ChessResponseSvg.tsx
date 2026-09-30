@@ -1,9 +1,12 @@
 import { CHESS_RESPONSE_GRID_SIZE, CHESS_RESPONSE_RING_RADIUS } from "./types";
 import type { ChessResponseComputation } from "./types";
 
-const PHASE_COLORS = ["#0f766e", "#2563eb", "#9333ea", "#c2410c"];
-const DR_COLOR = "#b91c1c";
-const MR_COLOR = "#d97706";
+import {
+    CHESS_DR_COLOR as DR_COLOR,
+    CHESS_MR_COLOR as MR_COLOR,
+    CHESS_PHASE_COLORS as PHASE_COLORS,
+} from "../_shared/dataColors";
+
 const VIEW_BOX_SIZE = 420;
 const GRID_ORIGIN = 23;
 const CELL_SIZE = 22;
@@ -30,7 +33,7 @@ const DEFAULT_PALETTE: ChessResponseSvgPalette = {
     border: "var(--line)",
     foreground: "var(--fg)",
     muted: "var(--fg-muted)",
-    pixelStroke: "rgb(148 163 184 / 0.22)",
+    pixelStroke: "color-mix(in oklab, var(--fg-subtle) 22%, transparent)",
 };
 
 const DEFAULT_FONTS: ChessResponseSvgFonts = {

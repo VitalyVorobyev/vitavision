@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Pause, Play } from "lucide-react";
+import { Button, DensityProvider, SegmentedControl } from "@vitavision/ui";
 import ChessResponseSvg from "./chess-response/ChessResponseSvg";
 import { useChessResponse } from "./chess-response/useChessResponse";
 import useChessResponseAnimation from "./chess-response/useChessResponseAnimation";
 import { formatValue } from "./chess-response/readoutHelpers";
 import { classNames } from "../../utils/helpers";
 import type { ChessResponsePattern } from "./chess-response/types";
+import { PATTERN_OPTIONS, toPattern } from "./chess-response/patternOptions";
 
 export interface ChessResponseInlinePreviewProps {
     initialPattern?: ChessResponsePattern;
@@ -39,6 +41,7 @@ export default function ChessResponseInlinePreview({
     });
 
     return (
+        <DensityProvider value="compact">
         <section className="not-prose my-6 flex flex-col sm:flex-row items-stretch gap-4 rounded-2xl border border-line bg-[linear-gradient(180deg,var(--surface),var(--ground))] p-4">
             {/* Mini SVG */}
             <div className="w-full sm:w-auto sm:max-w-[12rem] shrink-0">
@@ -61,31 +64,23 @@ export default function ChessResponseInlinePreview({
                     </div>
 
                     {/* Pattern switcher */}
-                    <div className="flex gap-1.5">
-                        {(["corner", "edge", "stripe"] as ChessResponsePattern[]).map((option) => (
-                            <button
-                                key={option}
-                                type="button"
-                                onClick={() => setPattern(option)}
-                                className={classNames(
-                                    "rounded-xl border px-2.5 py-1.5 text-xs font-medium capitalize transition-colors",
-                                    pattern === option
-                                        ? "border-signal/30 bg-signal/10 text-fg"
-                                        : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
-                                )}
-                            >
-                                {option}
-                            </button>
-                        ))}
-                    </div>
+                    <SegmentedControl
+                        aria-label="Pattern"
+                        value={pattern}
+                        options={PATTERN_OPTIONS}
+                        onValueChange={(next) => {
+                            const p = toPattern(next);
+                            if (p) setPattern(p);
+                        }}
+                    />
 
                     {/* R metric pill */}
                     <div
                         className={classNames(
                             "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-mono",
                             response.response > 0
-                                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                                : "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+                                ? "border-normal/30 bg-normal/10 text-normal"
+                                : "border-warn/30 bg-warn/10 text-warn",
                         )}
                     >
                         <span className="text-fg-muted">R =</span>
@@ -95,20 +90,13 @@ export default function ChessResponseInlinePreview({
 
                 <div className="flex items-center gap-3">
                     {/* Play/pause */}
-                    <button
-                        type="button"
+                    <Button
                         aria-label={playing ? "Pause rotation" : "Play rotation"}
                         onClick={() => setPlaying((p) => !p)}
-                        className={classNames(
-                            "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors",
-                            playing
-                                ? "border-signal/30 bg-signal/10 text-fg"
-                                : "border-line/80 bg-ground/80 text-fg-muted hover:text-fg",
-                        )}
+                        icon={playing ? <Pause /> : <Play />}
                     >
-                        {playing ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                         {playing ? "Pause" : "Play"}
-                    </button>
+                    </Button>
 
                     {/* Link to full demo (plain <a> so it works inside createRoot subtrees
                          that don't inherit the outer React Router context) */}
@@ -121,5 +109,6 @@ export default function ChessResponseInlinePreview({
                 </div>
             </div>
         </section>
+        </DensityProvider>
     );
 }

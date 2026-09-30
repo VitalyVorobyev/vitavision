@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Button, DensityProvider, SegmentedControl, ToggleChip } from "@vitavision/ui";
 import { Panel, PanelFlat, TinyBrow } from "./_shared/primitives";
 import DelaunayVoronoiCanvas from "./delaunay-voronoi/DelaunayVoronoiCanvas";
 import { useDelaunayVoronoi } from "./delaunay-voronoi/useDelaunayVoronoi";
@@ -15,6 +16,8 @@ const MODES: { tool: ActiveTool; label: string }[] = [
     { tool: "move",   label: "Move" },
     { tool: "delete", label: "Erase" },
 ];
+
+const MODE_OPTIONS = MODES.map(({ tool, label }) => ({ value: tool, label }));
 
 export interface DelaunayVoronoiInlineIllustrationProps {
     initialLayers?: Partial<Layers>;
@@ -45,63 +48,39 @@ export default function DelaunayVoronoiInlineIllustration({
     };
 
     return (
+        <DensityProvider value="compact">
         <div className="flex flex-col gap-3 my-6">
             {/* Toolbar */}
             <PanelFlat className="flex flex-wrap items-center gap-3 px-3 py-2">
-                <div className="flex items-center gap-1">
-                    <TinyBrow className="mr-1 hidden sm:inline">Mode</TinyBrow>
-                    {MODES.map(({ tool, label }) => {
-                        const on = state.activeTool === tool;
-                        return (
-                            <button
-                                key={tool}
-                                type="button"
-                                aria-pressed={on}
-                                onClick={() => setTool(tool)}
-                                className={`rounded-full px-2.5 py-1 text-[11px] border transition-colors ${
-                                    on
-                                        ? "border-signal/40 bg-signal/10 text-fg"
-                                        : "border-line text-fg-muted hover:text-fg"
-                                }`}
-                            >
-                                {label}
-                            </button>
-                        );
-                    })}
+                <div className="flex items-center gap-1.5">
+                    <TinyBrow className="hidden sm:inline">Mode</TinyBrow>
+                    <SegmentedControl
+                        aria-label="Mode"
+                        value={state.activeTool}
+                        options={MODE_OPTIONS}
+                        onValueChange={(next) => {
+                            const mode = MODES.find(({ tool }) => tool === next);
+                            if (mode) setTool(mode.tool);
+                        }}
+                    />
                 </div>
                 <div className="hidden sm:block w-px h-4 bg-line" />
-                <div className="flex items-center gap-1">
-                    <TinyBrow className="mr-1 hidden sm:inline">Layers</TinyBrow>
-                    {LAYER_LABELS.map(({ key, label, swatch }) => {
-                        const on = state.layers[key];
-                        return (
-                            <button
-                                key={key}
-                                type="button"
-                                aria-pressed={on}
-                                onClick={() => toggleLayer(key)}
-                                className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] border transition-colors ${
-                                    on
-                                        ? "border-signal/40 bg-signal/10 text-fg"
-                                        : "border-line text-fg-muted hover:text-fg"
-                                }`}
-                            >
-                                <span
-                                    className="inline-block w-2 h-2 rounded-xs shrink-0"
-                                    style={{ background: swatch }}
-                                />
-                                {label}
-                            </button>
-                        );
-                    })}
+                <div className="flex items-center gap-1.5">
+                    <TinyBrow className="hidden sm:inline">Layers</TinyBrow>
+                    {LAYER_LABELS.map(({ key, label, swatch }) => (
+                        <ToggleChip
+                            key={key}
+                            checked={state.layers[key]}
+                            onCheckedChange={() => toggleLayer(key)}
+                            swatch={swatch}
+                        >
+                            {label}
+                        </ToggleChip>
+                    ))}
                 </div>
-                <button
-                    type="button"
-                    onClick={reset}
-                    className="ml-auto rounded-full px-3 py-1 text-[11px] border border-line text-fg-muted hover:text-fg"
-                >
+                <Button variant="ghost" className="ml-auto" onClick={reset}>
                     Reset
-                </button>
+                </Button>
             </PanelFlat>
 
             {/* Canvas */}
@@ -115,5 +94,6 @@ export default function DelaunayVoronoiInlineIllustration({
                 </p>
             )}
         </div>
+        </DensityProvider>
     );
 }

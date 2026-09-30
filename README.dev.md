@@ -46,6 +46,41 @@ places they report are fixed as a change of their own.
 
 ---
 
+## Styling and theme
+
+The site is styled with Tailwind v4 (through `@tailwindcss/postcss`) on the tokens of
+[`@vitavision/ui`](https://github.com/VitalyVorobyev/lab-ui/tree/main/packages/ui), the
+shared vitavision design system (lab-ui PLAN L3-3):
+
+- **Tokens.** `src/index.css` imports `@vitavision/ui/styles.css`: `ground`, `surface`,
+  `raised`, `overlay`, `line`, `line-strong`, `fg`, `fg-muted`, `fg-subtle`, `signal`
+  (the one accent), the verdicts `normal` / `defect` / `warn`, and the radii
+  `rounded-control` / `rounded-panel`. Use the utilities (`bg-surface`, `text-fg-muted`)
+  or `var(--surface)`; never a hex or HSL literal in a component.
+- **Editorial token layer.** `src/styles/editorial-tokens.css` holds only what ui has no
+  name for: the article reading colours (`--article-body`, `--article-heading`,
+  `--article-link`), the Atlas graph and paper-lineage category palettes (`--graph-*`,
+  `--lineage-*`), the article block and inline-colour palettes used by
+  `src/styles/article.css` (`--vv-*`), and the logo's cyan pupil (`--vv-brand-mark`).
+  Chrome there is written in ui tokens; category colours are literals, held at 4.5:1 as
+  text in both themes.
+- **Type.** IBM Plex Sans and Plex Mono from `@vitavision/ui/fonts.css` (imported in
+  `main.tsx`: see the comment there for why not in `index.css`); Source Serif 4
+  (`font-serif`) for editorial body text only. Prose keeps Source Serif's own figures
+  (`.prose, .font-serif` reset ui's `tabular-nums`).
+- **Theme.** ui's controller, under the storage key `"theme"` (`src/lib/theme.ts`):
+  `light`, `dark` or `system` (the default, following the OS). The inline script in
+  `index.html` paints the `dark` class and the favicon before the first paint;
+  `main.tsx` calls `initTheme`; the Navbar renders ui's `ThemeToggle`. Read the painted
+  theme with `useIsDark()`, never from storage. ui's `ThemeToggle`, `Tooltip` and
+  `InfoHint` need a `TooltipProvider` above them: the app root, the prerender tree in
+  `entry-server.tsx` and each article-illustration island have one.
+- **CSP.** The inline theme script is allowed by its sha256 in the CSP of `index.html`
+  and `public/_headers`. Any edit to the script's text changes the hash: recompute it
+  from the built page (`dist/index.html`) and update both.
+
+---
+
 ## Deployment
 
 The frontend is deployed as a static site on **Cloudflare Pages**. Every merge to `main` triggers CI:

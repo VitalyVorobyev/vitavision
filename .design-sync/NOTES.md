@@ -25,12 +25,12 @@ converter to bundle. The design-system surface is defined by hand:
   "React is not defined". `build-ds.mjs` pre-bundles with an explicit `jsx: 'automatic'`
   so the converter only ever sees plain ESM. **Do not** point `--entry` straight at `src/`.
 
-- **Vite emits root-absolute font urls** (`url(/assets/inter-….woff2)`). The converter
-  resolves `url()` relative to the stylesheet, so those never resolve: all 117 font files
-  silently fail to copy and every design renders in a fallback font. `build-ds.mjs`
+- **Vite emits root-absolute font urls** (`url(/assets/ibm-plex-sans-….woff2)`). The converter
+  resolves `url()` relative to the stylesheet, so those never resolve: every font file
+  silently fails to copy and every design renders in a fallback font. `build-ds.mjs`
   rewrites them to `../assets/` and writes the sheet to `dist/ds/styles.css`, next to
   `dist/assets/`, which makes them resolvable. Verify after any build:
-  `ls ds-bundle/fonts | wc -l` should be ~138, not 1.
+  `ls ds-bundle/fonts | wc -l` should be several dozen (IBM Plex, Source Serif 4, KaTeX), not 1.
 
 - **Do not run `bun run build` for this workflow — use `buildCmd`.** The full script starts
   with `content:build`, which regenerates `src/generated/content/**` and dirties ~121 tracked
@@ -66,9 +66,9 @@ converter to bundle. The design-system surface is defined by hand:
   agent's runtime.
 - **`guidelinesGlob` is `[]` on purpose.** The default globs slurp `docs/*.md`, which
   here is Atlas research material, not design guidance. Worse, `docs/brand_identity.md`
-  is **stale**: it describes a dark-navy `#0B132B` / cyan `#33C6E3` palette, while
-  `src/index.css` actually implements the light-first "Technical Journal" scheme. Only
-  `--brand` (the cyan logo pupil) survived. Shipping that file would teach the design
+  is **stale**: it describes a dark-navy `#0B132B` / cyan `#33C6E3` palette, while the
+  site now uses @vitavision/ui's neutral *instrument* tokens (lab-ui L3-3). Only the cyan
+  logo pupil survived, as `--vv-brand-mark` in `src/styles/editorial-tokens.css`. Shipping that file would teach the design
   agent the wrong palette. The real design language lives in `.design-sync/conventions.md`.
 
 ## Ambient context the design system must supply

@@ -1,9 +1,9 @@
 interface Props { level: "beginner" | "intermediate" | "advanced"; }
 
 const DOT_COLOR: Record<Props["level"], string> = {
-    beginner:     "bg-[hsl(140_50%_45%)]",
-    intermediate: "bg-[hsl(38_85%_50%)]",
-    advanced:     "bg-[hsl(350_60%_55%)]",
+    beginner:     "bg-difficulty-beginner",
+    intermediate: "bg-difficulty-intermediate",
+    advanced:     "bg-difficulty-advanced",
 };
 
 const LABEL: Record<Props["level"], string> = {

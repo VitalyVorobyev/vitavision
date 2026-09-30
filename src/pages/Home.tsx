@@ -1,9 +1,8 @@
 import { motion } from "motion/react";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import { Tooltip } from "@vitavision/ui";
 import SeoHead from "../components/seo/SeoHead.tsx";
-import Tooltip from "../components/ui/Tooltip";
 import VitavisionLogo from "../components/shared/VitavisionLogo";
 import {
     SpecBlog,
@@ -78,42 +77,40 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 1.2 }}
                 className="w-full max-w-2xl"
             >
-                <TooltipPrimitive.Provider delayDuration={250}>
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                        {tiles.map(({ label, href, tooltip, Spec }) => (
-                            <Tooltip key={href} content={tooltip} side="bottom">
-                                <Link
-                                    to={href}
-                                    aria-label={`${label} — ${tooltip}`}
-                                    className="group relative flex min-h-[116px] flex-col overflow-hidden rounded-xl border border-line/70 bg-surface/80 px-3.5 pb-3.5 pt-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-signal/45 hover:shadow-[0_10px_28px_-16px_color-mix(in_oklab,var(--signal)_50%,transparent)] focus-visible:border-signal/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal/40"
-                                >
-                                    <span
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {tiles.map(({ label, href, tooltip, Spec }) => (
+                        <Tooltip key={href} content={tooltip}>
+                            <Link
+                                to={href}
+                                aria-label={`${label} — ${tooltip}`}
+                                className="group relative flex min-h-[116px] flex-col overflow-hidden rounded-xl border border-line/70 bg-surface/80 px-3.5 pb-3.5 pt-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-signal/45 hover:shadow-[0_10px_28px_-16px_color-mix(in_oklab,var(--signal)_50%,transparent)] focus-visible:border-signal/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal/40"
+                            >
+                                <span
+                                    aria-hidden
+                                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
+                                    style={{
+                                        background:
+                                            "radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--signal) 14%, transparent), transparent 60%)",
+                                    }}
+                                />
+                                <div className="relative flex h-10 items-center">
+                                    <Spec />
+                                </div>
+                                <div className="relative mt-auto flex items-end justify-between pt-3">
+                                    <span className="text-[13px] font-semibold tracking-tight text-fg">
+                                        {label}
+                                    </span>
+                                    <ArrowRight
+                                        size={14}
+                                        strokeWidth={2}
                                         aria-hidden
-                                        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
-                                        style={{
-                                            background:
-                                                "radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--signal) 14%, transparent), transparent 60%)",
-                                        }}
+                                        className="-translate-x-1 text-fg-muted/80 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:text-signal group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:text-signal group-focus-visible:opacity-100"
                                     />
-                                    <div className="relative flex h-10 items-center">
-                                        <Spec />
-                                    </div>
-                                    <div className="relative mt-auto flex items-end justify-between pt-3">
-                                        <span className="text-[13px] font-semibold tracking-tight text-fg">
-                                            {label}
-                                        </span>
-                                        <ArrowRight
-                                            size={14}
-                                            strokeWidth={2}
-                                            aria-hidden
-                                            className="-translate-x-1 text-fg-muted/80 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:text-signal group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:text-signal group-focus-visible:opacity-100"
-                                        />
-                                    </div>
-                                </Link>
-                            </Tooltip>
-                        ))}
-                    </div>
-                </TooltipPrimitive.Provider>
+                                </div>
+                            </Link>
+                        </Tooltip>
+                    ))}
+                </div>
             </motion.div>
         </div>
     );

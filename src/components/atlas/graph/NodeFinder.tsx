@@ -101,7 +101,7 @@ export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }:
                                 onMouseDown={(e) => { e.preventDefault(); pick(item.id); }}
                                 onMouseEnter={() => setHighlightIndex(idx)}
                                 className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-left transition-colors ${
-                                    isHighlighted ? "bg-raised" : "hover:bg-raised/60"
+                                    isHighlighted ? "bg-line/60" : "hover:bg-line/60"
                                 }`}
                             >
                                 {item.icon}

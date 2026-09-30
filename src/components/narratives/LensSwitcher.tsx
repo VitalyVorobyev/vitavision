@@ -27,7 +27,7 @@ export default function LensSwitcher({ lenses, activeId, onChange }: LensSwitche
                         className={`rounded-full border px-2.5 py-[3px] text-[11.5px] transition-colors ${
                             active
                                 ? "border-line-strong bg-line text-fg font-medium"
-                                : "border-line text-fg-muted hover:text-fg hover:bg-raised"
+                                : "border-line text-fg-muted hover:text-fg hover:bg-line/60"
                         }`}
                     >
                         {lens.title}

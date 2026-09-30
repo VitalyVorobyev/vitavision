@@ -36,7 +36,7 @@ export function TrailStrip({ history, current, future, onBack, onForward, onJump
                 disabled={history.length === 0}
                 className={`w-7 h-7 grid place-items-center rounded ${
                     history.length > 0
-                        ? "text-fg hover:bg-raised"
+                        ? "text-fg hover:bg-line/60"
                         : "text-fg-muted/60 cursor-default"
                 }`}
                 title="Back (⌘[)"
@@ -52,7 +52,7 @@ export function TrailStrip({ history, current, future, onBack, onForward, onJump
                 disabled={future.length === 0}
                 className={`w-7 h-7 grid place-items-center rounded ${
                     future.length > 0
-                        ? "text-fg hover:bg-raised"
+                        ? "text-fg hover:bg-line/60"
                         : "text-fg-muted/60 cursor-default"
                 }`}
                 title="Forward (⌘])"

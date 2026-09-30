@@ -98,7 +98,7 @@ export function PersonCombobox({ scholarly, authorsIdx, onSelect }: PersonCombob
                                 }}
                                 onMouseEnter={() => setHighlightIndex(idx)}
                                 className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left text-sm transition-colors ${
-                                    idx === highlightIndex ? "bg-raised" : "hover:bg-raised/60"
+                                    idx === highlightIndex ? "bg-line/60" : "hover:bg-line/60"
                                 }`}
                             >
                                 <span className="truncate text-fg">{r.name}</span>

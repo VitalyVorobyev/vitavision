@@ -8,7 +8,7 @@ export function cardBody(tagline?: string, summary?: string): string | undefined
 /** Per-kind text colours for the kind label — kept in sync with AtlasPageHeader's KIND_CLASSES. */
 export const KIND_TEXT_CLASSES: Record<"algorithm" | "model" | "concept", string> = {
     algorithm: "text-signal",
-    model:     "text-violet-600 dark:text-violet-400",
+    model:     "text-ink-violet",
     concept:   "text-fg-muted",
 };
 

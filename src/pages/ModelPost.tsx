@@ -107,7 +107,7 @@ export default function ModelPost() {
         <>
             <QualityBadge quality={frontmatter.quality} />
             {frontmatter.noPublicImpl && (
-                <span className="inline-flex items-center rounded border border-amber-500/40 px-2 py-0.5 text-sm font-mono uppercase tracking-wider text-amber-500">
+                <span className="inline-flex items-center rounded border border-ink-amber/40 px-2 py-0.5 text-sm font-mono uppercase tracking-wider text-ink-amber">
                     no public impl
                 </span>
             )}

@@ -31,8 +31,8 @@ export function NetworkEdges({ edges, positions, focusId, ringIds }: NetworkEdge
                     y1={pa.y}
                     x2={pb.x}
                     y2={pb.y}
-                    stroke={hot ? "currentColor" : "#94a3b8"}
-                    className={hot ? "text-fg" : undefined}
+                    stroke="currentColor"
+                    className={hot ? "text-fg" : "text-fg-subtle"}
                     strokeOpacity={opacity}
                     strokeWidth={width}
                 />

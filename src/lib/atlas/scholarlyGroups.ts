@@ -5,7 +5,9 @@
  * so domains fold into five communities that match how the co-author graph
  * actually clusters. Shared by the build (`scripts/build/scholarly.ts`, which
  * assigns each author a group from their main domain) and the client (labels,
- * colours). Colours differ in lightness as well as hue.
+ * colours). Colours differ in lightness as well as hue; they are the `--scholar-*`
+ * tokens of src/styles/editorial-tokens.css, as `var()` strings (paint them through
+ * `style`, not an SVG presentation attribute).
  */
 
 import type { ScholarlyGroup } from "./scholarlyTypes.ts";
@@ -25,12 +27,12 @@ export const GROUP_OF_DOMAIN: Record<string, ScholarlyGroup> = {
 };
 
 export const GROUPS: { group: ScholarlyGroup; label: string; color: string }[] = [
-    { group: "recognition", label: "Detection & segmentation", color: "#2f6fb5" },
-    { group: "representation", label: "Representation learning & anomaly", color: "#7b52c4" },
-    { group: "features", label: "Features & matching", color: "#12817f" },
-    { group: "geometry", label: "Geometry, stitching & depth", color: "#c2630f" },
-    { group: "calibration", label: "Calibration & targets", color: "#b0406f" },
-    { group: "other", label: "Not yet cited by a page", color: "#94a3b8" },
+    { group: "recognition", label: "Detection & segmentation", color: "var(--scholar-recognition)" },
+    { group: "representation", label: "Representation learning & anomaly", color: "var(--scholar-representation)" },
+    { group: "features", label: "Features & matching", color: "var(--scholar-features)" },
+    { group: "geometry", label: "Geometry, stitching & depth", color: "var(--scholar-geometry)" },
+    { group: "calibration", label: "Calibration & targets", color: "var(--scholar-calibration)" },
+    { group: "other", label: "Not yet cited by a page", color: "var(--scholar-other)" },
 ];
 
 export function groupOfDomain(domain: string | undefined): ScholarlyGroup {

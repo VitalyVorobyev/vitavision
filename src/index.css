@@ -24,6 +24,19 @@
   --color-article-heading: var(--article-heading);
   --color-article-link: var(--article-link);
 
+  /* Editorial inks (category and status labels): `text-ink-amber`, `bg-ink-amber/10`. */
+  --color-ink-blue: var(--ink-blue);
+  --color-ink-amber: var(--ink-amber);
+  --color-ink-green: var(--ink-green);
+  --color-ink-violet: var(--ink-violet);
+  --color-ink-slate: var(--ink-slate);
+
+  --color-difficulty-beginner: var(--difficulty-beginner);
+  --color-difficulty-intermediate: var(--difficulty-intermediate);
+  --color-difficulty-advanced: var(--difficulty-advanced);
+
+  --color-orcid-green: var(--orcid-green);
+
   --color-lineage-out: var(--lineage-out);
   --color-lineage-in: var(--lineage-in);
 

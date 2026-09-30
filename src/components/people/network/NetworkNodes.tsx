@@ -50,12 +50,16 @@ export function NetworkNodes({ nodes, labels, hoveredId, onHover, onSelect, scal
                     cx={n.x}
                     cy={n.y}
                     r={n.isFocus ? n.radius + 1 : n.radius}
-                    fill={n.color}
                     fillOpacity={n.opacity}
-                    stroke={n.isFocus ? "currentColor" : "#ffffff"}
                     className={n.isFocus ? "text-fg" : undefined}
                     strokeWidth={n.isFocus ? 2.5 : hoveredId === n.id ? 2 : 1}
-                    style={{ pointerEvents: "auto", cursor: "pointer" }}
+                    // A ring in the surface colour keeps touching nodes apart; the focus ring is ink.
+                    style={{
+                        fill: n.color,
+                        stroke: n.isFocus ? "currentColor" : "var(--surface)",
+                        pointerEvents: "auto",
+                        cursor: "pointer",
+                    }}
                     data-person-id={n.id}
                     onPointerUp={(e) => {
                         lastPointerType.current = e.pointerType;
@@ -84,8 +88,8 @@ export function NetworkNodes({ nodes, labels, hoveredId, onHover, onSelect, scal
                     y={l.y}
                     fontSize={l.fontSize / scale}
                     fontWeight={l.mandatory ? 600 : 500}
-                    fill={l.mandatory ? "currentColor" : "#5b6b80"}
-                    className={l.mandatory ? "text-fg" : undefined}
+                    fill="currentColor"
+                    className={l.mandatory ? "text-fg" : "text-fg-muted"}
                     paintOrder="stroke"
                     style={{ stroke: "var(--surface)" }}
                     strokeWidth={3.5 / scale}

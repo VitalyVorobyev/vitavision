@@ -9,29 +9,29 @@ export default function SupersededBy({ successor, variant }: { successor: string
 
     if (variant === "sidebar") {
         return (
-            <div className="mb-[18px] rounded-control border border-amber-500/40 bg-amber-500/10 px-3 py-2.5">
-                <h3 className="text-[10.5px] font-semibold tracking-[0.12em] uppercase text-amber-700 dark:text-amber-400 mb-1.5">
+            <div className="mb-[18px] rounded-control border border-ink-amber/40 bg-ink-amber/10 px-3 py-2.5">
+                <h3 className="text-[10.5px] font-semibold tracking-[0.12em] uppercase text-ink-amber mb-1.5">
                     Superseded by
                 </h3>
                 <Link
                     to={node.path}
-                    className="flex items-center justify-between gap-2 text-[14px] font-semibold text-amber-700 dark:text-amber-400 no-underline hover:underline"
+                    className="flex items-center justify-between gap-2 text-[14px] font-semibold text-ink-amber no-underline hover:underline"
                 >
                     <span className="truncate">{node.title}</span>
-                    <span aria-hidden="true" className="text-amber-700/70 dark:text-amber-400/70 text-[11px] flex-shrink-0">↗</span>
+                    <span aria-hidden="true" className="text-ink-amber/70 text-[11px] flex-shrink-0">↗</span>
                 </Link>
             </div>
         );
     }
 
     return (
-        <div className="rounded-control border border-amber-500/40 bg-amber-500/10 px-4 py-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1.5">
+        <div className="rounded-control border border-ink-amber/40 bg-ink-amber/10 px-4 py-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-amber mb-1.5">
                 Superseded by
             </h3>
             <Link
                 to={node.path}
-                className="text-base font-semibold text-amber-700 dark:text-amber-400 no-underline hover:underline"
+                className="text-base font-semibold text-ink-amber no-underline hover:underline"
             >
                 {node.title}
             </Link>

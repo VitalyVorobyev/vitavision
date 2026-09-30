@@ -12,7 +12,7 @@ export default function TagBadge({ tag, active, onClick, to }: TagBadgeProps) {
         "inline-block text-xs font-medium px-2.5 py-0.5 rounded-full transition-colors";
     const colors = active
         ? "bg-fg text-ground"
-        : "bg-raised text-fg-muted hover:bg-raised/80";
+        : "bg-raised text-fg-muted hover:bg-line/60";
 
     if (to) {
         return (

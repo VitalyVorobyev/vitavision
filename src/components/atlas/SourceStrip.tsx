@@ -23,14 +23,14 @@ export default function SourceStrip({ primary }: SourceStripProps) {
     // overlay (`absolute inset-0`) rather than the strip's outer element, and
     // the author links + external CTA sit above it on `z-10`.
     return (
-        <div className="relative flex items-stretch border border-blue-500/25 rounded-panel overflow-hidden bg-gradient-to-r from-blue-500/[0.06] to-blue-500/[0.02] no-underline hover:border-blue-500/40 transition-colors">
+        <div className="relative flex items-stretch border border-ink-blue/25 rounded-panel overflow-hidden bg-gradient-to-r from-ink-blue/[0.06] to-ink-blue/[0.02] no-underline hover:border-ink-blue/40 transition-colors">
             <Link
                 to={`/papers/${paper.id}`}
                 aria-label={`Open paper page: ${paper.title}`}
                 className="absolute inset-0"
             />
-            <div className="flex items-center bg-blue-500/[0.06] border-r border-blue-500/[0.18] px-3.5 py-2.5">
-                <span className="font-mono font-semibold text-[9.5px] tracking-[0.16em] uppercase text-blue-300">
+            <div className="flex items-center bg-ink-blue/[0.06] border-r border-ink-blue/[0.18] px-3.5 py-2.5">
+                <span className="font-mono font-semibold text-[9.5px] tracking-[0.16em] uppercase text-ink-blue">
                     Based on
                 </span>
             </div>
@@ -56,7 +56,7 @@ export default function SourceStrip({ primary }: SourceStripProps) {
                 href={paper.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative z-10 px-4 py-2.5 border-l border-blue-500/[0.18] flex items-center text-[12px] font-mono text-blue-300 whitespace-nowrap hover:underline"
+                className="relative z-10 px-4 py-2.5 border-l border-ink-blue/[0.18] flex items-center text-[12px] font-mono text-ink-blue whitespace-nowrap hover:underline"
             >
                 {ctaLabel}
             </a>

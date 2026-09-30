@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
-      script-src 'self' 'sha256-znd4R0XEo2yWSOYP1XBOpBdo7vp8M0E7tB+mHBto5U8=' 'sha256-GptdBUAXmnl+ogwGeUJgDS/+BGP46bFM+pMEk01bh+E=' 'wasm-unsafe-eval' https://*.clerk.accounts.dev https://clerk.vitavision.dev https://challenges.cloudflare.com;
+      script-src 'self' 'sha256-vA82SeF7VkGUyQOz0hC4qt0kapZwaKakpW9TsTVusWg=' 'wasm-unsafe-eval' https://*.clerk.accounts.dev https://clerk.vitavision.dev https://challenges.cloudflare.com;
       style-src 'self' 'unsafe-inline';
       img-src 'self' data: blob: https://img.clerk.com;
       font-src 'self' data:;
@@ -20,26 +20,28 @@
     " />
     <title>VitaVision</title>
     <!--
-      Anti-flash script: applies the stored theme-variant class to <html>
-      synchronously before any CSS or React renders. Runs once, inline, at
-      parse time — keeping the FOUC window to zero.
+      Theme before first paint: @vitavision/ui's no-flash script (its README), kept in
+      agreement with ui's theme.ts, under the site's storage key "theme"
+      (src/lib/theme.ts). "system", or no stored choice, follows the OS. It also picks the
+      favicon for the painted theme. main.tsx then calls initTheme("theme") so "system"
+      keeps following the OS. Any change to the script's text changes its sha256, which
+      the CSP meta above and public/_headers must list.
     -->
     <script>
       (function () {
-        var VARIANTS = ['aubergine', 'pine', 'oxblood'];
-        var DEFAULT  = 'aubergine';
-        var stored;
-        try { stored = localStorage.getItem('theme-variant'); } catch (_) {}
-        var variant = VARIANTS.includes(stored) ? stored : DEFAULT;
-        document.documentElement.classList.add('theme-' + variant);
-
-        /* Theme-aware favicon */
-        var theme;
-        try { theme = localStorage.getItem('theme'); } catch (_) {}
-        var isDark = theme === 'dark' ||
-          (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var dark = false;
+        try {
+          var stored = localStorage.getItem("theme");
+          dark =
+            stored === "dark" ||
+            ((stored === null || stored === "system") &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+        } catch (_) {
+          // Storage unavailable: fall through to the light palette defined on :root.
+        }
+        if (dark) document.documentElement.classList.add("dark");
         var icon = document.querySelector('link[rel="icon"]');
-        if (icon) icon.href = isDark ? '/vv-favicon-light.svg' : '/vv-favicon-dark.svg';
+        if (icon) icon.href = dark ? "/vv-favicon-light.svg" : "/vv-favicon-dark.svg";
       })();
     </script>
   </head>

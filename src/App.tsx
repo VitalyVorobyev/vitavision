@@ -7,7 +7,7 @@ import Footer from './components/layout/Footer';
 import ScrollToTop from './components/layout/ScrollToTop';
 import './index.css';
 
-import { ThemeProvider } from 'next-themes';
+import { TooltipProvider } from '@vitavision/ui';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
@@ -112,7 +112,8 @@ function App({ ssrSnapshot = {} }: { ssrSnapshot?: StaticContentContextValue }) 
         <ClerkProvider publishableKey={PUBLISHABLE_KEY!}>
             <HelmetProvider>
                 <StaticContentProvider value={ssrSnapshot}>
-                    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                    {/* ui's ThemeToggle, Tooltip and InfoHint throw without it. */}
+                    <TooltipProvider>
                         <PapersProvider>
                         <AuthorsProvider>
                         <ScholarlyProvider>
@@ -123,7 +124,7 @@ function App({ ssrSnapshot = {} }: { ssrSnapshot?: StaticContentContextValue }) 
                         </AuthorsProvider>
                         </PapersProvider>
                         <Toaster richColors closeButton position="bottom-right" />
-                    </ThemeProvider>
+                    </TooltipProvider>
                 </StaticContentProvider>
             </HelmetProvider>
         </ClerkProvider>

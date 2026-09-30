@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-import { Menu, Moon, Sun, X } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Menu, X } from "lucide-react";
+import { ThemeToggle } from "@vitavision/ui";
 import VitavisionLogo from "../shared/VitavisionLogo";
+import { THEME_STORAGE_KEY } from "../../lib/theme.ts";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 
 const NAV_ITEMS = [
@@ -13,23 +14,6 @@ const NAV_ITEMS = [
     { to: "/tools/target-generator", label: "Targets", active: (pathname: string) => pathname.startsWith("/tools") },
     { to: "/about", label: "About", active: (pathname: string) => pathname === "/about" },
 ] as const;
-
-export function ThemeToggle() {
-    const { theme, setTheme } = useTheme();
-
-    return (
-        <button
-            type="button"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="relative flex items-center justify-center rounded-control p-2 text-fg-muted transition-colors hover:bg-raised hover:text-fg"
-            title="Toggle dark / light mode"
-        >
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-        </button>
-    );
-}
 
 function NavDivider() {
     return (
@@ -115,7 +99,7 @@ export default function Navbar() {
                         />
                     ))}
                     <NavDivider />
-                    <ThemeToggle />
+                    <ThemeToggle storageKey={THEME_STORAGE_KEY} />
                     <SignedOut>
                         <SignInButton mode="modal">
                             <button
@@ -132,7 +116,7 @@ export default function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-1 md:hidden">
-                    <ThemeToggle />
+                    <ThemeToggle storageKey={THEME_STORAGE_KEY} />
                     <button
                         type="button"
                         onClick={openMobileNav}

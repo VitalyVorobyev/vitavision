@@ -12,7 +12,7 @@
 
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import * as TooltipPrimitive from '@radix-ui/react-tooltip';
+import { TooltipProvider } from '@vitavision/ui';
 import papersIndex from '../public/papers-index.json';
 import { PapersContext } from '../src/lib/atlas/papersContext.ts';
 import type { PapersById } from '../src/generated/papers-index.ts';
@@ -35,9 +35,10 @@ import type { PapersById } from '../src/generated/papers-index.ts';
  * - **Tooltip** — `Tooltip` renders `TooltipPrimitive.Root`, which reads
  *   Radix's provider context unconditionally. Radix gives that context no
  *   default value, so without an ancestor `Provider` the component throws and
- *   React swallows it — the card just goes blank, with no page error. In the
- *   app each call site supplies its own local Provider; there is no global
- *   one, so the design system has to bring it.
+ *   React swallows it — the card just goes blank, with no page error. The app
+ *   mounts @vitavision/ui's `TooltipProvider` at its root (and in each
+ *   illustration island); a design render has no app root, so it brings the
+ *   same provider here.
  *
  * Wired as `cfg.provider`, so it wraps every preview card and every design
  * built with this system.
@@ -45,11 +46,11 @@ import type { PapersById } from '../src/generated/papers-index.ts';
 export function DesignPreviewProvider({ children }: { children?: ReactNode }) {
     return (
         <MemoryRouter>
-            <TooltipPrimitive.Provider delayDuration={200}>
+            <TooltipProvider>
                 <PapersContext.Provider value={papersIndex as PapersById}>
                     {children}
                 </PapersContext.Provider>
-            </TooltipPrimitive.Provider>
+            </TooltipProvider>
         </MemoryRouter>
     );
 }

@@ -1,6 +1,6 @@
 import { renderToString } from "react-dom/server";
 import { MemoryRouter, Routes, Route, Navigate } from "react-router";
-import { ThemeProvider } from "next-themes";
+import { TooltipProvider } from "@vitavision/ui";
 import { ClerkProvider } from "@clerk/clerk-react";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
@@ -43,7 +43,11 @@ export function render(
         <PapersProvider initial={papers}>
         <AuthorsProvider initial={authors}>
         <ScholarlyProvider initial={scholarly}>
-            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+            {/* No theme provider: the theme is the `dark` class that the inline script in
+                index.html paints from the stored choice ("system" when there is none) before
+                the first paint, so the prerendered markup is the same for both themes.
+                TooltipProvider: ui's ThemeToggle (in Navbar) throws without it. */}
+            <TooltipProvider>
                 <MemoryRouter initialEntries={[url]}>
                     <div className="min-h-screen flex flex-col font-sans bg-ground text-fg">
                         <Navbar />
@@ -73,7 +77,7 @@ export function render(
                         <Footer />
                     </div>
                 </MemoryRouter>
-            </ThemeProvider>
+            </TooltipProvider>
         </ScholarlyProvider>
         </AuthorsProvider>
         </PapersProvider>

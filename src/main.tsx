@@ -10,8 +10,15 @@ import '@vitavision/ui/fonts.css'
 import '@fontsource-variable/source-serif-4/index.css'
 import 'katex/dist/katex.min.css'
 import './styles/article.css'
+import { initTheme } from '@vitavision/ui'
 import App from './App.tsx'
 import type { StaticContentContextValue } from './lib/content/ssr-content.tsx'
+import { syncFaviconWithTheme, THEME_STORAGE_KEY } from './lib/theme.ts'
+
+// The inline script in index.html already painted the stored (or OS) theme; this keeps a
+// "system" choice following the OS while the page is open, and the favicon in step.
+initTheme(THEME_STORAGE_KEY)
+syncFaviconWithTheme()
 
 // Snapshot the prerendered article HTML before createRoot wipes it. The
 // postbuild script bakes <article data-atlas-slug="..." data-atlas-kind="...">

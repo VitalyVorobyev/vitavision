@@ -5,7 +5,7 @@
   "globalName": "Vitavision",
   "srcDir": "src",
   "tsconfig": "tsconfig.app.json",
-  "buildCmd": "npx vite build && npx tsc -p .design-sync/tsconfig.ds.json && node .design-sync/build-ds.mjs",
+  "buildCmd": "bun run content:build && npx vite build && npx tsc -p .design-sync/tsconfig.ds.json && node .design-sync/build-ds.mjs",
   "cssEntry": "dist/ds/styles.css",
   "docsDir": ".design-sync/docs",
   "readmeHeader": ".design-sync/conventions.md",
@@ -14,6 +14,15 @@
     "component": "DesignPreviewProvider"
   },
   "componentSrcMap": {
+    "Button": "node_modules/@vitavision/ui/src/components/ui/Button.tsx",
+    "Select": "node_modules/@vitavision/ui/src/components/ui/Select.tsx",
+    "Field": "node_modules/@vitavision/ui/src/components/ui/Field.tsx",
+    "NumberInput": "node_modules/@vitavision/ui/src/components/ui/Input.tsx",
+    "SegmentedControl": "node_modules/@vitavision/ui/src/components/ui/SegmentedControl.tsx",
+    "Dialog": "node_modules/@vitavision/ui/src/components/ui/Dialog.tsx",
+    "Checkbox": "node_modules/@vitavision/ui/src/components/ui/Toggle.tsx",
+    "InfoHint": "node_modules/@vitavision/ui/src/components/ui/Tooltip.tsx",
+    "Callout": "node_modules/@vitavision/ui/src/components/ui/Feedback.tsx",
     "Tooltip": "node_modules/@vitavision/ui/src/components/ui/Tooltip.tsx",
     "ErrorBoundary": "src/components/ui/ErrorBoundary.tsx",
 

@@ -18,8 +18,8 @@ read as *engineered*, not decorative.
 It supplies three contexts the components read. Skip it and the failure is silent — a blank
 screen with no error in the console:
 
-- **Router** — anything rendering a link (`Footer`, `SourceCard`, `AlgorithmsSidebar`, `TagFilter`).
-- **Tooltip provider** — `Tooltip` throws during render without it.
+- **Router** — anything rendering a link (`SourceCard`, `AlgorithmsSidebar`, `TagFilter`).
+- **Tooltip provider** — `Tooltip` and `InfoHint` throw during render without it.
 - **Papers index** — `SourceCard` / `SourceStrip` look a paper up by ID and render `null` when
   the lookup misses. Pass a real ID from the index, e.g. `primary="zhang2000-flexible"`,
   `"harris1988-corner"`, `"rosten2006-fast"`, `"detone2018-superpoint"`.
@@ -39,9 +39,9 @@ token names is what makes a design work in both themes. The tokens are @vitavisi
 | Hairlines | `border-line` (dividers, cards), `border-line-strong` (the boundary of a control: input, select, kbd) |
 | Accent | `bg-signal` + `text-signal-fg` (primary action), `text-signal`, `bg-signal/10` (selected). Only for "you can act here": focus, selection, the active item. |
 | Verdicts | `text-defect` / `bg-defect/10` (errors, destructive), `text-normal`, `text-warn` — only for a judgement the app made |
-| Editorial | `text-article-body`, `text-article-heading`, `text-article-link`; `text-brand-mark` (the logo's cyan pupil; identity only) |
+| Editorial | `text-article-body`, `text-article-heading`, `text-article-link`; `text-ink-blue` / `-amber` / `-green` / `-violet` / `-slate` (category and status labels on reading pages, never verdicts); `text-brand-mark` (the logo's cyan pupil; identity only) |
 | Type | `font-sans` (IBM Plex Sans, UI and headings), `font-serif` (Source Serif 4, article body), `font-mono` (IBM Plex Mono, all numbers/IDs/keys) |
-| Radius | `rounded-control` (6px: buttons, inputs, chips) and `rounded-panel` (10px: cards, panels). Do not reach for `rounded-xl`+. |
+| Radius | `rounded-control` (6px: buttons, inputs, chips) and `rounded-panel` (10px: cards, panels). Do not reach for `rounded-xl`+ (only the illustration primitives below use larger radii). |
 
 Two caveats worth knowing:
 
@@ -49,16 +49,29 @@ Two caveats worth knowing:
    component ever used may have no rule. Prefer the names in the table; if you need something
    outside it, set the value with an inline `style` (`style={{ background: "var(--raised)" }}`)
    rather than trusting an arbitrary class to resolve.
-2. **Uppercase mono micro-labels are the house signature.** Section kickers use `Eyebrow`
-   (11px) or `TinyBrow` (10px) — mono, uppercase, wide tracking, muted. Use them instead of
-   inventing small-caps headings.
+2. **Uppercase mono micro-labels are the house signature.** Section kickers in figures and
+   panels use `TinyBrow` (10px) or `Eyebrow` (11px) — mono, uppercase, wide tracking, muted. Use
+   them instead of inventing small-caps headings.
 
-### Compose from the primitives
+### Interactive UI comes from `@vitavision/ui`
+
+Every control a user operates is **@vitavision/ui**'s, re-exported here under its own name:
+`Button` (`primary` / `secondary` / `ghost` / `danger`), `Select`, `Field` with `NumberInput`,
+`SegmentedControl`, `Checkbox`, `Dialog`, `Callout`, `Tooltip` and `InfoHint`. Never hand-roll a
+button, input, select or modal from utilities, and never hard-code their look: label every field
+with `Field`, put a help mark in its `annotation`, keep a single `primary` `Button` per screen. Each
+component's docs page lists its props; the full spec is in lab-ui's Storybook.
+
+### Editorial-illustration primitives (not for UI)
 
 `Panel` (gradient card) and `PanelFlat` (solid, for nesting) are the containers; `FloatingPanel`
 is overlay chrome for anything sitting above a canvas. `MetricCell` is the numeric readout, with
 a `tone` of `neutral` / `good` / `warn` / `bad`. `Pill`, `Kbd`, and `Note` cover tags, key hints,
-and asides. Atlas surfaces get `EntryIcon`, `QualityBadge`, `SourceCard`, and `SourceStrip`.
+and asides, and `TinyBrow` / `Eyebrow` are the mono kickers. These nine are **editorial-illustration
+primitives**: the chrome of article figures and home specimens, with their own larger radii. They are
+not a second control set: anything interactive uses the `@vitavision/ui` components above (a message
+is a `Callout`, not a `Note`). Atlas surfaces get `EntryIcon`, `QualityBadge`, `SourceCard`, and
+`SourceStrip`.
 
 ```jsx
 <Panel className="p-5">
@@ -72,6 +85,14 @@ and asides. Atlas surfaces get `EntryIcon`, `QualityBadge`, `SourceCard`, and `S
   <Note className="mt-4">Assumes the target is planar to within 0.1 mm.</Note>
 </Panel>
 ```
+
+### The logo
+
+`VitavisionLogo` is the brand mark: two nested, asymmetric "V" strokes (optical paths) that converge
+on a solid central circle, the "pupil" of a sensor, so it reads as focus and detection. The strokes
+use `currentColor`, so place it in a text colour (`text-fg`); the pupil is the one use of
+`text-brand-mark`, an identity colour that is never an accent. Do not redraw or recolour it, and use
+the `mark` variant at small sizes.
 
 ### Where the truth is
 

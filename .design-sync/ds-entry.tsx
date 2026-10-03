@@ -11,7 +11,7 @@
 // converter can find its source for props, JSDoc, and grouping.
 
 import type { ReactNode } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import { TooltipProvider } from '@vitavision/ui';
 import papersIndex from '../public/papers-index.json';
 import { PapersContext } from '../src/lib/atlas/papersContext.ts';
@@ -20,9 +20,9 @@ import type { PapersById } from '../src/generated/papers-index.ts';
 /**
  * Preview/render wrapper for design-system components.
  *
- * Provides the two contexts the presentational components read:
+ * Provides the three contexts the presentational components read:
  *
- * - **Router** — several components render `<Link>` from react-router-dom,
+ * - **Router** — several components render `<Link>` from react-router,
  *   which throws outside a router context.
  * - **Papers** — `SourceCard` / `SourceStrip` resolve a paper by ID through
  *   `usePaperById`. In the app `PapersContext` is filled by a lazy fetch of
@@ -55,10 +55,26 @@ export function DesignPreviewProvider({ children }: { children?: ReactNode }) {
     );
 }
 
+/* ── Interactive controls: @vitavision/ui ──────────────────────────────── */
+// Every interactive control in the app is @vitavision/ui's (lab-ui L3-3), re-exported so
+// designs reach for the real thing under the same names. Do not add a vitavision-local
+// look-alike: the full spec of each lives in lab-ui's Storybook. `Tooltip` and `InfoHint`
+// get their hover delay from the `TooltipProvider` above. ui's own `Panel` is NOT
+// re-exported: the name belongs to the illustration primitive below.
+export {
+    Button,
+    Select,
+    Field,
+    NumberInput,
+    SegmentedControl,
+    Dialog,
+    Checkbox,
+    InfoHint,
+    Callout,
+    Tooltip,
+} from '@vitavision/ui';
+
 /* ── UI primitives ─────────────────────────────────────────────────────── */
-// The tooltip is @vitavision/ui's (the site's own was retired in lab-ui L3-3); re-exported
-// so designs keep the name. Its hover delay comes from the `TooltipProvider` above.
-export { Tooltip } from '@vitavision/ui';
 export { default as ErrorBoundary } from '../src/components/ui/ErrorBoundary.tsx';
 
 /* ── Brand / shared chrome ─────────────────────────────────────────────── */
@@ -109,6 +125,8 @@ export { default as DownloadBar } from '../src/components/targetgen/panels/Downl
 export { SpecBlog, SpecAlgorithms, SpecEditor, SpecTargets } from '../src/components/home/specimens/index.tsx';
 
 /* ── Illustration primitives ───────────────────────────────────────────── */
+// Editorial-illustration chrome only (article figures, home specimens). Interactive UI uses
+// the @vitavision/ui controls above.
 export {
     Panel,
     PanelFlat,

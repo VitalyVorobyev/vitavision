@@ -19,15 +19,11 @@ export interface MarkerBoardConfig {
     // holds them, and transposed to the library's i=col/j=row convention in
     // markerboardAdapter.ts. See MarkerCircleCell's doc comment.
     circles: [MarkerCircleCell, MarkerCircleCell, MarkerCircleCell];
-    expectedRows: number;
-    expectedCols: number;
     minCornerStrength: number;
-    completenessThreshold: number;
-    // Grid graph sub-params
-    graphMinSpacingPix: number;
-    graphMaxSpacingPix: number;
-    graphKNeighbors: number;
-    graphOrientationToleranceDeg: number;
+    // Chessboard detector block. min_corner_strength, min_labeled_corners and
+    // max_components are its only keys in calib-targets 0.15 (verified).
+    minLabeledCorners: number;
+    maxComponents: number;
     // Circle score sub-params
     circleScorePatchSize: number;
     circleScoreRingThicknessFrac: number;
@@ -148,32 +144,6 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
             <Disclosure summary="Chessboard detector">
                 <div className={fieldGridClass(cols)}>
                     <Field
-                        label="Expected rows"
-                        as="group"
-                        annotation={<InfoHint label="About expected rows">Number of internal corner rows expected (squares minus one).</InfoHint>}
-                    >
-                        <NumberInput
-                            aria-label="Expected rows"
-                            {...numberInputProps(config.expectedRows, (v) => set("expectedRows", v ?? 22))}
-                            disabled={disabled}
-                            min={2}
-                            step={1}
-                        />
-                    </Field>
-                    <Field
-                        label="Expected cols"
-                        as="group"
-                        annotation={<InfoHint label="About expected cols">Number of internal corner columns expected (squares minus one).</InfoHint>}
-                    >
-                        <NumberInput
-                            aria-label="Expected cols"
-                            {...numberInputProps(config.expectedCols, (v) => set("expectedCols", v ?? 22))}
-                            disabled={disabled}
-                            min={2}
-                            step={1}
-                        />
-                    </Field>
-                    <Field
                         label="Min corner strength"
                         as="group"
                         annotation={<InfoHint label="About min corner strength">Absolute floor on the raw ChESS response (detector default 15). Lower values detect weaker corners but may increase false positives.</InfoHint>}
@@ -188,78 +158,29 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                         />
                     </Field>
                     <Field
-                        label="Completeness threshold"
+                        label="Min labeled corners"
                         as="group"
-                        annotation={<InfoHint label="About completeness threshold">Fraction of expected corners that must be detected for the board to be accepted.</InfoHint>}
+                        annotation={<InfoHint label="About min labeled corners">Fewest grid-labeled corners a detected board component may have. Raise it to ignore small fragments. Library default: 8.</InfoHint>}
                     >
                         <NumberInput
-                            aria-label="Completeness threshold"
-                            {...numberInputProps(config.completenessThreshold, (v) => set("completenessThreshold", v ?? 0.05))}
-                            disabled={disabled}
-                            min={0}
-                            max={1}
-                            step={0.01}
-                        />
-                    </Field>
-                </div>
-            </Disclosure>
-            <Disclosure summary="Grid graph">
-                <div className={fieldGridClass(cols)}>
-                    <Field
-                        label="Min spacing"
-                        as="group"
-                        annotation={<InfoHint label="About min spacing">Minimum distance between adjacent corners in pixels.</InfoHint>}
-                    >
-                        <NumberInput
-                            unit="px"
-                            aria-label="Min spacing"
-                            {...numberInputProps(config.graphMinSpacingPix, (v) => set("graphMinSpacingPix", v ?? 20))}
+                            aria-label="Min labeled corners"
+                            {...numberInputProps(config.minLabeledCorners, (v) => set("minLabeledCorners", v ?? 8))}
                             disabled={disabled}
                             min={1}
                             step={1}
                         />
                     </Field>
                     <Field
-                        label="Max spacing"
+                        label="Max components"
                         as="group"
-                        annotation={<InfoHint label="About max spacing">Maximum distance between adjacent corners in pixels.</InfoHint>}
+                        annotation={<InfoHint label="About max components">Most separate grid components kept per image. Library default: 3.</InfoHint>}
                     >
                         <NumberInput
-                            unit="px"
-                            aria-label="Max spacing"
-                            {...numberInputProps(config.graphMaxSpacingPix, (v) => set("graphMaxSpacingPix", v ?? 160))}
+                            aria-label="Max components"
+                            {...numberInputProps(config.maxComponents, (v) => set("maxComponents", v ?? 3))}
                             disabled={disabled}
                             min={1}
                             step={1}
-                        />
-                    </Field>
-                    <Field
-                        label="K neighbors"
-                        as="group"
-                        annotation={<InfoHint label="About k neighbors">Number of nearest neighbors for graph construction. Higher handles irregular boards better.</InfoHint>}
-                    >
-                        <NumberInput
-                            aria-label="K neighbors"
-                            {...numberInputProps(config.graphKNeighbors, (v) => set("graphKNeighbors", v ?? 8))}
-                            disabled={disabled}
-                            min={1}
-                            max={64}
-                            step={1}
-                        />
-                    </Field>
-                    <Field
-                        label="Orientation tolerance"
-                        as="group"
-                        annotation={<InfoHint label="About orientation tolerance">Maximum angle deviation from grid directions when connecting corners.</InfoHint>}
-                    >
-                        <NumberInput
-                            unit="°"
-                            aria-label="Orientation tolerance"
-                            {...numberInputProps(config.graphOrientationToleranceDeg, (v) => set("graphOrientationToleranceDeg", v ?? 12.5))}
-                            disabled={disabled}
-                            min={0}
-                            max={180}
-                            step={0.5}
                         />
                     </Field>
                 </div>

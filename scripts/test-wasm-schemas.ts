@@ -19,6 +19,7 @@ import { fileURLToPath } from "node:url";
 // implementations the worker itself uses (src/lib/wasm/worker/util.ts), not
 // private copies that can silently drift from them.
 const UTIL_PATH = fileURLToPath(new URL("../src/lib/wasm/worker/util.ts", import.meta.url));
+const ADAPTERS_DIR = fileURLToPath(new URL("../src/components/editor/algorithms/", import.meta.url));
 const IMPORT_DEEP_MERGE = `const { deepMerge } = await import(${JSON.stringify(UTIL_PATH)});`;
 const IMPORT_DEEP_MERGE_AND_UNWRAP_MAPS = `const { deepMerge, unwrapMaps } = await import(${JSON.stringify(UTIL_PATH)});`;
 
@@ -238,11 +239,14 @@ if (chessCfg.threshold !== 20)
     throw new Error('threshold override was merged instead of replaced: ' + JSON.stringify(chessCfg.threshold));
 console.log('PASS: chess config threshold is a scalar absolute floor (default ' + defaultCfg.threshold + '), detection block present');
 
-// The legacy flat fields the old ChessConfig/DetectorParams schemas used
-// (expected_rows, completeness_threshold, graph, chess) are silently ignored
-// under 0.10.1 — keep them in the merge to confirm they don't cause a schema
-// error (forward-compat with any stale adapter payload), while the current
-// stable-core keys (min_corner_strength, max_fit_rms_ratio, ...) still apply.
+// FORWARD-COMPAT ONLY: the legacy flat fields the old ChessboardParams schemas
+// used (expected_rows, completeness_threshold, graph, max_fit_rms_ratio, ...)
+// are NOT live keys on 0.15.1 -- default_chessboard_params() is exactly
+// { min_labeled_corners, max_components, min_corner_strength }, and the
+// "sent keys are all live" test further down proves the app no longer sends
+// the dead ones. They stay in this merge only to confirm that a stale payload
+// (e.g. a deep link saved by an older build) is dropped without a schema
+// error instead of crashing the run.
 const params = deepMerge(mod.default_chessboard_params(), {
     min_corner_strength: 15, completeness_threshold: 0.1,
     expected_rows: 7, expected_cols: 11,
@@ -314,9 +318,7 @@ const params = {
         marker_layout: 'opencv_charuco', border_bits: 1,
     },
     chessboard: deepMerge(cbDefaults, {
-        min_corner_strength: 15, expected_rows: 22, expected_cols: 22,
-        completeness_threshold: 0.05,
-        graph: { min_spacing_pix: 40, max_spacing_pix: 160, k_neighbors: 8, orientation_tolerance_deg: 12.5 },
+        min_corner_strength: 15, min_labeled_corners: 8, max_components: 3,
     }),
 };
 try {
@@ -370,7 +372,7 @@ console.log('PASS: "board" is the live schema key; "layout" is dropped like any 
 
 const params = deepMerge(mod.default_marker_board_params(), {
     board: { rows: 22, cols: 22, circles: [{ cell: { i: 11, j: 11 }, polarity: 'black' }, { cell: { i: 12, j: 11 }, polarity: 'white' }, { cell: { i: 12, j: 12 }, polarity: 'white' }] },
-    chessboard: { min_corner_strength: 15, expected_rows: 22, expected_cols: 22, completeness_threshold: 0.05, graph: { min_spacing_pix: 20, max_spacing_pix: 160 } },
+    chessboard: { min_corner_strength: 15, min_labeled_corners: 8, max_components: 3 },
     circle_score: { patch_size: 64, min_contrast: 10 },
 });
 mod.detect_marker_board(32, 32, gray, chessCfg, params);
@@ -526,6 +528,86 @@ for (const k of ['alignment_inliers', 'alignment_runner_up_inliers', 'alignment_
 if (dg.alignment_ambiguous !== false)
     throw new Error('blank-image miss reported alignment_ambiguous=' + dg.alignment_ambiguous);
 console.log('PASS: diagnostics carry alignment_runner_up_inliers / alignment_ambiguous (blank miss is not ambiguous)');
+process.exit(0);
+`,
+    },
+    {
+        name: "@vitavision/calib-targets: every key the adapters send is live",
+        code: `
+// The check that would have caught the dead chessboard sub-config: the WASM
+// boundary drops unknown keys silently, so the only defence is to compare what
+// each adapter ACTUALLY sends against the library's own defaults. This runs the
+// real adapters (initialConfig and every preset) with the worker proxy's Worker
+// stubbed to capture the posted params, then asserts that every sent key path
+// exists in default_*_params() (recursive subset; arrays of objects are compared
+// by element shape). It also pins the chessboard-block defaults the forms expose.
+const posted = [];
+globalThis.Worker = class {
+    postMessage(m) { posted.push(m); queueMicrotask(() => this.onmessage({ data: { id: m.id, result: null } })); }
+};
+const mod = await import('@vitavision/calib-targets');
+await mod.default();
+const A = ${JSON.stringify(ADAPTERS_DIR)};
+const adapters = {
+    chessboard: (await import(A + 'calibrationTargets/chessboardAdapter.ts')).chessboardAlgorithm,
+    charuco: (await import(A + 'calibrationTargets/charucoAdapter.ts')).charucoAlgorithm,
+    markerboard: (await import(A + 'calibrationTargets/markerboardAdapter.ts')).markerboardAlgorithm,
+    puzzleboard: (await import(A + 'puzzleboard/adapter.ts')).puzzleboardAlgorithm,
+};
+const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+function deadKeys(sent, ref, path) {
+    const out = [];
+    if (Array.isArray(sent)) {
+        if (Array.isArray(ref) && ref.length > 0)
+            sent.forEach((el, i) => out.push(...deadKeys(el, ref[0], path + '[' + i + ']')));
+        return out;
+    }
+    if (!isObj(sent) || !isObj(ref)) return out;
+    for (const k of Object.keys(sent)) {
+        if (!(k in ref)) out.push(path + k);
+        else if (ref[k] !== undefined && ref[k] !== null) out.push(...deadKeys(sent[k], ref[k], path + k + '.'));
+    }
+    return out;
+}
+const refParams = (name, c) =>
+    name === 'chessboard' ? mod.default_chessboard_params()
+    : name === 'charuco' ? mod.default_charuco_params(c.rows, c.cols, c.markerSizeRel, c.dictionary)
+    : name === 'markerboard' ? mod.default_marker_board_params()
+    : mod.default_puzzleboard_params(c.boardRows, c.boardCols);
+let checked = 0;
+for (const [name, algo] of Object.entries(adapters)) {
+    const configs = [['initialConfig', algo.initialConfig], ...(algo.presets ?? []).map((p) => ['preset ' + p.label, p.config])];
+    for (const [label, config] of configs) {
+        posted.length = 0;
+        await algo.runWasm({ pixels: new Uint8Array(4), width: 1, height: 1, config });
+        // Most adapters post { chessCfg, params }; PuzzleBoard posts the params itself.
+        const sent = posted[0].config;
+        const params = sent.params ?? sent;
+        if (!isObj(params) || Object.keys(params).length === 0)
+            throw new Error(name + ' ' + label + ': unexpected payload shape ' + JSON.stringify(Object.keys(sent)));
+        const dead = [
+            ...deadKeys(params, refParams(name, config), 'params.'),
+            ...deadKeys(sent.chessCfg ?? {}, mod.default_chess_config(), 'chessCfg.'),
+        ];
+        if (dead.length > 0)
+            throw new Error(name + ' ' + label + ' sends keys the library does not have (silently dropped): ' + dead.join(', '));
+        // The forms expose the chessboard block's non-threshold keys; their app
+        // defaults must equal the library's (defaults-first).
+        const ref = refParams(name, config).chessboard ?? refParams(name, config);
+        const cb = params.chessboard ?? params;
+        for (const k of ['min_labeled_corners', 'max_components'])
+            if (cb[k] !== ref[k])
+                throw new Error(name + ' ' + label + ': ' + k + ' = ' + cb[k] + ' but the library default is ' + ref[k]);
+        checked++;
+    }
+}
+console.log('PASS: ' + checked + ' adapter configs (initialConfig + presets, 4 adapters) send only keys present in the library defaults');
+
+// Teeth: the scan must flag a dead key. (A silent-pass guard is worse than none.)
+const probe = deadKeys({ chessboard: { expected_rows: 7, min_corner_strength: 1 } }, mod.default_marker_board_params(), '');
+if (probe.join() !== 'chessboard.expected_rows')
+    throw new Error('dead-key scan has no teeth, flagged: ' + JSON.stringify(probe));
+console.log('PASS: the dead-key scan flags chessboard.expected_rows');
 process.exit(0);
 `,
     },

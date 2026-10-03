@@ -1,15 +1,17 @@
-import { Disclosure, Field, InfoHint, NumberInput, Section } from "@vitavision/ui";
+import { Field, InfoHint, NumberInput, Section } from "@vitavision/ui";
 import { fieldGridClass, numberInputProps } from "../../../../lib/fieldBindings";
 import type { AlgorithmConfigFormProps } from "../types";
 
+// calib-targets 0.15's ChessboardParams has exactly these three stable keys
+// (default_chessboard_params() = { min_labeled_corners, max_components,
+// min_corner_strength }). The board's size is not a detector input — the
+// detector labels whatever grid it finds — and the fields this form used to
+// offer for it (expected rows/cols, completeness, orientation clustering,
+// grid graph) were silently dropped by the WASM boundary.
 export interface ChessboardConfig {
-    expectedRows: number;
-    expectedCols: number;
     minCornerStrength: number;
-    completenessThreshold: number;
-    maxFitRmsRatio: number;
-    peakMinSeparationDeg: number;
-    minPeakWeightFraction: number;
+    minLabeledCorners: number;
+    maxComponents: number;
 }
 
 const ChessboardConfigForm = (props: AlgorithmConfigFormProps<ChessboardConfig>) => {
@@ -19,117 +21,50 @@ const ChessboardConfigForm = (props: AlgorithmConfigFormProps<ChessboardConfig>)
         onChange({ ...config, [key]: value });
 
     return (
-        <>
-            <Section title="Board size">
-                <div className={fieldGridClass(modal ? 2 : undefined)}>
-                    <Field
-                        label="Expected rows"
-                        as="group"
-                        annotation={<InfoHint label="About expected rows">Number of internal corner rows in the chessboard pattern (squares minus one).</InfoHint>}
-                    >
-                        <NumberInput
-                            aria-label="Expected rows"
-                            {...numberInputProps(config.expectedRows, (v) => set("expectedRows", v ?? 7))}
-                            disabled={disabled}
-                            min={2}
-                            step={1}
-                        />
-                    </Field>
-                    <Field
-                        label="Expected cols"
-                        as="group"
-                        annotation={<InfoHint label="About expected cols">Number of internal corner columns in the chessboard pattern (squares minus one).</InfoHint>}
-                    >
-                        <NumberInput
-                            aria-label="Expected cols"
-                            {...numberInputProps(config.expectedCols, (v) => set("expectedCols", v ?? 11))}
-                            disabled={disabled}
-                            min={2}
-                            step={1}
-                        />
-                    </Field>
-                </div>
-            </Section>
-            <Disclosure summary="Detector tuning">
-                <div className={fieldGridClass(modal ? 2 : undefined)}>
-                    <Field
-                        label="Min corner strength"
-                        as="group"
-                        annotation={<InfoHint label="About min corner strength">Absolute floor on the raw ChESS response (detector default 15). Lower values detect weaker corners but may increase false positives.</InfoHint>}
-                    >
-                        <NumberInput
-                            aria-label="Min corner strength"
-                            {...numberInputProps(config.minCornerStrength, (v) => set("minCornerStrength", v ?? 15))}
-                            disabled={disabled}
-                            min={0}
-                            max={500}
-                            step={1}
-                        />
-                    </Field>
-                    <Field
-                        label="Completeness threshold"
-                        as="group"
-                        annotation={<InfoHint label="About completeness threshold">Fraction of expected corners that must be detected for the board to be accepted (0-1).</InfoHint>}
-                    >
-                        <NumberInput
-                            aria-label="Completeness threshold"
-                            {...numberInputProps(config.completenessThreshold, (v) => set("completenessThreshold", v ?? 0.1))}
-                            disabled={disabled}
-                            min={0}
-                            max={1}
-                            step={0.05}
-                        />
-                    </Field>
-                </div>
-            </Disclosure>
-            <Disclosure summary="Advanced">
-                <div className={fieldGridClass(modal ? 2 : undefined)}>
-                    <Field
-                        label="Max fit RMS ratio"
-                        as="group"
-                        annotation={<InfoHint label="About max fit RMS ratio">Maximum RMS residual (relative to board scale) for a corner-fit cluster to be accepted. Lower → stricter; raise if the detector rejects clearly-good boards. WASM default: 0.5.</InfoHint>}
-                    >
-                        <NumberInput
-                            aria-label="Max fit RMS ratio"
-                            {...numberInputProps(config.maxFitRmsRatio, (v) => set("maxFitRmsRatio", v ?? 0.5))}
-                            disabled={disabled}
-                            min={0.05}
-                            max={2}
-                            step={0.05}
-                        />
-                    </Field>
-                    <Field
-                        label="Peak min separation"
-                        as="group"
-                        annotation={<InfoHint label="About peak min separation">Minimum angular separation between dominant edge orientations. Higher → only well-separated grid axes accepted. WASM default: 60.</InfoHint>}
-                    >
-                        <NumberInput
-                            unit="°"
-                            aria-label="Peak min separation"
-                            {...numberInputProps(config.peakMinSeparationDeg, (v) => set("peakMinSeparationDeg", v ?? 60))}
-                            disabled={disabled}
-                            min={10}
-                            max={90}
-                            step={1}
-                        />
-                    </Field>
-                    <Field
-                        label="Min peak weight fraction"
-                        as="group"
-                        annotation={<InfoHint label="About min peak weight fraction">Minimum fractional weight a peak must carry in the orientation histogram. Lower → accept weaker peaks (helps with low-contrast boards). WASM default: 0.02.</InfoHint>}
-                    >
-                        <NumberInput
-                            aria-label="Min peak weight fraction"
-                            {...numberInputProps(config.minPeakWeightFraction, (v) => set("minPeakWeightFraction", v ?? 0.02))}
-                            disabled={disabled}
-                            min={0}
-                            max={1}
-                            step={0.005}
-                        />
-                    </Field>
-                </div>
-            </Disclosure>
-        </>
+        <Section title="Chessboard detector">
+            <div className={fieldGridClass(modal ? 2 : undefined)}>
+                <Field
+                    label="Min corner strength"
+                    as="group"
+                    annotation={<InfoHint label="About min corner strength">Absolute floor on the raw ChESS response. Lower values detect weaker corners but may increase false positives.</InfoHint>}
+                >
+                    <NumberInput
+                        aria-label="Min corner strength"
+                        {...numberInputProps(config.minCornerStrength, (v) => set("minCornerStrength", v ?? 15))}
+                        disabled={disabled}
+                        min={0}
+                        max={500}
+                        step={1}
+                    />
+                </Field>
+                <Field
+                    label="Min labeled corners"
+                    as="group"
+                    annotation={<InfoHint label="About min labeled corners">Fewest grid-labeled corners a detected board component may have. Raise it to ignore small fragments. Library default: 8.</InfoHint>}
+                >
+                    <NumberInput
+                        aria-label="Min labeled corners"
+                        {...numberInputProps(config.minLabeledCorners, (v) => set("minLabeledCorners", v ?? 8))}
+                        disabled={disabled}
+                        min={1}
+                        step={1}
+                    />
+                </Field>
+                <Field
+                    label="Max components"
+                    as="group"
+                    annotation={<InfoHint label="About max components">Most separate grid components returned per image. Library default: 3.</InfoHint>}
+                >
+                    <NumberInput
+                        aria-label="Max components"
+                        {...numberInputProps(config.maxComponents, (v) => set("maxComponents", v ?? 3))}
+                        disabled={disabled}
+                        min={1}
+                        step={1}
+                    />
+                </Field>
+            </div>
+        </Section>
     );
 };
 

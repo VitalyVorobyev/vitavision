@@ -5,6 +5,7 @@ import {
     calibrationCornerFeatures,
     calibrationCircleMatchFeatures,
     calibrationSummary,
+    definedOnly,
 } from "./shared";
 import MarkerBoardConfigForm, { type MarkerBoardConfig } from "./MarkerBoardConfigForm";
 import MarkerboardOverlay from "../../canvas/overlays/MarkerboardOverlay";
@@ -31,14 +32,9 @@ const initialConfig: MarkerBoardConfig = {
         { row: 12, col: 11, polarity: "black" },
         { row: 12, col: 12, polarity: "white" },
     ],
-    expectedRows: 22,
-    expectedCols: 22,
     minCornerStrength: 15,
-    completenessThreshold: 0.05,
-    graphMinSpacingPix: 20,
-    graphMaxSpacingPix: 160,
-    graphKNeighbors: 8,
-    graphOrientationToleranceDeg: 22.5,
+    minLabeledCorners: 8,
+    maxComponents: 3,
     circleScorePatchSize: 64,
     circleScoreRingThicknessFrac: 0.35,
     circleScoreRingRadiusMul: 1.6,
@@ -58,8 +54,6 @@ const presets: AlgorithmPreset[] = [
             ...initialConfig,
             boardRows: 10,
             boardCols: 14,
-            expectedRows: 10,
-            expectedCols: 14,
             // Centred like the generator's default for a board this size; the
             // polarities obey the parity rule above (the former preset had three
             // white circles, impossible on a real board). Round-tripped through
@@ -148,17 +142,15 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
                         polarity: circle.polarity,
                     })),
                 },
+                // The chessboard block has exactly these three keys in 0.15; the
+                // expected-size / completeness / grid-graph keys this adapter used
+                // to send were dropped silently (probe-verified).
                 chessboard: {
                     min_corner_strength: c.minCornerStrength,
-                    expected_rows: c.expectedRows,
-                    expected_cols: c.expectedCols,
-                    completeness_threshold: c.completenessThreshold,
-                    graph: {
-                        min_spacing_pix: c.graphMinSpacingPix,
-                        max_spacing_pix: c.graphMaxSpacingPix,
-                        k_neighbors: c.graphKNeighbors,
-                        orientation_tolerance_deg: c.graphOrientationToleranceDeg,
-                    },
+                    ...definedOnly({
+                        min_labeled_corners: c.minLabeledCorners,
+                        max_components: c.maxComponents,
+                    }),
                 },
                 circle_score: {
                     patch_size: c.circleScorePatchSize,

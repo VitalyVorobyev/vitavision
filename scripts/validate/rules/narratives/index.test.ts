@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../../context.ts";
+import { createTestContext } from "../../context.ts";
 import { narrativesRule } from "./index.ts";
 import type { MarkdownDirEntry } from "../../../lib/content-kinds.ts";
 
@@ -36,7 +36,7 @@ function narrative(file: string, overrides: Record<string, unknown>, content: st
 
 describe("narrativesRule", () => {
     it("passes a fully-resolved narrative", async () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", { sources: { primary: "paper-a" } })],
             narratives: [narrative("n.md", {}, "## Intro\ntext\n\n## Outro\ntext\n")],
             indexEntries: [{ id: "paper-a", year: 1999 }],
@@ -45,7 +45,7 @@ describe("narrativesRule", () => {
     });
 
     it("preserves nodes → edges → lenses → steps diagnostic order for one narrative", async () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", { sources: { primary: "paper-a" } })],
             narratives: [
                 narrative(

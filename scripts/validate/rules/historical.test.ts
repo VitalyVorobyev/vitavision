@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../context.ts";
+import { createTestContext } from "../context.ts";
 import { historicalRule } from "./historical.ts";
 import type { MarkdownDirEntry } from "../../lib/content-kinds.ts";
 
@@ -14,7 +14,7 @@ function algo(file: string, overrides: Record<string, unknown> = {}): MarkdownDi
 
 describe("historicalRule", () => {
     it("passes a properly superseded historical page", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", {
                     quality: "historical",
@@ -28,7 +28,7 @@ describe("historicalRule", () => {
     });
 
     it("leaves unresolved relations[].target to the slugs rule (no duplicate report)", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", {
                     relations: [{ type: "compared_with", target: "ghost", confidence: "high" }],
@@ -39,7 +39,7 @@ describe("historicalRule", () => {
     });
 
     it("flags a historical page with no generalized_by/high relation", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", { quality: "historical", sources: { primary: "known-paper" } }),
             ],

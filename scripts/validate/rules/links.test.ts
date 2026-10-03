@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../context.ts";
+import { createTestContext } from "../context.ts";
 import { linksRule } from "./links.ts";
 import type { MarkdownDirEntry } from "../../lib/content-kinds.ts";
 
@@ -34,7 +34,7 @@ function narrative(file: string, content: string): MarkdownDirEntry {
 
 describe("linksRule", () => {
     it("passes for a valid atlas link, a static route, and a resolvable anchor", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", "See [B](/atlas/b) and [home](/) and [B intro](/atlas/b#introduction)."),
                 algo("b.md", "## Introduction\nbody"),
@@ -44,7 +44,7 @@ describe("linksRule", () => {
     });
 
     it("flags an unknown atlas slug, an unknown path prefix, and an unresolved anchor (warning)", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", "[ghost](/atlas/ghost) [x](/some/random/path) [B bad anchor](/atlas/b#nope)"),
                 algo("b.md", "## Real Heading\nbody"),
@@ -58,7 +58,7 @@ describe("linksRule", () => {
     });
 
     it("resolves a valid /papers/<id> link and flags an unknown one", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", "See [paper](/papers/bennett2013-chess) and [ghost](/papers/does-not-exist)."),
             ],
@@ -70,7 +70,7 @@ describe("linksRule", () => {
     });
 
     it("warns on a legacy /algorithms/<slug> link but resolves a valid /atlas/narratives/<slug> link", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", "[old](/algorithms/foo) [n](/atlas/narratives/story)")],
             narratives: [narrative("story.md", "## Chapter One\nbody")],
         });
@@ -80,7 +80,7 @@ describe("linksRule", () => {
     });
 
     it("skips code-fenced and inline-code links, and ignores same-page anchors", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", "```\n[fake](/atlas/ghost)\n```\ninline `[x](/atlas/ghost)` code, and [same page](#section)")],
         });
         expect(linksRule(ctx)).toEqual([]);

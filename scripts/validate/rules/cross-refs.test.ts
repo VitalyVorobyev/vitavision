@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../context.ts";
+import { createTestContext } from "../context.ts";
 import { crossRefsRule } from "./cross-refs.ts";
 import { blogSlug } from "../../lib/content-kinds.ts";
 import type { MarkdownDirEntry } from "../../lib/content-kinds.ts";
@@ -33,7 +33,7 @@ function demo(file: string, overrides: Record<string, unknown> = {}): MarkdownDi
 
 describe("crossRefsRule", () => {
     it("passes when relatedPosts/relatedDemos/relatedAlgorithms all resolve", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", { relatedPosts: ["p1"], relatedDemos: ["d1"] })],
             blog: [blog("2020-01-01-p1.md", { relatedAlgorithms: ["a"], relatedDemos: ["d1"] })],
             demos: [demo("d1.md", { relatedAlgorithms: ["a"], relatedPosts: ["p1"] })],
@@ -42,7 +42,7 @@ describe("crossRefsRule", () => {
     });
 
     it("flags unknown slugs in relatedPosts, relatedDemos, and legacy relatedAlgorithms", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", { relatedPosts: ["ghost-post"], relatedDemos: ["ghost-demo"] })],
             blog: [blog("2020-01-01-p1.md", { relatedAlgorithms: ["ghost-algo"] })],
         });

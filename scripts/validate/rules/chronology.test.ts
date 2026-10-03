@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../context.ts";
+import { createTestContext } from "../context.ts";
 import { chronologyRule } from "./chronology.ts";
 import type { MarkdownDirEntry } from "../../lib/content-kinds.ts";
 
@@ -14,7 +14,7 @@ function algo(file: string, overrides: Record<string, unknown> = {}): MarkdownDi
 
 describe("chronologyRule", () => {
     it("passes when a feeds_into target is at least as recent as the host", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", {
                     sources: { primary: "paper-a" },
@@ -31,7 +31,7 @@ describe("chronologyRule", () => {
     });
 
     it("errors when a feeds_into target predates the host", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", {
                     sources: { primary: "paper-a" },
@@ -53,7 +53,7 @@ describe("chronologyRule", () => {
     });
 
     it("warns (does not error) when a generalized_by target predates the host", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", {
                     sources: { primary: "paper-a" },

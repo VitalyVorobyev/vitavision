@@ -1,6 +1,6 @@
 # AGENTS.md — Atlas authoring operating guide
 
-This file is consumed by any agent runtime working on vitavision (Claude Code and Codex both). It covers the atlas content rules. For broader project context see `.claude/CLAUDE.md`.
+This file is consumed by any agent runtime working on vitavision (Claude Code and Codex both). It covers the atlas content rules. For broader project context see `.claude/CLAUDE.md`; UI work (components, tokens, the lint gate that forbids raw palette classes and hex literals in `src/`) follows its Tech Stack section — interactive controls come from `@vitavision/ui`.
 
 ## Skills
 
@@ -108,7 +108,7 @@ CI's `validate-content` job runs `bun run content:validate` on published pages o
 
 There is no `content/atlas/` directory and no export pipeline. The atlas is a navigation and
 relationship layer over `content/algorithms/`, `content/models/`, `content/concepts/`, and
-`content/narratives/`, served at `/atlas` (tabs for grid, list, graph, and narratives). There is
+`content/narratives/`, served at `/atlas` (views for catalog grid/list, graph, narratives, people, and papers). There is
 a generated Obsidian vault at `docs/atlas-vault/` (`bun run vault:build`) — it is a derived,
 never-authored projection for exploring the graph in Obsidian, not a parallel content tree; never
 edit it by hand or author from it. Do not create other parallel namespaces.

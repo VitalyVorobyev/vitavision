@@ -1,3 +1,4 @@
+import { SegmentedControl } from "@vitavision/ui";
 import type { NarrativeLens } from "../../lib/content/schema.ts";
 
 interface LensSwitcherProps {
@@ -6,34 +7,21 @@ interface LensSwitcherProps {
     onChange: (id: string) => void;
 }
 
-/** Pill row selecting which authored (or build-generated) layout the canvas draws. */
+/** Segmented control selecting which authored (or build-generated) layout the canvas draws. */
 export default function LensSwitcher({ lenses, activeId, onChange }: LensSwitcherProps) {
     if (lenses.length < 2) return null;
 
     return (
-        <div role="radiogroup" aria-label="Layout" className="flex flex-wrap items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1">
             <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted mr-1">
                 Lens
             </span>
-            {lenses.map((lens) => {
-                const active = lens.id === activeId;
-                return (
-                    <button
-                        key={lens.id}
-                        type="button"
-                        role="radio"
-                        aria-checked={active}
-                        onClick={() => onChange(lens.id)}
-                        className={`rounded-full border px-2.5 py-[3px] text-[11.5px] transition-colors ${
-                            active
-                                ? "border-line-strong bg-line text-fg font-medium"
-                                : "border-line text-fg-muted hover:text-fg hover:bg-line/60"
-                        }`}
-                    >
-                        {lens.title}
-                    </button>
-                );
-            })}
+            <SegmentedControl
+                aria-label="Layout"
+                value={activeId}
+                options={lenses.map((lens) => ({ value: lens.id, label: lens.title }))}
+                onValueChange={onChange}
+            />
         </div>
     );
 }

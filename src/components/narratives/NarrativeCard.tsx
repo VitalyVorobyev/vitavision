@@ -54,7 +54,7 @@ export default function NarrativeCard({ entry }: NarrativeCardProps) {
     return (
         <Link
             to={`/atlas/narratives/${entry.slug}`}
-            className="group flex flex-col gap-2.5 rounded-[10px] border border-line bg-card p-4 no-underline transition-colors hover:border-line-strong"
+            className="group flex flex-col gap-2.5 rounded-[10px] border border-line bg-surface p-4 no-underline transition-colors hover:border-line-strong"
         >
             <div className="flex items-start gap-3">
                 <div className="min-w-0 flex-1">

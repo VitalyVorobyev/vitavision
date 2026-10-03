@@ -39,3 +39,9 @@ export const PuzzleBoardGridLayout = () => (
         <TargetTypeSelector selected="puzzleboard" dispatch={() => {}} layout="grid" />
     </Rail>
 );
+
+export const PuzzlePoleGridLayout = () => (
+    <Rail>
+        <TargetTypeSelector selected="puzzlepole" dispatch={() => {}} layout="grid" />
+    </Rail>
+);

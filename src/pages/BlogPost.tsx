@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useAuth, SignInButton } from "@clerk/clerk-react";
 import { Lock } from "lucide-react";
+import { Button } from "@vitavision/ui";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import { blogPosts } from "../generated/content-index.ts";
 import { blogHtmlLoaders } from "../generated/blog-loaders.ts";
@@ -20,6 +21,7 @@ import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.
 import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
 import ReadingProgress from "../components/blog/ReadingProgress.tsx";
 import TableOfContents from "../components/blog/TableOfContents.tsx";
+import LoadingIndicator from "../components/shared/LoadingIndicator.tsx";
 
 function MembersGate() {
     return (
@@ -30,9 +32,7 @@ function MembersGate() {
                 Sign in to read the full article. Membership is by invitation.
             </p>
             <SignInButton mode="modal">
-                <button className="inline-flex items-center justify-center rounded-control bg-signal px-5 py-2.5 text-sm font-medium text-signal-fg hover:bg-signal/90 transition-colors">
-                    Sign in to continue
-                </button>
+                <Button variant="primary">Sign in to continue</Button>
             </SignInButton>
         </div>
     );
@@ -174,9 +174,7 @@ export default function BlogPost() {
             <div className="border-t border-line mb-10" />
 
             {frontmatter.access === "members" && !isLoaded ? (
-                <div className="flex items-center justify-center py-16">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
-                </div>
+                <LoadingIndicator />
             ) : frontmatter.access === "members" && !isSignedIn ? (
                 <MembersGate />
             ) : html === null ? (
@@ -185,9 +183,7 @@ export default function BlogPost() {
                         Post content failed to load.
                     </div>
                 ) : (
-                    <div className="flex items-center justify-center py-16">
-                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
-                    </div>
+                    <LoadingIndicator />
                 )
             ) : (
                 <ErrorBoundary>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Pause, Play } from "lucide-react";
-import { Button, DensityProvider, SegmentedControl, Slider, ToggleChip } from "@vitavision/ui";
-import { classNames } from "../../utils/helpers";
+import { Button, DensityProvider, SegmentedControl, Slider, ToggleChip, cn } from "@vitavision/ui";
 import ChessResponseSvg from "./chess-response/ChessResponseSvg";
 import { deriveChessResponse } from "./chess-response/deriveChessResponse";
 import useChessResponseAnimation from "./chess-response/useChessResponseAnimation";
@@ -198,7 +197,7 @@ function MetricChip({
 }) {
     return (
         <div
-            className={classNames(
+            className={cn(
                 "flex flex-col items-center justify-center rounded-control border border-line/80 bg-ground/80 px-2 py-1.5 min-w-0",
                 accentClassName,
             )}
@@ -411,7 +410,7 @@ function ArticleLayout({
 
     return (
         <section
-            className={classNames(
+            className={cn(
                 "not-prose overflow-hidden rounded-[1.5rem] border border-line bg-[linear-gradient(180deg,var(--surface),var(--ground))] shadow-[0_24px_60px_-48px_rgba(15,23,42,0.55)]",
                 className,
             )}
@@ -450,7 +449,7 @@ function ArticleLayout({
 
                     <div className="flex flex-wrap items-center gap-2">
                         <span
-                            className={classNames(
+                            className={cn(
                                 "rounded-full border px-3 py-1.5 text-xs font-medium",
                                 response.status.className,
                             )}

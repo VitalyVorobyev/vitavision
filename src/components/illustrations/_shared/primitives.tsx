@@ -1,9 +1,5 @@
 import { type ReactNode, type ElementType } from "react";
-
-// Lightweight className merger — no external deps required.
-function cn(...classes: (string | undefined | false | null)[]): string {
-    return classes.filter(Boolean).join(" ");
-}
+import { cn } from "@vitavision/ui";
 
 // ---------------------------------------------------------------------------
 // Panel — gradient surface card (matches .panel in vv.css)

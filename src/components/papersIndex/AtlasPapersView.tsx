@@ -1,5 +1,6 @@
 import { use, useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { Input, SegmentedControl, Select } from "@vitavision/ui";
 import SeoHead from "../seo/SeoHead.tsx";
 import AtlasViewTabs from "../algorithms/AtlasViewTabs.tsx";
 import PapersList from "./PapersList.tsx";
@@ -68,51 +69,36 @@ export default function AtlasPapersView({ isDesktop, view, setView, query, setQu
                 </div>
 
                 <div className={`flex gap-3 ${isDesktop ? "items-center justify-between" : "flex-col"}`}>
-                    <label className="flex h-11 w-full items-center gap-2 rounded-control border border-line bg-surface px-3.5 text-fg-muted sm:w-[380px]">
-                        <Search size={16} className="shrink-0" aria-hidden="true" />
-                        <span className="sr-only">Search papers</span>
-                        <input
+                    <div className="relative w-full sm:w-[380px]">
+                        <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
+                        <Input
                             type="search"
+                            aria-label="Search papers"
                             placeholder="Search titles, authors, venues"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
-                            className="min-w-0 flex-1 bg-transparent text-[14px] text-fg outline-none placeholder:text-fg-muted"
+                            className="h-11 pl-10 text-[14px]"
                         />
-                    </label>
+                    </div>
 
                     <div className={`flex gap-3 ${isDesktop ? "items-center" : "flex-col"}`}>
-                        <div role="group" aria-label="Filter" className="inline-flex gap-0.5 rounded-control border border-line bg-surface p-[3px]">
-                            {FILTER_OPTIONS.map((opt) => (
-                                <button
-                                    key={opt.key}
-                                    type="button"
-                                    aria-pressed={filter === opt.key}
-                                    onClick={() => setFilter(opt.key)}
-                                    className={`h-9 rounded-control px-3.5 text-[13px] transition-colors ${
-                                        filter === opt.key
-                                            ? "bg-line font-semibold text-fg"
-                                            : "font-medium text-fg-muted hover:text-fg"
-                                    }`}
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
-                        </div>
+                        <SegmentedControl
+                            aria-label="Filter"
+                            value={filter}
+                            options={FILTER_OPTIONS.map((o) => ({ value: o.key, label: o.label }))}
+                            onValueChange={(v) => setFilter(v as PapersFilter)}
+                        />
 
-                        <label className="flex items-center gap-2 text-[13px] text-fg-muted">
-                            Sort
-                            <select
+                        <div className="flex items-center gap-2 text-[13px] text-fg-muted">
+                            <span aria-hidden="true">Sort</span>
+                            <Select
+                                aria-label="Sort"
+                                className="w-44"
                                 value={sort}
-                                onChange={(e) => setSort(e.target.value as PapersSort)}
-                                className="h-9 rounded-control border border-line bg-surface px-2.5 text-[13px] text-fg"
-                            >
-                                {SORT_OPTIONS.map((opt) => (
-                                    <option key={opt.key} value={opt.key}>
-                                        {opt.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
+                                options={SORT_OPTIONS.map((o) => ({ value: o.key, label: o.label }))}
+                                onValueChange={(v) => setSort(v as PapersSort)}
+                            />
+                        </div>
                     </div>
                 </div>
 

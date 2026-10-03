@@ -8,6 +8,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
+import { Input } from "@vitavision/ui";
 import { searchPeople } from "../../../lib/atlas/peopleNetwork.ts";
 import type { ScholarlyIndex } from "../../../lib/atlas/scholarlyTypes.ts";
 import type { AuthorsIndex } from "../../../generated/authors-index.ts";
@@ -55,12 +56,12 @@ export function PersonCombobox({ scholarly, authorsIdx, onSelect }: PersonCombob
 
     return (
         <div className="relative w-full sm:w-64">
-            <label className="flex items-center gap-2 h-10 px-3 rounded-control border border-line bg-surface text-fg-muted">
-                <Search size={14} className="shrink-0" />
-                <span className="sr-only">Find a person</span>
-                <input
+            <div className="relative">
+                <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
+                <Input
                     ref={inputRef}
                     type="search"
+                    aria-label="Find a person"
                     role="combobox"
                     aria-expanded={showList}
                     aria-controls={listboxId}
@@ -75,9 +76,9 @@ export function PersonCombobox({ scholarly, authorsIdx, onSelect }: PersonCombob
                     onFocus={() => setOpen(true)}
                     onBlur={() => setTimeout(() => setOpen(false), 120)}
                     onKeyDown={handleKeyDown}
-                    className="flex-1 min-w-0 bg-transparent outline-none text-sm text-fg placeholder:text-fg-muted"
+                    className="h-10 pl-9"
                 />
-            </label>
+            </div>
 
             {showList && (
                 <ul

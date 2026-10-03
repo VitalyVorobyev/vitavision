@@ -8,13 +8,20 @@ vitavision is an **application**, not a published component package: `private: t
 no `exports` map, no `dist/` of components. There is therefore no shipped entry for the
 converter to bundle. The design-system surface is defined by hand:
 
-- `.design-sync/ds-entry.tsx` — the curated export list (41 presentational components).
-  Adding a component to the sync means adding it **here** *and* to `componentSrcMap`
-  in `config.json`. Both, or it silently won't appear.
+- `.design-sync/ds-entry.tsx` — the curated export list (`bun run ds:validate` prints the
+  component count). Adding a component to the sync means adding it **here**, to
+  `componentSrcMap` in `config.json`, *and* writing `previews/<Name>.tsx`. Miss one and it
+  silently won't appear — so `ds:validate` fails when the three disagree.
+  Two sources: the app's own presentational components (`src/`), and the interactive
+  controls re-exported from `@vitavision/ui` (Button, Select, Field, NumberInput,
+  SegmentedControl, Checkbox, Dialog, Callout, Tooltip, InfoHint), whose
+  `componentSrcMap` entries point into `node_modules/@vitavision/ui/src`. ui's `Panel`
+  is deliberately not re-exported: the name belongs to the illustration primitive.
 - `.design-sync/tsconfig.ds.json` — declaration-only `tsc` project rooted at that entry.
 - `.design-sync/build-ds.mjs` — esbuild pre-bundle + stylesheet rewrite.
 
-`buildCmd` chains all three after `vite build`. Run it before the converter on every re-sync.
+`buildCmd` runs `bun run content:build`, `vite build`, then those three. Run it before the converter
+on every re-sync.
 
 ## Gotchas that cost real debugging time
 
@@ -32,20 +39,11 @@ converter to bundle. The design-system surface is defined by hand:
   `dist/assets/`, which makes them resolvable. Verify after any build:
   `ls ds-bundle/fonts | wc -l` should be several dozen (IBM Plex, Source Serif 4, KaTeX), not 1.
 
-- **Do not run `bun run build` for this workflow — use `buildCmd`.** The full script starts
-  with `content:build`, which regenerates `src/generated/content/**` and dirties ~121 tracked
-  files. The diff is not content: it is KaTeX float precision inside the pre-rendered HTML
-  (`0.0572em` → `0.05724em`), i.e. the installed KaTeX differs slightly from whatever
-  generated the committed files. Harmless but noisy — `git checkout -- src/generated` to
-  undo. `buildCmd` deliberately skips `content:build` and runs `vite build` alone.
-
-- **The repo build is broken on `main`** (as of 2026-07-22): `bun run build` fails at
-  `tsc -b` with TS2339 on `src/lib/wasm/wasmWorker.ts:803,963`
-  (`detect_marker_board_with_diagnostics`, `detect_puzzleboard_with_diagnostics` missing
-  from `@vitavision/calib-targets`). Unrelated to design-sync, and it does **not** block
-  us: `npx vite build` alone succeeds, and no synced component's import graph touches
-  `src/lib/wasm/**`, so `tsconfig.ds.json` type-checks clean. If someone fixes the WASM
-  types, nothing here needs to change.
+- **`buildCmd` starts with `content:build`, and has to.** `ds-entry.tsx` seeds `PapersContext`
+  from `public/papers-index.json`, which `content:build` generates and git ignores; on a fresh
+  clone both the `tsc` step and the esbuild step fail with "Cannot find module" until it
+  exists. (`content:build` is ~5 s and leaves the tree clean; the old KaTeX-float churn in
+  `src/generated` is gone.) The rest of `bun run build` (`tsc -b`) adds nothing here.
 
 - **Grouping is capped by the converter.** A doc's frontmatter `category` only overrides
   the group when the *source-directory* group is empty (`package-build.mjs:777` — it
@@ -61,15 +59,14 @@ converter to bundle. The design-system surface is defined by hand:
   `src/lib/auth/useIsAdmin.ts` (`useUser`), which throws outside a `ClerkProvider`.
   The publishable key lives only in gitignored `.env.local`, so wiring it would mean
   committing a key. Add it later only if the key is sourced some other way.
-- **Editor / canvas / WASM components** (~54 of 95) — coupled to the Zustand editor
+- **Editor / canvas / WASM components** — coupled to the Zustand editor
   store, react-konva, or WASM workers; they cannot render standalone in the design
   agent's runtime.
-- **`guidelinesGlob` is `[]` on purpose.** The default globs slurp `docs/*.md`, which
-  here is Atlas research material, not design guidance. Worse, `docs/brand_identity.md`
-  is **stale**: it describes a dark-navy `#0B132B` / cyan `#33C6E3` palette, while the
-  site now uses @vitavision/ui's neutral *instrument* tokens (lab-ui L3-3). Only the cyan
-  logo pupil survived, as `--vv-brand-mark` in `src/styles/editorial-tokens.css`. Shipping that file would teach the design
-  agent the wrong palette. The real design language lives in `.design-sync/conventions.md`.
+- **`guidelinesGlob` is `[]` on purpose.** The default globs slurp `docs/*.md`, which here is
+  Atlas and developer material, not design guidance. The real design language lives in
+  `.design-sync/conventions.md`, which restates @vitavision/ui's tokens (lab-ui
+  `docs/visual-language.md` is the source of truth) plus the editorial layer in
+  `src/styles/editorial-tokens.css`.
 
 ## Ambient context the design system must supply
 
@@ -136,6 +133,14 @@ it never uses, to serve tooling. Not worth it for the app.
   domain. That is real current behaviour, not a preview defect.
 - **`Tooltip` cards show the trigger only.** The popup is hover-gated and the wrapper
   exposes no `open` prop, so a static capture cannot show it. Deliberate, not a gap.
+- **`Dialog` has exactly one story.** It is a modal portalled to `<body>` with a dimming backdrop,
+  so a second cell in the same card would sit under the first one's overlay (verified in a
+  Chromium render of all previews on one page). The open state is the useful one; closed is just
+  a trigger.
+- **The ui controls come from `node_modules/@vitavision/ui`**, so a ui version bump changes the
+  design system without touching this repo's `src/`. Re-run the build and the previews after one,
+  and keep the `.design-sync/docs/` pages (props, defaults) in step with ui's TSDoc.
+
 - **`AlgorithmsFilterSheet` has no "closed" cell.** Closed means unmounted — nothing renders
   — so the state is documented in its `.prompt.md` rather than faked with a placeholder cell.
 
@@ -150,11 +155,14 @@ upload plan only carries `components/`, `tokens/`, `fonts/`, `_vendor/`, `_previ
   `/InBug-White.png`. Not prop-driven, so unfixable from a preview. **Excluded from the sync**
   (see the comment in `ds-entry.tsx`). To re-add: inline the four icons as SVG, or accept them as
   props, then restore the export and the `componentSrcMap` entry.
-- **`TargetPreview`** — ChArUco and ring-grid fetch `/arucodict/*.json` and
-  `/ringgrid/codebook_*.json` at render time; the other three target types are pure geometry.
-  Kept in the sync, with the caveat documented in `.design-sync/docs/TargetPreview.md` so the
-  design agent reads it. Its preview stubs `window.fetch` for exactly those two URLs, so the card
-  shows full capability — deliberately more than a bare design gets.
+- **`TargetPreview` / `TargetConfigPanel` / `DownloadBar`** — the app renders the preview SVG and
+  runs the validation through the calib-targets / ringgrid WASM worker, and `validateConfig`,
+  `svg/index.ts` and `puzzlepole/periods.ts` all reach `src/lib/wasm/`. The components themselves
+  are presentational (they show `state.previewSvg` / `state.validation`; `generateDxf` and
+  `puzzlepolePeriods` are injected props), so the previews feed them static data from
+  `.design-sync/fixtures/targetgen.ts` — a sketched SVG per target kind, a hand-built fit check and a
+  short real periods list. **Never import `validation.ts`, `svg/index.ts` or `periods.ts` from a
+  preview.** (`ds:validate` now bundles every preview too and fails on exactly this.)
 - **`SourceCard` / `SourceStrip`** — same class of problem, but solvable: fixed centrally by
   seeding `PapersContext` in `ds-entry.tsx` (see above) rather than by serving the JSON.
 
@@ -163,7 +171,7 @@ If a future wave needs more of these, the general fix is to seed the data throug
 
 ## `Link` in a preview file throws — use a plain `<a>`
 
-A preview that imports `Link` from `react-router-dom` bundles its **own** copy of react-router,
+A preview that imports `Link` from `react-router` bundles its **own** copy of react-router,
 whose `NavigationContext` is a different instance from the one the ambient `MemoryRouter` writes
 to — so `Link` throws, and (as always) the cell just goes blank with no reported error. Preview
 files should use a plain `<a>` for visual chrome; navigation is meaningless in a static card
@@ -185,8 +193,9 @@ but confusing — write comments as prose rather than pasting markup into them.
   facets highlighted). The component portals its sheet to `document.body` with `position: fixed`,
   which defeats the checker's per-cell measurement. Do not "fix" the preview for this.
 - `[DOCS_UNMAPPED]` for the components without a file in `.design-sync/docs/` — they get
-  a synthesized `.prompt.md` from the `.d.ts` + preview. Intentional; only the 16
-  components needing a regroup or extra usage guidance have hand-written docs.
+  a synthesized `.prompt.md` from the `.d.ts` + preview. Intentional; only the
+  components needing a regroup or extra usage guidance have hand-written docs (the @vitavision/ui
+  controls, the illustration primitives and the target-generator panels).
 
 ## Verifying tooling: simulate CI with a `git clone`, never an rsync
 

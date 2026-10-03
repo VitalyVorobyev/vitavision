@@ -1,1 +1,0 @@
-export const classNames = (...xs: Array<string | false | null | undefined>) => xs.filter(Boolean).join(" ");

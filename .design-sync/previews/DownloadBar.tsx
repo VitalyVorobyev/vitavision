@@ -1,18 +1,7 @@
 import { DownloadBar } from "vitcv";
-import { validateConfig } from "../../src/components/targetgen/validation";
-import { chessboardSvg } from "../../src/components/targetgen/svg/chessboardSvg";
-import { resolvePageDimensions } from "../../src/components/targetgen/svg/paperConstants";
-import type { TargetGeneratorState, ChessboardConfig } from "../../src/components/targetgen/types";
-
-const A4_LANDSCAPE = {
-    sizeKind: "a4" as const,
-    customWidthMm: 210,
-    customHeightMm: 297,
-    orientation: "landscape" as const,
-    marginMm: 10,
-    pngDpi: 300,
-    showScaleLine: true,
-};
+import { CHESSBOARD_PRESETS } from "../../src/components/targetgen/presets";
+import type { ChessboardConfig } from "../../src/components/targetgen/types";
+import { A4_LANDSCAPE, first, settledState } from "../fixtures/targetgen";
 
 // Real desktop usage nests DownloadBar inside TargetConfigPanel's `w-80`
 // right rail (src/pages/TargetGenerator.tsx), with `p-3` around it.
@@ -25,40 +14,22 @@ function Rail({ children }: { children: React.ReactNode }) {
 }
 
 export const Ready = () => {
-    // Camera-cal 7x10 chessboard preset, rendered with the real synchronous
-    // SVG generator and validated with the real validateConfig — a genuinely
-    // settled, download-ready run.
-    const config: ChessboardConfig = { innerRows: 7, innerCols: 10, squareSizeMm: 20, innerSquareRel: 0 };
-    const target: TargetGeneratorState["target"] = { targetType: "chessboard", config };
-    const state: TargetGeneratorState = {
-        target,
-        page: A4_LANDSCAPE,
-        previewSvg: chessboardSvg(config, resolvePageDimensions(A4_LANDSCAPE)),
-        validation: validateConfig(target, A4_LANDSCAPE),
-        configCache: {},
-    };
+    // The camera-calibration chessboard preset on A4: a settled, download-ready run.
+    const preset = first(CHESSBOARD_PRESETS);
     return (
         <Rail>
-            <DownloadBar state={state} />
+            <DownloadBar state={settledState(preset.target, preset.page)} />
         </Rail>
     );
 };
 
 export const Blocked = () => {
-    // Board too large for the page — validateConfig raises a real "does not
-    // fit the printable area" error, which disables every button.
+    // Board too large for the page: the fit check reports "does not fit the printable
+    // area", which disables every button.
     const config: ChessboardConfig = { innerRows: 9, innerCols: 13, squareSizeMm: 50, innerSquareRel: 0 };
-    const target: TargetGeneratorState["target"] = { targetType: "chessboard", config };
-    const state: TargetGeneratorState = {
-        target,
-        page: A4_LANDSCAPE,
-        previewSvg: chessboardSvg(config, resolvePageDimensions(A4_LANDSCAPE)),
-        validation: validateConfig(target, A4_LANDSCAPE),
-        configCache: {},
-    };
     return (
         <Rail>
-            <DownloadBar state={state} />
+            <DownloadBar state={settledState({ targetType: "chessboard", config }, A4_LANDSCAPE)} />
         </Rail>
     );
 };

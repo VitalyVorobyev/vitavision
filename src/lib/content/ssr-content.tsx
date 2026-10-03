@@ -10,9 +10,7 @@ export interface StaticContentContextValue {
     narrativeHtmlBySlug?: Record<string, string>;
 }
 
-const StaticContentContext = createContext<StaticContentContextValue | null>(null);
-
-export const StaticContentProvider = StaticContentContext.Provider;
+export const StaticContentContext = createContext<StaticContentContextValue | null>(null);
 
 export function useStaticContent(): StaticContentContextValue | null {
     return use(StaticContentContext);

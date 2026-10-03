@@ -17,6 +17,7 @@ import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 import NotFound from "./NotFound.tsx";
+import LoadingIndicator, { Spinner } from "../components/shared/LoadingIndicator.tsx";
 
 function clamp(v: number, lo: number, hi: number): number {
     return Math.max(lo, Math.min(hi, v));
@@ -209,7 +210,7 @@ export default function NarrativePage() {
                             The constellation failed to load.
                         </span>
                     ) : (
-                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
+                        <Spinner />
                     )}
                 </div>
             ) : isDesktop ? (
@@ -273,9 +274,7 @@ export default function NarrativePage() {
                             Narrative content failed to load.
                         </div>
                     ) : (
-                        <div className="flex items-center justify-center py-16">
-                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
-                        </div>
+                        <LoadingIndicator />
                     )
                 ) : (
                     <ErrorBoundary>

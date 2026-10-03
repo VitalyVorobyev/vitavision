@@ -33,7 +33,7 @@ import { NetworkToolbar } from "./NetworkToolbar.tsx";
 import { FocusCard } from "./FocusCard.tsx";
 import { Legend } from "./Legend.tsx";
 import { Minimap } from "./Minimap.tsx";
-import { ZoomButtons } from "./ZoomButtons.tsx";
+import ZoomControls from "../../shared/ZoomControls.tsx";
 
 export interface PeopleNetworkProps {
     /** Focused person (canonical author id) or undefined for the overview. */
@@ -247,7 +247,14 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
                                 />
                             )}
                             <Legend isPhone={isPhone} />
-                            <ZoomButtons onZoomIn={() => zoomAroundCenter(1.25)} onZoomOut={() => zoomAroundCenter(1 / 1.25)} onFit={() => fitView(true)} />
+                            <ZoomControls
+                                orientation="column"
+                                className="absolute bottom-3 right-3 gap-1.5"
+                                buttonClassName="size-11"
+                                onZoomIn={() => zoomAroundCenter(1.25)}
+                                onZoomOut={() => zoomAroundCenter(1 / 1.25)}
+                                onFit={() => fitView(true)}
+                            />
                             {activeFocusId && focusPerson && (
                                 <FocusCard
                                     id={activeFocusId}

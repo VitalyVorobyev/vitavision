@@ -19,7 +19,7 @@ import {
 } from "../../lib/atlas/graphLayout.ts";
 import { useGraphTrail } from "../../lib/atlas/graphTrail.ts";
 import { FocusedEntryPanel } from "./FocusedEntryPanel.tsx";
-import { ZoomControls } from "./graph/ZoomControls.tsx";
+import ZoomControls from "../shared/ZoomControls.tsx";
 import { NodeFinder } from "./graph/NodeFinder.tsx";
 import { nodeFinderSearch } from "./graph/nodeFinderSearch.tsx";
 import { PannableViewport } from "./graph/PannableViewport.tsx";
@@ -142,6 +142,8 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
                             <NodeFinder search={nodeFinderSearch} onSelect={navigate} />
                             <RelationLegend activeRels={activeRels} />
                             <ZoomControls
+                                orientation="column"
+                                className="absolute bottom-3 right-3"
                                 onZoomIn={() => zoomAroundCenter(1.25)}
                                 onZoomOut={() => zoomAroundCenter(1 / 1.25)}
                                 onFit={() => fitView(true)}

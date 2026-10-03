@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import { ButtonLink } from "@vitavision/ui";
 import type { NarrativeNode, ResolvedNarrative } from "../../lib/content/schema.ts";
 import type { NarrativeStep } from "../../lib/narratives/types.ts";
 import { areaColor } from "../../lib/narratives/narrativeLayout.ts";
@@ -129,12 +130,9 @@ function MobileNodeCard({ node, areaIds }: { node: NarrativeNode; areaIds: strin
                         </p>
                     )}
                     {node.kind === "page" && (
-                        <Link
-                            to={node.path}
-                            className="mt-2.5 flex h-9 items-center justify-center rounded-control bg-signal text-[13px] font-medium text-signal-fg no-underline active:opacity-90"
-                        >
-                            Open page →
-                        </Link>
+                        <ButtonLink variant="primary" asChild className="mt-2.5 h-9 w-full no-underline">
+                            <Link to={node.path}>Open page →</Link>
+                        </ButtonLink>
                     )}
                     {node.kind === "paper" && (
                         <a

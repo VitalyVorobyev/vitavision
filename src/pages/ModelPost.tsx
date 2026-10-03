@@ -20,6 +20,7 @@ import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.
 import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import NotFound from "./NotFound.tsx";
+import LoadingIndicator from "../components/shared/LoadingIndicator.tsx";
 
 export default function ModelPost() {
     const { slug } = useParams<{ slug: string }>();
@@ -163,9 +164,7 @@ export default function ModelPost() {
                             Model content failed to load.
                         </div>
                     ) : (
-                        <div className="flex items-center justify-center py-16">
-                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
-                        </div>
+                        <LoadingIndicator />
                     )
                 ) : (
                     <ErrorBoundary>

@@ -35,7 +35,6 @@ const baseFeatureSchema = z.object({
         inverted: z.boolean().optional(),
         polarity: z.string().optional(),
         contrast: z.number().optional(),
-        distanceCells: z.number().nullable().optional(),
         offsetCells: z.object({ di: z.number(), dj: z.number() }).nullable().optional(),
     }).optional(),
 });

@@ -176,7 +176,6 @@ export interface CalibrationCircleMatch {
         polarity: "white" | "black";
     };
     matched_index: number | null;
-    distance_cells: number | null;
     offset_cells: { di: number; dj: number } | null;
 }
 
@@ -200,6 +199,8 @@ export interface CalibrationTargetResult {
         circle_candidate_count: number | null;
         circle_match_count: number | null;
         alignment_inliers: number | null;
+        /** Circles consistent with the best *competing* board frame (marker board only). */
+        alignment_runner_up_inliers: number | null;
         runtime_ms: number;
     };
     detection: {

@@ -31,6 +31,7 @@ export function adaptCalibTargetResult(
                 circle_candidate_count: null,
                 circle_match_count: null,
                 alignment_inliers: null,
+                alignment_runner_up_inliers: null,
                 runtime_ms: runtimeMs,
             },
             detection: { kind, corners: [] },
@@ -94,6 +95,7 @@ export function adaptCalibTargetResult(
     let circleCandidates = null;
     let circleMatches = null;
     let alignmentInliers = null;
+    let alignmentRunnerUpInliers = null;
     if (algorithm === "markerboard") {
         if (r.circle_candidates) {
             circleCandidates = (r.circle_candidates as Array<Record<string, unknown>>).map((cc) => ({
@@ -108,11 +110,11 @@ export function adaptCalibTargetResult(
             circleMatches = (r.circle_matches as Array<Record<string, unknown>>).map((cm) => ({
                 expected: cm.expected as { cell: { i: number; j: number }; polarity: "white" | "black" },
                 matched_index: (cm.matched_index as number) ?? null,
-                distance_cells: (cm.distance_cells as number) ?? null,
                 offset_cells: (cm.offset_cells as { di: number; dj: number }) ?? null,
             }));
         }
         alignmentInliers = (r.alignment_inliers as number) ?? null;
+        alignmentRunnerUpInliers = (r.alignment_runner_up_inliers as number) ?? null;
     }
 
     // Alignment (charuco and markerboard)
@@ -138,6 +140,7 @@ export function adaptCalibTargetResult(
             circle_candidate_count: circleCandidates ? circleCandidates.length : null,
             circle_match_count: circleMatches ? circleMatches.filter((m) => m.matched_index !== null).length : null,
             alignment_inliers: alignmentInliers,
+            alignment_runner_up_inliers: alignmentRunnerUpInliers,
             runtime_ms: runtimeMs,
         },
         detection: { kind, corners },
@@ -145,6 +148,54 @@ export function adaptCalibTargetResult(
         alignment,
         circle_candidates: circleCandidates,
         circle_matches: circleMatches,
+    };
+}
+
+/** Shape of `diagnose_marker_board` after `unwrapMaps`. */
+export interface MarkerBoardDiagnosis {
+    result?: { corners: unknown[]; alignment: unknown } | null;
+    diagnostics?: {
+        circle_candidates: unknown[];
+        circle_matches: unknown[];
+        alignment_inliers: number;
+        alignment_runner_up_inliers: number;
+        alignment_ambiguous: boolean;
+    } | null;
+}
+
+/**
+ * Turn a (Map-unwrapped) `diagnose_marker_board` payload into the internal
+ * `{ detection, alignment, circle_* }` shape `adaptCalibTargetResult` expects,
+ * or `null` when the detector found nothing.
+ *
+ * Throws when the detector reports `alignment_ambiguous`. calib-targets 0.15
+ * resolves the board frame by hypothesis-and-verify over the four 90-degree
+ * rotations; when a second frame explains the circles as well as the best one
+ * it returns NO result at all (`result` is `undefined`, the corners are
+ * withheld) rather than guessing. Without this check that case would fall into
+ * the "nothing detected" branch and surface as a misleading "No corners
+ * detected" — the board is there, it is its orientation that is undecidable.
+ * `== null`, not `=== null`: Rust `None` serialises as `undefined`.
+ */
+export function adaptMarkerBoardDiagnosis(withDiag: MarkerBoardDiagnosis) {
+    const diag = withDiag.diagnostics;
+    if (withDiag.result == null) {
+        if (diag?.alignment_ambiguous) {
+            throw new Error(
+                `Marker board orientation is ambiguous: a second board frame explains the circles as well as the best one ` +
+                    `(${diag.alignment_inliers} vs ${diag.alignment_runner_up_inliers} circle inliers), so no alignment was returned. ` +
+                    `Check that the three circle cells and polarities (and the circle diameter) match the printed board.`,
+            );
+        }
+        return null;
+    }
+    return {
+        detection: { kind: "checkerboard_marker", corners: withDiag.result.corners },
+        alignment: withDiag.result.alignment,
+        circle_candidates: diag?.circle_candidates ?? [],
+        circle_matches: diag?.circle_matches ?? [],
+        alignment_inliers: diag?.alignment_inliers ?? null,
+        alignment_runner_up_inliers: diag?.alignment_runner_up_inliers ?? null,
     };
 }
 
@@ -225,28 +276,9 @@ export async function handleCalibTarget(
         // diagnostics channel. Call the diagnose_* variant and deep-unwrap
         // its Map-based payload (see unwrapMaps) to keep those fields populated —
         // the overlay's circle-candidate/match rendering depends on them.
-        const withDiag = unwrapMaps(
-            mod.diagnose_marker_board(width, height, gray, chessCfg, params),
-        ) as {
-            result?: { corners: unknown[]; alignment: unknown } | null;
-            diagnostics: { circle_candidates: unknown[]; circle_matches: unknown[]; alignment_inliers: number } | null;
-        };
-        // `== null`, not `=== null`: serde-wasm-bindgen serialises Rust `None` as
-        // *undefined*, so the key is present with an undefined value and a strict
-        // null check never matches. Verified against the real module — a failed
-        // detection under a strict check reached `withDiag.result.corners` and
-        // threw `TypeError: undefined is not an object`. The puzzleboard branch
-        // (see worker/puzzleboard.ts) has always used the loose check for this
-        // same reason.
-        result = withDiag.result == null
-            ? null
-            : {
-                detection: { kind: "checkerboard_marker", corners: withDiag.result.corners },
-                alignment: withDiag.result.alignment,
-                circle_candidates: withDiag.diagnostics?.circle_candidates ?? [],
-                circle_matches: withDiag.diagnostics?.circle_matches ?? [],
-                alignment_inliers: withDiag.diagnostics?.alignment_inliers ?? null,
-            };
+        result = adaptMarkerBoardDiagnosis(
+            unwrapMaps(mod.diagnose_marker_board(width, height, gray, chessCfg, params)) as MarkerBoardDiagnosis,
+        );
     }
 
     const runtimeMs = performance.now() - t0;

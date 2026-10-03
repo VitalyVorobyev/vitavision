@@ -36,6 +36,9 @@ export const calibrationSummary = (result: CalibrationTargetResult): Array<{ lab
     if (result.summary.alignment_inliers !== null) {
         summary.push({ label: "Alignment inliers", value: `${result.summary.alignment_inliers}` });
     }
+    if (result.summary.alignment_runner_up_inliers !== null) {
+        summary.push({ label: "Runner-up inliers", value: `${result.summary.alignment_runner_up_inliers}` });
+    }
 
     return summary;
 };
@@ -173,7 +176,6 @@ export const calibrationCircleMatchFeatures = (
                     polarity: m.expected.polarity,
                     score: candidate.score,
                     contrast: candidate.contrast,
-                    distanceCells: m.distance_cells,
                     offsetCells: m.offset_cells,
                 },
             };

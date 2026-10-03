@@ -6,6 +6,11 @@ import type { MarkerCircleCell } from "../../../../lib/types";
 export interface MarkerBoardConfig {
     boardRows: number;
     boardCols: number;
+    // Printed disk diameter as a fraction of the square side. Lives on the
+    // board spec (`board.circle_diameter_rel`) since calib-targets 0.15 —
+    // every radius the circle scorer probes is relative to it. Must equal the
+    // value the board was printed with (targetgen's `circleDiameterRel`).
+    circleDiameterRel: number;
     // The Rust printable spec and the detector spec both declare this as a
     // fixed-size array ([MarkerCircleSpec; 3]) — the count of three circles
     // is fixed by the library, not a UI choice.
@@ -25,7 +30,6 @@ export interface MarkerBoardConfig {
     graphOrientationToleranceDeg: number;
     // Circle score sub-params
     circleScorePatchSize: number;
-    circleScoreDiameterFrac: number;
     circleScoreRingThicknessFrac: number;
     circleScoreRingRadiusMul: number;
     circleScoreMinContrast: number;
@@ -80,6 +84,25 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                             disabled={disabled}
                             min={2}
                             step={1}
+                        />
+                    </Field>
+                    <Field
+                        label="Circle diameter"
+                        as="group"
+                        annotation={
+                            <InfoHint label="About circle diameter">
+                                Printed disk diameter as a fraction of the square side. All circle-scoring radii are
+                                relative to it, so it must match the board as printed. Library default: 0.5.
+                            </InfoHint>
+                        }
+                    >
+                        <NumberInput
+                            aria-label="Circle diameter"
+                            {...numberInputProps(config.circleDiameterRel, (v) => set("circleDiameterRel", v ?? 0.5))}
+                            disabled={disabled}
+                            min={0.1}
+                            max={0.99}
+                            step={0.05}
                         />
                     </Field>
                 </div>
@@ -258,20 +281,6 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                         />
                     </Field>
                     <Field
-                        label="Diameter fraction"
-                        as="group"
-                        annotation={<InfoHint label="About diameter fraction">Expected circle diameter as a fraction of the patch size.</InfoHint>}
-                    >
-                        <NumberInput
-                            aria-label="Diameter fraction"
-                            {...numberInputProps(config.circleScoreDiameterFrac, (v) => set("circleScoreDiameterFrac", v ?? 0.5))}
-                            disabled={disabled}
-                            min={0.01}
-                            max={2}
-                            step={0.05}
-                        />
-                    </Field>
-                    <Field
                         label="Ring thickness fraction"
                         as="group"
                         annotation={<InfoHint label="About ring thickness fraction">Thickness of the scoring ring as a fraction of the circle radius.</InfoHint>}
@@ -362,14 +371,14 @@ const MarkerBoardConfigForm = (props: AlgorithmConfigFormProps<MarkerBoardConfig
                     <Field
                         label="Min offset inliers"
                         as="group"
-                        annotation={<InfoHint label="About min offset inliers">Minimum number of circle-pair offsets that must agree for the alignment to be accepted. WASM default: 1.</InfoHint>}
+                        annotation={<InfoHint label="About min offset inliers">Expected circles that must agree on one board frame. The three circles exist only to break the board's 4-fold rotational symmetry, so fewer than all three cannot fix the orientation. WASM default: 3.</InfoHint>}
                     >
                         <NumberInput
                             aria-label="Min offset inliers"
-                            {...numberInputProps(config.matchMinOffsetInliers, (v) => set("matchMinOffsetInliers", v ?? 1))}
+                            {...numberInputProps(config.matchMinOffsetInliers, (v) => set("matchMinOffsetInliers", v ?? 3))}
                             disabled={disabled}
                             min={1}
-                            max={16}
+                            max={3}
                             step={1}
                         />
                     </Field>

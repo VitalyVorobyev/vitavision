@@ -448,6 +448,84 @@ if (miss.result != null)
     throw new Error('expected a miss on a blank image, got a detection: ' + JSON.stringify(miss.result));
 console.log('PASS: diagnose_marker_board returns a nullish result on a miss (value is '
     + (miss.result === null ? 'null' : 'undefined') + ', so the worker must use loose == null)');
+
+// ---- calib-targets 0.15 marker-board schema migration guards --------------
+// Every one of these changed SILENTLY in 0.15: a stale key is dropped by the
+// WASM boundary like any unknown key, so only the invalid-payload probe (a
+// string where a number belongs: live key -> throws, dead key -> accepted)
+// can tell a live key from a dead one.
+function isLive(path, bad) {
+    const p = mod.default_marker_board_params();
+    let o = p;
+    for (const k of path.slice(0, -1)) { o[k] ??= {}; o = o[k]; }
+    o[path[path.length - 1]] = bad;
+    try { mod.diagnose_marker_board(32, 32, gray, chessCfg, p); return false; }
+    catch (e) { return String(e).includes('invalid type'); }
+}
+const dflt = mod.default_marker_board_params();
+
+// 1. The printed disk diameter lives on the board spec now.
+if (dflt.board.circle_diameter_rel !== 0.5)
+    throw new Error('default board.circle_diameter_rel is no longer 0.5: ' + JSON.stringify(dflt.board));
+if ('diameter_frac' in dflt.circle_score)
+    throw new Error('circle_score.diameter_frac is back in the defaults -- revisit the 0.15 migration');
+if (!isLive(['board', 'circle_diameter_rel'], 'BAD'))
+    throw new Error('board.circle_diameter_rel is not a live key (invalid payload was accepted)');
+if (isLive(['circle_score', 'diameter_frac'], 'BAD'))
+    throw new Error('circle_score.diameter_frac is live again -- the adapter may need to send it');
+console.log('PASS: board.circle_diameter_rel is live (default 0.5); circle_score.diameter_frac is gone');
+
+// 2. circle_match max_distance_cells was removed; min_offset_inliers is the whole layout.
+if (isLive(['match_params', 'max_distance_cells'], 'BAD'))
+    throw new Error('match_params.max_distance_cells is live again -- the adapter may need to send it');
+if (!isLive(['match_params', 'min_offset_inliers'], 'BAD'))
+    throw new Error('match_params.min_offset_inliers is not a live key');
+if (dflt.match_params.min_offset_inliers !== 3)
+    throw new Error('default min_offset_inliers is no longer 3: ' + dflt.match_params.min_offset_inliers);
+console.log('PASS: match_params.max_distance_cells is gone; min_offset_inliers is live (default 3)');
+
+// 3. The app's initial config must equal the library defaults for every
+// circle-detector knob it sends (the worker deep-merges over the defaults, so
+// a drifted app default silently overrides the library one). The adapter
+// imports React/konva so it cannot be loaded here; read its literals.
+const { readFileSync: readSrc } = await import('fs');
+const adapterSrc = readSrc('src/components/editor/algorithms/calibrationTargets/markerboardAdapter.ts', 'utf8');
+const appDefault = (key) => {
+    const m = new RegExp('^    ' + key + ': ([0-9.]+),', 'm').exec(adapterSrc);
+    if (!m) throw new Error('could not find ' + key + ' in markerboardAdapter.ts initialConfig');
+    return Number(m[1]);
+};
+const expectEq = (key, lib) => {
+    const app = appDefault(key);
+    if (Math.abs(app - lib) > 1e-6)
+        throw new Error('app default ' + key + '=' + app + ' != library default ' + lib);
+};
+expectEq('circleDiameterRel', dflt.board.circle_diameter_rel);
+expectEq('circleScorePatchSize', dflt.circle_score.patch_size);
+expectEq('circleScoreRingThicknessFrac', dflt.circle_score.ring_thickness_frac);
+expectEq('circleScoreRingRadiusMul', dflt.circle_score.ring_radius_mul);
+expectEq('circleScoreMinContrast', dflt.circle_score.min_contrast);
+expectEq('circleScoreSamples', dflt.circle_score.samples);
+expectEq('circleScoreCenterSearchPx', dflt.circle_score.center_search_px);
+expectEq('matchMaxCandidatesPerPolarity', dflt.match_params.max_candidates_per_polarity);
+expectEq('matchMinOffsetInliers', dflt.match_params.min_offset_inliers);
+// ...and the target generator's printed diameter default must agree with it.
+const reducerSrc = readSrc('src/components/targetgen/reducer.ts', 'utf8');
+const genDefault = /circleDiameterRel: ([0-9.]+),/.exec(reducerSrc);
+if (!genDefault || Math.abs(Number(genDefault[1]) - dflt.board.circle_diameter_rel) > 1e-6)
+    throw new Error('target generator circleDiameterRel default != detector default ' + dflt.board.circle_diameter_rel);
+console.log('PASS: app detector defaults and target-generator diameter default equal the library defaults');
+
+// 4. The diagnostics payload gained the ambiguity channel. A blank image has no
+// alignment, so also assert the miss is NOT flagged ambiguous (the worker turns
+// alignment_ambiguous into a hard error; a false positive here would break
+// every plain miss).
+const dg = miss.diagnostics;
+for (const k of ['alignment_inliers', 'alignment_runner_up_inliers', 'alignment_ambiguous', 'circle_candidates', 'circle_matches', 'inliers'])
+    if (!(k in dg)) throw new Error('diagnostics.' + k + ' missing; keys: ' + JSON.stringify(Object.keys(dg)));
+if (dg.alignment_ambiguous !== false)
+    throw new Error('blank-image miss reported alignment_ambiguous=' + dg.alignment_ambiguous);
+console.log('PASS: diagnostics carry alignment_runner_up_inliers / alignment_ambiguous (blank miss is not ambiguous)');
 process.exit(0);
 `,
     },

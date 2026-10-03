@@ -73,6 +73,7 @@ function mockCalibResult(algorithm: CalibrationTargetAlgorithm, cornerCount: num
             circle_candidate_count: algorithm === "markerboard" ? 3 : null,
             circle_match_count: algorithm === "markerboard" ? 2 : null,
             alignment_inliers: algorithm === "markerboard" ? 10 : null,
+            alignment_runner_up_inliers: algorithm === "markerboard" ? 2 : null,
             runtime_ms: 45.2,
         },
         detection: {

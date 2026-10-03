@@ -103,7 +103,7 @@ export function NetworkCanvas({
                     // hook may have started for the first, then start tracking pinch.
                     onPointerUp(e);
                     dragStartRef.current = null;
-                    const [a, b] = [...activeTouches.current.values()];
+                    const [a, b] = [...activeTouchesRef.current.values()];
                     if (a === undefined || b === undefined) return; // unreachable: size === 2
                     pinchStartDistRef.current = Math.hypot(a.x - b.x, a.y - b.y);
                     return;
@@ -123,7 +123,7 @@ export function NetworkCanvas({
             if (e.pointerType === "touch" && activeTouchesRef.current.has(e.pointerId)) {
                 activeTouchesRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
                 if (activeTouchesRef.current.size === 2 && pinchStartDistRef.current !== null) {
-                    const [a, b] = [...activeTouches.current.values()];
+                    const [a, b] = [...activeTouchesRef.current.values()];
                     if (a === undefined || b === undefined) return; // unreachable: size === 2
                     const dist = Math.hypot(a.x - b.x, a.y - b.y);
                     const factor = dist / pinchStartDistRef.current;

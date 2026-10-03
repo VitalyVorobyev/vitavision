@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { Button, DensityProvider, SegmentedControl } from "@vitavision/ui";
 import ChessResponseSvg from "./chess-response/ChessResponseSvg";
-import { useChessResponse } from "./chess-response/useChessResponse";
+import { deriveChessResponse } from "./chess-response/deriveChessResponse";
 import useChessResponseAnimation from "./chess-response/useChessResponseAnimation";
 import { formatValue } from "./chess-response/readoutHelpers";
 import { classNames } from "../../utils/helpers";
@@ -33,7 +33,7 @@ export default function ChessResponseInlinePreview({
         onTick: setRotationDeg,
     });
 
-    const response = useChessResponse({
+    const response = deriveChessResponse({
         pattern,
         rotationDeg,
         blur: initialBlur,

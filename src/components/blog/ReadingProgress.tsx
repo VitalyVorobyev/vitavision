@@ -17,10 +17,14 @@ export default function ReadingProgress({ articleRef }: ReadingProgressProps) {
     const [visible, setVisible] = useState(false);
     const rafIdRef = useRef<number | null>(null);
     const hasScrolledRef = useRef(false);
-    const prefersReducedMotion =
-        typeof window !== "undefined" && typeof window.matchMedia === "function"
-            ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-            : false;
+    // Read once; only consumed once the bar is visible (client-only, after the
+    // first scroll), so the prerendered null output never depends on it.
+    const [prefersReducedMotion] = useState(
+        () =>
+            typeof window !== "undefined" && typeof window.matchMedia === "function"
+                ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+                : false,
+    );
 
     useEffect(() => {
         const compute = () => {

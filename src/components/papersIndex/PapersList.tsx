@@ -37,7 +37,7 @@ function ColumnHeader() {
 /** Decade-grouped (default) or flat ranked (while searching) list of papers,
  *  each decade showing 5 rows then an in-place "All N →" expansion. */
 export default function PapersList({ rows, query, filter, sort }: PapersListProps) {
-    const [expanded, setExpanded] = useState<Set<number>>(new Set());
+    const [expanded, setExpanded] = useState<Set<number>>(() => new Set());
     const needle = normalizeSearchText(query.trim());
     const searching = needle.length > 0;
 

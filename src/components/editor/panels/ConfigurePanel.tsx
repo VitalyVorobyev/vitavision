@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import { Sparkles, Maximize2, X } from "lucide-react";
@@ -112,12 +112,12 @@ export default function ConfigurePanel() {
 
     // Trigger counter so the component re-renders when a deferred load resolves
     // and getLoadedAlgorithm starts returning the freshly-cached entry.
-    const [, setLoadTick] = useState(0);
+    const [, bumpLoadTick] = useReducer((tick: number) => tick + 1, 0);
 
     useEffect(() => {
         let cancelled = false;
         void loadAlgorithm(selectedAlgorithmId).then(() => {
-            if (!cancelled) setLoadTick((tick) => tick + 1);
+            if (!cancelled) bumpLoadTick();
         });
         return () => { cancelled = true; };
     }, [selectedAlgorithmId]);

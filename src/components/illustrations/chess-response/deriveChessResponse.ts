@@ -1,7 +1,7 @@
 import { computeChessResponse, describePatternResponse, responseStatus } from "./math";
 import type { ChessResponseControls } from "./types";
 
-export function useChessResponse(controls: ChessResponseControls) {
+export function deriveChessResponse(controls: ChessResponseControls) {
     const computation = computeChessResponse(controls);
 
     return {

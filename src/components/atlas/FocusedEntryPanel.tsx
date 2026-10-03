@@ -5,6 +5,7 @@
 // When isPreview=true the eyebrow reads "Preview" (muted) instead of "Focused" (brand).
 
 import { Link } from "react-router";
+import { ButtonLink } from "@vitavision/ui";
 import { getFocusEntry } from "../../lib/atlas/focusEntry.ts";
 import { EntryIcon } from "./EntryIcon.tsx";
 import { SourceCard } from "./SourceCard.tsx";
@@ -119,12 +120,9 @@ export function FocusedEntryPanel({ slug, isPreview }: FocusedEntryPanelProps) {
             )}
 
             {/* Footer — open page button */}
-            <Link
-                to={node.path}
-                className="flex items-center justify-center h-9 rounded-control bg-signal text-signal-fg text-[13px] font-medium hover:opacity-90 active:opacity-80 transition-opacity"
-            >
-                Open page →
-            </Link>
+            <ButtonLink variant="primary" asChild className="w-full">
+                <Link to={node.path}>Open page →</Link>
+            </ButtonLink>
         </div>
     );
 }

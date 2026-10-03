@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import {
+    canvasOrigin,
     exportFeatures,
     openEditor,
     pickTool,
@@ -11,13 +12,14 @@ import {
 
 // Behavioural regression test for the editor's manual annotation tools, renderer-agnostic.
 //
-// Every test works at "Zoom to 100%" (zoom 1, pan 0,0), where image coordinate (x, y) sits
-// at the canvas container's top-left + (x, y) in page pixels. Shapes are drawn with real
-// pointer events (page.mouse) on the container behind data-testid="editor-canvas"; geometry
+// Every test works at "Zoom to 100%", where one image pixel is one page pixel. The stage centres
+// the image there and puts the centre of pixel i at coordinate i, so `at(x, y)` (from
+// `viewActualSize`) is read back from the app's pixel readout rather than assumed. Shapes are drawn
+// with real pointer events (page.mouse) on the container behind data-testid="editor-canvas"; geometry
 // is asserted from the app's own JSON export, in image coordinates. Selection is observed
 // through the Features panel's "Selected" card, deletion through its Delete button; pan and
 // zoom through the hover-pixel readout and the zoom readout. Nothing here depends on the
-// canvas renderer (Konva today).
+// canvas renderer.
 //
 // The viewport must stay 1440x900 (playwright.config.ts): the drawings below need roughly
 // 650x550 px of canvas and keep clear of the corner overlays.
@@ -90,8 +92,10 @@ const scenarios: Scenario[] = [
         tool: "bbox",
         type: "bbox",
         expected: [450, 330, 150, 100],
-        // 25% along the top edge: away from the corner and mid-edge resize handles.
-        grab: [487.5, 330],
+        // 25% along the top edge, a few pixels inside it: away from the corner and mid-edge resize
+        // handles, and on the shape's body (the editor's move target is its interior, which an
+        // exact-edge point may fall just outside of).
+        grab: [487.5, 335],
         draw: async (page, at) => {
             await dragBetween(page, at(450, 330), at(600, 430));
         },
@@ -100,8 +104,9 @@ const scenarios: Scenario[] = [
         tool: "ellipse",
         type: "ellipse",
         expected: [250, 470, 100, 50],
-        // The 45-degree point of the outline (centre 250,470; radii 100,50): clear of the handles.
-        grab: [250 + 100 * Math.SQRT1_2, 470 + 50 * Math.SQRT1_2],
+        // The 45-degree point of the outline (centre 250,470; radii 100,50), pulled 10% in towards the
+        // centre so it is on the body, not on a boundary pixel: clear of the handles.
+        grab: [250 + 90 * Math.SQRT1_2, 470 + 45 * Math.SQRT1_2],
         draw: async (page, at) => {
             await dragBetween(page, at(150, 420), at(350, 520));
         },
@@ -113,10 +118,10 @@ async function clickAt(page: Page, p: { x: number; y: number }): Promise<void> {
 }
 
 /**
- * Hold time (ms) of a polyline/polygon vertex click. Konva reports two quick clicks on the
- * empty stage as a double-click wherever they land, which would finish the shape early.
- * Holding the button keeps consecutive releases more than its 400 ms window apart without
- * waiting on app state; a user placing vertices one by one is slower than this anyway.
+ * Hold time (ms) of a polyline/polygon vertex click. Two quick clicks can be read as a
+ * double-click, which would finish the shape early. Holding the button keeps consecutive
+ * releases further apart than the double-click window without waiting on app state; a user
+ * placing vertices one by one is slower than this anyway.
  */
 const VERTEX_HOLD_MS = 420;
 
@@ -126,8 +131,8 @@ async function vertexClickAt(page: Page, p: { x: number; y: number }): Promise<v
 
 /**
  * Last vertex, then a double-click on it to finish the shape. The double-click's own clicks
- * add the same vertex again (the comparison dedupes it); the held click before it keeps
- * Konva's click-pairing from firing the double-click on the wrong release.
+ * add the same vertex again (the app drops the repeat, and the comparison dedupes it too); the
+ * held click before it keeps click-pairing from firing the double-click on the wrong release.
  */
 async function finishAt(page: Page, p: { x: number; y: number }): Promise<void> {
     await vertexClickAt(page, p);
@@ -237,11 +242,15 @@ test.describe("editor manual tools", () => {
 });
 
 test.describe("editor view", () => {
-    test("right-drag pans, wheel zooms about the cursor, fit and 1:1 reset the view", async ({ page }) => {
+    test("wheel zooms about the cursor, right-drag pans, fit and 1:1 reset the view", async ({ page }) => {
         await openEditor(page, { sample: "chessboard" });
         const { at } = await viewActualSize(page);
         const zoomReadout = page.getByTestId("zoom-readout");
         const pixelReadout = page.getByTestId("editor-pixel-readout");
+        // The image centre: zooming about it moves no image edge, so the view is not clamped and the point stays put.
+        // On a whole page pixel, because a wheel event reports its position in whole pixels.
+        const centre = at(512, 288);
+        const probe = { x: Math.round(centre.x), y: Math.round(centre.y) };
 
         await test.step("1:1 maps the pointer to image pixels", async () => {
             const p = at(300, 200);
@@ -250,46 +259,51 @@ test.describe("editor view", () => {
             await expect(pixelReadout).toContainText("Y: 200.00");
         });
 
-        await test.step("right-drag pans by the drag vector", async () => {
-            const start = at(400, 300);
-            await page.mouse.move(start.x, start.y);
-            await page.mouse.down({ button: "right" });
-            await page.mouse.move(start.x + 60, start.y + 40, { steps: 6 });
-            await page.mouse.up({ button: "right" });
-
-            // The image moved +60,+40 under the cursor, so the same screen point now reads 60,40 less.
-            const probe = at(300, 200);
-            await page.mouse.move(probe.x, probe.y);
-            await expect(pixelReadout).toContainText("X: 240.00");
-            await expect(pixelReadout).toContainText("Y: 160.00");
-            await expect(zoomReadout).toHaveText("100%");
-        });
-
         await test.step("wheel zooms in and out, keeping the image point under the cursor", async () => {
-            const probe = at(300, 200);
             await page.mouse.move(probe.x, probe.y);
             const before = await readPixelReadout(page);
 
-            await page.mouse.wheel(0, -100);
-            await expect(zoomReadout).toHaveText("110%");
+            await page.mouse.wheel(0, -600);
+            await expect(async () => {
+                const percent = Number.parseInt((await zoomReadout.textContent()) ?? "0", 10);
+                expect(percent).toBeGreaterThan(200);
+            }).toPass();
+            await page.mouse.move(probe.x + 1, probe.y);
             await page.mouse.move(probe.x, probe.y);
             const after = await readPixelReadout(page);
             expect(Math.abs(after.x - before.x), "image x under the cursor").toBeLessThan(0.05);
             expect(Math.abs(after.y - before.y), "image y under the cursor").toBeLessThan(0.05);
-
-            await page.mouse.wheel(0, 100);
-            await expect(zoomReadout).toHaveText("100%");
         });
 
-        await test.step("fit to screen and 1:1", async () => {
+        await test.step("right-drag pans by the drag vector", async () => {
+            // Zoomed in, the image is larger than the canvas, so there is room to pan (at 1:1 it fits and is held centred).
+            const start = probe;
+            await page.mouse.move(start.x, start.y);
+            const before = await readPixelReadout(page);
+            await page.mouse.down({ button: "right" });
+            await page.mouse.move(start.x + 60, start.y + 40, { steps: 6 });
+            await page.mouse.up({ button: "right" });
+
+            // The image moved +60,+40 under the cursor: the same screen point reads less, by the drag over the scale.
+            await page.mouse.move(start.x + 1, start.y);
+            await page.mouse.move(start.x, start.y);
+            const after = await readPixelReadout(page);
+            const scale = Number.parseInt((await zoomReadout.textContent()) ?? "100", 10) / 100;
+            expect(before.x - after.x, "image x moved under the cursor").toBeCloseTo(60 / scale, 0);
+            expect(before.y - after.y, "image y moved under the cursor").toBeCloseTo(40 / scale, 0);
+        });
+
+        await test.step("fit to screen, the zoom buttons and 1:1", async () => {
+            const canvasBox = await canvasOrigin(page);
+            // chessboard.png is 1024x576; the stage fits it to the canvas it is in.
+            const fit = Math.min(canvasBox.width / 1024, canvasBox.height / 576);
             await page.getByRole("button", { name: "Fit to screen" }).click();
-            // chessboard.png is 1024x576: fit = min(800/1024, 600/576) * 0.9 = 0.703.
-            await expect(zoomReadout).toHaveText("70%");
+            await expect(zoomReadout).toHaveText(`${Math.round(fit * 100)}%`);
 
             await page.getByRole("button", { name: "Zoom in" }).click();
-            await expect(zoomReadout).toHaveText("84%");
+            await expect(zoomReadout).toHaveText(`${Math.round(fit * 1.2 * 100)}%`);
             await page.getByRole("button", { name: "Zoom out" }).click();
-            await expect(zoomReadout).toHaveText("70%");
+            await expect(zoomReadout).toHaveText(`${Math.round(fit * 100)}%`);
 
             await page.getByRole("button", { name: "Zoom to 100%" }).click();
             await expect(zoomReadout).toHaveText("100%");

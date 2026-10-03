@@ -84,7 +84,7 @@ type Action =
     | { type: "SELECT_POINT"; id: string | null }
     | { type: "SET_HOVER"; hover: HoverTarget | null }
     | { type: "TOGGLE_LAYER"; layer: keyof Layers }
-    | { type: "SET_GRID_DIMS"; rows?: number; cols?: number }
+    | { type: "SET_GRID_DIMS"; rows?: number | undefined; cols?: number | undefined }
     | { type: "MOVE_CORNER"; index: 0 | 1 | 2 | 3; x: number; y: number }
     | { type: "RESET_GRID" }
     | { type: "CLEAR_POINTS" }
@@ -268,15 +268,15 @@ function reducer(state: ViewState, action: Action): ViewState {
         case "END_DRAG":
             return state.dragTag === null ? state : { ...state, dragTag: null };
         case "UNDO": {
-            if (state.history.past.length === 0) return state;
             const prev = state.history.past[state.history.past.length - 1];
+            if (prev === undefined) return state;
             const past = state.history.past.slice(0, -1);
             const future = [snapshotOf(state), ...state.history.future];
             return { ...applySnapshot(state, prev), history: { past, future } };
         }
         case "REDO": {
-            if (state.history.future.length === 0) return state;
             const next = state.history.future[0];
+            if (next === undefined) return state;
             const future = state.history.future.slice(1);
             const past = [...state.history.past, snapshotOf(state)];
             return { ...applySnapshot(state, next), history: { past, future } };
@@ -316,6 +316,12 @@ export interface TriangleInfo {
     ai: number;
     bi: number;
     ci: number;
+}
+
+// Resolve a triangle's vertex indices to points. `triangle` must come from the `triangles`
+// list built alongside `points`, whose indices are validated against it.
+export function triangleVertices(points: Point[], { ai, bi, ci }: TriangleInfo): [Point, Point, Point] {
+    return [points[ai]!, points[bi]!, points[ci]!];
 }
 
 export interface Stats {
@@ -393,8 +399,9 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
         // matches the dedup tolerance used for input points.
         const TRIANGLE_AREA_EPS = 1e-3;
         for (let i = 0; i < t.length; i += 3) {
-            const ai = t[i], bi = t[i + 1], ci = t[i + 2];
-            const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
+            // t holds complete index triples (i + 2 < t.length) into the points Delaunay.from was given.
+            const ai = t[i]!, bi = t[i + 1]!, ci = t[i + 2]!;
+            const a = allPoints[ai]!, b = allPoints[bi]!, c = allPoints[ci]!;
             if (triangleArea(a, b, c) <= TRIANGLE_AREA_EPS) continue;
             result.push({ ai, bi, ci });
         }
@@ -407,8 +414,9 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
         }
         const edgeSet = new Set<string>();
         let minAngle = Infinity;
-        for (const { ai, bi, ci } of triangles) {
-            const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
+        for (const triangle of triangles) {
+            const { ai, bi, ci } = triangle;
+            const [a, b, c] = triangleVertices(allPoints, triangle);
             const minRad = triangleMinAngle(a, b, c);
             if (Number.isFinite(minRad) && minRad < minAngle) minAngle = minRad;
             for (const [u, v] of [[ai, bi], [bi, ci], [ci, ai]] as [number, number][]) {

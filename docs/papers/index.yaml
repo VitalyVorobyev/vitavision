@@ -2004,3 +2004,109 @@
   - chen2018-deeplab
   - sun2019-hrnetv2
   - he2017-maskrcnn
+
+- id: bertoldo2024-aupimo
+  title: "AUPIMO: Redefining Visual Anomaly Detection Benchmarks with High Speed and Low Tolerance"
+  authors: ["J. P. C. Bertoldo", "D. Ameln", "A. Vaidya", "S. Akçay"]
+  authorIds: [A5026041233, A5025671893, A5038518813]
+  year: 2024
+  venue: BMVC 2024
+  url: https://arxiv.org/pdf/2401.01984
+  arxiv: "2401.01984"
+  doi: "10.48550/arxiv.2401.01984"
+  pdf: bertoldo2024-aupimo.pdf
+  cites: []
+
+- id: baitieva2024-segad
+  title: "Supervised Anomaly Detection for Complex Industrial Images"
+  authors: ["A. Baitieva", "D. Hurych", "V. Besnier", "O. Bernard"]
+  authorIds: [A5095094437, A5086144380, A5074326665]
+  year: 2024
+  venue: CVPR 2024
+  url: https://arxiv.org/pdf/2405.04953
+  arxiv: "2405.04953"
+  doi: "10.48550/arxiv.2405.04953"
+  pdf: baitieva2024-segad.pdf
+  cites: []
+
+- id: li2024-mulsen-ad
+  title: "Multi-Sensor Object Anomaly Detection: Unifying Appearance, Geometry, and Internal Properties"
+  authors: ["W. Li", "B. Zheng", "X. Xu", "J. Gan", "F. Lu", "X. Li", "N. Ni", "Z. Tian", "X. Huang", "S. Gao", "Y. Wu"]
+  authorIds: [A5089665295, A5018803784, A5053905081, A5111513090]
+  year: 2024
+  venue: arXiv
+  url: https://arxiv.org/pdf/2412.14592
+  arxiv: "2412.14592"
+  doi: "10.48550/arxiv.2412.14592"
+  pdf: li2024-mulsen-ad.pdf
+  cites: []
+
+- id: mokhtar2025-velm
+  title: "Detect, Classify, Act: Categorizing Industrial Anomalies with Multi-Modal Large Language Models"
+  authors: ["S. Mokhtar", "A. Mousakhan", "S. Galesso", "J. Tayyub", "T. Brox"]
+  authorIds: [A5104153935, A5092031241, A5064946819, A5002497004, A5070290355]
+  year: 2025
+  venue: VAND Workshop, CVPR 2025
+  url: https://arxiv.org/pdf/2505.02626
+  arxiv: "2505.02626"
+  doi: "10.48550/arxiv.2505.02626"
+  pdf: mokhtar2025-velm.pdf
+  cites: []
+
+- id: zhang2025-superad
+  title: "SuperAD: A Training-free Anomaly Classification and Segmentation Method for CVPR 2025 VAND 3.0 Workshop Challenge Track 1: Adapt & Detect"
+  authors: ["H. Zhang", "H. Chen", "Y. Cheng", "S. Wu", "L. Sun", "L. Han", "Z. Shi", "L. Qi"]
+  year: 2025
+  venue: arXiv
+  url: https://arxiv.org/pdf/2505.19750
+  arxiv: "2505.19750"
+  doi: "10.48550/arxiv.2505.19750"
+  pdf: zhang2025-superad.pdf
+  cites: []
+
+- id: gao2026-uniadet
+  title: "One Language-Free Foundation Model Is Enough for Universal Vision Anomaly Detection"
+  authors: ["B. Gao", "C. Wang"]
+  authorIds: [A5000290451, A5023834700]
+  year: 2026
+  venue: arXiv
+  url: https://arxiv.org/pdf/2601.05552
+  arxiv: "2601.05552"
+  doi: "10.48550/arxiv.2601.05552"
+  pdf: gao2026-uniadet.pdf
+  cites: []
+
+- id: fucka2026-anomalyvfm
+  title: "AnomalyVFM -- Transforming Vision Foundation Models into Zero-Shot Anomaly Detectors"
+  authors: ["M. Fučka", "V. Zavrtanik", "D. Skočaj"]
+  authorIds: [A5040408220, A5078364765, A5024699185]
+  year: 2026
+  venue: CVPR 2026
+  url: https://arxiv.org/pdf/2601.20524
+  arxiv: "2601.20524"
+  doi: "10.48550/arxiv.2601.20524"
+  pdf: fucka2026-anomalyvfm.pdf
+  cites: []
+
+- id: sugawara2024-puad
+  title: "PUAD: Frustratingly Simple Method for Robust Anomaly Detection"
+  authors: ["S. Sugawara", "R. Imamura"]
+  authorIds: [A5105783109, A5026911576]
+  year: 2024
+  venue: ICIP 2024
+  url: https://arxiv.org/pdf/2402.15143
+  arxiv: "2402.15143"
+  doi: "10.1109/icip51287.2024.10647438"
+  pdf: sugawara2024-puad.pdf
+  cites: []
+
+- id: zhang2026-logico
+  title: "LogiCo: A Unified Framework for Logical and Structural Anomaly Detection"
+  authors: ["X. Zhang", "M. Xu", "X. Zhou"]
+  authorIds: [A5020923609, A5139671087, A5085431435]
+  year: 2026
+  venue: ECCV 2026
+  url: https://arxiv.org/pdf/2606.28688
+  arxiv: "2606.28688"
+  pdf: zhang2026-logico.pdf
+  cites: []

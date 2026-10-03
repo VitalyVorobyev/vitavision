@@ -13,6 +13,14 @@ export interface DiagnosticEntry {
     detail?: string;
 }
 
+/**
+ * An algorithm's stored config: the JSON document its WASM package takes (or, where the
+ * call takes several documents, a small object holding them side by side), in the
+ * package's own snake_case shape. `AlgorithmConfigFormProps` is generic over it only so
+ * a form can be typed more tightly; the editor treats it as opaque JSON.
+ */
+export type ConfigDocument = Record<string, unknown>;
+
 export interface AlgorithmPreset {
     label: string;
     description?: string;

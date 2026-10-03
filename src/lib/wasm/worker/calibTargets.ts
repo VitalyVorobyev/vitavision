@@ -1,4 +1,4 @@
-import { generateId, toPoint, toPointOrNull, toPointArray, toPointArrayOrNull, gridFromWasm, alignmentFromWasm, deepMerge, unwrapMaps, mapTargetBundle, type TargetBundle, type RawTargetBundle } from "./util";
+import { generateId, toPoint, toPointOrNull, toPointArray, toPointArrayOrNull, gridFromWasm, alignmentFromWasm, mergeConfig, unwrapMaps, mapTargetBundle, type TargetBundle, type RawTargetBundle } from "./util";
 import { getCalibModule } from "./modules";
 
 export function adaptCalibTargetResult(
@@ -199,6 +199,28 @@ export function adaptMarkerBoardDiagnosis(withDiag: MarkerBoardDiagnosis) {
     };
 }
 
+/** A config document is an object; anything else is a malformed deep link or a caller bug. */
+const asRecord = (value: unknown, what: string): Record<string, unknown> => {
+    if (value === null || typeof value !== "object" || Array.isArray(value)) {
+        throw new Error(`${what} must be an object`);
+    }
+    return value as Record<string, unknown>;
+};
+
+/**
+ * Run one of the three board detectors. `config` is the package's own params document:
+ *
+ * - chessboard: `{ chess, params }` — `detect_chessboard` takes the ChESS front-end
+ *   (`schemas/chess_config.json`) and the chessboard params (`schemas/chessboard_params.json`)
+ *   as separate arguments.
+ * - charuco / markerboard: `CharucoParams` / `MarkerBoardParams`, which carry their front-end
+ *   under `chess`, so the separate argument is `null`.
+ *
+ * Each is merged over the library's defaults first, so a document with fields missing (a
+ * hand-edited deep link) is completed rather than rejected. `mergeConfig`, not `deepMerge`:
+ * the ChESS config holds externally tagged enums (`refiner`, `multiscale`, `upscale`), and
+ * merging the default's variant key into another variant's yields an invalid two-key object.
+ */
 export async function handleCalibTarget(
     algorithm: "chessboard" | "charuco" | "markerboard",
     pixels: Uint8Array,
@@ -211,35 +233,13 @@ export async function handleCalibTarget(
     // Convert RGBA to grayscale
     const gray = mod.rgba_to_gray(pixels, width, height);
 
-    // Start from WASM defaults and merge user overrides. `upscale` on
-    // ChessConfig is an internally-tagged Rust enum (exactly one variant key)
-    // — a plain deepMerge would union the default's variant key with the
-    // override's, and the WASM deserializer rejects that ("invalid length 2,
-    // expected 1"). Replace it wholesale when overridden instead of merging.
-    //
-    // `threshold` was such an enum in 0.10.1; 0.11 collapsed it to a plain f32
-    // absolute response floor (default 15). It stays in the wholesale-replace
-    // list because replacing a scalar is what deepMerge would do anyway, and
-    // keeping both fields on the same path means a future re-tagging cannot
-    // reintroduce the union bug silently.
-    const chessCfg = config.chessCfg
-        ? (() => {
-            const overrides = config.chessCfg as Record<string, unknown>;
-            const merged = deepMerge(mod.default_chess_config() as Record<string, unknown>, overrides);
-            if (overrides.threshold !== undefined) merged.threshold = overrides.threshold;
-            if (overrides.upscale !== undefined) merged.upscale = overrides.upscale;
-            return merged;
-        })()
-        : undefined;
-
     const t0 = performance.now();
     let result: unknown;
 
     if (algorithm === "chessboard") {
-        const defaults = mod.default_chessboard_params() as Record<string, unknown>;
-        const userParams = (config.params ?? {}) as Record<string, unknown>;
-        const params = deepMerge(defaults, userParams);
-        const raw = mod.detect_chessboard(width, height, gray, chessCfg, params) as
+        const chess = mergeConfig(mod.default_chess_config() as Record<string, unknown>, asRecord(config.chess ?? {}, "chessboard config.chess"));
+        const params = mergeConfig(mod.default_chessboard_params() as Record<string, unknown>, asRecord(config.params ?? {}, "chessboard config.params"));
+        const raw = mod.detect_chessboard(width, height, gray, chess, params) as
             | { corners: unknown[]; cell_size: number | null }
             | null;
         // 0.10.1 flattened ChessboardDetectionResult to { corners, cell_size } —
@@ -248,15 +248,17 @@ export async function handleCalibTarget(
         // and the rest of the app expect. `cell_size` has no current consumer.
         result = raw ? { detection: { kind: "chessboard", corners: raw.corners } } : null;
     } else if (algorithm === "charuco") {
-        // Charuco has no dedicated defaults function.
-        // Its `chessboard` sub-object uses the same schema as standalone chessboard params —
-        // merge user overrides on top of chessboard defaults for that section.
-        const userParams = (config.params ?? {}) as Record<string, unknown>;
-        const userChessboard = (userParams.chessboard ?? {}) as Record<string, unknown>;
-        const chessboardDefaults = mod.default_chessboard_params() as Record<string, unknown>;
-        const mergedChessboard = deepMerge(chessboardDefaults, userChessboard);
-        const params = { ...userParams, chessboard: mergedChessboard };
-        const raw = mod.detect_charuco(width, height, gray, chessCfg, params) as {
+        // The defaults depend on the board (the scan block mirrors it), so they are asked for
+        // with the board the config describes.
+        const board = asRecord(config.board, "charuco config.board");
+        const defaults = mod.default_charuco_params(
+            board.rows as number,
+            board.cols as number,
+            board.marker_size_rel as number,
+            board.dictionary as string,
+        ) as Record<string, unknown>;
+        const params = mergeConfig(defaults, config);
+        const raw = mod.detect_charuco(width, height, gray, null, params) as {
             corners: unknown[];
             markers: unknown[];
             alignment: unknown;
@@ -269,15 +271,14 @@ export async function handleCalibTarget(
         };
     } else {
         const defaults = mod.default_marker_board_params() as Record<string, unknown>;
-        const userParams = (config.params ?? {}) as Record<string, unknown>;
-        const params = deepMerge(defaults, userParams);
+        const params = mergeConfig(defaults, config);
         // 0.10.1 flattened MarkerBoardDetectionResult to { corners, alignment } and
         // moved circle_candidates / circle_matches / alignment_inliers into the
         // diagnostics channel. Call the diagnose_* variant and deep-unwrap
         // its Map-based payload (see unwrapMaps) to keep those fields populated —
         // the overlay's circle-candidate/match rendering depends on them.
         result = adaptMarkerBoardDiagnosis(
-            unwrapMaps(mod.diagnose_marker_board(width, height, gray, chessCfg, params)) as MarkerBoardDiagnosis,
+            unwrapMaps(mod.diagnose_marker_board(width, height, gray, null, params)) as MarkerBoardDiagnosis,
         );
     }
 

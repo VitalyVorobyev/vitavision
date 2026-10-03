@@ -10,6 +10,7 @@ import { useShallow } from "zustand/react/shallow";
 import { ALGORITHM_MANIFEST, loadAlgorithm, getLoadedAlgorithm } from "../algorithms/registry";
 import useAlgorithmRunner, { stageLabel } from "../algorithms/useAlgorithmRunner";
 import { useDeepLinkSync } from "../../../hooks/useEditorDeepLink";
+import { mergeConfig } from "../../../lib/wasm/worker/util";
 
 
 type ConfigEntry = { value: unknown; sampleId: SampleId };
@@ -26,7 +27,9 @@ const resolveConfig = (
         return entry.value;
     }
     const defaults = sampleDefaults?.[sampleId];
-    return defaults !== undefined ? { ...initialConfig as object, ...defaults as object } : initialConfig;
+    return defaults !== undefined
+        ? mergeConfig(initialConfig as Record<string, unknown>, defaults as Record<string, unknown>)
+        : initialConfig;
 };
 
 /**

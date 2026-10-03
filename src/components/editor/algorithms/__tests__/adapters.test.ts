@@ -21,16 +21,6 @@ function mockChessCornersResult(count: number): ChessCornersResult {
         image_width: 640,
         image_height: 480,
         frame: { name: "image_px_center", origin: "top_left", x_axis: "right", y_axis: "down", units: "pixels" },
-        config: {
-            threshold: 30,
-            nms_radius: 2,
-            broad_mode: false,
-            min_cluster_size: 2,
-            pyramid_levels: 4,
-            pyramid_min_size: 128,
-            upscale_factor: 0,
-            refiner: "center_of_mass",
-        },
         summary: {
             count,
             response_min: count > 0 ? 0.1 : null,
@@ -382,32 +372,6 @@ describe("ringgridAlgorithm", () => {
             const expected = result.markers[0]!.ellipse_outer.angle * (180 / Math.PI);
             expect(f.outerEllipse.angleDeg).toBeCloseTo(expected, 5);
         }
-    });
-
-    it("board JSON overrides only user-configured fields", () => {
-        // The adapter sends only user fields; the worker merges with WASM defaults
-        // that provide `schema`, `name`, etc.
-        const config = ringgridAlgorithm.initialConfig as { rows: number; longRowCols: number; pitchMm: number; markerOuterRadiusMm: number; markerInnerRadiusMm: number; markerRingWidthMm: number };
-        const boardJson = JSON.stringify({
-            rows: config.rows,
-            long_row_cols: config.longRowCols,
-            pitch_mm: config.pitchMm,
-            marker_outer_radius_mm: config.markerOuterRadiusMm,
-            marker_inner_radius_mm: config.markerInnerRadiusMm,
-            marker_ring_width_mm: config.markerRingWidthMm,
-        });
-        const parsed = JSON.parse(boardJson) as {
-            rows: number;
-            long_row_cols: number;
-            schema?: unknown;
-            name?: unknown;
-        };
-        // User fields are present
-        expect(parsed.rows).toBe(15);
-        expect(parsed.long_row_cols).toBe(14);
-        // Schema/name are NOT in user JSON — the worker merges from defaults
-        expect(parsed.schema).toBeUndefined();
-        expect(parsed.name).toBeUndefined();
     });
 
     it("summary returns marker count and runtime", () => {

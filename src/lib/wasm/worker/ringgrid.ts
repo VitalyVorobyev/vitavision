@@ -1,4 +1,4 @@
-import { deepMerge, mapTargetBundle, type TargetBundle } from "./util";
+import { mapTargetBundle, mergeConfig, type TargetBundle } from "./util";
 import { getRinggridModule } from "./modules";
 
 export function adaptRinggridResult(
@@ -67,6 +67,16 @@ export function adaptRinggridResult(
     };
 }
 
+/**
+ * Run the ring-grid detector. `config` is `{ board, config }`: a target spec
+ * (`schemas/target_spec.json`) and a detection config (`schemas/detect_config.json`).
+ *
+ * The board goes in whole (it is a complete document; merging a default `hex` lattice into
+ * a `rect` one would keep fields the variant does not have). The detection config is merged
+ * over `default_config_json(board)` — a complete snapshot is what `with_config` takes, and
+ * the fields the library derives from the board (the schema's `readOnly` ones) come from
+ * there too.
+ */
 export async function handleRinggrid(
     pixels: Uint8Array,
     width: number,
@@ -75,24 +85,13 @@ export async function handleRinggrid(
 ) {
     const mod = await getRinggridModule();
 
-    // Start from WASM defaults, override with user-provided fields.
-    // ringgrid.target.v6 nests layout under lattice/marker/coding, so a
-    // shallow merge would wipe sibling keys (e.g. lattice.kind) whenever the
-    // user overrides only part of a nested block — use the nested-aware
-    // deepMerge (see worker/util.ts) instead.
-    const defaults = JSON.parse(mod.default_board_json()) as Record<string, unknown>;
-    const userBoard = config.boardJson
-        ? JSON.parse(config.boardJson as string) as Record<string, unknown>
-        : {};
-    const merged = deepMerge(defaults, userBoard);
-    const boardJson = JSON.stringify(merged);
+    const board = (config.board as Record<string, unknown> | undefined) ?? (JSON.parse(mod.default_board_json()) as Record<string, unknown>);
+    const boardJson = JSON.stringify(board);
+    const defaults = JSON.parse(mod.default_config_json(boardJson)) as Record<string, unknown>;
+    const detectConfig = mergeConfig(defaults, (config.config as Record<string, unknown> | undefined) ?? {});
 
-    const detector = new mod.RinggridDetector(boardJson);
+    const detector = mod.RinggridDetector.with_config(boardJson, JSON.stringify(detectConfig));
     try {
-        if (config.configOverlay) {
-            detector.update_config(config.configOverlay as string);
-        }
-
         const t0 = performance.now();
         const resultJson = detector.detect_adaptive_rgba(pixels, width, height);
         const runtimeMs = performance.now() - t0;

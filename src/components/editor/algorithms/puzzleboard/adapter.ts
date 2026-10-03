@@ -1,35 +1,12 @@
-import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
+import type { AlgorithmDefinition, DiagnosticEntry } from "../types";
 import type { PuzzleBoardDetectResult } from "../../../../lib/types";
 import { detectPuzzleboardWasm } from "../../../../lib/wasm/wasmWorkerProxy";
-import { definedOnly } from "../calibrationTargets/shared";
-import PuzzleboardConfigForm, { type PuzzleboardConfig } from "./PuzzleboardConfigForm";
+import { createConfigForm } from "../createConfigForm";
+import { initialConfig, presets } from "./config";
+import { schema } from "./schema";
+import { ui } from "./ui";
 import PuzzleboardOverlay from "./PuzzleboardOverlay";
 import type { LabeledPointFeature } from "../../../../store/editor/useEditorStore";
-
-const initialConfig: PuzzleboardConfig = {
-    boardRows: 10,
-    boardCols: 10,
-    cellSize: 15,
-    originRow: 0,
-    originCol: 0,
-    pxPerSquare: 60,
-    decodeMinWindow: 4,
-    decodeMinBitConfidence: 0.15,
-    decodeMaxBitErrorRate: 0.30,
-    decodeSampleRadiusRel: 1 / 6,
-    decodeSearchAllComponents: true,
-    chessMinCornerStrength: 15,
-    chessMinLabeledCorners: 8,
-    chessMaxComponents: 3,
-    decodeSearchMode: "full",
-    decodeScoringMode: "soft_log_likelihood",
-};
-
-const presets: AlgorithmPreset[] = [
-    { label: "Default", description: "Full master-pattern scan — works regardless of printed origin", config: { ...initialConfig } },
-    { label: "Strict bit check", description: "Higher bit confidence, lower error tolerance", config: { ...initialConfig, decodeMinBitConfidence: 0.25, decodeMaxBitErrorRate: 0.15 } },
-    { label: "Fixed board (fast)", description: "Restrict decode to the configured rows × cols at origin (fastest; requires correct origin_row/col)", config: { ...initialConfig, decodeSearchMode: "fixed_board" } },
-];
 
 const toFeatures = (result: PuzzleBoardDetectResult, runId: string): LabeledPointFeature[] => {
     return result.detection.corners
@@ -82,37 +59,9 @@ export const puzzleboardAlgorithm: AlgorithmDefinition = {
     initialConfig,
     presets,
     executionModes: ["wasm"],
-    ConfigComponent: PuzzleboardConfigForm as AlgorithmDefinition["ConfigComponent"],
+    ConfigComponent: createConfigForm({ schema, ui }),
     run: () => Promise.reject(new Error("PuzzleBoard detection is only available via client-side WASM.")),
-    runWasm: async ({ pixels, width, height, config }) => {
-        const c = config as PuzzleboardConfig;
-        return detectPuzzleboardWasm(pixels, width, height, {
-            board: {
-                rows: c.boardRows,
-                cols: c.boardCols,
-                cell_size: c.cellSize,
-                origin_row: c.originRow,
-                origin_col: c.originCol,
-            },
-            px_per_square: c.pxPerSquare,
-            decode: {
-                min_window: c.decodeMinWindow,
-                min_bit_confidence: c.decodeMinBitConfidence,
-                max_bit_error_rate: c.decodeMaxBitErrorRate,
-                sample_radius_rel: c.decodeSampleRadiusRel,
-                search_all_components: c.decodeSearchAllComponents,
-                search_mode: { kind: c.decodeSearchMode },
-                scoring_mode: { kind: c.decodeScoringMode },
-            },
-            chessboard: {
-                min_corner_strength: c.chessMinCornerStrength,
-                ...definedOnly({
-                    min_labeled_corners: c.chessMinLabeledCorners,
-                    max_components: c.chessMaxComponents,
-                }),
-            },
-        });
-    },
+    runWasm: ({ pixels, width, height, config }) => detectPuzzleboardWasm(pixels, width, height, config),
     toFeatures: (result, runId) =>
         toFeatures(result as PuzzleBoardDetectResult, runId),
     summary: (result) => {

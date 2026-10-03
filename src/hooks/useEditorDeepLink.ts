@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router";
+import { migrateLegacyConfig } from "../components/editor/algorithms/legacyConfig";
 import { ALGORITHM_MANIFEST, DEFAULT_ALGORITHM_ID } from "../components/editor/algorithms/registry";
 import type { SampleId } from "../store/editor/useEditorStore";
 
@@ -48,7 +49,10 @@ export function readDeepLink(searchParams: URLSearchParams): DeepLinkState {
     let config: unknown = null;
     if (configParam) {
         try {
-            config = JSON.parse(fromBase64Url(configParam));
+            // A link saved before the config forms were generated from the WASM schemas carries
+            // the old flat camelCase config; it is rebuilt into the current document here, and
+            // anywhere else the config is only ever the current shape.
+            config = migrateLegacyConfig(algorithmId, JSON.parse(fromBase64Url(configParam)));
         } catch {
             // invalid config param — ignore
         }

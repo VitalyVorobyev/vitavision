@@ -63,16 +63,6 @@ function mockChessCornersResult(cornerCount: number): ChessCornersResult {
             y_axis: "down",
             units: "pixels",
         },
-        config: {
-            threshold: 30,
-            nms_radius: 2,
-            broad_mode: false,
-            min_cluster_size: 2,
-            pyramid_levels: 4,
-            pyramid_min_size: 128,
-            upscale_factor: 0,
-            refiner: "center_of_mass",
-        },
         summary: {
             count: cornerCount,
             response_min: cornerCount > 0 ? 0.5 : null,

@@ -1,6 +1,5 @@
 import type { AlgorithmDefinition, AlgorithmSummaryEntry, DiagnosticEntry } from "../types";
 import type { Feature, PointFeature } from "../../../../store/editor/useEditorStore";
-import { readCanvasTokens, scoreTone } from "../../../../lib/canvasTokens";
 import type { RadsymResult } from "../../../../lib/types";
 import { detectRadsymWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 
@@ -22,14 +21,6 @@ const toDiagnostics = (result: RadsymResult): DiagnosticEntry[] => {
     return [];
 };
 
-/**
- * The verdict colour of a proposal's score, stored on the point it becomes: the ui verdict
- * tokens as the image well resolves them (the point is drawn on the photograph).
- */
-function scoreColor(score: number): string {
-    return readCanvasTokens("well")[scoreTone(score)];
-}
-
 const toFeatures = (result: RadsymResult, runId: string): Feature[] => {
     return result.circles.map((c): PointFeature => ({
         id: c.id,
@@ -38,9 +29,8 @@ const toFeatures = (result: RadsymResult, runId: string): Feature[] => {
         algorithmId: "radsym",
         runId,
         readonly: true,
-        x: c.x + 0.5,
-        y: c.y + 0.5,
-        color: scoreColor(c.score),
+        x: c.x,
+        y: c.y,
         meta: { kind: "radsym_proposal", score: c.score },
     }));
 };

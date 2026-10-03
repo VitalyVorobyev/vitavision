@@ -30,8 +30,8 @@ const toFeatures = (result: RinggridDetectResult, runId: string): Feature[] => {
         algorithmId: "ringgrid",
         runId,
         readonly: true,
-        x: marker.center.x + 0.5,
-        y: marker.center.y + 0.5,
+        x: marker.center.x,
+        y: marker.center.y,
         outerEllipse: {
             cx: marker.ellipse_outer.cx,
             cy: marker.ellipse_outer.cy,

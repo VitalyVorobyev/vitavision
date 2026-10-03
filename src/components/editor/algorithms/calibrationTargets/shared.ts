@@ -7,8 +7,6 @@ import type {
 import { DETECTION_COLORS } from "../../../../store/editor/featureColors";
 import type { ArUcoMarkerFeature, Feature } from "../../../../store/editor/useEditorStore";
 
-export const toCanvasCoordinate = (value: number): number => value + 0.5;
-
 const averagePoint = (points: Array<{ x: number; y: number }>): { x: number; y: number } => {
     const total = points.reduce(
         (acc, point) => ({ x: acc.x + point.x, y: acc.y + point.y }),
@@ -56,8 +54,8 @@ export const calibrationCornerFeatures = (
         algorithmId,
         runId,
         readonly: true,
-        x: toCanvasCoordinate(corner.x),
-        y: toCanvasCoordinate(corner.y),
+        x: corner.x,
+        y: corner.y,
         color,
         label: `corner ${index + 1}`,
         meta: {
@@ -84,10 +82,7 @@ export const calibrationMarkerFeatures = (
         .map((marker) => {
             const imgCorners = marker.corners_img as Array<{ x: number; y: number }>;
             const center = averagePoint(imgCorners);
-            const corners = imgCorners.flatMap((c) => [
-                toCanvasCoordinate(c.x),
-                toCanvasCoordinate(c.y),
-            ]) as ArUcoMarkerFeature["corners"];
+            const corners = imgCorners.flatMap((c) => [c.x, c.y]) as ArUcoMarkerFeature["corners"];
             const feature: ArUcoMarkerFeature = {
                 id: `${algorithmId}-marker-${marker.id}`,
                 type: "aruco_marker",
@@ -95,8 +90,8 @@ export const calibrationMarkerFeatures = (
                 algorithmId,
                 runId,
                 readonly: true,
-                x: toCanvasCoordinate(center.x),
-                y: toCanvasCoordinate(center.y),
+                x: center.x,
+                y: center.y,
                 corners,
                 label: `marker ${marker.id}`,
                 meta: {
@@ -132,8 +127,8 @@ export const calibrationCircleCandidateFeatures = (
         algorithmId,
         runId,
         readonly: true,
-        x: toCanvasCoordinate(candidate.center_img.x),
-        y: toCanvasCoordinate(candidate.center_img.y),
+        x: candidate.center_img.x,
+        y: candidate.center_img.y,
         color,
         label: `circle ${index + 1}`,
         meta: {
@@ -167,8 +162,8 @@ export const calibrationCircleMatchFeatures = (
                 algorithmId,
                 runId,
                 readonly: true,
-                x: toCanvasCoordinate(candidate.center_img.x),
-                y: toCanvasCoordinate(candidate.center_img.y),
+                x: candidate.center_img.x,
+                y: candidate.center_img.y,
                 color,
                 label: `(${m.expected.cell.i}, ${m.expected.cell.j})`,
                 meta: {

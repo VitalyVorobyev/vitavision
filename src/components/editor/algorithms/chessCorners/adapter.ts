@@ -31,9 +31,9 @@ const toFeatures = (result: ChessCornersResult, runId: string): Feature[] => {
         algorithmId: "chess-corners",
         runId,
         readonly: true,
-        // Detector origin is center of top-left pixel; canvas origin is its top-left corner.
-        x: corner.x + 0.5,
-        y: corner.y + 0.5,
+        // The detector's own frame: the centre of the top-left pixel is (0, 0), as on the stage.
+        x: corner.x,
+        y: corner.y,
         axes: [
             { dx: corner.axes[0].direction.dx, dy: corner.axes[0].direction.dy, angleRad: corner.axes[0].angle_rad, sigmaRad: corner.axes[0].sigma_rad },
             { dx: corner.axes[1].direction.dx, dy: corner.axes[1].direction.dy, angleRad: corner.axes[1].angle_rad, sigmaRad: corner.axes[1].sigma_rad },

@@ -14,12 +14,12 @@ function makeRaw(corners: Array<{ x: number; y: number; response: number }>): Fl
 describe("adaptChessCornersResult", () => {
     it("throws when the buffer length is not a multiple of the stride", () => {
         const bad = new Float32Array(10); // not a multiple of 7
-        expect(() => adaptChessCornersResult(bad, 100, 100, {}, 1)).toThrow(/unexpected output length/i);
+        expect(() => adaptChessCornersResult(bad, 100, 100, 1)).toThrow(/unexpected output length/i);
     });
 
     it("maps a stride-7 buffer into corners with normalized coords and axes", () => {
         const raw = makeRaw([{ x: 10, y: 20, response: 50 }]);
-        const result = adaptChessCornersResult(raw, 100, 200, {}, 5);
+        const result = adaptChessCornersResult(raw, 100, 200, 5);
 
         expect(result.status).toBe("success");
         expect(result.image_width).toBe(100);
@@ -46,7 +46,7 @@ describe("adaptChessCornersResult", () => {
             { x: 1, y: 1, response: 100 },
             { x: 2, y: 2, response: 55 },
         ]);
-        const result = adaptChessCornersResult(raw, 10, 10, {}, 1);
+        const result = adaptChessCornersResult(raw, 10, 10, 1);
 
         expect(result.corners.map((c) => c.response)).toEqual([100, 55, 10]);
         expect(result.corners[0]!.confidence).toBe(1);
@@ -57,13 +57,13 @@ describe("adaptChessCornersResult", () => {
 
     it("drops non-finite corners", () => {
         const raw = makeRaw([{ x: NaN, y: 0, response: 10 }, { x: 1, y: 1, response: 20 }]);
-        const result = adaptChessCornersResult(raw, 10, 10, {}, 1);
+        const result = adaptChessCornersResult(raw, 10, 10, 1);
         expect(result.corners).toHaveLength(1);
         expect(result.summary.count).toBe(1);
     });
 
     it("handles an empty detection", () => {
-        const result = adaptChessCornersResult(new Float32Array(0), 10, 10, {}, 1);
+        const result = adaptChessCornersResult(new Float32Array(0), 10, 10, 1);
         expect(result.corners).toHaveLength(0);
         expect(result.summary.count).toBe(0);
         expect(result.summary.response_min).toBeNull();
@@ -71,42 +71,8 @@ describe("adaptChessCornersResult", () => {
         expect(result.summary.confidence_min).toBeNull();
     });
 
-    it("falls back to config defaults when fields are absent", () => {
-        const result = adaptChessCornersResult(new Float32Array(0), 10, 10, {}, 1);
-        expect(result.config).toEqual({
-            threshold: 30,
-            nms_radius: 2,
-            broad_mode: false,
-            min_cluster_size: 2,
-            pyramid_levels: 4,
-            pyramid_min_size: 128,
-            upscale_factor: 0,
-            refiner: "center_of_mass",
-        });
-    });
-
-    it("echoes explicit config overrides", () => {
-        const result = adaptChessCornersResult(
-            new Float32Array(0),
-            10,
-            10,
-            { threshold: 15, nmsRadius: 3, broadMode: true, minClusterSize: 4, pyramidLevels: 2, pyramidMinSize: 64, upscaleFactor: 3, refiner: "forstner" },
-            1,
-        );
-        expect(result.config).toEqual({
-            threshold: 15,
-            nms_radius: 3,
-            broad_mode: true,
-            min_cluster_size: 4,
-            pyramid_levels: 2,
-            pyramid_min_size: 64,
-            upscale_factor: 3,
-            refiner: "forstner",
-        });
-    });
-
     it("stamps runtime_ms into the summary", () => {
-        const result = adaptChessCornersResult(new Float32Array(0), 10, 10, {}, 42.5);
+        const result = adaptChessCornersResult(new Float32Array(0), 10, 10, 42.5);
         expect(result.summary.runtime_ms).toBe(42.5);
     });
 });

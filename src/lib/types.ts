@@ -72,16 +72,6 @@ export interface ChessCornersResult {
         y_axis: "down";
         units: "pixels";
     };
-    config: {
-        threshold: number;
-        nms_radius: number;
-        broad_mode: boolean;
-        min_cluster_size: number;
-        pyramid_levels: number;
-        pyramid_min_size: number;
-        upscale_factor: number;
-        refiner: string;
-    };
     summary: {
         count: number;
         response_min: number | null;

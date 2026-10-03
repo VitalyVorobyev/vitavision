@@ -90,6 +90,32 @@ export function deepMerge(target: Record<string, unknown>, source: Record<string
 }
 
 /**
+ * `deepMerge` for config documents that contain serde externally-tagged enums
+ * (`{ "forstner": {...} }` vs `{ "center_of_mass": {...} }`, `{ "pyramid": {...} }`
+ * vs `"single_scale"`): the WASM deserializer accepts exactly one variant key, so
+ * merging the default's variant key into an override that selects another variant
+ * produces a two-key object and a "invalid length 2, expected 1" error. When both
+ * sides are single-key objects with DIFFERENT keys the override replaces the
+ * default wholesale; everything else merges as in `deepMerge`.
+ */
+export function mergeConfig(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
+    const out = { ...target };
+    for (const key of Object.keys(source)) {
+        const sv = source[key];
+        const tv = target[key];
+        if (sv !== null && typeof sv === "object" && !Array.isArray(sv) && tv !== null && typeof tv === "object" && !Array.isArray(tv)) {
+            const sk = Object.keys(sv);
+            const tk = Object.keys(tv);
+            const swapsVariant = sk.length === 1 && tk.length === 1 && sk[0] !== tk[0];
+            out[key] = swapsVariant ? sv : mergeConfig(tv as Record<string, unknown>, sv as Record<string, unknown>);
+        } else {
+            out[key] = sv;
+        }
+    }
+    return out;
+}
+
+/**
  * Recursively convert a value that may contain nested JS `Map`s into plain
  * objects/arrays.
  *

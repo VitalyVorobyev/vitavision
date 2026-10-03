@@ -1,33 +1,12 @@
-import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
+import type { AlgorithmDefinition, DiagnosticEntry } from "../types";
 import type { CalibrationTargetResult } from "../../../../lib/types";
 import { detectCharucoWasm } from "../../../../lib/wasm/wasmWorkerProxy";
-import { calibrationCornerFeatures, calibrationMarkerFeatures, calibrationSummary, definedOnly } from "./shared";
-import CharucoConfigForm, { type CharucoConfig } from "./CharucoConfigForm";
+import { calibrationCornerFeatures, calibrationMarkerFeatures, calibrationSummary } from "./shared";
+import { createConfigForm } from "../createConfigForm";
+import { initialConfig, presets } from "./charuco/config";
+import { schema } from "./charuco/schema";
+import { ui } from "./charuco/ui";
 import CharucoOverlay from "../../canvas/overlays/CharucoOverlay";
-
-const initialConfig: CharucoConfig = {
-    rows: 22,
-    cols: 22,
-    cellSize: 4.8,
-    markerSizeRel: 0.75,
-    dictionary: "DICT_4X4_1000",
-    pxPerSquare: 40,
-    chessMinCornerStrength: 33,
-    chessMinLabeledCorners: 8,
-    chessMaxComponents: 3,
-    borderBits: 1,
-    scanInsetFrac: 0.06,
-    scanMinBorderScore: 0.75,
-    scanDedupById: true,
-    scanMultiThreshold: true,
-    minMarkerInliers: 1,
-};
-
-const presets: AlgorithmPreset[] = [
-    { label: "22×22 4×4", description: "Large board, 4×4 dictionary", config: { ...initialConfig } },
-    { label: "10×14 4×4", description: "Medium board, 4×4 dictionary", config: { ...initialConfig, rows: 10, cols: 14 } },
-    { label: "6×9 5×5", description: "Small board, 5×5 dictionary", config: { ...initialConfig, rows: 6, cols: 9, dictionary: "DICT_5X5_250" as const } },
-];
 
 const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
     const entries: DiagnosticEntry[] = [];
@@ -57,51 +36,9 @@ export const charucoAlgorithm: AlgorithmDefinition = {
     sampleDefaults: {
         charuco: { ...initialConfig },
     },
-    ConfigComponent: CharucoConfigForm as AlgorithmDefinition["ConfigComponent"],
+    ConfigComponent: createConfigForm({ schema, ui }),
     run: () => Promise.reject(new Error("ChArUco detection is only available via client-side WASM.")),
-    runWasm: async ({ pixels, width, height, config }) => {
-        const c = config as CharucoConfig;
-        return detectCharucoWasm(pixels, width, height, {
-            // calib-targets 0.11 collapsed the tagged
-            // `threshold: { relative | absolute }` enum back to a plain f32,
-            // dropping relative mode entirely — the value is now an ABSOLUTE
-            // floor on the raw ChESS response (default_chess_config() ships 15).
-            // Passing the old `{ relative: v }` object throws
-            // "invalid type: JsValue(Object(...)), expected f32" at detect time.
-            chessCfg: { threshold: c.chessMinCornerStrength },
-            params: {
-                px_per_square: c.pxPerSquare,
-                board: {
-                    rows: c.rows,
-                    cols: c.cols,
-                    cell_size: c.cellSize,
-                    marker_size_rel: c.markerSizeRel,
-                    dictionary: c.dictionary,
-                    marker_layout: "opencv_charuco",
-                    // calib-targets 0.14 added `border_bits` to CharucoBoardSpec, and
-                    // CharucoDetector::new now overwrites params.scan.border_bits with
-                    // the board's value on every construction path — setting it under
-                    // `scan` (as before 0.14) is silently ignored. See calib-targets
-                    // docs/migrations/0.14.0.md.
-                    border_bits: c.borderBits,
-                },
-                chessboard: {
-                    min_corner_strength: c.chessMinCornerStrength,
-                    ...definedOnly({
-                        min_labeled_corners: c.chessMinLabeledCorners,
-                        max_components: c.chessMaxComponents,
-                    }),
-                },
-                scan: {
-                    inset_frac: c.scanInsetFrac,
-                    min_border_score: c.scanMinBorderScore,
-                    dedup_by_id: c.scanDedupById,
-                    multi_threshold: c.scanMultiThreshold,
-                },
-                min_marker_inliers: c.minMarkerInliers,
-            },
-        });
-    },
+    runWasm: ({ pixels, width, height, config }) => detectCharucoWasm(pixels, width, height, config),
     toFeatures: (result, runId) =>
         toFeatures(result as CalibrationTargetResult, runId),
     summary: (result) => calibrationSummary(result as CalibrationTargetResult),

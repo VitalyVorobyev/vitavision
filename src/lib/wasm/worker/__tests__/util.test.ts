@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { generateId, deepMerge, unwrapMaps, alignmentFromWasm, gridFromWasm, toPoint, toPointOrNull, toPointArray, toPointArrayOrNull, mapTargetBundle } from "../util";
+import { generateId, deepMerge, mergeConfig, unwrapMaps, alignmentFromWasm, gridFromWasm, toPoint, toPointOrNull, toPointArray, toPointArrayOrNull, mapTargetBundle } from "../util";
 import { lazyInit } from "../modules";
 
 describe("generateId", () => {
@@ -37,6 +37,34 @@ describe("deepMerge", () => {
         const target = { a: { b: 1 } };
         deepMerge(target, { a: { b: 2 } });
         expect(target.a.b).toBe(1);
+    });
+});
+
+describe("mergeConfig", () => {
+    it("merges like deepMerge when no variant is swapped", () => {
+        const out = mergeConfig({ a: { x: 1, y: 2 }, xs: [1, 2] }, { a: { y: 3 }, xs: [9] });
+        expect(out).toEqual({ a: { x: 1, y: 3 }, xs: [9] });
+    });
+
+    it("replaces an externally tagged variant instead of uniting the two variants' keys", () => {
+        const defaults = { refiner: { center_of_mass: { radius: 2 } }, ring: "canonical" };
+        const out = mergeConfig(defaults, { refiner: { forstner: { radius: 3 } } });
+        expect(out).toEqual({ refiner: { forstner: { radius: 3 } }, ring: "canonical" });
+        // deepMerge would hand the WASM deserializer an object with two variant keys.
+        expect(Object.keys(deepMerge(defaults, { refiner: { forstner: { radius: 3 } } }).refiner as object)).toHaveLength(2);
+    });
+
+    it("merges into the same variant, and replaces a unit variant with a payload one and back", () => {
+        expect(mergeConfig({ r: { forstner: { radius: 2, min_det: 1 } } }, { r: { forstner: { radius: 3 } } }))
+            .toEqual({ r: { forstner: { radius: 3, min_det: 1 } } });
+        expect(mergeConfig({ m: "single_scale" }, { m: { pyramid: { levels: 3 } } })).toEqual({ m: { pyramid: { levels: 3 } } });
+        expect(mergeConfig({ m: { pyramid: { levels: 3 } } }, { m: "single_scale" })).toEqual({ m: "single_scale" });
+    });
+
+    it("does not mutate the target", () => {
+        const target = { a: { b: 1 } };
+        mergeConfig(target, { a: { c: 2 } });
+        expect(target).toEqual({ a: { b: 1 } });
     });
 });
 

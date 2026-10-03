@@ -282,6 +282,7 @@ export default function CanvasWorkspace() {
     return (
         <div
             ref={containerRef}
+            data-testid="editor-canvas"
             className={`w-full h-full relative overflow-hidden ${workspaceCursor}`}
             onDrop={handleDrop}
             onDragOver={(event) => event.preventDefault()}
@@ -299,7 +300,7 @@ export default function CanvasWorkspace() {
             )}
 
             {hoverPixel && hoveredDirectedPoint === null && (
-                <div className="absolute top-4 left-4 z-20 bg-ground/90 border border-line backdrop-blur-sm p-2 rounded-control shadow-xs text-xs font-mono flex items-center space-x-4 pointer-events-none">
+                <div data-testid="editor-pixel-readout" className="absolute top-4 left-4 z-20 bg-ground/90 border border-line backdrop-blur-sm p-2 rounded-control shadow-xs text-xs font-mono flex items-center space-x-4 pointer-events-none">
                     <div>
                         <span className="text-fg-muted">X:</span> {hoverPixel.x.toFixed(2)} <span className="text-fg-muted">Y:</span> {hoverPixel.y.toFixed(2)}
                     </div>

@@ -16,6 +16,23 @@ describe("readDeepLink", () => {
 });
 
 describe("buildDeepLinkSearch", () => {
+    it("leaves a config equal to the default out of the URL", () => {
+        const base = { chess: { threshold: 30 }, board: { rows: 7, cols: 9 } };
+        const same = { board: { cols: 9, rows: 7 }, chess: { threshold: 30 } };
+        const params = new URLSearchParams(buildDeepLinkSearch("?config=stale", "charuco", same, base));
+
+        expect(params.get("algo")).toBe("charuco");
+        expect(params.get("config")).toBeNull();
+    });
+
+    it("keeps a config that differs from the default", () => {
+        const base = { chess: { threshold: 30 }, radii: [3, 5] };
+        const changed = { chess: { threshold: 30 }, radii: [3, 7] };
+        const params = new URLSearchParams(buildDeepLinkSearch("", "radsym", changed, base));
+
+        expect(readDeepLink(params).config).toEqual(changed);
+    });
+
     it("preserves the current sample parameter when updating algo and config", () => {
         const search = buildDeepLinkSearch(
             "?sample=markerboard",

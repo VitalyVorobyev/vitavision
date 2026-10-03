@@ -1,4 +1,4 @@
-import { generateId, toPoint, toPointOrNull, gridFromWasm, alignmentFromWasm, deepMerge, unwrapMaps } from "./util";
+import { generateId, toPoint, toPointOrNull, gridFromWasm, alignmentFromWasm, mergeConfig, unwrapMaps } from "./util";
 import { getCalibModule } from "./modules";
 
 export function adaptPuzzleboardResult(
@@ -124,7 +124,7 @@ export async function handlePuzzleboard(
     const cols = (board.cols as number) ?? 10;
 
     const defaults = mod.default_puzzleboard_params(rows, cols) as Record<string, unknown>;
-    const merged = deepMerge(defaults, config);
+    const merged = mergeConfig(defaults, config);
 
     const t0 = performance.now();
     // 0.10.1 flattened PuzzleBoardDetectionResult to { corners, alignment, decode }

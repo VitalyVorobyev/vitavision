@@ -7,15 +7,6 @@ import type {
 import { DETECTION_COLORS } from "../../../../store/editor/featureColors";
 import type { ArUcoMarkerFeature, Feature } from "../../../../store/editor/useEditorStore";
 
-/**
- * Drop keys whose value is `undefined`. The worker deep-merges the params over
- * the library defaults, and a bare `undefined` would overwrite a default (a
- * deep link saved before a field existed carries no value for it); omitting the
- * key lets the library default stand.
- */
-export const definedOnly = <T extends Record<string, unknown>>(obj: T): Partial<T> =>
-    Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as Partial<T>;
-
 export const toCanvasCoordinate = (value: number): number => value + 0.5;
 
 const averagePoint = (points: Array<{ x: number; y: number }>): { x: number; y: number } => {

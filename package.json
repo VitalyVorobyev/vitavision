@@ -84,7 +84,7 @@
     "github-slugger": "2.0.0",
     "globals": "^17.9.0",
     "gray-matter": "^4.0.3",
-    "jsdom": "^30.0.1",
+    "jsdom": "^30.1.1",
     "pngjs": "^7.0.0",
     "postcss": "^8.5.26",
     "rehype-katex": "^7.0.1",

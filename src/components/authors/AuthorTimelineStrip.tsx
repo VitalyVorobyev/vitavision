@@ -23,7 +23,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
         <svg
             viewBox={`0 0 ${layout.width} ${layout.height}`}
             width="100%"
-            height="auto"
+            className="h-auto"
             role="img"
             aria-label={`Papers by year: ${entries.length} paper${entries.length === 1 ? "" : "s"}`}
         >

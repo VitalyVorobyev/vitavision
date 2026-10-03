@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import { Button } from "@vitavision/ui";
+import { Button, cn } from "@vitavision/ui";
 
-import { classNames } from "../../utils/helpers";
 
 interface CanvasControlsHintProps {
     lines: string[];
@@ -18,7 +17,7 @@ export default function CanvasControlsHint({ lines, className }: CanvasControlsH
 
     return (
         <div
-            className={classNames(
+            className={cn(
                 "absolute z-20 rounded-control border border-line bg-surface/90 px-2.5 py-1.5 text-[11px] leading-relaxed text-fg-muted shadow-xs backdrop-blur-sm",
                 className,
             )}

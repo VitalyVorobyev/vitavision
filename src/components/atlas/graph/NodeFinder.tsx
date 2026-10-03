@@ -8,6 +8,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Search } from "lucide-react";
+import { Input } from "@vitavision/ui";
 
 export interface NodeFinderItem {
     id:        string;
@@ -75,18 +76,19 @@ export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }:
     return (
         <div className="absolute top-3 left-3 z-20 w-64">
             {/* Input */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-control border border-line bg-surface/90 backdrop-blur shadow-sm">
-                <Search size={13} className="shrink-0 text-fg-muted" />
-                <input
+            <div className="relative">
+                <Search size={13} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
+                <Input
                     ref={inputRef}
                     type="search"
+                    aria-label={placeholder}
                     placeholder={placeholder}
                     value={query}
                     onChange={(e) => { setQuery(e.target.value); setOpen(true); setHighlightIndex(0); }}
                     onFocus={() => setOpen(true)}
                     onBlur={() => setTimeout(() => setOpen(false), 120)}
                     onKeyDown={handleKeyDown}
-                    className="flex-1 bg-transparent outline-none text-xs placeholder:text-fg-muted text-fg min-w-0"
+                    className="bg-surface/90 pl-8 text-xs shadow-sm backdrop-blur"
                 />
             </div>
 

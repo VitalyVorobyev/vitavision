@@ -48,7 +48,7 @@ export default function LineageStrip({ paperYear, cites, citedBy }: LineageStrip
             <svg
                 viewBox={`0 0 ${layout.width} ${layout.height}`}
                 width="100%"
-                height="auto"
+                className="h-auto"
                 role="img"
                 aria-label={`Citation lineage: ${cites.length} registry paper${cites.length === 1 ? "" : "s"} cited, ${citedBy.length} registry paper${citedBy.length === 1 ? "" : "s"} citing, by year`}
             >

@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import type { DemoFrontmatterSerialized } from "../../lib/content/schema.ts";
 import TagBadge from "../blog/TagBadge.tsx";
 import DemoCover from "./DemoCover.tsx";
-import { classNames } from "../../utils/helpers.ts";
+import { cn } from "@vitavision/ui";
 
 interface DemoCardProps {
     slug: string;
@@ -13,7 +13,7 @@ export default function DemoCard({ slug, frontmatter }: DemoCardProps) {
     return (
         <Link
             to={`/demos/${slug}`}
-            className={classNames(
+            className={cn(
                 "block rounded-xl border border-line hover:border-fg/20 transition-colors overflow-hidden",
                 "group",
             )}

@@ -4,11 +4,11 @@ import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import LoadingIndicator from './components/shared/LoadingIndicator';
 import ScrollToTop from './components/layout/ScrollToTop';
-import SiteToaster from './components/layout/SiteToaster';
 import './index.css';
 
-import { TooltipProvider } from '@vitavision/ui';
+import { Toaster, TooltipProvider } from '@vitavision/ui';
 import { HelmetProvider } from 'react-helmet-async';
 import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
 import { PapersProvider } from './lib/atlas/papersIndex.tsx';
@@ -59,7 +59,7 @@ function AppLayout() {
             </a>
             <Navbar />
             <main id="main-content" className="flex flex-1 flex-col">
-                <Suspense fallback={<div className="flex-1 flex items-center justify-center py-32"><div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" /></div>}>
+                <Suspense fallback={<LoadingIndicator className="flex-1 py-32" />}>
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/blog" element={<Blog />} />
@@ -124,7 +124,7 @@ function App({ ssrSnapshot = {} }: { ssrSnapshot?: StaticContentContextValue }) 
                         </ScholarlyProvider>
                         </AuthorsProvider>
                         </PapersProvider>
-                        <SiteToaster />
+                        <Toaster />
                     </TooltipProvider>
                 </StaticContentProvider>
             </HelmetProvider>

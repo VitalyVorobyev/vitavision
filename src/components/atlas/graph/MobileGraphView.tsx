@@ -4,6 +4,7 @@
 
 import { useMemo } from "react";
 import { Link } from "react-router";
+import { ButtonLink } from "@vitavision/ui";
 import { contentGraph } from "../../../generated/content-graph.ts";
 import { entryMeta, getFocusEntry } from "../../../lib/atlas/focusEntry.ts";
 import { shortTitle } from "../../../lib/atlas/graphNeighbors.ts";
@@ -212,12 +213,9 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                         </div>
                     </div>
                 )}
-                <Link
-                    to={node.path}
-                    className="mt-4 flex items-center justify-center h-10 rounded-control bg-signal text-signal-fg text-[13px] font-medium hover:opacity-90 active:opacity-90"
-                >
-                    Open page →
-                </Link>
+                <ButtonLink variant="primary" asChild className="mt-4 h-10 w-full">
+                    <Link to={node.path}>Open page →</Link>
+                </ButtonLink>
             </div>
 
             {/* Neighbor sections */}

@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@vitavision/ui";
 import type { NarrativeNode } from "../../lib/content/schema.ts";
 import type { NarrativeStep } from "../../lib/narratives/types.ts";
 import { proseClasses } from "../../lib/prose-classes.ts";
@@ -40,13 +41,9 @@ export default function StoryRail({
                     {steps.length} stops through the constellation. Each one dims the map to the
                     nodes it is about and pulls up that chapter.
                 </p>
-                <button
-                    type="button"
-                    onClick={() => onStep(0)}
-                    className="mt-3 inline-flex h-8 items-center rounded-control bg-signal px-3 text-[12px] font-medium text-signal-fg transition-opacity hover:opacity-90"
-                >
+                <Button variant="primary" className="mt-3" onClick={() => onStep(0)}>
                     Start the walkthrough
-                </button>
+                </Button>
             </div>
         );
     }

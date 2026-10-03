@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Pause, Play } from "lucide-react";
-import { Button, DensityProvider, SegmentedControl } from "@vitavision/ui";
+import { Button, DensityProvider, SegmentedControl, cn } from "@vitavision/ui";
 import ChessResponseSvg from "./chess-response/ChessResponseSvg";
 import { deriveChessResponse } from "./chess-response/deriveChessResponse";
 import useChessResponseAnimation from "./chess-response/useChessResponseAnimation";
 import { formatValue } from "./chess-response/readoutHelpers";
-import { classNames } from "../../utils/helpers";
 import type { ChessResponsePattern } from "./chess-response/types";
 import { PATTERN_OPTIONS, toPattern } from "./chess-response/patternOptions";
 
@@ -76,7 +75,7 @@ export default function ChessResponseInlinePreview({
 
                     {/* R metric pill */}
                     <div
-                        className={classNames(
+                        className={cn(
                             "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-mono",
                             response.response > 0
                                 ? "border-normal/30 bg-normal/10 text-normal"

@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import { Button } from "@vitavision/ui";
 
 interface Props {
     children: ReactNode;
@@ -32,12 +33,9 @@ export default class ErrorBoundary extends Component<Props, State> {
                 <p className="text-sm text-fg-muted max-w-md">
                     {this.state.error?.message ?? "An unexpected error occurred."}
                 </p>
-                <button
-                    className="rounded-control bg-signal px-4 py-2 text-sm text-signal-fg hover:bg-signal/90"
-                    onClick={() => this.setState({ hasError: false, error: null })}
-                >
+                <Button variant="primary" onClick={() => this.setState({ hasError: false, error: null })}>
                     Try again
-                </button>
+                </Button>
             </div>
         );
     }

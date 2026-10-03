@@ -2,6 +2,7 @@
 // Labels selects. The Atlas title / tabs / Directory|Network switch above
 // this card belongs to a sibling agent's component, not this file.
 
+import { Select } from "@vitavision/ui";
 import { PersonCombobox } from "./PersonCombobox.tsx";
 import { ERA_OPTIONS, LABEL_MODE_OPTIONS, type Era, type LabelMode } from "../../../lib/atlas/peopleNetwork.ts";
 import type { ScholarlyIndex } from "../../../lib/atlas/scholarlyTypes.ts";
@@ -17,9 +18,6 @@ export interface NetworkToolbarProps {
     onLabelModeChange: (mode: LabelMode) => void;
 }
 
-const selectCls =
-    "h-9 rounded-control border border-line bg-surface px-2.5 text-sm text-fg";
-
 export function NetworkToolbar({
     scholarly,
     authorsIdx,
@@ -33,34 +31,26 @@ export function NetworkToolbar({
         <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2.5 border-b border-line">
             <PersonCombobox scholarly={scholarly} authorsIdx={authorsIdx} onSelect={onSelectPerson} />
             <div className="flex items-center gap-3">
-                <label className="flex items-center gap-1.5 text-sm text-fg-muted">
-                    Era
-                    <select
+                <div className="flex items-center gap-1.5 text-sm text-fg-muted">
+                    <span aria-hidden="true">Era</span>
+                    <Select
+                        aria-label="Era"
+                        className="w-40"
                         value={era}
-                        onChange={(e) => onEraChange(e.target.value as Era)}
-                        className={selectCls}
-                    >
-                        {ERA_OPTIONS.map((o) => (
-                            <option key={o.value} value={o.value}>
-                                {o.label}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-                <label className="flex items-center gap-1.5 text-sm text-fg-muted">
-                    Labels
-                    <select
+                        options={ERA_OPTIONS}
+                        onValueChange={(v) => onEraChange(v as Era)}
+                    />
+                </div>
+                <div className="flex items-center gap-1.5 text-sm text-fg-muted">
+                    <span aria-hidden="true">Labels</span>
+                    <Select
+                        aria-label="Labels"
+                        className="w-40"
                         value={labelMode}
-                        onChange={(e) => onLabelModeChange(e.target.value as LabelMode)}
-                        className={selectCls}
-                    >
-                        {LABEL_MODE_OPTIONS.map((o) => (
-                            <option key={o.value} value={o.value}>
-                                {o.label}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                        options={LABEL_MODE_OPTIONS}
+                        onValueChange={(v) => onLabelModeChange(v as LabelMode)}
+                    />
+                </div>
             </div>
         </div>
     );

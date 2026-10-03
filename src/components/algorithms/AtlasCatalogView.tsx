@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Input } from "@vitavision/ui";
 import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import SeoHead from "../seo/SeoHead.tsx";
 import AlgorithmsSidebar from "./AlgorithmsSidebar.tsx";
@@ -76,14 +77,15 @@ export default function AtlasCatalogView({
                             {/* Right cluster */}
                             <div className="flex items-center gap-2.5 text-xs text-fg-muted">
                                 {/* Search */}
-                                <div className="w-[200px] flex items-center gap-1.5 px-2.5 py-1.5 rounded-control border border-line/70 bg-raised">
-                                    <Search size={13} className="shrink-0 text-fg-muted" />
-                                    <input
+                                <div className="relative w-[200px]">
+                                    <Search size={13} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
+                                    <Input
                                         type="search"
+                                        aria-label="Search the Atlas"
                                         placeholder="Search…"
                                         value={filters.query}
                                         onChange={(e) => setQuery(e.target.value)}
-                                        className="flex-1 bg-transparent outline-none text-xs placeholder:text-fg-muted text-fg min-w-0"
+                                        className="pl-8 text-xs"
                                     />
                                 </div>
 

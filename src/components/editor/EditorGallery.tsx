@@ -2,8 +2,7 @@ import { useEditorStore } from "../../store/editor/useEditorStore";
 import type { SampleId } from "../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
 import { Plus, Image as ImageIcon } from "lucide-react";
-import { Button } from "@vitavision/ui";
-import { toast } from "sonner";
+import { Button, toast } from "@vitavision/ui";
 import { v4 as uuidv4 } from "uuid";
 
 export default function EditorGallery() {
@@ -58,7 +57,7 @@ export default function EditorGallery() {
             setGalleryMode(false);
         };
         img.onerror = () => {
-            toast.error("Failed to load image");
+            toast({ title: "Failed to load image", tone: "error" });
         };
     };
 

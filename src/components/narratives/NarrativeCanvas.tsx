@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { NarrativeEdgeType, NarrativeNode, ResolvedNarrative } from "../../lib/content/schema.ts";
 import { buildEdge } from "../../lib/graph/edgeGeometry.ts";
 import { useViewport, type ViewportBounds } from "../../lib/graph/useViewport.ts";
-import { ZoomControls } from "../atlas/graph/ZoomControls.tsx";
+import ZoomControls from "../shared/ZoomControls.tsx";
 import { PannableViewport } from "../atlas/graph/PannableViewport.tsx";
 import { EdgeMarkers } from "../atlas/graph/EdgeMarkers.tsx";
 import { EdgeLabelPill } from "../atlas/graph/EdgeLabelPill.tsx";
@@ -306,6 +306,8 @@ export default function NarrativeCanvas({
                     {/* Viewport overlays — not scaled or translated */}
                     <NarrativeLegend edgeTypes={edgeTypes} areas={narrative.areas} hasQuestionNodes={hasQuestionNodes} />
                     <ZoomControls
+                        orientation="column"
+                        className="absolute bottom-3 right-3"
                         onZoomIn={() => zoomAroundCenter(1.25)}
                         onZoomOut={() => zoomAroundCenter(1 / 1.25)}
                         onFit={() => fitView(true)}

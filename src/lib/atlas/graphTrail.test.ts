@@ -93,4 +93,10 @@ describe("trailReducer — jump", () => {
             future:  [C, "extra"],
         });
     });
+
+    it("is a no-op for an out-of-range index", () => {
+        const state: TrailState = { history: [A, B], current: C, future: [] };
+        expect(trailReducer(state, { type: "jump", index: 2 })).toBe(state);
+        expect(trailReducer(state, { type: "jump", index: -1 })).toBe(state);
+    });
 });

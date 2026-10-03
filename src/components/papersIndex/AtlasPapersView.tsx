@@ -77,13 +77,14 @@ export default function AtlasPapersView({ isDesktop, view, setView, query, setQu
                             placeholder="Search titles, authors, venues"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
-                            className="h-11 pl-10 text-[14px]"
+                            className="pl-10"
                         />
                     </div>
 
                     <div className={`flex gap-3 ${isDesktop ? "items-center" : "flex-col"}`}>
                         <SegmentedControl
                             aria-label="Filter"
+                            size="md"
                             value={filter}
                             options={FILTER_OPTIONS.map((o) => ({ value: o.key, label: o.label }))}
                             onValueChange={(v) => setFilter(v as PapersFilter)}

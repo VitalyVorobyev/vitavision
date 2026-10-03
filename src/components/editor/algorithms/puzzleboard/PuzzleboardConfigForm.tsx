@@ -218,15 +218,15 @@ const PuzzleboardConfigForm = (props: AlgorithmConfigFormProps<PuzzleboardConfig
                     <Field
                         label="Min corner strength"
                         as="group"
-                        annotation={<InfoHint label="About min corner strength">Minimum ChESS response threshold (0–1).</InfoHint>}
+                        annotation={<InfoHint label="About min corner strength">Absolute floor on the raw ChESS response (not a 0–1 scale). Library default 33; values of 15 or below add no filtering beyond the corner detector threshold.</InfoHint>}
                     >
                         <NumberInput
                             aria-label="Min corner strength"
-                            {...numberInputProps(config.chessMinCornerStrength, (v) => set("chessMinCornerStrength", v ?? 0.1))}
+                            {...numberInputProps(config.chessMinCornerStrength, (v) => set("chessMinCornerStrength", v ?? 15))}
                             disabled={disabled}
                             min={0}
-                            max={1}
-                            step={0.01}
+                            max={500}
+                            step={1}
                         />
                     </Field>
                     <Field

@@ -40,4 +40,11 @@ describe("adaptRadsymProposalResult", () => {
         expect(result.circles).toHaveLength(0);
         expect(result.summary.count).toBe(0);
     });
+
+    it("ignores a trailing partial triple", () => {
+        const raw = new Float32Array([10, 20, 0.5, 30, 40]);
+        const result = adaptRadsymProposalResult(raw, 100, 100, 1);
+        expect(result.circles).toHaveLength(1);
+        expect(result.circles[0]).toMatchObject({ x: 10, y: 20, score: 0.5 });
+    });
 });

@@ -1,6 +1,7 @@
 // TrailStrip — full-width back/forward + breadcrumb trail bar above the
 // desktop graph canvas. Extracted from GraphExplorer.tsx.
 
+import { Kbd } from "@vitavision/ui";
 import { contentGraph } from "../../../generated/content-graph.ts";
 import { shortTitle } from "../../../lib/atlas/graphNeighbors.ts";
 import { GG } from "../../../lib/atlas/graphLayout.ts";
@@ -106,9 +107,9 @@ export function TrailStrip({ history, current, future, onBack, onForward, onJump
 
             {/* Keyboard shortcut hint */}
             <div className="ml-auto flex items-center gap-1.5 text-[10.5px] text-fg-muted shrink-0">
-                <kbd className="font-mono px-1 py-0.5 rounded bg-surface border border-line-strong">⌘[</kbd>
+                <Kbd>⌘[</Kbd>
                 <span className="-ml-0.5">back</span>
-                <kbd className="font-mono px-1 py-0.5 rounded bg-surface border border-line-strong ml-1.5">⌘]</kbd>
+                <Kbd className="ml-1.5">⌘]</Kbd>
                 <span className="-ml-0.5">forward</span>
             </div>
         </div>

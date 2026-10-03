@@ -12,7 +12,7 @@ const initialConfig: CharucoConfig = {
     markerSizeRel: 0.75,
     dictionary: "DICT_4X4_1000",
     pxPerSquare: 40,
-    chessMinCornerStrength: 15,
+    chessMinCornerStrength: 33,
     chessMinLabeledCorners: 8,
     chessMaxComponents: 3,
     borderBits: 1,
@@ -20,7 +20,7 @@ const initialConfig: CharucoConfig = {
     scanMinBorderScore: 0.75,
     scanDedupById: true,
     scanMultiThreshold: true,
-    minMarkerInliers: 8,
+    minMarkerInliers: 1,
 };
 
 const presets: AlgorithmPreset[] = [

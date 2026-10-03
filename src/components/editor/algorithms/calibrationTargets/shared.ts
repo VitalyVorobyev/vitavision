@@ -7,6 +7,15 @@ import type {
 import { DETECTION_COLORS } from "../../../../store/editor/featureColors";
 import type { ArUcoMarkerFeature, Feature } from "../../../../store/editor/useEditorStore";
 
+/**
+ * Drop keys whose value is `undefined`. The worker deep-merges the params over
+ * the library defaults, and a bare `undefined` would overwrite a default (a
+ * deep link saved before a field existed carries no value for it); omitting the
+ * key lets the library default stand.
+ */
+export const definedOnly = <T extends Record<string, unknown>>(obj: T): Partial<T> =>
+    Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as Partial<T>;
+
 export const toCanvasCoordinate = (value: number): number => value + 0.5;
 
 const averagePoint = (points: Array<{ x: number; y: number }>): { x: number; y: number } => {
@@ -35,6 +44,9 @@ export const calibrationSummary = (result: CalibrationTargetResult): Array<{ lab
     }
     if (result.summary.alignment_inliers !== null) {
         summary.push({ label: "Alignment inliers", value: `${result.summary.alignment_inliers}` });
+    }
+    if (result.summary.alignment_runner_up_inliers !== null) {
+        summary.push({ label: "Runner-up inliers", value: `${result.summary.alignment_runner_up_inliers}` });
     }
 
     return summary;
@@ -173,7 +185,6 @@ export const calibrationCircleMatchFeatures = (
                     polarity: m.expected.polarity,
                     score: candidate.score,
                     contrast: candidate.contrast,
-                    distanceCells: m.distance_cells,
                     offsetCells: m.offset_cells,
                 },
             };

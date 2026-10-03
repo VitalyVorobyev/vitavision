@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { toast } from "sonner";
-import { Grid3X3, QrCode, CircleDot, Target, Puzzle, Upload } from "lucide-react";
+import { Grid3X3, QrCode, CircleDot, Target, Puzzle, Cylinder, Upload } from "lucide-react";
 import type { TargetType, TargetGeneratorAction, TargetConfig, PageConfig } from "../types";
 import { presetsForType } from "../presets";
 import { Button, cn, Select } from "@vitavision/ui";
@@ -48,6 +48,12 @@ const TARGET_TYPES: {
         label: "PuzzleBoard",
         description: "Self-identifying checkerboard with embedded edge-bit position code.",
         icon: <Puzzle size={24} />,
+    },
+    {
+        id: "puzzlepole",
+        label: "PuzzlePole",
+        description: "PuzzleBoard wrapped around a cylinder — identifiable through 360°; wrap strip to print and roll",
+        icon: <Cylinder size={24} />,
     },
 ];
 

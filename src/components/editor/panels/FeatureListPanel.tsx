@@ -11,7 +11,7 @@ import {
 } from "../../../store/editor/featureGroups";
 import { isReadonlyFeature, useEditorStore, type Feature, type FeatureMeta } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
-import { fmtCoord, fmtScore, fmtDistance } from "./formatNumber";
+import { fmtCoord, fmtScore } from "./formatNumber";
 
 /* ── helpers ─────────────────────────────────────────────────── */
 
@@ -52,9 +52,6 @@ function buildDetailMeta(meta: FeatureMeta): MetaRow[] {
             : null,
         meta.contrast !== undefined && meta.contrast !== null
             ? { label: "Contrast", value: fmtScore(meta.contrast) }
-            : null,
-        meta.distanceCells !== undefined && meta.distanceCells !== null
-            ? { label: "Distance", value: `${fmtDistance(meta.distanceCells)} cells` }
             : null,
         meta.offsetCells !== undefined && meta.offsetCells !== null
             ? { label: "Offset", value: `di=${meta.offsetCells.di}, dj=${meta.offsetCells.dj}` }

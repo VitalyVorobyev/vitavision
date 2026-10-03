@@ -5,6 +5,7 @@ import {
     defaultConfigForType,
     defaultCircles,
     DEFAULT_PUZZLEBOARD,
+    DEFAULT_PUZZLEPOLE,
 } from "./reducer";
 import type { PuzzleboardConfig } from "./types";
 
@@ -49,9 +50,18 @@ describe("defaultConfigForType", () => {
         expect(config.cols).toBe(DEFAULT_PUZZLEBOARD.cols);
         expect(config.cellSizeMm).toBe(DEFAULT_PUZZLEBOARD.cellSizeMm);
     });
+
+    it("returns puzzlepole config for 'puzzlepole'", () => {
+        expect(defaultConfigForType("puzzlepole")).toEqual(DEFAULT_PUZZLEPOLE);
+    });
 });
 
 describe("targetGeneratorReducer", () => {
+    it("selects puzzlepole with its default config", () => {
+        const next = targetGeneratorReducer(INITIAL_STATE, { type: "SET_TARGET_TYPE", targetType: "puzzlepole" });
+        expect(next.target).toEqual({ targetType: "puzzlepole", config: DEFAULT_PUZZLEPOLE });
+    });
+
     it("handles SET_TARGET_TYPE and caches previous config", () => {
         const next = targetGeneratorReducer(INITIAL_STATE, {
             type: "SET_TARGET_TYPE",

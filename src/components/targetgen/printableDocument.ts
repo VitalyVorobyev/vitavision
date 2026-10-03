@@ -22,6 +22,7 @@ import type {
     CharucoConfig,
     MarkerBoardConfig,
     PuzzleboardConfig,
+    PuzzlepoleConfig,
     CircleSpec,
 } from "./types";
 
@@ -99,11 +100,24 @@ export interface PrintablePuzzleBoardSpec {
     dot_diameter_rel: number;
 }
 
+/**
+ * `axial_start_col` (default 0) and `dot_diameter_rel` (default 1/3) are
+ * optional upstream and deliberately not sent: the app has no field for them.
+ */
+export interface PrintablePuzzlePoleSpec {
+    kind: "puzzlepole";
+    circumference_squares: number;
+    start_row: number;
+    axial_squares: number;
+    square_size_mm: number;
+}
+
 export type PrintableTargetSpec =
     | PrintableChessboardSpec
     | PrintableCharucoSpec
     | PrintableMarkerBoardSpec
-    | PrintablePuzzleBoardSpec;
+    | PrintablePuzzleBoardSpec
+    | PrintablePuzzlePoleSpec;
 
 export interface PrintableTargetDocument {
     schema_version: 1;
@@ -258,6 +272,16 @@ function toPuzzleBoardSpec(cfg: PuzzleboardConfig): PrintablePuzzleBoardSpec {
     };
 }
 
+function toPuzzlePoleSpec(cfg: PuzzlepoleConfig): PrintablePuzzlePoleSpec {
+    return {
+        kind: "puzzlepole",
+        circumference_squares: cfg.circumferenceSquares,
+        start_row: cfg.startRow,
+        axial_squares: cfg.axialSquares,
+        square_size_mm: cfg.squareSizeMm,
+    };
+}
+
 // ── entry point ──────────────────────────────────────────────────────────────
 
 /**
@@ -283,6 +307,9 @@ export function toPrintableDocument(target: TargetConfig, page: PageConfig): Pri
             break;
         case "puzzleboard":
             spec = toPuzzleBoardSpec(target.config);
+            break;
+        case "puzzlepole":
+            spec = toPuzzlePoleSpec(target.config);
             break;
         case "ringgrid":
             throw new Error(

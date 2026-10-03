@@ -1,7 +1,7 @@
 import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
 import type { CalibrationTargetResult } from "../../../../lib/types";
 import { detectCharucoWasm } from "../../../../lib/wasm/wasmWorkerProxy";
-import { calibrationCornerFeatures, calibrationMarkerFeatures, calibrationSummary } from "./shared";
+import { calibrationCornerFeatures, calibrationMarkerFeatures, calibrationSummary, definedOnly } from "./shared";
 import CharucoConfigForm, { type CharucoConfig } from "./CharucoConfigForm";
 import CharucoOverlay from "../../canvas/overlays/CharucoOverlay";
 
@@ -12,27 +12,21 @@ const initialConfig: CharucoConfig = {
     markerSizeRel: 0.75,
     dictionary: "DICT_4X4_1000",
     pxPerSquare: 40,
-    chessExpectedRows: 22,
-    chessExpectedCols: 22,
     chessMinCornerStrength: 15,
-    chessCompletenessThreshold: 0.05,
-    graphMinSpacingPix: 40,
-    graphMaxSpacingPix: 160,
-    graphKNeighbors: 8,
-    graphOrientationToleranceDeg: 12.5,
+    chessMinLabeledCorners: 8,
+    chessMaxComponents: 3,
     borderBits: 1,
     scanInsetFrac: 0.06,
     scanMinBorderScore: 0.75,
     scanDedupById: true,
     scanMultiThreshold: true,
-    maxHamming: 1,
     minMarkerInliers: 8,
 };
 
 const presets: AlgorithmPreset[] = [
     { label: "22×22 4×4", description: "Large board, 4×4 dictionary", config: { ...initialConfig } },
-    { label: "10×14 4×4", description: "Medium board, 4×4 dictionary", config: { ...initialConfig, rows: 10, cols: 14, chessExpectedRows: 10, chessExpectedCols: 14 } },
-    { label: "6×9 5×5", description: "Small board, 5×5 dictionary", config: { ...initialConfig, rows: 6, cols: 9, chessExpectedRows: 6, chessExpectedCols: 9, dictionary: "DICT_5X5_250" as const } },
+    { label: "10×14 4×4", description: "Medium board, 4×4 dictionary", config: { ...initialConfig, rows: 10, cols: 14 } },
+    { label: "6×9 5×5", description: "Small board, 5×5 dictionary", config: { ...initialConfig, rows: 6, cols: 9, dictionary: "DICT_5X5_250" as const } },
 ];
 
 const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
@@ -93,15 +87,10 @@ export const charucoAlgorithm: AlgorithmDefinition = {
                 },
                 chessboard: {
                     min_corner_strength: c.chessMinCornerStrength,
-                    expected_rows: c.chessExpectedRows,
-                    expected_cols: c.chessExpectedCols,
-                    completeness_threshold: c.chessCompletenessThreshold,
-                    graph: {
-                        min_spacing_pix: c.graphMinSpacingPix,
-                        max_spacing_pix: c.graphMaxSpacingPix,
-                        k_neighbors: c.graphKNeighbors,
-                        orientation_tolerance_deg: c.graphOrientationToleranceDeg,
-                    },
+                    ...definedOnly({
+                        min_labeled_corners: c.chessMinLabeledCorners,
+                        max_components: c.chessMaxComponents,
+                    }),
                 },
                 scan: {
                     inset_frac: c.scanInsetFrac,
@@ -109,7 +98,6 @@ export const charucoAlgorithm: AlgorithmDefinition = {
                     dedup_by_id: c.scanDedupById,
                     multi_threshold: c.scanMultiThreshold,
                 },
-                max_hamming: c.maxHamming,
                 min_marker_inliers: c.minMarkerInliers,
             },
         });

@@ -42,7 +42,6 @@ export interface FeatureMeta {
     inverted?: boolean;
     polarity?: string;
     contrast?: number;
-    distanceCells?: number | null;
     offsetCells?: CellOffset | null;
 }
 

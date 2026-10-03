@@ -3,7 +3,7 @@ import type {
     TargetConfig,
     PageConfig,
 } from "./types";
-import { defaultCircles, DEFAULT_RINGGRID, DEFAULT_PUZZLEBOARD } from "./reducer";
+import { defaultCircles, DEFAULT_RINGGRID, DEFAULT_PUZZLEBOARD, DEFAULT_PUZZLEPOLE } from "./reducer";
 
 export interface Preset {
     id: string;
@@ -212,6 +212,32 @@ export const PUZZLEBOARD_PRESETS: Preset[] = [
     },
 ];
 
+// ── PuzzlePole presets ───────────────────────────────────────────────────────
+
+const A4_PORTRAIT: PageConfig = { ...A4_LANDSCAPE, orientation: "portrait" };
+
+export const PUZZLEPOLE_PRESETS: Preset[] = [
+    {
+        id: "puzzlepole-small",
+        label: "Small pole",
+        description: "12 squares round at 10 mm: a ~38 mm cylinder, 100 x 140 mm strip",
+        targetType: "puzzlepole",
+        target: { targetType: "puzzlepole", config: { ...DEFAULT_PUZZLEPOLE } },
+        page: A4_LANDSCAPE,
+    },
+    {
+        id: "puzzlepole-medium",
+        label: "Medium pole",
+        description: "24 squares round at 10 mm: a ~76 mm cylinder, 80 x 260 mm strip (A4 portrait)",
+        targetType: "puzzlepole",
+        target: {
+            targetType: "puzzlepole",
+            config: { circumferenceSquares: 24, startRow: 75, axialSquares: 8, squareSizeMm: 10 },
+        },
+        page: A4_PORTRAIT,
+    },
+];
+
 export function presetsForType(targetType: TargetType): Preset[] {
     switch (targetType) {
         case "chessboard":
@@ -224,5 +250,7 @@ export function presetsForType(targetType: TargetType): Preset[] {
             return RINGGRID_PRESETS;
         case "puzzleboard":
             return PUZZLEBOARD_PRESETS;
+        case "puzzlepole":
+            return PUZZLEPOLE_PRESETS;
     }
 }

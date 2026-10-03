@@ -15,14 +15,10 @@ export interface PuzzleboardConfig {
     decodeSampleRadiusRel: number;
     decodeSearchAllComponents: boolean;
     chessMinCornerStrength: number;
-    chessCompletenessThreshold: number;
-    graphMinSpacingPix: number;
-    graphMaxSpacingPix: number;
+    chessMinLabeledCorners: number;
+    chessMaxComponents: number;
     decodeSearchMode: "full" | "fixed_board";
     decodeScoringMode: "hard_weighted" | "soft_log_likelihood";
-    decodeBitLikelihoodSlope: number;
-    decodePerBitFloor: number;
-    decodeAlignmentMinMargin: number;
 }
 
 const searchModeOptions: ChoiceOption<"fixed_board" | "full">[] = [
@@ -202,50 +198,6 @@ const PuzzleboardConfigForm = (props: AlgorithmConfigFormProps<PuzzleboardConfig
                             disabled={disabled}
                         />
                     </Field>
-                    <Disclosure summary="Advanced (decoder)">
-                        <div className={fieldGridClass()}>
-                            <Field
-                                label="Bit likelihood slope"
-                                as="group"
-                                annotation={<InfoHint label="About bit likelihood slope">Steepness of the per-bit log-likelihood mapping. Higher → more weight on confident bits. WASM default: 12.</InfoHint>}
-                            >
-                                <NumberInput
-                                    aria-label="Bit likelihood slope"
-                                    {...numberInputProps(config.decodeBitLikelihoodSlope, (v) => set("decodeBitLikelihoodSlope", v ?? 12))}
-                                    disabled={disabled}
-                                    min={0.5}
-                                    max={100}
-                                    step={0.5}
-                                />
-                            </Field>
-                            <Field
-                                label="Per-bit floor"
-                                as="group"
-                                annotation={<InfoHint label="About per-bit floor">Lower bound on per-bit log-likelihood contribution (negative; clamps the penalty for very wrong bits). WASM default: -6.</InfoHint>}
-                            >
-                                <NumberInput
-                                    aria-label="Per-bit floor"
-                                    {...numberInputProps(config.decodePerBitFloor, (v) => set("decodePerBitFloor", v ?? -6))}
-                                    disabled={disabled}
-                                    max={0}
-                                    step={0.5}
-                                />
-                            </Field>
-                            <Field
-                                label="Alignment min margin"
-                                as="group"
-                                annotation={<InfoHint label="About alignment min margin">Minimum required margin between the best and runner-up alignment scores. Lower → more permissive matches. WASM default: 0.02.</InfoHint>}
-                            >
-                                <NumberInput
-                                    aria-label="Alignment min margin"
-                                    {...numberInputProps(config.decodeAlignmentMinMargin, (v) => set("decodeAlignmentMinMargin", v ?? 0.02))}
-                                    disabled={disabled}
-                                    min={0}
-                                    step={0.005}
-                                />
-                            </Field>
-                        </div>
-                    </Disclosure>
                 </div>
             </Disclosure>
             <Disclosure summary="Chessboard">
@@ -278,42 +230,26 @@ const PuzzleboardConfigForm = (props: AlgorithmConfigFormProps<PuzzleboardConfig
                         />
                     </Field>
                     <Field
-                        label="Completeness threshold"
+                        label="Min labeled corners"
                         as="group"
-                        annotation={<InfoHint label="About completeness threshold">Fraction of expected corners that must be detected.</InfoHint>}
+                        annotation={<InfoHint label="About min labeled corners">Fewest grid-labeled corners a detected board component may have. Raise it to ignore small fragments. Library default: 8.</InfoHint>}
                     >
                         <NumberInput
-                            aria-label="Completeness threshold"
-                            {...numberInputProps(config.chessCompletenessThreshold, (v) => set("chessCompletenessThreshold", v ?? 0.02))}
-                            disabled={disabled}
-                            min={0}
-                            max={1}
-                            step={0.01}
-                        />
-                    </Field>
-                    <Field
-                        label="Min spacing"
-                        as="group"
-                        annotation={<InfoHint label="About min spacing">Minimum distance between adjacent corners in pixels.</InfoHint>}
-                    >
-                        <NumberInput
-                            unit="px"
-                            aria-label="Min spacing"
-                            {...numberInputProps(config.graphMinSpacingPix, (v) => set("graphMinSpacingPix", v ?? 8))}
+                            aria-label="Min labeled corners"
+                            {...numberInputProps(config.chessMinLabeledCorners, (v) => set("chessMinLabeledCorners", v ?? 8))}
                             disabled={disabled}
                             min={1}
                             step={1}
                         />
                     </Field>
                     <Field
-                        label="Max spacing"
+                        label="Max components"
                         as="group"
-                        annotation={<InfoHint label="About max spacing">Maximum distance between adjacent corners in pixels.</InfoHint>}
+                        annotation={<InfoHint label="About max components">Most separate grid components kept per image. Library default: 3.</InfoHint>}
                     >
                         <NumberInput
-                            unit="px"
-                            aria-label="Max spacing"
-                            {...numberInputProps(config.graphMaxSpacingPix, (v) => set("graphMaxSpacingPix", v ?? 600))}
+                            aria-label="Max components"
+                            {...numberInputProps(config.chessMaxComponents, (v) => set("chessMaxComponents", v ?? 3))}
                             disabled={disabled}
                             min={1}
                             step={1}

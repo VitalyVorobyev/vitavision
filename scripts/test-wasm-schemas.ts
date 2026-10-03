@@ -19,6 +19,7 @@ import { fileURLToPath } from "node:url";
 // implementations the worker itself uses (src/lib/wasm/worker/util.ts), not
 // private copies that can silently drift from them.
 const UTIL_PATH = fileURLToPath(new URL("../src/lib/wasm/worker/util.ts", import.meta.url));
+const ADAPTERS_DIR = fileURLToPath(new URL("../src/components/editor/algorithms/", import.meta.url));
 const IMPORT_DEEP_MERGE = `const { deepMerge } = await import(${JSON.stringify(UTIL_PATH)});`;
 const IMPORT_DEEP_MERGE_AND_UNWRAP_MAPS = `const { deepMerge, unwrapMaps } = await import(${JSON.stringify(UTIL_PATH)});`;
 
@@ -238,11 +239,14 @@ if (chessCfg.threshold !== 20)
     throw new Error('threshold override was merged instead of replaced: ' + JSON.stringify(chessCfg.threshold));
 console.log('PASS: chess config threshold is a scalar absolute floor (default ' + defaultCfg.threshold + '), detection block present');
 
-// The legacy flat fields the old ChessConfig/DetectorParams schemas used
-// (expected_rows, completeness_threshold, graph, chess) are silently ignored
-// under 0.10.1 — keep them in the merge to confirm they don't cause a schema
-// error (forward-compat with any stale adapter payload), while the current
-// stable-core keys (min_corner_strength, max_fit_rms_ratio, ...) still apply.
+// FORWARD-COMPAT ONLY: the legacy flat fields the old ChessboardParams schemas
+// used (expected_rows, completeness_threshold, graph, max_fit_rms_ratio, ...)
+// are NOT live keys on 0.15.1 -- default_chessboard_params() is exactly
+// { min_labeled_corners, max_components, min_corner_strength }, and the
+// "sent keys are all live" test further down proves the app no longer sends
+// the dead ones. They stay in this merge only to confirm that a stale payload
+// (e.g. a deep link saved by an older build) is dropped without a schema
+// error instead of crashing the run.
 const params = deepMerge(mod.default_chessboard_params(), {
     min_corner_strength: 15, completeness_threshold: 0.1,
     expected_rows: 7, expected_cols: 11,
@@ -314,9 +318,7 @@ const params = {
         marker_layout: 'opencv_charuco', border_bits: 1,
     },
     chessboard: deepMerge(cbDefaults, {
-        min_corner_strength: 15, expected_rows: 22, expected_cols: 22,
-        completeness_threshold: 0.05,
-        graph: { min_spacing_pix: 40, max_spacing_pix: 160, k_neighbors: 8, orientation_tolerance_deg: 12.5 },
+        min_corner_strength: 15, min_labeled_corners: 8, max_components: 3,
     }),
 };
 try {
@@ -370,7 +372,7 @@ console.log('PASS: "board" is the live schema key; "layout" is dropped like any 
 
 const params = deepMerge(mod.default_marker_board_params(), {
     board: { rows: 22, cols: 22, circles: [{ cell: { i: 11, j: 11 }, polarity: 'black' }, { cell: { i: 12, j: 11 }, polarity: 'white' }, { cell: { i: 12, j: 12 }, polarity: 'white' }] },
-    chessboard: { min_corner_strength: 15, expected_rows: 22, expected_cols: 22, completeness_threshold: 0.05, graph: { min_spacing_pix: 20, max_spacing_pix: 160 } },
+    chessboard: { min_corner_strength: 15, min_labeled_corners: 8, max_components: 3 },
     circle_score: { patch_size: 64, min_contrast: 10 },
 });
 mod.detect_marker_board(32, 32, gray, chessCfg, params);
@@ -448,6 +450,212 @@ if (miss.result != null)
     throw new Error('expected a miss on a blank image, got a detection: ' + JSON.stringify(miss.result));
 console.log('PASS: diagnose_marker_board returns a nullish result on a miss (value is '
     + (miss.result === null ? 'null' : 'undefined') + ', so the worker must use loose == null)');
+
+// ---- calib-targets 0.15 marker-board schema migration guards --------------
+// Every one of these changed SILENTLY in 0.15: a stale key is dropped by the
+// WASM boundary like any unknown key, so only the invalid-payload probe (a
+// string where a number belongs: live key -> throws, dead key -> accepted)
+// can tell a live key from a dead one.
+function isLive(path, bad) {
+    const p = mod.default_marker_board_params();
+    let o = p;
+    for (const k of path.slice(0, -1)) { o[k] ??= {}; o = o[k]; }
+    o[path[path.length - 1]] = bad;
+    try { mod.diagnose_marker_board(32, 32, gray, chessCfg, p); return false; }
+    catch (e) { return String(e).includes('invalid type'); }
+}
+const dflt = mod.default_marker_board_params();
+
+// 1. The printed disk diameter lives on the board spec now.
+if (dflt.board.circle_diameter_rel !== 0.5)
+    throw new Error('default board.circle_diameter_rel is no longer 0.5: ' + JSON.stringify(dflt.board));
+if ('diameter_frac' in dflt.circle_score)
+    throw new Error('circle_score.diameter_frac is back in the defaults -- revisit the 0.15 migration');
+if (!isLive(['board', 'circle_diameter_rel'], 'BAD'))
+    throw new Error('board.circle_diameter_rel is not a live key (invalid payload was accepted)');
+if (isLive(['circle_score', 'diameter_frac'], 'BAD'))
+    throw new Error('circle_score.diameter_frac is live again -- the adapter may need to send it');
+console.log('PASS: board.circle_diameter_rel is live (default 0.5); circle_score.diameter_frac is gone');
+
+// 2. circle_match max_distance_cells was removed; min_offset_inliers is the whole layout.
+if (isLive(['match_params', 'max_distance_cells'], 'BAD'))
+    throw new Error('match_params.max_distance_cells is live again -- the adapter may need to send it');
+if (!isLive(['match_params', 'min_offset_inliers'], 'BAD'))
+    throw new Error('match_params.min_offset_inliers is not a live key');
+if (dflt.match_params.min_offset_inliers !== 3)
+    throw new Error('default min_offset_inliers is no longer 3: ' + dflt.match_params.min_offset_inliers);
+console.log('PASS: match_params.max_distance_cells is gone; min_offset_inliers is live (default 3)');
+
+// 3. The app's initial config must equal the library defaults for every
+// circle-detector knob it sends (the worker deep-merges over the defaults, so
+// a drifted app default silently overrides the library one). The adapter
+// imports React/konva so it cannot be loaded here; read its literals.
+const { readFileSync: readSrc } = await import('fs');
+const adapterSrc = readSrc('src/components/editor/algorithms/calibrationTargets/markerboardAdapter.ts', 'utf8');
+const appDefault = (key) => {
+    const m = new RegExp('^    ' + key + ': ([0-9.]+),', 'm').exec(adapterSrc);
+    if (!m) throw new Error('could not find ' + key + ' in markerboardAdapter.ts initialConfig');
+    return Number(m[1]);
+};
+const expectEq = (key, lib) => {
+    const app = appDefault(key);
+    if (Math.abs(app - lib) > 1e-6)
+        throw new Error('app default ' + key + '=' + app + ' != library default ' + lib);
+};
+expectEq('circleDiameterRel', dflt.board.circle_diameter_rel);
+expectEq('circleScorePatchSize', dflt.circle_score.patch_size);
+expectEq('circleScoreRingThicknessFrac', dflt.circle_score.ring_thickness_frac);
+expectEq('circleScoreRingRadiusMul', dflt.circle_score.ring_radius_mul);
+expectEq('circleScoreMinContrast', dflt.circle_score.min_contrast);
+expectEq('circleScoreSamples', dflt.circle_score.samples);
+expectEq('circleScoreCenterSearchPx', dflt.circle_score.center_search_px);
+expectEq('matchMaxCandidatesPerPolarity', dflt.match_params.max_candidates_per_polarity);
+expectEq('matchMinOffsetInliers', dflt.match_params.min_offset_inliers);
+// ...and the target generator's printed diameter default must agree with it.
+const reducerSrc = readSrc('src/components/targetgen/reducer.ts', 'utf8');
+const genDefault = /circleDiameterRel: ([0-9.]+),/.exec(reducerSrc);
+if (!genDefault || Math.abs(Number(genDefault[1]) - dflt.board.circle_diameter_rel) > 1e-6)
+    throw new Error('target generator circleDiameterRel default != detector default ' + dflt.board.circle_diameter_rel);
+console.log('PASS: app detector defaults and target-generator diameter default equal the library defaults');
+
+// 4. The diagnostics payload gained the ambiguity channel. A blank image has no
+// alignment, so also assert the miss is NOT flagged ambiguous (the worker turns
+// alignment_ambiguous into a hard error; a false positive here would break
+// every plain miss).
+const dg = miss.diagnostics;
+for (const k of ['alignment_inliers', 'alignment_runner_up_inliers', 'alignment_ambiguous', 'circle_candidates', 'circle_matches', 'inliers'])
+    if (!(k in dg)) throw new Error('diagnostics.' + k + ' missing; keys: ' + JSON.stringify(Object.keys(dg)));
+if (dg.alignment_ambiguous !== false)
+    throw new Error('blank-image miss reported alignment_ambiguous=' + dg.alignment_ambiguous);
+console.log('PASS: diagnostics carry alignment_runner_up_inliers / alignment_ambiguous (blank miss is not ambiguous)');
+process.exit(0);
+`,
+    },
+    {
+        name: "@vitavision/calib-targets: every key the adapters send is live",
+        code: `
+// The check that would have caught the dead chessboard sub-config: the WASM
+// boundary drops unknown keys silently, so the only defence is to compare what
+// each adapter ACTUALLY sends against the library's own defaults. This runs the
+// real adapters (initialConfig and every preset) with the worker proxy's Worker
+// stubbed to capture the posted params, then asserts that every sent key path
+// exists in default_*_params() (recursive subset; arrays of objects are compared
+// by element shape). It also pins the chessboard-block defaults the forms expose.
+const posted = [];
+globalThis.Worker = class {
+    postMessage(m) { posted.push(m); queueMicrotask(() => this.onmessage({ data: { id: m.id, result: null } })); }
+};
+const mod = await import('@vitavision/calib-targets');
+await mod.default();
+const A = ${JSON.stringify(ADAPTERS_DIR)};
+const adapters = {
+    chessboard: (await import(A + 'calibrationTargets/chessboardAdapter.ts')).chessboardAlgorithm,
+    charuco: (await import(A + 'calibrationTargets/charucoAdapter.ts')).charucoAlgorithm,
+    markerboard: (await import(A + 'calibrationTargets/markerboardAdapter.ts')).markerboardAlgorithm,
+    puzzleboard: (await import(A + 'puzzleboard/adapter.ts')).puzzleboardAlgorithm,
+};
+const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+function deadKeys(sent, ref, path) {
+    const out = [];
+    if (Array.isArray(sent)) {
+        if (Array.isArray(ref) && ref.length > 0)
+            sent.forEach((el, i) => out.push(...deadKeys(el, ref[0], path + '[' + i + ']')));
+        return out;
+    }
+    if (!isObj(sent) || !isObj(ref)) return out;
+    for (const k of Object.keys(sent)) {
+        if (!(k in ref)) out.push(path + k);
+        else if (ref[k] !== undefined && ref[k] !== null) out.push(...deadKeys(sent[k], ref[k], path + k + '.'));
+    }
+    return out;
+}
+const refParams = (name, c) =>
+    name === 'chessboard' ? mod.default_chessboard_params()
+    : name === 'charuco' ? mod.default_charuco_params(c.rows, c.cols, c.markerSizeRel, c.dictionary)
+    : name === 'markerboard' ? mod.default_marker_board_params()
+    : mod.default_puzzleboard_params(c.boardRows, c.boardCols);
+let checked = 0;
+for (const [name, algo] of Object.entries(adapters)) {
+    const configs = [['initialConfig', algo.initialConfig], ...(algo.presets ?? []).map((p) => ['preset ' + p.label, p.config])];
+    for (const [label, config] of configs) {
+        posted.length = 0;
+        await algo.runWasm({ pixels: new Uint8Array(4), width: 1, height: 1, config });
+        // Most adapters post { chessCfg, params }; PuzzleBoard posts the params itself.
+        const sent = posted[0].config;
+        const params = sent.params ?? sent;
+        if (!isObj(params) || Object.keys(params).length === 0)
+            throw new Error(name + ' ' + label + ': unexpected payload shape ' + JSON.stringify(Object.keys(sent)));
+        const dead = [
+            ...deadKeys(params, refParams(name, config), 'params.'),
+            ...deadKeys(sent.chessCfg ?? {}, mod.default_chess_config(), 'chessCfg.'),
+        ];
+        if (dead.length > 0)
+            throw new Error(name + ' ' + label + ' sends keys the library does not have (silently dropped): ' + dead.join(', '));
+        // The forms expose the chessboard block's non-threshold keys; their app
+        // defaults must equal the library's (defaults-first).
+        const ref = refParams(name, config).chessboard ?? refParams(name, config);
+        const cb = params.chessboard ?? params;
+        for (const k of ['min_labeled_corners', 'max_components'])
+            if (cb[k] !== ref[k])
+                throw new Error(name + ' ' + label + ': ' + k + ' = ' + cb[k] + ' but the library default is ' + ref[k]);
+        checked++;
+    }
+}
+console.log('PASS: ' + checked + ' adapter configs (initialConfig + presets, 4 adapters) send only keys present in the library defaults');
+
+// Teeth: the scan must flag a dead key. (A silent-pass guard is worse than none.)
+const probe = deadKeys({ chessboard: { expected_rows: 7, min_corner_strength: 1 } }, mod.default_marker_board_params(), '');
+if (probe.join() !== 'chessboard.expected_rows')
+    throw new Error('dead-key scan has no teeth, flagged: ' + JSON.stringify(probe));
+console.log('PASS: the dead-key scan flags chessboard.expected_rows');
+process.exit(0);
+`,
+    },
+    {
+        name: "@vitavision/calib-targets: puzzlepole (printable)",
+        code: `
+const mod = await import('@vitavision/calib-targets');
+await mod.default();
+// puzzlepole_periods() is the library's table of strips that close
+// seamlessly; the generator reads it at runtime (worker command
+// 'puzzlepole-periods') instead of copying it. It must stay an array of
+// [circumference_squares, start_row] integer pairs.
+const periods = mod.puzzlepole_periods();
+if (!Array.isArray(periods) || periods.length === 0 || !periods.every(p => Array.isArray(p) && p.length === 2 && p.every(Number.isInteger)))
+    throw new Error('puzzlepole_periods() shape changed: ' + JSON.stringify(periods).slice(0, 200));
+console.log('PASS: puzzlepole_periods() is ' + periods.length + ' [circumference, start_row] pairs');
+
+// The generator renders through render_target_bundle_json with kind
+// 'puzzlepole' (page size / orientation / margin apply) rather than
+// render_puzzlepole_bundle (fixed tight page, no options).
+const [circumference, startRow] = periods[0];
+const doc = (over) => ({
+    schema_version: 1,
+    target: { kind: 'puzzlepole', circumference_squares: circumference, start_row: startRow, axial_squares: 6, square_size_mm: 5, ...over },
+    page: { size: { kind: 'a4' }, orientation: 'portrait', margin_mm: 10 },
+    render: { debug_annotations: false, png_dpi: 100 },
+});
+const bundle = mod.render_target_bundle_json(doc({}));
+for (const k of ['json_text', 'svg_text', 'png_bytes', 'dxf_text'])
+    if (!bundle[k] || bundle[k].length === 0) throw new Error('puzzlepole bundle has empty ' + k);
+if (!/width="210mm" height="297mm"/.test(bundle.svg_text))
+    throw new Error('puzzlepole page options were not applied: ' + bundle.svg_text.slice(0, 200));
+console.log('PASS: render_target_bundle_json renders kind puzzlepole at the requested A4 page');
+
+// Invalid-payload probes: the optional keys the app does NOT send are live
+// (a string where a number belongs throws); a made-up key is accepted silently.
+for (const key of ['axial_start_col', 'dot_diameter_rel']) {
+    let live = false;
+    try { mod.render_target_bundle_json(doc({ [key]: 'BAD' })); } catch (e) { live = String(e).includes('invalid type'); }
+    if (!live) throw new Error('puzzlepole target key ' + key + ' is not live');
+}
+mod.render_target_bundle_json(doc({ totally_made_up_key: 'BAD' }));
+console.log('PASS: axial_start_col / dot_diameter_rel are live keys; unknown keys are dropped silently');
+
+let rejected = '';
+try { mod.render_target_bundle_json(doc({ circumference_squares: 25 })); } catch (e) { rejected = String(e); }
+if (!rejected.includes('25')) throw new Error('unsupported period 25 was not rejected: ' + rejected);
+console.log('PASS: unsupported period rejected by the library: ' + rejected.replace(/^Error: /, ''));
 process.exit(0);
 `,
     },

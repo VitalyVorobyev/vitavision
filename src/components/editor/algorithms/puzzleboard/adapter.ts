@@ -1,6 +1,7 @@
 import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
 import type { PuzzleBoardDetectResult } from "../../../../lib/types";
 import { detectPuzzleboardWasm } from "../../../../lib/wasm/wasmWorkerProxy";
+import { definedOnly } from "../calibrationTargets/shared";
 import PuzzleboardConfigForm, { type PuzzleboardConfig } from "./PuzzleboardConfigForm";
 import PuzzleboardOverlay from "./PuzzleboardOverlay";
 import type { LabeledPointFeature } from "../../../../store/editor/useEditorStore";
@@ -18,14 +19,10 @@ const initialConfig: PuzzleboardConfig = {
     decodeSampleRadiusRel: 1 / 6,
     decodeSearchAllComponents: true,
     chessMinCornerStrength: 0.1,
-    chessCompletenessThreshold: 0.02,
-    graphMinSpacingPix: 8,
-    graphMaxSpacingPix: 600,
+    chessMinLabeledCorners: 8,
+    chessMaxComponents: 3,
     decodeSearchMode: "full",
     decodeScoringMode: "soft_log_likelihood",
-    decodeBitLikelihoodSlope: 12,
-    decodePerBitFloor: -6,
-    decodeAlignmentMinMargin: 0.02,
 };
 
 const presets: AlgorithmPreset[] = [
@@ -106,17 +103,13 @@ export const puzzleboardAlgorithm: AlgorithmDefinition = {
                 search_all_components: c.decodeSearchAllComponents,
                 search_mode: { kind: c.decodeSearchMode },
                 scoring_mode: { kind: c.decodeScoringMode },
-                bit_likelihood_slope: c.decodeBitLikelihoodSlope,
-                per_bit_floor: c.decodePerBitFloor,
-                alignment_min_margin: c.decodeAlignmentMinMargin,
             },
             chessboard: {
                 min_corner_strength: c.chessMinCornerStrength,
-                completeness_threshold: c.chessCompletenessThreshold,
-                graph: {
-                    min_spacing_pix: c.graphMinSpacingPix,
-                    max_spacing_pix: c.graphMaxSpacingPix,
-                },
+                ...definedOnly({
+                    min_labeled_corners: c.chessMinLabeledCorners,
+                    max_components: c.chessMaxComponents,
+                }),
             },
         });
     },

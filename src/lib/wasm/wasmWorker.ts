@@ -12,7 +12,7 @@
 
 import type { CommandRequest, DetectionRequest, WorkerCommand, WorkerRequest, WorkerResponse } from "./worker/protocol";
 import { handleChessCorners } from "./worker/chessCorners";
-import { handleCalibTarget, handleRenderTargetBundle } from "./worker/calibTargets";
+import { handleCalibTarget, handleRenderTargetBundle, handlePuzzlepolePeriods } from "./worker/calibTargets";
 import { handlePuzzleboard, handlePuzzleboardGenPng } from "./worker/puzzleboard";
 import { handleRinggrid, handleRenderRinggridBundle, handleRinggridPageSize } from "./worker/ringgrid";
 import { handleRadsym, handleRadsymHeatmap } from "./worker/radsym";
@@ -53,6 +53,7 @@ const commandTable: Record<WorkerCommand, (req: CommandRequest) => Promise<Dispa
         const bundleResult = await handleRenderTargetBundle(req.config);
         return { result: bundleResult, transfer: [bundleResult.png.buffer] };
     },
+    "puzzlepole-periods": async () => ({ result: await handlePuzzlepolePeriods() }),
     "render-ringgrid-bundle": async (req) => {
         const { targetJson, optionsJson } = req.config as { targetJson: string; optionsJson: string };
         const bundleResult = await handleRenderRinggridBundle(targetJson, optionsJson);

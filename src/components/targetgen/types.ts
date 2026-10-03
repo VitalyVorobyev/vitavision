@@ -2,7 +2,7 @@ import type { DictionaryName } from "../../lib/types";
 
 // ── Target type discriminator ────────────────────────────────────────────────
 
-export type TargetType = "chessboard" | "charuco" | "markerboard" | "ringgrid" | "puzzleboard";
+export type TargetType = "chessboard" | "charuco" | "markerboard" | "ringgrid" | "puzzleboard" | "puzzlepole";
 
 // ── Per-type config ──────────────────────────────────────────────────────────
 
@@ -47,6 +47,20 @@ export interface PuzzleboardConfig {
     cellSizeMm: number;
 }
 
+/**
+ * A PuzzleBoard wrapped around a cylinder. `circumferenceSquares` + `startRow`
+ * must be one of the pairs `puzzlepole_periods()` returns (see
+ * `puzzlepole/geometry.ts`); the cylinder diameter follows from them and
+ * `squareSizeMm` and is not otherwise adjustable.
+ */
+export interface PuzzlepoleConfig {
+    circumferenceSquares: number;
+    /** Master-pattern row the strip is cut from (the seam). */
+    startRow: number;
+    axialSquares: number;
+    squareSizeMm: number;
+}
+
 export interface RingGridConfig {
     rows: number;
     longRowCols: number;
@@ -62,7 +76,8 @@ export type TargetConfig =
     | { targetType: "charuco"; config: CharucoConfig }
     | { targetType: "markerboard"; config: MarkerBoardConfig }
     | { targetType: "ringgrid"; config: RingGridConfig }
-    | { targetType: "puzzleboard"; config: PuzzleboardConfig };
+    | { targetType: "puzzleboard"; config: PuzzleboardConfig }
+    | { targetType: "puzzlepole"; config: PuzzlepoleConfig };
 
 // ── Page config ──────────────────────────────────────────────────────────────
 
@@ -106,6 +121,7 @@ export interface ConfigCache {
     markerboard?: MarkerBoardConfig;
     ringgrid?: RingGridConfig;
     puzzleboard?: PuzzleboardConfig;
+    puzzlepole?: PuzzlepoleConfig;
 }
 
 export interface TargetGeneratorState {

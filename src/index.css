@@ -102,6 +102,17 @@
   }
 
   /*
+   * Mermaid measures a label in a detached container, where its <p> has the line-height
+   * mermaid set (1.5). In the article the same <p> picks up the prose line-height (1.75), so
+   * a wrapped label is taller than the box mermaid sized for it and its last line is clipped.
+   * Tailwind's utilities layer (`prose-p:leading-[1.75]`) outranks this base layer, hence
+   * the `!important`.
+   */
+  .mermaid-diagram :is(.nodeLabel, .edgeLabel) p {
+    line-height: inherit !important;
+  }
+
+  /*
    * ui's reduced-motion rule gives every element `transition-duration: 0.01ms`, and with the
    * initial `transition-property: all` that makes each style change land a frame later.
    * Mermaid styles its labels and measures them in the same tick, so under reduced motion it

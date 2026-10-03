@@ -1,25 +1,22 @@
-import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
+import type { AlgorithmDefinition, DiagnosticEntry } from "../types";
 import type { CalibrationTargetResult } from "../../../../lib/types";
 import { detectChessboardWasm } from "../../../../lib/wasm/wasmWorkerProxy";
-import { calibrationCornerFeatures, calibrationSummary } from "./shared";
+import { calibrationCornerFeatures, calibrationSummary, definedOnly } from "./shared";
 import ChessboardConfigForm, { type ChessboardConfig } from "./ChessboardConfigForm";
 import ChessboardOverlay from "../../canvas/overlays/ChessboardOverlay";
 
+// minLabeledCorners / maxComponents equal default_chessboard_params(); the
+// worker deep-merges these over the library defaults and
+// scripts/test-wasm-schemas.ts pins the equality. minCornerStrength 15 is the
+// app's long-standing value (the library default is 33).
+//
+// No presets: they differed only in the expected board size, which is not a
+// detector input (see ChessboardConfigForm).
 const initialConfig: ChessboardConfig = {
-    expectedRows: 7,
-    expectedCols: 11,
     minCornerStrength: 15,
-    completenessThreshold: 0.1,
-    maxFitRmsRatio: 0.5,
-    peakMinSeparationDeg: 60,
-    minPeakWeightFraction: 0.02,
+    minLabeledCorners: 8,
+    maxComponents: 3,
 };
-
-const presets: AlgorithmPreset[] = [
-    { label: "7×11 board", description: "Standard calibration board", config: { ...initialConfig } },
-    { label: "6×9 board", description: "Common smaller board", config: { ...initialConfig, expectedRows: 6, expectedCols: 9 } },
-    { label: "5×8 board", config: { ...initialConfig, expectedRows: 5, expectedCols: 8 } },
-];
 
 const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
     const entries: DiagnosticEntry[] = [];
@@ -36,18 +33,9 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
     title: "Chessboard",
     description: "Detect labeled chessboard corner grid with subpixel accuracy.",
     initialConfig,
-    presets,
     executionModes: ["wasm"],
     sampleDefaults: {
-        chessboard: {
-            expectedRows: 7,
-            expectedCols: 11,
-            minCornerStrength: 15,
-            completenessThreshold: 0.1,
-            maxFitRmsRatio: 0.5,
-            peakMinSeparationDeg: 60,
-            minPeakWeightFraction: 0.02,
-        },
+        chessboard: { ...initialConfig },
     },
     ConfigComponent: ChessboardConfigForm as AlgorithmDefinition["ConfigComponent"],
     run: () => Promise.reject(new Error("Chessboard detection is only available via client-side WASM.")),
@@ -63,18 +51,10 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
             chessCfg: { threshold: c.minCornerStrength },
             params: {
                 min_corner_strength: c.minCornerStrength,
-                completeness_threshold: c.completenessThreshold,
-                expected_rows: c.expectedRows,
-                expected_cols: c.expectedCols,
-                max_fit_rms_ratio: c.maxFitRmsRatio,
-                peak_min_separation_deg: c.peakMinSeparationDeg,
-                min_peak_weight_fraction: c.minPeakWeightFraction,
-                graph: {
-                    min_spacing_pix: 5,
-                    max_spacing_pix: 50,
-                    k_neighbors: 8,
-                    orientation_tolerance_deg: 22.5,
-                },
+                ...definedOnly({
+                    min_labeled_corners: c.minLabeledCorners,
+                    max_components: c.maxComponents,
+                }),
             },
         });
     },

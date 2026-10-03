@@ -35,6 +35,9 @@ function buildFilename(state: TargetGeneratorState, ext: string): string {
         case "puzzleboard":
             dims = `${t.config.rows}x${t.config.cols}`;
             break;
+        case "puzzlepole":
+            dims = `${t.config.circumferenceSquares}x${t.config.axialSquares}`;
+            break;
     }
     return `vitavision_${t.targetType}_${dims}.${ext}`;
 }

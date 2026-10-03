@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { adaptCalibTargetResult } from "../calibTargets";
+import { adaptCalibTargetResult, adaptMarkerBoardDiagnosis } from "../calibTargets";
 
 describe("adaptCalibTargetResult", () => {
     it("returns an empty chessboard result when raw is null (no detection)", () => {
@@ -77,10 +77,11 @@ describe("adaptCalibTargetResult", () => {
                 { center_img: [5, 6], cell: { i: 0, j: 0 }, polarity: "white", score: 0.5, contrast: 0.2 },
             ],
             circle_matches: [
-                { expected: { cell: { i: 0, j: 0 }, polarity: "white" }, matched_index: 0, distance_cells: 0, offset_cells: { di: 0, dj: 0 } },
-                { expected: { cell: { i: 1, j: 1 }, polarity: "black" }, matched_index: null, distance_cells: null, offset_cells: null },
+                { expected: { cell: { i: 0, j: 0 }, polarity: "white" }, matched_index: 0, offset_cells: { di: 0, dj: 0 } },
+                { expected: { cell: { i: 1, j: 1 }, polarity: "black" }, matched_index: null, offset_cells: null },
             ],
             alignment_inliers: 3,
+            alignment_runner_up_inliers: 2,
             alignment: { matrix: [[1, 0], [0, 1]], translation: [2, 3] },
         };
         const result = adaptCalibTargetResult(raw, "markerboard", 100, 100, 1);
@@ -89,6 +90,8 @@ describe("adaptCalibTargetResult", () => {
         expect(result.summary.circle_candidate_count).toBe(1);
         expect(result.summary.circle_match_count).toBe(1); // only the matched one counts
         expect(result.summary.alignment_inliers).toBe(3);
+        expect(result.summary.alignment_runner_up_inliers).toBe(2);
+        expect(result.circle_matches![0]).not.toHaveProperty("distance_cells");
         expect(result.alignment).toEqual({ transform: { a: 1, b: 0, c: 0, d: 1 }, translation: [2, 3] });
     });
 
@@ -98,5 +101,42 @@ describe("adaptCalibTargetResult", () => {
         expect(result.circle_candidates).toBeNull();
         expect(result.circle_matches).toBeNull();
         expect(result.summary.alignment_inliers).toBeNull();
+        expect(result.summary.alignment_runner_up_inliers).toBeNull();
+    });
+});
+
+describe("adaptMarkerBoardDiagnosis", () => {
+    const diagnostics = (over: Record<string, unknown> = {}) => ({
+        circle_candidates: [],
+        circle_matches: [],
+        alignment_inliers: 3,
+        alignment_runner_up_inliers: 2,
+        alignment_ambiguous: false,
+        ...over,
+    });
+
+    it("maps a successful diagnosis, including the runner-up inlier count", () => {
+        const out = adaptMarkerBoardDiagnosis({
+            result: { corners: [{ position: [1, 2] }], alignment: { matrix: [[1, 0], [0, 1]], translation: [0, 0] } },
+            diagnostics: diagnostics(),
+        });
+        expect(out).not.toBeNull();
+        expect(out!.detection.kind).toBe("checkerboard_marker");
+        expect(out!.alignment_inliers).toBe(3);
+        expect(out!.alignment_runner_up_inliers).toBe(2);
+    });
+
+    it("returns null when nothing was detected and the frame is not ambiguous", () => {
+        // serde-wasm-bindgen serialises Rust `None` as undefined, not null.
+        expect(adaptMarkerBoardDiagnosis({ result: undefined, diagnostics: diagnostics({ alignment_inliers: 0, alignment_runner_up_inliers: 0 }) })).toBeNull();
+        expect(adaptMarkerBoardDiagnosis({ result: null, diagnostics: null })).toBeNull();
+    });
+
+    it("throws a clear error when a second frame explains the circles as well (no alignment returned)", () => {
+        // Shape observed on calib-targets 0.15.1: result is undefined and
+        // alignment_ambiguous is set; corners are withheld.
+        const ambiguous = { result: undefined, diagnostics: diagnostics({ alignment_inliers: 2, alignment_runner_up_inliers: 2, alignment_ambiguous: true }) };
+        expect(() => adaptMarkerBoardDiagnosis(ambiguous)).toThrow(/Marker board orientation is ambiguous/);
+        expect(() => adaptMarkerBoardDiagnosis(ambiguous)).toThrow(/2 vs 2 circle inliers/);
     });
 });

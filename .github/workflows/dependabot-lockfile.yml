@@ -78,13 +78,13 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           ref: ${{ github.ref_name }}
           token: ${{ secrets.DEPENDABOT_LOCKFILE_TOKEN }}
           persist-credentials: true
 
-      - uses: oven-sh/setup-bun@3d267786b128fe76c2f16a390aa2448b815359f3 # v2
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
 
       # Deliberately not --frozen-lockfile: regenerating the lockfile is the point.
       - name: Regenerate bun.lock

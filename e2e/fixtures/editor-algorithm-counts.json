@@ -1,0 +1,171 @@
+{
+  "chess-corners": {
+    "sample": "chessboard",
+    "total": 77,
+    "kinds": {
+      "directed_point": 77
+    },
+    "firstPositions": [
+      {
+        "type": "directed_point",
+        "x": 426.499755859375,
+        "y": 369.369873046875
+      },
+      {
+        "type": "directed_point",
+        "x": 307.5333557128906,
+        "y": 241.2349090576172
+      },
+      {
+        "type": "directed_point",
+        "x": 224.3828887939453,
+        "y": 238.60643005371094
+      }
+    ]
+  },
+  "chessboard": {
+    "sample": "chessboard",
+    "total": 77,
+    "kinds": {
+      "point": 77
+    },
+    "firstPositions": [
+      {
+        "type": "point",
+        "x": 189.39427185058594,
+        "y": 113.47828674316406
+      },
+      {
+        "type": "point",
+        "x": 230.47669982910156,
+        "y": 115.10162353515625
+      },
+      {
+        "type": "point",
+        "x": 271.5096435546875,
+        "y": 116.36264038085938
+      }
+    ]
+  },
+  "charuco": {
+    "sample": "charuco",
+    "total": 467,
+    "kinds": {
+      "aruco_marker": 140,
+      "point": 327
+    },
+    "firstPositions": [
+      {
+        "type": "point",
+        "x": 1926.1156005859375,
+        "y": 126.9998779296875
+      },
+      {
+        "type": "point",
+        "x": 1916.9619140625,
+        "y": 197.7581024169922
+      },
+      {
+        "type": "point",
+        "x": 1907.7943115234375,
+        "y": 268.82843017578125
+      }
+    ]
+  },
+  "markerboard": {
+    "sample": "markerboard",
+    "total": 176,
+    "kinds": {
+      "point": 176
+    },
+    "firstPositions": [
+      {
+        "type": "point",
+        "x": 38.718807220458984,
+        "y": 22.50795555114746
+      },
+      {
+        "type": "point",
+        "x": 70.02892303466797,
+        "y": 19.12459945678711
+      },
+      {
+        "type": "point",
+        "x": 101.7838134765625,
+        "y": 15.63961124420166
+      }
+    ]
+  },
+  "ringgrid": {
+    "sample": "ringgrid",
+    "total": 62,
+    "kinds": {
+      "ring_marker": 62
+    },
+    "firstPositions": [
+      {
+        "type": "ring_marker",
+        "x": 395.23306162654404,
+        "y": 337.8147963535508
+      },
+      {
+        "type": "ring_marker",
+        "x": 276.9435768027171,
+        "y": 341.85210906984116
+      },
+      {
+        "type": "ring_marker",
+        "x": 218.682114889665,
+        "y": 343.8266314834155
+      }
+    ]
+  },
+  "radsym": {
+    "sample": "ringgrid",
+    "total": 50,
+    "kinds": {
+      "point": 50
+    },
+    "firstPositions": [
+      {
+        "type": "point",
+        "x": 395.5,
+        "y": 338.5
+      },
+      {
+        "type": "point",
+        "x": 370.5,
+        "y": 489.5
+      },
+      {
+        "type": "point",
+        "x": 492.5,
+        "y": 483.5
+      }
+    ]
+  },
+  "puzzleboard": {
+    "sample": "puzzleboard",
+    "total": 361,
+    "kinds": {
+      "labeled_point": 361
+    },
+    "firstPositions": [
+      {
+        "type": "labeled_point",
+        "x": 67.66049194335938,
+        "y": 42.55371856689453
+      },
+      {
+        "type": "labeled_point",
+        "x": 94.74860382080078,
+        "y": 43.18266677856445
+      },
+      {
+        "type": "labeled_point",
+        "x": 121.98941802978516,
+        "y": 43.84812927246094
+      }
+    ]
+  }
+}

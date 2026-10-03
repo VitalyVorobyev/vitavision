@@ -44,6 +44,7 @@ export default function ZoomControls({
             )}
             {zoomPercent !== undefined && (
                 <div
+                    data-testid="zoom-readout"
                     className={cn(
                         "flex min-w-[3.5rem] items-center justify-center rounded-control border border-line bg-surface font-mono text-fg-muted tabular-nums",
                         touchFriendly ? "h-8 px-3 text-xs" : "h-7 px-2 text-[11px]",

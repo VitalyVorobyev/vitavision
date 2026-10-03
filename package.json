@@ -26,7 +26,8 @@
     "postbuild": "bun run scripts/postbuild.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:screens": "playwright test"
+    "test:screens": "playwright test --project=screens",
+    "test:e2e": "playwright test --project=e2e --project=e2e-touch"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.9",

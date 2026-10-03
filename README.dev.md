@@ -30,13 +30,26 @@ bun run build                          # Type-check + Vite production build
 bun run lint                           # ESLint
 npx vitest run                         # Unit tests
 bun run scripts/test-wasm-schemas.ts   # WASM integration tests
-bun run test:screens                   # screenshots of the main routes (after a build)
+bun run test:screens                   # screenshots: main routes + editor canvas per algorithm (after a build)
+bun run test:e2e                       # behavioural editor specs (after a build)
 ```
 
 `test:screens` serves `dist/` with `vite preview` and captures seventeen main routes in
 light and dark. Its baseline (`e2e/.screens/`) is local and uncommitted: capture it with
 `--update-snapshots` before a change such as a dependency upgrade, and compare after it
-on the same machine. It is not a CI gate.
+on the same machine. It is not a CI gate. The project also holds `editor-visual.spec.ts`
+(the editor canvas after each algorithm run, light theme), the before/after check for a
+canvas-renderer change.
+
+`test:e2e` drives the editor in a browser against `vite preview` and asserts on data, not
+pixels, so it is renderer-agnostic: `editor-algorithms` runs each registered algorithm on its
+sample and compares the exported features (counts per kind, first three positions) with the
+committed `e2e/fixtures/editor-algorithm-counts.json`; `editor-drawing` and `editor-touch`
+draw, select, move and delete shapes with real pointer events and check the exported geometry,
+pan and zoom. Regenerate the fixture with `UPDATE_E2E_FIXTURES=1 bun run test:e2e` after an
+intended detector change; set `E2E_COORD_OFFSET=-0.5` to accept a half-pixel convention
+change. It is not a CI gate either: the fixture was captured on one machine and
+cross-platform bit-exactness of the WASM runs is unverified.
 
 The toolchain follows the shared vitavision baseline: compiler options from
 `@vitavision/config-ts` and lint from `@vitavision/config-eslint` (type-aware), with no

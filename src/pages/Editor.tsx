@@ -290,6 +290,7 @@ export default function Editor() {
                     variant={activeTool === "SELECT" ? "primary" : "ghost"}
                     className={TOOL_BUTTON}
                     onClick={() => setActiveTool("SELECT")}
+                    data-testid="tool-select"
                     aria-label="Select"
                     aria-pressed={activeTool === "SELECT"}
                 >
@@ -364,6 +365,7 @@ export default function Editor() {
                                         className={TOOL_BUTTON}
                                         onClick={() => setActiveTool(tool.id)}
                                         tabIndex={annotationToolsOpen ? 0 : -1}
+                                        data-testid={`tool-${tool.id.toLowerCase()}`}
                                         aria-label={tool.label}
                                         aria-pressed={activeTool === tool.id}
                                     >

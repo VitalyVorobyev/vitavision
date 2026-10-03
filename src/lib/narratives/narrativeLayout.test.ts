@@ -53,47 +53,49 @@ describe("scaleLensCoords", () => {
 
     it("maps one authored unit to one chip pitch on each axis", () => {
         const l = scaleLensCoords({ a: [0, 0], b: [1, 1] });
-        expect(l.positions.b.x - l.positions.a.x).toBeGreaterThan(NARRATIVE_NODE_W);
-        expect(l.positions.b.y - l.positions.a.y).toBeGreaterThan(NARRATIVE_NODE_H);
+        expect(l.positions.b!.x - l.positions.a!.x).toBeGreaterThan(NARRATIVE_NODE_W);
+        expect(l.positions.b!.y - l.positions.a!.y).toBeGreaterThan(NARRATIVE_NODE_H);
         const doubled = scaleLensCoords({ a: [0, 0], b: [2, 2] });
-        expect(doubled.positions.b.x).toBe(2 * l.positions.b.x);
-        expect(doubled.positions.b.y).toBe(2 * l.positions.b.y);
+        expect(doubled.positions.b!.x).toBe(2 * l.positions.b!.x);
+        expect(doubled.positions.b!.y).toBe(2 * l.positions.b!.y);
     });
 
     it("pushes overlapping same-row chips apart, preserving authored order", () => {
         const l = scaleLensCoords({ a: [6.0, 4], b: [6.1, 4], c: [6.2, 4], d: [6.6, 4] });
-        const xs = ["a", "b", "c", "d"].map((id) => l.positions[id].x);
+        const xs = ["a", "b", "c", "d"].map((id) => l.positions[id]!.x);
         for (let i = 1; i < xs.length; i++) {
-            expect(xs[i] - xs[i - 1]).toBeGreaterThanOrEqual(NARRATIVE_NODE_W);
+            expect(xs[i]! - xs[i - 1]!).toBeGreaterThanOrEqual(NARRATIVE_NODE_W);
         }
-        expect(l.width).toBe(xs[3] + NARRATIVE_NODE_W);
+        expect(l.width).toBe(xs[3]! + NARRATIVE_NODE_W);
     });
 
     it("does not collision-push chips that sit in different rows", () => {
         const l = scaleLensCoords({ a: [0, 0], b: [0.1, 1] });
         // Different rows: b keeps its authored near-zero x offset.
-        expect(l.positions.b.x - l.positions.a.x).toBeLessThan(NARRATIVE_NODE_W);
+        expect(l.positions.b!.x - l.positions.a!.x).toBeLessThan(NARRATIVE_NODE_W);
     });
 
     it("spaces adjacent distinct columns by at least the chip width", () => {
         const l = scaleLensCoords({ a: [0, 0], b: [1, 0], c: [2, 0], d: [3, 0] });
-        const xs = ["a", "b", "c", "d"].map((id) => l.positions[id].x);
+        const xs = ["a", "b", "c", "d"].map((id) => l.positions[id]!.x);
         for (let i = 1; i < xs.length; i++) {
-            expect(xs[i] - xs[i - 1]).toBeGreaterThanOrEqual(NARRATIVE_NODE_W);
+            expect(xs[i]! - xs[i - 1]!).toBeGreaterThanOrEqual(NARRATIVE_NODE_W);
         }
-        expect(l.width).toBe(xs[xs.length - 1] + NARRATIVE_NODE_W);
+        expect(l.width).toBe(xs[xs.length - 1]! + NARRATIVE_NODE_W);
     });
 
     it("collapses an axis with no span to zero extent", () => {
         const l = scaleLensCoords({ a: [0, 5], b: [1, 5] });
-        expect(l.positions.a.y).toBe(0);
-        expect(l.positions.b.y).toBe(0);
+        expect(l.positions.a!.y).toBe(0);
+        expect(l.positions.b!.y).toBe(0);
         expect(l.height).toBe(NARRATIVE_NODE_H);
     });
 
     it("keeps unevenly spaced coordinates proportional", () => {
         const l = scaleLensCoords({ a: [0, 0], b: [1, 0], c: [4, 0] });
-        const { a, b, c } = l.positions;
+        const a = l.positions.a!;
+        const b = l.positions.b!;
+        const c = l.positions.c!;
         expect(a.x).toBe(0);
         expect(b.x / c.x).toBeCloseTo(0.25, 6);
     });

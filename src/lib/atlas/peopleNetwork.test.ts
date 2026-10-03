@@ -213,7 +213,7 @@ describe("layoutLabels", () => {
     it("places a single candidate to the right of its node", () => {
         const placed = layoutLabels([{ id: "a", x: 100, y: 100, radius: 5, text: "Ada", fontSize: 12 }], canvas);
         expect(placed).toHaveLength(1);
-        expect(placed[0].x).toBeGreaterThan(100);
+        expect(placed[0]?.x).toBeGreaterThan(100);
     });
 
     it("drops an optional candidate that collides with an already-placed label", () => {
@@ -274,8 +274,8 @@ describe("layoutLabels", () => {
         const candidate = { id: "a", x: 500, y: 500, radius: 5, text: "Ada", fontSize: 12 };
         const atFitScale = layoutLabels([candidate], canvas, [], 1);
         const zoomedOut = layoutLabels([candidate], canvas, [], 4);
-        const distAt1 = Math.hypot(atFitScale[0].x - 500, atFitScale[0].y - 500);
-        const distAt4 = Math.hypot(zoomedOut[0].x - 500, zoomedOut[0].y - 500);
+        const distAt1 = Math.hypot(atFitScale[0]!.x - 500, atFitScale[0]!.y - 500);
+        const distAt4 = Math.hypot(zoomedOut[0]!.x - 500, zoomedOut[0]!.y - 500);
         expect(distAt4).toBeGreaterThan(distAt1);
     });
 
@@ -383,8 +383,8 @@ function expectNoPairwiseOverlap(placed: { x: number; y: number; text: string; f
     };
     for (let i = 0; i < placed.length; i++) {
         for (let j = i + 1; j < placed.length; j++) {
-            const a = boxOf(placed[i]);
-            const b = boxOf(placed[j]);
+            const a = boxOf(placed[i]!);
+            const b = boxOf(placed[j]!);
             const overlaps = !(a[2] < b[0] || a[0] > b[2] || a[3] < b[1] || a[1] > b[3]);
             expect(overlaps).toBe(false);
         }
@@ -401,7 +401,7 @@ describe("selectOverviewLabelCandidates", () => {
     it("caps to the limit for labelMode 'top20', highest page count first", () => {
         const candidates = selectOverviewLabelCandidates(people, "top20", 20);
         expect(candidates).toHaveLength(20);
-        expect(candidates[0].id).toBe("p0");
+        expect(candidates[0]?.id).toBe("p0");
     });
 
     it("returns everyone for labelMode 'all'", () => {
@@ -516,8 +516,8 @@ describe("computeRingLayout", () => {
         const slots = ties.map((t) => ring.get(t.id)!);
         // Adjacent-by-angle spacing: straight-line distance between consecutive slots.
         for (let i = 0; i < slots.length; i++) {
-            const a = slots[i];
-            const b = slots[(i + 1) % slots.length];
+            const a = slots[i]!;
+            const b = slots[(i + 1) % slots.length]!;
             const dist = Math.hypot(a.x - b.x, a.y - b.y);
             expect(dist).toBeGreaterThanOrEqual(20); // a little under the 22 target — ellipse foreshortens x.
         }

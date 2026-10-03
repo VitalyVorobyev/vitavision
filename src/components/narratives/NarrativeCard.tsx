@@ -29,14 +29,17 @@ function ConstellationThumb({ entry }: { entry: NarrativeIndexEntry }) {
             className="shrink-0 rounded border border-line bg-raised/40"
         >
             {ids.map((id, i) => {
-                const [nx, ny] = entry.preview[id];
+                const xy = entry.preview[id];
+                const areaId = areaIds[i % areaIds.length];
+                if (!xy || areaId === undefined) return null; // unreachable: ids are preview keys, areaIds non-empty
+                const [nx, ny] = xy;
                 return (
                     <circle
                         key={id}
                         cx={PAD + nx * (W - 2 * PAD)}
                         cy={PAD + ny * (H - 2 * PAD)}
                         r={2.6}
-                        fill={areaColor(areaIds, areaIds[i % areaIds.length])}
+                        fill={areaColor(areaIds, areaId)}
                         opacity={0.85}
                     />
                 );

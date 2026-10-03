@@ -105,7 +105,7 @@ describe("groupContributionByDomain", () => {
             b: { primaryPages: ["resnet"], citingPages: [], cites: [], citedBy: [], narratives: [] },
         };
         const groups = groupContributionByDomain(["a", "b"], spWithBothOrders, pages);
-        expect(groups[0].entries[0].isPrimary).toBe(true);
+        expect(groups[0]?.entries[0]?.isPrimary).toBe(true);
     });
 });
 
@@ -176,8 +176,8 @@ describe("computeAuthorTimelineLayout", () => {
     it("places a single entry on the axis at the layout's midpoint x", () => {
         const layout = computeAuthorTimelineLayout([{ id: "a", year: 2016, label: "A", state: "primary" }], 700);
         expect(layout.points).toHaveLength(1);
-        expect(layout.points[0].y).toBe(layout.axisY);
-        expect(layout.points[0].x).toBeCloseTo((layout.axisX1 + layout.axisX2) / 2);
+        expect(layout.points[0]?.y).toBe(layout.axisY);
+        expect(layout.points[0]?.x).toBeCloseTo((layout.axisX1 + layout.axisX2) / 2);
     });
 
     it("stacks same-year labels upward without collision and nudges dots apart on x", () => {
@@ -186,7 +186,8 @@ describe("computeAuthorTimelineLayout", () => {
             { id: "b", year: 2017, label: "B", state: "primary" as const },
         ];
         const layout = computeAuthorTimelineLayout(entries, 700);
-        const [a, b] = layout.points;
+        const a = layout.points[0]!;
+        const b = layout.points[1]!; // two entries in the fixture above
         expect(a.y).toBe(b.y); // both dots sit on the axis
         expect(a.x).not.toBe(b.x); // nudged apart so each stays clickable
         expect(a.labelY).not.toBe(b.labelY);
@@ -209,12 +210,12 @@ describe("buildCoAuthorRows", () => {
             [{ id: "A2", name: "Jian Sun", shared: 2, sharedPaperIds: ["p1", "p2"] }],
             papers,
         );
-        expect(rows[0].sharedPapers.map((p) => p.id)).toEqual(["p2", "p1"]);
+        expect(rows[0]?.sharedPapers.map((p) => p.id)).toEqual(["p2", "p1"]);
     });
 
     it("drops shared paper ids unknown to PapersById", () => {
         const rows = buildCoAuthorRows([{ id: "A2", name: "Jian Sun", shared: 1, sharedPaperIds: ["unknown"] }], papers);
-        expect(rows[0].sharedPapers).toEqual([]);
+        expect(rows[0]?.sharedPapers).toEqual([]);
     });
 });
 

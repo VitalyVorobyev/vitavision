@@ -12,7 +12,7 @@ export interface EdgeLabelPillProps {
     transform: string;
     opacity:   number;
     color:     string;
-    style?:    CSSProperties;
+    style?:    CSSProperties | undefined;
 }
 
 export function EdgeLabelPill({ label, width, transform, opacity, color, style }: EdgeLabelPillProps) {

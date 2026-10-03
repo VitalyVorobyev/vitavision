@@ -39,37 +39,40 @@ export default function MobileNarrativeView({ narrative, steps, chapters }: Mobi
                 stops, same order. Tap any node to see what it contributes.
             </p>
 
-            {steps.map((step, i) => (
-                <section key={step.anchor} className="mt-5">
-                    <div className="mb-1.5 flex items-baseline gap-2">
-                        <span className="font-mono text-[10px] tabular-nums text-fg-muted">
-                            {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <h2 className="m-0 text-[15px] font-semibold leading-tight -tracking-[0.2px] text-fg">
-                            {step.title}
-                        </h2>
-                    </div>
+            {steps.map((step, i) => {
+                const chapter = chapters[step.anchor];
+                return (
+                    <section key={step.anchor} className="mt-5">
+                        <div className="mb-1.5 flex items-baseline gap-2">
+                            <span className="font-mono text-[10px] tabular-nums text-fg-muted">
+                                {String(i + 1).padStart(2, "0")}
+                            </span>
+                            <h2 className="m-0 text-[15px] font-semibold leading-tight -tracking-[0.2px] text-fg">
+                                {step.title}
+                            </h2>
+                        </div>
 
-                    {step.claim && (
-                        <p className="mt-1.5 px-1 text-[14px] leading-[1.5] text-fg-muted">{step.claim}</p>
-                    )}
+                        {step.claim && (
+                            <p className="mt-1.5 px-1 text-[14px] leading-[1.5] text-fg-muted">{step.claim}</p>
+                        )}
 
-                    {chapters[step.anchor] && (
-                        <div
-                            className={`${proseClasses} !max-w-none !text-[14.5px] !leading-[1.7] [&>h2]:hidden`}
-                            dangerouslySetInnerHTML={{ __html: chapters[step.anchor] }}
-                        />
-                    )}
+                        {chapter && (
+                            <div
+                                className={`${proseClasses} !max-w-none !text-[14.5px] !leading-[1.7] [&>h2]:hidden`}
+                                dangerouslySetInnerHTML={{ __html: chapter }}
+                            />
+                        )}
 
-                    <div className="mt-3 flex flex-col gap-1.5">
-                        {step.focus.map((id) => {
-                            const node = nodesById.get(id);
-                            if (!node) return null;
-                            return <MobileNodeCard key={id} node={node} areaIds={areaIds} />;
-                        })}
-                    </div>
-                </section>
-            ))}
+                        <div className="mt-3 flex flex-col gap-1.5">
+                            {step.focus.map((id) => {
+                                const node = nodesById.get(id);
+                                if (!node) return null;
+                                return <MobileNodeCard key={id} node={node} areaIds={areaIds} />;
+                            })}
+                        </div>
+                    </section>
+                );
+            })}
         </div>
     );
 }

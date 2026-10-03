@@ -9,7 +9,7 @@ export type ResolvedLink = { slug: string; title: string; href: string };
 
 interface RelationshipSidebarProps {
     result: RelationDisplayResult;
-    supersededBy?: string;
+    supersededBy?: string | undefined;
     sectionsOpen: boolean;
     resolvedNarratives: ResolvedLink[];
     resolvedPosts: ResolvedLink[];

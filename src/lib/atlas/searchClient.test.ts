@@ -150,7 +150,7 @@ describe("searchEntities", () => {
 
     it("includes authors/venue on a paper hit for display", () => {
         const [hit] = searchEntities("resnet", { types: ["paper"] });
-        expect(hit.authors).toEqual(["K. He", "X. Zhang", "S. Ren", "J. Sun"]);
-        expect(hit.venue).toBe("CVPR 2016");
+        expect(hit?.authors).toEqual(["K. He", "X. Zhang", "S. Ren", "J. Sun"]);
+        expect(hit?.venue).toBe("CVPR 2016");
     });
 });

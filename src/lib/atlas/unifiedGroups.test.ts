@@ -108,7 +108,7 @@ describe("computeUnifiedGroups", () => {
             "algorithm",
         );
         expect(groups.map((g) => g.id)).toEqual(["features"]);
-        expect(groups[0].entries.map((e) => e.slug)).toEqual(["harris"]);
+        expect(groups[0]?.entries.map((e) => e.slug)).toEqual(["harris"]);
     });
 
     it("sorts entries within a domain group by depth-then-date (date desc, title asc, since these slugs have no known depth)", () => {
@@ -121,6 +121,6 @@ describe("computeUnifiedGroups", () => {
             [],
             "algorithm",
         );
-        expect(groups[0].entries.map((e) => e.slug)).toEqual(["newer", "older"]);
+        expect(groups[0]?.entries.map((e) => e.slug)).toEqual(["newer", "older"]);
     });
 });

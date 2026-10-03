@@ -91,7 +91,7 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
     if (paper) {
         const firstAuthor = paper.authors?.[0] ?? "";
         const surname = firstAuthor.includes(",")
-            ? firstAuthor.split(",")[0].trim()
+            ? (firstAuthor.split(",")[0] ?? firstAuthor).trim()
             : firstAuthor.split(" ").at(-1) ?? firstAuthor;
         const parts = [surname, paper.venue, paper.year].filter(Boolean).join(" · ");
         citationText = parts || null;

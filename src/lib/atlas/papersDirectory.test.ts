@@ -175,7 +175,7 @@ describe("decadeOf / groupPapersByDecade", () => {
         const rows = buildPaperRows(PAPERS, SCHOLARLY);
         const groups = groupPapersByDecade(rows);
         expect(groups.map((g) => g.label)).toEqual(["2020s", "2010s", "2000s"]);
-        expect(groups[0].rows.map((r) => r.id)).toEqual(["vit"]);
-        expect(groups[2].rows.map((r) => r.id).sort()).toEqual(["fast", "sift"]);
+        expect(groups[0]?.rows.map((r) => r.id)).toEqual(["vit"]);
+        expect(groups[2]?.rows.map((r) => r.id).sort()).toEqual(["fast", "sift"]);
     });
 });

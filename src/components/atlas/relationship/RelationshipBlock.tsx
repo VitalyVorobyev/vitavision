@@ -6,7 +6,7 @@ import SupersededBy from "./SupersededBy.tsx";
 
 interface RelationshipBlockProps {
     result: RelationDisplayResult;
-    supersededBy?: string;
+    supersededBy?: string | undefined;
 }
 
 export default function RelationshipBlock({ result, supersededBy }: RelationshipBlockProps) {

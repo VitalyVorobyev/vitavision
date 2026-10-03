@@ -48,9 +48,9 @@ describe("CoauthorEgoGraph", () => {
         const lines = container.querySelectorAll("line");
         const widths = [...lines].map((l) => Number(l.getAttribute("stroke-width")));
         // shared counts are 1, 2, 3 in order — stroke width must be non-decreasing.
-        expect(widths[0]).toBeLessThanOrEqual(widths[1]);
-        expect(widths[1]).toBeLessThanOrEqual(widths[2]);
-        expect(widths[2]).toBeGreaterThan(widths[0]);
+        expect(widths[0]).toBeLessThanOrEqual(widths[1]!);
+        expect(widths[1]).toBeLessThanOrEqual(widths[2]!);
+        expect(widths[2]).toBeGreaterThan(widths[0]!);
     });
 
     it("navigates to the collaborator's author page on click", () => {

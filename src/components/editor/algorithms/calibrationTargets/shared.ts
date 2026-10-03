@@ -72,9 +72,9 @@ export const calibrationCornerFeatures = (
         meta: {
             kind: result.detection.kind,
             score: corner.score,
-            ...(corner.grid != null && { grid: corner.grid }),
+            grid: corner.grid ?? undefined,
             cornerId: corner.corner_id,
-            ...(corner.target_position != null && { targetPosition: corner.target_position }),
+            targetPosition: corner.target_position ?? undefined,
         },
     }));
 };

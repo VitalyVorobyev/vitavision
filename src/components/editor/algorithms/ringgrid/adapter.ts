@@ -64,13 +64,11 @@ const toFeatures = (result: RinggridDetectResult, runId: string): Feature[] => {
             kind: marker.decode ? "ringgrid_decoded" : "ringgrid_proposal",
             markerId: marker.id,
             score: marker.confidence,
-            ...(marker.decode && {
-                rotation: marker.decode.best_rotation,
-                hamming: marker.decode.best_dist,
-            }),
-            ...(marker.board_xy_mm && {
-                targetPosition: { x: marker.board_xy_mm.x, y: marker.board_xy_mm.y },
-            }),
+            rotation: marker.decode?.best_rotation,
+            hamming: marker.decode ? marker.decode.best_dist : undefined,
+            targetPosition: marker.board_xy_mm
+                ? { x: marker.board_xy_mm.x, y: marker.board_xy_mm.y }
+                : undefined,
         },
     }));
 };

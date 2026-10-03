@@ -10,7 +10,7 @@ interface FeatureTooltipProps {
     tooltip: DirectedPointTooltipState | null;
 }
 
-function axisAngleDeg(axis: { dx: number; dy: number; angleRad?: number }): number {
+function axisAngleDeg(axis: { dx: number; dy: number; angleRad?: number | undefined }): number {
     const rad = axis.angleRad !== undefined
         ? axis.angleRad
         : Math.atan2(axis.dy, axis.dx);

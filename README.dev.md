@@ -97,8 +97,9 @@ shared vitavision design system (lab-ui PLAN L3-3):
   `src/store/editor/featureColors.ts`, `src/components/targetgen/printColors.ts`,
   `src/components/illustrations/_shared/dataColors.ts` (and Shiki's output in
   `src/generated/`).
-- **Toasts.** sonner stays (ui has none); `SiteToaster` follows the painted theme and
-  paints with the ui tokens.
+- **Toasts.** `toast()` and the single `<Toaster />` from `@vitavision/ui`: news that needs no
+  answer. Something that must be acknowledged is a `Dialog`; an error tied to one control is
+  that control's `Field` `error`.
 - **CSP.** The inline theme script is allowed by its sha256 in the CSP of `index.html`
   and `public/_headers`. Any edit to the script's text changes the hash: recompute it
   from the built page (`dist/index.html`) and update both.

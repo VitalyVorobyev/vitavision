@@ -3,6 +3,8 @@ import { resolvePageDimensions } from "./svg/paperConstants";
 import { PUZZLEBOARD_QUIET_ZONE_MM } from "./puzzleboard/constants";
 import { toRinggridTarget, toRinggridBoardSizeOptions } from "./ringgridTarget";
 import { ringgridBoardSizeMmWasm } from "../../lib/wasm/wasmWorkerProxy";
+import { puzzlepoleBoardSizeMm, puzzlepoleConfigErrors } from "./puzzlepole/geometry";
+import { loadPuzzlepolePeriods } from "./puzzlepole/periods";
 
 /** Number of markers a ChArUco board requires (one per white square). */
 function charucoMarkerCount(c: CharucoConfig): number {
@@ -112,6 +114,19 @@ export async function validateConfig(
             boardW = c.cols * c.cellSizeMm + 2 * PUZZLEBOARD_QUIET_ZONE_MM;
             boardH = c.rows * c.cellSizeMm + 2 * PUZZLEBOARD_QUIET_ZONE_MM;
             if (c.cellSizeMm < 5) smallFeatureWarning = true;
+            break;
+        }
+        case "puzzlepole": {
+            const c = target.config;
+            // The supported periods belong to the library, so they are read
+            // from it (once, through the worker) rather than copied here.
+            try {
+                errors.push(...puzzlepoleConfigErrors(c, await loadPuzzlepolePeriods()));
+            } catch (e) {
+                errors.push(`Could not read the supported PuzzlePole periods: ${e instanceof Error ? e.message : String(e)}`);
+            }
+            ({ widthMm: boardW, heightMm: boardH } = puzzlepoleBoardSizeMm(c));
+            if (c.squareSizeMm < 5) smallFeatureWarning = true;
             break;
         }
     }

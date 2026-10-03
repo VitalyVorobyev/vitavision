@@ -58,8 +58,12 @@ import type {
     CharucoConfig,
     MarkerBoardConfig,
     PuzzleboardConfig,
+    PuzzlepoleConfig,
 } from "../src/components/targetgen/types";
 import { toPrintableDocument } from "../src/components/targetgen/printableDocument";
+import { puzzlepoleBoardSizeMm, puzzlepoleConfigErrors, type PuzzlepolePeriod } from "../src/components/targetgen/puzzlepole/geometry";
+import { DEFAULT_PUZZLEPOLE } from "../src/components/targetgen/reducer";
+import { PUZZLEPOLE_PRESETS } from "../src/components/targetgen/presets";
 import { resolvePageDimensions } from "../src/components/targetgen/svg/paperConstants";
 import { toRinggridTarget } from "../src/components/targetgen/ringgridTarget";
 import { deepMerge, unwrapMaps } from "../src/lib/wasm/worker/util";
@@ -349,6 +353,32 @@ function buildCases(defaultCircles: DefaultCirclesFn): Case[] {
             target: { targetType: "puzzleboard", config: { rows: 9, cols: 12, cellSizeMm: 14 } },
             page: page({ orientation: "landscape", marginMm: 14 }),
         },
+
+        // ── puzzlepole ──────────────────────────────────────────────────────
+        // Generator only: there is no editor detector for PuzzlePole, so Part B
+        // skips these and Part A asserts the strip geometry and the DXF/PNG/JSON
+        // channels instead. Periods (circumference, start_row) come from the
+        // real `puzzlepole_periods()` table.
+        {
+            name: "puzzlepole/default-12x10-a4-landscape",
+            target: { targetType: "puzzlepole", config: { ...DEFAULT_PUZZLEPOLE } },
+            page: page({ orientation: "landscape" }),
+        },
+        {
+            name: "puzzlepole/24x8-a4-portrait",
+            target: { targetType: "puzzlepole", config: { circumferenceSquares: 24, startRow: 242, axialSquares: 8, squareSizeMm: 10 } },
+            page: page(),
+        },
+        {
+            name: "puzzlepole/36x20-custom-page-margin",
+            target: { targetType: "puzzlepole", config: { circumferenceSquares: 36, startRow: 327, axialSquares: 20, squareSizeMm: 5 } },
+            page: page({ sizeKind: "custom", customWidthMm: 160, customHeightMm: 230, marginMm: 12 }),
+        },
+        ...PUZZLEPOLE_PRESETS.map((preset) => ({
+            name: `puzzlepole/preset-${preset.id}`,
+            target: preset.target,
+            page: preset.page,
+        })),
     ];
 }
 
@@ -359,6 +389,59 @@ interface GeneratedBundle {
     dxf_text: string;
     json_text: string;
     png_bytes: Uint8Array;
+}
+
+/**
+ * Geometry and channel checks for a rendered PuzzlePole strip. Returns the list
+ * of problems (empty when fine).
+ *
+ * The strip is `axial_squares` columns by `circumference_squares + 2` rows —
+ * measured on calib-targets 0.15.1, NOT circumference x axial: the library
+ * prints two rows past the wrap. `puzzlepoleBoardSizeMm` encodes that, and
+ * this check pins it to the real renderer so a change upstream fails here.
+ */
+function checkPuzzlepoleBundle(cfg: PuzzlepoleConfig, bundle: GeneratedBundle): string[] {
+    const problems: string[] = [];
+    // Skip the first primitive: the white page background.
+    const prims = parsePrimitives(bundle.svg_text).slice(1);
+    const rects = prims.filter((p): p is Extract<Primitive, { kind: "rect" }> => p.kind === "rect");
+    const dots = prims.filter((p): p is Extract<Primitive, { kind: "circle" }> => p.kind === "circle");
+
+    const { widthMm, heightMm } = puzzlepoleBoardSizeMm(cfg);
+    const minX = Math.min(...rects.map((r) => r.x));
+    const maxX = Math.max(...rects.map((r) => r.x + r.w));
+    const minY = Math.min(...rects.map((r) => r.y));
+    const maxY = Math.max(...rects.map((r) => r.y + r.h));
+    const tol = 1e-3; // the renderer prints a few decimals
+    if (Math.abs(maxX - minX - widthMm) > tol) problems.push(`strip width ${maxX - minX}mm != ${widthMm}mm`);
+    if (Math.abs(maxY - minY - heightMm) > tol) problems.push(`strip height ${maxY - minY}mm != ${heightMm}mm`);
+    const expectedRects = cfg.axialSquares * (cfg.circumferenceSquares + 2);
+    if (rects.length !== expectedRects) problems.push(`${rects.length} squares != ${expectedRects}`);
+    if (rects.some((r) => Math.abs(r.w - cfg.squareSizeMm) > tol || Math.abs(r.h - cfg.squareSizeMm) > tol)) {
+        problems.push(`a square is not ${cfg.squareSizeMm}mm`);
+    }
+    if (dots.length === 0) problems.push("no edge dots drawn");
+    // Edge dots are 1/3 of the square side across (library default).
+    const dotR = cfg.squareSizeMm / 6;
+    if (dots.some((d) => Math.abs(d.r - dotR) > tol)) problems.push(`a dot radius != ${dotR}mm`);
+
+    if (!bundle.dxf_text.startsWith("  0\nSECTION\n  2\nHEADER\n")) problems.push("DXF header missing");
+    if (!bundle.dxf_text.endsWith("  0\nENDSEC\n  0\nEOF\n")) problems.push("DXF does not end with ENDSEC/EOF");
+    const png = bundle.png_bytes;
+    if (!(png?.length > 8 && png[0] === 0x89 && png[1] === 0x50 && png[2] === 0x4e && png[3] === 0x47)) problems.push("PNG magic missing");
+    try {
+        const json = JSON.parse(bundle.json_text) as { target?: { kind?: string; start_row?: number; circumference_squares?: number } };
+        if (
+            json.target?.kind !== "puzzlepole" ||
+            json.target.start_row !== cfg.startRow ||
+            json.target.circumference_squares !== cfg.circumferenceSquares
+        ) {
+            problems.push(`json_text target does not echo the config: ${JSON.stringify(json.target)}`);
+        }
+    } catch (e) {
+        problems.push(`json_text is not JSON: ${String(e)}`);
+    }
+    return problems;
 }
 
 async function runHarness(
@@ -435,7 +518,19 @@ async function runHarness(
                 diameterNote = `, disk r=${expectedR}mm`;
             }
 
-            record(`PASS ${c.name}: renders at ${svgDims.widthMm}x${svgDims.heightMm}mm${insetNote}${diameterNote}`, true);
+            let poleNote = "";
+            if (c.target.targetType === "puzzlepole") {
+                const cfg: PuzzlepoleConfig = c.target.config;
+                const problems = checkPuzzlepoleBundle(cfg, bundle);
+                if (problems.length > 0) {
+                    record(`FAIL ${c.name}: ${problems.join("; ")}`, false);
+                    continue;
+                }
+                const { widthMm, heightMm } = puzzlepoleBoardSizeMm(cfg);
+                poleNote = `, strip ${widthMm}x${heightMm}mm = ${cfg.axialSquares} cols x (${cfg.circumferenceSquares}+2) rows x ${cfg.squareSizeMm}mm, DXF/PNG/JSON ok`;
+            }
+
+            record(`PASS ${c.name}: renders at ${svgDims.widthMm}x${svgDims.heightMm}mm${insetNote}${diameterNote}${poleNote}`, true);
         } catch (e) {
             record(`FAIL ${c.name}: render threw: ${e instanceof Error ? e.message : String(e)}`, false);
         }
@@ -445,6 +540,9 @@ async function runHarness(
     console.log(`\n--- Part B: generation -> detection round trip (${ROUNDTRIP_DPI} DPI) ---\n`);
 
     for (const c of cases) {
+        // No editor detector exists for PuzzlePole (generator only); its strip
+        // geometry and output channels are asserted in Part A and Part F.
+        if (c.target.targetType === "puzzlepole") continue;
         try {
             const doc = toPrintableDocument(c.target, c.page);
             const bundle = mod.render_target_bundle_json(doc) as GeneratedBundle;
@@ -702,6 +800,63 @@ async function runHarness(
         );
     } catch (e) {
         record(`FAIL markerboard/ambiguous-orientation: errored: ${e instanceof Error ? e.message : String(e)}`, false);
+    }
+
+    // ── Part F — PuzzlePole periods and invalid configs ─────────────────────
+    //
+    // `puzzlepole_periods()` is the library's own table of strips that close
+    // seamlessly. Assert that every entry really renders, that the app's
+    // defaults and presets sit on the table, and that an unsupported period is
+    // rejected twice over: by the library (it throws) and by the app's own
+    // validation rules with a readable message.
+    console.log("\n--- Part F: PuzzlePole periods + invalid config ---\n");
+    try {
+        const periods = mod.puzzlepole_periods() as PuzzlepolePeriod[];
+        const shapeOk =
+            Array.isArray(periods) && periods.length > 0 && periods.every((p) => Array.isArray(p) && p.length === 2 && p.every(Number.isInteger));
+        let rendered = 0;
+        const failures: string[] = [];
+        for (const [circumferenceSquares, startRow] of periods) {
+            try {
+                const cfg: PuzzlepoleConfig = { circumferenceSquares, startRow, axialSquares: 6, squareSizeMm: 5 };
+                const doc = toPrintableDocument({ targetType: "puzzlepole", config: cfg }, page({ sizeKind: "custom", customWidthMm: 200, customHeightMm: 300 }));
+                const bundle = mod.render_target_bundle_json(doc) as GeneratedBundle;
+                const problems = checkPuzzlepoleBundle(cfg, bundle);
+                if (problems.length) failures.push(`${circumferenceSquares}@${startRow}: ${problems.join(", ")}`);
+                else rendered++;
+            } catch (e) {
+                failures.push(`${circumferenceSquares}@${startRow}: ${e instanceof Error ? e.message : String(e)}`);
+            }
+        }
+        record(
+            `${shapeOk && failures.length === 0 ? "PASS" : "FAIL"} puzzlepole/all-periods-render: ${rendered}/${periods.length} ` +
+                `(circumferences ${[...new Set(periods.map((p) => p[0]))].join(",")})${failures.length ? `\n     ${failures.join("\n     ")}` : ""}`,
+            shapeOk && failures.length === 0,
+        );
+
+        const configs = [DEFAULT_PUZZLEPOLE, ...PUZZLEPOLE_PRESETS.map((p) => (p.target as { config: PuzzlepoleConfig }).config)];
+        const offTable = configs.flatMap((cfg) => puzzlepoleConfigErrors(cfg, periods));
+        record(
+            `${offTable.length === 0 ? "PASS" : "FAIL"} puzzlepole/defaults-on-table: default + ${PUZZLEPOLE_PRESETS.length} presets are supported periods` +
+                (offTable.length ? `: ${offTable.join(" | ")}` : ""),
+            offTable.length === 0,
+        );
+
+        const bad: PuzzlepoleConfig = { ...DEFAULT_PUZZLEPOLE, circumferenceSquares: 25 };
+        let libraryError = "";
+        try {
+            mod.render_target_bundle_json(toPrintableDocument({ targetType: "puzzlepole", config: bad }, page()));
+        } catch (e) {
+            libraryError = e instanceof Error ? e.message : String(e);
+        }
+        const appErrors = puzzlepoleConfigErrors(bad, periods);
+        const rejectedOk = libraryError !== "" && appErrors.length === 1 && /25 squares around the circumference is not a PuzzlePole period/.test(appErrors[0]) && /Supported: 12, 18, 24/.test(appErrors[0]);
+        record(
+            `${rejectedOk ? "PASS" : "FAIL"} puzzlepole/invalid-period-rejected: library throws "${libraryError}"; app validation: "${appErrors[0]}"`,
+            rejectedOk,
+        );
+    } catch (e) {
+        record(`FAIL puzzlepole/periods: errored: ${e instanceof Error ? e.message : String(e)}`, false);
     }
 
     // ── inner_square_rel bounds check ───────────────────────────────────────

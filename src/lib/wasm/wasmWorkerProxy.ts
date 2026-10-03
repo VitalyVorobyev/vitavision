@@ -170,6 +170,16 @@ export async function renderTargetBundleWasm(
     ) as Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }>;
 }
 
+export async function puzzlepolePeriodsWasm(): Promise<Array<[number, number]>> {
+    return postCommand(
+        "puzzlepole-periods",
+        new Uint8Array(0),
+        0,
+        0,
+        {},
+    ) as Promise<Array<[number, number]>>;
+}
+
 export async function renderRinggridBundleWasm(
     targetJson: string,
     optionsJson: string,

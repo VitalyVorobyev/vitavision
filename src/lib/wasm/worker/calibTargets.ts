@@ -287,6 +287,27 @@ export async function handleCalibTarget(
 }
 
 /**
+ * The `[circumference_squares, start_row]` pairs for which a PuzzlePole strip
+ * closes seamlessly (`puzzlepole_periods()`), as a plain array of pairs.
+ *
+ * Shape verified against the real module on 0.15.1: a JS array of
+ * two-element number arrays. The library, not a TypeScript copy, owns this
+ * table (it is pinned by a Rust test), so the app reads it at runtime.
+ */
+export async function handlePuzzlepolePeriods(): Promise<Array<[number, number]>> {
+    const mod = await getCalibModule();
+    const raw = mod.puzzlepole_periods() as unknown;
+    if (
+        !Array.isArray(raw) ||
+        raw.length === 0 ||
+        !raw.every((p) => Array.isArray(p) && p.length === 2 && p.every((n) => typeof n === "number"))
+    ) {
+        throw new Error(`puzzlepole_periods() returned an unexpected shape: ${JSON.stringify(raw)?.slice(0, 120)}`);
+    }
+    return (raw as number[][]).map(([circumference, startRow]) => [circumference, startRow]);
+}
+
+/**
  * Render a `PrintableTargetDocument` (see
  * `src/components/targetgen/printableDocument.ts`) via the library's own
  * renderer, returning the full JSON/SVG/PNG/DXF bundle.

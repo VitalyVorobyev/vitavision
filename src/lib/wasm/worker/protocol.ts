@@ -23,6 +23,7 @@ export type WorkerCommand =
     | "radsym-heatmap"
     | "puzzleboard-gen-png"
     | "render-target-bundle"
+    | "puzzlepole-periods"
     | "render-ringgrid-bundle"
     | "ringgrid-page-size";
 

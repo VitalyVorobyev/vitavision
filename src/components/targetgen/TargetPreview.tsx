@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import type { TargetGeneratorState, TargetGeneratorAction } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
 import { PUZZLEBOARD_QUIET_ZONE_MM } from "./puzzleboard/constants";
+import { puzzlepoleBoardSizeMm } from "./puzzlepole/geometry";
 import { isPreviewOverlayTarget } from "./previewInteractions";
 import ZoomControls from "../shared/ZoomControls";
 import CanvasControlsHint from "../shared/CanvasControlsHint";
@@ -47,6 +48,10 @@ function computeBoardDims(state: TargetGeneratorState) {
                 w: target.config.cols * target.config.cellSizeMm + 2 * PUZZLEBOARD_QUIET_ZONE_MM,
                 h: target.config.rows * target.config.cellSizeMm + 2 * PUZZLEBOARD_QUIET_ZONE_MM,
             };
+        }
+        case "puzzlepole": {
+            const { widthMm, heightMm } = puzzlepoleBoardSizeMm(target.config);
+            return { w: widthMm, h: heightMm };
         }
     }
 }

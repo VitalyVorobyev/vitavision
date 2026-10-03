@@ -6,6 +6,7 @@ import type {
     MarkerBoardConfig,
     RingGridConfig,
     PuzzleboardConfig,
+    PuzzlepoleConfig,
     CircleSpec,
 } from "./types";
 
@@ -65,6 +66,16 @@ export const DEFAULT_PUZZLEBOARD: PuzzleboardConfig = {
     cellSizeMm: 15,
 };
 
+// 12 pieces round at 10 mm is a ~38 mm cylinder and a 100 x 140 mm strip, so the
+// default fits the generator's default (landscape A4) page. start_row 73 is the
+// first period the library lists for 12.
+export const DEFAULT_PUZZLEPOLE: PuzzlepoleConfig = {
+    circumferenceSquares: 12,
+    startRow: 73,
+    axialSquares: 10,
+    squareSizeMm: 10,
+};
+
 export function defaultConfigForType(targetType: string) {
     switch (targetType) {
         case "chessboard":
@@ -77,6 +88,8 @@ export function defaultConfigForType(targetType: string) {
             return { ...DEFAULT_RINGGRID };
         case "puzzleboard":
             return { ...DEFAULT_PUZZLEBOARD };
+        case "puzzlepole":
+            return { ...DEFAULT_PUZZLEPOLE };
         default:
             return { ...DEFAULT_CHESSBOARD };
     }

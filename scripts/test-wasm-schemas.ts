@@ -530,6 +530,54 @@ process.exit(0);
 `,
     },
     {
+        name: "@vitavision/calib-targets: puzzlepole (printable)",
+        code: `
+const mod = await import('@vitavision/calib-targets');
+await mod.default();
+// puzzlepole_periods() is the library's table of strips that close
+// seamlessly; the generator reads it at runtime (worker command
+// 'puzzlepole-periods') instead of copying it. It must stay an array of
+// [circumference_squares, start_row] integer pairs.
+const periods = mod.puzzlepole_periods();
+if (!Array.isArray(periods) || periods.length === 0 || !periods.every(p => Array.isArray(p) && p.length === 2 && p.every(Number.isInteger)))
+    throw new Error('puzzlepole_periods() shape changed: ' + JSON.stringify(periods).slice(0, 200));
+console.log('PASS: puzzlepole_periods() is ' + periods.length + ' [circumference, start_row] pairs');
+
+// The generator renders through render_target_bundle_json with kind
+// 'puzzlepole' (page size / orientation / margin apply) rather than
+// render_puzzlepole_bundle (fixed tight page, no options).
+const [circumference, startRow] = periods[0];
+const doc = (over) => ({
+    schema_version: 1,
+    target: { kind: 'puzzlepole', circumference_squares: circumference, start_row: startRow, axial_squares: 6, square_size_mm: 5, ...over },
+    page: { size: { kind: 'a4' }, orientation: 'portrait', margin_mm: 10 },
+    render: { debug_annotations: false, png_dpi: 100 },
+});
+const bundle = mod.render_target_bundle_json(doc({}));
+for (const k of ['json_text', 'svg_text', 'png_bytes', 'dxf_text'])
+    if (!bundle[k] || bundle[k].length === 0) throw new Error('puzzlepole bundle has empty ' + k);
+if (!/width="210mm" height="297mm"/.test(bundle.svg_text))
+    throw new Error('puzzlepole page options were not applied: ' + bundle.svg_text.slice(0, 200));
+console.log('PASS: render_target_bundle_json renders kind puzzlepole at the requested A4 page');
+
+// Invalid-payload probes: the optional keys the app does NOT send are live
+// (a string where a number belongs throws); a made-up key is accepted silently.
+for (const key of ['axial_start_col', 'dot_diameter_rel']) {
+    let live = false;
+    try { mod.render_target_bundle_json(doc({ [key]: 'BAD' })); } catch (e) { live = String(e).includes('invalid type'); }
+    if (!live) throw new Error('puzzlepole target key ' + key + ' is not live');
+}
+mod.render_target_bundle_json(doc({ totally_made_up_key: 'BAD' }));
+console.log('PASS: axial_start_col / dot_diameter_rel are live keys; unknown keys are dropped silently');
+
+let rejected = '';
+try { mod.render_target_bundle_json(doc({ circumference_squares: 25 })); } catch (e) { rejected = String(e); }
+if (!rejected.includes('25')) throw new Error('unsupported period 25 was not rejected: ' + rejected);
+console.log('PASS: unsupported period rejected by the library: ' + rejected.replace(/^Error: /, ''));
+process.exit(0);
+`,
+    },
+    {
         name: "@vitavision/calib-targets: chessboard coordinates (real image)",
         code: `
 const { PNG } = await import('pngjs');

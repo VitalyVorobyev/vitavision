@@ -6,6 +6,7 @@ import TargetTypeSelector from "./panels/TargetTypeSelector";
 import TargetConfigPanel from "./panels/TargetConfigPanel";
 import TargetPreview from "./TargetPreview";
 import type { TargetGeneratorAction, TargetGeneratorState, TargetType } from "./types";
+import type { PuzzlepolePeriod } from "./puzzlepole/geometry";
 import { presetsForType } from "./presets";
 // Imported here, not in DownloadBar/TargetConfigPanel: both of those are synced
 // to the design system and must not reach the WASM worker proxy at runtime.
@@ -26,6 +27,7 @@ const TARGET_LABELS: Record<TargetType, string> = {
     markerboard: "Marker Board",
     ringgrid: "Ring Grid",
     puzzleboard: "PuzzleBoard",
+    puzzlepole: "PuzzlePole",
 };
 
 function WizardStepCard({
@@ -102,10 +104,13 @@ export default function TargetGeneratorWizard({
     state,
     dispatch,
     isPhone,
+    puzzlepolePeriods,
 }: {
     state: TargetGeneratorState;
     dispatch: React.Dispatch<TargetGeneratorAction>;
     isPhone: boolean;
+    /** From `useTargetGenerator`; handed to the synced config panel as a prop. */
+    puzzlepolePeriods?: readonly PuzzlepolePeriod[];
 }) {
     const [activeStep, setActiveStep] = useState<TargetGeneratorStep>("target");
     const [previewOpen, setPreviewOpen] = useState(!isPhone);
@@ -209,6 +214,7 @@ export default function TargetGeneratorWizard({
                                     state={state}
                                     dispatch={dispatch}
                                     sections={["pattern"]}
+                                    puzzlepolePeriods={puzzlepolePeriods}
                                 />
                             </div>
                         </WizardStepCard>

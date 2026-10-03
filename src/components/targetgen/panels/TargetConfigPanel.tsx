@@ -4,9 +4,11 @@ import CharucoGenConfig from "./CharucoGenConfig";
 import MarkerBoardGenConfig from "./MarkerBoardGenConfig";
 import RingGridGenConfig from "./RingGridGenConfig";
 import PuzzleboardGenConfig from "./PuzzleboardGenConfig";
+import PuzzlepoleGenConfig from "./PuzzlepoleGenConfig";
 import PaperConfig from "./PaperConfig";
 import DownloadBar, { type DxfGenerator } from "./DownloadBar";
 import type { TargetGeneratorState, TargetGeneratorAction } from "../types";
+import type { PuzzlepolePeriod } from "../puzzlepole/geometry";
 
 export type TargetConfigSection = "pattern" | "page" | "validation" | "downloads";
 
@@ -16,11 +18,17 @@ interface Props {
     sections?: TargetConfigSection[];
     /** Forwarded to DownloadBar; see DxfGenerator for why it is injected. */
     generateDxf?: DxfGenerator;
+    /**
+     * The library's supported PuzzlePole periods, forwarded to
+     * PuzzlepoleGenConfig. Injected for the same reason as `generateDxf`: they
+     * come from the WASM worker, which this synced component must not import.
+     */
+    puzzlepolePeriods?: readonly PuzzlepolePeriod[];
 }
 
 const ALL_SECTIONS: TargetConfigSection[] = ["pattern", "page", "validation", "downloads"];
 
-export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECTIONS, generateDxf }: Props) {
+export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECTIONS, generateDxf, puzzlepolePeriods }: Props) {
     const { target, validation } = state;
     const visibleSections = new Set(sections);
 
@@ -41,6 +49,9 @@ export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECT
             )}
             {visibleSections.has("pattern") && target.targetType === "puzzleboard" && (
                 <PuzzleboardGenConfig config={target.config} dispatch={dispatch} />
+            )}
+            {visibleSections.has("pattern") && target.targetType === "puzzlepole" && (
+                <PuzzlepoleGenConfig config={target.config} dispatch={dispatch} periods={puzzlepolePeriods} />
             )}
 
             {/* Page config */}

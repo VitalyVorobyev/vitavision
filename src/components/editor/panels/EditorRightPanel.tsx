@@ -74,7 +74,7 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
         lastAlgorithmResult: s.lastAlgorithmResult,
     })));
     const [width, setWidth] = useState(DEFAULT_WIDTH);
-    const isDragging = useRef(false);
+    const isDraggingRef = useRef(false);
     const [touchTabOverride, setTouchTabOverride] = useState<"features" | null>(null);
     const touchTab: TouchPanelTab = touchTabOverride ?? panelMode;
 
@@ -95,7 +95,7 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
 
     const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         e.preventDefault();
-        isDragging.current = true;
+        isDraggingRef.current = true;
         const handle = e.currentTarget;
         handle.setPointerCapture(e.pointerId);
 
@@ -109,7 +109,7 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
             setWidth(newWidth);
         };
         const onUp = () => {
-            isDragging.current = false;
+            isDraggingRef.current = false;
             controller.abort();
             dragAbortRef.current = null;
         };

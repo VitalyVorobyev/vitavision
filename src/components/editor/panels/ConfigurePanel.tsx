@@ -83,16 +83,16 @@ export default function ConfigurePanel() {
 
     // didSeedFromUrl: run once per mount (useRef instead of module-level variable
     // so it resets if the user navigates away and returns — URL may have changed).
-    const didSeedFromUrl = useRef(false);
+    const didSeedFromUrlRef = useRef(false);
     useEffect(() => {
-        if (!didSeedFromUrl.current) {
-            didSeedFromUrl.current = true;
+        if (!didSeedFromUrlRef.current) {
+            didSeedFromUrlRef.current = true;
             if (initialState.algorithmId !== selectedAlgorithmId) {
                 setSelectedAlgorithmId(initialState.algorithmId);
             }
         }
     // Empty deps: intentional — we only want this to run once on mount.
-    // didSeedFromUrl is a ref (stable), and the initial* values from useDeepLinkSync
+    // didSeedFromUrlRef is a ref (stable), and the initial* values from useDeepLinkSync
     // are derived from URL search params at construction time and do not change.
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

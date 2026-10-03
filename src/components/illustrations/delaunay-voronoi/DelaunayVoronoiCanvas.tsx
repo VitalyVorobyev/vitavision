@@ -31,7 +31,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
     const { layers, selectedId, hover } = state;
     const activeTool = state.activeTool;
     const svgRef = useRef<SVGSVGElement>(null);
-    const dragging = useRef<{ id: string } | null>(null);
+    const draggingRef = useRef<{ id: string } | null>(null);
 
     // Shared hit-test used by both mouse-hover and touch-tap paths.
     const hitTest = useCallback(
@@ -120,7 +120,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             }
 
             if (activeTool === "move" || activeTool === "add" || activeTool === "grid") {
-                dragging.current = { id };
+                draggingRef.current = { id };
                 e.currentTarget.setPointerCapture(e.pointerId);
                 demo.selectPoint(id);
             }
@@ -141,10 +141,10 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                 y: Math.round(Math.max(0, Math.min(H, y))),
             });
 
-            if (dragging.current) {
+            if (draggingRef.current) {
                 const cx = Math.max(0, Math.min(W, x));
                 const cy = Math.max(0, Math.min(H, y));
-                demo.movePoint(dragging.current.id, cx, cy);
+                demo.movePoint(draggingRef.current.id, cx, cy);
                 return;
             }
 
@@ -172,8 +172,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
     }, [demo]);
 
     const onPointerUp = useCallback(() => {
-        if (dragging.current) {
-            dragging.current = null;
+        if (draggingRef.current) {
+            draggingRef.current = null;
             demo.endDrag();
         }
     }, [demo]);

@@ -174,7 +174,7 @@ export function useViewport({
 
     // ── Pan (pointer drag on background) ─────────────────────────────────────
 
-    const panState = useRef<{ startX: number; startY: number; startVx: number; startVy: number } | null>(null);
+    const panStateRef = useRef<{ startX: number; startY: number; startVx: number; startVy: number } | null>(null);
 
     const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         // Only pan when clicking on the viewport background or the plane itself (not cards)
@@ -186,7 +186,7 @@ export function useViewport({
 
         e.currentTarget.setPointerCapture(e.pointerId);
         setAnimate(false);
-        panState.current = {
+        panStateRef.current = {
             startX:  e.clientX,
             startY:  e.clientY,
             startVx: viewRef.current.x,
@@ -195,18 +195,18 @@ export function useViewport({
     }, [onPanStart]);
 
     const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-        if (!panState.current) return;
-        const dx = e.clientX - panState.current.startX;
-        const dy = e.clientY - panState.current.startY;
+        if (!panStateRef.current) return;
+        const dx = e.clientX - panStateRef.current.startX;
+        const dy = e.clientY - panStateRef.current.startY;
         setView((v) => ({
             ...v,
-            x: panState.current!.startVx + dx,
-            y: panState.current!.startVy + dy,
+            x: panStateRef.current!.startVx + dx,
+            y: panStateRef.current!.startVy + dy,
         }));
     }, []);
 
     const onPointerUp = useCallback(() => {
-        panState.current = null;
+        panStateRef.current = null;
     }, []);
 
     // ── Zoom controls helper ───────────────────────────────────────────────────

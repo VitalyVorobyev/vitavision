@@ -88,31 +88,31 @@ export function NetworkCanvas({
     const planeHeight = bounds.maxY - bounds.minY;
     const viewBox = `0 0 ${planeWidth} ${planeHeight}`;
 
-    const dragStart = useRef<{ x: number; y: number } | null>(null);
+    const dragStartRef = useRef<{ x: number; y: number } | null>(null);
 
     // Two-finger pinch tracking — see the adapter note at the top of this file.
-    const activeTouches = useRef<Map<number, { x: number; y: number }>>(new Map());
-    const pinchStartDist = useRef<number | null>(null);
+    const activeTouchesRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+    const pinchStartDistRef = useRef<number | null>(null);
 
     const handlePointerDown = useCallback(
         (e: ReactPointerEvent<HTMLDivElement>) => {
             if (e.pointerType === "touch") {
-                activeTouches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-                if (activeTouches.current.size === 2) {
+                activeTouchesRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+                if (activeTouchesRef.current.size === 2) {
                     // Second finger just landed — release any single-finger pan the
                     // hook may have started for the first, then start tracking pinch.
                     onPointerUp(e);
-                    dragStart.current = null;
+                    dragStartRef.current = null;
                     const [a, b] = [...activeTouches.current.values()];
                     if (a === undefined || b === undefined) return; // unreachable: size === 2
-                    pinchStartDist.current = Math.hypot(a.x - b.x, a.y - b.y);
+                    pinchStartDistRef.current = Math.hypot(a.x - b.x, a.y - b.y);
                     return;
                 }
-                if (activeTouches.current.size > 2) return; // ignore a third touch point
+                if (activeTouchesRef.current.size > 2) return; // ignore a third touch point
             }
             const t = e.target as Element;
             const isBackground = t === viewportRef.current || t === planeRef.current;
-            dragStart.current = isBackground ? { x: e.clientX, y: e.clientY } : null;
+            dragStartRef.current = isBackground ? { x: e.clientX, y: e.clientY } : null;
             onPointerDown(e);
         },
         [onPointerDown, onPointerUp, planeRef, viewportRef],
@@ -120,16 +120,16 @@ export function NetworkCanvas({
 
     const handlePointerMove = useCallback(
         (e: ReactPointerEvent<HTMLDivElement>) => {
-            if (e.pointerType === "touch" && activeTouches.current.has(e.pointerId)) {
-                activeTouches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-                if (activeTouches.current.size === 2 && pinchStartDist.current !== null) {
+            if (e.pointerType === "touch" && activeTouchesRef.current.has(e.pointerId)) {
+                activeTouchesRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+                if (activeTouchesRef.current.size === 2 && pinchStartDistRef.current !== null) {
                     const [a, b] = [...activeTouches.current.values()];
                     if (a === undefined || b === undefined) return; // unreachable: size === 2
                     const dist = Math.hypot(a.x - b.x, a.y - b.y);
-                    const factor = dist / pinchStartDist.current;
+                    const factor = dist / pinchStartDistRef.current;
                     if (Math.abs(factor - 1) > 0.015) {
                         onPinchZoom(factor);
-                        pinchStartDist.current = dist;
+                        pinchStartDistRef.current = dist;
                     }
                     return; // don't also forward to the hook's single-pointer pan
                 }
@@ -141,16 +141,16 @@ export function NetworkCanvas({
 
     const endTouch = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
         if (e.pointerType === "touch") {
-            activeTouches.current.delete(e.pointerId);
-            if (activeTouches.current.size < 2) pinchStartDist.current = null;
+            activeTouchesRef.current.delete(e.pointerId);
+            if (activeTouchesRef.current.size < 2) pinchStartDistRef.current = null;
         }
     }, []);
 
     const handlePointerUp = useCallback(
         (e: ReactPointerEvent<HTMLDivElement>) => {
             endTouch(e);
-            const start = dragStart.current;
-            dragStart.current = null;
+            const start = dragStartRef.current;
+            dragStartRef.current = null;
             onPointerUp(e);
             if (start) {
                 const dx = e.clientX - start.x;
@@ -164,7 +164,7 @@ export function NetworkCanvas({
     const handlePointerCancel = useCallback(
         (e: ReactPointerEvent<HTMLDivElement>) => {
             endTouch(e);
-            dragStart.current = null;
+            dragStartRef.current = null;
             onPointerCancel(e);
         },
         [onPointerCancel, endTouch],

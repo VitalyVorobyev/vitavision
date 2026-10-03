@@ -40,7 +40,7 @@ export function NetworkNodes({ nodes, labels, hoveredId, onHover, onSelect, scal
     // Click events (unlike pointer events) don't carry `pointerType`, so the
     // preceding pointerup on the SAME element records it for the click
     // handler that follows.
-    const lastPointerType = useRef<string>("mouse");
+    const lastPointerTypeRef = useRef<string>("mouse");
 
     return (
         <>
@@ -62,10 +62,10 @@ export function NetworkNodes({ nodes, labels, hoveredId, onHover, onSelect, scal
                     }}
                     data-person-id={n.id}
                     onPointerUp={(e) => {
-                        lastPointerType.current = e.pointerType;
+                        lastPointerTypeRef.current = e.pointerType;
                     }}
                     onClick={() => {
-                        if (twoTapToFocus && lastPointerType.current === "touch" && hoveredId !== n.id) {
+                        if (twoTapToFocus && lastPointerTypeRef.current === "touch" && hoveredId !== n.id) {
                             onHover(n.id);
                             return;
                         }

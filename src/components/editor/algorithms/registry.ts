@@ -82,8 +82,9 @@ export function loadAlgorithm(id: string): Promise<AlgorithmDefinition> {
     const cached = pendingLoads.get(id);
     if (cached) return cached;
 
-    const loader = LOADERS[id] ?? LOADERS[DEFAULT_ALGORITHM_ID];
     const resolvedId = LOADERS[id] ? id : DEFAULT_ALGORITHM_ID;
+    // DEFAULT_ALGORITHM_ID is always a key of LOADERS (declared above).
+    const loader = LOADERS[resolvedId]!;
 
     const promise = loader().then((algo) => {
         loadedAlgorithms.set(resolvedId, algo);

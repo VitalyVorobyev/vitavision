@@ -42,10 +42,10 @@ export default function MarkerboardOverlay({
         const candidates = data.circle_candidates ?? [];
         return matches
             .filter((m) => m.matched_index !== null && m.matched_index < candidates.length)
-            .map((m) => ({
-                ...candidates[m.matched_index!],
-                expectedCell: m.expected.cell,
-            }));
+            .flatMap((m) => {
+                const candidate = candidates[m.matched_index!];
+                return candidate ? [{ ...candidate, expectedCell: m.expected.cell }] : [];
+            });
     }, [data]);
 
     const showLabels = toggles.labels && zoom >= LABEL_MIN_ZOOM;

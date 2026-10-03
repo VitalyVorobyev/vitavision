@@ -180,7 +180,7 @@ export default function CanvasWorkspace() {
         if (!event.dataTransfer.files || event.dataTransfer.files.length === 0) return;
 
         const file = event.dataTransfer.files[0];
-        if (!file.type.startsWith("image/")) return;
+        if (!file || !file.type.startsWith("image/")) return;
 
         // Revoke the previous blob URL (if any) before creating a new one.
         if (droppedBlobUrlRef.current) {
@@ -380,7 +380,7 @@ export default function CanvasWorkspace() {
                             <Line
                                 points={currentLinePoints}
                                 closed={currentLinePoints.length >= 6}
-                                fill={currentLinePoints.length >= 6 ? withAlpha(ANNOTATION_COLORS.polygon, 0.1) : undefined}
+                                {...(currentLinePoints.length >= 6 && { fill: withAlpha(ANNOTATION_COLORS.polygon, 0.1) })}
                                 stroke={ANNOTATION_COLORS.polygon}
                                 strokeWidth={2 / zoom}
                                 dash={[5 / zoom, 5 / zoom]}

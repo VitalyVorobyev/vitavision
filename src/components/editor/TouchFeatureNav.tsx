@@ -39,13 +39,17 @@ export default function TouchFeatureNav() {
     const goPrev = useCallback(() => {
         if (total === 0) return;
         const next = indexInGroup > 0 ? indexInGroup - 1 : total - 1;
-        setSelectedFeatureId(ids[next]);
+        const id = ids[next];
+        if (id === undefined) return;
+        setSelectedFeatureId(id);
     }, [indexInGroup, total, ids, setSelectedFeatureId]);
 
     const goNext = useCallback(() => {
         if (total === 0) return;
         const next = indexInGroup < total - 1 ? indexInGroup + 1 : 0;
-        setSelectedFeatureId(ids[next]);
+        const id = ids[next];
+        if (id === undefined) return;
+        setSelectedFeatureId(id);
     }, [indexInGroup, total, ids, setSelectedFeatureId]);
 
     const handleClear = useCallback(() => {

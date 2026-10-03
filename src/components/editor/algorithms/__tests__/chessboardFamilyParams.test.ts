@@ -24,20 +24,20 @@ describe("chessboard-block params sent by the adapters", () => {
 
     it("chessboard sends only the three live keys", async () => {
         await run(chessboardAlgorithm, chessboardAlgorithm.initialConfig);
-        const sent = vi.mocked(detectChessboardWasm).mock.calls[0][3] as { params: Record<string, unknown> };
+        const sent = vi.mocked(detectChessboardWasm).mock.calls[0]![3] as { params: Record<string, unknown> };
         expect(Object.keys(sent.params).sort()).toEqual(["max_components", "min_corner_strength", "min_labeled_corners"]);
     });
 
     it("charuco's chessboard block has no expected size, completeness or graph keys", async () => {
         await run(charucoAlgorithm, charucoAlgorithm.initialConfig);
-        const sent = vi.mocked(detectCharucoWasm).mock.calls[0][3] as { params: Record<string, unknown> };
+        const sent = vi.mocked(detectCharucoWasm).mock.calls[0]![3] as { params: Record<string, unknown> };
         expect(Object.keys(sent.params.chessboard as object).sort()).toEqual(["max_components", "min_corner_strength", "min_labeled_corners"]);
         expect(sent.params).not.toHaveProperty("max_hamming");
     });
 
     it("puzzleboard's chessboard block and decode block carry only live keys", async () => {
         await run(puzzleboardAlgorithm, puzzleboardAlgorithm.initialConfig);
-        const sent = vi.mocked(detectPuzzleboardWasm).mock.calls[0][3] as { chessboard: object; decode: object };
+        const sent = vi.mocked(detectPuzzleboardWasm).mock.calls[0]![3] as { chessboard: object; decode: object };
         expect(Object.keys(sent.chessboard).sort()).toEqual(["max_components", "min_corner_strength", "min_labeled_corners"]);
         expect(sent.decode).not.toHaveProperty("bit_likelihood_slope");
     });
@@ -45,7 +45,7 @@ describe("chessboard-block params sent by the adapters", () => {
     it("omits a field a saved deep link predates, so the library default stands", async () => {
         const { minLabeledCorners: _drop, ...older } = chessboardAlgorithm.initialConfig as Record<string, unknown>;
         await run(chessboardAlgorithm, older);
-        const sent = vi.mocked(detectChessboardWasm).mock.calls[0][3] as { params: Record<string, unknown> };
+        const sent = vi.mocked(detectChessboardWasm).mock.calls[0]![3] as { params: Record<string, unknown> };
         expect(sent.params).not.toHaveProperty("min_labeled_corners");
         expect(sent.params.max_components).toBe(3);
     });

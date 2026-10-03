@@ -25,14 +25,16 @@ export function adaptChessCornersResult(
     let responseMax = -Infinity;
     let responseSum = 0;
 
+    // `raw.length % stride === 0` is checked above and `count = raw.length / stride`,
+    // so every `raw[i * stride + k]` (k < stride) below is in bounds.
     for (let i = 0; i < count; i++) {
-        const x = raw[i * stride];
-        const y = raw[i * stride + 1];
-        const response = raw[i * stride + 2];
-        const axis0_angle = raw[i * stride + 3];
-        const axis0_sigma = raw[i * stride + 4];
-        const axis1_angle = raw[i * stride + 5];
-        const axis1_sigma = raw[i * stride + 6];
+        const x = raw[i * stride]!;
+        const y = raw[i * stride + 1]!;
+        const response = raw[i * stride + 2]!;
+        const axis0_angle = raw[i * stride + 3]!;
+        const axis0_sigma = raw[i * stride + 4]!;
+        const axis1_angle = raw[i * stride + 5]!;
+        const axis1_sigma = raw[i * stride + 6]!;
 
         if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(response)) continue;
 
@@ -75,6 +77,10 @@ export function adaptChessCornersResult(
     // Sort by confidence descending
     cornersOut.sort((a, b) => b.confidence - a.confidence);
 
+    // Sorted by confidence descending: first = most confident, last = least.
+    const mostConfident = cornersOut[0];
+    const leastConfident = cornersOut[cornersOut.length - 1];
+
     return {
         status: "success" as const,
         key: "wasm://local",
@@ -103,8 +109,8 @@ export function adaptChessCornersResult(
             response_min: cornersOut.length > 0 ? responseMin : null,
             response_max: cornersOut.length > 0 ? responseMax : null,
             response_mean: cornersOut.length > 0 ? responseSum / cornersOut.length : null,
-            confidence_min: cornersOut.length > 0 ? cornersOut[cornersOut.length - 1].confidence : null,
-            confidence_max: cornersOut.length > 0 ? cornersOut[0].confidence : null,
+            confidence_min: leastConfident ? leastConfident.confidence : null,
+            confidence_max: mostConfident ? mostConfident.confidence : null,
             runtime_ms: runtimeMs,
         },
         corners: cornersOut.map(({ _index: _, ...rest }) => rest),

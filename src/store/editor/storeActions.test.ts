@@ -83,8 +83,8 @@ describe("normalizeImportedFeatures", () => {
         ];
         const result = normalizeImportedFeatures(input);
         expect(result).toHaveLength(2);
-        expect(result[0].type).toBe("point");
-        expect(result[1].type).toBe("bbox");
+        expect(result[0]!.type).toBe("point");
+        expect(result[1]!.type).toBe("bbox");
     });
 
     it("filters out invalid features", () => {
@@ -95,7 +95,7 @@ describe("normalizeImportedFeatures", () => {
         ];
         const result = normalizeImportedFeatures(input);
         expect(result).toHaveLength(1);
-        expect(result[0].type).toBe("point");
+        expect(result[0]!.type).toBe("point");
     });
 
     it("normalizes source and readonly for algorithm features", () => {
@@ -103,8 +103,8 @@ describe("normalizeImportedFeatures", () => {
             { type: "point", x: 1, y: 2, source: "algorithm", algorithmId: "test", runId: "r1" },
         ];
         const result = normalizeImportedFeatures(input);
-        expect(result[0].source).toBe("algorithm");
-        expect(result[0].readonly).toBe(true);
+        expect(result[0]!.source).toBe("algorithm");
+        expect(result[0]!.readonly).toBe(true);
     });
 
     it("parses ring_marker features", () => {
@@ -117,7 +117,7 @@ describe("normalizeImportedFeatures", () => {
         }];
         const result = normalizeImportedFeatures(input);
         expect(result).toHaveLength(1);
-        expect(result[0].type).toBe("ring_marker");
+        expect(result[0]!.type).toBe("ring_marker");
     });
 
     it("parses aruco_marker features", () => {
@@ -129,6 +129,6 @@ describe("normalizeImportedFeatures", () => {
         }];
         const result = normalizeImportedFeatures(input);
         expect(result).toHaveLength(1);
-        expect(result[0].type).toBe("aruco_marker");
+        expect(result[0]!.type).toBe("aruco_marker");
     });
 });

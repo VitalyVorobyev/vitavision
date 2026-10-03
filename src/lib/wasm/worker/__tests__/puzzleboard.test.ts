@@ -26,7 +26,7 @@ describe("adaptPuzzleboardResult", () => {
             observed_edges: [],
         };
         const result = adaptPuzzleboardResult(raw, 3, 100, 100, {});
-        const c = result.detection.corners[0];
+        const c = result.detection.corners[0]!;
         expect(c.x).toBe(10.5);
         expect(c.y).toBe(20.5);
         expect(c.grid).toEqual({ i: 1, j: 2 });
@@ -40,7 +40,7 @@ describe("adaptPuzzleboardResult", () => {
             observed_edges: [],
         };
         const result = adaptPuzzleboardResult(raw, 1, 10, 10, {});
-        const c = result.detection.corners[0];
+        const c = result.detection.corners[0]!;
         expect(c.score).toBe(0);
         expect(c.grid).toBeNull();
         expect(c.target_position).toBeNull();

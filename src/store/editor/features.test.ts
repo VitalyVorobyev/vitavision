@@ -125,6 +125,6 @@ describe("normalizeImportedFeatures", () => {
         const invalid = { id: "bad", type: "point" }; // missing x, y
         const result = normalizeImportedFeatures([point, invalid]);
         expect(result).toHaveLength(1);
-        expect(result[0].id).toBe("p1");
+        expect(result[0]!.id).toBe("p1");
     });
 });

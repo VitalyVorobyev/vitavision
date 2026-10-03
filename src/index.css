@@ -6,6 +6,9 @@
    Its fonts (`@vitavision/ui/fonts.css`, IBM Plex) are imported from main.tsx instead: see
    the note there. */
 @import "@vitavision/ui/styles.css";
+/* The schema-driven config forms (@vitavision/forms): like ui, it declares its own `@source`
+   so Tailwind finds the class names in the package; it has no styles of its own. */
+@import "@vitavision/forms/styles.css";
 /* What ui has no name for: the article reading colours and the editorial category palettes. */
 @import "./styles/editorial-tokens.css";
 @plugin "@tailwindcss/typography";

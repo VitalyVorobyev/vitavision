@@ -11,6 +11,7 @@ import {
 } from "../../../store/editor/featureGroups";
 import { isReadonlyFeature, useEditorStore, type Feature, type FeatureMeta } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
+import { useFeatureNav } from "../hooks/useFeatureNav";
 import { fmtCoord, fmtScore } from "./formatNumber";
 
 /* ── helpers ─────────────────────────────────────────────────── */
@@ -89,37 +90,7 @@ function FeatureNavigator({
     selectedFeatureId: string | null;
     setSelectedFeatureId: (id: string) => void;
 }) {
-    // Find which group the selected feature belongs to
-    const activeGroupIndex = useMemo(() => {
-        if (!selectedFeatureId) return -1;
-        return groups.findIndex((g) => g.features.some((f) => f.id === selectedFeatureId));
-    }, [groups, selectedFeatureId]);
-
-    const group = activeGroupIndex >= 0 ? groups[activeGroupIndex] : null;
-
-    const indexInGroup = useMemo(() => {
-        if (!group || !selectedFeatureId) return -1;
-        return group.features.findIndex((f) => f.id === selectedFeatureId);
-    }, [group, selectedFeatureId]);
-
-    const ids = useMemo(() => group?.features.map((f) => f.id) ?? [], [group]);
-    const total = ids.length;
-
-    const goPrev = useCallback(() => {
-        if (total === 0) return;
-        const next = indexInGroup > 0 ? indexInGroup - 1 : total - 1;
-        const id = ids[next];
-        if (id === undefined) return;
-        setSelectedFeatureId(id);
-    }, [indexInGroup, total, ids, setSelectedFeatureId]);
-
-    const goNext = useCallback(() => {
-        if (total === 0) return;
-        const next = indexInGroup < total - 1 ? indexInGroup + 1 : 0;
-        const id = ids[next];
-        if (id === undefined) return;
-        setSelectedFeatureId(id);
-    }, [indexInGroup, total, ids, setSelectedFeatureId]);
+    const { activeGroupIndex, group, total, goPrev, goNext, position } = useFeatureNav(groups, selectedFeatureId, setSelectedFeatureId);
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent) => {
@@ -145,10 +116,6 @@ function FeatureNavigator({
 
     if (total === 0) return null;
 
-    const display = indexInGroup >= 0
-        ? `${indexInGroup + 1} / ${total}`
-        : `— / ${total}`;
-
     return (
         <div
             ref={containerRef}
@@ -168,7 +135,7 @@ function FeatureNavigator({
                 {group && (
                     <span className="text-fg-muted">{group.label} </span>
                 )}
-                <span className="tabular-nums">{display}</span>
+                <span className="tabular-nums">{position}</span>
             </span>
             <Button
                 variant="ghost"

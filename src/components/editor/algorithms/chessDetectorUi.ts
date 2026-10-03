@@ -1,4 +1,6 @@
-import type { FieldUi } from "@vitavision/forms";
+import type { FieldUi, JsonSchema, UiGroup, UiSchema } from "@vitavision/forms";
+
+import { hidden, hideContainers } from "./schemaTools";
 
 /*
  * The ChESS corner front-end is one document, `DetectorConfig`, wherever it appears: it IS
@@ -181,4 +183,41 @@ export function chessboardFields(prefix: string): Record<string, FieldUi> {
         ],
     ];
     return Object.fromEntries(entries.map(([path, ui]) => [at(prefix, path), ui]));
+}
+
+/**
+ * The form of a board detector (chessboard, ChArUco, marker board, PuzzleBoard): its own groups and
+ * fields, plus the two detector blocks all four carry (the ChESS corner front-end under `chess`, the
+ * chessboard detector under `chessboardPrefix`), the paths deliberately not offered, and a hidden
+ * container for any top-level object no group lists.
+ *
+ * @param options.schema - The algorithm's root schema.
+ * @param options.groups - The form's groups.
+ * @param options.chessboardPrefix - Where the chessboard-detector block sits in the document.
+ * @param options.fields - Labels and hints for the algorithm's own fields.
+ * @param options.extraHidden - Paths hidden beyond the corner detector's strategy selector.
+ * @returns `hiddenPaths` (also checked by the tests) and the `ui`.
+ */
+export function boardUi(options: {
+    schema: JsonSchema;
+    groups: UiGroup[];
+    chessboardPrefix: string;
+    fields: Record<string, FieldUi>;
+    extraHidden?: string[];
+}): { hiddenPaths: string[]; ui: UiSchema } {
+    const { schema, groups, chessboardPrefix, fields, extraHidden = [] } = options;
+    const hiddenPaths = [...chessDetectorHidden("chess"), ...extraHidden];
+    return {
+        hiddenPaths,
+        ui: {
+            groups,
+            fields: {
+                ...chessDetectorFields("chess"),
+                ...chessboardFields(chessboardPrefix),
+                ...fields,
+                ...hidden(...hiddenPaths),
+                ...hideContainers(schema, groups),
+            },
+        },
+    };
 }

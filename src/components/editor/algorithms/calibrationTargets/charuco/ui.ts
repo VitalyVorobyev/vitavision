@@ -1,14 +1,7 @@
-import type { UiGroup, UiSchema } from "@vitavision/forms";
+import type { UiGroup } from "@vitavision/forms";
 
-import {
-    chessDetectorFields,
-    chessDetectorHidden,
-    chessDetectorPaths,
-    chessboardFields,
-    chessboardKnobPaths,
-    chessboardTuningPath,
-} from "../../chessDetectorUi";
-import { hidden, hideContainers, readOnlyPaths } from "../../schemaTools";
+import { boardUi, chessDetectorPaths, chessboardKnobPaths, chessboardTuningPath } from "../../chessDetectorUi";
+import { readOnlyPaths } from "../../schemaTools";
 import { schema } from "./schema";
 
 /** `DICT_4X4_1000` -> `4×4 (1000)`, `DICT_APRILTAG_36h11` -> `AprilTag 36h11`. */
@@ -58,23 +51,17 @@ const groups: UiGroup[] = [
 ];
 
 /**
- * Fields deliberately not offered; the schema's other fields are all in a group. The only
- * marker layout there is, and the scan values the detector derives from the board
- * (`scan.border_bits` is `readOnly`; `scan.marker_size_rel` follows `board.marker_size_rel`,
- * so a copy here could only go stale).
+ * Fields deliberately not offered, beyond the corner detector's strategy selector; the schema's other
+ * fields are all in a group. The only marker layout there is, and the scan values the detector
+ * derives from the board (`scan.border_bits` is `readOnly`; `scan.marker_size_rel` follows
+ * `board.marker_size_rel`, so a copy here could only go stale).
  */
-export const hiddenPaths: string[] = [
-    ...chessDetectorHidden("chess"),
-    "board.marker_layout",
-    "scan.marker_size_rel",
-    ...readOnlyPaths(schema),
-];
-
-export const ui: UiSchema = {
+export const { hiddenPaths, ui } = boardUi({
+    schema,
     groups,
+    chessboardPrefix: "chessboard",
+    extraHidden: ["board.marker_layout", "scan.marker_size_rel", ...readOnlyPaths(schema)],
     fields: {
-        ...chessDetectorFields("chess"),
-        ...chessboardFields("chessboard"),
         "board.rows": { label: "Rows", hint: "Total number of rows of squares on the ChArUco board." },
         "board.cols": { label: "Cols", hint: "Total number of columns of squares on the ChArUco board." },
         "board.cell_size": {
@@ -125,7 +112,5 @@ export const ui: UiSchema = {
             label: "ChArUco tuning",
             hint: "Board-level matcher and corner-validation tuning knobs. Unstable: not covered by the library's semver, and best left off unless a specific image fails.",
         },
-        ...hidden(...hiddenPaths),
-        ...hideContainers(schema, groups),
     },
-};
+});

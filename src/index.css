@@ -9,9 +9,22 @@
 /* The schema-driven config forms (@vitavision/forms): like ui, it declares its own `@source`
    so Tailwind finds the class names in the package; it has no styles of its own. */
 @import "@vitavision/forms/styles.css";
+/* The editor's image stage (@vitavision/stage2d): the overlay role colours every mark on the image
+   is painted in (`--stage-feature`, `--stage-model`, `--stage-selection`, …) and its class names;
+   the calibration-target overlays (@vitavision/overlays) add no colours of their own. Both after ui. */
+@import "@vitavision/stage2d/styles.css";
+@import "@vitavision/overlays/styles.css";
 /* What ui has no name for: the article reading colours and the editorial category palettes. */
 @import "./styles/editorial-tokens.css";
 @plugin "@tailwindcss/typography";
+
+/* The image stage moves every layer with one `translate() scale()` on this box. Left to itself the
+   browser repaints the box's contents on every pan frame (thousands of corner paths: ~130 ms a frame
+   with 4,000 corners in view, measured); a composited layer pans by compositor translate instead and
+   is re-rasterised only when the zoom settles. */
+[data-stage] {
+  will-change: transform;
+}
 
 @theme {
   /* Editorial body text only (lab-ui visual-language §7): the sans and mono families are

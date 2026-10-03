@@ -6,7 +6,6 @@ import { createConfigForm } from "../createConfigForm";
 import { initialConfig, presets } from "./charuco/config";
 import { schema } from "./charuco/schema";
 import { ui } from "./charuco/ui";
-import CharucoOverlay from "../../canvas/overlays/CharucoOverlay";
 
 const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
     const entries: DiagnosticEntry[] = [];
@@ -43,5 +42,4 @@ export const charucoAlgorithm: AlgorithmDefinition = {
         toFeatures(result as CalibrationTargetResult, runId),
     summary: (result) => calibrationSummary(result as CalibrationTargetResult),
     diagnostics: (result) => toDiagnostics(result as CalibrationTargetResult),
-    OverlayComponent: CharucoOverlay,
 };

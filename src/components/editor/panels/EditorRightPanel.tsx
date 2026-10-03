@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useEditorStore, type OverlayToggles, type PanelMode } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
 import { DensityProvider, Panel, SegmentedControl, ToggleChip } from "@vitavision/ui";
-import { getLoadedAlgorithm } from "../algorithms/registry";
+import { hasLatticeOverlay } from "../overlay/targetDetection";
 
 import ConfigurePanel from "./ConfigurePanel";
 import FeatureListPanel from "./FeatureListPanel";
@@ -78,10 +78,8 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
     const [touchTabOverride, setTouchTabOverride] = useState<"features" | null>(null);
     const touchTab: TouchPanelTab = touchTabOverride ?? panelMode;
 
-    // By the time lastAlgorithmResult is set, the algorithm is already loaded.
-    const hasOverlay = lastAlgorithmResult
-        ? !!(getLoadedAlgorithm(lastAlgorithmResult.algorithmId)?.OverlayComponent)
-        : false;
+    // Boards draw a lattice (edges, index labels); the other algorithms have no overlay to toggle.
+    const hasOverlay = lastAlgorithmResult ? hasLatticeOverlay(lastAlgorithmResult.algorithmId) : false;
 
     // AbortController used to clean up drag listeners if the component unmounts mid-drag.
     const dragAbortRef = useRef<AbortController | null>(null);

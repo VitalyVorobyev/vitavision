@@ -6,7 +6,6 @@ import { createConfigForm } from "../createConfigForm";
 import { initialConfig } from "./chessboard/config";
 import { schema } from "./chessboard/schema";
 import { ui } from "./chessboard/ui";
-import ChessboardOverlay from "../../canvas/overlays/ChessboardOverlay";
 
 const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
     const entries: DiagnosticEntry[] = [];
@@ -34,5 +33,4 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
         calibrationCornerFeatures(result as CalibrationTargetResult, runId, "chessboard"),
     summary: (result) => calibrationSummary(result as CalibrationTargetResult),
     diagnostics: (result) => toDiagnostics(result as CalibrationTargetResult),
-    OverlayComponent: ChessboardOverlay,
 };

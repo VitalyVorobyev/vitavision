@@ -6,7 +6,6 @@ import { createConfigForm } from "../createConfigForm";
 import { initialConfig, presets } from "./markerboard/config";
 import { schema } from "./markerboard/schema";
 import { ui } from "./markerboard/ui";
-import MarkerboardOverlay from "../../canvas/overlays/MarkerboardOverlay";
 
 const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
     const entries: DiagnosticEntry[] = [];
@@ -44,5 +43,4 @@ export const markerboardAlgorithm: AlgorithmDefinition = {
         toFeatures(result as CalibrationTargetResult, runId),
     summary: (result) => calibrationSummary(result as CalibrationTargetResult),
     diagnostics: (result) => toDiagnostics(result as CalibrationTargetResult),
-    OverlayComponent: MarkerboardOverlay,
 };

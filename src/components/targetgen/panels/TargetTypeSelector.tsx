@@ -1,9 +1,8 @@
 import { useRef } from "react";
-import { toast } from "sonner";
 import { Grid3X3, QrCode, CircleDot, Target, Puzzle, Cylinder, Upload } from "lucide-react";
 import type { TargetType, TargetGeneratorAction, TargetConfig, PageConfig } from "../types";
 import { presetsForType } from "../presets";
-import { Button, cn, Select } from "@vitavision/ui";
+import { Button, cn, Select, toast } from "@vitavision/ui";
 
 /** Shape of a config file previously exported via `exportFeaturesAsJson`-style
  *  JSON download. `page` may be missing the fields added after older exports
@@ -89,10 +88,10 @@ export default function TargetTypeSelector({
                         page,
                     });
                 } else {
-                    toast.error("Invalid config file: missing target or page fields.");
+                    toast({ title: "Invalid config file: missing target or page fields.", tone: "error" });
                 }
             } catch {
-                toast.error("Failed to parse JSON config file.");
+                toast({ title: "Failed to parse JSON config file.", tone: "error" });
             }
         };
         reader.readAsText(file);

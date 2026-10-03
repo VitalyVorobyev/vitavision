@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Link } from "react-router";
-import { toast } from "sonner";
 import { Sparkles, Maximize2, X } from "lucide-react";
-import { Button, Callout, Dialog, DialogClose, Panel, Select, SkeletonRows } from "@vitavision/ui";
+import { Button, Callout, Dialog, DialogClose, Panel, Select, SkeletonRows, toast } from "@vitavision/ui";
 
 import { useEditorStore } from "../../../store/editor/useEditorStore";
 import type { SampleId } from "../../../store/editor/useEditorStore";
@@ -200,7 +199,7 @@ export default function ConfigurePanel() {
             });
             setPanelMode("results");
         } catch (err) {
-            toast.error(`Failed to process algorithm results: ${err instanceof Error ? err.message : "unknown error"}`);
+            toast({ title: `Failed to process algorithm results: ${err instanceof Error ? err.message : "unknown error"}`, tone: "error" });
         }
     };
 

@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { toast } from "@vitavision/ui";
 import { featuresArraySchema } from "../../store/editor/featureSchema";
 import { normalizeImportedFeatures, type Feature } from "../../store/editor/useEditorStore";
 
@@ -103,13 +103,13 @@ export function promptFeatureImport({
                 const migrated = migrateLegacyFeatures(parsed);
                 const result = featuresArraySchema.safeParse(migrated);
                 if (!result.success) {
-                    toast.error(`Invalid feature file: ${result.error.issues[0]?.message ?? "unknown error"}`);
+                    toast({ title: `Invalid feature file: ${result.error.issues[0]?.message ?? "unknown error"}`, tone: "error" });
                     return;
                 }
 
                 onLoaded(normalizeImportedFeatures(result.data));
             } catch {
-                toast.error("Failed to parse JSON.");
+                toast({ title: "Failed to parse JSON.", tone: "error" });
             }
         };
         reader.readAsText(file);

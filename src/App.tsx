@@ -5,10 +5,9 @@ import NotFound from './pages/NotFound';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ScrollToTop from './components/layout/ScrollToTop';
-import SiteToaster from './components/layout/SiteToaster';
 import './index.css';
 
-import { TooltipProvider } from '@vitavision/ui';
+import { Toaster, TooltipProvider } from '@vitavision/ui';
 import { HelmetProvider } from 'react-helmet-async';
 import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
 import { PapersProvider } from './lib/atlas/papersIndex.tsx';
@@ -124,7 +123,7 @@ function App({ ssrSnapshot = {} }: { ssrSnapshot?: StaticContentContextValue }) 
                         </ScholarlyProvider>
                         </AuthorsProvider>
                         </PapersProvider>
-                        <SiteToaster />
+                        <Toaster />
                     </TooltipProvider>
                 </StaticContentProvider>
             </HelmetProvider>

@@ -51,6 +51,12 @@ export function useMermaid(
             mermaid.initialize({
                 startOnLoad: false,
                 theme: theme === "dark" ? "dark" : "default",
+                // mermaid 12 defaults to ELK, a separate 1.46 MB (456 kB gzip)
+                // lazy chunk fetched by every page with a flowchart. On this
+                // site's diagrams ELK's layouts were no better than dagre's, so
+                // keep dagre and take only the new default look (neo). A single
+                // diagram can still opt in with `config: { layout: elk }`.
+                layout: "dagre",
             });
 
             for (let i = 0; i < sources.length; i++) {

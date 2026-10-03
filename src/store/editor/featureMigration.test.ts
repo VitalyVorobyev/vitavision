@@ -80,7 +80,7 @@ describe("migrateFeaturesV1", () => {
             algorithmId: "puzzleboard",
             runId: "run-1",
             readonly: true,
-        } as Feature;
+        };
         expect(migrateOne(corner)).toEqual(corner);
     });
 

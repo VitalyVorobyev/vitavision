@@ -151,11 +151,11 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     <Field
                         label="Min corner strength"
                         as="group"
-                        annotation={<InfoHint label="About min corner strength">Absolute floor on the raw ChESS response (detector default 15). Lower values detect weaker corners but may increase false positives.</InfoHint>}
+                        annotation={<InfoHint label="About min corner strength">Absolute floor on the raw ChESS response (library default 33). Lower values detect weaker corners but may increase false positives.</InfoHint>}
                     >
                         <NumberInput
                             aria-label="Min corner strength"
-                            {...numberInputProps(config.chessMinCornerStrength, (v) => set("chessMinCornerStrength", v ?? 15))}
+                            {...numberInputProps(config.chessMinCornerStrength, (v) => set("chessMinCornerStrength", v ?? 33))}
                             disabled={disabled}
                             min={0}
                             max={500}
@@ -241,11 +241,11 @@ const CharucoConfigForm = (props: AlgorithmConfigFormProps<CharucoConfig>) => {
                     <Field
                         label="Min marker inliers"
                         as="group"
-                        annotation={<InfoHint label="About min marker inliers">Minimum number of decoded markers required to accept the board. WASM default: 8.</InfoHint>}
+                        annotation={<InfoHint label="About min marker inliers">Minimum number of decoded markers required to accept the board. WASM default: 1.</InfoHint>}
                     >
                         <NumberInput
                             aria-label="Min marker inliers"
-                            {...numberInputProps(config.minMarkerInliers, (v) => set("minMarkerInliers", v ?? 8))}
+                            {...numberInputProps(config.minMarkerInliers, (v) => set("minMarkerInliers", v ?? 1))}
                             disabled={disabled}
                             min={1}
                             max={64}

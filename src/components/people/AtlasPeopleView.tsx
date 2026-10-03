@@ -111,12 +111,13 @@ export default function AtlasPeopleView({
                                 placeholder={`Search ${peopleCount || ""} people or a paper title`}
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                className="h-11 pl-10 text-[14px]"
+                                className="pl-10"
                             />
                         </div>
 
                         <SegmentedControl
                             aria-label="People view"
+                            size="md"
                             value={mode}
                             options={MODE_OPTIONS}
                             onValueChange={(v) => setMode(v as PeopleMode)}

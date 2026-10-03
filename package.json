@@ -35,7 +35,7 @@
     "@vitavision/chess-corners": "^1.2.0",
     "@vitavision/radsym": "^0.4.1",
     "@vitavision/ringgrid": "^0.13.0",
-    "@vitavision/ui": "^0.9.0",
+    "@vitavision/ui": "^0.11.0",
     "d3-delaunay": "^6.0.4",
     "jszip": "^3.10.1",
     "katex": "~0.16.47",

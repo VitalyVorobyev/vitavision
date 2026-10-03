@@ -91,22 +91,6 @@ export function TinyBrow({ className, children }: BrowProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Eyebrow — 11 px mono uppercase label (slightly larger than TinyBrow)
-// ---------------------------------------------------------------------------
-export function Eyebrow({ className, children }: BrowProps) {
-    return (
-        <span
-            className={cn(
-                "text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted",
-                className,
-            )}
-        >
-            {children}
-        </span>
-    );
-}
-
-// ---------------------------------------------------------------------------
 // MetricCell — label + mono value with optional tone tint
 // ---------------------------------------------------------------------------
 type Tone = "neutral" | "good" | "warn" | "bad";

@@ -18,7 +18,7 @@ const initialConfig: PuzzleboardConfig = {
     decodeMaxBitErrorRate: 0.30,
     decodeSampleRadiusRel: 1 / 6,
     decodeSearchAllComponents: true,
-    chessMinCornerStrength: 0.1,
+    chessMinCornerStrength: 15,
     chessMinLabeledCorners: 8,
     chessMaxComponents: 3,
     decodeSearchMode: "full",

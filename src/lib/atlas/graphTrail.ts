@@ -60,10 +60,9 @@ function navigate(state: TrailState, slug: string): TrailState {
 }
 
 function jump(state: TrailState, index: number): TrailState {
+    const target = state.history[index];
+    if (target === undefined) return state;
     const before = state.history.slice(0, index);
-    // NOTE(strict-ts): an out-of-range `index` yields `current: undefined`; kept as-is
-    // (no caller passes one), asserted only to preserve the pre-strict behaviour exactly.
-    const target = state.history[index]!;
     const popped = state.history.slice(index + 1);
     return {
         history: before,

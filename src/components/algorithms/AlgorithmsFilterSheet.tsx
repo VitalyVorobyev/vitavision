@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { LayoutGrid, List } from "lucide-react";
+import { Button } from "@vitavision/ui";
 import type {
     AlgorithmsFilters,
     AlgorithmsKind,
@@ -291,13 +292,9 @@ export default function AlgorithmsFilterSheet({
 
                         {/* Sticky apply footer */}
                         <div className="border-t border-line/80 bg-raised px-4 py-2.5 shrink-0">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="w-full py-3 bg-signal text-ground rounded-[10px] font-semibold text-sm"
-                            >
+                            <Button variant="primary" className="h-11 w-full" onClick={onClose}>
                                 Show {totalResults} results
-                            </button>
+                            </Button>
                         </div>
                     </motion.div>
                 </>

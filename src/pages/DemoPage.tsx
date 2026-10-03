@@ -13,6 +13,7 @@ import { useStaticContent } from "../lib/content/ssr-content.tsx";
 import { buildDemoJsonLd } from "../lib/content/publication.ts";
 import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.tsx";
 import NotFound from "./NotFound.tsx";
+import LoadingIndicator from "../components/shared/LoadingIndicator.tsx";
 
 export default function DemoPage() {
     const { slug } = useParams<{ slug: string }>();
@@ -105,9 +106,7 @@ export default function DemoPage() {
             {DemoComponent && (
                 <Suspense
                     fallback={
-                        <div className="flex items-center justify-center py-16">
-                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
-                        </div>
+                        <LoadingIndicator />
                     }
                 >
                     <DemoComponent />
@@ -122,9 +121,7 @@ export default function DemoPage() {
                             Demo content failed to load.
                         </div>
                     ) : (
-                        <div className="flex items-center justify-center py-16">
-                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-signal border-t-transparent" />
-                        </div>
+                        <LoadingIndicator />
                     )
                 ) : html.trim() ? (
                     <ErrorBoundary>

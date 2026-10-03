@@ -1,8 +1,11 @@
 version: 2
 
 updates:
-  # Frontend — npm/bun ecosystem
-  - package-ecosystem: "npm"
+  # Frontend. The project is managed by bun (bun.lock), and the `npm` ecosystem
+  # cannot update bun.lock: from 2026-09-28 every npm_and_yarn run aborted with
+  # "Set `package-ecosystem: \"bun\"`". The bun ecosystem does version updates only;
+  # GitHub does not raise security-update PRs for it.
+  - package-ecosystem: "bun"
     directory: "/"
     schedule:
       interval: "weekly"
@@ -15,6 +18,13 @@ updates:
         patterns: ["eslint*", "@eslint/*", "typescript-eslint", "@typescript-eslint/*"]
       vite:
         patterns: ["vite*", "@vitejs/*"]
+      # The lab-ui packages are released together from one monorepo
+      # (VitalyVorobyev/lab-ui). The @vitavision WASM packages (calib-targets,
+      # chess-corners, radsym, ringgrid) are deliberately NOT grouped: every
+      # release so far has broken the worker silently, so each bump is its own
+      # migration, driven from scripts/test-wasm-schemas.ts.
+      lab-ui:
+        patterns: ["@vitavision/ui", "@vitavision/config-*", "@vitavision/forms", "@vitavision/stage2d", "@vitavision/charts", "@vitavision/workbench"]
     ignore:
       # TypeScript 7 (the Go-native port) is blocked on typescript-eslint, which
       # declares peer `typescript: ">=4.8.4 <6.1.0"` as of 8.64.0. Remove this
@@ -43,3 +53,12 @@ updates:
       # rehype-katex upgrade.
       - dependency-name: "katex"
         versions: [">= 0.17"]
+
+  # CI actions (.github/workflows/*.yml)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      actions:
+        patterns: ["*"]

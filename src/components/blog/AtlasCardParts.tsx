@@ -27,7 +27,7 @@ export function NewBadge() {
 }
 
 /** Renders DRAFT then NEW badges for a card based on its frontmatter. */
-export function CardBadges({ draft, date }: { draft?: boolean; date: string }) {
+export function CardBadges({ draft, date }: { draft?: boolean | undefined; date: string }) {
     const fresh = isRecentlyAdded(date);
     if (!draft && !fresh) return null;
     return (
@@ -71,7 +71,7 @@ export function GraphChip({ slug }: { slug: string }) {
  * `KIND · PROBLEM · YEAR` meta row. Renders the `·` separator only between
  * present items; renders nothing when all three are absent.
  */
-export function CardMeta({ kind, label, year }: { kind?: "algorithm" | "model" | "concept"; label?: string; year?: number }) {
+export function CardMeta({ kind, label, year }: { kind?: "algorithm" | "model" | "concept"; label?: string | undefined; year?: number | undefined }) {
     if (!kind && !label && year === undefined) return null;
     return (
         <div className="flex items-center gap-1.5 mt-1 text-[10.5px] text-fg-muted uppercase tracking-[0.06em]">

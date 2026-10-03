@@ -110,7 +110,7 @@ export default function TargetGeneratorWizard({
     dispatch: React.Dispatch<TargetGeneratorAction>;
     isPhone: boolean;
     /** From `useTargetGenerator`; handed to the synced config panel as a prop. */
-    puzzlepolePeriods?: readonly PuzzlepolePeriod[];
+    puzzlepolePeriods?: readonly PuzzlepolePeriod[] | undefined;
 }) {
     const [activeStep, setActiveStep] = useState<TargetGeneratorStep>("target");
     const [previewOpen, setPreviewOpen] = useState(!isPhone);
@@ -118,6 +118,8 @@ export default function TargetGeneratorWizard({
     const activeIndex = STEPS.findIndex((step) => step.key === activeStep);
     const canGoBack = activeIndex > 0;
     const canGoForward = activeIndex < STEPS.length - 1;
+    const prevStep = canGoBack ? STEPS[activeIndex - 1] : undefined;
+    const nextStep = canGoForward ? STEPS[activeIndex + 1] : undefined;
     const warningCount = state.validation.warnings.length;
     const errorCount = state.validation.errors.length;
 
@@ -251,7 +253,7 @@ export default function TargetGeneratorWizard({
                         <Button
                             size="md"
                             className="h-10 min-w-[7.5rem]"
-                            onClick={() => canGoBack && setActiveStep(STEPS[activeIndex - 1].key)}
+                            onClick={() => prevStep && setActiveStep(prevStep.key)}
                             disabled={!canGoBack}
                             icon={<ChevronLeft />}
                         >
@@ -261,7 +263,7 @@ export default function TargetGeneratorWizard({
                             variant="primary"
                             size="md"
                             className="h-10 min-w-[7.5rem]"
-                            onClick={() => canGoForward && setActiveStep(STEPS[activeIndex + 1].key)}
+                            onClick={() => nextStep && setActiveStep(nextStep.key)}
                             disabled={!canGoForward}
                         >
                             Next

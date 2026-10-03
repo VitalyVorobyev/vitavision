@@ -109,6 +109,7 @@ function DelaunayVoronoiCover() {
             {/* Delaunay triangulation outlines */}
             {tris.map(([a, b, c], i) => {
                 const A = pts[a], B = pts[b], C = pts[c];
+                if (!A || !B || !C) return null;
                 return (
                     <polygon
                         key={i}
@@ -125,6 +126,7 @@ function DelaunayVoronoiCover() {
             {/* Highlighted dual-graph spokes from the centre */}
             {dualEdges.map(([a, b], i) => {
                 const A = pts[a], B = pts[b];
+                if (!A || !B) return null;
                 return (
                     <line
                         key={i}

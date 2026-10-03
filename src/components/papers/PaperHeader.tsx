@@ -9,7 +9,7 @@ interface PaperHeaderProps {
     paper: PaperRef;
     authorsIndex: AuthorsIndex;
     /** First primary-source page's slug, when one exists — gates "View in graph". */
-    primarySlug?: string;
+    primarySlug?: string | undefined;
 }
 
 const btnClass =

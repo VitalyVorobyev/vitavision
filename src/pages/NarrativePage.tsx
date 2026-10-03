@@ -82,11 +82,12 @@ export default function NarrativePage() {
     const steps = useMemo(() => mod?.steps ?? [], [mod]);
 
     const lensId = useMemo(() => {
-        if (!narrative || narrative.lenses.length === 0) return "";
+        const firstLens = narrative?.lenses[0];
+        if (!narrative || !firstLens) return "";
         const requested = searchParams.get("lens");
         return narrative.lenses.some((l) => l.id === requested)
             ? (requested as string)
-            : narrative.lenses[0].id;
+            : firstLens.id;
     }, [narrative, searchParams]);
 
     const stepIndex = useMemo(() => {

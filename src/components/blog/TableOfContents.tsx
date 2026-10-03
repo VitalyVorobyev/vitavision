@@ -20,13 +20,14 @@ export default function TableOfContents({ articleRef, deps }: TableOfContentsPro
     const [activeId, setActiveId] = useState<string>("");
 
     useEffect(() => {
-        if (headings.length === 0) return;
+        const firstHeading = headings[0];
+        if (!firstHeading) return;
 
         const update = () => {
             const article = articleRef.current;
             if (!article) return;
             const threshold = window.innerHeight * 0.2;
-            let nextActive = headings[0].id;
+            let nextActive = firstHeading.id;
             for (const { id } of headings) {
                 const el = article.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
                 if (!el) continue;

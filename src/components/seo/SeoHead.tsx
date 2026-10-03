@@ -5,11 +5,11 @@ const DEFAULT_DESCRIPTION =
     "Computer vision algorithms, interactive tools, and technical deep dives.";
 
 interface SeoHeadProps {
-    title?: string;
-    description?: string;
-    ogImage?: string;
-    ogType?: string;
-    url?: string;
+    title?: string | undefined;
+    description?: string | undefined;
+    ogImage?: string | undefined;
+    ogType?: string | undefined;
+    url?: string | undefined;
 }
 
 export default function SeoHead({

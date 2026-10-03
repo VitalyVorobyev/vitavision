@@ -22,7 +22,7 @@ interface Props {
      * circumference and start row fall back to plain number fields and
      * validation still rejects an unsupported value.
      */
-    periods?: readonly PuzzlepolePeriod[];
+    periods?: readonly PuzzlepolePeriod[] | undefined;
 }
 
 export default function PuzzlepoleGenConfig({ config, dispatch, periods }: Props) {

@@ -61,7 +61,9 @@ describe("puzzlepole geometry", () => {
     });
 
     it("maps onto the library's puzzlepole spec", () => {
-        const doc = toPrintableDocument(PUZZLEPOLE_PRESETS[1].target, PUZZLEPOLE_PRESETS[1].page);
+        const preset = PUZZLEPOLE_PRESETS[1];
+        if (!preset) throw new Error("PUZZLEPOLE_PRESETS[1] is missing");
+        const doc = toPrintableDocument(preset.target, preset.page);
         expect(doc.target).toEqual({
             kind: "puzzlepole",
             circumference_squares: 24,

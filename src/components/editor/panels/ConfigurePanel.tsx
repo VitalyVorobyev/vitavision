@@ -143,7 +143,11 @@ export default function ConfigurePanel() {
             ...current,
             [algorithm.id]: { value: next, sampleId: configSampleId },
         }));
-        syncToUrl(algorithm.id, next);
+        syncToUrl(
+            algorithm.id,
+            next,
+            resolveConfig({}, algorithm.id, configSampleId, algorithm.initialConfig, algorithm.sampleDefaults),
+        );
     }, [algorithm, configSampleId, syncToUrl]);
 
     const activeGalleryImage = useMemo(
@@ -167,6 +171,7 @@ export default function ConfigurePanel() {
             syncToUrl(
                 id,
                 resolveConfig(configEntries, id, configSampleId, algo.initialConfig, algo.sampleDefaults),
+                resolveConfig({}, id, configSampleId, algo.initialConfig, algo.sampleDefaults),
             );
         });
     };

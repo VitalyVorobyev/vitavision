@@ -47,9 +47,9 @@ export function DesignPreviewProvider({ children }: { children?: ReactNode }) {
     return (
         <MemoryRouter>
             <TooltipProvider>
-                <PapersContext.Provider value={papersIndex as PapersById}>
+                <PapersContext value={papersIndex as PapersById}>
                     {children}
-                </PapersContext.Provider>
+                </PapersContext>
             </TooltipProvider>
         </MemoryRouter>
     );

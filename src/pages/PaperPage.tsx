@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { use, useMemo } from "react";
 import { useParams } from "react-router";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import PaperHeader from "../components/papers/PaperHeader.tsx";
@@ -39,7 +39,7 @@ function PaperPageSkeleton() {
 
 export default function PaperPage() {
     const { id } = useParams<{ id: string }>();
-    const papers = useContext(PapersContext);
+    const papers = use(PapersContext);
     const authorsIndex = useAuthorsIndex();
     const { index: scholarly, status } = useScholarlyIndex();
     const isDesktop = useMediaQuery("(min-width: 1024px)", true);

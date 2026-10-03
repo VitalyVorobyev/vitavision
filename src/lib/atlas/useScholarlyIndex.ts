@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { use, useEffect } from "react";
 import { ScholarlyContext, type ScholarlyState } from "./scholarlyContext.ts";
 
 /**
@@ -9,7 +9,7 @@ import { ScholarlyContext, type ScholarlyState } from "./scholarlyContext.ts";
  * hook never cause the ~440 kB asset to be downloaded.
  */
 export function useScholarlyIndex(): ScholarlyState {
-    const { index, status, request } = useContext(ScholarlyContext);
+    const { index, status, request } = use(ScholarlyContext);
 
     useEffect(() => {
         request();

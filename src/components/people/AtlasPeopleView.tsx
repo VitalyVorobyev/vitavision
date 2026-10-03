@@ -1,4 +1,4 @@
-import { lazy, Suspense, useContext, useMemo, useState } from "react";
+import { lazy, Suspense, use, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import SeoHead from "../seo/SeoHead.tsx";
 import AtlasViewTabs from "../algorithms/AtlasViewTabs.tsx";
@@ -57,7 +57,7 @@ export default function AtlasPeopleView({
 }: AtlasPeopleViewProps) {
     const { index: scholarly, status } = useScholarlyIndex();
     const authorsIndex = useAuthorsIndex();
-    const papersById = useContext(PapersContext);
+    const papersById = use(PapersContext);
 
     const [sort, setSort] = useState<PeopleSort>("reach");
     const [selectedDomain, setSelectedDomain] = useState<string | null>(null);

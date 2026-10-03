@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../context.ts";
+import { createTestContext } from "../context.ts";
 import { implementationsRule } from "./implementations.ts";
 import type { MarkdownDirEntry } from "../../lib/content-kinds.ts";
 
@@ -22,12 +22,12 @@ const validImpl = {
 
 describe("implementationsRule", () => {
     it("passes a non-draft model with implementations[]", () => {
-        const ctx = createContext({ models: [model("m.md", { implementations: [validImpl] })] });
+        const ctx = createTestContext({ models: [model("m.md", { implementations: [validImpl] })] });
         expect(implementationsRule(ctx)).toEqual([]);
     });
 
     it("passes noPublicImpl: true with a non-empty ## Limitations section", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             models: [
                 model(
                     "m.md",
@@ -40,7 +40,7 @@ describe("implementationsRule", () => {
     });
 
     it("flags a non-draft model with no implementations[] and no noPublicImpl", () => {
-        const ctx = createContext({ models: [model("m.md")] });
+        const ctx = createTestContext({ models: [model("m.md")] });
         expect(implementationsRule(ctx)).toEqual([
             {
                 level: "error",
@@ -50,7 +50,7 @@ describe("implementationsRule", () => {
     });
 
     it("flags noPublicImpl: true with no ## Limitations heading", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             models: [model("m.md", { noPublicImpl: true }, "# M\n\nNo limitations section here.\n")],
         });
         expect(implementationsRule(ctx)).toEqual([
@@ -59,7 +59,7 @@ describe("implementationsRule", () => {
     });
 
     it("flags noPublicImpl: true with an empty ## Limitations section", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             models: [model("m.md", { noPublicImpl: true }, "# M\n\n## Limitations\n\n## Next\nbody\n")],
         });
         expect(implementationsRule(ctx)).toEqual([

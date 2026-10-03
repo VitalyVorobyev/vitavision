@@ -95,7 +95,7 @@ const _GLYPHS: Array<(s: string) => React.ReactNode> = [
     </g>,
 ];
 
-const KIND_TINT: Record<string, string> = {
+const KIND_TINT: Record<string, string> & { algorithm: string } = {
     algorithm: "var(--graph-icon-tint-algorithm)",
     model:     "var(--graph-icon-tint-model)",
     concept:   "var(--graph-icon-tint-concept)",
@@ -140,7 +140,7 @@ export function EntryIcon({ slug, kind = "algorithm", size = 30, coverImage }: E
         );
     }
 
-    const i = _hash(slug) % _GLYPHS.length;
+    const glyph = _GLYPHS[_hash(slug) % _GLYPHS.length];
     const stroke = KIND_TINT[kind] ?? KIND_TINT.algorithm;
 
     return (
@@ -159,7 +159,7 @@ export function EntryIcon({ slug, kind = "algorithm", size = 30, coverImage }: E
                 viewBox="0 0 24 24"
                 aria-hidden="true"
             >
-                {_GLYPHS[i](stroke)}
+                {glyph?.(stroke)}
             </svg>
         </div>
     );

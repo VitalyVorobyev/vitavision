@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import { Sparkles, Maximize2, X } from "lucide-react";
@@ -83,16 +83,16 @@ export default function ConfigurePanel() {
 
     // didSeedFromUrl: run once per mount (useRef instead of module-level variable
     // so it resets if the user navigates away and returns — URL may have changed).
-    const didSeedFromUrl = useRef(false);
+    const didSeedFromUrlRef = useRef(false);
     useEffect(() => {
-        if (!didSeedFromUrl.current) {
-            didSeedFromUrl.current = true;
+        if (!didSeedFromUrlRef.current) {
+            didSeedFromUrlRef.current = true;
             if (initialState.algorithmId !== selectedAlgorithmId) {
                 setSelectedAlgorithmId(initialState.algorithmId);
             }
         }
     // Empty deps: intentional — we only want this to run once on mount.
-    // didSeedFromUrl is a ref (stable), and the initial* values from useDeepLinkSync
+    // didSeedFromUrlRef is a ref (stable), and the initial* values from useDeepLinkSync
     // are derived from URL search params at construction time and do not change.
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -112,12 +112,12 @@ export default function ConfigurePanel() {
 
     // Trigger counter so the component re-renders when a deferred load resolves
     // and getLoadedAlgorithm starts returning the freshly-cached entry.
-    const [, setLoadTick] = useState(0);
+    const [, bumpLoadTick] = useReducer((tick: number) => tick + 1, 0);
 
     useEffect(() => {
         let cancelled = false;
         void loadAlgorithm(selectedAlgorithmId).then(() => {
-            if (!cancelled) setLoadTick((tick) => tick + 1);
+            if (!cancelled) bumpLoadTick();
         });
         return () => { cancelled = true; };
     }, [selectedAlgorithmId]);
@@ -125,7 +125,8 @@ export default function ConfigurePanel() {
     const runner = useAlgorithmRunner();
 
     const manifestEntry = useMemo(
-        () => ALGORITHM_MANIFEST.find((e) => e.id === selectedAlgorithmId) ?? ALGORITHM_MANIFEST[0],
+        // ALGORITHM_MANIFEST is a non-empty static list, so index 0 always exists.
+        () => ALGORITHM_MANIFEST.find((e) => e.id === selectedAlgorithmId) ?? ALGORITHM_MANIFEST[0]!,
         [selectedAlgorithmId],
     );
 
@@ -182,8 +183,9 @@ export default function ConfigurePanel() {
         try {
             const mappedFeatures = algorithm.toFeatures(output.result, output.runId);
             replaceAlgorithmFeatures(algorithm.id, mappedFeatures);
-            if (mappedFeatures.length > 0) {
-                setSelectedFeatureId(mappedFeatures[0].id);
+            const firstFeature = mappedFeatures[0];
+            if (firstFeature) {
+                setSelectedFeatureId(firstFeature.id);
             }
 
             const summaryEntries = algorithm.summary(output.result);

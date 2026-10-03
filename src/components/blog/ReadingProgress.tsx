@@ -15,12 +15,16 @@ interface ReadingProgressProps {
 export default function ReadingProgress({ articleRef }: ReadingProgressProps) {
     const [progress, setProgress] = useState(0);
     const [visible, setVisible] = useState(false);
-    const rafId = useRef<number | null>(null);
-    const hasScrolled = useRef(false);
-    const prefersReducedMotion =
-        typeof window !== "undefined" && typeof window.matchMedia === "function"
-            ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-            : false;
+    const rafIdRef = useRef<number | null>(null);
+    const hasScrolledRef = useRef(false);
+    // Read once; only consumed once the bar is visible (client-only, after the
+    // first scroll), so the prerendered null output never depends on it.
+    const [prefersReducedMotion] = useState(
+        () =>
+            typeof window !== "undefined" && typeof window.matchMedia === "function"
+                ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+                : false,
+    );
 
     useEffect(() => {
         const compute = () => {
@@ -44,28 +48,26 @@ export default function ReadingProgress({ articleRef }: ReadingProgressProps) {
         };
 
         const onScroll = () => {
-            if (!hasScrolled.current) {
-                hasScrolled.current = true;
+            if (!hasScrolledRef.current) {
+                hasScrolledRef.current = true;
                 setVisible(true);
             }
-            if (rafId.current !== null) return;
-            rafId.current = requestAnimationFrame(() => {
+            if (rafIdRef.current !== null) return;
+            rafIdRef.current = requestAnimationFrame(() => {
                 compute();
-                rafId.current = null;
+                rafIdRef.current = null;
             });
         };
 
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => {
             window.removeEventListener("scroll", onScroll);
-            if (rafId.current !== null) {
-                cancelAnimationFrame(rafId.current);
-                rafId.current = null;
+            if (rafIdRef.current !== null) {
+                cancelAnimationFrame(rafIdRef.current);
+                rafIdRef.current = null;
             }
         };
-        // articleRef is a stable ref object — its identity never changes
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [articleRef]);
 
     if (!visible) return null;
 

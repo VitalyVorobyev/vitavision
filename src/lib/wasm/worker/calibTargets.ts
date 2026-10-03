@@ -153,14 +153,14 @@ export function adaptCalibTargetResult(
 
 /** Shape of `diagnose_marker_board` after `unwrapMaps`. */
 export interface MarkerBoardDiagnosis {
-    result?: { corners: unknown[]; alignment: unknown } | null;
+    result?: { corners: unknown[]; alignment: unknown } | null | undefined;
     diagnostics?: {
         circle_candidates: unknown[];
         circle_matches: unknown[];
         alignment_inliers: number;
         alignment_runner_up_inliers: number;
         alignment_ambiguous: boolean;
-    } | null;
+    } | null | undefined;
 }
 
 /**
@@ -297,14 +297,12 @@ export async function handleCalibTarget(
 export async function handlePuzzlepolePeriods(): Promise<Array<[number, number]>> {
     const mod = await getCalibModule();
     const raw = mod.puzzlepole_periods() as unknown;
-    if (
-        !Array.isArray(raw) ||
-        raw.length === 0 ||
-        !raw.every((p) => Array.isArray(p) && p.length === 2 && p.every((n) => typeof n === "number"))
-    ) {
+    const isNumberPair = (p: unknown): p is [number, number] =>
+        Array.isArray(p) && p.length === 2 && p.every((n) => typeof n === "number");
+    if (!Array.isArray(raw) || raw.length === 0 || !raw.every(isNumberPair)) {
         throw new Error(`puzzlepole_periods() returned an unexpected shape: ${JSON.stringify(raw)?.slice(0, 120)}`);
     }
-    return (raw as number[][]).map(([circumference, startRow]) => [circumference, startRow]);
+    return raw.map(([circumference, startRow]) => [circumference, startRow]);
 }
 
 /**

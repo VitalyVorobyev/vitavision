@@ -15,7 +15,9 @@ describe("computeLineageLayout", () => {
         });
 
         expect(layout.citedBy).toHaveLength(3);
-        const [a, b, c] = layout.citedBy;
+        const a = layout.citedBy[0]!;
+        const b = layout.citedBy[1]!;
+        const c = layout.citedBy[2]!; // length asserted above
         // Same x (same year), increasing distance from the axis.
         expect(a.x).toBe(b.x);
         expect(b.x).toBe(c.x);
@@ -39,7 +41,8 @@ describe("computeLineageLayout", () => {
             width: 720,
         });
 
-        const [x, y] = layout.cites;
+        const x = layout.cites[0]!;
+        const y = layout.cites[1]!; // two cites in the fixture above
         expect(x.y).toBeLessThan(y.y);
         expect(x.y).toBeGreaterThan(layout.axisY);
     });
@@ -59,7 +62,7 @@ describe("computeLineageLayout", () => {
         // A tick exists for every year in [minYear, maxYear], one flagged as the paper's year.
         const paperTicks = layout.ticks.filter((t) => t.isPaperYear);
         expect(paperTicks).toHaveLength(1);
-        expect(paperTicks[0].year).toBe(2016);
+        expect(paperTicks[0]?.year).toBe(2016);
         expect(layout.ticks).toHaveLength(2023 - 2012 + 1);
     });
 
@@ -75,11 +78,11 @@ describe("computeLineageLayout", () => {
         expect(layout.maxYear).toBe(2016);
         expect(layout.ticks).toHaveLength(1);
         expect(Number.isFinite(layout.paperX)).toBe(true);
-        expect(Number.isFinite(layout.citedBy[0].x)).toBe(true);
-        expect(Number.isFinite(layout.cites[0].x)).toBe(true);
+        expect(Number.isFinite(layout.citedBy[0]?.x)).toBe(true);
+        expect(Number.isFinite(layout.cites[0]?.x)).toBe(true);
         // Same year → same x for the paper tick and both dots.
-        expect(layout.citedBy[0].x).toBe(layout.paperX);
-        expect(layout.cites[0].x).toBe(layout.paperX);
+        expect(layout.citedBy[0]?.x).toBe(layout.paperX);
+        expect(layout.cites[0]?.x).toBe(layout.paperX);
     });
 
     it("produces a sane layout with empty cites and citedBy", () => {

@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { use, useMemo } from "react";
 import { Navigate, useParams } from "react-router";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import AuthorHeader from "../components/authors/AuthorHeader.tsx";
@@ -49,7 +49,7 @@ export default function AuthorPage() {
     const { id } = useParams<{ id: string }>();
     const authorsIndex = useAuthorsIndex();
     const { index: scholarly, status } = useScholarlyIndex();
-    const papers = useContext(PapersContext);
+    const papers = use(PapersContext);
     const isDesktop = useMediaQuery("(min-width: 1024px)", true);
 
     const author = id ? authorsIndex.authors[id] : undefined;

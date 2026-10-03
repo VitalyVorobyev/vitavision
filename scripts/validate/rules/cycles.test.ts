@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../context.ts";
+import { createTestContext } from "../context.ts";
 import { cyclesRule } from "./cycles.ts";
 import type { MarkdownDirEntry } from "../../lib/content-kinds.ts";
 
@@ -14,14 +14,14 @@ function algo(file: string, overrides: Record<string, unknown> = {}): MarkdownDi
 
 describe("cyclesRule", () => {
     it("passes for an acyclic prerequisite graph", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", { prerequisites: ["b"] }), algo("b.md")],
         });
         expect(cyclesRule(ctx)).toEqual([]);
     });
 
     it("flags a prerequisite cycle", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", { prerequisites: ["b"] }),
                 algo("b.md", { prerequisites: ["a"] }),

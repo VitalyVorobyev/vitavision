@@ -15,7 +15,7 @@ describe("adaptRadsymProposalResult", () => {
         expect(result.status).toBe("success");
         expect(result.circles).toHaveLength(1);
         expect(result.circles[0]).toMatchObject({ x: 10, y: 20, score: 0.5, radius: 0 });
-        expect(typeof result.circles[0].id).toBe("string");
+        expect(typeof result.circles[0]!.id).toBe("string");
         expect(result.summary.count).toBe(1);
         expect(result.summary.runtime_ms).toBe(4);
     });

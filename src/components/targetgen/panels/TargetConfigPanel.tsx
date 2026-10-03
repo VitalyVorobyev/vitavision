@@ -17,13 +17,13 @@ interface Props {
     dispatch: React.Dispatch<TargetGeneratorAction>;
     sections?: TargetConfigSection[];
     /** Forwarded to DownloadBar; see DxfGenerator for why it is injected. */
-    generateDxf?: DxfGenerator;
+    generateDxf?: DxfGenerator | undefined;
     /**
      * The library's supported PuzzlePole periods, forwarded to
      * PuzzlepoleGenConfig. Injected for the same reason as `generateDxf`: they
      * come from the WASM worker, which this synced component must not import.
      */
-    puzzlepolePeriods?: readonly PuzzlepolePeriod[];
+    puzzlepolePeriods?: readonly PuzzlepolePeriod[] | undefined;
 }
 
 const ALL_SECTIONS: TargetConfigSection[] = ["pattern", "page", "validation", "downloads"];

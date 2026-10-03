@@ -4,7 +4,7 @@
  * `buildValidationContext` does ALL disk I/O: loads content/{algorithms,
  * models,concepts,narratives}, docs/papers/index.yaml, and content/tags.yaml,
  * then hands the raw, unparsed data to `buildContextCore` — the same
- * pure-data path `createContext` (the in-memory test builder) drives, so
+ * pure-data path `createTestContext` (the in-memory test builder) drives, so
  * disk-loaded and in-memory contexts are built identically after loading.
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
@@ -354,7 +354,7 @@ export interface CreateContextInput {
 /** Builds a `ValidationContext` from in-memory fixtures, for rule unit tests.
  *  Runs the exact same core logic as `buildValidationContext` — only the
  *  loading step (disk reads) differs. */
-export function createContext(input: CreateContextInput = {}): ValidationContext {
+export function createTestContext(input: CreateContextInput = {}): ValidationContext {
     return buildContextCore({
         algorithms: input.algorithms ?? [],
         models: input.models ?? [],

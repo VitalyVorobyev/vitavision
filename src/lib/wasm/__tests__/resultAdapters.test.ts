@@ -138,7 +138,7 @@ describe("Chess Corners WASM result shape", () => {
 
     it("produces features compatible with toFeatures", () => {
         const result = mockChessCornersResult(3);
-        const corner = result.corners[0];
+        const corner = result.corners[0]!;
         expect(corner).toHaveProperty("id");
         expect(corner).toHaveProperty("x");
         expect(corner).toHaveProperty("y");
@@ -233,7 +233,7 @@ describe("Calibration Target WASM result shape", () => {
         expect(result.markers).not.toBeNull();
         expect(result.markers!.length).toBe(1);
 
-        const marker = result.markers![0];
+        const marker = result.markers![0]!;
         expect(marker).toHaveProperty("id");
         expect(marker).toHaveProperty("grid_cell");
         expect(marker.grid_cell).toHaveProperty("gx");
@@ -409,7 +409,7 @@ describe("Ringgrid WASM result shape", () => {
 
     it("includes decode and fit data", () => {
         const result = mockRinggridWasmResult(1);
-        const marker = result.markers[0];
+        const marker = result.markers[0]!;
         expect(marker.decode).not.toBeNull();
         expect(marker.decode.best_id).toBe(0);
         expect(typeof marker.decode.decode_confidence).toBe("number");

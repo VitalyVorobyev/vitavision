@@ -72,7 +72,8 @@ function featureXY(feature: Feature): { x: number; y: number } | null {
         return { x: feature.points[0], y: feature.points[1] };
     }
     if (feature.type === "polyline" && feature.points.length >= 2) {
-        return { x: feature.points[0], y: feature.points[1] };
+        // Length checked just above, so indices 0 and 1 are in bounds.
+        return { x: feature.points[0]!, y: feature.points[1]! };
     }
     return null;
 }
@@ -107,13 +108,17 @@ function FeatureNavigator({
     const goPrev = useCallback(() => {
         if (total === 0) return;
         const next = indexInGroup > 0 ? indexInGroup - 1 : total - 1;
-        setSelectedFeatureId(ids[next]);
+        const id = ids[next];
+        if (id === undefined) return;
+        setSelectedFeatureId(id);
     }, [indexInGroup, total, ids, setSelectedFeatureId]);
 
     const goNext = useCallback(() => {
         if (total === 0) return;
         const next = indexInGroup < total - 1 ? indexInGroup + 1 : 0;
-        setSelectedFeatureId(ids[next]);
+        const id = ids[next];
+        if (id === undefined) return;
+        setSelectedFeatureId(id);
     }, [indexInGroup, total, ids, setSelectedFeatureId]);
 
     const handleKeyDown = useCallback(
@@ -394,6 +399,7 @@ export default function FeatureListPanel() {
                     {groups.map((group) => {
                         const isActive = group.key === activeGroupKey;
                         const isVisible = isFeatureGroupVisible(group.key, featureGroupVisibility);
+                        const firstFeatureId = group.features[0]?.id;
                         return (
                             <div key={group.key} className="inline-flex items-center">
                                 {/* Selects the group: the navigator then steps through it. */}
@@ -401,7 +407,9 @@ export default function FeatureListPanel() {
                                     variant={isActive ? "secondary" : "ghost"}
                                     aria-pressed={isActive}
                                     className={cn("gap-1.5 px-2", !isVisible && "text-fg-subtle")}
-                                    onClick={() => setSelectedFeatureId(group.features[0].id)}
+                                    onClick={() => {
+                                        if (firstFeatureId !== undefined) setSelectedFeatureId(firstFeatureId);
+                                    }}
                                 >
                                     <span
                                         aria-hidden

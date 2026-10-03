@@ -65,9 +65,9 @@ export default function TargetPreview({ state, dispatch }: Props) {
     const [zoom, setZoom] = useState(1);
     const [pan, setPan] = useState({ x: 0, y: 0 });
     const [dragging, setDragging] = useState(false);
-    const lastMouse = useRef({ x: 0, y: 0 });
-    const dragDistance = useRef(0);
-    const touchGesture = useRef<{
+    const lastMouseRef = useRef({ x: 0, y: 0 });
+    const dragDistanceRef = useRef(0);
+    const touchGestureRef = useRef<{
         lastCenter: { x: number; y: number } | null;
         lastDistance: number | null;
         moved: boolean;
@@ -79,7 +79,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
         lastTouchPoint: null,
     });
     const containerRef = useRef<HTMLDivElement>(null);
-    const hasAutoFit = useRef(false);
+    const hasAutoFitRef = useRef(false);
     const { isTouchPrimary } = useViewportMode();
 
     const dims = useMemo(() => {
@@ -121,8 +121,8 @@ export default function TargetPreview({ state, dispatch }: Props) {
     useEffect(() => {
         if (!containerRef.current) return;
         const id = requestAnimationFrame(() => {
-            if (!hasAutoFit.current) {
-                hasAutoFit.current = true;
+            if (!hasAutoFitRef.current) {
+                hasAutoFitRef.current = true;
                 fitToScreen();
             }
         });
@@ -211,8 +211,8 @@ export default function TargetPreview({ state, dispatch }: Props) {
 
         event.preventDefault();
         setDragging(true);
-        lastMouse.current = { x: event.clientX, y: event.clientY };
-        dragDistance.current = 0;
+        lastMouseRef.current = { x: event.clientX, y: event.clientY };
+        dragDistanceRef.current = 0;
     }, []);
 
     const handleMouseMove = useCallback((event: React.MouseEvent) => {
@@ -220,10 +220,10 @@ export default function TargetPreview({ state, dispatch }: Props) {
             return;
         }
 
-        const dx = event.clientX - lastMouse.current.x;
-        const dy = event.clientY - lastMouse.current.y;
-        dragDistance.current += Math.abs(dx) + Math.abs(dy);
-        lastMouse.current = { x: event.clientX, y: event.clientY };
+        const dx = event.clientX - lastMouseRef.current.x;
+        const dy = event.clientY - lastMouseRef.current.y;
+        dragDistanceRef.current += Math.abs(dx) + Math.abs(dy);
+        lastMouseRef.current = { x: event.clientX, y: event.clientY };
         setPan((value) => ({ x: value.x + dx, y: value.y + dy }));
     }, [dragging]);
 
@@ -242,20 +242,24 @@ export default function TargetPreview({ state, dispatch }: Props) {
         }
 
         const touches = event.touches;
+        const t0 = touches[0];
+        if (t0 === undefined) {
+            return;
+        }
+
         if (touches.length === 1) {
-            touchGesture.current = {
-                lastCenter: { x: touches[0].clientX, y: touches[0].clientY },
+            touchGestureRef.current = {
+                lastCenter: { x: t0.clientX, y: t0.clientY },
                 lastDistance: null,
                 moved: false,
-                lastTouchPoint: { x: touches[0].clientX, y: touches[0].clientY },
+                lastTouchPoint: { x: t0.clientX, y: t0.clientY },
             };
             return;
         }
 
-        if (touches.length >= 2) {
-            const t0 = touches[0];
-            const t1 = touches[1];
-            touchGesture.current = {
+        const t1 = touches[1];
+        if (t1 !== undefined) {
+            touchGestureRef.current = {
                 lastCenter: {
                     x: (t0.clientX + t1.clientX) / 2,
                     y: (t0.clientY + t1.clientY) / 2,
@@ -273,39 +277,45 @@ export default function TargetPreview({ state, dispatch }: Props) {
         }
 
         const touches = event.touches;
+        const first = touches[0];
+        if (first === undefined) {
+            return;
+        }
+
         if (touches.length === 1) {
-            const current = touches[0];
-            const previous = touchGesture.current.lastCenter;
+            const current = first;
+            const previous = touchGestureRef.current.lastCenter;
             if (!previous) {
-                touchGesture.current.lastCenter = { x: current.clientX, y: current.clientY };
+                touchGestureRef.current.lastCenter = { x: current.clientX, y: current.clientY };
                 return;
             }
 
             const dx = current.clientX - previous.x;
             const dy = current.clientY - previous.y;
             if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-                touchGesture.current.moved = true;
+                touchGestureRef.current.moved = true;
             }
 
-            touchGesture.current.lastCenter = { x: current.clientX, y: current.clientY };
-            touchGesture.current.lastTouchPoint = { x: current.clientX, y: current.clientY };
+            touchGestureRef.current.lastCenter = { x: current.clientX, y: current.clientY };
+            touchGestureRef.current.lastTouchPoint = { x: current.clientX, y: current.clientY };
             setPan((value) => ({ x: value.x + dx, y: value.y + dy }));
             event.preventDefault();
             return;
         }
 
-        if (touches.length < 2) {
+        const second = touches[1];
+        if (second === undefined) {
             return;
         }
 
         event.preventDefault();
-        const t0 = { x: touches[0].clientX, y: touches[0].clientY };
-        const t1 = { x: touches[1].clientX, y: touches[1].clientY };
+        const t0 = { x: first.clientX, y: first.clientY };
+        const t1 = { x: second.clientX, y: second.clientY };
         const distance = Math.hypot(t1.x - t0.x, t1.y - t0.y);
         const center = { x: (t0.x + t1.x) / 2, y: (t0.y + t1.y) / 2 };
         const container = containerRef.current;
-        const previousCenter = touchGesture.current.lastCenter;
-        const previousDistance = touchGesture.current.lastDistance;
+        const previousCenter = touchGestureRef.current.lastCenter;
+        const previousDistance = touchGestureRef.current.lastDistance;
 
         if (!container) {
             return;
@@ -333,9 +343,9 @@ export default function TargetPreview({ state, dispatch }: Props) {
             });
         }
 
-        touchGesture.current.lastCenter = center;
-        touchGesture.current.lastDistance = distance;
-        touchGesture.current.moved = true;
+        touchGestureRef.current.lastCenter = center;
+        touchGestureRef.current.lastDistance = distance;
+        touchGestureRef.current.moved = true;
     }, [isTouchPrimary, pan.x, pan.y, zoom]);
 
     const handleTouchEnd = useCallback((event: React.TouchEvent) => {
@@ -345,13 +355,13 @@ export default function TargetPreview({ state, dispatch }: Props) {
 
         if (
             !isPreviewOverlayTarget(event.target)
-            && !touchGesture.current.moved
-            && touchGesture.current.lastTouchPoint
+            && !touchGestureRef.current.moved
+            && touchGestureRef.current.lastTouchPoint
         ) {
-            moveMarkerboardCircle(touchGesture.current.lastTouchPoint.x, touchGesture.current.lastTouchPoint.y);
+            moveMarkerboardCircle(touchGestureRef.current.lastTouchPoint.x, touchGestureRef.current.lastTouchPoint.y);
         }
 
-        touchGesture.current = {
+        touchGestureRef.current = {
             lastCenter: null,
             lastDistance: null,
             moved: false,

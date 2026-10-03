@@ -376,18 +376,22 @@ export default function NarrativeCanvas({
                 })}
             </svg>
 
-            {nodes.map((node) => (
-                <NodeChip
-                    key={node.id}
-                    node={node}
-                    pos={layout.positions[node.id]}
-                    areaIds={areaIds}
-                    dimmed={isDimmed(node.id)}
-                    hidden={isHidden(node.id)}
-                    selected={selectedId === node.id}
-                    onSelect={onSelect}
-                />
-            ))}
+            {nodes.map((node) => {
+                const pos = layout.positions[node.id];
+                if (!pos) return null; // unreachable: `nodes` is filtered to ids with a position
+                return (
+                    <NodeChip
+                        key={node.id}
+                        node={node}
+                        pos={pos}
+                        areaIds={areaIds}
+                        dimmed={isDimmed(node.id)}
+                        hidden={isHidden(node.id)}
+                        selected={selectedId === node.id}
+                        onSelect={onSelect}
+                    />
+                );
+            })}
         </PannableViewport>
     );
 }

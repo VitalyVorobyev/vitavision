@@ -20,19 +20,19 @@ export function PapersProvider({ initial, children }: PapersProviderProps) {
     useEffect(() => {
         if (Object.keys(papers).length > 0) return;
         if (typeof window === "undefined") return;
-        let cancelled = false;
-        fetch(PAPERS_INDEX_URL)
+        const controller = new AbortController();
+        fetch(PAPERS_INDEX_URL, { signal: controller.signal })
             .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
             .then((data: PapersById) => {
-                if (!cancelled) setPapers(data);
+                if (!controller.signal.aborted) setPapers(data);
             })
             .catch(() => {
                 // Network error / 404 — leave papers empty; SourceStrip degrades to nothing.
             });
         return () => {
-            cancelled = true;
+            controller.abort();
         };
     }, [papers]);
 
-    return <PapersContext.Provider value={papers}>{children}</PapersContext.Provider>;
+    return <PapersContext value={papers}>{children}</PapersContext>;
 }

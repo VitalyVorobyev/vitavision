@@ -39,10 +39,12 @@ light and dark. Its baseline (`e2e/.screens/`) is local and uncommitted: capture
 on the same machine. It is not a CI gate.
 
 The toolchain follows the shared vitavision baseline: compiler options from
-`@vitavision/config-ts` and lint from `@vitavision/config-eslint` (type-aware). Two of
-the shared compiler options, `noUncheckedIndexedAccess` and
-`exactOptionalPropertyTypes`, are switched off in `tsconfig.app.json` until the ~665
-places they report are fixed as a change of their own.
+`@vitavision/config-ts` and lint from `@vitavision/config-eslint` (type-aware), with no
+exceptions: `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` are on. Index
+reads are narrowed rather than asserted where it reads naturally; a `!` is reserved for
+an access whose bound is visible right there (a loop bound, a length check, a fixed-size
+buffer). An optional prop that callers legitimately pass `undefined` to is declared
+`prop?: T | undefined`.
 
 ---
 

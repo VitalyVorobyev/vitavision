@@ -14,6 +14,7 @@ export function RelationLegend({ activeRels }: RelationLegendProps) {
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-x-3 gap-y-1.5 px-3 py-1.5 rounded-2xl max-w-[680px] bg-surface/90 backdrop-blur border border-line shadow-sm">
             {active.map((rel) => {
                 const m = RELATION_V3[rel];
+                if (!m) return null;
                 return (
                     <span key={rel} className="inline-flex items-center gap-1.5 text-[10px]">
                         <span className="w-2 h-2 rounded-full" style={{ background: m.color }} />

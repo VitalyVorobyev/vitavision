@@ -43,8 +43,10 @@ export function pointInPolygon(p: Vec2, polygon: Vec2[]): boolean {
     let inside = false;
     const n = polygon.length;
     for (let i = 0, j = n - 1; i < n; j = i++) {
-        const xi = polygon[i].x, yi = polygon[i].y;
-        const xj = polygon[j].x, yj = polygon[j].y;
+        // i and j are both in [0, n) by the loop bounds.
+        const pi = polygon[i]!, pj = polygon[j]!;
+        const xi = pi.x, yi = pi.y;
+        const xj = pj.x, yj = pj.y;
         if ((yi > p.y) !== (yj > p.y) && p.x < ((xj - xi) * (p.y - yi)) / (yj - yi) + xi) {
             inside = !inside;
         }

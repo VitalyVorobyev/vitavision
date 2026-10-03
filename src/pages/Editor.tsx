@@ -158,7 +158,7 @@ export default function Editor() {
     })));
     const [annotationToolsOpen, setAnnotationToolsOpen] = useState(false);
     const [searchParams] = useSearchParams();
-    const deepLinkApplied = useRef(false);
+    const deepLinkAppliedRef = useRef(false);
     const { isPhone, isTouchTablet, isLandscape } = useViewportMode();
 
     // Revoke blob: URLs and scrub them from the store when the user leaves /editor.
@@ -184,7 +184,7 @@ export default function Editor() {
     }, []);
 
     useEffect(() => {
-        if (deepLinkApplied.current || imageSrc !== null) {
+        if (deepLinkAppliedRef.current || imageSrc !== null) {
             return;
         }
 
@@ -198,7 +198,7 @@ export default function Editor() {
             return;
         }
 
-        deepLinkApplied.current = true;
+        deepLinkAppliedRef.current = true;
         const image = new Image();
         image.src = sample.src;
         image.onload = () => {

@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from "react";
+import { use, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import SeoHead from "../seo/SeoHead.tsx";
 import AtlasViewTabs from "../algorithms/AtlasViewTabs.tsx";
@@ -34,7 +34,7 @@ interface AtlasPapersViewProps {
 /** The Atlas Papers view — every registry paper, searchable, filterable by
  *  whether it anchors an Atlas page, sortable, grouped by decade. */
 export default function AtlasPapersView({ isDesktop, view, setView, query, setQuery }: AtlasPapersViewProps) {
-    const papersById = useContext(PapersContext);
+    const papersById = use(PapersContext);
     const { index: scholarly, status } = useScholarlyIndex();
 
     const [filter, setFilter] = useState<PapersFilter>("all");

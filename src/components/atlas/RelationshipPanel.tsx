@@ -15,11 +15,11 @@ interface RelationshipPanelProps {
     /** Layout variant — "block" is the default bottom-of-page card; "sidebar" is the sticky right-rail design. */
     variant?: "block" | "sidebar";
     /** Sidebar-only: blog post slugs surfaced under "Also see". */
-    relatedPosts?: string[];
+    relatedPosts?: string[] | undefined;
     /** Sidebar-only: demo slugs surfaced under "Also see". */
-    relatedDemos?: string[];
+    relatedDemos?: string[] | undefined;
     /** When set, render a prominent "Superseded by" section linking this slug. The caller decides — typically only set when `quality: "historical"`. */
-    supersededBy?: string;
+    supersededBy?: string | undefined;
 }
 
 export default function RelationshipPanel({

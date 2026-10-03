@@ -1,6 +1,6 @@
-import type { PageConfig } from "../types";
+import type { PageConfig, PageSizeKind } from "../types";
 
-const PAPER_SIZES: Record<string, { w: number; h: number }> = {
+const PAPER_SIZES: Record<Exclude<PageSizeKind, "custom">, { w: number; h: number }> = {
     a4: { w: 210, h: 297 },
     letter: { w: 215.9, h: 279.4 },
 };

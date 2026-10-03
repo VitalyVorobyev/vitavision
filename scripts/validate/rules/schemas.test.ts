@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../context.ts";
+import { createTestContext } from "../context.ts";
 import { schemasRule } from "./schemas.ts";
 import type { MarkdownDirEntry } from "../../lib/content-kinds.ts";
 
@@ -23,7 +23,7 @@ function demo(file: string, overrides: Record<string, unknown> = {}): MarkdownDi
 
 describe("schemasRule", () => {
     it("passes for valid blog and demo frontmatter", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             blog: [blog("2020-01-01-post.md")],
             demos: [demo("thing.md")],
         });
@@ -31,7 +31,7 @@ describe("schemasRule", () => {
     });
 
     it("flags missing required fields on a blog post", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             blog: [blog("2020-01-01-post.md", { title: undefined, tags: [] })],
         });
         expect(schemasRule(ctx)).toEqual([
@@ -47,7 +47,7 @@ describe("schemasRule", () => {
     });
 
     it("flags a malformed demo page", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             demos: [demo("thing.md", { category: "not-a-real-category" })],
         });
         expect(schemasRule(ctx)).toEqual([

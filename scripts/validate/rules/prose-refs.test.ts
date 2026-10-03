@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../context.ts";
+import { createTestContext } from "../context.ts";
 import { proseRefsRule } from "./prose-refs.ts";
 import type { MarkdownDirEntry } from "../../lib/content-kinds.ts";
 
@@ -14,7 +14,7 @@ function algo(file: string, overrides: Record<string, unknown> = {}, content = "
 
 describe("proseRefsRule", () => {
     it("passes when a cited arXiv id is in the papers index", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", {}, "See arXiv:1234.5678 for details.")],
             indexEntries: [{ id: "p1", arxiv: "1234.5678" }],
         });
@@ -22,7 +22,7 @@ describe("proseRefsRule", () => {
     });
 
     it("warns on a cited arXiv id absent from the papers index", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", {}, "See arXiv:9999.9999 for details.")],
         });
         expect(proseRefsRule(ctx)).toEqual([

@@ -105,6 +105,7 @@ export function buildGridEdges(grid: CornerGrid): { rowEdges: GridEdge[]; colEdg
         for (let k = 0; k < sorted.length - 1; k++) {
             const a = sorted[k];
             const b = sorted[k + 1];
+            if (!a || !b) continue;
             // Only connect if j values are adjacent (differ by 1)
             if (b.j - a.j === 1) {
                 rowEdges.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y });
@@ -120,6 +121,7 @@ export function buildGridEdges(grid: CornerGrid): { rowEdges: GridEdge[]; colEdg
         for (let k = 0; k < sorted.length - 1; k++) {
             const a = sorted[k];
             const b = sorted[k + 1];
+            if (!a || !b) continue;
             if (b.i - a.i === 1) {
                 colEdges.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y });
             }

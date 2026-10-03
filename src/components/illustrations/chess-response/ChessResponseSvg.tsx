@@ -64,6 +64,13 @@ function toSvg(x: number, y: number): { x: number; y: number } {
     };
 }
 
+// Term pair indices come from computeChessResponse and always address the
+// CHESS_RESPONSE_SAMPLE_COUNT (16) ring samples.
+function sampleToSvg(computation: ChessResponseComputation, index: number): { x: number; y: number } {
+    const sample = computation.samples[index]!;
+    return toSvg(sample.x, sample.y);
+}
+
 function grayscale(intensity: number): string {
     const shade = Math.round(Math.max(0, Math.min(255, intensity)));
     return `rgb(${shade} ${shade} ${shade})`;
@@ -155,22 +162,10 @@ export default function ChessResponseSvg({
             {showSrPairs && (
                 <g aria-hidden="true">
                     {computation.srTerms.map((term) => {
-                        const a0 = toSvg(
-                            computation.samples[term.pairA[0]].x,
-                            computation.samples[term.pairA[0]].y,
-                        );
-                        const a1 = toSvg(
-                            computation.samples[term.pairA[1]].x,
-                            computation.samples[term.pairA[1]].y,
-                        );
-                        const b0 = toSvg(
-                            computation.samples[term.pairB[0]].x,
-                            computation.samples[term.pairB[0]].y,
-                        );
-                        const b1 = toSvg(
-                            computation.samples[term.pairB[1]].x,
-                            computation.samples[term.pairB[1]].y,
-                        );
+                        const a0 = sampleToSvg(computation, term.pairA[0]);
+                        const a1 = sampleToSvg(computation, term.pairA[1]);
+                        const b0 = sampleToSvg(computation, term.pairB[0]);
+                        const b1 = sampleToSvg(computation, term.pairB[1]);
                         const color = PHASE_COLORS[term.phase];
 
                         return (
@@ -204,14 +199,8 @@ export default function ChessResponseSvg({
             {showDrPairs && (
                 <g aria-hidden="true">
                     {computation.drTerms.map((term) => {
-                        const from = toSvg(
-                            computation.samples[term.pair[0]].x,
-                            computation.samples[term.pair[0]].y,
-                        );
-                        const to = toSvg(
-                            computation.samples[term.pair[1]].x,
-                            computation.samples[term.pair[1]].y,
-                        );
+                        const from = sampleToSvg(computation, term.pair[0]);
+                        const to = sampleToSvg(computation, term.pair[1]);
 
                         return (
                             <line

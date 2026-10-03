@@ -30,11 +30,12 @@ export const GROUP_COLOR: Record<ScholarlyGroup, string> = Object.fromEntries(
 export function resolveAuthorId(id: string, aliases: Record<string, string>): string {
     let current = id;
     const seen = new Set<string>();
-    while (aliases[current] && !seen.has(current)) {
+    for (;;) {
+        const next = aliases[current];
+        if (!next || seen.has(current)) return current;
         seen.add(current);
-        current = aliases[current];
+        current = next;
     }
-    return current;
 }
 
 // ── Era filter ───────────────────────────────────────────────────────────────
@@ -500,11 +501,11 @@ function nudgeApartMandatoryOverlaps(placed: PlacedLabel[], contentPerScreenPx: 
     for (let iter = 0; iter < 50; iter++) {
         let movedAny = false;
         for (let i = 0; i < placed.length; i++) {
-            if (!placed[i].mandatory) continue;
+            const a = placed[i];
+            if (!a?.mandatory) continue;
             for (let j = i + 1; j < placed.length; j++) {
-                if (!placed[j].mandatory) continue;
-                const a = placed[i];
                 const b = placed[j];
+                if (!b?.mandatory) continue;
                 const boxA = boxOf(a);
                 const boxB = boxOf(b);
                 if (!boxesOverlap(boxA, boxB)) continue;
@@ -639,7 +640,10 @@ export function splitFocusTieLabels(
         remaining > 0 && weak.length > 0
             ? Array.from(
                   new Set(Array.from({ length: Math.min(remaining, weak.length) }, (_, k) => Math.floor((k * weak.length) / Math.min(remaining, weak.length)))),
-              ).map((i) => weak[i])
+              ).flatMap((i) => {
+                  const t = weak[i];
+                  return t ? [t] : []; // indices are < weak.length by construction
+              })
             : [];
     const labelled = [...strong, ...weakLabelled];
     const labelledIds = new Set(labelled.map((t) => t.id));
@@ -737,7 +741,8 @@ export function hoverLabelAnchor(
     const w = textWidth(node.name, px(fontSize));
     const h = px(fontSize);
     const gap = px(4);
-    const anchors: { x: number; y: number }[] = [
+    type Pt = { x: number; y: number };
+    const anchors: [Pt, Pt, Pt, Pt] = [
         { x: node.x + node.radius + gap, y: node.y + h * 0.35 },
         { x: node.x - node.radius - gap - w, y: node.y + h * 0.35 },
         { x: node.x - w / 2, y: node.y + node.radius + h },

@@ -48,6 +48,7 @@ export function useArticleIllustrations(
         hosts.forEach((host) => {
             const kind = host.dataset.vvIllustration;
             if (kind === "chess-response") {
+                const initialPattern = parsePattern(host.dataset.vvPattern);
                 const root = createRoot(host);
                 roots.push(root);
                 root.render(
@@ -55,7 +56,7 @@ export function useArticleIllustrations(
                         <div className="font-sans">
                             <ChessResponseIllustration
                                 preset={parsePreset(host.dataset.vvPreset)}
-                                initialPattern={parsePattern(host.dataset.vvPattern)}
+                                {...(initialPattern !== undefined && { initialPattern })}
                                 initialRotation={parseNumber(host.dataset.vvRotation, 22.5)}
                                 showControls={parseBoolean(host.dataset.vvControls, true)}
                                 initialAnimateRotation={parseBoolean(host.dataset.vvAnimateRotation, false)}

@@ -56,7 +56,8 @@ export function getFeatureGroupKey(feature: Feature): string {
 }
 
 export function getFeatureGroupLabel(key: string): string {
-    const [prefix, value] = key.split(":");
+    // Keys are built by getFeatureGroupKey as `<prefix>:<value>`.
+    const [prefix, value = ""] = key.split(":");
     if (prefix === "algo") {
         return KIND_LABELS[value] ?? value;
     }
@@ -155,7 +156,8 @@ export function buildFeatureGroups(features: Feature[]): FeatureGroup[] {
         return {
             key,
             label: getFeatureGroupLabel(key),
-            color: featureSwatch(items[0]),
+            // Every group is created together with its first feature, so it is non-empty.
+            color: featureSwatch(items[0]!),
             features: items,
         };
     });

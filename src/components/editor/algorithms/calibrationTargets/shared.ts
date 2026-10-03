@@ -166,9 +166,10 @@ export const calibrationCircleMatchFeatures = (
 
     return matches
         .filter((m) => m.matched_index !== null && m.matched_index < candidates.length)
-        .map((m) => {
+        .flatMap((m) => {
             const candidate = candidates[m.matched_index!];
-            return {
+            if (!candidate) return [];
+            return [{
                 id: `${algorithmId}-circle-match-${m.expected.cell.i}-${m.expected.cell.j}`,
                 type: "point" as const,
                 source: "algorithm" as const,
@@ -187,6 +188,6 @@ export const calibrationCircleMatchFeatures = (
                     contrast: candidate.contrast,
                     offsetCells: m.offset_cells,
                 },
-            };
+            }];
         });
 };

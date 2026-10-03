@@ -16,13 +16,20 @@ export function useArticleImageZoom(
 
         let active: HTMLImageElement | null = null;
         let backdrop: HTMLDivElement | null = null;
+        // Fade-out removal timers still pending, keyed by timer id.
+        const pendingRemovals = new Map<number, HTMLDivElement>();
 
         const close = () => {
             if (!active || !backdrop) return;
             active.classList.remove("vv-zoom-active");
             const b = backdrop;
             b.classList.remove("vv-zoom-backdrop-active");
-            window.setTimeout(() => b.remove(), 250);
+            b.removeEventListener("click", close);
+            const timer = window.setTimeout(() => {
+                pendingRemovals.delete(timer);
+                b.remove();
+            }, 250);
+            pendingRemovals.set(timer, b);
             active = null;
             backdrop = null;
             document.body.style.overflow = "";
@@ -64,7 +71,13 @@ export function useArticleImageZoom(
                 img.style.cursor = "";
             });
             document.removeEventListener("keydown", onKey);
+            backdrop?.removeEventListener("click", close);
             close();
+            pendingRemovals.forEach((el, timer) => {
+                window.clearTimeout(timer);
+                el.remove();
+            });
+            pendingRemovals.clear();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, deps);

@@ -2,7 +2,7 @@
 // Plots every node as a dot (faded when it's outside the current focus) plus
 // a rectangle for the current viewport, derived from the live pan/zoom state.
 
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import type { ScholarlyNetworkNode, ScholarlyGroup } from "../../../lib/atlas/scholarlyTypes.ts";
 import { GROUP_COLOR } from "../../../lib/atlas/peopleNetwork.ts";
 import type { ViewportBounds, ViewportState } from "../../../lib/graph/useViewport.ts";
@@ -25,10 +25,14 @@ export function Minimap({ nodes, groupOf, bounds, view, vp, dimId }: MinimapProp
     const boundsH = bounds.maxY - bounds.minY || 1;
     const scale = Math.min((MW - PAD * 2) / boundsW, (MH - PAD * 2) / boundsH);
 
-    const toMini = (x: number, y: number) => ({
-        x: PAD + (x - bounds.minX) * scale,
-        y: PAD + (y - bounds.minY) * scale,
-    });
+    const { minX: boundsMinX, minY: boundsMinY } = bounds;
+    const toMini = useCallback(
+        (x: number, y: number) => ({
+            x: PAD + (x - boundsMinX) * scale,
+            y: PAD + (y - boundsMinY) * scale,
+        }),
+        [boundsMinX, boundsMinY, scale],
+    );
 
     const dots = useMemo(
         () =>
@@ -36,8 +40,7 @@ export function Minimap({ nodes, groupOf, bounds, view, vp, dimId }: MinimapProp
                 const p = toMini(n.x, n.y);
                 return { id: n.id, ...p, color: GROUP_COLOR[groupOf(n.id)] ?? GROUP_COLOR.other, dim: dimId(n.id) };
             }),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [nodes, groupOf, dimId, bounds],
+        [nodes, groupOf, dimId, toMini],
     );
 
     // Visible content box, inverted from the plane's translate/scale transform.

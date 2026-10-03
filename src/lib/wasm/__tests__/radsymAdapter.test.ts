@@ -86,14 +86,14 @@ describe("Radsym toFeatures", () => {
     it("applies +0.5 pixel offset to center coordinates", () => {
         const result = mockRadsymResult(1);
         const features = toFeatures(result, "run-1");
-        expect(features[0].x).toBe(result.circles[0].x + 0.5);
-        expect(features[0].y).toBe(result.circles[0].y + 0.5);
+        expect(features[0]!.x).toBe(result.circles[0]!.x + 0.5);
+        expect(features[0]!.y).toBe(result.circles[0]!.y + 0.5);
     });
 
     it("preserves radius without modification", () => {
         const result = mockRadsymResult(1);
         const features = toFeatures(result, "run-1");
-        expect(features[0].radius).toBe(result.circles[0].radius);
+        expect(features[0]!.radius).toBe(result.circles[0]!.radius);
     });
 
     it("handles empty result", () => {
@@ -109,8 +109,8 @@ describe("Radsym summary", () => {
         const summary = toSummary(result);
         expect(summary).toHaveLength(2);
         expect(summary[0]).toEqual({ label: "Circles", value: "5" });
-        expect(summary[1].label).toBe("Runtime");
-        expect(summary[1].value).toContain("ms");
+        expect(summary[1]!.label).toBe("Runtime");
+        expect(summary[1]!.value).toContain("ms");
     });
 });
 
@@ -119,7 +119,7 @@ describe("Radsym diagnostics", () => {
         const result = mockRadsymResult(0);
         const diags = toDiagnostics(result);
         expect(diags).toHaveLength(1);
-        expect(diags[0].level).toBe("warning");
+        expect(diags[0]!.level).toBe("warning");
     });
 
     it("returns empty for successful detection", () => {

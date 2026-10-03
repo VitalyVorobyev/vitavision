@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useChessResponse } from "./chess-response/useChessResponse";
+import { deriveChessResponse } from "./chess-response/deriveChessResponse";
 import useChessResponseAnimation from "./chess-response/useChessResponseAnimation";
 import ChessResponseDesktopA from "./chess-response/ChessResponseDesktopA";
 import ChessResponseMobile from "./chess-response/ChessResponseMobile";
@@ -19,7 +19,7 @@ export default function ChessResponseDemo() {
 
     useChessResponseAnimation({ playing, speed, onTick: setRotationDeg });
 
-    const response = useChessResponse({ pattern, rotationDeg, blur, contrast });
+    const response = deriveChessResponse({ pattern, rotationDeg, blur, contrast });
 
     const props = {
         pattern,

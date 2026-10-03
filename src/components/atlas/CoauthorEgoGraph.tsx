@@ -26,7 +26,7 @@ const MAX_STROKE = 5;
 /** Surname (or the whole name for a single-token name), truncated. */
 function shortLabel(name: string, max = 16): string {
     const parts = name.trim().split(/\s+/);
-    const surname = parts.length > 1 ? parts[parts.length - 1] : (parts[0] ?? name);
+    const surname = (parts.length > 1 ? parts[parts.length - 1] : parts[0]) ?? name;
     return surname.length > max ? `${surname.slice(0, max - 1)}…` : surname;
 }
 

@@ -20,19 +20,19 @@ export function AuthorsProvider({ initial, children }: AuthorsProviderProps) {
     useEffect(() => {
         if (Object.keys(index.authors).length > 0) return;
         if (typeof window === "undefined") return;
-        let cancelled = false;
-        fetch(AUTHORS_INDEX_URL)
+        const controller = new AbortController();
+        fetch(AUTHORS_INDEX_URL, { signal: controller.signal })
             .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
             .then((data: AuthorsIndex) => {
-                if (!cancelled) setIndex(data);
+                if (!controller.signal.aborted) setIndex(data);
             })
             .catch(() => {
                 // Network error / 404 — leave the index empty; consumers degrade to nothing.
             });
         return () => {
-            cancelled = true;
+            controller.abort();
         };
     }, [index]);
 
-    return <AuthorsIndexContext.Provider value={index}>{children}</AuthorsIndexContext.Provider>;
+    return <AuthorsIndexContext value={index}>{children}</AuthorsIndexContext>;
 }

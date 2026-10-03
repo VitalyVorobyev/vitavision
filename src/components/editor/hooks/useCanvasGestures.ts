@@ -12,8 +12,8 @@ export function useCanvasGestures({ pan, setZoom, setPan, touchPrimary }: Gestur
     const [isPanning, setIsPanning] = useState(false);
     const lastPanPointerRef = useRef<{ x: number; y: number } | null>(null);
     const panRef = useRef(pan);
-    const lastTouchDist = useRef<number | null>(null);
-    const lastTouchCenter = useRef<{ x: number; y: number } | null>(null);
+    const lastTouchDistRef = useRef<number | null>(null);
+    const lastTouchCenterRef = useRef<{ x: number; y: number } | null>(null);
 
     useEffect(() => {
         panRef.current = pan;
@@ -106,14 +106,18 @@ export function useCanvasGestures({ pan, setZoom, setPan, touchPrimary }: Gestur
         const stage = event.target.getStage();
         if (!stage) return;
 
-        const t0 = { x: touches[0].clientX, y: touches[0].clientY };
-        const t1 = { x: touches[1].clientX, y: touches[1].clientY };
+        const touch0 = touches[0];
+        const touch1 = touches[1];
+        if (!touch0 || !touch1) return;
+
+        const t0 = { x: touch0.clientX, y: touch0.clientY };
+        const t1 = { x: touch1.clientX, y: touch1.clientY };
         const dist = Math.hypot(t1.x - t0.x, t1.y - t0.y);
         const center = { x: (t0.x + t1.x) / 2, y: (t0.y + t1.y) / 2 };
 
-        if (lastTouchDist.current !== null && lastTouchCenter.current !== null) {
+        if (lastTouchDistRef.current !== null && lastTouchCenterRef.current !== null) {
             const oldScale = stage.scaleX();
-            const newScale = oldScale * (dist / lastTouchDist.current);
+            const newScale = oldScale * (dist / lastTouchDistRef.current);
 
             const rect = stage.container().getBoundingClientRect();
             const stageCenter = { x: center.x - rect.left, y: center.y - rect.top };
@@ -124,18 +128,18 @@ export function useCanvasGestures({ pan, setZoom, setPan, touchPrimary }: Gestur
 
             setZoom(newScale);
             setPan({
-                x: stageCenter.x - mousePointTo.x * newScale + (center.x - lastTouchCenter.current.x),
-                y: stageCenter.y - mousePointTo.y * newScale + (center.y - lastTouchCenter.current.y),
+                x: stageCenter.x - mousePointTo.x * newScale + (center.x - lastTouchCenterRef.current.x),
+                y: stageCenter.y - mousePointTo.y * newScale + (center.y - lastTouchCenterRef.current.y),
             });
         }
 
-        lastTouchDist.current = dist;
-        lastTouchCenter.current = center;
+        lastTouchDistRef.current = dist;
+        lastTouchCenterRef.current = center;
     };
 
     const handleTouchEnd = () => {
-        lastTouchDist.current = null;
-        lastTouchCenter.current = null;
+        lastTouchDistRef.current = null;
+        lastTouchCenterRef.current = null;
     };
 
     return {

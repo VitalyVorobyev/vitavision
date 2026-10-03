@@ -3,7 +3,7 @@ import { Pause, Play } from "lucide-react";
 import { Button, DensityProvider, SegmentedControl, Slider, ToggleChip } from "@vitavision/ui";
 import { classNames } from "../../utils/helpers";
 import ChessResponseSvg from "./chess-response/ChessResponseSvg";
-import { useChessResponse } from "./chess-response/useChessResponse";
+import { deriveChessResponse } from "./chess-response/deriveChessResponse";
 import useChessResponseAnimation from "./chess-response/useChessResponseAnimation";
 import ChessResponseInlinePreview from "./ChessResponseInlinePreview";
 import { PHASE_COLORS, formatValue } from "./chess-response/readoutHelpers";
@@ -13,7 +13,7 @@ import type {
     ChessResponsePattern,
     ChessResponsePreset,
 } from "./chess-response/types";
-import type { useChessResponse as UseChessResponse } from "./chess-response/useChessResponse";
+import type { deriveChessResponse as DeriveChessResponse } from "./chess-response/deriveChessResponse";
 
 // ---------------------------------------------------------------------------
 // Inline Controls (replaces deleted ChessResponseControls.tsx)
@@ -213,7 +213,7 @@ function MetricChip({
     );
 }
 
-function ArticleReadouts({ response }: { response: ReturnType<typeof UseChessResponse> }) {
+function ArticleReadouts({ response }: { response: ReturnType<typeof DeriveChessResponse> }) {
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-4 gap-1.5">
@@ -368,7 +368,7 @@ export default function ChessResponseIllustration({
 }
 
 interface ArticleLayoutProps {
-    className?: string;
+    className?: string | undefined;
     showControls: boolean;
     initialPattern: ChessResponsePattern;
     initialRotation: number;
@@ -407,7 +407,7 @@ function ArticleLayout({
 
     useChessResponseAnimation({ playing, speed, onTick: setRotationDeg });
 
-    const response = useChessResponse({ pattern, rotationDeg, blur, contrast });
+    const response = deriveChessResponse({ pattern, rotationDeg, blur, contrast });
 
     return (
         <section

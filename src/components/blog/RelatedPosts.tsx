@@ -3,7 +3,7 @@ import { blogPosts, algorithmPages, demoPages, modelPages } from "../../generate
 import { useIsAdmin } from "../../lib/auth/useIsAdmin.ts";
 
 interface RelatedPostsProps {
-    slugs?: string[];
+    slugs?: string[] | undefined;
     type: "blog" | "algorithm" | "demo" | "model";
 }
 

@@ -111,7 +111,6 @@ const KIND_BORDER: Record<string, string> = {
     concept:   "var(--graph-icon-border-concept)",
 };
 
-export { KIND_TINT, KIND_BG, KIND_BORDER };
 
 interface EntryIconProps {
     slug: string;

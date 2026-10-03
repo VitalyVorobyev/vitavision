@@ -14,7 +14,8 @@ import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/
 import { PapersProvider } from './lib/atlas/papersIndex.tsx';
 import { AuthorsProvider } from './lib/atlas/authorsIndex.tsx';
 import { ScholarlyProvider } from './lib/atlas/scholarlyIndex.tsx';
-import { StaticContentProvider, type StaticContentContextValue } from './lib/content/ssr-content.tsx';
+import { type StaticContentContextValue } from './lib/content/ssr-content.tsx';
+import { StaticContentProvider } from './lib/content/StaticContentProvider.tsx';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 if (!PUBLISHABLE_KEY) {

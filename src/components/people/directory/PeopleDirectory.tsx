@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { ArrowRight } from "lucide-react";
+import { ToggleChip } from "@vitavision/ui";
 import PeopleRow, { PEOPLE_ROW_COLUMNS } from "./PeopleRow.tsx";
 import {
     computeDomainChips,
@@ -15,6 +16,9 @@ import type { AuthorsIndex } from "../../../generated/authors-index.ts";
 import type { PapersById } from "../../../lib/atlas/paperRefTypes.ts";
 
 const GROUP_PREVIEW_SIZE = 5;
+
+/** Keeps the 32px touch height the chips had before they became ui's ToggleChip. */
+const CHIP_CLASS = "h-8 px-2.5 text-[13px] font-medium";
 
 interface PeopleDirectoryProps {
     rows: PeopleRowData[];
@@ -79,32 +83,24 @@ export default function PeopleDirectory({
         <div className="flex flex-col gap-4">
             {!searching && (
                 <div className="flex flex-wrap gap-1.5">
-                    <button
-                        type="button"
-                        onClick={() => onSelectDomain(null)}
-                        className={`inline-flex h-8 items-center gap-1.5 rounded-[5px] px-2.5 text-[13px] font-medium transition-colors ${
-                            selectedDomain === null
-                                ? "bg-fg/85 text-ground"
-                                : "border border-line bg-surface text-fg hover:bg-line/50"
-                        }`}
+                    <ToggleChip
+                        checked={selectedDomain === null}
+                        onCheckedChange={() => onSelectDomain(null)}
+                        className={CHIP_CLASS}
                     >
                         All domains
                         <span className="font-mono tabular-nums opacity-80">{rows.length}</span>
-                    </button>
+                    </ToggleChip>
                     {chips.map((chip) => (
-                        <button
+                        <ToggleChip
                             key={chip.domain}
-                            type="button"
-                            onClick={() => onSelectDomain(chip.domain)}
-                            className={`inline-flex h-8 items-center gap-1.5 rounded-[5px] px-2.5 text-[13px] font-medium transition-colors ${
-                                selectedDomain === chip.domain
-                                    ? "bg-fg/85 text-ground"
-                                    : "border border-line bg-surface text-fg hover:bg-line/50"
-                            }`}
+                            checked={selectedDomain === chip.domain}
+                            onCheckedChange={() => onSelectDomain(chip.domain)}
+                            className={CHIP_CLASS}
                         >
                             {chip.label}
                             <span className="font-mono tabular-nums text-fg-muted">{chip.count}</span>
-                        </button>
+                        </ToggleChip>
                     ))}
                 </div>
             )}

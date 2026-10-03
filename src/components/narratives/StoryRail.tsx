@@ -53,6 +53,7 @@ export default function StoryRail({
 
     const clamped = Math.min(Math.max(index, 0), steps.length - 1);
     const step = steps[clamped];
+    if (!step) return null; // unreachable: `steps` is non-empty and `clamped` is in range
     const chapter = chapters[step.anchor];
     const areaIds = areas.map((a) => a.id);
 

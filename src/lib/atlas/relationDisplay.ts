@@ -48,12 +48,12 @@ export interface DisplayRelation {
     label: string;
     target: string;
     confidence: TypedRelation["confidence"];
-    caution?: string;
+    caution?: string | undefined;
 }
 
 export interface RelationDisplayOptions {
     /** When set, suppresses the forward `generalized_by`/high-confidence entry that drives the "Superseded by" section. */
-    supersededBy?: string;
+    supersededBy?: string | undefined;
     /** Whether draft-page targets should be included (admin-only view). */
     showDrafts: boolean;
     /** Content graph to read from; defaults to the build-generated graph. Overridable for tests. */

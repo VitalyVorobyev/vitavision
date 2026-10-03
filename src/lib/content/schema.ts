@@ -205,10 +205,10 @@ export const algorithmFrontmatterSchema = publicationFrontmatterBaseObjectSchema
 
 export type AlgorithmFrontmatter = z.infer<typeof algorithmFrontmatterSchema>;
 
-type SerializedFrontmatter<T extends { date: Date; updated?: Date }> =
+type SerializedFrontmatter<T extends { date: Date; updated?: Date | undefined }> =
     Omit<T, "date" | "updated"> & {
     date: string;
-    updated?: string;
+    updated?: string | undefined;
 };
 
 /** Serialized blog frontmatter (dates as ISO strings). */

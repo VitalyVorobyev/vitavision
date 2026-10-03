@@ -9,13 +9,13 @@ import type {
 interface StructuredArticleFrontmatter {
     title: string;
     summary: string;
-    author?: string;
+    author?: string | undefined;
     date: string;
-    updated?: string;
-    coverImage?: string;
+    updated?: string | undefined;
+    coverImage?: string | undefined;
     tags: string[];
-    difficulty?: "beginner" | "intermediate" | "advanced";
-    readingTimeMinutes?: number;
+    difficulty?: "beginner" | "intermediate" | "advanced" | undefined;
+    readingTimeMinutes?: number | undefined;
 }
 
 function buildStructuredArticleJsonLd(

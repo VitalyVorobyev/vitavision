@@ -64,9 +64,10 @@ export function resolveAuthorIds(
         const surname = surnameKey(display);
         if (!surname) return undefined;
         const matches = candidates.filter((c) => !c.used && c.surname === surname);
-        if (matches.length === 0) return undefined;
+        const [firstMatch] = matches;
+        if (firstMatch === undefined) return undefined;
         const initial = initialKey(display);
-        const pick = matches.find((c) => c.initial === initial) ?? matches[0];
+        const pick = matches.find((c) => c.initial === initial) ?? firstMatch;
         pick.used = true;
         return pick.id;
     });

@@ -21,6 +21,7 @@ interface PaperListRowProps {
  *  cited-by. */
 export default function PaperListRow({ row, maxCitedBy, bordered = false }: PaperListRowProps) {
     const extra = row.primaryPages.length - 1;
+    const firstPage = row.primaryPages[0];
     const barWidth = maxCitedBy > 0 ? Math.max(row.citedByCount > 0 ? 6 : 0, (row.citedByCount / maxCitedBy) * 100) : 0;
 
     return (
@@ -41,7 +42,7 @@ export default function PaperListRow({ row, maxCitedBy, bordered = false }: Pape
                 </span>
                 {/* Page tags render inline on mobile, in their own column on desktop */}
                 <span className="mt-1 flex min-w-0 flex-wrap items-center gap-1.5 sm:hidden">
-                    {row.primaryPages.length > 0 ? <PaperPageTag page={row.primaryPages[0]} /> : <NoPageTag />}
+                    {firstPage !== undefined ? <PaperPageTag page={firstPage} /> : <NoPageTag />}
                     {extra > 0 && <span className="font-mono text-[11.5px] text-fg-muted">+{extra}</span>}
                     {row.citingPageCount > 0 && (
                         <span className="whitespace-nowrap text-[12px] text-fg-muted">
@@ -52,7 +53,7 @@ export default function PaperListRow({ row, maxCitedBy, bordered = false }: Pape
             </span>
 
             <span className="hidden min-w-0 items-center gap-1.5 sm:flex">
-                {row.primaryPages.length > 0 ? <PaperPageTag page={row.primaryPages[0]} /> : <NoPageTag />}
+                {firstPage !== undefined ? <PaperPageTag page={firstPage} /> : <NoPageTag />}
                 {extra > 0 && <span className="font-mono text-[11.5px] text-fg-muted">+{extra}</span>}
                 {row.citingPageCount > 0 && (
                     <span className="whitespace-nowrap text-[12px] text-fg-muted">

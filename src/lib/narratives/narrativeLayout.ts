@@ -100,17 +100,19 @@ const MIN_ROW_CLEARANCE = 24;
  * nodes sharing an axis value all collapse that axis to zero extent.
  */
 export function scaleLensCoords(coords: Record<string, [number, number]>): NarrativeLayout {
-    const ids = Object.keys(coords);
+    const entries = Object.entries(coords);
+    const ids = entries.map(([id]) => id);
     if (ids.length === 0) {
         return { positions: {}, width: NARRATIVE_NODE_W, height: NARRATIVE_NODE_H };
     }
 
-    const minX = Math.min(...ids.map((id) => coords[id][0]));
-    const minY = Math.min(...ids.map((id) => coords[id][1]));
+    const minX = Math.min(...entries.map(([, xy]) => xy[0]));
+    const minY = Math.min(...entries.map(([, xy]) => xy[1]));
 
     const positions: Record<string, { x: number; y: number }> = {};
-    for (const id of ids) {
-        const [x, y] = coords[id];
+    // Every id in `ids` is assigned in the loop below, so this lookup is always defined.
+    const at = (id: string) => positions[id]!;
+    for (const [id, [x, y]] of entries) {
         positions[id] = {
             x: (x - minX) * (NARRATIVE_NODE_W + GAP_X),
             y: (y - minY) * (NARRATIVE_NODE_H + GAP_Y),
@@ -119,12 +121,12 @@ export function scaleLensCoords(coords: Record<string, [number, number]>): Narra
 
     // Group chips into rows (y-distance under one chip height = same row) and
     // enforce a minimum x pitch within each row, pushing rightwards.
-    const byY = [...ids].sort((a, b) => positions[a].y - positions[b].y || positions[a].x - positions[b].x);
+    const byY = [...ids].sort((a, b) => at(a).y - at(b).y || at(a).x - at(b).x);
     const rows: string[][] = [];
     for (const id of byY) {
         const row = rows[rows.length - 1];
         const prev = row?.[row.length - 1];
-        if (prev !== undefined && positions[id].y - positions[prev].y < NARRATIVE_NODE_H) {
+        if (row !== undefined && prev !== undefined && at(id).y - at(prev).y < NARRATIVE_NODE_H) {
             row.push(id);
         } else {
             rows.push([id]);
@@ -132,19 +134,22 @@ export function scaleLensCoords(coords: Record<string, [number, number]>): Narra
     }
     const minPitch = NARRATIVE_NODE_W + MIN_ROW_CLEARANCE;
     for (const row of rows) {
-        row.sort((a, b) => positions[a].x - positions[b].x);
+        row.sort((a, b) => at(a).x - at(b).x);
         for (let i = 1; i < row.length; i++) {
-            const prevX = positions[row[i - 1]].x;
-            if (positions[row[i]].x < prevX + minPitch) {
-                positions[row[i]] = { ...positions[row[i]], x: prevX + minPitch };
+            const prevId = row[i - 1];
+            const id = row[i];
+            if (prevId === undefined || id === undefined) continue; // unreachable: 1 <= i < row.length
+            const prevX = at(prevId).x;
+            if (at(id).x < prevX + minPitch) {
+                positions[id] = { ...at(id), x: prevX + minPitch };
             }
         }
     }
 
     return {
         positions,
-        width:  Math.max(...ids.map((id) => positions[id].x)) + NARRATIVE_NODE_W,
-        height: Math.max(...ids.map((id) => positions[id].y)) + NARRATIVE_NODE_H,
+        width:  Math.max(...ids.map((id) => at(id).x)) + NARRATIVE_NODE_W,
+        height: Math.max(...ids.map((id) => at(id).y)) + NARRATIVE_NODE_H,
     };
 }
 
@@ -167,6 +172,7 @@ export function yearRulerTicks(minYear: number, maxYear: number, maxTicks = 8): 
 
     const span = maxYear - minYear;
     const step = TICK_STEPS.find((s) => span / s <= maxTicks) ?? TICK_STEPS[TICK_STEPS.length - 1];
+    if (step === undefined) return []; // unreachable: TICK_STEPS is non-empty
 
     const ticks: number[] = [];
     for (let y = Math.ceil(minYear / step) * step; y <= maxYear; y += step) ticks.push(y);

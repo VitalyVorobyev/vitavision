@@ -22,8 +22,8 @@ export function initialTrailState(current: string): TrailState {
 }
 
 function back(state: TrailState): TrailState {
-    if (state.history.length === 0) return state;
     const prev = state.history[state.history.length - 1];
+    if (prev === undefined) return state;
     return {
         history: state.history.slice(0, -1),
         current: prev,
@@ -32,8 +32,8 @@ function back(state: TrailState): TrailState {
 }
 
 function forward(state: TrailState): TrailState {
-    if (state.future.length === 0) return state;
     const next = state.future[0];
+    if (next === undefined) return state;
     return {
         history: [...state.history, state.current],
         current: next,
@@ -61,7 +61,9 @@ function navigate(state: TrailState, slug: string): TrailState {
 
 function jump(state: TrailState, index: number): TrailState {
     const before = state.history.slice(0, index);
-    const target = state.history[index];
+    // NOTE(strict-ts): an out-of-range `index` yields `current: undefined`; kept as-is
+    // (no caller passes one), asserted only to preserve the pre-strict behaviour exactly.
+    const target = state.history[index]!;
     const popped = state.history.slice(index + 1);
     return {
         history: before,

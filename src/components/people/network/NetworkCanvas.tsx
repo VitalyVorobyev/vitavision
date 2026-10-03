@@ -104,6 +104,7 @@ export function NetworkCanvas({
                     onPointerUp(e);
                     dragStart.current = null;
                     const [a, b] = [...activeTouches.current.values()];
+                    if (a === undefined || b === undefined) return; // unreachable: size === 2
                     pinchStartDist.current = Math.hypot(a.x - b.x, a.y - b.y);
                     return;
                 }
@@ -123,6 +124,7 @@ export function NetworkCanvas({
                 activeTouches.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
                 if (activeTouches.current.size === 2 && pinchStartDist.current !== null) {
                     const [a, b] = [...activeTouches.current.values()];
+                    if (a === undefined || b === undefined) return; // unreachable: size === 2
                     const dist = Math.hypot(a.x - b.x, a.y - b.y);
                     const factor = dist / pinchStartDist.current;
                     if (Math.abs(factor - 1) > 0.015) {

@@ -74,8 +74,8 @@ describe("groupCitingPagesByDomain", () => {
     it("sorts groups by size descending, then label A–Z, and entries by title", () => {
         const groups = groupCitingPagesByDomain(["fpn", "deeplab", "bisenet", "fcn", "cnn"], pages);
         expect(groups.map((g) => g.domain)).toEqual(["segmentation", "detection", "features"]);
-        expect(groups[0].label).toBe("Segmentation");
-        expect(groups[0].entries.map((e) => e.title)).toEqual([
+        expect(groups[0]?.label).toBe("Segmentation");
+        expect(groups[0]?.entries.map((e) => e.title)).toEqual([
             "BiSeNet",
             "DeepLab",
             "FCN: Fully Convolutional Networks",

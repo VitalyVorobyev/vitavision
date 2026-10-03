@@ -61,7 +61,8 @@ export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }:
             e.preventDefault();
             setHighlightIndex((i) => Math.max(i - 1, 0));
         } else if (e.key === "Enter") {
-            if (results.length > 0) pick((results[highlightIndex] ?? results[0]).id);
+            const item = results[highlightIndex] ?? results[0];
+            if (item) pick(item.id);
         } else if (e.key === "Escape") {
             setQuery("");
             setOpen(false);

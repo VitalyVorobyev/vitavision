@@ -74,7 +74,7 @@ interface FilterableEntry {
         date: string;
         summary: string;
         tags: readonly string[];
-        tasks?: readonly string[];
+        tasks?: readonly string[] | undefined;
     };
 }
 

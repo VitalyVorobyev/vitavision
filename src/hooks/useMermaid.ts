@@ -61,7 +61,9 @@ export function useMermaid(
 
             for (let i = 0; i < sources.length; i++) {
                 if (cancelled) return;
-                const { node, text } = sources[i];
+                const source = sources[i];
+                if (!source) continue;
+                const { node, text } = source;
                 const id = `mermaid-${Date.now()}-${i}`;
                 try {
                     const { svg } = await mermaid.render(id, text);

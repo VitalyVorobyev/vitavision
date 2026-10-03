@@ -39,15 +39,19 @@ export function SpecAlgorithms({ className }: SpecProps) {
             aria-hidden
             className={className}
         >
-            {edges.map(([a, b], i) => (
-                <line
-                    key={i}
-                    x1={nodes[a][0]} y1={nodes[a][1]}
-                    x2={nodes[b][0]} y2={nodes[b][1]}
-                    strokeWidth={1}
-                    className="stroke-fg-muted/55 transition-colors duration-300 group-hover:stroke-signal/70 group-focus-visible:stroke-signal/70"
-                />
-            ))}
+            {edges.map(([a, b], i) => {
+                const from = nodes[a], to = nodes[b];
+                if (!from || !to) return null;
+                return (
+                    <line
+                        key={i}
+                        x1={from[0]} y1={from[1]}
+                        x2={to[0]} y2={to[1]}
+                        strokeWidth={1}
+                        className="stroke-fg-muted/55 transition-colors duration-300 group-hover:stroke-signal/70 group-focus-visible:stroke-signal/70"
+                    />
+                );
+            })}
             {nodes.map(([x, y], i) => {
                 const isEntry = i === 0;
                 return (

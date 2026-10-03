@@ -10,10 +10,12 @@ export async function rasterizeSvgToPng(
     // Extract mm dimensions from the SVG
     const wMatch = svg.match(/width="([\d.]+)mm"/);
     const hMatch = svg.match(/height="([\d.]+)mm"/);
-    if (!wMatch || !hMatch) throw new Error("Could not parse SVG dimensions");
+    const wText = wMatch?.[1];
+    const hText = hMatch?.[1];
+    if (wText === undefined || hText === undefined) throw new Error("Could not parse SVG dimensions");
 
-    const widthMm = parseFloat(wMatch[1]);
-    const heightMm = parseFloat(hMatch[1]);
+    const widthMm = parseFloat(wText);
+    const heightMm = parseFloat(hText);
     const widthPx = Math.round((widthMm * dpi) / 25.4);
     const heightPx = Math.round((heightMm * dpi) / 25.4);
 

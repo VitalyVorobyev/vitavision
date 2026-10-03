@@ -5,7 +5,9 @@ import { render } from "./entry-server";
 
 describe("entry-server blog prerender", () => {
     it("renders blog post HTML instead of the loading spinner", async () => {
-        const post = await blogHtmlLoaders["00-intro"]();
+        const loadPost = blogHtmlLoaders["00-intro"];
+        if (!loadPost) throw new Error('No blog HTML loader for "00-intro"');
+        const post = await loadPost();
         const html = render("/blog/00-intro", {
             blogHtmlBySlug: { "00-intro": post.html },
             algorithmHtmlBySlug: {},
@@ -19,7 +21,9 @@ describe("entry-server blog prerender", () => {
 
 describe("entry-server algorithm prerender", () => {
     it("renders algorithm page HTML instead of the loading spinner", async () => {
-        const page = await algorithmHtmlLoaders["harris-corner-detector"]();
+        const loadPage = algorithmHtmlLoaders["harris-corner-detector"];
+        if (!loadPage) throw new Error('No algorithm HTML loader for "harris-corner-detector"');
+        const page = await loadPage();
         const html = render("/atlas/harris-corner-detector", {
             blogHtmlBySlug: {},
             algorithmHtmlBySlug: { "harris-corner-detector": page.html },

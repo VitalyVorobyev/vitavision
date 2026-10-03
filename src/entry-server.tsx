@@ -42,7 +42,7 @@ export function render(
         <StaticContentProvider value={staticContent}>
         <PapersProvider initial={papers}>
         <AuthorsProvider initial={authors}>
-        <ScholarlyProvider initial={scholarly}>
+        <ScholarlyProvider {...(scholarly !== undefined && { initial: scholarly })}>
             {/* No theme provider: the theme is the `dark` class that the inline script in
                 index.html paints from the stored choice ("system" when there is none) before
                 the first paint, so the prerendered markup is the same for both themes.

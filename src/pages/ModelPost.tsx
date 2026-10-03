@@ -105,7 +105,7 @@ export default function ModelPost() {
     );
     const modelBadges = hasModelBadges ? (
         <>
-            <QualityBadge quality={frontmatter.quality} />
+            <QualityBadge {...(frontmatter.quality !== undefined && { quality: frontmatter.quality })} />
             {frontmatter.noPublicImpl && (
                 <span className="inline-flex items-center rounded border border-ink-amber/40 px-2 py-0.5 text-sm font-mono uppercase tracking-wider text-ink-amber">
                     no public impl
@@ -217,8 +217,8 @@ export default function ModelPost() {
                 <div className="sticky top-6">
                     <RelationsSidebar
                         slug={resolvedSlug}
-                        relatedPosts={frontmatter.relatedPosts}
-                        relatedDemos={frontmatter.relatedDemos}
+                        {...(frontmatter.relatedPosts !== undefined && { relatedPosts: frontmatter.relatedPosts })}
+                        {...(frontmatter.relatedDemos !== undefined && { relatedDemos: frontmatter.relatedDemos })}
                     />
                     {frontmatter.sources?.primary && <AIDisclosure />}
                 </div>

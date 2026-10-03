@@ -23,7 +23,7 @@ interface AtlasGraphViewProps {
     isDesktop: boolean;
     view: AlgorithmsView;
     setView: (view: AlgorithmsView) => void;
-    focusParam?: string;
+    focusParam?: string | undefined;
 }
 
 /** The Atlas graph-explorer view — full-width, no sidebar/facets. */
@@ -44,7 +44,7 @@ export default function AtlasGraphView({ isDesktop, view, setView, focusParam }:
                         graph re-centers; internal trail nav never touches
                         ?focus=, so it does not trigger a remount. */}
                     <Suspense fallback={<GraphFallback />}>
-                        <GraphExplorer key={focusParam ?? ""} focusSlug={focusParam} />
+                        <GraphExplorer key={focusParam ?? ""} {...(focusParam !== undefined && { focusSlug: focusParam })} />
                     </Suspense>
                 </main>
             </div>
@@ -66,7 +66,7 @@ export default function AtlasGraphView({ isDesktop, view, setView, focusParam }:
             </div>
 
             <Suspense fallback={<GraphFallback />}>
-                <GraphExplorer key={focusParam ?? ""} focusSlug={focusParam} />
+                <GraphExplorer key={focusParam ?? ""} {...(focusParam !== undefined && { focusSlug: focusParam })} />
             </Suspense>
         </div>
     );

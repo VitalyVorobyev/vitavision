@@ -57,7 +57,7 @@ export type DxfGenerator = (target: TargetConfig, page: PageConfig) => Promise<s
 
 interface Props {
     state: TargetGeneratorState;
-    generateDxf?: DxfGenerator;
+    generateDxf?: DxfGenerator | undefined;
 }
 
 export default function DownloadBar({ state, generateDxf }: Props) {

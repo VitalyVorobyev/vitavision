@@ -242,19 +242,23 @@ export default function TargetPreview({ state, dispatch }: Props) {
         }
 
         const touches = event.touches;
+        const t0 = touches[0];
+        if (t0 === undefined) {
+            return;
+        }
+
         if (touches.length === 1) {
             touchGesture.current = {
-                lastCenter: { x: touches[0].clientX, y: touches[0].clientY },
+                lastCenter: { x: t0.clientX, y: t0.clientY },
                 lastDistance: null,
                 moved: false,
-                lastTouchPoint: { x: touches[0].clientX, y: touches[0].clientY },
+                lastTouchPoint: { x: t0.clientX, y: t0.clientY },
             };
             return;
         }
 
-        if (touches.length >= 2) {
-            const t0 = touches[0];
-            const t1 = touches[1];
+        const t1 = touches[1];
+        if (t1 !== undefined) {
             touchGesture.current = {
                 lastCenter: {
                     x: (t0.clientX + t1.clientX) / 2,
@@ -273,8 +277,13 @@ export default function TargetPreview({ state, dispatch }: Props) {
         }
 
         const touches = event.touches;
+        const first = touches[0];
+        if (first === undefined) {
+            return;
+        }
+
         if (touches.length === 1) {
-            const current = touches[0];
+            const current = first;
             const previous = touchGesture.current.lastCenter;
             if (!previous) {
                 touchGesture.current.lastCenter = { x: current.clientX, y: current.clientY };
@@ -294,13 +303,14 @@ export default function TargetPreview({ state, dispatch }: Props) {
             return;
         }
 
-        if (touches.length < 2) {
+        const second = touches[1];
+        if (second === undefined) {
             return;
         }
 
         event.preventDefault();
-        const t0 = { x: touches[0].clientX, y: touches[0].clientY };
-        const t1 = { x: touches[1].clientX, y: touches[1].clientY };
+        const t0 = { x: first.clientX, y: first.clientY };
+        const t1 = { x: second.clientX, y: second.clientY };
         const distance = Math.hypot(t1.x - t0.x, t1.y - t0.y);
         const center = { x: (t0.x + t1.x) / 2, y: (t0.y + t1.y) / 2 };
         const container = containerRef.current;

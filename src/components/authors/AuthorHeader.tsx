@@ -5,7 +5,7 @@ import type { AuthorSummary } from "../../lib/atlas/authorView.ts";
 interface AuthorHeaderProps {
     id: string;
     name: string;
-    orcid?: string;
+    orcid?: string | undefined;
     summary: AuthorSummary;
 }
 

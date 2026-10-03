@@ -181,7 +181,7 @@ export default function AlgorithmPost() {
                     <RelatedPosts slugs={frontmatter.relatedDemos} type="demo" />
                     <RelationshipPanel
                         slug={resolvedSlug}
-                        supersededBy={supersededBy}
+                        {...(supersededBy !== undefined && { supersededBy })}
                     />
                 </div>
 
@@ -217,9 +217,9 @@ export default function AlgorithmPost() {
                 <div className="sticky top-6">
                     <RelationsSidebar
                         slug={resolvedSlug}
-                        relatedPosts={frontmatter.relatedPosts}
-                        relatedDemos={frontmatter.relatedDemos}
-                        supersededBy={supersededBy}
+                        {...(frontmatter.relatedPosts !== undefined && { relatedPosts: frontmatter.relatedPosts })}
+                        {...(frontmatter.relatedDemos !== undefined && { relatedDemos: frontmatter.relatedDemos })}
+                        {...(supersededBy !== undefined && { supersededBy })}
                     />
                     {frontmatter.sources?.primary && <AIDisclosure />}
                 </div>

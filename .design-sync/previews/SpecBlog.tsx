@@ -6,9 +6,9 @@ import { SpecBlog } from "vitcv";
 // arrow. The tile's width comes from its parent grid column there; reproduced
 // here with an explicit width so the cell crops tightly around one tile.
 //
-// A plain <a> stands in for react-router-dom's <Link>: this preview file
+// A plain <a> stands in for react-router's <Link>: this preview file
 // bundles from source (story-imports.mjs rule 3), which gives it its OWN
-// copy of react-router-dom distinct from the one inside the ambient
+// copy of react-router distinct from the one inside the ambient
 // MemoryRouter (bundled into the shipped global). Two separate module
 // instances means two separate NavigationContext objects, so a real <Link>
 // here reads a context the provider never wrote to and throws ("Cannot

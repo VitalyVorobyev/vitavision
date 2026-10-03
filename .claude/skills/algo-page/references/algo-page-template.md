@@ -116,7 +116,7 @@ with NumPy-style vectorization.>
      because it overflows narrow viewports. Model the script on the canonical
      pattern at py/generate_gp_checkerboard_pipeline.py — matplotlib
      FancyBboxPatch boxes, snake layout (cols=3 wraps to 3+3+1...),
-     slate-50 figure patch, white axes, 12-pt labels, deterministic
+     ui `raised` figure patch (#f4f6f7), white axes, 12-pt labels, deterministic
      svg.hashsalt, accessibility post-pass injecting <title>/<desc>.
      A pipeline figure earns its place when it visualizes flow (snake
      wrap, parallel paths, fan-out, feedback) the numbered :::algorithm[...]
@@ -143,7 +143,7 @@ flowchart TB
 
 <!-- Generated SVG — sibling script at py/generate_<slug>_<name>.py writes content/images/<slug>/<name>.svg.
      Use for data-driven figures: response surfaces, parametric regions, contour / density plots, etc.
-     Model the script on py/generate_harris_eigenvalue_regions.py (deterministic, accessible, Tailwind palette).
+     Model the script on py/generate_harris_eigenvalue_regions.py (deterministic, accessible; colours copied from the ui/editorial tokens, see _shared/illustrations.md, never the Tailwind palette).
      Run with: .venv/bin/python py/generate_<slug>_<name>.py -->
 
 ![Caption describing what the generated plot shows](./images/<slug>/<name>.svg)

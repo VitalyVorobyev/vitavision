@@ -21,9 +21,9 @@ const REPO = resolve(HERE, '..');
 
 // ── Stylesheet ───────────────────────────────────────────────────────────
 // Vite emits the compiled Tailwind sheet with ROOT-ABSOLUTE font urls
-// (`url(/assets/inter-….woff2)`). The converter resolves url() relative to the
+// (`url(/assets/ibm-plex-sans-….woff2)`). The converter resolves url() relative to the
 // stylesheet, so those never resolve — every @font-face ships dangling and all
-// 117 font files silently fail to copy, leaving designs in a fallback font.
+// font files silently fail to copy, leaving designs in a fallback font.
 // Rewriting them to `../assets/` and writing the sheet next to dist/assets
 // makes them resolvable, so the fonts travel with the bundle.
 mkdirSync(join(REPO, 'dist/ds'), { recursive: true });

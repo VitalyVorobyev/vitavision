@@ -42,7 +42,7 @@ After any code change, run **all** of the following before committing:
 2. `bun run lint` — ESLint
 3. `npx vitest run` — unit tests
 4. `bun run scripts/test-wasm-schemas.ts` — WASM integration tests (when touching algorithm configs)
-5. `bun run ds:validate` — design-system boundary (when touching a component exported from `.design-sync/ds-entry.tsx`)
+5. `bun run ds:validate` — design-system boundary (when touching a component exported from `.design-sync/ds-entry.tsx` or a `.design-sync/previews/` file; it also checks that the entry, `config.json` and the previews agree)
 
 ### Secrets & Credentials
 
@@ -209,16 +209,25 @@ section to public pages — never publish from a raw LLM summary.
 Static computer vision web app: image annotation editor + WASM algorithm runner. **No backend** — all processing is client-side.
 
 ### Tech Stack
-- **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS
+- **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS v4 + react-router
+- **UI system**: `@vitavision/ui` — design tokens (`@vitavision/ui/styles.css`: `ground` / `surface` / `raised` / `overlay` / `line` / `fg*` / `signal` + verdicts `normal` / `defect` / `warn`), the theme controller, IBM Plex fonts, and every interactive control (`Button`, `Field` + `NumberInput`, `Select`, `SegmentedControl`, `Checkbox`, `Switch`, `Dialog`, `Callout`, `Tooltip` / `InfoHint`, `toast()` …). It is built in the separate **lab-ui** monorepo (`~/vision/lab-ui`; `docs/plan/PLAN.md` and `docs/visual-language.md` are the source of truth for UI, and its Storybook specifies each component). Use the ui component rather than hand-rolling a control; editorial pages keep their own markup (Source Serif 4, `src/styles/editorial-tokens.css`).
+- **Toolchain**: `@vitavision/config-ts` (strict compiler options, incl. `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`) and `@vitavision/config-eslint` (type-aware lint plus the `tokensOnly(['src/**'])` rule, gate G5.1: no raw Tailwind palette classes or hex literals in `src/`; colour data lives in the modules allowlisted with a reason in `eslint.config.js`)
 - **State**: Zustand (`src/store/editor/useEditorStore.ts`)
-- **Canvas**: react-konva
+- **Canvas**: react-konva (colours from `useCanvasTokens()`, since canvas cannot resolve `var(--x)`)
 - **CV Processing**: WASM npm packages executed in Web Workers
+- **Auth**: Clerk (sign-in and `/admin` only)
+- **Design sync**: `.design-sync/` curates the components synced to claude.ai/design (`NOTES.md` first)
 - **Hosting**: Cloudflare Pages (static)
 
-### Frontend Routes
+### Frontend Routes (`src/App.tsx`)
 - `/` — Home
 - `/blog`, `/blog/:slug` — Blog
-- `/editor` — Main image editor
+- `/atlas` — the Atlas (views via `?view=`: catalog grid/list, graph, narratives, people, papers; `?kind=` filters); `/atlas/:slug` — algorithm/model/concept page; `/atlas/narratives/:slug` — narrative
+- `/authors/:id`, `/papers/:id` — author and paper pages (unlisted registers; `/authors` redirects to the People view)
+- `/demos`, `/demos/:slug` — Demos
+- `/editor` — Main image editor; `/tools/target-generator` — calibration target generator
+- `/about`, `/sign-in`, `/admin/*` (drafts, users, analytics)
+- `/algorithms/*`, `/concepts/*` — legacy redirects into `/atlas`
 
 ### Editor Layout (`src/pages/Editor.tsx`)
 Two modes via `galleryMode` in the Zustand store:

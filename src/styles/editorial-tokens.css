@@ -18,7 +18,7 @@
  */
 
 :root {
-    /* The brand mark's pupil (docs/brand_identity.md, the favicons). An identity colour,
+    /* The brand mark's pupil (see the favicons and .design-sync/conventions.md). An identity colour,
        not an accent: it never means "you can act here". */
     --vv-brand-mark: #33c6e3;
 

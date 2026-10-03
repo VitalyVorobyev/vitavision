@@ -286,7 +286,7 @@ Run before handing off a draft.
 - [ ] No softeners, no marketing vocabulary, no hedges.
 - [ ] Math uses `$...$` and `$$...$$`. Every code fence has a language tag.
 - [ ] Every display-math formula fits within the content column — long loss sums use `\begin{aligned}...\end{aligned}` with explicit `\\` breaks.
-- [ ] Illustration pass done: at most two figures. Mermaid pipelines inline; hand-authored SVGs under `content/images/<slug>/`; generated SVGs have a sibling `py/generate_<slug>_<name>.py` committed alongside the SVG, deterministic, accessibility post-pass, Tailwind palette — same rules as `algo-page`.
+- [ ] Illustration pass done: at most two figures. Mermaid pipelines inline; hand-authored SVGs under `content/images/<slug>/`; generated SVGs have a sibling `py/generate_<slug>_<name>.py` committed alongside the SVG, deterministic, accessibility post-pass, colours from the ui/editorial token values in `_shared/illustrations.md` — same rules as `algo-page`.
 - [ ] No real-image model-output figure committed as a reference-card illustration. Real-image figures belong in a demo or blog post.
 - [ ] Research notes exist for `sources.primary` AND every entry in `sources.references`. Page draft is the result of the Draft contract on those notes; the orchestrator did not load any `docs/papers/.cache/*` file.
 - [ ] AUDIT JSON returned by the Draft subagent has zero MISS entries when grep-checked against the cited notes (verification recipe in `_shared/subagent-prompts.md`).

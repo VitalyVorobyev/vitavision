@@ -26,7 +26,7 @@ describe("adaptChessCornersResult", () => {
         expect(result.image_height).toBe(200);
         expect(result.corners).toHaveLength(1);
 
-        const c = result.corners[0];
+        const c = result.corners[0]!;
         expect(c.x).toBe(10);
         expect(c.y).toBe(20);
         expect(c.x_norm).toBeCloseTo(0.1);
@@ -49,10 +49,10 @@ describe("adaptChessCornersResult", () => {
         const result = adaptChessCornersResult(raw, 10, 10, {}, 1);
 
         expect(result.corners.map((c) => c.response)).toEqual([100, 55, 10]);
-        expect(result.corners[0].confidence).toBe(1);
-        expect(result.corners[0].confidence_level).toBe("high");
-        expect(result.corners[2].confidence).toBe(0);
-        expect(result.corners[2].confidence_level).toBe("low");
+        expect(result.corners[0]!.confidence).toBe(1);
+        expect(result.corners[0]!.confidence_level).toBe("high");
+        expect(result.corners[2]!.confidence).toBe(0);
+        expect(result.corners[2]!.confidence_level).toBe("low");
     });
 
     it("drops non-finite corners", () => {

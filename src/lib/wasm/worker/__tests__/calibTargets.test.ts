@@ -28,7 +28,7 @@ describe("adaptCalibTargetResult", () => {
         };
         const result = adaptCalibTargetResult(raw, "chessboard", 640, 480, 3);
         expect(result.detection.corners).toHaveLength(1);
-        const c = result.detection.corners[0];
+        const c = result.detection.corners[0]!;
         expect(c.x).toBe(64);
         expect(c.y).toBe(48);
         expect(c.x_norm).toBeCloseTo(0.1);
@@ -41,8 +41,8 @@ describe("adaptCalibTargetResult", () => {
     it("falls back corner_id to array index when neither input_index nor id is present", () => {
         const raw = { detection: { kind: "chessboard", corners: [{ position: [0, 0], grid: null, score: 0 }] } };
         const result = adaptCalibTargetResult(raw, "chessboard", 10, 10, 1);
-        expect(result.detection.corners[0].corner_id).toBe(0);
-        expect(result.detection.corners[0].grid).toBeNull();
+        expect(result.detection.corners[0]!.corner_id).toBe(0);
+        expect(result.detection.corners[0]!.grid).toBeNull();
     });
 
     it("maps charuco markers, converting gc {u,v} to grid_cell {gx,gy}", () => {
@@ -65,8 +65,8 @@ describe("adaptCalibTargetResult", () => {
         };
         const result = adaptCalibTargetResult(raw, "charuco", 100, 100, 1);
         expect(result.markers).toHaveLength(1);
-        expect(result.markers![0].grid_cell).toEqual({ gx: 2, gy: 4 });
-        expect(result.markers![0].corners_img).toBeNull();
+        expect(result.markers![0]!.grid_cell).toEqual({ gx: 2, gy: 4 });
+        expect(result.markers![0]!.corners_img).toBeNull();
         expect(result.summary.marker_count).toBe(1);
     });
 

@@ -13,10 +13,13 @@ export function adaptRadsymProposalResult(
     const count = raw.length / stride;
     const circles = [];
 
+    // NOTE(strict-ts): `count` is fractional if `raw.length` is not a multiple of
+    // `stride`, so a trailing partial triple could read past the end (undefined).
+    // The Rust side always emits whole triples; behaviour is kept as-is.
     for (let i = 0; i < count; i++) {
-        const x = raw[i * stride];
-        const y = raw[i * stride + 1];
-        const score = raw[i * stride + 2];
+        const x = raw[i * stride]!;
+        const y = raw[i * stride + 1]!;
+        const score = raw[i * stride + 2]!;
 
         if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
 

@@ -46,7 +46,7 @@ describe("buildFeatureGroups", () => {
             makeRingMarkerFeature("marker-top-left", 0, "ringgrid_decoded", 10, 10),
         ];
 
-        const [ringMarkers] = buildFeatureGroups(features);
+        const ringMarkers = buildFeatureGroups(features)[0]!;
 
         expect(ringMarkers.key).toBe("algo:ringgrid_decoded");
         expect(ringMarkers.features.map((feature) => feature.id)).toEqual([
@@ -64,7 +64,7 @@ describe("buildFeatureGroups", () => {
             makeRingMarkerFeature("r0c1", 1, "ringgrid_decoded", 200, 100, { x: 13.86, y: 0 }),
         ];
 
-        const [group] = buildFeatureGroups(features);
+        const group = buildFeatureGroups(features)[0]!;
         expect(group.features.map((f) => f.id)).toEqual([
             "r0c0", "r0c1", "r1c0", "r1c1",
         ]);
@@ -76,7 +76,7 @@ describe("buildFeatureGroups", () => {
             makeRingMarkerFeature("decoded", 5, "ringgrid_decoded", 200, 200, { x: 0, y: 0 }),
         ];
 
-        const [group] = buildFeatureGroups(features);
+        const group = buildFeatureGroups(features)[0]!;
         expect(group.features.map((f) => f.id)).toEqual(["decoded", "proposal"]);
     });
 
@@ -90,10 +90,10 @@ describe("buildFeatureGroups", () => {
         const groups = buildFeatureGroups(features);
 
         expect(groups).toHaveLength(2);
-        expect(groups[0].key).toBe("algo:ringgrid_decoded");
-        expect(groups[0].features).toHaveLength(2);
-        expect(groups[1].key).toBe("algo:ringgrid_proposal");
-        expect(groups[1].features).toHaveLength(1);
+        expect(groups[0]!.key).toBe("algo:ringgrid_decoded");
+        expect(groups[0]!.features).toHaveLength(2);
+        expect(groups[1]!.key).toBe("algo:ringgrid_proposal");
+        expect(groups[1]!.features).toHaveLength(1);
     });
 
     it("preserves insertion order for non-ringgrid groups", () => {
@@ -122,7 +122,7 @@ describe("buildFeatureGroups", () => {
             },
         ];
 
-        const [markers] = buildFeatureGroups(features);
+        const markers = buildFeatureGroups(features)[0]!;
 
         expect(markers.key).toBe("algo:marker");
         expect(markers.features.map((feature) => feature.id)).toEqual(["marker-5", "marker-1"]);

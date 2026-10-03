@@ -29,7 +29,7 @@ describe("adaptRinggridResult", () => {
         };
         const result = adaptRinggridResult(JSON.stringify(raw), 640, 480, 9);
         expect(result.markers).toHaveLength(1);
-        const m = result.markers[0];
+        const m = result.markers[0]!;
         expect(m.id).toBe(7); // id comes from decode.best_id, not a top-level field
         expect(m.center).toEqual({ x: 12, y: 34 });
         expect(m.decode).toEqual({ best_id: 7, best_rotation: 1, best_dist: 2, margin: 3, decode_confidence: 0.95 });
@@ -45,7 +45,7 @@ describe("adaptRinggridResult", () => {
             ],
         };
         const result = adaptRinggridResult(JSON.stringify(raw), 10, 10, 1);
-        const m = result.markers[0];
+        const m = result.markers[0]!;
         expect(m.id).toBe(0);
         expect(m.decode).toBeNull();
         expect(m.fit).toBeNull();
@@ -59,6 +59,6 @@ describe("adaptRinggridResult", () => {
             ],
         };
         const result = adaptRinggridResult(JSON.stringify(raw), 10, 10, 1);
-        expect(result.markers[0].ellipse_inner).toEqual({ cx: 3, cy: 4, a: 0, b: 0, angle: 0 });
+        expect(result.markers[0]!.ellipse_inner).toEqual({ cx: 3, cy: 4, a: 0, b: 0, angle: 0 });
     });
 });

@@ -52,7 +52,7 @@ describe("migrateFeaturesV1", () => {
         expect(migrated).toMatchObject({ x: 6.5, y: 8.5, axes, score: 0.5 });
     });
 
-    it("shifts a ring marker's centre and both ellipse centres, not their radii or angles", () => {
+    it("shifts a ring marker's centre but not its ellipses, which version 1 stored native", () => {
         const migrated = migrateOne({
             ...base,
             id: "r",
@@ -65,9 +65,23 @@ describe("migrateFeaturesV1", () => {
         expect(migrated).toMatchObject({
             x: 50,
             y: 60,
-            outerEllipse: { cx: 49.5, cy: 59.5, a: 12, b: 10, angleDeg: 30 },
-            innerEllipse: { cx: 50.5, cy: 60.5, a: 6, b: 5, angleDeg: 31 },
+            outerEllipse: { cx: 50, cy: 60, a: 12, b: 10, angleDeg: 30 },
+            innerEllipse: { cx: 51, cy: 61, a: 6, b: 5, angleDeg: 31 },
         });
+    });
+
+    it("leaves PuzzleBoard detections alone: version 1 already stored them native", () => {
+        const corner: Feature = {
+            id: "p",
+            type: "point",
+            x: 12.25,
+            y: 40.75,
+            source: "algorithm",
+            algorithmId: "puzzleboard",
+            runId: "run-1",
+            readonly: true,
+        } as Feature;
+        expect(migrateOne(corner)).toEqual(corner);
     });
 
     it("shifts an ArUco marker's centre and all four corners", () => {

@@ -1,4 +1,4 @@
-import type { Feature, RingMarkerEllipse } from "./editorTypes";
+import type { Feature } from "./editorTypes";
 
 /**
  * The feature file format. Version 1 (a bare JSON array, no `version`) stored coordinates with the
@@ -19,17 +19,18 @@ function shiftFlat<T extends readonly number[]>(points: T): { -readonly [K in ke
     return points.map(shift) as { -readonly [K in keyof T]: number };
 }
 
-const shiftEllipse = (ellipse: RingMarkerEllipse): RingMarkerEllipse => ({
-    ...ellipse,
-    cx: shift(ellipse.cx),
-    cy: shift(ellipse.cy),
-});
+/**
+ * Detections a version 1 file already stored in the detector's own frame: the PuzzleBoard
+ * adapter never added the 0.5, so its features need no shift.
+ */
+const NATIVE_IN_V1 = new Set(["puzzleboard"]);
 
 /**
- * Move one version 1 feature into the version 2 frame: every pixel coordinate shifts by -0.5.
+ * Move one version 1 feature into the version 2 frame: its pixel coordinates shift by -0.5.
  * Lengths (radii, widths, heights), angles, directions, scores and board millimetres do not.
  */
 function migrateFeatureV1(feature: Feature): Feature {
+    if (feature.algorithmId !== undefined && NATIVE_IN_V1.has(feature.algorithmId)) return feature;
     switch (feature.type) {
         case "point":
         case "bbox":
@@ -43,13 +44,9 @@ function migrateFeatureV1(feature: Feature): Feature {
         case "polygon":
             return { ...feature, points: shiftFlat(feature.points) } as Feature;
         case "ring_marker":
-            return {
-                ...feature,
-                x: shift(feature.x),
-                y: shift(feature.y),
-                outerEllipse: shiftEllipse(feature.outerEllipse),
-                innerEllipse: shiftEllipse(feature.innerEllipse),
-            };
+            // The ringgrid adapter added 0.5 to the marker centre but copied the fitted
+            // ellipses' centres as the detector reported them, so only the centre moves.
+            return { ...feature, x: shift(feature.x), y: shift(feature.y) };
         case "aruco_marker":
             return {
                 ...feature,
@@ -61,8 +58,8 @@ function migrateFeatureV1(feature: Feature): Feature {
 }
 
 /**
- * The features of a version 1 file, as version 2 features: every coordinate of every feature
- * shifted by -0.5 (see `FEATURE_FILE_VERSION`). Pure; the input is not changed.
+ * The features of a version 1 file, as version 2 features: the coordinates version 1 offset by
+ * 0.5 shift back by -0.5 (see `FEATURE_FILE_VERSION`). Pure; the input is not changed.
  */
 export function migrateFeaturesV1(features: readonly Feature[]): Feature[] {
     return features.map(migrateFeatureV1);

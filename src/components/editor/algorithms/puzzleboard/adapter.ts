@@ -46,7 +46,7 @@ const toFeatures = (result: PuzzleBoardDetectResult, runId: string): LabeledPoin
             score: c.score,
             gridIndex: c.grid!,
             masterId: c.master_id!,
-            targetPosMm: c.target_position ?? undefined,
+            ...(c.target_position != null && { targetPosMm: c.target_position }),
         }));
 };
 

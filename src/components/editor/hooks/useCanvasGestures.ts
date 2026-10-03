@@ -106,8 +106,12 @@ export function useCanvasGestures({ pan, setZoom, setPan, touchPrimary }: Gestur
         const stage = event.target.getStage();
         if (!stage) return;
 
-        const t0 = { x: touches[0].clientX, y: touches[0].clientY };
-        const t1 = { x: touches[1].clientX, y: touches[1].clientY };
+        const touch0 = touches[0];
+        const touch1 = touches[1];
+        if (!touch0 || !touch1) return;
+
+        const t0 = { x: touch0.clientX, y: touch0.clientY };
+        const t1 = { x: touch1.clientX, y: touch1.clientY };
         const dist = Math.hypot(t1.x - t0.x, t1.y - t0.y);
         const center = { x: (t0.x + t1.x) / 2, y: (t0.y + t1.y) / 2 };
 

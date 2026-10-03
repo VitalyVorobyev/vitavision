@@ -47,7 +47,8 @@ export function usePixelSampler(
                 const px = Math.floor(pos.x);
                 const py = Math.floor(pos.y);
                 const pixel = ctx.getImageData(px, py, 1, 1).data;
-                setHoverPixel({ x: pos.x, y: pos.y, r: pixel[0], g: pixel[1], b: pixel[2] });
+                // A 1x1 ImageData always holds exactly four RGBA bytes.
+                setHoverPixel({ x: pos.x, y: pos.y, r: pixel[0]!, g: pixel[1]!, b: pixel[2]! });
                 return;
             }
         }

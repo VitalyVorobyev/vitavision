@@ -177,23 +177,23 @@ describe("chessCornersAlgorithm", () => {
     it("applies +0.5 pixel offset", () => {
         const result = mockChessCornersResult(1);
         const features = chessCornersAlgorithm.toFeatures(result, "run-1");
-        expect(features[0].type === "directed_point" && features[0].x).toBe(result.corners[0].x + 0.5);
+        expect(features[0]!.type === "directed_point" && features[0].x).toBe(result.corners[0]!.x + 0.5);
     });
 
     it("emits two axes with dx/dy/angleRad/sigmaRad", () => {
         const result = mockChessCornersResult(1);
         const features = chessCornersAlgorithm.toFeatures(result, "run-1");
-        const f = features[0];
+        const f = features[0]!;
         if (f.type === "directed_point") {
             expect(f.axes).toHaveLength(2);
-            expect(f.axes[0].dx).toBeCloseTo(result.corners[0].axes[0].direction.dx, 5);
-            expect(f.axes[0].dy).toBeCloseTo(result.corners[0].axes[0].direction.dy, 5);
-            expect(f.axes[0].angleRad).toBeCloseTo(result.corners[0].axes[0].angle_rad, 5);
-            expect(f.axes[0].sigmaRad).toBeCloseTo(result.corners[0].axes[0].sigma_rad, 5);
-            expect(f.axes[1].dx).toBeCloseTo(result.corners[0].axes[1].direction.dx, 5);
-            expect(f.axes[1].dy).toBeCloseTo(result.corners[0].axes[1].direction.dy, 5);
-            expect(f.axes[1].angleRad).toBeCloseTo(result.corners[0].axes[1].angle_rad, 5);
-            expect(f.axes[1].sigmaRad).toBeCloseTo(result.corners[0].axes[1].sigma_rad, 5);
+            expect(f.axes[0].dx).toBeCloseTo(result.corners[0]!.axes[0].direction.dx, 5);
+            expect(f.axes[0].dy).toBeCloseTo(result.corners[0]!.axes[0].direction.dy, 5);
+            expect(f.axes[0].angleRad).toBeCloseTo(result.corners[0]!.axes[0].angle_rad, 5);
+            expect(f.axes[0].sigmaRad).toBeCloseTo(result.corners[0]!.axes[0].sigma_rad, 5);
+            expect(f.axes[1].dx).toBeCloseTo(result.corners[0]!.axes[1].direction.dx, 5);
+            expect(f.axes[1].dy).toBeCloseTo(result.corners[0]!.axes[1].direction.dy, 5);
+            expect(f.axes[1].angleRad).toBeCloseTo(result.corners[0]!.axes[1].angle_rad, 5);
+            expect(f.axes[1].sigmaRad).toBeCloseTo(result.corners[0]!.axes[1].sigma_rad, 5);
         }
     });
 
@@ -224,7 +224,7 @@ describe("chessCornersAlgorithm", () => {
         const result = mockChessCornersResult(0);
         const diags = chessCornersAlgorithm.diagnostics!(result);
         expect(diags.length).toBe(1);
-        expect(diags[0].level).toBe("warning");
+        expect(diags[0]!.level).toBe("warning");
     });
 
     it("diagnostics empty on successful detection", () => {
@@ -370,16 +370,16 @@ describe("ringgridAlgorithm", () => {
     it("applies +0.5 pixel offset to center", () => {
         const result = mockRinggridResult(1);
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
-        const f = features[0];
-        expect(f.type === "ring_marker" && f.x).toBe(result.markers[0].center.x + 0.5);
+        const f = features[0]!;
+        expect(f.type === "ring_marker" && f.x).toBe(result.markers[0]!.center.x + 0.5);
     });
 
     it("converts ellipse angle from radians to degrees", () => {
         const result = mockRinggridResult(1);
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
-        const f = features[0];
+        const f = features[0]!;
         if (f.type === "ring_marker") {
-            const expected = result.markers[0].ellipse_outer.angle * (180 / Math.PI);
+            const expected = result.markers[0]!.ellipse_outer.angle * (180 / Math.PI);
             expect(f.outerEllipse.angleDeg).toBeCloseTo(expected, 5);
         }
     });
@@ -423,7 +423,7 @@ describe("ringgridAlgorithm", () => {
         const result = mockRinggridResult(0);
         const diags = ringgridAlgorithm.diagnostics!(result);
         expect(diags.length).toBe(1);
-        expect(diags[0].level).toBe("warning");
+        expect(diags[0]!.level).toBe("warning");
     });
 
     it("handles empty result", () => {
@@ -435,21 +435,21 @@ describe("ringgridAlgorithm", () => {
     it("assigns ringgrid_decoded kind to decoded markers", () => {
         const result = mockRinggridResult(1);
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
-        expect(features[0].meta?.kind).toBe("ringgrid_decoded");
+        expect(features[0]!.meta?.kind).toBe("ringgrid_decoded");
     });
 
     it("assigns ringgrid_proposal kind to undecoded markers", () => {
         const result = mockRinggridResult(1);
-        result.markers[0].decode = null;
+        result.markers[0]!.decode = null;
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
-        expect(features[0].meta?.kind).toBe("ringgrid_proposal");
+        expect(features[0]!.meta?.kind).toBe("ringgrid_proposal");
     });
 
     it("generates unique feature IDs even with duplicate marker IDs", () => {
         const result = mockRinggridResult(3);
-        result.markers[0].decode = null;
-        result.markers[1].decode = null;
-        result.markers[2].decode = null;
+        result.markers[0]!.decode = null;
+        result.markers[1]!.decode = null;
+        result.markers[2]!.decode = null;
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
         const ids = features.map((f) => f.id);
         expect(new Set(ids).size).toBe(ids.length);
@@ -483,13 +483,13 @@ describe("radsymAlgorithm", () => {
     it("applies +0.5 pixel offset", () => {
         const result = mockRadsymResult(1);
         const features = radsymAlgorithm.toFeatures(result, "run-1");
-        expect(features[0].type === "point" && features[0].x).toBe(result.circles[0].x + 0.5);
+        expect(features[0]!.type === "point" && features[0].x).toBe(result.circles[0]!.x + 0.5);
     });
 
     it("preserves score in meta", () => {
         const result = mockRadsymResult(1);
         const features = radsymAlgorithm.toFeatures(result, "run-1");
-        expect(features[0].meta?.score).toBe(result.circles[0].score);
+        expect(features[0]!.meta?.score).toBe(result.circles[0]!.score);
     });
 
     it("summary returns count and runtime", () => {
@@ -505,7 +505,7 @@ describe("radsymAlgorithm", () => {
         const result = mockRadsymResult(0);
         const diags = radsymAlgorithm.diagnostics!(result);
         expect(diags.length).toBe(1);
-        expect(diags[0].level).toBe("warning");
+        expect(diags[0]!.level).toBe("warning");
     });
 
     it("handles empty result", () => {
@@ -588,8 +588,8 @@ describe("puzzleboardAlgorithm", () => {
 
     it("skips corners with null grid or null master_id", () => {
         const result = mockPuzzleboardResult(3);
-        result.detection.corners[1].grid = null;
-        result.detection.corners[2].master_id = null;
+        result.detection.corners[1]!.grid = null;
+        result.detection.corners[2]!.master_id = null;
         const features = puzzleboardAlgorithm.toFeatures(result, "run-pb");
         expect(features).toHaveLength(1);
     });
@@ -599,10 +599,10 @@ describe("puzzleboardAlgorithm", () => {
         const summary = puzzleboardAlgorithm.summary(result);
         expect(summary).toHaveLength(5);
         expect(summary[0]).toEqual({ label: "Corners", value: "10" });
-        expect(summary[1].label).toBe("Mean confidence");
-        expect(summary[2].label).toBe("Bit error rate");
+        expect(summary[1]!.label).toBe("Mean confidence");
+        expect(summary[2]!.label).toBe("Bit error rate");
         expect(summary[3]).toEqual({ label: "Master origin", value: "(3, 2)" });
-        expect(summary[4].label).toBe("Runtime");
+        expect(summary[4]!.label).toBe("Runtime");
     });
 
     it("diagnostics warns on high bit error rate paired with low confidence", () => {

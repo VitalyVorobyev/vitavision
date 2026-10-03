@@ -57,6 +57,7 @@ function buildEdgeMarkers(
     const markers: EdgeMarker[] = [];
     for (let idx = 0; idx < edges.length; idx++) {
         const e = edges[idx];
+        if (!e) continue;
         // Horizontal edge at (row=r, col=c): connects local (i=c, j=r) → (i=c+1, j=r).
         // Vertical   edge at (row=r, col=c): connects local (i=c, j=r) → (i=c,   j=r+1).
         const [ai, aj] = toMaster(e.col, e.row);
@@ -114,8 +115,11 @@ function buildPuzzleGrid(corners: PuzzleBoardDetectResult["detection"]["corners"
     for (const group of rowMap.values()) {
         group.sort((a, b) => a.j - b.j);
         for (let k = 0; k < group.length - 1; k++) {
-            if (group[k + 1].j - group[k].j === 1) {
-                rowEdges.push({ x1: group[k].x, y1: group[k].y, x2: group[k + 1].x, y2: group[k + 1].y });
+            const a = group[k];
+            const b = group[k + 1];
+            if (!a || !b) continue;
+            if (b.j - a.j === 1) {
+                rowEdges.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y });
             }
         }
     }
@@ -124,8 +128,11 @@ function buildPuzzleGrid(corners: PuzzleBoardDetectResult["detection"]["corners"
     for (const group of colMap.values()) {
         group.sort((a, b) => a.i - b.i);
         for (let k = 0; k < group.length - 1; k++) {
-            if (group[k + 1].i - group[k].i === 1) {
-                colEdges.push({ x1: group[k].x, y1: group[k].y, x2: group[k + 1].x, y2: group[k + 1].y });
+            const a = group[k];
+            const b = group[k + 1];
+            if (!a || !b) continue;
+            if (b.i - a.i === 1) {
+                colEdges.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y });
             }
         }
     }

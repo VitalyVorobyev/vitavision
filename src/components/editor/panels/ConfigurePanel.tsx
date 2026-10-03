@@ -125,7 +125,8 @@ export default function ConfigurePanel() {
     const runner = useAlgorithmRunner();
 
     const manifestEntry = useMemo(
-        () => ALGORITHM_MANIFEST.find((e) => e.id === selectedAlgorithmId) ?? ALGORITHM_MANIFEST[0],
+        // ALGORITHM_MANIFEST is a non-empty static list, so index 0 always exists.
+        () => ALGORITHM_MANIFEST.find((e) => e.id === selectedAlgorithmId) ?? ALGORITHM_MANIFEST[0]!,
         [selectedAlgorithmId],
     );
 
@@ -182,8 +183,9 @@ export default function ConfigurePanel() {
         try {
             const mappedFeatures = algorithm.toFeatures(output.result, output.runId);
             replaceAlgorithmFeatures(algorithm.id, mappedFeatures);
-            if (mappedFeatures.length > 0) {
-                setSelectedFeatureId(mappedFeatures[0].id);
+            const firstFeature = mappedFeatures[0];
+            if (firstFeature) {
+                setSelectedFeatureId(firstFeature.id);
             }
 
             const summaryEntries = algorithm.summary(output.result);

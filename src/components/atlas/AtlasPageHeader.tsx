@@ -11,13 +11,13 @@ type PageKind = "algorithm" | "model" | "concept";
 interface AtlasFrontmatter {
     title: string;
     date: string;
-    updated?: string;
-    readingTimeMinutes?: number;
-    difficulty?: Difficulty;
+    updated?: string | undefined;
+    readingTimeMinutes?: number | undefined;
+    difficulty?: Difficulty | undefined;
     tags: string[];
-    draft?: boolean;
-    dev?: boolean;
-    sources?: { primary?: string };
+    draft?: boolean | undefined;
+    dev?: boolean | undefined;
+    sources?: { primary?: string | undefined } | undefined;
 }
 
 interface AtlasPageHeaderProps {

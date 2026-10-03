@@ -368,7 +368,7 @@ export default function ChessResponseIllustration({
 }
 
 interface ArticleLayoutProps {
-    className?: string;
+    className?: string | undefined;
     showControls: boolean;
     initialPattern: ChessResponsePattern;
     initialRotation: number;

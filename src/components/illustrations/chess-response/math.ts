@@ -16,7 +16,8 @@ function mean(values: number[]): number {
 }
 
 function oppositeSample(samples: ChessResponsePoint[], index: number): ChessResponsePoint {
-    return samples[(index + 8) % samples.length];
+    // Modulo keeps the index within [0, samples.length).
+    return samples[(index + 8) % samples.length]!;
 }
 
 export function computeChessResponse(
@@ -26,11 +27,14 @@ export function computeChessResponse(
     const samples = createRingSamples(controls);
     const localMeanSamples = createLocalMeanSamples(controls);
 
+    // Term indices below are < CHESS_RESPONSE_SAMPLE_COUNT (16), the ring-sample count.
+    const intensityAt = (index: number) => samples[index]!.intensity;
+
     const srTerms: ChessResponseSumTerm[] = Array.from({ length: 4 }, (_, phase) => {
         const pairA: [number, number] = [phase, phase + 8];
         const pairB: [number, number] = [phase + 4, phase + 12];
-        const sumA = samples[pairA[0]].intensity + samples[pairA[1]].intensity;
-        const sumB = samples[pairB[0]].intensity + samples[pairB[1]].intensity;
+        const sumA = intensityAt(pairA[0]) + intensityAt(pairA[1]);
+        const sumB = intensityAt(pairB[0]) + intensityAt(pairB[1]);
 
         return {
             phase,
@@ -47,7 +51,7 @@ export function computeChessResponse(
         return {
             index,
             pair: [index, opposite.index],
-            value: Math.abs(samples[index].intensity - opposite.intensity),
+            value: Math.abs(intensityAt(index) - opposite.intensity),
         };
     });
 

@@ -1,6 +1,6 @@
 import { useRef, useCallback, type PointerEvent, type KeyboardEvent, type ReactElement } from "react";
 import { triangleArea, triangleMinAngle } from "./geometry";
-import type { DelaunayVoronoiState } from "./useDelaunayVoronoi";
+import { triangleVertices, type DelaunayVoronoiState } from "./useDelaunayVoronoi";
 import type { HoverTarget } from "./types";
 
 const W = 800;
@@ -43,7 +43,10 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                     if (poly) {
                         let area = 0;
                         for (let i = 0; i < poly.length - 1; i++) {
-                            area += poly[i][0] * poly[i + 1][1] - poly[i + 1][0] * poly[i][1];
+                            // i and i + 1 are both < poly.length by the loop bound.
+                            const [x0, y0] = poly[i]!;
+                            const [x1, y1] = poly[i + 1]!;
+                            area += x0 * y1 - x1 * y0;
                         }
                         area = Math.abs(area) / 2;
                         return { kind: "cell", index: cellIdx, area: area / (W * H) };
@@ -51,9 +54,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                 }
             }
             if (layers.delaunay && triangles.length > 0) {
-                for (let i = 0; i < triangles.length; i++) {
-                    const { ai, bi, ci } = triangles[i];
-                    const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
+                for (const [i, triangle] of triangles.entries()) {
+                    const [a, b, c] = triangleVertices(allPoints, triangle);
                     const minX = Math.min(a.x, b.x, c.x);
                     const maxX = Math.max(a.x, b.x, c.x);
                     const minY = Math.min(a.y, b.y, c.y);
@@ -209,9 +211,9 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
     // Build hover highlight polygon points string
     let hoverPolygonPoints: string | null = null;
     if (hover !== null && allPoints.length >= 3) {
-        if (hover.kind === "triangle" && hover.index < triangles.length) {
-            const { ai, bi, ci } = triangles[hover.index];
-            const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
+        const hoveredTriangle = hover.kind === "triangle" ? triangles[hover.index] : undefined;
+        if (hoveredTriangle !== undefined) {
+            const [a, b, c] = triangleVertices(allPoints, hoveredTriangle);
             hoverPolygonPoints = `${a.x},${a.y} ${b.x},${b.y} ${c.x},${c.y}`;
         } else if (hover.kind === "cell" && voronoi) {
             const poly = voronoi.cellPolygon(hover.index);
@@ -283,8 +285,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             {/* Layer 3: Circumcircles */}
             {layers.circumcircles && allPoints.length >= 3 && (
                 <g aria-hidden="true" pointerEvents="none">
-                    {triangles.map(({ ai, bi, ci }, i) => {
-                        const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
+                    {triangles.map((triangle, i) => {
+                        const [a, b, c] = triangleVertices(allPoints, triangle);
                         const ax = b.x - a.x, ay = b.y - a.y;
                         const bx = c.x - a.x, by = c.y - a.y;
                         const D = 2 * (ax * by - ay * bx);
@@ -325,7 +327,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                                 const key = u < v ? `${u}-${v}` : `${v}-${u}`;
                                 if (rendered.has(key)) continue;
                                 rendered.add(key);
-                                const a = allPoints[u], b = allPoints[v];
+                                // u and v are triangle vertex indices, valid for allPoints.
+                                const a = allPoints[u]!, b = allPoints[v]!;
                                 lines.push(
                                     <line
                                         key={key}

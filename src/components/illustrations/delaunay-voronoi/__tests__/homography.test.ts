@@ -65,9 +65,9 @@ describe("computeHomography", () => {
         expect(H).not.toBeNull();
         const srcCorners = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }];
         for (let i = 0; i < 4; i++) {
-            const r = applyHomography(H!, srcCorners[i]);
-            expect(r.x).toBeCloseTo(corners[i].x, 9);
-            expect(r.y).toBeCloseTo(corners[i].y, 9);
+            const r = applyHomography(H!, srcCorners[i]!);
+            expect(r.x).toBeCloseTo(corners[i]!.x, 9);
+            expect(r.y).toBeCloseTo(corners[i]!.y, 9);
         }
     });
 

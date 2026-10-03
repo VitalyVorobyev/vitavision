@@ -67,9 +67,7 @@ export default function ReadingProgress({ articleRef }: ReadingProgressProps) {
                 rafIdRef.current = null;
             }
         };
-        // articleRef is a stable ref object — its identity never changes
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [articleRef]);
 
     if (!visible) return null;
 

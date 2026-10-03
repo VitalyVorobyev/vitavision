@@ -145,6 +145,7 @@ function replaceRefsInTree(
 ): void {
     for (let index = 0; index < node.children.length; index += 1) {
         const child = node.children[index];
+        if (child === undefined) continue;
 
         if ("children" in child && Array.isArray(child.children)) {
             if (!SKIP_CONTAINER_TYPES.has(child.type)) {
@@ -177,10 +178,11 @@ const remarkEquationReferences: Plugin<[], Root> = () => {
                 .map((match) => match[1]?.trim() ?? "")
                 .filter(Boolean);
 
-            if (labels.length === 0) return;
+            const [firstLabel] = labels;
+            if (firstLabel === undefined) return;
 
             equationCount += 1;
-            const anchorId = createAnchorId(labels[0], usedIds);
+            const anchorId = createAnchorId(firstLabel, usedIds);
             annotateEquation(mathNode, equationCount, anchorId);
 
             for (const label of labels) {

@@ -27,7 +27,7 @@ describe("composeSchema", () => {
         expect(Object.keys(schema.properties ?? {})).toEqual(["algorithm", "b"]);
     });
 
-    it("folds a $ref with properties beside it, so a tagged variant keeps the struct's fields", () => {
+    it("resolves a tagged variant ($ref with sibling properties) to the struct's fields in declaration order, through forms' shapeOf", () => {
         const schema = composeSchema("ring grid", { board: asSchema(targetSpec) });
         const lattice = shapeOf({ $ref: "#/$defs/board_LatticeGeometry" }, schema);
         expect(lattice.kind).toBe("tagged");

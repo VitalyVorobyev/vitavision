@@ -74,39 +74,3 @@ export interface EllipseItem {
 export function ellipseItem(id: string, ellipse: EllipseGeometry): EllipseItem {
     return { id, x: ellipse.x, y: ellipse.y, rx: ellipse.radiusX, ry: ellipse.radiusY, angle: ellipse.rotation * DEG_TO_RAD };
 }
-
-/**
- * The ellipse under a point, for a hit-test layer: one whose outline is within `radius` of it, nearest
- * first; else the smallest one it is inside, as `AreaSet` picks a region. Linear in the number of
- * ellipses, which are hand-drawn and few.
- *
- * @param items - The ellipses.
- * @param point - The query, image coordinates.
- * @param radius - The pointer's tolerance, image pixels.
- * @returns The id and the distance to the outline (exact for a circle, close for a mild ellipse), or `null`.
- */
-export function pickEllipse(
-    items: readonly EllipseItem[],
-    point: { x: number; y: number },
-    radius: number,
-): { id: string; dist: number } | null {
-    let onOutline: { id: string; dist: number } | null = null;
-    let containing: { id: string; dist: number; area: number } | null = null;
-    for (const item of items) {
-        const c = Math.cos(item.angle);
-        const s = Math.sin(item.angle);
-        const dx = point.x - item.x;
-        const dy = point.y - item.y;
-        const local = { x: c * dx + s * dy, y: -s * dx + c * dy };
-        const n = Math.hypot(local.x / item.rx, local.y / item.ry);
-        const dist = Math.abs(n - 1) * Math.min(item.rx, item.ry);
-        if (dist <= radius) {
-            if (onOutline === null || dist < onOutline.dist) onOutline = { id: item.id, dist };
-        } else if (n < 1) {
-            const area = item.rx * item.ry;
-            if (containing === null || area < containing.area) containing = { id: item.id, dist, area };
-        }
-    }
-    if (onOutline) return onOutline;
-    return containing ? { id: containing.id, dist: containing.dist } : null;
-}

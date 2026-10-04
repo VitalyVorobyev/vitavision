@@ -1,20 +1,19 @@
 import { useMemo } from "react";
 import {
     AreaSet,
+    EllipseSet,
     PointSet,
     PolylineSet,
-    STAGE_HIT_PRIORITY,
     overlayRole,
     translatePoints,
-    useStageHitLayer,
     type AreaSetItem,
+    type EllipseSetItem,
     type PointSetItem,
     type PolylineSetItem,
 } from "@vitavision/stage2d";
-import { EllipseSet, type EllipseSetItem } from "@vitavision/overlays";
 
 import type { Feature } from "../../../store/editor/useEditorStore";
-import { bboxToShape, ellipseItem, pickEllipse, shapeRing, type EllipseItem } from "./shapeConvert";
+import { bboxToShape, ellipseItem, shapeRing } from "./shapeConvert";
 
 /** A feature being moved by a drag: drawn shifted by `delta` until the drag commits. */
 export interface MoveDraft {
@@ -38,7 +37,7 @@ interface Items {
     points: PointSetItem[];
     lines: PolylineSetItem[];
     areas: AreaSetItem[];
-    ellipses: EllipseItem[];
+    ellipses: EllipseSetItem[];
 }
 
 function buildItems(features: readonly Feature[], moving: MoveDraft | null, editingId: string | null): Items {
@@ -78,18 +77,12 @@ function buildItems(features: readonly Feature[], moving: MoveDraft | null, edit
 
 /**
  * The hand-drawn annotations, one stage2d layer per geometry. Hit-testing is the layers' own
- * (`PointSet`, `PolylineSet`, `AreaSet`) plus one registered here for the ellipses, which no stage2d
- * layer picks. Nothing here handles a pointer: the tool surface above asks `useStageHitTest`.
+ * (`PointSet`, `PolylineSet`, `AreaSet`) and `EllipseSet`. Nothing here handles a pointer: the tool surface above asks `useStageHitTest`.
  */
 export default function AnnotationLayers({ features, selectedId, moving, editingId }: AnnotationLayersProps) {
     const items = useMemo(() => buildItems(features, moving, editingId), [features, moving, editingId]);
     const selection = useMemo(() => (selectedId === null ? [] : [selectedId]), [selectedId]);
-    const ellipses = useMemo<EllipseSetItem[]>(() => items.ellipses, [items.ellipses]);
-
-    useStageHitLayer({
-        priority: STAGE_HIT_PRIORITY.area,
-        pick: (point, radius) => pickEllipse(items.ellipses, point, radius),
-    });
+    const { ellipses } = items;
 
     return (
         <>

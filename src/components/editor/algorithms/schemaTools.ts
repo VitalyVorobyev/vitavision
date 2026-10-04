@@ -30,50 +30,41 @@ function reprefix(node: unknown, prefix: string): unknown {
     return out;
 }
 
-const rank = (order: string[], key: string): number => {
-    const index = order.indexOf(key);
-    return index === -1 ? order.length : index;
-};
+/**
+ * Names of the `$defs` that a node refers to with `properties` written beside the `$ref` (an
+ * internally tagged variant). Forms merges the two itself, but keeps the target's property order.
+ */
+function taggedVariantTargets(node: unknown, found: Set<string> = new Set()): Set<string> {
+    if (Array.isArray(node)) {
+        for (const item of node) taggedVariantTargets(item, found);
+    } else if (node !== null && typeof node === "object") {
+        const record = node as Record<string, unknown>;
+        const ref = record.$ref;
+        if (typeof ref === "string" && REF.test(ref) && typeof record.properties === "object" && record.properties !== null) {
+            found.add(ref.replace(REF, ""));
+        }
+        for (const [key, value] of Object.entries(record)) {
+            if (key !== "$defs" && key !== "definitions") taggedVariantTargets(value, found);
+        }
+    }
+    return found;
+}
 
 /**
- * Inline a `$ref` that has `properties` written beside it.
- *
- * ringgrid's target spec writes an internally tagged variant as the struct it flattens plus
- * the discriminator: `{ "$ref": "#/$defs/HexGeometry", "properties": { "kind": { "const": "hex" } } }`.
- * Both apply (that is JSON Schema), but a form that follows the `$ref` and then looks at
- * `properties` sees only the discriminator and none of the struct's fields. Folding the two
- * into one object schema, discriminator first, gives it the shape every other tagged union
- * in these schemas has.
+ * `def` with its `properties` in declaration order. schemars writes `properties` alphabetically but
+ * `required` in the struct's declaration order, which is the order a reader expects; fields not in
+ * `required` follow, alphabetically.
  */
-function inlineSiblingProperties(node: unknown, defs: Record<string, JsonSchema>): unknown {
-    if (Array.isArray(node)) return node.map((item) => inlineSiblingProperties(item, defs));
-    if (node === null || typeof node !== "object") return node;
-    const record = node as Record<string, unknown>;
-    const out: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(record)) {
-        out[key] = key === "$defs" || key === "definitions" ? value : inlineSiblingProperties(value, defs);
-    }
-    const ref = out.$ref;
-    if (typeof ref === "string" && REF.test(ref) && typeof out.properties === "object" && out.properties !== null) {
-        const target = defs[ref.replace(REF, "")];
-        if (target === undefined) return out;
-        const { $ref: _ref, properties, required, ...own } = out;
-        const targetRequired = target.required ?? [];
-        // The schema files list properties alphabetically; `required` keeps the struct's
-        // declaration order, which is the order a reader expects the fields in.
-        const declared = Object.fromEntries(
-            Object.entries(target.properties ?? {}).sort(
-                ([a], [b]) => rank(targetRequired, a) - rank(targetRequired, b) || a.localeCompare(b),
-            ),
-        );
-        return {
-            ...target,
-            ...own,
-            properties: { ...properties, ...declared },
-            required: [...new Set([...((required as string[] | undefined) ?? []), ...targetRequired])],
-        };
-    }
-    return out;
+function inDeclarationOrder(def: JsonSchema): JsonSchema {
+    const required = def.required ?? [];
+    const rank = (key: string): number => {
+        const index = required.indexOf(key);
+        return index === -1 ? required.length : index;
+    };
+    const properties = Object.fromEntries(
+        Object.entries(def.properties ?? {}).sort(([a], [b]) => rank(a) - rank(b) || a.localeCompare(b)),
+    );
+    return { ...def, properties };
 }
 
 /**
@@ -95,10 +86,11 @@ export function composeSchema(
     for (const [key, part] of Object.entries(parts)) {
         const { $defs, definitions, $schema: _ignored, ...root } = part as JsonSchema & { $schema?: string };
         const own: Record<string, JsonSchema> = { ...definitions, ...$defs };
+        const tagged = taggedVariantTargets([root, own]);
         for (const [name, def] of Object.entries(own)) {
-            defs[`${key}_${name}`] = reprefix(inlineSiblingProperties(def, own), key) as JsonSchema;
+            defs[`${key}_${name}`] = reprefix(tagged.has(name) ? inDeclarationOrder(def) : def, key) as JsonSchema;
         }
-        defs[key] = reprefix(inlineSiblingProperties(root, own), key) as JsonSchema;
+        defs[key] = reprefix(root, key) as JsonSchema;
         properties[key] = { $ref: `#/$defs/${key}`, ...(part.description === undefined ? {} : { description: part.description }) };
     }
     return {

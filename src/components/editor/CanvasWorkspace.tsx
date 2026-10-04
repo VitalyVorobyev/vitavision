@@ -1,33 +1,34 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Stage, Layer, Image as KonvaImage, Line, Rect, Ellipse, Transformer } from "react-konva";
-import useImage from "use-image";
-import type Konva from "konva";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { HeatmapLayer, ImageLayer, ImageStage, type StageHandle } from "@vitavision/stage2d";
+import { TargetOverlay, type TargetHit } from "@vitavision/overlays";
 import { Button } from "@vitavision/ui";
-
-import FeatureLayer from "./canvas/FeatureLayer";
-import HeatmapLayer from "./canvas/HeatmapLayer";
-import FeatureTooltip, { type DirectedPointTooltipState } from "./canvas/FeatureTooltip";
-import { isReadonlyFeature, useEditorStore } from "../../store/editor/useEditorStore";
-import { useRadsymHeatmap } from "./algorithms/radsym/useRadsymHeatmap";
 import { useShallow } from "zustand/react/shallow";
-import { getLoadedAlgorithm } from "./algorithms/registry";
+
+import AnnotationLayer from "./annotations/AnnotationLayer";
+import { isDetectionFeature, detectionGroups, toTargetDetection } from "./overlay/targetDetection";
+import FeatureTooltip, { type DirectedPointTooltipState } from "./canvas/FeatureTooltip";
+import PixelReadout, { type PixelReadoutHandle } from "./canvas/PixelReadout";
+import { useDrawing } from "./hooks/useDrawing";
+import { useRadsymHeatmap } from "./algorithms/radsym/useRadsymHeatmap";
+import { isFeatureVisible } from "../../store/editor/featureGroups";
+import { useEditorStore, type Feature } from "../../store/editor/useEditorStore";
 import CanvasControlsHint from "../shared/CanvasControlsHint";
+import ZoomControls from "../shared/ZoomControls";
 import useViewportMode from "../../hooks/useViewportMode";
-import { withAlpha } from "../../lib/canvasTokens";
-import { ANNOTATION_COLORS } from "../../store/editor/featureColors";
-import { usePixelSampler } from "./hooks/usePixelSampler";
-import { useCanvasGestures } from "./hooks/useCanvasGestures";
-import { useDrawingHandlers } from "./hooks/useDrawingHandlers";
+
+/** How far a zoom button steps the scale. */
+const ZOOM_STEP = 1.2;
+/** Where a tooltip sits from the pointer. */
+const TOOLTIP_OFFSET_PX = 12;
 
 export default function CanvasWorkspace() {
     const {
         imageSrc,
+        imageName,
         imageWidth,
         imageHeight,
-        zoom,
-        pan,
-        setZoom,
-        setPan,
+        view,
+        setView,
         setImage,
         activeTool,
         toolVersion,
@@ -40,14 +41,16 @@ export default function CanvasWorkspace() {
         featureGroupVisibility,
         overlayVisibility,
         overlayToggles,
+        heatmapData,
+        heatmapVisible,
+        heatmapOpacity,
     } = useEditorStore(useShallow((s) => ({
         imageSrc: s.imageSrc,
+        imageName: s.imageName,
         imageWidth: s.imageWidth,
         imageHeight: s.imageHeight,
-        zoom: s.zoom,
-        pan: s.pan,
-        setZoom: s.setZoom,
-        setPan: s.setPan,
+        view: s.view,
+        setView: s.setView,
         setImage: s.setImage,
         activeTool: s.activeTool,
         toolVersion: s.toolVersion,
@@ -60,115 +63,67 @@ export default function CanvasWorkspace() {
         featureGroupVisibility: s.featureGroupVisibility,
         overlayVisibility: s.overlayVisibility,
         overlayToggles: s.overlayToggles,
+        heatmapData: s.heatmapData,
+        heatmapVisible: s.heatmapVisible,
+        heatmapOpacity: s.heatmapOpacity,
     })));
 
-    const [image] = useImage(imageSrc || "", "anonymous");
-    const stageRef = useRef<Konva.Stage | null>(null);
-    const layerRef = useRef<Konva.Layer | null>(null);
-    const transformerRef = useRef<Konva.Transformer | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-    const [hoveredDirectedPoint, setHoveredDirectedPoint] = useState<DirectedPointTooltipState | null>(null);
-    const { isTouchPrimary } = useViewportMode();
-
-    const hoveredDirectedPointId = hoveredDirectedPoint?.feature.id ?? null;
-    const selectedFeature = features.find((feature) => feature.id === selectedFeatureId) ?? null;
-    const canTransformSelectedFeature = selectedFeature !== null
-        && !isReadonlyFeature(selectedFeature)
-        && (selectedFeature.type === "bbox" || selectedFeature.type === "ellipse");
-    /* ── Extracted hooks ── */
+    const stageRef = useRef<StageHandle>(null);
+    const readoutRef = useRef<PixelReadoutHandle>(null);
+    const pointerRef = useRef({ x: 0, y: 0 });
+    const [tooltip, setTooltip] = useState<DirectedPointTooltipState | null>(null);
+    const { isTouchPrimary, isTouchTablet } = useViewportMode();
 
     useRadsymHeatmap();
 
-    const { hoverPixel, sampleAt, clearPixel } = usePixelSampler(imageSrc, imageWidth, imageHeight);
+    const drawing = useDrawing(activeTool, toolVersion, addFeature);
 
-    const {
-        isPanning,
-        startPan, handleWheel, handleTouchMove, handleTouchEnd,
-    } = useCanvasGestures({ pan, setZoom, setPan, touchPrimary: isTouchPrimary });
+    /* ── What is drawn ── */
 
-    const getRelativePointerPosition = () => {
-        const stage = stageRef.current;
-        if (!stage) return null;
-        const transform = stage.getAbsoluteTransform().copy();
-        transform.invert();
-        const position = stage.getPointerPosition();
-        if (!position) return null;
-        return transform.point(position);
-    };
+    const featureById = useMemo(() => new Map(features.map((feature) => [feature.id, feature])), [features]);
+    const visible = useMemo(
+        () => (overlayVisibility.features ? features.filter((feature) => isFeatureVisible(feature, featureGroupVisibility)) : []),
+        [features, featureGroupVisibility, overlayVisibility.features],
+    );
+    const annotations = useMemo(() => visible.filter((feature) => !isDetectionFeature(feature)), [visible]);
+    const detections = useMemo(
+        () =>
+            detectionGroups(visible, lastAlgorithmResult).map((group) => ({
+                key: group.key,
+                detection: toTargetDetection(group.algorithmId, group.features, group.result),
+            })),
+        [visible, lastAlgorithmResult],
+    );
+    const selection = useMemo(() => (selectedFeatureId === null ? [] : [selectedFeatureId]), [selectedFeatureId]);
+    const gridOverlay = overlayVisibility.algorithmOverlay;
 
-    const {
-        isDrawing, currentLinePoints, currentBBoxPos, currentBBoxDims, currentLinePos,
-        updateDrawingOnMove,
-        handleStageMouseDown: drawingMouseDown,
-        handleStageMouseUp,
-        handleStageTouchStart,
-        handleStageTouchEnd,
-        handleStageClick,
-        handleStageDblClick,
-        finishCurrentShape,
-    } = useDrawingHandlers({
-        activeTool,
-        toolVersion,
-        addFeature,
-        setSelectedFeatureId,
-        getRelativePointerPosition,
-    });
+    const image = useMemo(() => ({ width: imageWidth, height: imageHeight }), [imageWidth, imageHeight]);
+    const scale = view?.scale ?? 1;
 
-    /* ── Derived ── */
+    /* ── Hover and tap affordances ── */
 
-    const controlHints = isTouchPrimary
-        ? [
-            activeTool === "SELECT" ? "Tap selects or edits" : "Tap uses the active tool",
-            activeTool === "SELECT" ? "Drag pans the canvas" : "Pinch zooms while drawing",
-            "Pinch zooms",
-            ...(activeTool === "POLYLINE" || activeTool === "POLYGON" ? ["Use Finish shape to complete the outline"] : []),
-        ]
-        : [
-            activeTool === "SELECT" ? "Left click selects or edits" : "Left click uses the active tool",
-            "Right drag pans",
-            "Wheel zooms",
-            ...(activeTool === "POLYLINE" || activeTool === "POLYGON" ? ["Double click finishes the shape"] : []),
-        ];
-    const workspaceCursor = isPanning ? "cursor-grabbing" : activeTool !== "SELECT" ? "cursor-crosshair" : "cursor-default";
-
-    /* ── Effects ── */
-
-    useEffect(() => {
-        const el = containerRef.current;
-        if (!el) return;
-        const observer = new ResizeObserver(() => {
-            setContainerSize({
-                width: el.clientWidth,
-                height: el.clientHeight,
-            });
-        });
-        observer.observe(el);
-        return () => observer.disconnect();
+    const tooltipAt = useCallback((feature: Feature | null, client: { x: number; y: number }) => {
+        const box = containerRef.current?.getBoundingClientRect();
+        if (feature?.type !== "directed_point" || !box) {
+            setTooltip(null);
+            return;
+        }
+        setTooltip({ feature, left: client.x - box.left + TOOLTIP_OFFSET_PX, top: client.y - box.top + TOOLTIP_OFFSET_PX });
     }, []);
 
-    useEffect(() => {
-        if (
-            activeTool === "SELECT"
-            && selectedFeatureId
-            && canTransformSelectedFeature
-            && transformerRef.current
-        ) {
-            const node = layerRef.current?.findOne(`#transformable-${selectedFeatureId}`);
-            if (node) {
-                transformerRef.current.nodes([node]);
-                transformerRef.current.getLayer()?.batchDraw();
-                return;
-            }
-        }
+    // The mouse hovers a corner: show its numbers beside the pointer. A touch has no hover, so a tap shows them (see `onTap`).
+    const onOverlayHover = useCallback(
+        (hit: TargetHit | null) => tooltipAt(hit ? (featureById.get(String(hit.id)) ?? null) : null, pointerRef.current),
+        [featureById, tooltipAt],
+    );
 
-        if (transformerRef.current) {
-            transformerRef.current.nodes([]);
-            transformerRef.current.getLayer()?.batchDraw();
-        }
-    }, [activeTool, selectedFeatureId, canTransformSelectedFeature]);
+    const onPointerMove = (event: React.PointerEvent) => {
+        pointerRef.current = { x: event.clientX, y: event.clientY };
+        if (tooltip && event.pointerType !== "touch") tooltipAt(tooltip.feature, pointerRef.current);
+    };
 
-    /* ── Event handlers ── */
+    /* ── Drop to load ── */
 
     // Track the most-recent drag-and-drop blob URL so we can revoke it when a
     // second file is dropped (the first URL is then orphaned by setImage).
@@ -190,103 +145,37 @@ export default function CanvasWorkspace() {
         const url = URL.createObjectURL(file);
         droppedBlobUrlRef.current = url;
         const img = new Image();
-        img.onload = () => {
-            setImage(url, img.width, img.height, file.name);
-            if (!containerRef.current) return;
-            const scale = Math.min(
-                containerRef.current.clientWidth / img.width,
-                containerRef.current.clientHeight / img.height,
-            ) * 0.9;
-            setZoom(scale);
-            setPan({
-                x: (containerRef.current.clientWidth - img.width * scale) / 2,
-                y: (containerRef.current.clientHeight - img.height * scale) / 2,
-            });
-        };
+        // `setImage` clears the view; the stage opens the new image fit.
+        img.onload = () => setImage(url, img.width, img.height, file.name);
         img.src = url;
     };
 
-    const handleMouseMove = () => {
-        const pos = getRelativePointerPosition();
-        if (!pos) return;
-        sampleAt(pos);
-        updateDrawingOnMove(pos);
-    };
+    /* ── Derived ── */
 
-    const handleStageMouseDown = (event: Konva.KonvaEventObject<MouseEvent>) => {
-        if (event.evt.button === 2) {
-            event.evt.preventDefault();
-            startPan(event.evt);
-            return;
-        }
-        drawingMouseDown(event);
-    };
-
-    const handleStageTouchMove = (event: Konva.KonvaEventObject<TouchEvent>) => {
-        if (event.evt.touches.length === 1) {
-            const pos = getRelativePointerPosition();
-            if (pos) {
-                updateDrawingOnMove(pos);
-            }
-        }
-
-        handleTouchMove(event);
-    };
-
-    const handleTransformEnd = useCallback((event: Konva.KonvaEventObject<Event>) => {
-        const node = event.target as Konva.Node;
-        if (!selectedFeatureId) return;
-
-        const feature = features.find((item) => item.id === selectedFeatureId);
-        if (!feature || isReadonlyFeature(feature)) return;
-
-        const scaleX = node.scaleX();
-        const scaleY = node.scaleY();
-        node.scaleX(1);
-        node.scaleY(1);
-
-        if (feature.type === "ellipse") {
-            const ellipseNode = node as Konva.Ellipse;
-            updateFeature(selectedFeatureId, {
-                x: ellipseNode.x(),
-                y: ellipseNode.y(),
-                radiusX: Math.max(5, ellipseNode.radiusX() * scaleX),
-                radiusY: Math.max(5, ellipseNode.radiusY() * scaleY),
-                rotation: ellipseNode.rotation(),
-            });
-            return;
-        }
-
-        if (feature.type === "bbox") {
-            updateFeature(selectedFeatureId, {
-                x: node.x(),
-                y: node.y(),
-                width: Math.max(5, node.width() * scaleX),
-                height: Math.max(5, node.height() * scaleY),
-                rotation: node.rotation(),
-            });
-        }
-    }, [selectedFeatureId, features, updateFeature]);
-
-    const handleDirectedPointHover = useCallback((feature: DirectedPointTooltipState["feature"], event: Konva.KonvaEventObject<MouseEvent>) => {
-        const stage = event.target.getStage();
-        const pointer = stage?.getPointerPosition();
-        if (!pointer) return;
-        setHoveredDirectedPoint({ feature, left: pointer.x + 12, top: pointer.y + 12 });
-    }, []);
-
-    const clearDirectedPointHover = useCallback(() => setHoveredDirectedPoint(null), []);
-
-    /* ── Render ── */
+    const drawsShapes = activeTool === "POLYLINE" || activeTool === "POLYGON";
+    const controlHints = isTouchPrimary
+        ? [
+            activeTool === "SELECT" ? "Tap selects or edits" : "Tap uses the active tool",
+            activeTool === "SELECT" ? "Drag pans the canvas" : "Two fingers pan",
+            "Pinch zooms",
+            ...(drawsShapes ? ["Use Finish shape to complete the outline"] : []),
+        ]
+        : [
+            activeTool === "SELECT" ? "Left click selects or edits" : "Left click uses the active tool",
+            "Right drag pans",
+            "Wheel zooms",
+            ...(drawsShapes ? ["Double click finishes the shape"] : []),
+        ];
 
     return (
         <div
             ref={containerRef}
             data-testid="editor-canvas"
-            className={`w-full h-full relative overflow-hidden ${workspaceCursor}`}
+            className="w-full h-full relative overflow-hidden"
             onDrop={handleDrop}
             onDragOver={(event) => event.preventDefault()}
             onContextMenu={(event) => event.preventDefault()}
+            onPointerMove={onPointerMove}
         >
             {!imageSrc && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none gap-2">
@@ -299,176 +188,85 @@ export default function CanvasWorkspace() {
                 </div>
             )}
 
-            {hoverPixel && hoveredDirectedPoint === null && (
-                <div data-testid="editor-pixel-readout" className="absolute top-4 left-4 z-20 bg-ground/90 border border-line backdrop-blur-sm p-2 rounded-control shadow-xs text-xs font-mono flex items-center space-x-4 pointer-events-none">
-                    <div>
-                        <span className="text-fg-muted">X:</span> {hoverPixel.x.toFixed(2)} <span className="text-fg-muted">Y:</span> {hoverPixel.y.toFixed(2)}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <span className="text-fg-muted">|</span>
-                        <span>{Math.round(0.299 * hoverPixel.r + 0.587 * hoverPixel.g + 0.114 * hoverPixel.b)}</span>
-                    </div>
-                </div>
-            )}
+            <PixelReadout
+                ref={readoutRef}
+                imageSrc={imageSrc}
+                imageWidth={imageWidth}
+                imageHeight={imageHeight}
+                suppressed={tooltip !== null}
+            />
 
-            <FeatureTooltip tooltip={hoveredDirectedPoint} />
+            <FeatureTooltip tooltip={tooltip} />
             <CanvasControlsHint lines={controlHints} className="bottom-4 right-4 max-w-52" />
 
-            {isTouchPrimary && (activeTool === "POLYLINE" || activeTool === "POLYGON") && isDrawing && (
+            <div className="absolute top-3 right-3 z-20">
+                <ZoomControls
+                    onZoomIn={() => stageRef.current?.zoomTo(scale * ZOOM_STEP)}
+                    onZoomOut={() => stageRef.current?.zoomTo(scale / ZOOM_STEP)}
+                    onFit={() => stageRef.current?.fit()}
+                    onActual={() => stageRef.current?.zoomTo(1)}
+                    {...(view && { zoomPercent: Math.round(view.scale * 100) })}
+                    touchFriendly={isTouchTablet}
+                />
+            </div>
+
+            {isTouchPrimary && drawsShapes && drawing.hasVertices && (
                 <div className="absolute bottom-4 left-4 z-20">
-                    <Button onClick={finishCurrentShape} className="shadow-xs">
+                    <Button onClick={() => drawing.finish()} className="shadow-xs">
                         Finish shape
                     </Button>
                 </div>
             )}
 
-            {containerSize.width > 0 && (
-                <Stage
+            {imageSrc && imageWidth > 0 && imageHeight > 0 && (
+                <ImageStage
                     ref={stageRef}
-                    width={containerSize.width}
-                    height={containerSize.height}
-                    onWheel={handleWheel}
-                    onMouseMove={handleMouseMove}
-                    onMouseDown={handleStageMouseDown}
-                    onMouseUp={handleStageMouseUp}
-                    onClick={handleStageClick}
-                    onDblClick={handleStageDblClick}
-                    onTouchStart={handleStageTouchStart}
-                    onTouchMove={handleStageTouchMove}
-                    onTouchEnd={() => {
-                        handleStageTouchEnd();
-                        handleTouchEnd();
-                    }}
-                    onMouseLeave={() => {
-                        clearPixel();
-                        clearDirectedPointHover();
-                    }}
-                    scaleX={zoom}
-                    scaleY={zoom}
-                    x={pan.x}
-                    y={pan.y}
-                    draggable={isTouchPrimary && activeTool === "SELECT"}
-                    onDragEnd={(event) => {
-                        if (event.target === stageRef.current) {
-                            setPan({ x: event.target.x(), y: event.target.y() });
-                        }
-                    }}
+                    image={image}
+                    view={view}
+                    onView={setView}
+                    initialView="fit"
+                    panButton="right"
+                    doubleClickFit={false}
+                    touchPan={activeTool === "SELECT" ? "one-finger" : "two-finger"}
+                    panKeys={false}
+                    onHover={(point) => readoutRef.current?.hover(point)}
+                    className="rounded-none border-0"
                 >
-                    <Layer ref={layerRef} imageSmoothingEnabled={false}>
-                        {image && (
-                            <KonvaImage
-                                image={image}
-                                width={imageWidth}
-                                height={imageHeight}
-                                listening={false}
-                            />
-                        )}
+                    <ImageLayer src={imageSrc} alt={imageName ?? "Image under annotation"} />
 
-                        <HeatmapLayer />
-
-                        {activeTool === "POLYLINE" && isDrawing && currentLinePoints.length > 0 && (
-                            <Line
-                                points={currentLinePoints}
-                                stroke={ANNOTATION_COLORS.polyline}
-                                strokeWidth={2 / zoom}
-                                tension={0}
-                                lineCap="round"
-                                lineJoin="round"
-                            />
-                        )}
-
-                        {activeTool === "POLYGON" && isDrawing && currentLinePoints.length > 0 && (
-                            <Line
-                                points={currentLinePoints}
-                                closed={currentLinePoints.length >= 6}
-                                {...(currentLinePoints.length >= 6 && { fill: withAlpha(ANNOTATION_COLORS.polygon, 0.1) })}
-                                stroke={ANNOTATION_COLORS.polygon}
-                                strokeWidth={2 / zoom}
-                                dash={[5 / zoom, 5 / zoom]}
-                                tension={0}
-                                lineCap="round"
-                                lineJoin="round"
-                            />
-                        )}
-
-                        {activeTool === "LINE" && isDrawing && currentLinePos && (
-                            <Line
-                                points={[currentLinePos.x1, currentLinePos.y1, currentLinePos.x2, currentLinePos.y2]}
-                                stroke={ANNOTATION_COLORS.line}
-                                strokeWidth={2 / zoom}
-                            />
-                        )}
-
-                        {activeTool === "BBOX" && isDrawing && currentBBoxPos && currentBBoxDims && (
-                            <Rect
-                                x={currentBBoxDims.w < 0 ? currentBBoxPos.x + currentBBoxDims.w : currentBBoxPos.x}
-                                y={currentBBoxDims.h < 0 ? currentBBoxPos.y + currentBBoxDims.h : currentBBoxPos.y}
-                                width={Math.abs(currentBBoxDims.w)}
-                                height={Math.abs(currentBBoxDims.h)}
-                                stroke={ANNOTATION_COLORS.bbox}
-                                strokeWidth={2 / zoom}
-                                dash={[5 / zoom, 5 / zoom]}
-                            />
-                        )}
-
-                        {activeTool === "ELLIPSE" && isDrawing && currentBBoxPos && currentBBoxDims && (
-                            <Ellipse
-                                x={currentBBoxPos.x + currentBBoxDims.w / 2}
-                                y={currentBBoxPos.y + currentBBoxDims.h / 2}
-                                radiusX={Math.abs(currentBBoxDims.w) / 2}
-                                radiusY={Math.abs(currentBBoxDims.h) / 2}
-                                stroke={ANNOTATION_COLORS.ellipse}
-                                strokeWidth={2 / zoom}
-                                dash={[5 / zoom, 5 / zoom]}
-                            />
-                        )}
-
-                        {/* Algorithm overlay (grid edges, labels, markers) */}
-                        {overlayVisibility.algorithmOverlay && lastAlgorithmResult && (() => {
-                            // By the time lastAlgorithmResult is set, the algorithm is loaded.
-                            const algo = getLoadedAlgorithm(lastAlgorithmResult.algorithmId);
-                            const Overlay = algo?.OverlayComponent;
-                            if (!Overlay) return null;
-                            return (
-                                <Overlay
-                                    result={lastAlgorithmResult.result}
-                                    zoom={zoom}
-                                    toggles={overlayToggles}
-                                    onSelectFeature={setSelectedFeatureId}
-                                    features={features}
-                                />
-                            );
-                        })()}
-
-                        <FeatureLayer
-                            features={features}
-                            showFeatures={overlayVisibility.features}
-                            featureGroupVisibility={featureGroupVisibility}
-                            zoom={zoom}
-                            activeTool={activeTool}
-                            selectedFeatureId={selectedFeatureId}
-                            hoveredDirectedPointId={hoveredDirectedPointId}
-                            overlayToggles={overlayToggles}
-                            setSelectedFeatureId={setSelectedFeatureId}
-                            updateFeature={updateFeature}
-                            onTransformEnd={handleTransformEnd}
-                            onDirectedPointHover={handleDirectedPointHover}
-                            onDirectedPointLeave={clearDirectedPointHover}
+                    {heatmapData && (
+                        <HeatmapLayer
+                            rgba={heatmapData.rgba}
+                            width={heatmapData.width}
+                            height={heatmapData.height}
+                            opacity={heatmapOpacity}
+                            visible={heatmapVisible}
                         />
+                    )}
 
-                        {activeTool === "SELECT" && canTransformSelectedFeature && (
-                            <Transformer
-                                ref={transformerRef}
-                                boundBoxFunc={(oldBox, newBox) => {
-                                    if (newBox.width < 5 || newBox.height < 5) {
-                                        return oldBox;
-                                    }
-                                    return newBox;
-                                }}
-                            />
-                        )}
-                    </Layer>
-                </Stage>
+                    {detections.map(({ key, detection }) => (
+                        <TargetOverlay
+                            key={key}
+                            detection={detection}
+                            showEdges={gridOverlay && overlayToggles.edges}
+                            showLabels={gridOverlay && overlayToggles.labels}
+                            selectedIds={selection}
+                            onHoverChange={onOverlayHover}
+                            layerIdPrefix={`det-${key}`}
+                        />
+                    ))}
+
+                    <AnnotationLayer
+                        tool={activeTool}
+                        drawing={drawing}
+                        annotations={annotations}
+                        featureById={featureById}
+                        selectedId={selectedFeatureId}
+                        onSelect={setSelectedFeatureId}
+                        onUpdate={updateFeature}
+                        onTap={tooltipAt}
+                    />
+                </ImageStage>
             )}
         </div>
     );

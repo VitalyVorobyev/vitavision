@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 
-import type { Feature, OverlayToggles, SampleId } from "../../../store/editor/useEditorStore";
+import type { Feature, SampleId } from "../../../store/editor/useEditorStore";
 
 export interface AlgorithmSummaryEntry {
     label: string;
@@ -60,13 +60,6 @@ export interface AlgorithmDefinition {
     summary: (result: unknown) => AlgorithmSummaryEntry[];
     diagnostics?: (result: unknown) => DiagnosticEntry[];
     presets?: AlgorithmPreset[];
-    OverlayComponent?: ComponentType<{
-        result: unknown;
-        zoom: number;
-        toggles: OverlayToggles;
-        onSelectFeature?: (featureId: string) => void;
-        features?: Feature[];
-    }>;
 }
 
 export interface AlgorithmRunResult {

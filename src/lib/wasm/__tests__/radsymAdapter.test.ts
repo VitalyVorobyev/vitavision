@@ -40,8 +40,8 @@ function toFeatures(result: RadsymResult, runId: string): CircleFeature[] {
         algorithmId: "radsym",
         runId,
         readonly: true,
-        x: circle.x + 0.5,
-        y: circle.y + 0.5,
+        x: circle.x,
+        y: circle.y,
         radius: circle.radius,
         score: circle.score,
         label: `circle ${circle.id.slice(0, 8)}`,
@@ -83,11 +83,11 @@ describe("Radsym toFeatures", () => {
         }
     });
 
-    it("applies +0.5 pixel offset to center coordinates", () => {
+    it("keeps the detector's own centre coordinates", () => {
         const result = mockRadsymResult(1);
         const features = toFeatures(result, "run-1");
-        expect(features[0]!.x).toBe(result.circles[0]!.x + 0.5);
-        expect(features[0]!.y).toBe(result.circles[0]!.y + 0.5);
+        expect(features[0]!.x).toBe(result.circles[0]!.x);
+        expect(features[0]!.y).toBe(result.circles[0]!.y);
     });
 
     it("preserves radius without modification", () => {

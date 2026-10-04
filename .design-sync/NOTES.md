@@ -60,7 +60,7 @@ on every re-sync.
   The publishable key lives only in gitignored `.env.local`, so wiring it would mean
   committing a key. Add it later only if the key is sourced some other way.
 - **Editor / canvas / WASM components** — coupled to the Zustand editor
-  store, react-konva, or WASM workers; they cannot render standalone in the design
+  store, the stage2d image stage, or WASM workers; they cannot render standalone in the design
   agent's runtime.
 - **`guidelinesGlob` is `[]` on purpose.** The default globs slurp `docs/*.md`, which here is
   Atlas and developer material, not design guidance. The real design language lives in
@@ -236,7 +236,7 @@ passes on everything is worse than no check, because it buys false confidence.
   breaks the `tsc` step loudly (good), but a *new* component worth syncing will never
   appear on its own — the entry is a hand-curated list.
 - **Coupling can change under you.** A component that is standalone today starts
-  throwing the moment someone adds a store/WASM/konva/Clerk import to it or to one of
+  throwing the moment someone adds a store/WASM/stage2d/Clerk import to it or to one of
   its children. Symptom is `[RENDER] root empty` on a component that used to pass —
   i.e. a blank card with a clean log, the most expensive failure mode here.
   `bun run ds:validate` (`scripts/validate-ds-boundary.ts`) now guards this in CI: it

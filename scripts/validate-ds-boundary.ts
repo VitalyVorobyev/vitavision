@@ -3,7 +3,7 @@
  *
  * The components exported from `.design-sync/ds-entry.tsx` are synced to
  * claude.ai/design and rendered there in isolation — no Zustand store, no
- * react-konva stage, no WASM worker, no Clerk session. Nothing in the type
+ * image stage, no WASM worker, no Clerk session. Nothing in the type
  * system enforces that. A component that grows a `useEditorStore()` call still
  * type-checks, builds, lints, and passes tests; it only fails at the next
  * design sync, and it fails SILENTLY — the component throws during render,
@@ -53,9 +53,9 @@ const FORBIDDEN_PACKAGES: { match: (spec: string) => boolean; label: string; why
         why: "pulls in editor state that a design render cannot provide",
     },
     {
-        match: (s) => s === "konva" || s === "react-konva" || s.startsWith("react-konva/"),
-        label: "konva / react-konva",
-        why: "requires a canvas Stage ancestor; renders blank or throws outside one",
+        match: (s) => s === "@vitavision/stage2d" || s === "@vitavision/overlays",
+        label: "@vitavision/stage2d, @vitavision/overlays",
+        why: "layers read the enclosing ImageStage and throw outside one",
     },
     {
         match: (s) => s.startsWith("@clerk/"),

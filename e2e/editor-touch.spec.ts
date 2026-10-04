@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
 
 import {
-    canvasOrigin,
     exportFeatures,
     openEditor,
     pickTool,
     runAlgorithm,
+    viewActualSize,
     type ExportedFeature,
 } from "./helpers/editor";
 
@@ -22,11 +22,10 @@ test.describe("editor on touch", () => {
 
         const featuresTab = page.getByRole("radio", { name: "Features" });
         await featuresTab.click();
-        await page.getByRole("button", { name: "Zoom to 100%" }).click();
-        await expect(page.getByTestId("zoom-readout")).toHaveText("100%");
+        // 1:1, with `at` mapping image coordinates to page positions (the stage centres the image there).
+        const { at } = await viewActualSize(page);
 
         const corners = await exportFeatures(page);
-        const origin = await canvasOrigin(page);
 
         // The run selects the first corner. Pick the corner nearest to (250, 250) in the image:
         // inside the visible canvas at 1:1 and clear of the corner overlays.
@@ -48,7 +47,8 @@ test.describe("editor on touch", () => {
         const selectedBefore = await readPosition();
         expect(Math.hypot(selectedBefore.x - first.x, selectedBefore.y - first.y)).toBeLessThan(0.01);
 
-        await page.touchscreen.tap(origin.x + target.x, origin.y + target.y);
+        const tapAt = at(target.x, target.y);
+        await page.touchscreen.tap(tapAt.x, tapAt.y);
         await expect(async () => {
             const selected = await readPosition();
             expect(Math.hypot(selected.x - target.x, selected.y - target.y)).toBeLessThan(0.01);
@@ -57,12 +57,11 @@ test.describe("editor on touch", () => {
 
     test("a tap with the point tool adds a point, a tap with Select selects it", async ({ page }) => {
         await openEditor(page, { sample: "chessboard" });
-        await page.getByRole("button", { name: "Zoom to 100%" }).click();
-        await expect(page.getByTestId("zoom-readout")).toHaveText("100%");
-        const origin = await canvasOrigin(page);
+        const { at } = await viewActualSize(page);
 
         await pickTool(page, "point");
-        await page.touchscreen.tap(origin.x + 300, origin.y + 200);
+        const pointAt = at(300, 200);
+        await page.touchscreen.tap(pointAt.x, pointAt.y);
 
         await page.getByRole("radio", { name: "Features" }).click();
         const features: ExportedFeature[] = await exportFeatures(page);
@@ -75,7 +74,7 @@ test.describe("editor on touch", () => {
         // Switching tools clears the selection; a tap on the point selects it again.
         await pickTool(page, "select");
         await expect(page.getByText("Selected", { exact: true })).toBeHidden();
-        await page.touchscreen.tap(origin.x + 300, origin.y + 200);
+        await page.touchscreen.tap(pointAt.x, pointAt.y);
         await expect(page.getByText("Selected", { exact: true })).toBeVisible();
     });
 });

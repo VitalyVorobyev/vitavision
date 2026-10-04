@@ -164,10 +164,10 @@ describe("chessCornersAlgorithm", () => {
         }
     });
 
-    it("applies +0.5 pixel offset", () => {
+    it("keeps the detector's own coordinates (no half-pixel offset)", () => {
         const result = mockChessCornersResult(1);
         const features = chessCornersAlgorithm.toFeatures(result, "run-1");
-        expect(features[0]!.type === "directed_point" && features[0].x).toBe(result.corners[0]!.x + 0.5);
+        expect(features[0]!.type === "directed_point" && features[0].x).toBe(result.corners[0]!.x);
     });
 
     it("emits two axes with dx/dy/angleRad/sigmaRad", () => {
@@ -357,11 +357,11 @@ describe("ringgridAlgorithm", () => {
         }
     });
 
-    it("applies +0.5 pixel offset to center", () => {
+    it("keeps the detector's own centre coordinates", () => {
         const result = mockRinggridResult(1);
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
         const f = features[0]!;
-        expect(f.type === "ring_marker" && f.x).toBe(result.markers[0]!.center.x + 0.5);
+        expect(f.type === "ring_marker" && f.x).toBe(result.markers[0]!.center.x);
     });
 
     it("converts ellipse angle from radians to degrees", () => {
@@ -444,10 +444,10 @@ describe("radsymAlgorithm", () => {
         }
     });
 
-    it("applies +0.5 pixel offset", () => {
+    it("keeps the detector's own coordinates (no half-pixel offset)", () => {
         const result = mockRadsymResult(1);
         const features = radsymAlgorithm.toFeatures(result, "run-1");
-        expect(features[0]!.type === "point" && features[0].x).toBe(result.circles[0]!.x + 0.5);
+        expect(features[0]!.type === "point" && features[0].x).toBe(result.circles[0]!.x);
     });
 
     it("preserves score in meta", () => {

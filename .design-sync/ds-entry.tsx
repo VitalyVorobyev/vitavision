@@ -3,7 +3,7 @@
 // vitavision is an application, not a published component package: there is no
 // `dist/` of components and no `exports` map. This file is the design-system
 // surface — the curated set of presentational components that render standalone
-// (no editor store, no react-konva, no WASM worker) and that the claude.ai/design
+// (no editor store, no image stage, no WASM worker) and that the claude.ai/design
 // agent builds with.
 //
 // Adding a component here is what puts it in the synced design system; it must

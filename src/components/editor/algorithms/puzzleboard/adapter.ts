@@ -5,7 +5,6 @@ import { createConfigForm } from "../createConfigForm";
 import { initialConfig, presets } from "./config";
 import { schema } from "./schema";
 import { ui } from "./ui";
-import PuzzleboardOverlay from "./PuzzleboardOverlay";
 import type { LabeledPointFeature } from "../../../../store/editor/useEditorStore";
 
 const toFeatures = (result: PuzzleBoardDetectResult, runId: string): LabeledPointFeature[] => {
@@ -75,5 +74,4 @@ export const puzzleboardAlgorithm: AlgorithmDefinition = {
         ];
     },
     diagnostics: (result) => toDiagnostics(result as PuzzleBoardDetectResult),
-    OverlayComponent: PuzzleboardOverlay,
 };

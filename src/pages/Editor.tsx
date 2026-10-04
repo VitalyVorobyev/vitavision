@@ -28,7 +28,6 @@ import {
     Pentagon,
     Square,
 } from "lucide-react";
-import ZoomControls from "../components/shared/ZoomControls";
 const OVERLAY_LAYERS: { key: OverlayVisibilityKey; label: string }[] = [
     { key: "features", label: "Features" },
     { key: "algorithmOverlay", label: "Grid overlay" },
@@ -130,11 +129,6 @@ export default function Editor() {
     const {
         activeTool,
         setActiveTool,
-        zoom,
-        setZoom,
-        setPan,
-        imageWidth,
-        imageHeight,
         galleryMode,
         setGalleryMode,
         galleryImages,
@@ -144,11 +138,6 @@ export default function Editor() {
     } = useEditorStore(useShallow((s) => ({
         activeTool: s.activeTool,
         setActiveTool: s.setActiveTool,
-        zoom: s.zoom,
-        setZoom: s.setZoom,
-        setPan: s.setPan,
-        imageWidth: s.imageWidth,
-        imageHeight: s.imageHeight,
         galleryMode: s.galleryMode,
         setGalleryMode: s.setGalleryMode,
         galleryImages: s.galleryImages,
@@ -204,11 +193,9 @@ export default function Editor() {
         image.onload = () => {
             setImage(sample.src, image.width, image.height, sample.name, sample.sampleId);
             setFeatures([]);
-            setZoom(1);
-            setPan({ x: 0, y: 0 });
             setGalleryMode(false);
         };
-    }, [searchParams, galleryImages, imageSrc, setImage, setFeatures, setZoom, setPan, setGalleryMode]);
+    }, [searchParams, galleryImages, imageSrc, setImage, setFeatures, setGalleryMode]);
 
     const manualTools: { id: ToolType; icon: React.ReactNode; label: string }[] = [
         { id: "POINT", icon: <MapPin size={22} />, label: "Point" },
@@ -218,26 +205,6 @@ export default function Editor() {
         { id: "BBOX", icon: <Square size={22} />, label: "Bounding Box" },
         { id: "ELLIPSE", icon: <Circle size={22} />, label: "Ellipse" },
     ];
-
-    const handleZoomIn = () => setZoom(zoom * 1.2);
-    const handleZoomOut = () => setZoom(zoom / 1.2);
-    const handleZoomActual = () => {
-        setZoom(1);
-        setPan({ x: 0, y: 0 });
-    };
-
-    const handleZoomFit = () => {
-        if (!imageWidth || !imageHeight) {
-            return;
-        }
-
-        const scale = Math.min(800 / imageWidth, 600 / imageHeight);
-        setZoom(scale * 0.9);
-        setPan({
-            x: 400 - (imageWidth * scale * 0.9) / 2,
-            y: 300 - (imageHeight * scale * 0.9) / 2,
-        });
-    };
 
     const toggleAnnotationTools = () => {
         setAnnotationToolsOpen((open) => {
@@ -387,16 +354,6 @@ export default function Editor() {
         // a stray non-printable byte), so the pattern never rendered. Fixed here.
         <div className="relative flex-1 overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZTVlN2ViIi8+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjQiIGhlaWdodD0iNCIgZmlsbD0iI2U1ZTdlYiIvPjwvc3ZnPg==')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiMxODE4MTgiLz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMjgyODI4Ii8+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjQiIGhlaWdodD0iNCIgZmlsbD0iIzI4MjgyOCIvPjwvc3ZnPg==')]">
             <ErrorBoundary><CanvasWorkspace /></ErrorBoundary>
-            <div className="absolute top-3 right-3">
-                <ZoomControls
-                    onZoomIn={handleZoomIn}
-                    onZoomOut={handleZoomOut}
-                    onFit={handleZoomFit}
-                    onActual={handleZoomActual}
-                    zoomPercent={Math.round(zoom * 100)}
-                    touchFriendly={isTouchTablet}
-                />
-            </div>
             <TouchFeatureNav />
         </div>
     );

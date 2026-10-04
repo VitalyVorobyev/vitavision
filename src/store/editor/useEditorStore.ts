@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { StageView } from '@vitavision/stage2d';
 import type {
     SampleId,
     Feature,
@@ -67,8 +68,8 @@ interface EditorState {
     selectedFeatureId: string | null;
     features: Feature[];
 
-    zoom: number;
-    pan: { x: number; y: number };
+    /** The stage's view; `null` until the stage has been measured (it then opens fit). */
+    view: StageView | null;
 
     galleryMode: boolean;
     galleryImages: GalleryImage[];
@@ -96,8 +97,7 @@ interface EditorState {
     setFeatures: (features: Feature[]) => void;
     replaceAlgorithmFeatures: (algorithmId: string, features: Feature[]) => void;
 
-    setZoom: (zoom: number) => void;
-    setPan: (pan: { x: number; y: number }) => void;
+    setView: (view: StageView | null) => void;
 
     setGalleryMode: (mode: boolean) => void;
     addGalleryImage: (img: GalleryImage) => void;
@@ -131,10 +131,10 @@ export const useEditorStore = create<EditorState>((set) => ({
     selectedFeatureId: null,
     features: [],
 
-    zoom: 1,
-    pan: { x: 0, y: 0 },
+    view: null,
 
     setImage: (src, width, height, name, sampleId) => set({
+        view: null,
         imageSrc: src,
         imageName: name ?? null,
         imageSampleId: sampleId ?? 'upload',
@@ -204,8 +204,7 @@ export const useEditorStore = create<EditorState>((set) => ({
         };
     }),
 
-    setZoom: (zoom) => set({ zoom }),
-    setPan: (pan) => set({ pan }),
+    setView: (view) => set({ view }),
 
     galleryMode: true,
     galleryImages: SAMPLE_GALLERY_IMAGES,

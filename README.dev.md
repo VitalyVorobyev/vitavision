@@ -102,10 +102,10 @@ shared vitavision design system (lab-ui PLAN L3-3):
   touch layouts keep the comfortable density. Editorial pages keep their own markup
   (visual-language §7).
 - **Tokens only (G5.1).** `eslint.config.js` runs `tokensOnly(["src/**"])`: no raw
-  Tailwind palette class, no hex literal. Konva and Canvas 2D cannot resolve `var(--x)`,
-  so canvas code takes resolved colours from `useCanvasTokens()` in
-  `src/lib/canvasTokens.ts` (re-read on a theme change; `"well"` resolves them as in the
-  always-dark image well the editor overlays are drawn in). Colours that are data sit in
+  Tailwind palette class, no hex literal. The editor's image canvas (`@vitavision/stage2d`
+  and `@vitavision/overlays`) paints in overlay roles (`--stage-feature`, `--stage-model`,
+  `--stage-selection`, … from `@vitavision/stage2d/styles.css`), never a literal colour or a
+  score tone. Colours that are data sit in
   a few allowlisted modules, each exempted in `eslint.config.js` with its reason:
   `src/store/editor/featureColors.ts`, `src/components/targetgen/printColors.ts`,
   `src/components/illustrations/_shared/dataColors.ts` (and Shiki's output in
@@ -141,11 +141,13 @@ src/
       wasmWorkerProxy.ts     # Main-thread API: typed proxy + zero-copy transfer
       imageDecoder.ts        # Canvas-based RGBA pixel decoder
   components/editor/
-    algorithms/              # Algorithm adapters, configs, overlays
-    canvas/                  # Konva canvas layers (features, heatmap)
+    algorithms/              # Algorithm adapters and configs
+    annotations/             # Hand-drawn shapes: layers, tool surface, drawing and shape-edit arithmetic
+    overlay/                 # Features to a `TargetDetection` (what `@vitavision/overlays` draws)
+    canvas/                  # canvas helpers (pixel readout, feature tooltip)
     panels/                  # Right panel (configure, results, features)
   store/editor/
-    useEditorStore.ts        # Zustand store (features, zoom, algorithm state)
+    useEditorStore.ts        # Zustand store (features, stage view, algorithm state)
   pages/
     Editor.tsx               # Main editor page
 ```

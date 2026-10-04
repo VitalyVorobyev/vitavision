@@ -1,14 +1,11 @@
-import type { UiGroup, UiSchema } from "@vitavision/forms";
+import type { UiGroup } from "@vitavision/forms";
 
 import {
-    chessDetectorFields,
-    chessDetectorHidden,
+    boardUi,
     chessDetectorPaths,
-    chessboardFields,
     chessboardKnobPaths,
     chessboardTuningPath,
 } from "../chessDetectorUi";
-import { hidden, hideContainers } from "../schemaTools";
 import { schema } from "./schema";
 
 const groups: UiGroup[] = [
@@ -46,14 +43,11 @@ const groups: UiGroup[] = [
     },
 ];
 
-/** Fields deliberately not offered; the schema's other fields are all in a group. */
-export const hiddenPaths: string[] = [...chessDetectorHidden("chess")];
-
-export const ui: UiSchema = {
+export const { hiddenPaths, ui } = boardUi({
+    schema,
     groups,
+    chessboardPrefix: "chessboard",
     fields: {
-        ...chessDetectorFields("chess"),
-        ...chessboardFields("chessboard"),
         "board.rows": { label: "Rows", hint: "Number of rows of squares on the PuzzleBoard." },
         "board.cols": { label: "Cols", hint: "Number of columns of squares on the PuzzleBoard." },
         "board.cell_size": { label: "Cell size", unit: "mm", hint: "Physical size of one board square in millimeters." },
@@ -104,7 +98,5 @@ export const ui: UiSchema = {
             hint: "Soft-scorer and consensus tuning knobs of the decoder. Unstable: not covered by the library's semver, and best left off unless a specific image fails.",
         },
         px_per_square: { label: "Pixels per square", hint: "Rectified cell size in pixels used for corner detection." },
-        ...hidden(...hiddenPaths),
-        ...hideContainers(schema, groups),
     },
-};
+});

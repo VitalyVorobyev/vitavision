@@ -12,16 +12,12 @@ export default function EditorGallery() {
         setImage,
         setGalleryMode,
         setFeatures,
-        setZoom,
-        setPan,
     } = useEditorStore(useShallow((s) => ({
         galleryImages: s.galleryImages,
         addGalleryImage: s.addGalleryImage,
         setImage: s.setImage,
         setGalleryMode: s.setGalleryMode,
         setFeatures: s.setFeatures,
-        setZoom: s.setZoom,
-        setPan: s.setPan,
     })));
 
     const handleFileUpload = () => {
@@ -52,8 +48,6 @@ export default function EditorGallery() {
         img.onload = () => {
             setImage(src, img.width, img.height, name, sampleId);
             setFeatures([]);
-            setZoom(1);
-            setPan({ x: 0, y: 0 });
             setGalleryMode(false);
         };
         img.onerror = () => {

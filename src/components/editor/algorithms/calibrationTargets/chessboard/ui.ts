@@ -1,14 +1,11 @@
-import type { UiGroup, UiSchema } from "@vitavision/forms";
+import type { UiGroup } from "@vitavision/forms";
 
 import {
-    chessDetectorFields,
-    chessDetectorHidden,
+    boardUi,
     chessDetectorPaths,
-    chessboardFields,
     chessboardKnobPaths,
     chessboardTuningPath,
 } from "../../chessDetectorUi";
-import { hidden, hideContainers } from "../../schemaTools";
 import { schema } from "./schema";
 
 const groups: UiGroup[] = [
@@ -17,15 +14,4 @@ const groups: UiGroup[] = [
     { id: "advanced", title: "Advanced", collapsible: true, fields: [chessboardTuningPath("params")] },
 ];
 
-/** Fields deliberately not offered; the schema's other fields are all in a group. */
-export const hiddenPaths: string[] = [...chessDetectorHidden("chess")];
-
-export const ui: UiSchema = {
-    groups,
-    fields: {
-        ...chessboardFields("params"),
-        ...chessDetectorFields("chess"),
-        ...hidden(...hiddenPaths),
-        ...hideContainers(schema, groups),
-    },
-};
+export const { hiddenPaths, ui } = boardUi({ schema, groups, chessboardPrefix: "params", fields: {} });

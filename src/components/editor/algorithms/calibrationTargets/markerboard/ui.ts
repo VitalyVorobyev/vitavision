@@ -1,14 +1,11 @@
-import type { UiGroup, UiSchema } from "@vitavision/forms";
+import type { UiGroup } from "@vitavision/forms";
 
 import {
-    chessDetectorFields,
-    chessDetectorHidden,
+    boardUi,
     chessDetectorPaths,
-    chessboardFields,
     chessboardKnobPaths,
     chessboardTuningPath,
 } from "../../chessDetectorUi";
-import { hidden, hideContainers } from "../../schemaTools";
 import { schema } from "./schema";
 
 const groups: UiGroup[] = [
@@ -43,14 +40,11 @@ const groups: UiGroup[] = [
     },
 ];
 
-/** Fields deliberately not offered; the schema's other fields are all in a group. */
-export const hiddenPaths: string[] = [...chessDetectorHidden("chess")];
-
-export const ui: UiSchema = {
+export const { hiddenPaths, ui } = boardUi({
+    schema,
     groups,
+    chessboardPrefix: "chessboard",
     fields: {
-        ...chessDetectorFields("chess"),
-        ...chessboardFields("chessboard"),
         "board.rows": { label: "Rows", hint: "Total number of rows of squares on the marker board." },
         "board.cols": { label: "Cols", hint: "Total number of columns of squares on the marker board." },
         "board.circle_diameter_rel": {
@@ -111,7 +105,5 @@ export const ui: UiSchema = {
         "roi_cells.1": { label: "j0" },
         "roi_cells.2": { label: "i1" },
         "roi_cells.3": { label: "j1" },
-        ...hidden(...hiddenPaths),
-        ...hideContainers(schema, groups),
     },
-};
+});

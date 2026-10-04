@@ -35,7 +35,7 @@
     "@vitavision/calib-targets": "^0.15.4",
     "@vitavision/chess-corners": "^1.3.0",
     "@vitavision/forms": "^0.7.0",
-    "@vitavision/overlays": "file:/private/tmp/claude-501/-Users-vitalyvorobyev-vitavision/2c13f33c-fdb7-4ef4-9c39-0eb1a646f104/scratchpad/vitavision-overlays-0.1.0.tgz",
+    "@vitavision/overlays": "^0.1.1",
     "@vitavision/radsym": "^0.4.2",
     "@vitavision/ringgrid": "^0.13.1",
     "@vitavision/stage2d": "^0.10.0",

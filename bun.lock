@@ -10,7 +10,7 @@
         "@vitavision/calib-targets": "^0.15.4",
         "@vitavision/chess-corners": "^1.3.0",
         "@vitavision/forms": "^0.7.0",
-        "@vitavision/overlays": "file:/private/tmp/claude-501/-Users-vitalyvorobyev-vitavision/2c13f33c-fdb7-4ef4-9c39-0eb1a646f104/scratchpad/vitavision-overlays-0.1.0.tgz",
+        "@vitavision/overlays": "^0.1.1",
         "@vitavision/radsym": "^0.4.2",
         "@vitavision/ringgrid": "^0.13.1",
         "@vitavision/stage2d": "^0.10.0",
@@ -589,7 +589,7 @@
 
     "@vitavision/forms": ["@vitavision/forms@0.7.0", "", { "dependencies": { "@vitavision/ui": "^0.11.0" }, "peerDependencies": { "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-LC/5LKOPat9rWR6Q7F1UIDiAqBrgT6ppc8ExTVQw3Bt1ceN9B+6S/JNZXcQh5P09Iea94L3CC3/Egjn2QNSFvw=="],
 
-    "@vitavision/overlays": ["@vitavision/overlays@/private/tmp/claude-501/-Users-vitalyvorobyev-vitavision/2c13f33c-fdb7-4ef4-9c39-0eb1a646f104/scratchpad/vitavision-overlays-0.1.0.tgz", { "peerDependencies": { "@vitavision/stage2d": ">=0.10.0 <1.0.0-0", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-i37IUXWkeXKkOZrk+mLZwK2lRkmhf3PFA7gQbvue8n2aG05qknAiE1YNnUrN0n7XyNz7VQaszdwcY7+KiSCFWw=="],
+    "@vitavision/overlays": ["@vitavision/overlays@0.1.1", "", { "peerDependencies": { "@vitavision/stage2d": ">=0.10.0 <1.0.0-0", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-Y3UB/Z8cNqYFt5GUzI/jJUBUgBw08KdR4o+yey7fzcg+bJGuqKRipbwYCBOM8AoSfcehqmSKldPptvQSgCMVjw=="],
 
     "@vitavision/radsym": ["@vitavision/radsym@0.4.2", "", {}, "sha512-5vAXm5R+3ptjNvf8HJnpEB9cKdQ4ZcRvcEegxqlN77XnsLgpAWjovapk92Kgz/jVLEMx8dsAFMmiqzDyl2XUgQ=="],
 

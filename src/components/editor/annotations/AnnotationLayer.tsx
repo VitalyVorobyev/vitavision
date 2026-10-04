@@ -1,12 +1,45 @@
 import { useState } from "react";
-import { DraftShape, ShapeEditor, useStageHitTest } from "@vitavision/stage2d";
+import { DraftShape, ShapeEditor, StageSurface, useStageHitTest, type StageDrag, type StagePress } from "@vitavision/stage2d";
 
 import type { Feature, ToolType } from "../../../store/editor/useEditorStore";
 import type { DrawingController } from "../hooks/useDrawing";
 import AnnotationLayers, { type MoveDraft } from "./AnnotationLayers";
 import { isMovable, movedGeometry, type Point2 } from "./drawing";
 import { bboxToShape, ellipseToShape, shapeToBbox, shapeToEllipse } from "./shapeConvert";
-import ToolSurface, { type Gesture, type Press } from "./ToolSurface";
+
+/**
+ * What a press means, as the active tool decides it. Displacements are from the press, in image
+ * pixels.
+ */
+export interface Gesture {
+    /** Runs at the press for a mouse; for a touch, at the release of a tap (a finger that moved is a pan or a pinch). */
+    immediate?: (() => void) | undefined;
+    /** The pointer has left the click slop. */
+    onMove?: ((delta: Point2) => void) | undefined;
+    /** The release. `moved` is false for a click or a tap, and `delta` is then zero. */
+    onEnd?: ((delta: Point2, moved: boolean) => void) | undefined;
+    /** The gesture was interrupted: a second finger, a lost pointer, an unmount. */
+    onCancel?: (() => void) | undefined;
+    /** The gesture owns a touch that starts on it (a shape move), so the stage neither pans nor pinches from it. */
+    claimsTouch?: boolean | undefined;
+}
+
+/** The press a gesture is chosen for: where, whether it is a touch, and the hit-test tolerance. */
+export type Press = StagePress;
+
+/** A gesture as the stage surface follows it: displacements from the press, a tap run at the release of an unclaimed touch. */
+function toStageDrag(press: Press, gesture: Gesture): StageDrag {
+    const delta = (p: Point2): Point2 => ({ x: p.x - press.point.x, y: p.y - press.point.y });
+    return {
+        onMove: gesture.onMove && ((p) => gesture.onMove?.(delta(p))),
+        onEnd: (p, _event, moved) => {
+            if (press.touch && !gesture.claimsTouch && !moved) gesture.immediate?.();
+            gesture.onEnd?.(moved ? delta(p) : { x: 0, y: 0 }, moved);
+        },
+        onCancel: gesture.onCancel,
+        claimsTouch: gesture.claimsTouch,
+    };
+}
 
 interface AnnotationLayerProps {
     tool: ToolType;
@@ -90,8 +123,13 @@ export default function AnnotationLayer({
                 editingId={editable?.id ?? null}
             />
             <DraftShape shape={drawing.preview} />
-            <ToolSurface
-                begin={(press) => (tool === "SELECT" ? beginSelect(press) : drawing.begin(press))}
+            <StageSurface
+                onPress={(press) => {
+                    const gesture = tool === "SELECT" ? beginSelect(press) : drawing.begin(press);
+                    if (!gesture) return null;
+                    if (!press.touch || gesture.claimsTouch) gesture.immediate?.();
+                    return toStageDrag(press, gesture);
+                }}
                 cursor={tool === "SELECT" ? undefined : "crosshair"}
                 onHover={drawing.hover}
                 onDoubleClick={() => {

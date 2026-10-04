@@ -12,7 +12,7 @@ import {
     type Point2,
     type VertexTool,
 } from "../annotations/drawing";
-import type { Gesture, Press } from "../annotations/ToolSurface";
+import type { Gesture, Press } from "../annotations/AnnotationLayer";
 
 /** The shape being drawn: a drag between two corners, or the vertices placed so far. */
 type Draft =

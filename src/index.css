@@ -18,14 +18,6 @@
 @import "./styles/editorial-tokens.css";
 @plugin "@tailwindcss/typography";
 
-/* The image stage moves every layer with one `translate() scale()` on this box. Left to itself the
-   browser repaints the box's contents on every pan frame (thousands of corner paths: ~130 ms a frame
-   with 4,000 corners in view, measured); a composited layer pans by compositor translate instead and
-   is re-rasterised only when the zoom settles. */
-[data-stage] {
-  will-change: transform;
-}
-
 @theme {
   /* Editorial body text only (lab-ui visual-language §7): the sans and mono families are
      ui's `--font-sans` / `--font-mono`. */

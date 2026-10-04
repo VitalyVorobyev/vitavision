@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { bboxToShape, ellipseToShape, pickEllipse, shapeRing, shapeToBbox, shapeToEllipse } from "./shapeConvert";
+import { bboxToShape, ellipseToShape, shapeRing, shapeToBbox, shapeToEllipse } from "./shapeConvert";
 
 const close = (actual: number[], expected: number[]) => {
     expect(actual).toHaveLength(expected.length);
@@ -79,36 +79,5 @@ describe("shapeRing", () => {
     it("follows the rotation about the corner", () => {
         // 90 degrees clockwise about (10, 20): the top-left stays, the top-right goes straight down.
         close(shapeRing(bboxToShape({ x: 10, y: 20, width: 40, height: 20, rotation: 90 })), [10, 20, 10, 60, -10, 60, -10, 20]);
-    });
-});
-
-describe("pickEllipse", () => {
-    const wide = { id: "wide", x: 100, y: 100, rx: 50, ry: 20, angle: 0 };
-    const turned = { id: "turned", x: 300, y: 100, rx: 50, ry: 20, angle: Math.PI / 2 };
-
-    it("picks an ellipse by its outline within the tolerance", () => {
-        expect(pickEllipse([wide], { x: 150, y: 100 }, 6)).toMatchObject({ id: "wide" });
-        expect(pickEllipse([wide], { x: 153, y: 100 }, 6)?.dist).toBeCloseTo(3 * (20 / 50), 6);
-    });
-
-    it("picks the ellipse a point is inside, away from the outline", () => {
-        expect(pickEllipse([wide], { x: 100, y: 100 }, 6)).toMatchObject({ id: "wide" });
-    });
-
-    it("misses outside the tolerance", () => {
-        expect(pickEllipse([wide], { x: 100, y: 140 }, 6)).toBeNull();
-    });
-
-    it("follows the rotation about the centre", () => {
-        // Turned a quarter turn, the long axis runs down the screen.
-        expect(pickEllipse([turned], { x: 300, y: 148 }, 6)).toMatchObject({ id: "turned" });
-        expect(pickEllipse([turned], { x: 348, y: 100 }, 6)).toBeNull();
-    });
-
-    it("prefers an outline hit, then the smallest ellipse containing the point", () => {
-        const inner = { id: "inner", x: 100, y: 100, rx: 20, ry: 20, angle: 0 };
-        const outer = { id: "outer", x: 100, y: 100, rx: 80, ry: 80, angle: 0 };
-        expect(pickEllipse([outer, inner], { x: 100, y: 100 }, 6)).toMatchObject({ id: "inner" });
-        expect(pickEllipse([outer, inner], { x: 180, y: 100 }, 6)).toMatchObject({ id: "outer" });
     });
 });

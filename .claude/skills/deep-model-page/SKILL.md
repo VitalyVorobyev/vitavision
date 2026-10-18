@@ -139,7 +139,7 @@ relatedDemos: [...]          # Demo page slugs
 coverImage: "..."
 ```
 
-`sources` is required for every non-draft page. `implementations[]` is required for every non-draft page — a model without a referenceable implementation cannot ship as non-draft.
+`sources` is required for every non-draft page. `implementations[]` is required for every non-draft page unless `noPublicImpl: true` is set with a non-empty `## Limitations` section (see B9a Floor).
 
 **Source kinds in `sources.references[]`.** Accepts `<bare-id>` (defaults to `paper`), `paper:<id>`, `repo:<url>@<sha>`, or `doc:<path>`. Use `repo:` in `references[]` for repos cited as background, comparison, or upstream — analogous to citing a paper. The page's reference implementations live in the dedicated `implementations[]` field (richer-typed, license-verified per commit), not in `sources.references[]`. A repo can appear in both: as a `repo:` reference if also cited in `# Assessment`, and as a structured `implementations[]` entry.
 
@@ -234,7 +234,7 @@ B10. **Flip `draft: false`** once B9a wrote at least one valid implementations e
 
    Sonnet **does not** write any file. Sonnet **does not** read cache files. If Sonnet returns `blocked: missing <kind> <name> for <source-id>`, fix the note and retry.
 7.5. **Illustration pass.** Scan each section against the "good signals" in the shared illustrations guidance. Typical figures for a model page:
-   - Data-flow / training pipeline → Mermaid (inline).
+   - Data-flow / training pipeline → Mermaid (inline) for ≤ 4 stages; ≥ 5 stages → generated SVG per `_shared/illustrations.md`.
    - Architecture block diagram → hand-authored SVG (< ~15 primitives) OR skip and let the code snippet in `# Architecture.Blocks` carry the design.
    - Learning curve, scaling law, efficiency frontier → generator script under `py/generate_<slug>_<name>.py`.
    Do not include real-image output from the model — that belongs in a demo or a blog post. At most two figures per page.
@@ -277,7 +277,7 @@ Run before handing off a draft.
 - [ ] `# Assessment` has three bolded sub-blocks in order: **Novelty.**, **Strengths.**, **Limitations.**. 2–4 bullets each. Each bullet declarative.
 - [ ] `# References` is a numbered list. 1–5 entries. Primary source is entry 1.
 - [ ] Frontmatter `sources:` block populated: `primary` set; `references` lists every paper cited in `# References`; `notes` summarizes equations / losses / tables the page references.
-- [ ] Frontmatter `implementations:` has ≥ 1 entry (or the page is `draft: true`). Every entry has `role`, `repo`, `commit` (7–40 hex), `framework`, `license`. Every `weights_url` has a matching `weights_license`.
+- [ ] Frontmatter `implementations:` has ≥ 1 entry, or `noPublicImpl: true` with a non-empty `## Limitations` section. Every entry has `role`, `repo`, `commit` (7–40 hex), `framework`, `license`. Every `weights_url` has a matching `weights_license`.
 - [ ] **Every `license` field has been verified by reading the LICENSE file at the pinned `commit`** via `curl https://raw.githubusercontent.com/<owner>/<repo>/<sha>/LICENSE`. Working notes record the verification.
 - [ ] Every paper id in `sources:` exists as an entry in `docs/papers/index.yaml`.
 - [ ] Working notes trace every numerical constant, benchmark number, parameter count, FLOPs figure, and figure label to a specific source line — paper §/equation/table, or impl file/line, or LICENSE file.
@@ -305,7 +305,7 @@ See `.claude/skills/_shared/page-pipeline.md` §3 — shared verbatim with `algo
 ## Resources
 
 - [references/deep-model-page-template.md](references/deep-model-page-template.md) — copy-pasteable skeleton
-- `.claude/skills/algo-page/SKILL.md` — the companion skill. Voice rules, typography blocks, and illustration rules are inherited from there.
+- `.claude/skills/algo-page/SKILL.md` — the companion skill; typography blocks and forbidden patterns are inherited from there. Voice and illustration rules live in `_shared/voice-rules.md` and `_shared/illustrations.md`.
 - `/Users/vitalyvorobyev/vitavision/docs/papers/index.yaml` — registry of authoritative sources (papers + citation graph). Query via `bun papers:query`.
 - `bun papers:fetch [id]` / `bun papers:fetch-meta <arxiv-id|doi>` / `bun papers:query <relation> <id>` — the three reasoning tools that drive the Workflow above.
 - `.venv/bin/python py/generate_<slug>_<name>.py` — repo-root venv (matplotlib, numpy preinstalled) for running generator scripts. Model generators on `py/generate_harris_eigenvalue_regions.py`.

@@ -7,7 +7,7 @@ description: Author or update a concept page in content/concepts/. Concepts span
 
 A concept page is a **reference entry for a mathematical or algorithmic idea** that underpins multiple algorithms or models — not an essay, not a tutorial. It is read to understand what the concept is, how it is formalized, where it breaks down numerically, and which registered pages use it.
 
-The closest analogues are Wikipedia's mathematics articles, *Numerical Recipes* chapters on foundational topics, and introductory graduate textbook sections. The voice is identical to `algo-page` — impersonal, declarative, minimal glue prose between math. See `.claude/skills/algo-page/SKILL.md §"Voice rules"` for the full voice specification.
+The closest analogues are Wikipedia's mathematics articles, *Numerical Recipes* chapters on foundational topics, and introductory graduate textbook sections. The voice is identical to `algo-page` — impersonal, declarative, minimal glue prose between math. See `.claude/skills/_shared/voice-rules.md` for the full voice specification.
 
 Use this skill for cross-cutting mathematical ideas (`homography`, `structure-tensor`, `scale-space`). Use `algo-page` for closed-form algorithms with a specific procedure. Use `deep-model-page` for learned models.
 
@@ -118,7 +118,7 @@ sources:
 Evaluate the criterion from `## Page-creation criterion` above before doing anything else — do not proxy it with a referencing-page count. Check, in order:
 
 1. **Fundamental and cross-cutting.** The topic is a genuinely fundamental, cross-cutting computer-vision concept — not one that happens to be reused, but one that would deserve a page even before its dependents exist. The number of pages that currently (or will eventually) reference the concept is **not** a gate.
-2. **≥500 words of substance.** The topic can support at least 500 words of substantive standalone content across the five required sections (definition, math, numerical concerns, implementation implications, where it appears).
+2. **≥500 words of substance.** The topic can support at least 500 words of substantive standalone content across the five required sections (Definition, Mathematical Description, Numerical Concerns, Where it appears, References).
 3. **Source diversity (the real second gate).** The concept can synthesise ≥3 distinct sources — check `docs/research/notes/` for existing notes and confirm at least 3 will be cited (see Step 2 and Step 4). A topic backed by a single paper belongs as a section inside that paper's page, not as a standalone concept.
 
 If (1) fails, the topic is probably too peripheral — prefer to defer it. If (2) or (3) fails, **reject the request**: suggest adding it as a `## <Concept>` subsection inside the most relevant existing algorithm or model page instead.

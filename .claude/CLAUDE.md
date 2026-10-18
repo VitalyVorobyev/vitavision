@@ -12,7 +12,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Development Workflow
 
-Work is driven from approved plan files (typically under `~/.claude/plans/`) — not from a tracked backlog.
+Work is driven from approved plan files (typically under `~/.claude/plans/`). Atlas work also keeps living state in `docs/atlas/roadmap.md` and `docs/atlas/backlog.md`; edit them only when the task asks.
 
 The main agent (Opus) acts as architect + reviewer. Implementation is delegated to a Sonnet subagent per discrete task.
 
@@ -86,7 +86,7 @@ For symmetric relation types (`compared_with`, `alternative_formulation_of`, `pa
 - Omitted = normal published page (default).
 - `quality: "stub"` = public placeholder; reader-visible warning badge.
 - `quality: "canonical"` = flagship reviewed page; reader-visible badge; passes stricter validation (sources, prerequisites, no TODO).
-- `quality: "historical"` = preserved for citation/lineage; method is superseded for practical use. Renders a "Historical" badge and a prominent "Superseded by" link derived from the page's `relations[]`. Body is trimmed to `# Goal` + `# Historical context` + `# References` only — no `# Algorithm`, no `# Implementation`, no `# Remarks`. Requires at least one `relations[]` entry of type `generalized_by` with `confidence: high`. Drops `editorAlgorithmId` (no Try-in-editor CTA) and any `comparedWith:` entries.
+- `quality: "historical"` = preserved for citation/lineage; method is superseded for practical use. Renders a "Historical" badge and a prominent "Superseded by" link derived from the page's `relations[]`. Body is trimmed to `# Goal` + `# Historical context` + `# References` only — no `# Algorithm`, no `# Implementation`, no `# Remarks`. Requires at least one `relations[]` entry of type `generalized_by` with `confidence: high`. Drops `editorAlgorithmId` (no Try-in-editor CTA) and any `relations[type=compared_with]` entry.
 
 `draft: true` remains the publication gate. Do not introduce `status:` or `review:` fields.
 
@@ -117,7 +117,7 @@ Each entry has:
 
 Symmetric types are mirrored by the build onto the target's `relations[]`. Asymmetric types produce typed reverse buckets on the target (`generalises`, `extending`, `fedBy`, `hasLearnedAlternative`). Author one side only — the renderer composes the reader-visible bidirectional view.
 
-The renderer groups entries into three sidebar sections by category — **Lineage**, **Practice**, **Cross-paradigm** — each entry showing its specific type label, target link, confidence-if-not-high, and optional caution. The legacy fields `related`, `relatedAlgorithms`, and `comparedWith` are removed; do not introduce them.
+The renderer groups entries into three sidebar sections by category — **Lineage**, **Practice**, **Cross-paradigm** — each entry showing its specific type label, target link, confidence-if-not-high, and optional caution. The legacy fields `related`, `relatedAlgorithms`, and `comparedWith` are removed from algorithm/model/concept frontmatter; do not introduce them there. (`relatedAlgorithms` remains valid on blog and demo frontmatter.)
 
 ### Sources
 

@@ -13,7 +13,7 @@ Math and code carry the content, but a figure earns its place when it encodes a 
 
 The two SVG primitives share the same markdown syntax and output location (`content/images/<slug>/`); they differ only in how the file is produced. The build (`scripts/content-build.ts`) rewrites relative paths to `/content/images/...` regardless.
 
-**Blocked.** Inline `<svg>` markup in markdown is stripped by `rehype-sanitize` (`scripts/content-build.ts:57-120`). Paste raw SVG into a `.svg` file under `content/images/<slug>/` and reference it with markdown image syntax; do not paste it into the page body. Interactive React components are possible but hardcoded per algorithm (`src/lib/content/useArticleIllustrations.tsx` currently only knows `chess-response`); do not invent new ones from a skill pass — request a code change.
+**Blocked.** Inline `<svg>` markup in markdown is stripped by `rehype-sanitize` (`scripts/build/render.ts`). Paste raw SVG into a `.svg` file under `content/images/<slug>/` and reference it with markdown image syntax; do not paste it into the page body. Interactive React components are possible but hardcoded per algorithm (`src/lib/content/useArticleIllustrations.tsx` currently only knows `chess-response`); do not invent new ones from a skill pass — request a code change.
 
 **Also blocked.** Embedding raster images inside SVG via `<image href="data:image/png;..."/>` is unacceptable. SVGs are vector primitives — if the figure is a photograph or a rasterized screenshot, use a PNG/JPEG with markdown image syntax directly. SVG is for vector content only.
 

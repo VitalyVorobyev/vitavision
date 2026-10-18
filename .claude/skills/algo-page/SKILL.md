@@ -192,7 +192,7 @@ Setting `editorAlgorithmId` renders a "Try in the editor →" button on the page
 When introducing a new `editorAlgorithmId` value:
 
 1. Confirm the adapter is registered in `src/components/editor/algorithms/registry.ts` and its id appears in the sample-id mapping in `AlgorithmPost.tsx`. If missing, add the entry so the CTA preloads an image.
-2. If the algorithm needs a new sample image not yet in `galleryImages` (`src/store/editor/useEditorStore.ts`), add it there with a `sampleId` and add the `sampleId` to `VALID_SAMPLE_IDS` in `src/hooks/useEditorDeepLink.ts`.
+2. If the algorithm needs a new sample image not yet in `SAMPLE_GALLERY_IMAGES` (`src/store/editor/galleryImages.ts`), add it there with a `sampleId` and add the `sampleId` to `VALID_SAMPLE_IDS` in `src/hooks/useEditorDeepLink.ts`.
 3. Smoke-test: visit `/atlas/<slug>`, click "Try in the editor", confirm the image loads and the algorithm is preselected before touching anything.
 
 A deep-link that leaves the user in gallery mode with no image is worse than no link — they don't know what to do next.
@@ -264,8 +264,8 @@ B9. **Write `content/algorithms/<slug>.md`** with the frontmatter above — no b
    - A `<<<AUDIT>>>{json}<<<END>>>` block listing every constant / equation / symbol used in the body and the source note that supplied each
 
    Sonnet **does not** write any file. Sonnet **does not** read cache files. If Sonnet returns `blocked: missing <kind> <name> for <source-id>`, the note is incomplete — fix the note (extend it by hand or rerun paper-ingest after deleting the note) and retry the delegation.
-7.5. **Illustration pass.** Scan each section against the "good signals" in the Illustrations section above. Choose the primitive by content:
-  - Control flow / pipeline stages → Mermaid (inline, no asset).
+7.5. **Illustration pass.** Scan each section against the "good signals" in `_shared/illustrations.md`. Choose the primitive by content:
+  - Control flow / pipeline stages → Mermaid (inline, no asset) for ≤ 4 stages; ≥ 5 stages → generated snake-layout SVG (see the pipeline-figure checklist item).
   - Small fixed geometric scheme (≤ ~15 primitives) → hand-authored SVG under `content/images/<slug>/`.
   - Anything that evaluates a function, plots a region, sweeps a parameter, or embeds page-level constants → **generator script** under `py/generate_<slug>_<name>.py` writing `content/images/<slug>/<name>.svg`, run from `.venv/bin/python`. Commit the script and the SVG. Model it on `py/generate_harris_eigenvalue_regions.py`.
   - Real-image data the generator cannot synthesize → `<!-- TODO figure: ... -->` placeholder and a bullet in working notes.

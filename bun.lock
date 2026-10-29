@@ -9,12 +9,12 @@
         "@fontsource-variable/source-serif-4": "^5.3.0",
         "@vitavision/calib-targets": "^0.15.4",
         "@vitavision/chess-corners": "^1.3.0",
-        "@vitavision/forms": "^0.8.0",
+        "@vitavision/forms": "^0.8.3",
         "@vitavision/overlays": "^0.2.0",
         "@vitavision/radsym": "^0.4.2",
         "@vitavision/ringgrid": "^0.13.1",
-        "@vitavision/stage2d": "^0.11.0",
-        "@vitavision/ui": "^0.11.0",
+        "@vitavision/stage2d": "^0.13.2",
+        "@vitavision/ui": "^0.14.0",
         "d3-delaunay": "^6.0.4",
         "jszip": "^3.10.1",
         "katex": "~0.16.47",
@@ -47,8 +47,8 @@
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@types/uuid": "^11.0.0",
-        "@vitavision/config-eslint": "^0.1.0",
-        "@vitavision/config-ts": "^0.1.0",
+        "@vitavision/config-eslint": "^0.1.1",
+        "@vitavision/config-ts": "^0.2.0",
         "@vitejs/plugin-react": "^6.1.2",
         "ajv": "^8.20.0",
         "d3-force": "3.0.0",
@@ -583,11 +583,11 @@
 
     "@vitavision/chess-corners": ["@vitavision/chess-corners@1.3.0", "", {}, "sha512-UFNe8DTjbVeWOtmr737Ko6uK0THxwma8rYaKw/WLjmBDUf2hZvHDUT2/NTocDQ8VyTakzPInAFgeoNu0k9Ad7g=="],
 
-    "@vitavision/config-eslint": ["@vitavision/config-eslint@0.1.0", "", { "dependencies": { "@eslint-react/eslint-plugin": "^5.20.8", "eslint-plugin-react-hooks": "^7.1.1", "eslint-plugin-storybook": "^10.6.0", "typescript-eslint": "^8.70.1" }, "peerDependencies": { "eslint": "^10.11.0", "typescript": "^6.0.3" } }, "sha512-pDoahF2AErSqt0JVbR8PhrS/93RLy//fEVZbJld0IUFXYmRkBsuRTXWcpp6/fa99hGJTCUPevv5Y2cWNaYFXuA=="],
+    "@vitavision/config-eslint": ["@vitavision/config-eslint@0.1.1", "", { "dependencies": { "@eslint-react/eslint-plugin": "^5.20.8", "eslint-plugin-react-hooks": "^7.1.1", "eslint-plugin-storybook": "^10.6.0", "typescript-eslint": "^8.70.1" }, "peerDependencies": { "eslint": "^10.11.0", "typescript": "^6.0.3" } }, "sha512-50b24ddWntG/vsS5eylH74wraowyRRtbpEO7VaUFwgUDuMG4vKcO7LX2Z9TExtbIdgcm82z5uuPXyR8IGIyKtw=="],
 
-    "@vitavision/config-ts": ["@vitavision/config-ts@0.1.0", "", { "peerDependencies": { "tsdown": "0.23.0", "typescript": "^6.0.3" }, "optionalPeers": ["tsdown"] }, "sha512-2I0BYpc0kt2co9ZGZVSqS3OnFM1jYufKLl5Ww4+KVT67PfohwCWt8Q37gatLgIAG4yKns5jKsXx9KUu99yZIzw=="],
+    "@vitavision/config-ts": ["@vitavision/config-ts@0.2.0", "", { "peerDependencies": { "tsdown": "0.23.0", "typescript": "^7.0.2" }, "optionalPeers": ["tsdown"] }, "sha512-Ykf3F3TkDBx/vwO4lczMeHSogzZ5Gphy3aCwedHXfafI457nOZNotH9fDbeWV2qElUgqmuJi+cttE/N5ViO29g=="],
 
-    "@vitavision/forms": ["@vitavision/forms@0.8.0", "", { "dependencies": { "@vitavision/ui": "^0.11.0" }, "peerDependencies": { "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-Uyw1GToVT1iEhohPssanupRMpEX9FWYmYpwOuKlanyHkL3RBxsXwpeGJZOpd8HJIXllXrlhe2J2HteYQWZS5LA=="],
+    "@vitavision/forms": ["@vitavision/forms@0.8.3", "", { "dependencies": { "@vitavision/ui": "^0.14.0" }, "peerDependencies": { "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-0w9ebkNadh8A6TKUFASUeB7gCMzZZv7RaHyfKSNNujIL4dKoUtjMx8qgdO6OsU98VQuQ1mVkFFRceq5qV6tfEw=="],
 
     "@vitavision/overlays": ["@vitavision/overlays@0.2.0", "", { "peerDependencies": { "@vitavision/stage2d": ">=0.11.0 <1.0.0-0", "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-vNb+noiyyyvL8K8+57PT4ZV/8F0zixG0AMujFM2w5xQHxpCMUxq6vSjCS6j49JBWIRGe26+KlRopeEQG2Zi/Ew=="],
 
@@ -595,9 +595,9 @@
 
     "@vitavision/ringgrid": ["@vitavision/ringgrid@0.13.1", "", {}, "sha512-hbOI7Wl8q4CgsWQX3k2IJcaTj2f8BQNMXCi+6ndOIQ2gojf3uTfAE1L9oiFFU6qI4BzL0WzdMXt9GOZaEkfeRA=="],
 
-    "@vitavision/stage2d": ["@vitavision/stage2d@0.11.0", "", { "dependencies": { "@vitavision/ui": "^0.11.0", "lucide-react": "^1.48.0" }, "peerDependencies": { "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-nNmwktyTGyg7cULVL08xeCr/S0UpR90JWhfWxUt2LEtfeFf1b+JaN5IySAJtoXApCm+ox8X0+vHRpXvUMTxNjg=="],
+    "@vitavision/stage2d": ["@vitavision/stage2d@0.13.2", "", { "dependencies": { "@vitavision/ui": "^0.14.0", "lucide-react": "^1.48.0" }, "peerDependencies": { "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-2Er2Jdgq7AliEF0dQg3Y9CDi7yHwyuGwiP5q9/PjbieF4vACe1ETZ3UzBsEMKHFjr8AubIG8gXT/9zCQGy2bJg=="],
 
-    "@vitavision/ui": ["@vitavision/ui@0.11.0", "", { "dependencies": { "@radix-ui/react-checkbox": "^1.3.11", "@radix-ui/react-dialog": "^1.1.23", "@radix-ui/react-dropdown-menu": "^2.1.24", "@radix-ui/react-popover": "^1.1.23", "@radix-ui/react-select": "^2.3.7", "@radix-ui/react-slider": "^1.4.7", "@radix-ui/react-slot": "^1.3.3", "@radix-ui/react-switch": "^1.3.7", "@radix-ui/react-tooltip": "^1.2.16", "clsx": "^2.1.1", "lucide-react": "^1.48.0", "tailwind-merge": "^3.6.0" }, "peerDependencies": { "react": "^19.2.0", "react-dom": "^19.2.0", "tailwindcss": "^4.3.0" } }, "sha512-0MP5/NfAfxQ45GXg9XWErvqT3KLdbv1OVSV3lpWnlC55n56ErnZ6sSRDDM5H4ghO4a2JqXEMShOnUOsYiMYsAA=="],
+    "@vitavision/ui": ["@vitavision/ui@0.14.0", "", { "dependencies": { "@radix-ui/react-checkbox": "^1.3.11", "@radix-ui/react-dialog": "^1.1.23", "@radix-ui/react-dropdown-menu": "^2.1.24", "@radix-ui/react-popover": "^1.1.23", "@radix-ui/react-select": "^2.3.7", "@radix-ui/react-slider": "^1.4.7", "@radix-ui/react-slot": "^1.3.3", "@radix-ui/react-switch": "^1.3.7", "@radix-ui/react-tooltip": "^1.2.16", "clsx": "^2.1.1", "lucide-react": "^1.48.0", "tailwind-merge": "^3.6.0" }, "peerDependencies": { "react": "^19.2.0", "react-dom": "^19.2.0", "tailwindcss": "^4.3.0" } }, "sha512-kPi5qRzpyhFxwg7ZyWcAMcc1nULG9o/a5mX3vmiOeeFmRFvsg118WAP+KfA/m1opdWpL1h0GLXnTqhYHPiKM1Q=="],
 
     "@vitejs/plugin-react": ["@vitejs/plugin-react@6.1.2", "", { "dependencies": { "@rolldown/pluginutils": "^1.0.1" }, "peerDependencies": { "@rolldown/plugin-babel": "^0.1.7 || ^0.2.0", "babel-plugin-react-compiler": "^1.0.0", "oxc-transform-react": "^0.152.0", "vite": "^8.0.0" }, "optionalPeers": ["@rolldown/plugin-babel", "babel-plugin-react-compiler", "oxc-transform-react"] }, "sha512-fhJNGUdscQa4HkI0xFxwonWyhnVReCPDbXI7FH7jmzpnVCrFQI7PRrhWecO263610vOrs9tr2Y4xcf8uAdFxbw=="],
 

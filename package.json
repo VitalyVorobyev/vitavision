@@ -74,7 +74,7 @@
     "@types/uuid": "^11.0.0",
     "@vitavision/config-eslint": "^0.1.1",
     "@vitavision/config-ts": "^0.2.0",
-    "@vitejs/plugin-react": "^6.1.2",
+    "@vitejs/plugin-react": "^6.2.1",
     "ajv": "^8.20.0",
     "d3-force": "3.0.0",
     "esbuild": "^0.28.2",
@@ -99,8 +99,8 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.1",
     "unified": "^11.0.5",
-    "vite": "^8.3.5",
-    "vitest": "^5.0.5",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0",
     "yaml": "^2.9.0"
   },
   "overrides": {

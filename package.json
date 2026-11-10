@@ -35,7 +35,7 @@
     "@vitavision/calib-targets": "^0.15.4",
     "@vitavision/chess-corners": "^1.3.0",
     "@vitavision/forms": "^0.8.3",
-    "@vitavision/overlays": "^0.2.0",
+    "@vitavision/overlays": "^0.3.0",
     "@vitavision/radsym": "^0.4.2",
     "@vitavision/ringgrid": "^0.13.1",
     "@vitavision/stage2d": "^0.14.0",

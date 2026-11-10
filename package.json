@@ -37,7 +37,7 @@
     "@vitavision/forms": "^0.8.3",
     "@vitavision/overlays": "^0.3.0",
     "@vitavision/radsym": "^0.4.2",
-    "@vitavision/ringgrid": "^0.13.1",
+    "@vitavision/ringgrid": "^0.13.2",
     "@vitavision/stage2d": "^0.14.0",
     "@vitavision/ui": "^0.14.0",
     "d3-delaunay": "^6.0.4",

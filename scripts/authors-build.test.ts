@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-    normalizeSourceId,
-    buildPagesByPaper,
-    buildAuthorsIndex,
-    buildCoauthors,
-} from "./authors-build.ts";
+import { normalizeSourceId, buildPagesByPaper, buildAuthorsIndex, buildCoauthors } from "./authors-build.ts";
 import type { PageSourcesEntry, AuthorRecord } from "./authors-build.ts";
 
 describe("normalizeSourceId", () => {
@@ -27,9 +22,7 @@ describe("normalizeSourceId", () => {
 
 describe("buildPagesByPaper", () => {
     it("maps a paper id referenced by sources.primary to the citing slug", () => {
-        const pages: PageSourcesEntry[] = [
-            { slug: "chess-corners", sources: { primary: "paper:duda1972" } },
-        ];
+        const pages: PageSourcesEntry[] = [{ slug: "chess-corners", sources: { primary: "paper:duda1972" } }];
         expect(buildPagesByPaper(pages)).toEqual({ duda1972: ["chess-corners"] });
     });
 
@@ -130,11 +123,7 @@ describe("buildAuthorsIndex", () => {
     });
 
     it("omits orcid entirely when the author record has none", () => {
-        const index = buildAuthorsIndex(
-            [{ id: "A1", name: "No Orcid" }],
-            [{ paperId: "p1", authorIds: ["A1"] }],
-            {},
-        );
+        const index = buildAuthorsIndex([{ id: "A1", name: "No Orcid" }], [{ paperId: "p1", authorIds: ["A1"] }], {});
         expect(index.authors.A1).not.toHaveProperty("orcid");
     });
 
@@ -143,11 +132,7 @@ describe("buildAuthorsIndex", () => {
             { id: "A-old", name: "Old Name", mergedInto: "A-canon" },
             { id: "A-canon", name: "Canonical Name", orcid: "0000-0001-0000-0002" },
         ];
-        const index = buildAuthorsIndex(
-            authorRecords,
-            [{ paperId: "p1", authorIds: ["A-old"] }],
-            {},
-        );
+        const index = buildAuthorsIndex(authorRecords, [{ paperId: "p1", authorIds: ["A-old"] }], {});
         expect(index.paperAuthors.p1).toEqual(["A-canon"]);
         expect(index.authors).not.toHaveProperty("A-old");
         expect(index.authors["A-canon"]).toEqual({
@@ -179,11 +164,7 @@ describe("buildAuthorsIndex", () => {
             { id: "A-old", name: "Stale Name", mergedInto: "A-canon" },
             { id: "A-canon", name: "Fresh Name", orcid: "0000-0001-0000-0003" },
         ];
-        const index = buildAuthorsIndex(
-            authorRecords,
-            [{ paperId: "p1", authorIds: ["A-old"] }],
-            {},
-        );
+        const index = buildAuthorsIndex(authorRecords, [{ paperId: "p1", authorIds: ["A-old"] }], {});
         expect(index.authors["A-canon"].name).toBe("Fresh Name");
         expect(index.authors["A-canon"].orcid).toBe("0000-0001-0000-0003");
     });
@@ -194,11 +175,7 @@ describe("buildAuthorsIndex", () => {
             { id: "A-b", name: "B", mergedInto: "A-c" },
             { id: "A-c", name: "C" },
         ];
-        const index = buildAuthorsIndex(
-            authorRecords,
-            [{ paperId: "p1", authorIds: ["A-a"] }],
-            {},
-        );
+        const index = buildAuthorsIndex(authorRecords, [{ paperId: "p1", authorIds: ["A-a"] }], {});
         expect(index.aliases).toEqual({ "A-a": "A-c", "A-b": "A-c" });
         expect(index.paperAuthors.p1).toEqual(["A-c"]);
     });
@@ -208,11 +185,7 @@ describe("buildAuthorsIndex", () => {
             { id: "A-x", name: "X", mergedInto: "A-y" },
             { id: "A-y", name: "Y", mergedInto: "A-x" },
         ];
-        const index = buildAuthorsIndex(
-            authorRecords,
-            [{ paperId: "p1", authorIds: ["A-x", "A-y"] }],
-            {},
-        );
+        const index = buildAuthorsIndex(authorRecords, [{ paperId: "p1", authorIds: ["A-x", "A-y"] }], {});
         // Cycle detected — resolution stops rather than hanging; the exact
         // landing id is an implementation detail, but it must be stable and
         // every paper author id must resolve to a single canonical id.

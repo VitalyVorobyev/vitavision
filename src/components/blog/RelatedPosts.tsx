@@ -42,23 +42,21 @@ export default function RelatedPosts({ slugs, type }: RelatedPostsProps) {
     if (items.length === 0) return null;
 
     const heading =
-        type === "blog" ? "Related Posts" :
-        type === "demo" ? "Related Demos" :
-        type === "model" ? "Related Models" :
-        "Related Algorithms";
+        type === "blog"
+            ? "Related Posts"
+            : type === "demo"
+              ? "Related Demos"
+              : type === "model"
+                ? "Related Models"
+                : "Related Algorithms";
 
     return (
         <section className="mt-12 pt-6 border-t border-line">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-fg-muted mb-3">
-                {heading}
-            </h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-fg-muted mb-3">{heading}</h3>
             <ul className="space-y-1.5">
                 {items.map((item) => (
                     <li key={item.slug}>
-                        <Link
-                            to={item.path}
-                            className="text-signal underline hover:text-signal/80 text-sm"
-                        >
+                        <Link to={item.path} className="text-signal underline hover:text-signal/80 text-sm">
                             {item.title}
                         </Link>
                     </li>

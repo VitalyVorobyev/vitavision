@@ -10,27 +10,27 @@
 // helper; do not import validation.ts, svg/index.ts or puzzlepole/periods.ts, which reach the
 // worker proxy.
 
-import { resolvePageDimensions } from '../../src/components/targetgen/svg/paperConstants';
-import { DEFAULT_SCREEN } from '../../src/components/targetgen/reducer';
+import { resolvePageDimensions } from "../../src/components/targetgen/svg/paperConstants";
+import { DEFAULT_SCREEN } from "../../src/components/targetgen/reducer";
 import type {
     PageConfig,
     ScreenRenderResult,
     TargetConfig,
     TargetGeneratorState,
     ValidationResult,
-} from '../../src/components/targetgen/types';
+} from "../../src/components/targetgen/types";
 
 export const A4_LANDSCAPE: PageConfig = {
-    sizeKind: 'a4',
+    sizeKind: "a4",
     customWidthMm: 210,
     customHeightMm: 297,
-    orientation: 'landscape',
+    orientation: "landscape",
     marginMm: 10,
     pngDpi: 300,
     showScaleLine: true,
 };
 
-export const A4_PORTRAIT: PageConfig = { ...A4_LANDSCAPE, orientation: 'portrait' };
+export const A4_PORTRAIT: PageConfig = { ...A4_LANDSCAPE, orientation: "portrait" };
 
 /**
  * A few real `[circumference_squares, start_row]` pairs, as `puzzlepole_periods()` returns
@@ -43,30 +43,36 @@ export const PUZZLEPOLE_PERIODS: readonly (readonly [number, number])[] = [
     [24, 75],
 ];
 
-const INK = '#000';
-const PAPER = '#fff';
+const INK = "#000";
+const PAPER = "#fff";
 
 /** Printed footprint of the board in mm (the same arithmetic as TargetPreview's computeBoardDims). */
 export function boardSizeMm(target: TargetConfig): { w: number; h: number } {
     switch (target.targetType) {
-        case 'chessboard':
-        case 'markerboard':
+        case "chessboard":
+        case "markerboard":
             return {
                 w: (target.config.innerCols + 1) * target.config.squareSizeMm,
                 h: (target.config.innerRows + 1) * target.config.squareSizeMm,
             };
-        case 'charuco':
-            return { w: target.config.cols * target.config.squareSizeMm, h: target.config.rows * target.config.squareSizeMm };
-        case 'ringgrid': {
+        case "charuco":
+            return {
+                w: target.config.cols * target.config.squareSizeMm,
+                h: target.config.rows * target.config.squareSizeMm,
+            };
+        case "ringgrid": {
             const c = target.config;
             return {
                 w: c.longRowCols * c.pitchMm + 2 * c.markerOuterRadiusMm,
                 h: (c.rows - 1) * c.pitchMm * (Math.sqrt(3) / 2) + 2 * c.markerOuterRadiusMm,
             };
         }
-        case 'puzzleboard':
-            return { w: target.config.cols * target.config.cellSizeMm, h: target.config.rows * target.config.cellSizeMm };
-        case 'puzzlepole':
+        case "puzzleboard":
+            return {
+                w: target.config.cols * target.config.cellSizeMm,
+                h: target.config.rows * target.config.cellSizeMm,
+            };
+        case "puzzlepole":
             return {
                 w: target.config.axialSquares * target.config.squareSizeMm,
                 h: (target.config.circumferenceSquares + 2) * target.config.squareSizeMm,
@@ -75,10 +81,11 @@ export function boardSizeMm(target: TargetConfig): { w: number; h: number } {
 }
 
 function squares(cols: number, rows: number, size: number, ox: number, oy: number): string {
-    let out = '';
+    let out = "";
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-            if ((r + c) % 2 === 0) out += `<rect x="${ox + c * size}" y="${oy + r * size}" width="${size}" height="${size}"/>`;
+            if ((r + c) % 2 === 0)
+                out += `<rect x="${ox + c * size}" y="${oy + r * size}" width="${size}" height="${size}"/>`;
         }
     }
     return out;
@@ -91,14 +98,14 @@ function bit(i: number, j: number, k: number): boolean {
 
 function boardBody(target: TargetConfig, ox: number, oy: number): string {
     switch (target.targetType) {
-        case 'chessboard': {
+        case "chessboard": {
             const { squareSizeMm: s, innerCols, innerRows } = target.config;
             return `<g fill="${INK}">${squares(innerCols + 1, innerRows + 1, s, ox, oy)}</g>`;
         }
-        case 'charuco': {
+        case "charuco": {
             const { squareSizeMm: s, cols, rows, markerSizeRel } = target.config;
             const m = s * markerSizeRel;
-            let markers = '';
+            let markers = "";
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     if ((r + c) % 2 === 0) continue;
@@ -114,18 +121,18 @@ function boardBody(target: TargetConfig, ox: number, oy: number): string {
             }
             return `<g fill="${INK}">${squares(cols, rows, s, ox, oy)}</g>${markers}`;
         }
-        case 'markerboard': {
+        case "markerboard": {
             const { squareSizeMm: s, innerCols, innerRows, circleDiameterRel, circles } = target.config;
-            let dots = '';
+            let dots = "";
             for (const { cell } of circles) {
                 const dark = (cell.i + cell.j) % 2 === 0;
                 dots += `<circle cx="${ox + (cell.j + 0.5) * s}" cy="${oy + (cell.i + 0.5) * s}" r="${(s * circleDiameterRel) / 2}" fill="${dark ? PAPER : INK}"/>`;
             }
             return `<g fill="${INK}">${squares(innerCols + 1, innerRows + 1, s, ox, oy)}</g>${dots}`;
         }
-        case 'ringgrid': {
+        case "ringgrid": {
             const c = target.config;
-            let rings = '';
+            let rings = "";
             for (let r = 0; r < c.rows; r++) {
                 const cols = r % 2 === 0 ? c.longRowCols : c.longRowCols - 1;
                 const shift = r % 2 === 0 ? 0 : c.pitchMm / 2;
@@ -138,9 +145,9 @@ function boardBody(target: TargetConfig, ox: number, oy: number): string {
             }
             return rings;
         }
-        case 'puzzleboard': {
+        case "puzzleboard": {
             const { cellSizeMm: s, cols, rows } = target.config;
-            let dots = '';
+            let dots = "";
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols - 1; c++) {
                     dots += `<circle cx="${ox + (c + 1) * s}" cy="${oy + (r + 0.5) * s}" r="${s * 0.12}" fill="${bit(r, c, 1) ? PAPER : INK}"/>`;
@@ -148,7 +155,7 @@ function boardBody(target: TargetConfig, ox: number, oy: number): string {
             }
             return `<g fill="${INK}">${squares(cols, rows, s, ox, oy)}</g>${dots}`;
         }
-        case 'puzzlepole': {
+        case "puzzlepole": {
             const { squareSizeMm: s, axialSquares, circumferenceSquares } = target.config;
             return `<g fill="${INK}">${squares(axialSquares, circumferenceSquares + 2, s, ox, oy)}</g>`;
         }
@@ -175,7 +182,9 @@ export function staticValidation(target: TargetConfig, page: PageConfig): Valida
     const { w, h } = boardSizeMm(target);
     const errors =
         w > drawW || h > drawH
-            ? [`Board (${w.toFixed(1)} x ${h.toFixed(1)} mm) does not fit the printable area (${drawW.toFixed(1)} x ${drawH.toFixed(1)} mm).`]
+            ? [
+                  `Board (${w.toFixed(1)} x ${h.toFixed(1)} mm) does not fit the printable area (${drawW.toFixed(1)} x ${drawH.toFixed(1)} mm).`,
+              ]
             : [];
     return { errors, warnings: [], boardWidthMm: w, boardHeightMm: h };
 }
@@ -185,7 +194,7 @@ export function settledState(target: TargetConfig, page: PageConfig = A4_LANDSCA
     return {
         target,
         page,
-        medium: 'print',
+        medium: "print",
         screen: { ...DEFAULT_SCREEN },
         screenPrefilled: false,
         screenResult: null,
@@ -202,7 +211,7 @@ export function settledState(target: TargetConfig, page: PageConfig = A4_LANDSCA
  * pixelated preview have something true-to-shape to show.
  */
 const CHECKER_8X8_PNG_BASE64 =
-    'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAAIklEQVR4ATXBsQEAMAjAIPT/n9PFwpCR9RXFOkNG1lcU6zzIfQwBpEIBKwAAAABJRU5ErkJggg==';
+    "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAAIklEQVR4ATXBsQEAMAjAIPT/n9PFwpCR9RXFOkNG1lcU6zzIfQwBpEIBKwAAAABJRU5ErkJggg==";
 
 export function stubPng(): Uint8Array {
     const bin = atob(CHECKER_8X8_PNG_BASE64);
@@ -211,11 +220,11 @@ export function stubPng(): Uint8Array {
 
 export const SCREEN_GRID_RESULT: ScreenRenderResult = {
     png: stubPng(),
-    sidecarJson: '{}',
+    sidecarJson: "{}",
     widthPx: 1920,
     heightPx: 1080,
     geometry: {
-        kind: 'grid',
+        kind: "grid",
         squareSizePx: 73,
         squareSizeMm: 20.0385,
         requestedSquareSizeMm: 20,
@@ -225,11 +234,11 @@ export const SCREEN_GRID_RESULT: ScreenRenderResult = {
 
 export const SCREEN_RINGGRID_RESULT: ScreenRenderResult = {
     png: stubPng(),
-    sidecarJson: '{}',
+    sidecarJson: "{}",
     widthPx: 1920,
     heightPx: 1080,
     geometry: {
-        kind: 'ringgrid',
+        kind: "ringgrid",
         rows: 22,
         columns: 34,
         markerCount: 737,
@@ -243,10 +252,10 @@ export const SCREEN_RINGGRID_RESULT: ScreenRenderResult = {
 export function settledScreenState(target: TargetConfig, result: ScreenRenderResult): TargetGeneratorState {
     return {
         ...settledState(target),
-        medium: 'screen',
+        medium: "screen",
         screenPrefilled: true,
         screenResult: result,
-        previewSvg: '',
+        previewSvg: "",
         validation: { errors: [], warnings: [] },
     };
 }
@@ -254,6 +263,6 @@ export function settledScreenState(target: TargetConfig, result: ScreenRenderRes
 /** The first element of a preset list (`noUncheckedIndexedAccess` makes `xs[0]` possibly undefined). */
 export function first<T>(xs: readonly T[]): T {
     const x = xs[0];
-    if (x === undefined) throw new Error('empty list');
+    if (x === undefined) throw new Error("empty list");
     return x;
 }

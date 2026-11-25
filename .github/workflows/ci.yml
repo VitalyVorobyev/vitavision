@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: ['**']
+    branches: ["**"]
   workflow_dispatch:
 
 permissions:
@@ -54,6 +54,9 @@ jobs:
 
       - name: Lint
         run: bun run lint
+
+      - name: Format
+        run: bun run format:check
 
       # Guards the components synced to claude.ai/design against reaching the
       # editor store, the WASM proxy, konva, or Clerk. Those break a design

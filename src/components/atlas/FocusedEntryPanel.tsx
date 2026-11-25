@@ -15,8 +15,8 @@ import TagBadge from "../blog/TagBadge.tsx";
 
 const KIND_LABEL: Record<string, string> = {
     algorithm: "Algorithm",
-    model:     "Model",
-    concept:   "Concept",
+    model: "Model",
+    concept: "Concept",
 };
 
 interface FocusedEntryPanelProps {
@@ -30,12 +30,12 @@ export function FocusedEntryPanel({ slug, isPreview }: FocusedEntryPanelProps) {
 
     const { node, kind, fm } = entry;
 
-    const year    = (fm as { year?: number }).year;
+    const year = (fm as { year?: number }).year;
     const tagline = (fm as { tagline?: string }).tagline;
-    const tasks   = (fm as { tasks?: string[] }).tasks ?? [];
+    const tasks = (fm as { tasks?: string[] }).tasks ?? [];
     const sources = (fm as { sources?: { primary?: string } }).sources;
-    const domain  = fm.domain as string | undefined;
-    const tags    = (fm.tags as string[] | undefined) ?? [];
+    const domain = fm.domain as string | undefined;
+    const tags = (fm.tags as string[] | undefined) ?? [];
 
     const description = tagline ?? node.summary;
 
@@ -47,10 +47,11 @@ export function FocusedEntryPanel({ slug, isPreview }: FocusedEntryPanelProps) {
                 <div className="min-w-0 flex-1">
                     {/* Eyebrow */}
                     <div className="flex items-center gap-1 text-[9.5px] uppercase tracking-[0.12em] text-fg-muted flex-wrap">
-                        {isPreview
-                            ? <span className="text-fg-muted font-semibold">Preview</span>
-                            : <span className="text-signal font-semibold">Focused</span>
-                        }
+                        {isPreview ? (
+                            <span className="text-fg-muted font-semibold">Preview</span>
+                        ) : (
+                            <span className="text-signal font-semibold">Focused</span>
+                        )}
                         <span className="text-fg-muted/60">·</span>
                         <span>{KIND_LABEL[kind]}</span>
                         {year != null && (
@@ -62,16 +63,12 @@ export function FocusedEntryPanel({ slug, isPreview }: FocusedEntryPanelProps) {
                     </div>
 
                     {/* Title — full, no truncation */}
-                    <div className="text-[16px] font-semibold leading-snug text-fg mt-0.5">
-                        {node.title}
-                    </div>
+                    <div className="text-[16px] font-semibold leading-snug text-fg mt-0.5">{node.title}</div>
                 </div>
             </div>
 
             {/* Description — full, no line-clamp */}
-            <p className="text-[12.5px] text-fg-muted leading-[1.5]">
-                {description}
-            </p>
+            <p className="text-[12.5px] text-fg-muted leading-[1.5]">{description}</p>
 
             {/* Source — vertical mini-card sized for the narrow rail (renders nothing when absent or repo:/doc:) */}
             <SourceCard primary={sources?.primary} />
@@ -109,11 +106,7 @@ export function FocusedEntryPanel({ slug, isPreview }: FocusedEntryPanelProps) {
                     <div className="text-[9.5px] uppercase tracking-[0.12em] text-fg-muted mb-1">Tags</div>
                     <div className="flex flex-wrap gap-1.5">
                         {tags.map((t) => (
-                            <TagBadge
-                                key={t}
-                                tag={t}
-                                to={`/atlas?tags=${encodeURIComponent(t)}`}
-                            />
+                            <TagBadge key={t} tag={t} to={`/atlas?tags=${encodeURIComponent(t)}`} />
                         ))}
                     </div>
                 </div>

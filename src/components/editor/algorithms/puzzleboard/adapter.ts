@@ -29,10 +29,18 @@ const toFeatures = (result: PuzzleBoardDetectResult, runId: string): LabeledPoin
 const toDiagnostics = (result: PuzzleBoardDetectResult): DiagnosticEntry[] => {
     const entries: DiagnosticEntry[] = [];
     if (result.summary.corner_count === 0) {
-        entries.push({ level: "error", message: "No corners detected", detail: "Check board dimensions, image focus, and lighting." });
+        entries.push({
+            level: "error",
+            message: "No corners detected",
+            detail: "Check board dimensions, image focus, and lighting.",
+        });
     }
     if (!result.alignment) {
-        entries.push({ level: "error", message: "No alignment found", detail: "Board could not be located in the image." });
+        entries.push({
+            level: "error",
+            message: "No alignment found",
+            detail: "Board could not be located in the image.",
+        });
     }
     // Detection succeeded if we got here, so a moderately high bit-error rate paired
     // with high mean confidence is informational, not a problem worth flagging.
@@ -45,7 +53,11 @@ const toDiagnostics = (result: PuzzleBoardDetectResult): DiagnosticEntry[] => {
         });
     }
     if (result.decode.edges_observed > 0 && result.decode.edges_matched / result.decode.edges_observed < 0.6) {
-        entries.push({ level: "info", message: "Low edge match rate", detail: "Fewer than 60% of observed edges matched the master pattern." });
+        entries.push({
+            level: "info",
+            message: "Low edge match rate",
+            detail: "Fewer than 60% of observed edges matched the master pattern.",
+        });
     }
     return entries;
 };
@@ -61,8 +73,7 @@ export const puzzleboardAlgorithm: AlgorithmDefinition = {
     ConfigComponent: createConfigForm({ schema, ui }),
     run: () => Promise.reject(new Error("PuzzleBoard detection is only available via client-side WASM.")),
     runWasm: ({ pixels, width, height, config }) => detectPuzzleboardWasm(pixels, width, height, config),
-    toFeatures: (result, runId) =>
-        toFeatures(result as PuzzleBoardDetectResult, runId),
+    toFeatures: (result, runId) => toFeatures(result as PuzzleBoardDetectResult, runId),
     summary: (result) => {
         const r = result as PuzzleBoardDetectResult;
         return [

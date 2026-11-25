@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { dedupeVertices, featureFromDrag, featureFromPoint, featureFromVertices, isMovable, movedGeometry } from "./drawing";
+import {
+    dedupeVertices,
+    featureFromDrag,
+    featureFromPoint,
+    featureFromVertices,
+    isMovable,
+    movedGeometry,
+} from "./drawing";
 
 describe("featureFromDrag", () => {
     it("makes a bbox from either diagonal of the drag, with its top-left corner as x, y", () => {
@@ -26,7 +33,10 @@ describe("featureFromDrag", () => {
     });
 
     it("makes a line, and refuses one of 2 px or less on both axes", () => {
-        expect(featureFromDrag("LINE", { x: 1, y: 2 }, { x: 30, y: 2 })).toMatchObject({ type: "line", points: [1, 2, 30, 2] });
+        expect(featureFromDrag("LINE", { x: 1, y: 2 }, { x: 30, y: 2 })).toMatchObject({
+            type: "line",
+            points: [1, 2, 30, 2],
+        });
         expect(featureFromDrag("LINE", { x: 1, y: 2 }, { x: 3, y: 4 })).toBeNull();
     });
 });
@@ -51,7 +61,12 @@ describe("vertices", () => {
 
 describe("featureFromPoint", () => {
     it("stores the position as given", () => {
-        expect(featureFromPoint({ x: 299.5, y: 199.5 })).toMatchObject({ type: "point", x: 299.5, y: 199.5, source: "manual" });
+        expect(featureFromPoint({ x: 299.5, y: 199.5 })).toMatchObject({
+            type: "point",
+            x: 299.5,
+            y: 199.5,
+            source: "manual",
+        });
     });
 });
 
@@ -59,13 +74,28 @@ describe("movedGeometry", () => {
     const delta = { x: 40, y: 30 };
 
     it("moves the anchor of a point, bbox and ellipse and leaves their size and rotation", () => {
-        expect(movedGeometry({ id: "b", type: "bbox", source: "manual", x: 450, y: 330, width: 150, height: 100, rotation: 20 }, delta)).toEqual({ x: 490, y: 360 });
-        expect(movedGeometry({ id: "p", type: "point", source: "manual", x: 1, y: 2 }, delta)).toEqual({ x: 41, y: 32 });
+        expect(
+            movedGeometry(
+                { id: "b", type: "bbox", source: "manual", x: 450, y: 330, width: 150, height: 100, rotation: 20 },
+                delta,
+            ),
+        ).toEqual({ x: 490, y: 360 });
+        expect(movedGeometry({ id: "p", type: "point", source: "manual", x: 1, y: 2 }, delta)).toEqual({
+            x: 41,
+            y: 32,
+        });
     });
 
     it("moves every vertex of a line, polyline and polygon", () => {
-        expect(movedGeometry({ id: "l", type: "line", source: "manual", points: [0, 0, 10, 0] }, delta)).toEqual({ points: [40, 30, 50, 30] });
-        expect(movedGeometry({ id: "g", type: "polygon", source: "manual", points: [0, 0, 10, 0, 5, 5], closed: true }, delta)).toEqual({
+        expect(movedGeometry({ id: "l", type: "line", source: "manual", points: [0, 0, 10, 0] }, delta)).toEqual({
+            points: [40, 30, 50, 30],
+        });
+        expect(
+            movedGeometry(
+                { id: "g", type: "polygon", source: "manual", points: [0, 0, 10, 0, 5, 5], closed: true },
+                delta,
+            ),
+        ).toEqual({
             points: [40, 30, 50, 30, 45, 35],
         });
     });

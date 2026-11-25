@@ -8,7 +8,12 @@ describe("computeHomography", () => {
             { x: number; y: number },
             { x: number; y: number },
             { x: number; y: number },
-        ] = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }];
+        ] = [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 0, y: 1 },
+        ];
         const H = computeHomography(corners);
         expect(H).not.toBeNull();
         const result = applyHomography(H!, { x: 0.5, y: 0.5 });
@@ -22,7 +27,12 @@ describe("computeHomography", () => {
             { x: number; y: number },
             { x: number; y: number },
             { x: number; y: number },
-        ] = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }];
+        ] = [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 0, y: 1 },
+        ];
         const H = computeHomography(corners);
         expect(H).not.toBeNull();
         const r = applyHomography(H!, { x: 0, y: 0 });
@@ -31,7 +41,8 @@ describe("computeHomography", () => {
     });
 
     it("translation: corners shifted by (10,5)", () => {
-        const dx = 10, dy = 5;
+        const dx = 10,
+            dy = 5;
         const corners: [
             { x: number; y: number },
             { x: number; y: number },
@@ -60,10 +71,20 @@ describe("computeHomography", () => {
             { x: number; y: number },
             { x: number; y: number },
             { x: number; y: number },
-        ] = [{ x: 0, y: 0 }, { x: 4, y: 0 }, { x: 3, y: 2 }, { x: 1, y: 2 }];
+        ] = [
+            { x: 0, y: 0 },
+            { x: 4, y: 0 },
+            { x: 3, y: 2 },
+            { x: 1, y: 2 },
+        ];
         const H = computeHomography(corners);
         expect(H).not.toBeNull();
-        const srcCorners = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }];
+        const srcCorners = [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 0, y: 1 },
+        ];
         for (let i = 0; i < 4; i++) {
             const r = applyHomography(H!, srcCorners[i]!);
             expect(r.x).toBeCloseTo(corners[i]!.x, 9);
@@ -77,7 +98,12 @@ describe("computeHomography", () => {
             { x: number; y: number },
             { x: number; y: number },
             { x: number; y: number },
-        ] = [{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }];
+        ] = [
+            { x: 0, y: 0 },
+            { x: 0, y: 0 },
+            { x: 0, y: 0 },
+            { x: 0, y: 0 },
+        ];
         expect(computeHomography(corners)).toBeNull();
     });
 
@@ -87,7 +113,12 @@ describe("computeHomography", () => {
             { x: number; y: number },
             { x: number; y: number },
             { x: number; y: number },
-        ] = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 }];
+        ] = [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 2, y: 0 },
+            { x: 3, y: 0 },
+        ];
         expect(computeHomography(corners)).toBeNull();
     });
 });

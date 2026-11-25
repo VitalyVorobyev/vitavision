@@ -1,5 +1,17 @@
 import { describe, it, expect, vi } from "vitest";
-import { generateId, deepMerge, mergeConfig, unwrapMaps, alignmentFromWasm, gridFromWasm, toPoint, toPointOrNull, toPointArray, toPointArrayOrNull, mapTargetBundle } from "../util";
+import {
+    generateId,
+    deepMerge,
+    mergeConfig,
+    unwrapMaps,
+    alignmentFromWasm,
+    gridFromWasm,
+    toPoint,
+    toPointOrNull,
+    toPointArray,
+    toPointArrayOrNull,
+    mapTargetBundle,
+} from "../util";
 import { lazyInit } from "../modules";
 
 describe("generateId", () => {
@@ -52,13 +64,18 @@ describe("mergeConfig", () => {
         const out = mergeConfig(defaults, { strategy: { radon: { ray_radius: 4 } } });
         expect(out).toEqual({ strategy: { radon: { ray_radius: 4 } }, threshold: 15 });
         // deepMerge would hand the WASM deserializer an object with two variant keys.
-        expect(Object.keys(deepMerge(defaults, { strategy: { radon: { ray_radius: 4 } } }).strategy as object)).toHaveLength(2);
+        expect(
+            Object.keys(deepMerge(defaults, { strategy: { radon: { ray_radius: 4 } } }).strategy as object),
+        ).toHaveLength(2);
     });
 
     it("merges into the same variant, and replaces a unit variant with a payload one and back", () => {
-        expect(mergeConfig({ r: { forstner: { radius: 2, min_det: 1 } } }, { r: { forstner: { radius: 3 } } }))
-            .toEqual({ r: { forstner: { radius: 3, min_det: 1 } } });
-        expect(mergeConfig({ m: "single_scale" }, { m: { pyramid: { levels: 3 } } })).toEqual({ m: { pyramid: { levels: 3 } } });
+        expect(mergeConfig({ r: { forstner: { radius: 2, min_det: 1 } } }, { r: { forstner: { radius: 3 } } })).toEqual(
+            { r: { forstner: { radius: 3, min_det: 1 } } },
+        );
+        expect(mergeConfig({ m: "single_scale" }, { m: { pyramid: { levels: 3 } } })).toEqual({
+            m: { pyramid: { levels: 3 } },
+        });
         expect(mergeConfig({ m: { pyramid: { levels: 3 } } }, { m: "single_scale" })).toEqual({ m: "single_scale" });
     });
 
@@ -71,13 +88,19 @@ describe("mergeConfig", () => {
 
 describe("unwrapMaps", () => {
     it("converts a top-level Map to a plain object", () => {
-        const m = new Map<string, unknown>([["a", 1], ["b", 2]]);
+        const m = new Map<string, unknown>([
+            ["a", 1],
+            ["b", 2],
+        ]);
         expect(unwrapMaps(m)).toEqual({ a: 1, b: 2 });
     });
 
     it("recursively converts nested Maps at every level", () => {
         const inner = new Map<string, unknown>([["x", 1]]);
-        const outer = new Map<string, unknown>([["cell", inner], ["list", [inner]]]);
+        const outer = new Map<string, unknown>([
+            ["cell", inner],
+            ["list", [inner]],
+        ]);
         expect(unwrapMaps(outer)).toEqual({ cell: { x: 1 }, list: [{ x: 1 }] });
     });
 
@@ -92,12 +115,24 @@ describe("unwrapMaps", () => {
 
 describe("alignmentFromWasm", () => {
     it("converts {matrix, translation} into {transform, translation}", () => {
-        const out = alignmentFromWasm({ matrix: [[1, 0], [0, 1]], translation: [3, 4] });
+        const out = alignmentFromWasm({
+            matrix: [
+                [1, 0],
+                [0, 1],
+            ],
+            translation: [3, 4],
+        });
         expect(out).toEqual({ transform: { a: 1, b: 0, c: 0, d: 1 }, translation: [3, 4] });
     });
 
     it("preserves a non-identity (e.g. rotated) matrix", () => {
-        const out = alignmentFromWasm({ matrix: [[0, -1], [1, 0]], translation: [0, 0] });
+        const out = alignmentFromWasm({
+            matrix: [
+                [0, -1],
+                [1, 0],
+            ],
+            translation: [0, 0],
+        });
         expect(out.transform).toEqual({ a: 0, b: -1, c: 1, d: 0 });
     });
 });
@@ -128,7 +163,15 @@ describe("point helpers", () => {
     });
 
     it("toPointArray maps every element", () => {
-        expect(toPointArray([[1, 2], [3, 4]])).toEqual([{ x: 1, y: 2 }, { x: 3, y: 4 }]);
+        expect(
+            toPointArray([
+                [1, 2],
+                [3, 4],
+            ]),
+        ).toEqual([
+            { x: 1, y: 2 },
+            { x: 3, y: 4 },
+        ]);
     });
 
     it("toPointArrayOrNull returns null for null/undefined", () => {

@@ -1,16 +1,13 @@
 import { useEffect, type RefObject } from "react";
 
-export function useArticleImageZoom(
-    ref: RefObject<HTMLElement | null>,
-    deps: unknown[],
-): void {
+export function useArticleImageZoom(ref: RefObject<HTMLElement | null>, deps: unknown[]): void {
     useEffect(() => {
         const root = ref.current;
         if (!root) return;
 
-        const imgs = Array.from(
-            root.querySelectorAll<HTMLImageElement>("img"),
-        ).filter((img) => !img.closest("[data-vv-illustration]"));
+        const imgs = Array.from(root.querySelectorAll<HTMLImageElement>("img")).filter(
+            (img) => !img.closest("[data-vv-illustration]"),
+        );
 
         if (imgs.length === 0) return;
 

@@ -9,7 +9,12 @@ import {
     isFeatureGroupVisible,
     type FeatureGroup,
 } from "../../../store/editor/featureGroups";
-import { isReadonlyFeature, useEditorStore, type Feature, type FeatureMeta } from "../../../store/editor/useEditorStore";
+import {
+    isReadonlyFeature,
+    useEditorStore,
+    type Feature,
+    type FeatureMeta,
+} from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
 import { useFeatureNav } from "../hooks/useFeatureNav";
 import { fmtCoord, fmtScore } from "./formatNumber";
@@ -33,18 +38,12 @@ function buildDetailMeta(meta: FeatureMeta): MetaRow[] {
         meta.targetPosition !== undefined && meta.targetPosition !== null
             ? { label: "Target pos", value: `${fmtCoord(meta.targetPosition.x)}, ${fmtCoord(meta.targetPosition.y)}` }
             : null,
-        meta.rotation !== undefined
-            ? { label: "Rotation", value: `${meta.rotation.toFixed(1)}°` }
-            : null,
-        meta.hamming !== undefined && meta.hamming !== null
-            ? { label: "Hamming", value: String(meta.hamming) }
-            : null,
+        meta.rotation !== undefined ? { label: "Rotation", value: `${meta.rotation.toFixed(1)}°` } : null,
+        meta.hamming !== undefined && meta.hamming !== null ? { label: "Hamming", value: String(meta.hamming) } : null,
         meta.borderScore !== undefined && meta.borderScore !== null
             ? { label: "Border score", value: fmtScore(meta.borderScore) }
             : null,
-        meta.code !== undefined && meta.code !== null
-            ? { label: "Code", value: String(meta.code) }
-            : null,
+        meta.code !== undefined && meta.code !== null ? { label: "Code", value: String(meta.code) } : null,
         meta.inverted !== undefined && meta.inverted !== null
             ? { label: "Inverted", value: meta.inverted ? "yes" : "no" }
             : null,
@@ -66,7 +65,12 @@ function featureXY(feature: Feature): { x: number; y: number } | null {
     if (feature.type === "point" || feature.type === "directed_point" || feature.type === "labeled_point") {
         return { x: feature.x, y: feature.y };
     }
-    if (feature.type === "bbox" || feature.type === "ellipse" || feature.type === "ring_marker" || feature.type === "aruco_marker") {
+    if (
+        feature.type === "bbox" ||
+        feature.type === "ellipse" ||
+        feature.type === "ring_marker" ||
+        feature.type === "aruco_marker"
+    ) {
         return { x: feature.x, y: feature.y };
     }
     if (feature.type === "line") {
@@ -90,7 +94,11 @@ function FeatureNavigator({
     selectedFeatureId: string | null;
     setSelectedFeatureId: (id: string) => void;
 }) {
-    const { activeGroupIndex, group, total, goPrev, goNext, position } = useFeatureNav(groups, selectedFeatureId, setSelectedFeatureId);
+    const { activeGroupIndex, group, total, goPrev, goNext, position } = useFeatureNav(
+        groups,
+        selectedFeatureId,
+        setSelectedFeatureId,
+    );
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent) => {
@@ -132,9 +140,7 @@ function FeatureNavigator({
                 icon={<ChevronLeft />}
             />
             <span className="text-xs text-fg font-medium text-center">
-                {group && (
-                    <span className="text-fg-muted">{group.label} </span>
-                )}
+                {group && <span className="text-fg-muted">{group.label} </span>}
                 <span className="tabular-nums">{position}</span>
             </span>
             <Button
@@ -164,28 +170,28 @@ function SelectedFeatureCard({
     const xy = featureXY(feature);
 
     // Resolve score from meta or features that carry it directly.
-    const score = meta?.score
-        ?? (feature.type === "directed_point" ? feature.score : null)
-        ?? (feature.type === "labeled_point" ? feature.score : null);
+    const score =
+        meta?.score ??
+        (feature.type === "directed_point" ? feature.score : null) ??
+        (feature.type === "labeled_point" ? feature.score : null);
     const detailRows = meta ? buildDetailMeta(meta) : [];
 
     // labeled_point (puzzleboard / charuco corners) carries its grid + target-board
     // info directly on the feature, not inside meta — surface it here.
-    const labeledPointInfo = feature.type === "labeled_point"
-        ? {
-            gridIndex: feature.gridIndex,
-            masterId: feature.masterId,
-            targetPosMm: feature.targetPosMm,
-        }
-        : null;
+    const labeledPointInfo =
+        feature.type === "labeled_point"
+            ? {
+                  gridIndex: feature.gridIndex,
+                  masterId: feature.masterId,
+                  targetPosMm: feature.targetPosMm,
+              }
+            : null;
 
     return (
         <div className="rounded-panel border border-signal/30 bg-signal/6 px-4 py-3 space-y-2.5">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-signal">
-                    Selected
-                </span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-signal">Selected</span>
                 <div className="flex items-center gap-1.5">
                     {hidden && (
                         <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-raised text-fg-muted">
@@ -219,13 +225,17 @@ function SelectedFeatureCard({
                 {meta?.grid && (
                     <>
                         <dt className="text-fg-muted">Grid</dt>
-                        <dd className="font-medium tabular-nums text-right">({meta.grid.i}, {meta.grid.j})</dd>
+                        <dd className="font-medium tabular-nums text-right">
+                            ({meta.grid.i}, {meta.grid.j})
+                        </dd>
                     </>
                 )}
                 {meta?.gridCell && !meta?.grid && (
                     <>
                         <dt className="text-fg-muted">Cell</dt>
-                        <dd className="font-medium tabular-nums text-right">({meta.gridCell.gx}, {meta.gridCell.gy})</dd>
+                        <dd className="font-medium tabular-nums text-right">
+                            ({meta.gridCell.gx}, {meta.gridCell.gy})
+                        </dd>
                     </>
                 )}
                 {labeledPointInfo && (
@@ -240,7 +250,8 @@ function SelectedFeatureCard({
                             <>
                                 <dt className="text-fg-muted whitespace-nowrap">Target (mm)</dt>
                                 <dd className="font-medium tabular-nums text-right">
-                                    {fmtCoord(labeledPointInfo.targetPosMm.x)}, {fmtCoord(labeledPointInfo.targetPosMm.y)}
+                                    {fmtCoord(labeledPointInfo.targetPosMm.x)},{" "}
+                                    {fmtCoord(labeledPointInfo.targetPosMm.y)}
                                 </dd>
                             </>
                         )}
@@ -275,16 +286,18 @@ export default function FeatureListPanel() {
         deleteFeature,
         featureGroupVisibility,
         setFeatureGroupVisibility,
-    } = useEditorStore(useShallow((s) => ({
-        features: s.features,
-        selectedFeatureId: s.selectedFeatureId,
-        setSelectedFeatureId: s.setSelectedFeatureId,
-        setFeatures: s.setFeatures,
-        clearFeatures: s.clearFeatures,
-        deleteFeature: s.deleteFeature,
-        featureGroupVisibility: s.featureGroupVisibility,
-        setFeatureGroupVisibility: s.setFeatureGroupVisibility,
-    })));
+    } = useEditorStore(
+        useShallow((s) => ({
+            features: s.features,
+            selectedFeatureId: s.selectedFeatureId,
+            setSelectedFeatureId: s.setSelectedFeatureId,
+            setFeatures: s.setFeatures,
+            clearFeatures: s.clearFeatures,
+            deleteFeature: s.deleteFeature,
+            featureGroupVisibility: s.featureGroupVisibility,
+            setFeatureGroupVisibility: s.setFeatureGroupVisibility,
+        })),
+    );
 
     const selectedFeature = features.find((feature) => feature.id === selectedFeatureId) ?? null;
     const selectedFeatureHidden = selectedFeature

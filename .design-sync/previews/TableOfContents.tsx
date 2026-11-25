@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { TableOfContents } from 'vitcv';
+import { useRef } from "react";
+import { TableOfContents } from "vitcv";
 
 // TableOfContents scrapes h1/h2/h3 (that carry an `id`) out of the element
 // behind `articleRef`, so a truthful preview has to render a real article
@@ -11,15 +11,12 @@ function Article() {
                 Zhang&rsquo;s planar calibration
             </h1>
             <p className="text-sm text-fg-muted">
-                A closed-form solution from at least three views of a planar target,
-                refined by nonlinear least squares.
+                A closed-form solution from at least three views of a planar target, refined by nonlinear least squares.
             </p>
             <h2 id="homography" className="text-base font-serif font-semibold">
                 Estimating the homography
             </h2>
-            <p className="text-sm text-fg-muted">
-                Each view gives a homography between the model plane and the image.
-            </p>
+            <p className="text-sm text-fg-muted">Each view gives a homography between the model plane and the image.</p>
             <h3 id="normalisation" className="text-sm font-serif font-semibold">
                 Data normalisation
             </h3>

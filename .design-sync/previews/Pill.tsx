@@ -1,8 +1,6 @@
-import { Pill } from 'vitcv';
+import { Pill } from "vitcv";
 
-export const Default = () => (
-    <Pill>chessboard</Pill>
-);
+export const Default = () => <Pill>chessboard</Pill>;
 
 export const StatusRow = () => (
     <div className="flex flex-wrap gap-2">

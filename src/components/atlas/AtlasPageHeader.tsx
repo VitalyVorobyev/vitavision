@@ -34,44 +34,50 @@ interface AtlasPageHeaderProps {
 
 const KIND_CLASSES: Record<PageKind, string> = {
     algorithm: "text-signal border-signal/40",
-    model:     "text-ink-violet border-ink-violet/40",
-    concept:   "text-fg-muted border-line",
+    model: "text-ink-violet border-ink-violet/40",
+    concept: "text-fg-muted border-line",
 };
 
 const DIFFICULTY_DOT: Record<Difficulty, string> = {
-    advanced:     "bg-difficulty-advanced",
+    advanced: "bg-difficulty-advanced",
     intermediate: "bg-difficulty-intermediate",
-    beginner:     "bg-difficulty-beginner",
+    beginner: "bg-difficulty-beginner",
 };
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = {
-    advanced:     "Advanced",
+    advanced: "Advanced",
     intermediate: "Intermediate",
-    beginner:     "Beginner",
+    beginner: "Beginner",
 };
 
 export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges, kind, slug }: AtlasPageHeaderProps) {
     return (
         <header className="space-y-4 mb-8">
-            <Link
-                to={backTo}
-                className="text-sm text-fg-muted hover:text-fg transition-colors"
-            >
+            <Link to={backTo} className="text-sm text-fg-muted hover:text-fg transition-colors">
                 &larr; {backLabel}
             </Link>
             <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
                 {kind && (
-                    <span aria-hidden="true" className={`text-sm font-mono uppercase tracking-wider border rounded px-2 py-1 mr-3 align-middle ${KIND_CLASSES[kind]}`}>
+                    <span
+                        aria-hidden="true"
+                        className={`text-sm font-mono uppercase tracking-wider border rounded px-2 py-1 mr-3 align-middle ${KIND_CLASSES[kind]}`}
+                    >
                         {kind}
                     </span>
                 )}
                 {frontmatter.dev && (
-                    <span aria-hidden="true" className="text-sm font-mono uppercase tracking-wider text-ink-blue border border-ink-blue/40 rounded px-2 py-1 mr-3 align-middle">
+                    <span
+                        aria-hidden="true"
+                        className="text-sm font-mono uppercase tracking-wider text-ink-blue border border-ink-blue/40 rounded px-2 py-1 mr-3 align-middle"
+                    >
                         dev sample
                     </span>
                 )}
                 {frontmatter.draft && (
-                    <span aria-hidden="true" className="text-sm font-mono uppercase tracking-wider text-ink-amber border border-ink-amber/40 rounded px-2 py-1 mr-3 align-middle">
+                    <span
+                        aria-hidden="true"
+                        className="text-sm font-mono uppercase tracking-wider text-ink-amber border border-ink-amber/40 rounded px-2 py-1 mr-3 align-middle"
+                    >
                         draft
                     </span>
                 )}
@@ -116,11 +122,21 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                             to={`/atlas?view=graph&focus=${slug}`}
                             className="inline-flex items-center gap-1.5 text-fg-muted hover:text-fg transition-colors"
                         >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <svg
+                                width="13"
+                                height="13"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.8"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                aria-hidden="true"
+                            >
                                 <circle cx="12" cy="12" r="3" />
-                                <circle cx="5"  cy="5"  r="1.6" />
-                                <circle cx="19" cy="5"  r="1.6" />
-                                <circle cx="5"  cy="19" r="1.6" />
+                                <circle cx="5" cy="5" r="1.6" />
+                                <circle cx="19" cy="5" r="1.6" />
+                                <circle cx="5" cy="19" r="1.6" />
                                 <circle cx="19" cy="19" r="1.6" />
                                 <line x1="7" y1="6.5" x2="10" y2="10" />
                                 <line x1="17" y1="6.5" x2="14" y2="10" />
@@ -131,18 +147,19 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                         </Link>
                     </>
                 )}
-                {slug && (narrativeRefs[slug] ?? []).map((ref) => (
-                    <span key={ref.slug} className="contents">
-                        <span aria-hidden="true">·</span>
-                        <Link
-                            to={`/atlas/narratives/${ref.slug}`}
-                            className="inline-flex items-center gap-1.5 text-fg-muted transition-colors hover:text-fg"
-                        >
-                            <BookOpen size={13} aria-hidden="true" />
-                            In narrative: {ref.title}
-                        </Link>
-                    </span>
-                ))}
+                {slug &&
+                    (narrativeRefs[slug] ?? []).map((ref) => (
+                        <span key={ref.slug} className="contents">
+                            <span aria-hidden="true">·</span>
+                            <Link
+                                to={`/atlas/narratives/${ref.slug}`}
+                                className="inline-flex items-center gap-1.5 text-fg-muted transition-colors hover:text-fg"
+                            >
+                                <BookOpen size={13} aria-hidden="true" />
+                                In narrative: {ref.title}
+                            </Link>
+                        </span>
+                    ))}
             </div>
             <SourceStrip primary={frontmatter.sources?.primary} />
             {frontmatter.tags.length > 0 && (

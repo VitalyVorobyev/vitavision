@@ -21,9 +21,7 @@ describe("adaptCalibTargetResult", () => {
         const raw = {
             detection: {
                 kind: "chessboard",
-                corners: [
-                    { position: [64, 48], grid: { u: 1, v: 2 }, score: 0.9, input_index: 5 },
-                ],
+                corners: [{ position: [64, 48], grid: { u: 1, v: 2 }, score: 0.9, input_index: 5 }],
             },
         };
         const result = adaptCalibTargetResult(raw, "chessboard", 640, 480, 3);
@@ -58,7 +56,12 @@ describe("adaptCalibTargetResult", () => {
                     border_score: 0.8,
                     code: 7,
                     inverted: false,
-                    corners_rect: [[0, 0], [1, 0], [1, 1], [0, 1]],
+                    corners_rect: [
+                        [0, 0],
+                        [1, 0],
+                        [1, 1],
+                        [0, 1],
+                    ],
                     corners_img: null,
                 },
             ],
@@ -77,12 +80,22 @@ describe("adaptCalibTargetResult", () => {
                 { center_img: [5, 6], cell: { i: 0, j: 0 }, polarity: "white", score: 0.5, contrast: 0.2 },
             ],
             circle_matches: [
-                { expected: { cell: { i: 0, j: 0 }, polarity: "white" }, matched_index: 0, offset_cells: { di: 0, dj: 0 } },
+                {
+                    expected: { cell: { i: 0, j: 0 }, polarity: "white" },
+                    matched_index: 0,
+                    offset_cells: { di: 0, dj: 0 },
+                },
                 { expected: { cell: { i: 1, j: 1 }, polarity: "black" }, matched_index: null, offset_cells: null },
             ],
             alignment_inliers: 3,
             alignment_runner_up_inliers: 2,
-            alignment: { matrix: [[1, 0], [0, 1]], translation: [2, 3] },
+            alignment: {
+                matrix: [
+                    [1, 0],
+                    [0, 1],
+                ],
+                translation: [2, 3],
+            },
         };
         const result = adaptCalibTargetResult(raw, "markerboard", 100, 100, 1);
         expect(result.circle_candidates).toHaveLength(1);
@@ -117,7 +130,16 @@ describe("adaptMarkerBoardDiagnosis", () => {
 
     it("maps a successful diagnosis, including the runner-up inlier count", () => {
         const out = adaptMarkerBoardDiagnosis({
-            result: { corners: [{ position: [1, 2] }], alignment: { matrix: [[1, 0], [0, 1]], translation: [0, 0] } },
+            result: {
+                corners: [{ position: [1, 2] }],
+                alignment: {
+                    matrix: [
+                        [1, 0],
+                        [0, 1],
+                    ],
+                    translation: [0, 0],
+                },
+            },
             diagnostics: diagnostics(),
         });
         expect(out).not.toBeNull();
@@ -128,14 +150,26 @@ describe("adaptMarkerBoardDiagnosis", () => {
 
     it("returns null when nothing was detected and the frame is not ambiguous", () => {
         // serde-wasm-bindgen serialises Rust `None` as undefined, not null.
-        expect(adaptMarkerBoardDiagnosis({ result: undefined, diagnostics: diagnostics({ alignment_inliers: 0, alignment_runner_up_inliers: 0 }) })).toBeNull();
+        expect(
+            adaptMarkerBoardDiagnosis({
+                result: undefined,
+                diagnostics: diagnostics({ alignment_inliers: 0, alignment_runner_up_inliers: 0 }),
+            }),
+        ).toBeNull();
         expect(adaptMarkerBoardDiagnosis({ result: null, diagnostics: null })).toBeNull();
     });
 
     it("throws a clear error when a second frame explains the circles as well (no alignment returned)", () => {
         // Shape observed on calib-targets 0.15.1: result is undefined and
         // alignment_ambiguous is set; corners are withheld.
-        const ambiguous = { result: undefined, diagnostics: diagnostics({ alignment_inliers: 2, alignment_runner_up_inliers: 2, alignment_ambiguous: true }) };
+        const ambiguous = {
+            result: undefined,
+            diagnostics: diagnostics({
+                alignment_inliers: 2,
+                alignment_runner_up_inliers: 2,
+                alignment_ambiguous: true,
+            }),
+        };
         expect(() => adaptMarkerBoardDiagnosis(ambiguous)).toThrow(/Marker board orientation is ambiguous/);
         expect(() => adaptMarkerBoardDiagnosis(ambiguous)).toThrow(/2 vs 2 circle inliers/);
     });

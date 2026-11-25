@@ -28,6 +28,7 @@ Open `http://localhost:5173/editor`, upload an image or pick a sample, choose an
 ```bash
 bun run build                          # Type-check + Vite production build
 bun run lint                           # Oxlint
+bun run format                         # oxfmt (.oxfmtrc.json; CI runs format:check)
 npx vitest run                         # Unit tests
 bun run scripts/test-wasm-schemas.ts   # WASM integration tests
 bun run test:screens                   # screenshots: main routes + editor canvas per algorithm (after a build)
@@ -124,7 +125,7 @@ shared vitavision design system (lab-ui PLAN L3-3):
 The frontend is deployed as a static site on **Cloudflare Pages**. Every merge to `main` triggers CI:
 
 1. **`validate-content`** — frontmatter, images, links
-2. **`build-frontend`** — lint + type-check + Vite build
+2. **`build-frontend`** — lint + format check + type-check + Vite build
 
 Security headers are configured in `public/_headers` (CSP, HSTS, etc.).
 

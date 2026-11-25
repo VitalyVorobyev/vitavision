@@ -1,14 +1,9 @@
 import type { ReactNode } from "react";
 import type { ModelFrontmatterSerialized } from "../../lib/content/schema.ts";
 
-type Implementation = NonNullable<
-    ModelFrontmatterSerialized["implementations"]
->[number];
+type Implementation = NonNullable<ModelFrontmatterSerialized["implementations"]>[number];
 
-const roleStyles: Record<
-    Implementation["role"],
-    { label: string; chip: string }
-> = {
+const roleStyles: Record<Implementation["role"], { label: string; chip: string }> = {
     official: {
         label: "Official",
         chip: "border-ink-green/40 bg-ink-green/10 text-ink-green",
@@ -38,12 +33,8 @@ function parseRepoLabel(repoUrl: string): string {
 function Field({ label, children }: { label: string; children: ReactNode }) {
     return (
         <div className="flex items-baseline gap-1.5 min-w-0">
-            <dt className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-fg-muted/70">
-                {label}
-            </dt>
-            <dd className="text-[12.5px] text-fg/90 truncate">
-                {children}
-            </dd>
+            <dt className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-fg-muted/70">{label}</dt>
+            <dd className="text-[12.5px] text-fg/90 truncate">{children}</dd>
         </div>
     );
 }
@@ -69,10 +60,7 @@ function ImplementationCard({ impl }: { impl: Implementation }) {
                     title={impl.repo}
                 >
                     {repoLabel}
-                    <span
-                        aria-hidden
-                        className="ml-1 text-fg-muted/60 transition-colors group-hover:text-signal/70"
-                    >
+                    <span aria-hidden className="ml-1 text-fg-muted/60 transition-colors group-hover:text-signal/70">
                         ↗
                     </span>
                 </a>
@@ -115,14 +103,10 @@ interface ImplementationsListProps {
     implementations: NonNullable<ModelFrontmatterSerialized["implementations"]>;
 }
 
-export default function ImplementationsList({
-    implementations,
-}: ImplementationsListProps) {
+export default function ImplementationsList({ implementations }: ImplementationsListProps) {
     return (
         <section aria-label="Implementations" className="mb-10">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-fg-muted">
-                Implementations
-            </h2>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-fg-muted">Implementations</h2>
             <div className="space-y-2.5">
                 {implementations.map((impl, i) => (
                     // oxlint-disable-next-line react/no-array-index-key -- implementations carry no unique id (a repo can be listed twice); the list is static per page

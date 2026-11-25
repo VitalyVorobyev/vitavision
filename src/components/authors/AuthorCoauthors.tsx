@@ -18,7 +18,11 @@ function CoauthorRow({ row }: { row: CoAuthorRow }) {
             </Link>
             <div className="flex flex-wrap gap-x-3 gap-y-1 text-[13.5px]">
                 {row.sharedPapers.map((p) => (
-                    <Link key={p.id} to={`/papers/${p.id}`} className="font-serif text-fg/85 no-underline hover:text-fg">
+                    <Link
+                        key={p.id}
+                        to={`/papers/${p.id}`}
+                        className="font-serif text-fg/85 no-underline hover:text-fg"
+                    >
                         {p.title} <span className="font-mono text-[11px] text-fg-muted">{p.year}</span>
                     </Link>
                 ))}

@@ -11,10 +11,7 @@ export interface Heading {
  * Re-runs when deps change (e.g. when html changes and article re-renders).
  * Returns [] while the element is not yet mounted or has no headings.
  */
-export function useHeadings(
-    articleRef: RefObject<HTMLElement | null>,
-    deps: unknown[],
-): Heading[] {
+export function useHeadings(articleRef: RefObject<HTMLElement | null>, deps: unknown[]): Heading[] {
     const [headings, setHeadings] = useState<Heading[]>([]);
 
     // oxlint-disable-next-line react/exhaustive-deps -- headings are read from the rendered DOM after commit, so setState in the effect is intended; re-runs are keyed by the caller's `deps`

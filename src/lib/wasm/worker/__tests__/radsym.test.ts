@@ -21,7 +21,11 @@ describe("adaptRadsymProposalResult", () => {
     });
 
     it("sorts circles by score descending", () => {
-        const raw = makeRaw([{ x: 0, y: 0, score: 0.2 }, { x: 1, y: 1, score: 0.9 }, { x: 2, y: 2, score: 0.5 }]);
+        const raw = makeRaw([
+            { x: 0, y: 0, score: 0.2 },
+            { x: 1, y: 1, score: 0.9 },
+            { x: 2, y: 2, score: 0.5 },
+        ]);
         const result = adaptRadsymProposalResult(raw, 10, 10, 1);
         const scores = result.circles.map((c) => c.score);
         expect(scores[0]).toBeCloseTo(0.9);
@@ -30,7 +34,10 @@ describe("adaptRadsymProposalResult", () => {
     });
 
     it("drops non-finite x/y", () => {
-        const raw = makeRaw([{ x: NaN, y: 0, score: 1 }, { x: 1, y: 1, score: 1 }]);
+        const raw = makeRaw([
+            { x: NaN, y: 0, score: 1 },
+            { x: 1, y: 1, score: 1 },
+        ]);
         const result = adaptRadsymProposalResult(raw, 10, 10, 1);
         expect(result.circles).toHaveLength(1);
     });

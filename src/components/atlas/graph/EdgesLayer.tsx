@@ -8,7 +8,7 @@ import { EdgeLabelPill } from "./EdgeLabelPill.tsx";
 
 export interface EdgesLayerProps {
     positions: PositionedNode[];
-    layout:    Layout;
+    layout: Layout;
     hoverSlug: string | null;
 }
 
@@ -33,7 +33,7 @@ export function EdgesLayer({ positions, layout, hoverSlug }: EdgesLayerProps) {
                 const meta = RELATION_V3[pos.rel];
                 if (!meta) return null;
                 const isHover = hoverSlug === pos.slug;
-                const isDim   = hoverSlug !== null && hoverSlug !== pos.slug;
+                const isDim = hoverSlug !== null && hoverSlug !== pos.slug;
                 const opacity = isHover ? 1 : isDim ? 0.18 : 0.55;
                 return (
                     <path
@@ -45,7 +45,7 @@ export function EdgesLayer({ positions, layout, hoverSlug }: EdgesLayerProps) {
                         strokeDasharray={meta.dashed ? "4 4" : undefined}
                         opacity={opacity}
                         markerEnd={meta.arrow === "out" ? `url(#arr-${pos.rel})` : undefined}
-                        markerStart={meta.arrow === "in"  ? `url(#arr-${pos.rel})` : undefined}
+                        markerStart={meta.arrow === "in" ? `url(#arr-${pos.rel})` : undefined}
                     />
                 );
             })}
@@ -56,7 +56,7 @@ export function EdgesLayer({ positions, layout, hoverSlug }: EdgesLayerProps) {
                 const meta = RELATION_V3[pos.rel];
                 if (!meta) return null;
                 const isHover = hoverSlug === pos.slug;
-                const isDim   = hoverSlug !== null && hoverSlug !== pos.slug;
+                const isDim = hoverSlug !== null && hoverSlug !== pos.slug;
                 const opacity = isHover ? 1 : isDim ? 0 : 0.95;
                 const w = meta.short.length * 5.6 + 8;
                 return (

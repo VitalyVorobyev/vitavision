@@ -23,9 +23,7 @@ export default function DemoPage() {
 
     // Resolve content synchronously from SSR context (postbuild prerender).
     // On the client useStaticContent() returns null, so the async loader runs instead.
-    const syncHtml = slug
-        ? staticContent?.demoHtmlBySlug?.[slug] ?? null
-        : null;
+    const syncHtml = slug ? (staticContent?.demoHtmlBySlug?.[slug] ?? null) : null;
 
     // Async loading state — reset when slug changes (render-time state reset pattern).
     const [trackedSlug, setTrackedSlug] = useState(slug);
@@ -50,9 +48,15 @@ export default function DemoPage() {
 
         let cancelled = false;
         loader()
-            .then((mod) => { if (!cancelled) setAsyncHtml(mod.html); })
-            .catch(() => { if (!cancelled) setAsyncFailed(true); });
-        return () => { cancelled = true; };
+            .then((mod) => {
+                if (!cancelled) setAsyncHtml(mod.html);
+            })
+            .catch(() => {
+                if (!cancelled) setAsyncFailed(true);
+            });
+        return () => {
+            cancelled = true;
+        };
     }, [slug, syncHtml]);
 
     if (!demo || !slug) {
@@ -81,14 +85,9 @@ export default function DemoPage() {
                     url={`/demos/${slug}`}
                 />
                 <Helmet>
-                    <script type="application/ld+json">
-                        {JSON.stringify(jsonLd)}
-                    </script>
+                    <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
                 </Helmet>
-                <Link
-                    to="/demos"
-                    className="text-sm text-fg-muted hover:text-fg transition-colors"
-                >
+                <Link to="/demos" className="text-sm text-fg-muted hover:text-fg transition-colors">
                     &larr; Demos
                 </Link>
                 <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
@@ -104,11 +103,7 @@ export default function DemoPage() {
 
             {/* Embedded demo component — full width, owns its own layout */}
             {DemoComponent && (
-                <Suspense
-                    fallback={
-                        <LoadingIndicator />
-                    }
-                >
+                <Suspense fallback={<LoadingIndicator />}>
                     <DemoComponent />
                 </Suspense>
             )}
@@ -117,9 +112,7 @@ export default function DemoPage() {
             <div className="max-w-[760px] mx-auto px-4 sm:px-8 pb-16">
                 {html === null ? (
                     loadFailed ? (
-                        <div className="py-10 text-sm text-fg-muted">
-                            Demo content failed to load.
-                        </div>
+                        <div className="py-10 text-sm text-fg-muted">Demo content failed to load.</div>
                     ) : (
                         <LoadingIndicator />
                     )

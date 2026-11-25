@@ -1,4 +1,4 @@
-import { Panel, Eyebrow, MetricCell } from 'vitcv';
+import { Panel, Eyebrow, MetricCell } from "vitcv";
 
 export const Default = () => (
     <Panel className="p-4 w-64">
@@ -32,9 +32,7 @@ export const Nested = () => (
     <Panel className="p-4 w-64">
         <Eyebrow>Distortion model</Eyebrow>
         <div className="mt-2 rounded-[1rem] border border-line bg-ground/60 p-3">
-            <p className="text-xs font-mono text-fg-muted">
-                k1 = -0.2814, k2 = 0.0932, p1 = 0.0004
-            </p>
+            <p className="text-xs font-mono text-fg-muted">k1 = -0.2814, k2 = 0.0932, p1 = 0.0004</p>
         </div>
     </Panel>
 );

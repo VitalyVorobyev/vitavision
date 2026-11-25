@@ -6,11 +6,7 @@
 import type { Diagnostic, ValidationContext } from "../../types.ts";
 import type { NarrativeFrontmatterShape, NodeCheckResult } from "./shared.ts";
 
-export function checkNodes(
-    file: string,
-    fm: NarrativeFrontmatterShape,
-    ctx: ValidationContext,
-): NodeCheckResult {
+export function checkNodes(file: string, fm: NarrativeFrontmatterShape, ctx: ValidationContext): NodeCheckResult {
     const diagnostics: Diagnostic[] = [];
     const areas = fm.areas ?? [];
     const nodes = fm.nodes ?? [];
@@ -35,17 +31,26 @@ export function checkNodes(
         const hasPaper = n.paper !== undefined;
         const hasQuestion = n.question !== undefined;
         if ((hasPage ? 1 : 0) + (hasPaper ? 1 : 0) + (hasQuestion ? 1 : 0) !== 1) {
-            diagnostics.push({ level: "error", message: `[${file}] node "${n.id}" must have exactly one of \`page\`, \`paper\`, or \`question\`` });
+            diagnostics.push({
+                level: "error",
+                message: `[${file}] node "${n.id}" must have exactly one of \`page\`, \`paper\`, or \`question\``,
+            });
         }
 
         if (!areaIds.has(n.area)) {
-            diagnostics.push({ level: "error", message: `[${file}] node "${n.id}" area "${n.area}" is not a declared area id` });
+            diagnostics.push({
+                level: "error",
+                message: `[${file}] node "${n.id}" area "${n.area}" is not a declared area id`,
+            });
         }
 
         if (hasPage) {
             const target = ctx.atlasBySlug.get(n.page as string);
             if (!target) {
-                diagnostics.push({ level: "error", message: `[${file}] node "${n.id}" page "${n.page}" does not resolve to a known atlas page` });
+                diagnostics.push({
+                    level: "error",
+                    message: `[${file}] node "${n.id}" page "${n.page}" does not resolve to a known atlas page`,
+                });
             } else if (target.isDraft) {
                 diagnostics.push({
                     level: "error",
@@ -58,12 +63,18 @@ export function checkNodes(
         } else if (hasPaper) {
             const key = `paper:${n.paper}`;
             if (!ctx.sourceIndex.has(key)) {
-                diagnostics.push({ level: "error", message: `[${file}] node "${n.id}" paper "${n.paper}" not found in docs/papers/index.yaml` });
+                diagnostics.push({
+                    level: "error",
+                    message: `[${file}] node "${n.id}" paper "${n.paper}" not found in docs/papers/index.yaml`,
+                });
             } else {
                 nodeYear.set(n.id, ctx.paperYears.get(n.paper as string));
             }
             if (!n.label || n.label.trim().length === 0) {
-                diagnostics.push({ level: "error", message: `[${file}] paper node "${n.id}" (paper: "${n.paper}") requires a label` });
+                diagnostics.push({
+                    level: "error",
+                    message: `[${file}] paper node "${n.id}" (paper: "${n.paper}") requires a label`,
+                });
             }
             diagnostics.push({
                 level: "warning",
@@ -76,7 +87,10 @@ export function checkNodes(
         }
 
         if ((hasPage || hasPaper) && nodeYear.get(n.id) === undefined) {
-            diagnostics.push({ level: "warning", message: `[${file}] node "${n.id}" has no derivable publication year` });
+            diagnostics.push({
+                level: "warning",
+                message: `[${file}] node "${n.id}" has no derivable publication year`,
+            });
         }
     }
 

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { Button, cn } from "@vitavision/ui";
 
-
 interface CanvasControlsHintProps {
     lines: string[];
     className?: string;

@@ -90,7 +90,10 @@ export function chessDetectorFields(prefix: string): Record<string, FieldUi> {
                 enumLabels: { single_scale: "Single scale", pyramid: "Pyramid" },
             },
         ],
-        ["multiscale.pyramid.levels", { label: "Pyramid levels", hint: "Number of image pyramid levels for multiscale detection." }],
+        [
+            "multiscale.pyramid.levels",
+            { label: "Pyramid levels", hint: "Number of image pyramid levels for multiscale detection." },
+        ],
         [
             "multiscale.pyramid.min_size",
             { label: "Pyramid min size", hint: "Minimum image dimension at the coarsest pyramid level (pixels)." },

@@ -13,9 +13,7 @@ export default function LensSwitcher({ lenses, activeId, onChange }: LensSwitche
 
     return (
         <div className="flex flex-wrap items-center gap-1">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted mr-1">
-                Lens
-            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted mr-1">Lens</span>
             <SegmentedControl
                 aria-label="Layout"
                 value={activeId}

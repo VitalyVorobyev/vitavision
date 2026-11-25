@@ -50,7 +50,13 @@ export function hasLatticeOverlay(algorithmId: string | null | undefined): boole
 }
 
 /** The feature types that are always a detection's. A `point` is one only when an algorithm made it. */
-const DETECTION_TYPES = new Set<Feature["type"]>(["directed_point", "ring_marker", "aruco_marker", "circle", "labeled_point"]);
+const DETECTION_TYPES = new Set<Feature["type"]>([
+    "directed_point",
+    "ring_marker",
+    "aruco_marker",
+    "circle",
+    "labeled_point",
+]);
 
 /** Whether a feature belongs to a detection overlay rather than to the annotation layers (manual `point`, `line`, …). */
 export function isDetectionFeature(feature: Feature): boolean {
@@ -88,7 +94,9 @@ function gridCorner(feature: PointFeature | LabeledPointFeature): TargetCorner {
 
 /** A marker board's matched or candidate circle: a `point` feature that carries a printed polarity. */
 function isCircleFeature(feature: Feature): feature is PointFeature {
-    return feature.type === "point" && (feature.meta?.kind === "circle_match" || feature.meta?.kind === "circle_candidate");
+    return (
+        feature.type === "point" && (feature.meta?.kind === "circle_match" || feature.meta?.kind === "circle_candidate")
+    );
 }
 
 function circleOf(feature: PointFeature): TargetCircle {

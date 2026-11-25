@@ -56,7 +56,10 @@ describe("adaptChessCornersResult", () => {
     });
 
     it("drops non-finite corners", () => {
-        const raw = makeRaw([{ x: NaN, y: 0, response: 10 }, { x: 1, y: 1, response: 20 }]);
+        const raw = makeRaw([
+            { x: NaN, y: 0, response: 10 },
+            { x: 1, y: 1, response: 20 },
+        ]);
         const result = adaptChessCornersResult(raw, 10, 10, 1);
         expect(result.corners).toHaveLength(1);
         expect(result.summary.count).toBe(1);

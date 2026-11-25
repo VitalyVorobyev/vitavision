@@ -120,12 +120,14 @@ export function sameAuthorsPapers(
     const rows: SameAuthorPaper[] = [...creditedBy.entries()].flatMap(([paperId, credited]) => {
         const paper = papers[paperId];
         if (!paper) return []; // unreachable: only ids present in `papers` were inserted above
-        return [{
-            id: paperId,
-            year: paper.year,
-            title: paper.title,
-            authorIds: authorIds.filter((a) => credited.has(a)),
-        }];
+        return [
+            {
+                id: paperId,
+                year: paper.year,
+                title: paper.title,
+                authorIds: authorIds.filter((a) => credited.has(a)),
+            },
+        ];
     });
 
     rows.sort((a, b) => a.year - b.year || a.title.localeCompare(b.title) || a.id.localeCompare(b.id));

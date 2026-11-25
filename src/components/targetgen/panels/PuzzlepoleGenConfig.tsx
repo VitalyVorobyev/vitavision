@@ -26,8 +26,7 @@ interface Props {
 }
 
 export default function PuzzlepoleGenConfig({ config, dispatch, periods }: Props) {
-    const update = (partial: Partial<PuzzlepoleConfig>) =>
-        dispatch({ type: "UPDATE_CONFIG", partial });
+    const update = (partial: Partial<PuzzlepoleConfig>) => dispatch({ type: "UPDATE_CONFIG", partial });
 
     const circumferences = periods ? puzzlepoleCircumferences(periods) : [];
     const startRows = periods ? puzzlepoleStartRows(periods, config.circumferenceSquares) : [];
@@ -50,7 +49,8 @@ export default function PuzzlepoleGenConfig({ config, dispatch, periods }: Props
                         as="group"
                         annotation={
                             <InfoHint label="About circumference">
-                                Squares around the cylinder. Only a few values close seamlessly, so they come from the library.
+                                Squares around the cylinder. Only a few values close seamlessly, so they come from the
+                                library.
                             </InfoHint>
                         }
                     >
@@ -64,7 +64,9 @@ export default function PuzzlepoleGenConfig({ config, dispatch, periods }: Props
                         ) : (
                             <NumberInput
                                 aria-label="Squares around the circumference"
-                                {...numberInputProps(config.circumferenceSquares, (v) => update({ circumferenceSquares: v ?? 12 }))}
+                                {...numberInputProps(config.circumferenceSquares, (v) =>
+                                    update({ circumferenceSquares: v ?? 12 }),
+                                )}
                                 min={1}
                                 step={1}
                             />
@@ -75,7 +77,8 @@ export default function PuzzlepoleGenConfig({ config, dispatch, periods }: Props
                         as="group"
                         annotation={
                             <InfoHint label="About seam row">
-                                Master-pattern row the strip is cut from. Each listed row closes seamlessly for this circumference.
+                                Master-pattern row the strip is cut from. Each listed row closes seamlessly for this
+                                circumference.
                             </InfoHint>
                         }
                     >
@@ -100,7 +103,8 @@ export default function PuzzlepoleGenConfig({ config, dispatch, periods }: Props
                         as="group"
                         annotation={
                             <InfoHint label="About axial squares">
-                                Squares along the cylinder axis ({PUZZLEPOLE_MIN_AXIAL_SQUARES} to {PUZZLEPOLE_MAX_AXIAL_SQUARES}).
+                                Squares along the cylinder axis ({PUZZLEPOLE_MIN_AXIAL_SQUARES} to{" "}
+                                {PUZZLEPOLE_MAX_AXIAL_SQUARES}).
                             </InfoHint>
                         }
                     >
@@ -115,7 +119,9 @@ export default function PuzzlepoleGenConfig({ config, dispatch, periods }: Props
                     <Field
                         label="Square size"
                         as="group"
-                        annotation={<InfoHint label="About square size">Side length of each square in millimeters</InfoHint>}
+                        annotation={
+                            <InfoHint label="About square size">Side length of each square in millimeters</InfoHint>
+                        }
                     >
                         <NumberInput
                             unit="mm"
@@ -129,9 +135,10 @@ export default function PuzzlepoleGenConfig({ config, dispatch, periods }: Props
                 </div>
             </Section>
             <p className="text-xs text-fg-muted px-1">
-                Wraps a cylinder of about {diameterMm.toFixed(1)} mm diameter (circumference {config.circumferenceSquares} × {config.squareSizeMm} mm).
-                The printed strip is {board.widthMm.toFixed(0)} × {board.heightMm.toFixed(0)} mm: print at 100 % scale, then roll it around the cylinder.
-                Margin (5 mm) and dot diameter (1/3 edge) are fixed by the upstream pattern.
+                Wraps a cylinder of about {diameterMm.toFixed(1)} mm diameter (circumference{" "}
+                {config.circumferenceSquares} × {config.squareSizeMm} mm). The printed strip is{" "}
+                {board.widthMm.toFixed(0)} × {board.heightMm.toFixed(0)} mm: print at 100 % scale, then roll it around
+                the cylinder. Margin (5 mm) and dot diameter (1/3 edge) are fixed by the upstream pattern.
             </p>
         </>
     );

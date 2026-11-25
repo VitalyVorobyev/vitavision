@@ -54,7 +54,10 @@ export function useNetworkLayout({ scholarly, authorsIdx, focusId, era }: UseNet
     );
     const edges = useMemo(() => scholarly?.network.edges ?? [], [scholarly]);
     const bounds: ViewportBounds = useMemo(
-        () => (rawBounds ? { minX: 0, minY: 0, maxX: rawBounds.maxX - originX, maxY: rawBounds.maxY - originY } : EMPTY_BOUNDS),
+        () =>
+            rawBounds
+                ? { minX: 0, minY: 0, maxX: rawBounds.maxX - originX, maxY: rawBounds.maxY - originY }
+                : EMPTY_BOUNDS,
         [rawBounds, originX, originY],
     );
 

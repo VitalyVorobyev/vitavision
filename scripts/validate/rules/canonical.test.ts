@@ -29,10 +29,7 @@ describe("canonicalRule", () => {
 
     it("flags a canonical algorithm/model with no sources.primary", async () => {
         const ctx = createTestContext({
-            algorithms: [
-                algo("a.md", { quality: "canonical", prerequisites: ["b"] }),
-                algo("b.md"),
-            ],
+            algorithms: [algo("a.md", { quality: "canonical", prerequisites: ["b"] }), algo("b.md")],
         });
         expect(await canonicalRule(ctx)).toEqual([
             { level: "error", message: '[a.md] quality: "canonical" algorithm/model must have sources.primary' },

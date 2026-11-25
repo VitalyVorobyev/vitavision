@@ -5,13 +5,7 @@ import type { DisplayRelation } from "../../../lib/atlas/relationDisplay.ts";
 
 // ── Typed-relations bucket section (block variant) ────────────────────────────
 
-export default function TypedBucket({
-    heading,
-    items,
-}: {
-    heading: string;
-    items: DisplayRelation[];
-}) {
+export default function TypedBucket({ heading, items }: { heading: string; items: DisplayRelation[] }) {
     const resolved = items
         .map((rel) => ({ rel, node: contentGraph.nodes[rel.target] }))
         .filter((r): r is { rel: DisplayRelation; node: GraphNode } => r.node !== undefined);
@@ -19,9 +13,7 @@ export default function TypedBucket({
 
     return (
         <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-fg-muted mb-2">
-                {heading}
-            </h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-fg-muted mb-2">{heading}</h3>
             <ul className="m-0 p-0 list-none space-y-3">
                 {resolved.map(({ rel, node }, i) => (
                     // oxlint-disable-next-line react/no-array-index-key -- a symmetric relation authored on both pages can yield the same label+target twice, so no field is provably unique; the list is static
@@ -34,9 +26,7 @@ export default function TypedBucket({
                         <Link to={node.path} className="text-sm font-medium text-fg hover:underline">
                             {node.title}
                         </Link>
-                        {rel.caution && (
-                            <p className="m-0 mt-1 text-xs text-fg-muted italic">{rel.caution}</p>
-                        )}
+                        {rel.caution && <p className="m-0 mt-1 text-xs text-fg-muted italic">{rel.caution}</p>}
                     </li>
                 ))}
             </ul>

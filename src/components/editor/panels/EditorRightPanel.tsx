@@ -45,10 +45,12 @@ const TOGGLE_ITEMS: { key: keyof OverlayToggles; label: string }[] = [
 ];
 
 function OverlayTogglePanel() {
-    const { overlayToggles, setOverlayToggle } = useEditorStore(useShallow((s) => ({
-        overlayToggles: s.overlayToggles,
-        setOverlayToggle: s.setOverlayToggle,
-    })));
+    const { overlayToggles, setOverlayToggle } = useEditorStore(
+        useShallow((s) => ({
+            overlayToggles: s.overlayToggles,
+            setOverlayToggle: s.setOverlayToggle,
+        })),
+    );
 
     return (
         <div className="flex flex-wrap gap-1.5">
@@ -68,11 +70,13 @@ function OverlayTogglePanel() {
 /* ── main panel ──────────────────────────────────────────────── */
 
 export default function EditorRightPanel({ variant = "desktop" }: { variant?: "desktop" | "touch" }) {
-    const { panelMode, setPanelMode, lastAlgorithmResult } = useEditorStore(useShallow((s) => ({
-        panelMode: s.panelMode,
-        setPanelMode: s.setPanelMode,
-        lastAlgorithmResult: s.lastAlgorithmResult,
-    })));
+    const { panelMode, setPanelMode, lastAlgorithmResult } = useEditorStore(
+        useShallow((s) => ({
+            panelMode: s.panelMode,
+            setPanelMode: s.setPanelMode,
+            lastAlgorithmResult: s.lastAlgorithmResult,
+        })),
+    );
     const [width, setWidth] = useState(DEFAULT_WIDTH);
     const isDraggingRef = useRef(false);
     const [touchTabOverride, setTouchTabOverride] = useState<"features" | null>(null);
@@ -165,10 +169,7 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
     }
 
     return (
-        <div
-            className="border-l border-line bg-ground shrink-0 flex h-full overflow-hidden relative"
-            style={{ width }}
-        >
+        <div className="border-l border-line bg-ground shrink-0 flex h-full overflow-hidden relative" style={{ width }}>
             {/* resize handle */}
             <div
                 onPointerDown={handlePointerDown}
@@ -178,25 +179,25 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
             </div>
 
             <DensityProvider value="compact">
-            <div className="flex flex-col h-full w-full p-4 pl-3">
-                <div className="mb-4 shrink-0">
-                    <ModeToggle value={panelMode} onChange={setPanelMode} />
-                </div>
-                <div className="flex-1 overflow-y-auto space-y-4 pr-0.5">
-                    {panelMode === "configure" && <ConfigurePanel />}
-                    {panelMode === "results" && <ResultsPanel />}
+                <div className="flex flex-col h-full w-full p-4 pl-3">
+                    <div className="mb-4 shrink-0">
+                        <ModeToggle value={panelMode} onChange={setPanelMode} />
+                    </div>
+                    <div className="flex-1 overflow-y-auto space-y-4 pr-0.5">
+                        {panelMode === "configure" && <ConfigurePanel />}
+                        {panelMode === "results" && <ResultsPanel />}
 
-                    {hasOverlay && (
-                        <Panel title="Overlay">
-                            <OverlayTogglePanel />
+                        {hasOverlay && (
+                            <Panel title="Overlay">
+                                <OverlayTogglePanel />
+                            </Panel>
+                        )}
+
+                        <Panel title="Features">
+                            <FeatureListPanel />
                         </Panel>
-                    )}
-
-                    <Panel title="Features">
-                        <FeatureListPanel />
-                    </Panel>
+                    </div>
                 </div>
-            </div>
             </DensityProvider>
         </div>
     );

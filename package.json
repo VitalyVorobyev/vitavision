@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "INCLUDE_DRAFTS=true bun run content:build && tsc -b && vite build",
     "lint": "oxlint --max-warnings 0",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "preview": "vite preview",
     "content:build": "INCLUDE_DRAFTS=true bun run scripts/content-build.ts",
     "authors:build": "bun run scripts/authors-build.ts",

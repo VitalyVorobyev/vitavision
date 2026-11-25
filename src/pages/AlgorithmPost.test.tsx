@@ -23,13 +23,9 @@ describe("AlgorithmPost", () => {
             </HelmetProvider>,
         );
 
-        expect(
-            screen.getByRole("heading", { name: "Harris Corner Detector" }),
-        ).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Harris Corner Detector" })).toBeInTheDocument();
 
-        expect(
-            await screen.findByText(/intensity varies strongly in two independent directions/i),
-        ).toBeInTheDocument();
+        expect(await screen.findByText(/intensity varies strongly in two independent directions/i)).toBeInTheDocument();
         expect(screen.queryByText("Vitaly Vorobyev")).toBeNull();
         expect(screen.getByText("2026-04-15")).toBeInTheDocument();
 
@@ -37,5 +33,4 @@ describe("AlgorithmPost", () => {
         expect(jsonLd?.textContent).toContain('"@type":"TechArticle"');
         expect(jsonLd?.textContent).toContain('"headline":"Harris Corner Detector"');
     });
-
 });

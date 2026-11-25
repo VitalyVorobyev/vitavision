@@ -44,8 +44,8 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
 
     // ── Graph data ─────────────────────────────────────────────────────────────
 
-    const cat    = useMemo(() => (current ? categorize(current) : null), [current]);
-    const layout = useMemo(() => (cat ? computeLayout(cat) : null),      [cat]);
+    const cat = useMemo(() => (current ? categorize(current) : null), [current]);
+    const layout = useMemo(() => (cat ? computeLayout(cat) : null), [cat]);
 
     // ── Active rels (for legend filtering) ────────────────────────────────────
 
@@ -71,9 +71,9 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
         animate,
         fitView,
         zoomAroundCenter,
-        onPointerDown:   handleViewportPointerDown,
-        onPointerMove:   handleViewportPointerMove,
-        onPointerUp:     handleViewportPointerUp,
+        onPointerDown: handleViewportPointerDown,
+        onPointerMove: handleViewportPointerMove,
+        onPointerUp: handleViewportPointerUp,
         onPointerCancel: handleViewportPointerCancel,
     } = useViewport({ bounds, refitKey: current, onPanStart });
 
@@ -90,14 +90,7 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
     // ── Mobile branch — focused-entry hero + grouped neighbor lists ────────────
 
     if (!isDesktop) {
-        return (
-            <MobileGraphView
-                history={history}
-                current={current}
-                onBack={back}
-                onNavigate={navigate}
-            />
-        );
+        return <MobileGraphView history={history} current={current} onBack={back} onNavigate={navigate} />;
     }
 
     // ── Desktop — visual graph canvas ──────────────────────────────────────────
@@ -152,9 +145,9 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
                     }
                 >
                     {/* Lane labels */}
-                    <LaneLabel side="W" top={layout.cy + 70}              left={-30} />
-                    <LaneLabel side="E" top={layout.cy - 70}              left={layout.canvasW - 30} />
-                    <LaneLabel side="N" top={GG.pad + GG.nodeH + 12}     left={layout.cx - 50} />
+                    <LaneLabel side="W" top={layout.cy + 70} left={-30} />
+                    <LaneLabel side="E" top={layout.cy - 70} left={layout.canvasW - 30} />
+                    <LaneLabel side="N" top={GG.pad + GG.nodeH + 12} left={layout.cx - 50} />
                     <LaneLabel side="S" top={layout.canvasH - GG.pad - GG.nodeH - 22} left={layout.cx - 70} />
 
                     <EdgesLayer positions={layout.positions} layout={layout} hoverSlug={hover} />
@@ -174,10 +167,7 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
 
                 {/* Right rail — focused entry details; previews hovered neighbour */}
                 <aside className="w-[300px] shrink-0 border-l border-line overflow-y-auto p-5 bg-surface">
-                    <FocusedEntryPanel
-                        slug={hover ?? current}
-                        isPreview={hover != null && hover !== current}
-                    />
+                    <FocusedEntryPanel slug={hover ?? current} isPreview={hover != null && hover !== current} />
                 </aside>
             </div>
         </div>

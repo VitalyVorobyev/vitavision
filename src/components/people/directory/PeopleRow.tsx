@@ -3,7 +3,8 @@ import OrcidLink from "../../atlas/OrcidLink.tsx";
 import PeopleEraBar from "./PeopleEraBar.tsx";
 import { domainLabel, type PeopleRow as PeopleRowData } from "../../../lib/atlas/peopleDirectory.ts";
 
-const COLUMNS = "grid grid-cols-[minmax(0,1fr)_56px_64px] sm:grid-cols-[minmax(0,1fr)_170px_150px_90px_90px] items-center gap-3 sm:gap-4 px-4 sm:px-5";
+const COLUMNS =
+    "grid grid-cols-[minmax(0,1fr)_56px_64px] sm:grid-cols-[minmax(0,1fr)_170px_150px_90px_90px] items-center gap-3 sm:gap-4 px-4 sm:px-5";
 
 export { COLUMNS as PEOPLE_ROW_COLUMNS };
 

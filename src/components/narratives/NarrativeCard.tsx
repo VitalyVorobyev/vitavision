@@ -18,7 +18,9 @@ function ConstellationThumb({ entry }: { entry: NarrativeIndexEntry }) {
     const areaIds = entry.areas.map((a) => a.id);
     if (ids.length === 0 || areaIds.length === 0) return null;
 
-    const W = 96, H = 44, PAD = 5;
+    const W = 96,
+        H = 44,
+        PAD = 5;
 
     return (
         <svg

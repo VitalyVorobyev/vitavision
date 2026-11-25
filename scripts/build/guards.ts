@@ -20,12 +20,10 @@ export function checkEmptyDivGuard(entries: EmptyDivGuardEntry[]): void {
         if (count > 0) emptyDivViolations.push({ slug, count });
     }
     if (emptyDivViolations.length > 0) {
-        const details = emptyDivViolations
-            .map(({ slug, count }) => `  ${slug}: ${count} occurrence(s)`)
-            .join("\n");
+        const details = emptyDivViolations.map(({ slug, count }) => `  ${slug}: ${count} occurrence(s)`).join("\n");
         throw new Error(
             `content:build — ${emptyDivViolations.length} page(s) contain <div></div> ` +
-            `(unclaimed remark-directive — a stray colon in prose triggers an empty div):\n${details}`,
+                `(unclaimed remark-directive — a stray colon in prose triggers an empty div):\n${details}`,
         );
     }
 }

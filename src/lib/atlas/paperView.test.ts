@@ -85,7 +85,11 @@ describe("groupCitingPagesByDomain", () => {
     it("buckets domain-less pages under an 'Other' group and skips unknown slugs", () => {
         const groups = groupCitingPagesByDomain(["noDomain", "ghost-slug"], pages);
         expect(groups).toEqual([
-            { domain: "other", label: "Other", entries: [{ slug: "noDomain", title: "No Domain Page", kind: "concept" }] },
+            {
+                domain: "other",
+                label: "Other",
+                entries: [{ slug: "noDomain", title: "No Domain Page", kind: "concept" }],
+            },
         ]);
     });
 
@@ -104,10 +108,38 @@ describe("sameAuthorsPapers", () => {
         },
     };
     const papers: PapersById = {
-        "he2016-resnet": { id: "he2016-resnet", title: "Deep Residual Learning", authors: [], year: 2016, venue: "CVPR", url: "u" },
-        "he2017-maskrcnn": { id: "he2017-maskrcnn", title: "Mask R-CNN", authors: [], year: 2017, venue: "ICCV", url: "u" },
-        "lin2017-fpn": { id: "lin2017-fpn", title: "Feature Pyramid Networks", authors: [], year: 2017, venue: "CVPR", url: "u" },
-        "ren2015-faster": { id: "ren2015-faster", title: "Faster R-CNN", authors: [], year: 2015, venue: "NeurIPS", url: "u" },
+        "he2016-resnet": {
+            id: "he2016-resnet",
+            title: "Deep Residual Learning",
+            authors: [],
+            year: 2016,
+            venue: "CVPR",
+            url: "u",
+        },
+        "he2017-maskrcnn": {
+            id: "he2017-maskrcnn",
+            title: "Mask R-CNN",
+            authors: [],
+            year: 2017,
+            venue: "ICCV",
+            url: "u",
+        },
+        "lin2017-fpn": {
+            id: "lin2017-fpn",
+            title: "Feature Pyramid Networks",
+            authors: [],
+            year: 2017,
+            venue: "CVPR",
+            url: "u",
+        },
+        "ren2015-faster": {
+            id: "ren2015-faster",
+            title: "Faster R-CNN",
+            authors: [],
+            year: 2015,
+            venue: "NeurIPS",
+            url: "u",
+        },
     };
 
     it("unions papers across subject authors, excludes the current paper, sorts oldest first", () => {
@@ -138,15 +170,9 @@ describe("shortAuthorList", () => {
     });
 
     it("truncates to the first two surnames plus 'et al.' beyond 3 authors", () => {
-        expect(
-            shortAuthorList([
-                "Christian Szegedy",
-                "Wei Liu",
-                "Yangqing Jia",
-                "Pierre Sermanet",
-                "Scott Reed",
-            ]),
-        ).toBe("Szegedy, Liu et al.");
+        expect(shortAuthorList(["Christian Szegedy", "Wei Liu", "Yangqing Jia", "Pierre Sermanet", "Scott Reed"])).toBe(
+            "Szegedy, Liu et al.",
+        );
     });
 
     it("returns '' for an empty author list", () => {

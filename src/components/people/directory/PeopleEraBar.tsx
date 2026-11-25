@@ -18,9 +18,7 @@ export default function PeopleEraBar({ firstYear, lastYear, width = 96 }: People
     const x0 = x(firstYear);
     const x1 = Math.max(x(lastYear), x0 + 3);
     const label =
-        firstYear === lastYear
-            ? String(firstYear)
-            : `’${String(firstYear).slice(2)}–’${String(lastYear).slice(2)}`;
+        firstYear === lastYear ? String(firstYear) : `’${String(firstYear).slice(2)}–’${String(lastYear).slice(2)}`;
 
     return (
         <span className="flex items-center gap-2">

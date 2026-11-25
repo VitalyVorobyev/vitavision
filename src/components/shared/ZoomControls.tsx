@@ -34,11 +34,38 @@ export default function ZoomControls({
 
     return (
         <div className={cn("flex gap-1", orientation === "column" ? "flex-col" : "items-center", className)}>
-            <Button size={size} className={iconOnly} onClick={onZoomIn} aria-label="Zoom in" title="Zoom in" icon={<ZoomIn />} />
-            <Button size={size} className={iconOnly} onClick={onZoomOut} aria-label="Zoom out" title="Zoom out" icon={<ZoomOut />} />
-            <Button size={size} className={iconOnly} onClick={onFit} aria-label="Fit to screen" title="Fit to screen" icon={<Maximize />} />
+            <Button
+                size={size}
+                className={iconOnly}
+                onClick={onZoomIn}
+                aria-label="Zoom in"
+                title="Zoom in"
+                icon={<ZoomIn />}
+            />
+            <Button
+                size={size}
+                className={iconOnly}
+                onClick={onZoomOut}
+                aria-label="Zoom out"
+                title="Zoom out"
+                icon={<ZoomOut />}
+            />
+            <Button
+                size={size}
+                className={iconOnly}
+                onClick={onFit}
+                aria-label="Fit to screen"
+                title="Fit to screen"
+                icon={<Maximize />}
+            />
             {onActual && (
-                <Button size={size} className={cn("px-2 font-mono", buttonClassName)} onClick={onActual} aria-label="Zoom to 100%" title="Zoom to 100%">
+                <Button
+                    size={size}
+                    className={cn("px-2 font-mono", buttonClassName)}
+                    onClick={onActual}
+                    aria-label="Zoom to 100%"
+                    title="Zoom to 100%"
+                >
                     1:1
                 </Button>
             )}

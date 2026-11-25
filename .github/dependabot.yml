@@ -15,7 +15,7 @@ updates:
       react:
         patterns: ["react", "react-*", "@types/react*"]
       oxlint:
-        patterns: ["oxlint", "oxlint-tsgolint"]
+        patterns: ["oxlint", "oxlint-tsgolint", "oxfmt"]
       vite:
         patterns: ["vite*", "@vitejs/*"]
       # The lab-ui packages are released together from one monorepo
@@ -24,7 +24,15 @@ updates:
       # release so far has broken the worker silently, so each bump is its own
       # migration, driven from scripts/test-wasm-schemas.ts.
       lab-ui:
-        patterns: ["@vitavision/ui", "@vitavision/config-*", "@vitavision/forms", "@vitavision/stage2d", "@vitavision/charts", "@vitavision/workbench"]
+        patterns:
+          [
+            "@vitavision/ui",
+            "@vitavision/config-*",
+            "@vitavision/forms",
+            "@vitavision/stage2d",
+            "@vitavision/charts",
+            "@vitavision/workbench",
+          ]
     ignore:
       # katex is pinned to the version rehype-katex actually renders with, not
       # just imported for its CSS. src/main.tsx imports katex/dist/katex.min.css

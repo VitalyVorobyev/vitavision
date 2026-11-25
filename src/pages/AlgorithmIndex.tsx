@@ -9,18 +9,8 @@ import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import useMediaQuery from "../hooks/useMediaQuery.ts";
 
 export default function AlgorithmIndex() {
-    const {
-        filters,
-        setKind,
-        setQuery,
-        setView,
-        setProblem,
-        setMode,
-        setPersonFocus,
-        toggleTag,
-        setTags,
-        reset,
-    } = useAlgorithmsFilters();
+    const { filters, setKind, setQuery, setView, setProblem, setMode, setPersonFocus, toggleTag, setTags, reset } =
+        useAlgorithmsFilters();
     const [searchParams] = useSearchParams();
     const focusParam = searchParams.get("focus") ?? undefined;
 
@@ -29,25 +19,11 @@ export default function AlgorithmIndex() {
     const isAdmin = useIsAdmin();
 
     if (filters.view === "narratives") {
-        return (
-            <AtlasNarrativesView
-                isDesktop={isDesktop}
-                view={filters.view}
-                setView={setView}
-                isAdmin={isAdmin}
-            />
-        );
+        return <AtlasNarrativesView isDesktop={isDesktop} view={filters.view} setView={setView} isAdmin={isAdmin} />;
     }
 
     if (filters.view === "graph") {
-        return (
-            <AtlasGraphView
-                isDesktop={isDesktop}
-                view={filters.view}
-                setView={setView}
-                focusParam={focusParam}
-            />
-        );
+        return <AtlasGraphView isDesktop={isDesktop} view={filters.view} setView={setView} focusParam={focusParam} />;
     }
 
     if (filters.view === "people") {

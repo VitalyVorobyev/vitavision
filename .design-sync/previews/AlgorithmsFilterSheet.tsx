@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { AlgorithmsFilterSheet } from 'vitcv';
+import { useState } from "react";
+import { AlgorithmsFilterSheet } from "vitcv";
 
 const FACETS = {
     kinds: { all: 52, algorithm: 33, model: 8, concept: 11 },
@@ -36,7 +36,9 @@ export const OpenAllAlgorithms = () => {
                 totalResults={FACETS.total}
                 onKindChange={(kind) => setFilters((f) => ({ ...f, kind }))}
                 onProblemChange={(problem) => setFilters((f) => ({ ...f, problem }))}
-                onReset={() => setFilters({ kind: "all", tags: [], query: "", view: "grid", sort: "recent", problem: "all" })}
+                onReset={() =>
+                    setFilters({ kind: "all", tags: [], query: "", view: "grid", sort: "recent", problem: "all" })
+                }
             />
         </div>
     );
@@ -61,7 +63,9 @@ export const OpenWithCameraCalibrationSelected = () => {
                 totalResults={9}
                 onKindChange={(kind) => setFilters((f) => ({ ...f, kind }))}
                 onProblemChange={(problem) => setFilters((f) => ({ ...f, problem }))}
-                onReset={() => setFilters({ kind: "all", tags: [], query: "", view: "grid", sort: "recent", problem: "all" })}
+                onReset={() =>
+                    setFilters({ kind: "all", tags: [], query: "", view: "grid", sort: "recent", problem: "all" })
+                }
             />
         </div>
     );

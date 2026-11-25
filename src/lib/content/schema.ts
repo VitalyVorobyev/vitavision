@@ -181,32 +181,31 @@ export const algorithmFrontmatterSchema = publicationFrontmatterBaseObjectSchema
         relatedPosts: z.array(z.string().min(1)).optional(),
         relatedDemos: z.array(z.string().min(1)).optional(),
         editorAlgorithmId: z.string().min(1).optional(),
-        sources: z.object({
-            primary: z.string().min(1),
-            references: z.array(z.string().min(1)).optional(),
-            impl: z.object({
-                repo: z.string().url(),
-                commit: z.string().regex(/^[0-9a-f]{7,40}$/),
-                files: z.array(z.string().min(1)).min(1),
-            }).optional(),
-            notes: z.string().optional(),
-        }).optional(),
+        sources: z
+            .object({
+                primary: z.string().min(1),
+                references: z.array(z.string().min(1)).optional(),
+                impl: z
+                    .object({
+                        repo: z.string().url(),
+                        commit: z.string().regex(/^[0-9a-f]{7,40}$/),
+                        files: z.array(z.string().min(1)).min(1),
+                    })
+                    .optional(),
+                notes: z.string().optional(),
+            })
+            .optional(),
         // Transitional compatibility for older algorithm pages.
         demoLink: z.string().url().optional(),
     })
     .transform(({ demoLink, demoLinks, ...rest }) => ({
         ...rest,
-        ...(demoLinks
-            ? { demoLinks }
-            : demoLink
-                ? { demoLinks: [demoLink] }
-                : {}),
+        ...(demoLinks ? { demoLinks } : demoLink ? { demoLinks: [demoLink] } : {}),
     }));
 
 export type AlgorithmFrontmatter = z.infer<typeof algorithmFrontmatterSchema>;
 
-type SerializedFrontmatter<T extends { date: Date; updated?: Date | undefined }> =
-    Omit<T, "date" | "updated"> & {
+type SerializedFrontmatter<T extends { date: Date; updated?: Date | undefined }> = Omit<T, "date" | "updated"> & {
     date: string;
     updated?: string | undefined;
 };
@@ -262,34 +261,39 @@ export interface DemoEntry extends DemoIndexEntry {
 }
 
 /** Zod schema for model page frontmatter. */
-export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema
-    .merge(relationshipFieldsSchema)
-    .extend({
-        tags: z.array(z.enum(tagValues)).min(1),
-        dev: z.boolean().optional(),
-        domain: z.enum(domainValues).optional(),
-        tasks: z.array(z.enum(taskValues)).optional(),
-        noPublicImpl: z.boolean().optional(),
-        arch_family: z.enum(["cnn", "vit", "encoder-decoder", "diffusion", "gan", "hybrid"]).optional(),
-        params: z.string().optional(),
-        flops: z.string().optional(),
-        sources: z.object({
+export const modelFrontmatterSchema = publicationFrontmatterBaseObjectSchema.merge(relationshipFieldsSchema).extend({
+    tags: z.array(z.enum(tagValues)).min(1),
+    dev: z.boolean().optional(),
+    domain: z.enum(domainValues).optional(),
+    tasks: z.array(z.enum(taskValues)).optional(),
+    noPublicImpl: z.boolean().optional(),
+    arch_family: z.enum(["cnn", "vit", "encoder-decoder", "diffusion", "gan", "hybrid"]).optional(),
+    params: z.string().optional(),
+    flops: z.string().optional(),
+    sources: z
+        .object({
             primary: z.string().min(1),
             references: z.array(z.string().min(1)).optional(),
             notes: z.string().optional(),
-        }).optional(),
-        implementations: z.array(z.object({
-            role: z.enum(["official", "community", "port"]),
-            repo: z.string().url(),
-            commit: z.string().regex(/^[0-9a-f]{7,40}$/),
-            framework: z.enum(["pytorch", "tensorflow", "jax", "caffe", "other"]),
-            license: z.string().min(1),
-            weights_url: z.string().url().optional(),
-            weights_license: z.string().min(1).optional(),
-        })).min(1).optional(), // required on non-drafts unless noPublicImpl: true; enforced in content-build
-        relatedPosts: z.array(z.string().min(1)).optional(),
-        relatedDemos: z.array(z.string().min(1)).optional(),
-    });
+        })
+        .optional(),
+    implementations: z
+        .array(
+            z.object({
+                role: z.enum(["official", "community", "port"]),
+                repo: z.string().url(),
+                commit: z.string().regex(/^[0-9a-f]{7,40}$/),
+                framework: z.enum(["pytorch", "tensorflow", "jax", "caffe", "other"]),
+                license: z.string().min(1),
+                weights_url: z.string().url().optional(),
+                weights_license: z.string().min(1).optional(),
+            }),
+        )
+        .min(1)
+        .optional(), // required on non-drafts unless noPublicImpl: true; enforced in content-build
+    relatedPosts: z.array(z.string().min(1)).optional(),
+    relatedDemos: z.array(z.string().min(1)).optional(),
+});
 
 export type ModelFrontmatter = z.infer<typeof modelFrontmatterSchema>;
 export type ModelFrontmatterSerialized = SerializedFrontmatter<ModelFrontmatter> & { year?: number };
@@ -336,10 +340,7 @@ const narrativeNodeSchema = z
     })
     .refine(
         (n) =>
-            (n.page !== undefined ? 1 : 0) +
-                (n.paper !== undefined ? 1 : 0) +
-                (n.question !== undefined ? 1 : 0) ===
-            1,
+            (n.page !== undefined ? 1 : 0) + (n.paper !== undefined ? 1 : 0) + (n.question !== undefined ? 1 : 0) === 1,
         { message: "narrative node must have exactly one of `page`, `paper`, or `question`" },
     );
 
@@ -392,10 +393,10 @@ export const narrativeFrontmatterSchema = publicationFrontmatterBaseObjectSchema
          */
         walkthrough: z.enum(narrativeWalkthroughValues).optional(),
     })
-    .refine(
-        (fm) => new Set(fm.areas.map((a) => a.id)).size === fm.areas.length,
-        { message: "areas[].id must be unique", path: ["areas"] },
-    );
+    .refine((fm) => new Set(fm.areas.map((a) => a.id)).size === fm.areas.length, {
+        message: "areas[].id must be unique",
+        path: ["areas"],
+    });
 
 export type NarrativeFrontmatter = z.infer<typeof narrativeFrontmatterSchema>;
 export type NarrativeFrontmatterSerialized = SerializedFrontmatter<NarrativeFrontmatter>;
@@ -494,18 +495,18 @@ export interface NarrativeIndexEntry {
 }
 
 /** Zod schema for concept page frontmatter. */
-export const conceptFrontmatterSchema = publicationFrontmatterBaseObjectSchema
-    .merge(relationshipFieldsSchema)
-    .extend({
-        tags: z.array(z.enum(tagValues)).min(1),
-        dev: z.boolean().optional(),
-        domain: z.enum(domainValues).optional(),
-        sources: z.object({
+export const conceptFrontmatterSchema = publicationFrontmatterBaseObjectSchema.merge(relationshipFieldsSchema).extend({
+    tags: z.array(z.enum(tagValues)).min(1),
+    dev: z.boolean().optional(),
+    domain: z.enum(domainValues).optional(),
+    sources: z
+        .object({
             primary: z.string().min(1).optional(),
             references: z.array(z.string().min(1)).optional(),
             notes: z.string().optional(),
-        }).optional(),
-    });
+        })
+        .optional(),
+});
 
 export type ConceptFrontmatter = z.infer<typeof conceptFrontmatterSchema>;
 export type ConceptFrontmatterSerialized = SerializedFrontmatter<ConceptFrontmatter> & { year?: number };

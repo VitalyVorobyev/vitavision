@@ -21,7 +21,17 @@ export interface FocusCardProps {
     onClose: () => void;
 }
 
-export function FocusCard({ id, name, paperCount, pageCount, ties, unlabelledCount, nameOf, isPhone, onClose }: FocusCardProps) {
+export function FocusCard({
+    id,
+    name,
+    paperCount,
+    pageCount,
+    ties,
+    unlabelledCount,
+    nameOf,
+    isPhone,
+    onClose,
+}: FocusCardProps) {
     const strongest = ties.slice(0, 3);
 
     return (
@@ -45,12 +55,13 @@ export function FocusCard({ id, name, paperCount, pageCount, ties, unlabelledCou
             </div>
             <span className="text-lg font-bold text-fg leading-tight">{name}</span>
             <span className="text-xs text-fg-muted">
-                {paperCount} {paperCount === 1 ? "paper" : "papers"} · {pageCount} Atlas {pageCount === 1 ? "page" : "pages"} ·{" "}
-                {ties.length} co-{ties.length === 1 ? "author" : "authors"}
+                {paperCount} {paperCount === 1 ? "paper" : "papers"} · {pageCount} Atlas{" "}
+                {pageCount === 1 ? "page" : "pages"} · {ties.length} co-{ties.length === 1 ? "author" : "authors"}
             </span>
             {strongest.length > 0 && (
                 <span className="text-sm text-fg leading-relaxed">
-                    Strongest ties: {strongest.map((t, i) => (
+                    Strongest ties:{" "}
+                    {strongest.map((t, i) => (
                         <span key={t.id}>
                             {i > 0 && ", "}
                             {nameOf(t.id)} ({t.shared})
@@ -60,7 +71,8 @@ export function FocusCard({ id, name, paperCount, pageCount, ties, unlabelledCou
             )}
             {unlabelledCount > 0 && (
                 <span className="text-xs text-fg-muted leading-relaxed">
-                    +{unlabelledCount} more co-{unlabelledCount === 1 ? "author" : "authors"} — hover or tap to see names
+                    +{unlabelledCount} more co-{unlabelledCount === 1 ? "author" : "authors"} — hover or tap to see
+                    names
                 </span>
             )}
             <Link

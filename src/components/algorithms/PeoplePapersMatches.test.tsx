@@ -11,9 +11,7 @@ vi.mock("../../lib/atlas/searchClient.ts", () => ({
 
 const { default: PeoplePapersMatches } = await import("./PeoplePapersMatches.tsx");
 
-const PEOPLE: SearchEntity[] = [
-    { type: "author", path: "/authors/A1", title: "Ross Girshick", summary: "5 papers" },
-];
+const PEOPLE: SearchEntity[] = [{ type: "author", path: "/authors/A1", title: "Ross Girshick", summary: "5 papers" }];
 const PAPERS: SearchEntity[] = [
     {
         type: "paper",

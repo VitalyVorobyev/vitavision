@@ -1,11 +1,6 @@
 import type { UiGroup } from "@vitavision/forms";
 
-import {
-    boardUi,
-    chessDetectorPaths,
-    chessboardKnobPaths,
-    chessboardTuningPath,
-} from "../../chessDetectorUi";
+import { boardUi, chessDetectorPaths, chessboardKnobPaths, chessboardTuningPath } from "../../chessDetectorUi";
 import { schema } from "./schema";
 
 const groups: UiGroup[] = [

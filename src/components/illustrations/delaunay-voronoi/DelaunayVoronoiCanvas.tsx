@@ -183,7 +183,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             // Undo/redo (Cmd/Ctrl-Z, Shift-Cmd/Ctrl-Z).
             if ((e.metaKey || e.ctrlKey) && (e.key === "z" || e.key === "Z")) {
                 e.preventDefault();
-                if (e.shiftKey) demo.redo(); else demo.undo();
+                if (e.shiftKey) demo.redo();
+                else demo.undo();
                 return;
             }
             if ((e.metaKey || e.ctrlKey) && (e.key === "y" || e.key === "Y")) {
@@ -199,11 +200,26 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                 }
                 return;
             }
-            if (e.key === "a" || e.key === "A") { demo.setTool("add"); return; }
-            if (e.key === "v" || e.key === "V") { demo.setTool("move"); return; }
-            if (e.key === "g" || e.key === "G") { demo.setTool("grid"); return; }
-            if (e.key === "h" || e.key === "H") { demo.setTool("inspect"); return; }
-            if (e.key === "r" || e.key === "R") { demo.randomPoints(); return; }
+            if (e.key === "a" || e.key === "A") {
+                demo.setTool("add");
+                return;
+            }
+            if (e.key === "v" || e.key === "V") {
+                demo.setTool("move");
+                return;
+            }
+            if (e.key === "g" || e.key === "G") {
+                demo.setTool("grid");
+                return;
+            }
+            if (e.key === "h" || e.key === "H") {
+                demo.setTool("inspect");
+                return;
+            }
+            if (e.key === "r" || e.key === "R") {
+                demo.randomPoints();
+                return;
+            }
         },
         [demo, selectedId, state.points],
     );
@@ -241,14 +257,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             role="img"
         >
             {/* Background hit target */}
-            <rect
-                x={0}
-                y={0}
-                width={W}
-                height={H}
-                fill="transparent"
-                onPointerDown={onBgPointerDown}
-            />
+            <rect x={0} y={0} width={W} height={H} fill="transparent" onPointerDown={onBgPointerDown} />
 
             {/* Layer 1: Voronoi cells */}
             {layers.voronoi && voronoi && allPoints.length >= 3 && (
@@ -288,13 +297,16 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                 <g aria-hidden="true" pointerEvents="none">
                     {triangles.map((triangle, i) => {
                         const [a, b, c] = triangleVertices(allPoints, triangle);
-                        const ax = b.x - a.x, ay = b.y - a.y;
-                        const bx = c.x - a.x, by = c.y - a.y;
+                        const ax = b.x - a.x,
+                            ay = b.y - a.y;
+                        const bx = c.x - a.x,
+                            by = c.y - a.y;
                         const D = 2 * (ax * by - ay * bx);
                         if (Math.abs(D) < 1e-10) return null;
                         const ux = (by * (ax * ax + ay * ay) - ay * (bx * bx + by * by)) / D;
                         const uy = (ax * (bx * bx + by * by) - bx * (ax * ax + ay * ay)) / D;
-                        const cx = a.x + ux, cy = a.y + uy;
+                        const cx = a.x + ux,
+                            cy = a.y + uy;
                         const r = Math.hypot(ux, uy);
                         return (
                             <circle
@@ -323,19 +335,24 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                         const rendered = new Set<string>();
                         for (const { ai, bi, ci } of triangles) {
                             const pairs: [number, number][] = [
-                                [ai, bi], [bi, ci], [ci, ai],
+                                [ai, bi],
+                                [bi, ci],
+                                [ci, ai],
                             ];
                             for (const [u, v] of pairs) {
                                 const key = u < v ? `${u}-${v}` : `${v}-${u}`;
                                 if (rendered.has(key)) continue;
                                 rendered.add(key);
                                 // u and v are triangle vertex indices, valid for allPoints.
-                                const a = allPoints[u]!, b = allPoints[v]!;
+                                const a = allPoints[u]!,
+                                    b = allPoints[v]!;
                                 lines.push(
                                     <line
                                         key={key}
-                                        x1={a.x} y1={a.y}
-                                        x2={b.x} y2={b.y}
+                                        x1={a.x}
+                                        y1={a.y}
+                                        x2={b.x}
+                                        y2={b.y}
                                         stroke="var(--fg)"
                                         strokeWidth="1"
                                         strokeOpacity="0.4"

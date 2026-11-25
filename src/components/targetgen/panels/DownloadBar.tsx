@@ -119,10 +119,7 @@ export default function DownloadBar({ state, generateDxf }: Props) {
 
     const handleSvg = () => {
         if (!svg) return;
-        downloadBlob(
-            new Blob([svg], { type: "image/svg+xml" }),
-            buildFilename(state, "svg"),
-        );
+        downloadBlob(new Blob([svg], { type: "image/svg+xml" }), buildFilename(state, "svg"));
     };
 
     // Deliberately rasterizes the app's own preview SVG (which already has
@@ -143,10 +140,7 @@ export default function DownloadBar({ state, generateDxf }: Props) {
         setGeneratingDxf(true);
         try {
             const dxf = await generateDxf(state.target, state.page);
-            downloadBlob(
-                new Blob([dxf], { type: "application/dxf" }),
-                buildFilename(state, "dxf"),
-            );
+            downloadBlob(new Blob([dxf], { type: "application/dxf" }), buildFilename(state, "dxf"));
         } catch (error) {
             console.error("Failed to generate DXF", error);
         } finally {
@@ -155,15 +149,8 @@ export default function DownloadBar({ state, generateDxf }: Props) {
     };
 
     const handleJson = () => {
-        const json = JSON.stringify(
-            { target: state.target, page: state.page },
-            null,
-            2,
-        );
-        downloadBlob(
-            new Blob([json], { type: "application/json" }),
-            buildFilename(state, "json"),
-        );
+        const json = JSON.stringify({ target: state.target, page: state.page }, null, 2);
+        downloadBlob(new Blob([json], { type: "application/json" }), buildFilename(state, "json"));
     };
 
     const handleZip = async () => {

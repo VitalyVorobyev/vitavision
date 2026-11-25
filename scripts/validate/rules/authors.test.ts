@@ -28,7 +28,8 @@ describe("authorsRule", () => {
         expect(authorsRule(ctx)).toEqual([
             {
                 level: "error",
-                message: '[docs/papers/index.yaml] paper "some-paper" authorIds entry "A99" not found in docs/papers/authors.yaml',
+                message:
+                    '[docs/papers/index.yaml] paper "some-paper" authorIds entry "A99" not found in docs/papers/authors.yaml',
             },
         ]);
     });
@@ -45,7 +46,14 @@ describe("authorsRule", () => {
 
     it("does not warn about missing authorIds for a repo/doc entry", () => {
         const ctx = createTestContext({
-            indexEntries: [{ id: "repo:https://example.com/x@1234567", kind: "repo", repo: "https://example.com/x", commit: "1234567" }],
+            indexEntries: [
+                {
+                    id: "repo:https://example.com/x@1234567",
+                    kind: "repo",
+                    repo: "https://example.com/x",
+                    commit: "1234567",
+                },
+            ],
             authorRecords: [],
         });
         expect(authorsRule(ctx)).toEqual([]);
@@ -59,7 +67,8 @@ describe("authorsRule", () => {
         expect(authorsRule(ctx)).toEqual([
             {
                 level: "warning",
-                message: '[docs/papers/index.yaml] paper "some-paper" authorIds count (1) does not match authors count (2)',
+                message:
+                    '[docs/papers/index.yaml] paper "some-paper" authorIds count (1) does not match authors count (2)',
             },
         ]);
     });
@@ -72,7 +81,8 @@ describe("authorsRule", () => {
         expect(authorsRule(ctx)).toEqual([
             {
                 level: "error",
-                message: '[docs/papers/authors.yaml] author "A1" mergedInto target "A99" does not exist in authors.yaml',
+                message:
+                    '[docs/papers/authors.yaml] author "A1" mergedInto target "A99" does not exist in authors.yaml',
             },
         ]);
     });

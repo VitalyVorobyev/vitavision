@@ -47,7 +47,8 @@ describe("chronologyRule", () => {
         expect(chronologyRule(ctx)).toEqual([
             {
                 level: "error",
-                message: '[a.md] feeds_into target "b" (2000) predates host (2010) — feeds_into is an intellectual-lineage edge and must be chronological (see CLAUDE.md → Relations field)',
+                message:
+                    '[a.md] feeds_into target "b" (2000) predates host (2010) — feeds_into is an intellectual-lineage edge and must be chronological (see CLAUDE.md → Relations field)',
             },
         ]);
     });
@@ -69,7 +70,8 @@ describe("chronologyRule", () => {
         expect(chronologyRule(ctx)).toEqual([
             {
                 level: "warning",
-                message: '[a.md] generalized_by target "b" (2000) predates host (2010) — generalized_by is a lineage edge and the target is expected to be at least as recent as the host',
+                message:
+                    '[a.md] generalized_by target "b" (2000) predates host (2010) — generalized_by is a lineage edge and the target is expected to be at least as recent as the host',
             },
         ]);
     });

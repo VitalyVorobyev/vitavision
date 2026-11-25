@@ -8,7 +8,10 @@ describe("checkLenses", () => {
             lenses: [{ id: "overview", coords: { n1: [0, 0], n2: [1, 1] } }],
         };
         const nodeIds = new Set(["n1", "n2"]);
-        const nodeYear = new Map([["n1", 2000], ["n2", 2010]]);
+        const nodeYear = new Map([
+            ["n1", 2000],
+            ["n2", 2010],
+        ]);
         expect(checkLenses("narr.md", fm, nodeIds, nodeYear)).toEqual([]);
     });
 
@@ -25,7 +28,10 @@ describe("checkLenses", () => {
             lenses: [{ id: "overview", coords: { n1: [1, 0], n2: [0, 0] } }],
         };
         const nodeIds = new Set(["n1", "n2"]);
-        const nodeYear = new Map([["n1", 2000], ["n2", 2010]]);
+        const nodeYear = new Map([
+            ["n1", 2000],
+            ["n2", 2010],
+        ]);
         expect(checkLenses("narr.md", fm, nodeIds, nodeYear)).toEqual([
             {
                 level: "warning",

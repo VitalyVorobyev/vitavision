@@ -11,18 +11,18 @@ interface Props {
 }
 
 const DOCK_TOOLS: { tool: ActiveTool; icon: string; label: string }[] = [
-    { tool: "add",     icon: "+",  label: "Add" },
-    { tool: "move",    icon: "↔", label: "Move" },
+    { tool: "add", icon: "+", label: "Add" },
+    { tool: "move", icon: "↔", label: "Move" },
     { tool: "inspect", icon: "⊙", label: "Inspect" },
-    { tool: "delete",  icon: "✕", label: "Delete" },
-    { tool: "grid",    icon: "▦", label: "Grid" },
+    { tool: "delete", icon: "✕", label: "Delete" },
+    { tool: "grid", icon: "▦", label: "Grid" },
 ];
 
 const LAYER_LABELS: { key: keyof Layers; label: string }[] = [
-    { key: "delaunay",      label: "Delaunay" },
-    { key: "voronoi",       label: "Voronoi" },
+    { key: "delaunay", label: "Delaunay" },
+    { key: "voronoi", label: "Voronoi" },
     { key: "circumcircles", label: "Circles" },
-    { key: "grid",          label: "Grid" },
+    { key: "grid", label: "Grid" },
 ];
 
 function minAngleColor(deg: number): string {
@@ -37,7 +37,20 @@ function formatMinAngle(deg: number): string {
 }
 
 export default function DelaunayVoronoiMobile({ demo }: Props) {
-    const { state, stats, toggleLayer, setGridDims, resetGrid, clearPoints, randomPoints, setTool, undo, redo, canUndo, canRedo } = demo;
+    const {
+        state,
+        stats,
+        toggleLayer,
+        setGridDims,
+        resetGrid,
+        clearPoints,
+        randomPoints,
+        setTool,
+        undo,
+        redo,
+        canUndo,
+        canRedo,
+    } = demo;
     const { layers, activeTool } = state;
     const { points, triangles, edges, minAngleDeg } = stats;
     const [randomN, setRandomN] = useState(30);
@@ -64,7 +77,8 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
 
                 {/* Stats chip (top-right, below kebab) */}
                 <FloatingPanel className="absolute top-12 right-2.5 px-2.5 py-1.5 font-mono text-[11px]">
-                    {points} · {triangles} · {edges} · <span className={minAngleColor(minAngleDeg)}>{formatMinAngle(minAngleDeg)}</span>
+                    {points} · {triangles} · {edges} ·{" "}
+                    <span className={minAngleColor(minAngleDeg)}>{formatMinAngle(minAngleDeg)}</span>
                 </FloatingPanel>
 
                 {/* Reset corners chip — appears below stats when grid layer is on */}
@@ -105,10 +119,13 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
                             onClick={() => setTool(tool)}
                             className={cn(
                                 "h-14 flex-col gap-1 px-0",
-                                isActive && "bg-signal/15 text-signal ring-1 ring-inset ring-signal/40 hover:bg-signal/15 hover:text-signal",
+                                isActive &&
+                                    "bg-signal/15 text-signal ring-1 ring-inset ring-signal/40 hover:bg-signal/15 hover:text-signal",
                             )}
                         >
-                            <span aria-hidden className="text-lg leading-none">{icon}</span>
+                            <span aria-hidden className="text-lg leading-none">
+                                {icon}
+                            </span>
                             <span className="text-[10px] leading-none">{label}</span>
                         </Button>
                     );
@@ -132,10 +149,7 @@ export default function DelaunayVoronoiMobile({ demo }: Props) {
             {/* More sheet */}
             {isMoreOpen && (
                 <>
-                    <div
-                        className="fixed inset-0 z-40 bg-black/40"
-                        onClick={() => setTool("add")}
-                    />
+                    <div className="fixed inset-0 z-40 bg-black/40" onClick={() => setTool("add")} />
                     <div className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-line p-4 max-h-[60vh] overflow-y-auto bg-surface">
                         <TinyBrow className="mb-3">More options</TinyBrow>
                         <div className="flex flex-col gap-3">

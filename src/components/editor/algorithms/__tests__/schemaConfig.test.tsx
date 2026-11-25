@@ -54,7 +54,10 @@ describe.each(CASES)("$id config", ({ id, schema, ui, hiddenPaths }) => {
         const configs: Array<[string, unknown]> = [
             ["initialConfig", algo.initialConfig],
             ...(algo.presets ?? []).map((p): [string, unknown] => [`preset ${p.label}`, p.config]),
-            ...Object.entries(algo.sampleDefaults ?? {}).map(([sample, config]): [string, unknown] => [`sample ${sample}`, config]),
+            ...Object.entries(algo.sampleDefaults ?? {}).map(([sample, config]): [string, unknown] => [
+                `sample ${sample}`,
+                config,
+            ]),
         ];
         for (const [label, config] of configs) {
             expect(validate(config), `${label}: ${JSON.stringify(validate.errors?.slice(0, 3))}`).toBe(true);
@@ -87,7 +90,10 @@ describe.each(CASES)("$id config", ({ id, schema, ui, hiddenPaths }) => {
 
     it("hides every field the schema marks readOnly", () => {
         for (const path of readOnlyPaths(schema)) {
-            expect(hiddenPaths.some((p) => isUnder(path, p)), path).toBe(true);
+            expect(
+                hiddenPaths.some((p) => isUnder(path, p)),
+                path,
+            ).toBe(true);
         }
     });
 
@@ -119,7 +125,10 @@ describe.each(CASES)("$id form", ({ id }) => {
         // Open every disclosure so nested frames render too.
         container.querySelectorAll("details").forEach((d) => d.setAttribute("open", ""));
         for (const frame of container.querySelectorAll("fieldset")) {
-            expect(frame.querySelector("input, button, textarea, [role=radio], [role=switch], [role=checkbox]"), frame.textContent ?? "").not.toBeNull();
+            expect(
+                frame.querySelector("input, button, textarea, [role=radio], [role=switch], [role=checkbox]"),
+                frame.textContent ?? "",
+            ).not.toBeNull();
         }
         expect(container.querySelectorAll("h3, summary").length).toBeGreaterThan(0);
     });
@@ -192,7 +201,10 @@ describe("editing", () => {
     it("radsym: a radii list that is not a range is left to the form's JSON control", async () => {
         const algo = await loadAlgorithm("radsym");
         const Form = algo.ConfigComponent;
-        const config = { ...(algo.initialConfig as { config: object }), config: { ...(algo.initialConfig as { config: object }).config, radii: [3, 5, 9] } };
+        const config = {
+            ...(algo.initialConfig as { config: object }),
+            config: { ...(algo.initialConfig as { config: object }).config, radii: [3, 5, 9] },
+        };
         render(<Form config={config} onChange={() => {}} disabled={false} />);
         expect(screen.queryByRole("spinbutton", { name: "Min radius" })).toBeNull();
         expect(screen.getByRole("textbox", { name: /radii/i })).toBeInTheDocument();

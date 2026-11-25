@@ -21,23 +21,25 @@ const baseFeatureSchema = z.object({
     readonly: z.boolean().optional(),
     color: z.string().optional(),
     label: z.string().optional(),
-    meta: z.object({
-        kind: z.string().optional(),
-        score: z.number().optional(),
-        grid: z.object({ i: z.number(), j: z.number() }).optional(),
-        gridCell: z.object({ gx: z.number(), gy: z.number() }).optional(),
-        cornerId: z.number().nullable().optional(),
-        markerId: z.number().nullable().optional(),
-        targetPosition: z.object({ x: z.number(), y: z.number() }).nullable().optional(),
-        rotation: z.number().optional(),
-        hamming: z.number().optional(),
-        borderScore: z.number().optional(),
-        code: z.number().optional(),
-        inverted: z.boolean().optional(),
-        polarity: z.string().optional(),
-        contrast: z.number().optional(),
-        offsetCells: z.object({ di: z.number(), dj: z.number() }).nullable().optional(),
-    }).optional(),
+    meta: z
+        .object({
+            kind: z.string().optional(),
+            score: z.number().optional(),
+            grid: z.object({ i: z.number(), j: z.number() }).optional(),
+            gridCell: z.object({ gx: z.number(), gy: z.number() }).optional(),
+            cornerId: z.number().nullable().optional(),
+            markerId: z.number().nullable().optional(),
+            targetPosition: z.object({ x: z.number(), y: z.number() }).nullable().optional(),
+            rotation: z.number().optional(),
+            hamming: z.number().optional(),
+            borderScore: z.number().optional(),
+            code: z.number().optional(),
+            inverted: z.boolean().optional(),
+            polarity: z.string().optional(),
+            contrast: z.number().optional(),
+            offsetCells: z.object({ di: z.number(), dj: z.number() }).nullable().optional(),
+        })
+        .optional(),
 });
 
 const pointFeatureSchema = baseFeatureSchema.extend({
@@ -118,10 +120,7 @@ const arucoMarkerFeatureSchema = baseFeatureSchema.extend({
     type: z.literal("aruco_marker"),
     x: z.number(),
     y: z.number(),
-    corners: z.tuple([
-        z.number(), z.number(), z.number(), z.number(),
-        z.number(), z.number(), z.number(), z.number(),
-    ]),
+    corners: z.tuple([z.number(), z.number(), z.number(), z.number(), z.number(), z.number(), z.number(), z.number()]),
 });
 
 const circleFeatureSchema = baseFeatureSchema.extend({

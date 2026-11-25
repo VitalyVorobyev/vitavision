@@ -11,7 +11,11 @@ import { ui } from "./ui";
 const toDiagnostics = (result: ChessCornersResult): DiagnosticEntry[] => {
     const entries: DiagnosticEntry[] = [];
     if (result.summary.count === 0) {
-        entries.push({ level: "warning", message: "No corners detected", detail: "Try lowering the threshold or check that the image contains X-junctions." });
+        entries.push({
+            level: "warning",
+            message: "No corners detected",
+            detail: "Try lowering the threshold or check that the image contains X-junctions.",
+        });
     }
     return entries;
 };
@@ -37,8 +41,18 @@ const toFeatures = (result: ChessCornersResult, runId: string): Feature[] => {
         // `sigmaRad` is the persisted name of the axis error slot (saved feature JSON uses it);
         // the value is the fit standard error, not a calibrated 1-sigma (see ChessCornerAxis).
         axes: [
-            { dx: corner.axes[0].direction.dx, dy: corner.axes[0].direction.dy, angleRad: corner.axes[0].angle_rad, sigmaRad: corner.axes[0].fit_std_error_rad },
-            { dx: corner.axes[1].direction.dx, dy: corner.axes[1].direction.dy, angleRad: corner.axes[1].angle_rad, sigmaRad: corner.axes[1].fit_std_error_rad },
+            {
+                dx: corner.axes[0].direction.dx,
+                dy: corner.axes[0].direction.dy,
+                angleRad: corner.axes[0].angle_rad,
+                sigmaRad: corner.axes[0].fit_std_error_rad,
+            },
+            {
+                dx: corner.axes[1].direction.dx,
+                dy: corner.axes[1].direction.dy,
+                angleRad: corner.axes[1].angle_rad,
+                sigmaRad: corner.axes[1].fit_std_error_rad,
+            },
         ],
         score: corner.confidence,
         label: `corner ${corner.id.slice(0, 8)}`,

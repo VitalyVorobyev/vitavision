@@ -41,7 +41,8 @@ describe("sourcesRule", () => {
         expect(sourcesRule(ctx)).toEqual([
             {
                 level: "error",
-                message: '[a.md] sources.primary "repo:not-a-url" malformed (expected paper:<id> | repo:<url>@<7-40 hex> | doc:<path>)',
+                message:
+                    '[a.md] sources.primary "repo:not-a-url" malformed (expected paper:<id> | repo:<url>@<7-40 hex> | doc:<path>)',
             },
         ]);
     });

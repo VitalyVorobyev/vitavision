@@ -19,11 +19,10 @@ export default function ReadingProgress({ articleRef }: ReadingProgressProps) {
     const hasScrolledRef = useRef(false);
     // Read once; only consumed once the bar is visible (client-only, after the
     // first scroll), so the prerendered null output never depends on it.
-    const [prefersReducedMotion] = useState(
-        () =>
-            typeof window !== "undefined" && typeof window.matchMedia === "function"
-                ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-                : false,
+    const [prefersReducedMotion] = useState(() =>
+        typeof window !== "undefined" && typeof window.matchMedia === "function"
+            ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            : false,
     );
 
     useEffect(() => {
@@ -72,10 +71,7 @@ export default function ReadingProgress({ articleRef }: ReadingProgressProps) {
     if (!visible) return null;
 
     return (
-        <div
-            aria-hidden="true"
-            className="fixed left-0 top-16 z-30 h-[2px] w-full"
-        >
+        <div aria-hidden="true" className="fixed left-0 top-16 z-30 h-[2px] w-full">
             <div
                 className="h-full w-full origin-left bg-signal"
                 style={{

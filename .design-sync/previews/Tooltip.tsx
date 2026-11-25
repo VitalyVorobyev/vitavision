@@ -1,4 +1,4 @@
-import { Tooltip } from 'vitcv';
+import { Tooltip } from "vitcv";
 
 export const Default = () => (
     <Tooltip content="Detects chessboard corners with sub-pixel refinement">

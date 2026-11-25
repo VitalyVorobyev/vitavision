@@ -36,10 +36,7 @@ interface PanelFlatProps extends React.HTMLAttributes<HTMLElement> {
 
 export function PanelFlat({ as: Tag = "div", className, children, ...rest }: PanelFlatProps) {
     return (
-        <Tag
-            className={cn("rounded-[1rem] border border-line bg-surface", className)}
-            {...rest}
-        >
+        <Tag className={cn("rounded-[1rem] border border-line bg-surface", className)} {...rest}>
             {children}
         </Tag>
     );
@@ -79,12 +76,7 @@ interface BrowProps {
 
 export function TinyBrow({ className, children }: BrowProps) {
     return (
-        <span
-            className={cn(
-                "text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted",
-                className,
-            )}
-        >
+        <span className={cn("text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted", className)}>
             {children}
         </span>
     );
@@ -97,9 +89,9 @@ type Tone = "neutral" | "good" | "warn" | "bad";
 
 const toneStyles: Record<Tone, { cell: string; value: string }> = {
     neutral: { cell: "", value: "text-fg" },
-    good:    { cell: "border-normal/40 bg-normal/10", value: "text-normal" },
-    warn:    { cell: "border-warn/40 bg-warn/10",     value: "text-warn"   },
-    bad:     { cell: "border-defect/40 bg-defect/10", value: "text-defect" },
+    good: { cell: "border-normal/40 bg-normal/10", value: "text-normal" },
+    warn: { cell: "border-warn/40 bg-warn/10", value: "text-warn" },
+    bad: { cell: "border-defect/40 bg-defect/10", value: "text-defect" },
 };
 
 interface MetricCellProps {
@@ -123,9 +115,7 @@ export function MetricCell({ label, value, tone = "neutral", className }: Metric
             <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-fg-muted leading-none">
                 {label}
             </span>
-            <span className={cn("mt-1.5 text-[13px] font-mono font-semibold leading-none", valueColor)}>
-                {value}
-            </span>
+            <span className={cn("mt-1.5 text-[13px] font-mono font-semibold leading-none", valueColor)}>{value}</span>
         </div>
     );
 }

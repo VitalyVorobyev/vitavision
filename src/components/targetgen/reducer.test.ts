@@ -182,7 +182,11 @@ describe("screen medium", () => {
     });
 
     it("prefills the display size once, the first time Screen is chosen", () => {
-        const first = targetGeneratorReducer(INITIAL_STATE, { type: "SET_MEDIUM", medium: "screen", displayPx: display });
+        const first = targetGeneratorReducer(INITIAL_STATE, {
+            type: "SET_MEDIUM",
+            medium: "screen",
+            displayPx: display,
+        });
         expect(first.medium).toBe("screen");
         expect(first.screen).toMatchObject(display);
         expect(first.screenPrefilled).toBe(true);
@@ -215,7 +219,13 @@ describe("screen medium", () => {
                 sidecarJson: "{}",
                 widthPx: 1,
                 heightPx: 1,
-                geometry: { kind: "grid" as const, squareSizePx: 1, squareSizeMm: 1, requestedSquareSizeMm: 1, boardOriginPx: [0, 0] as [number, number] },
+                geometry: {
+                    kind: "grid" as const,
+                    squareSizePx: 1,
+                    squareSizeMm: 1,
+                    requestedSquareSizeMm: 1,
+                    boardOriginPx: [0, 0] as [number, number],
+                },
             },
         };
         const back = targetGeneratorReducer(withResult, { type: "SET_MEDIUM", medium: "print" });
@@ -229,7 +239,10 @@ describe("screen medium", () => {
     });
 
     it("UPDATE_SCREEN merges, including clearing the margin", () => {
-        const a = targetGeneratorReducer(INITIAL_STATE, { type: "UPDATE_SCREEN", partial: { marginPx: 4, pixelPitchMm: 0.2745 } });
+        const a = targetGeneratorReducer(INITIAL_STATE, {
+            type: "UPDATE_SCREEN",
+            partial: { marginPx: 4, pixelPitchMm: 0.2745 },
+        });
         expect(a.screen).toMatchObject({ marginPx: 4, pixelPitchMm: 0.2745 });
         const b = targetGeneratorReducer(a, { type: "UPDATE_SCREEN", partial: { marginPx: null } });
         expect(b.screen.marginPx).toBeNull();

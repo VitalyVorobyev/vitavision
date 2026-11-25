@@ -12,26 +12,26 @@
 // Exits 1 if any class is missing. Fix by switching to a class the app already
 // uses, or by setting the exact value with an inline `style`.
 
-import { readdirSync, readFileSync, existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join, resolve } from 'node:path';
+import { readdirSync, readFileSync, existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join, resolve } from "node:path";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const REPO = resolve(HERE, '..');
-const PREVIEWS = join(HERE, 'previews');
+const REPO = resolve(HERE, "..");
+const PREVIEWS = join(HERE, "previews");
 
-let css = '';
-for (const p of ['ds-bundle/styles.css', 'ds-bundle/_ds_bundle.css']) {
+let css = "";
+for (const p of ["ds-bundle/styles.css", "ds-bundle/_ds_bundle.css"]) {
     const f = join(REPO, p);
-    if (existsSync(f)) css += readFileSync(f, 'utf8');
+    if (existsSync(f)) css += readFileSync(f, "utf8");
 }
 if (!css) {
-    console.error('! no compiled CSS found under ds-bundle/ — run the converter build first');
+    console.error("! no compiled CSS found under ds-bundle/ — run the converter build first");
     process.exit(1);
 }
 
 // Tailwind escapes non-identifier characters in its generated selectors.
-const esc = (c) => c.replace(/[.:/[\]%(),#!&>+*~='"|^$?{}\\]/g, (m) => '\\' + m);
+const esc = (c) => c.replace(/[.:/[\]%(),#!&>+*~='"|^$?{}\\]/g, (m) => "\\" + m);
 
 // Classes that never map to a utility rule: they are targets for other CSS, or
 // Tailwind state/group markers that only appear as part of a compound selector.
@@ -39,30 +39,30 @@ const IGNORE = /^(group|peer|dark|prose|not-prose|sr-only|mermaid-diagram|number
 
 const only = process.argv.slice(2);
 const files = readdirSync(PREVIEWS)
-    .filter((f) => f.endsWith('.tsx'))
-    .filter((f) => !only.length || only.includes(f.replace(/\.tsx$/, '')));
+    .filter((f) => f.endsWith(".tsx"))
+    .filter((f) => !only.length || only.includes(f.replace(/\.tsx$/, "")));
 
 let bad = 0;
 for (const file of files) {
-    const src = readFileSync(join(PREVIEWS, file), 'utf8');
+    const src = readFileSync(join(PREVIEWS, file), "utf8");
     const missing = new Set();
     // className="…" and className={`…`} — string literals only; expressions are skipped.
     for (const m of src.matchAll(/className\s*=\s*(?:"([^"]*)"|\{`([^`]*)`\}|\{"([^"]*)"\})/g)) {
-        const raw = (m[1] ?? m[2] ?? m[3] ?? '').replace(/\$\{[^}]*\}/g, ' ');
+        const raw = (m[1] ?? m[2] ?? m[3] ?? "").replace(/\$\{[^}]*\}/g, " ");
         for (const cls of raw.split(/\s+/).filter(Boolean)) {
             if (IGNORE.test(cls)) continue;
-            if (!css.includes('.' + esc(cls))) missing.add(cls);
+            if (!css.includes("." + esc(cls))) missing.add(cls);
         }
     }
     if (missing.size) {
         bad++;
-        console.error(`✗ ${file}: ${[...missing].join(', ')}`);
+        console.error(`✗ ${file}: ${[...missing].join(", ")}`);
     }
 }
 
 if (bad) {
     console.error(`\n${bad} preview file(s) use classes with no rule in the shipped CSS.`);
-    console.error('Swap for a class the app already uses, or set the value with inline style={{…}}.');
+    console.error("Swap for a class the app already uses, or set the value with inline style={{…}}.");
     process.exit(1);
 }
 console.error(`✓ ${files.length} preview file(s): every class resolves in the shipped CSS`);

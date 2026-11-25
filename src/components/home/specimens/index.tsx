@@ -8,18 +8,16 @@ export type SpecProps = { className?: string };
 /** Blog — stacked text lines. Headline becomes brand on parent hover/focus. */
 export function SpecBlog({ className }: SpecProps) {
     return (
-        <svg
-            viewBox="0 0 44 28"
-            width={44}
-            height={28}
-            aria-hidden
-            className={className}
-        >
+        <svg viewBox="0 0 44 28" width={44} height={28} aria-hidden className={className}>
             <rect
-                x="0" y="2" width="32" height="3" rx="1"
+                x="0"
+                y="2"
+                width="32"
+                height="3"
+                rx="1"
                 className="fill-fg/85 transition-colors duration-300 group-hover:fill-signal group-focus-visible:fill-signal"
             />
-            <rect x="0" y="9"  width="44" height="1.5" rx="0.75" className="fill-fg-muted/80" />
+            <rect x="0" y="9" width="44" height="1.5" rx="0.75" className="fill-fg-muted/80" />
             <rect x="0" y="14" width="40" height="1.5" rx="0.75" className="fill-fg-muted/60" />
             <rect x="0" y="19" width="36" height="1.5" rx="0.75" className="fill-fg-muted/45" />
             <rect x="0" y="24" width="22" height="1.5" rx="0.75" className="fill-fg-muted/30" />
@@ -29,24 +27,33 @@ export function SpecBlog({ className }: SpecProps) {
 
 /** Algorithms — tiny directed graph. Entry node + edges highlight on hover. */
 export function SpecAlgorithms({ className }: SpecProps) {
-    const nodes: [number, number][] = [[4, 14], [18, 6], [18, 22], [32, 14], [42, 8]];
-    const edges: [number, number][] = [[0, 1], [0, 2], [1, 3], [2, 3], [3, 4]];
+    const nodes: [number, number][] = [
+        [4, 14],
+        [18, 6],
+        [18, 22],
+        [32, 14],
+        [42, 8],
+    ];
+    const edges: [number, number][] = [
+        [0, 1],
+        [0, 2],
+        [1, 3],
+        [2, 3],
+        [3, 4],
+    ];
     return (
-        <svg
-            viewBox="0 0 46 28"
-            width={46}
-            height={28}
-            aria-hidden
-            className={className}
-        >
+        <svg viewBox="0 0 46 28" width={46} height={28} aria-hidden className={className}>
             {edges.map(([a, b]) => {
-                const from = nodes[a], to = nodes[b];
+                const from = nodes[a],
+                    to = nodes[b];
                 if (!from || !to) return null;
                 return (
                     <line
                         key={`${a}-${b}`}
-                        x1={from[0]} y1={from[1]}
-                        x2={to[0]} y2={to[1]}
+                        x1={from[0]}
+                        y1={from[1]}
+                        x2={to[0]}
+                        y2={to[1]}
                         strokeWidth={1}
                         className="stroke-fg-muted/55 transition-colors duration-300 group-hover:stroke-signal/70 group-focus-visible:stroke-signal/70"
                     />
@@ -57,7 +64,9 @@ export function SpecAlgorithms({ className }: SpecProps) {
                 return (
                     <circle
                         key={`${x}-${y}`}
-                        cx={x} cy={y} r={2}
+                        cx={x}
+                        cy={y}
+                        r={2}
                         strokeWidth={1.2}
                         className={
                             isEntry
@@ -74,33 +83,48 @@ export function SpecAlgorithms({ className }: SpecProps) {
 /** Editor — image frame with feature points and a dashed bounding box. */
 export function SpecEditor({ className }: SpecProps) {
     const pts: [number, number][] = [
-        [8, 6], [14, 10], [22, 8], [30, 12], [35, 7],
-        [12, 18], [20, 22], [28, 20], [34, 24], [9, 24], [18, 14],
+        [8, 6],
+        [14, 10],
+        [22, 8],
+        [30, 12],
+        [35, 7],
+        [12, 18],
+        [20, 22],
+        [28, 20],
+        [34, 24],
+        [9, 24],
+        [18, 14],
     ];
     return (
-        <svg
-            viewBox="0 0 44 30"
-            width={44}
-            height={30}
-            aria-hidden
-            className={className}
-        >
+        <svg viewBox="0 0 44 30" width={44} height={30} aria-hidden className={className}>
             <rect
-                x="0.5" y="0.5" width="43" height="29" rx="2"
-                fill="none" strokeWidth={1}
+                x="0.5"
+                y="0.5"
+                width="43"
+                height="29"
+                rx="2"
+                fill="none"
+                strokeWidth={1}
                 className="stroke-fg-muted/60 transition-colors duration-300 group-hover:stroke-signal group-focus-visible:stroke-signal"
             />
             <line x1="2" y1="20" x2="42" y2="18" strokeWidth="0.8" className="stroke-fg-muted/30" />
             {pts.map(([x, y]) => (
                 <circle
                     key={`${x}-${y}`}
-                    cx={x} cy={y} r={1}
+                    cx={x}
+                    cy={y}
+                    r={1}
                     className="fill-fg/80 transition-colors duration-300 group-hover:fill-signal group-focus-visible:fill-signal"
                 />
             ))}
             <rect
-                x="16" y="6" width="18" height="10"
-                fill="none" strokeWidth="0.8" strokeDasharray="2 1.5"
+                x="16"
+                y="6"
+                width="18"
+                height="10"
+                fill="none"
+                strokeWidth="0.8"
+                strokeDasharray="2 1.5"
                 className="stroke-fg/70 transition-colors duration-300 group-hover:stroke-signal group-focus-visible:stroke-signal"
             />
         </svg>
@@ -109,8 +133,10 @@ export function SpecEditor({ className }: SpecProps) {
 
 /** Targets — miniature 7×4 checkerboard. One cell becomes brand on hover. */
 export function SpecTargets({ className }: SpecProps) {
-    const cols = 7, rows = 4;
-    const cw = 40 / cols, ch = 24 / rows;
+    const cols = 7,
+        rows = 4;
+    const cw = 40 / cols,
+        ch = 24 / rows;
     const cells: Array<{ r: number; c: number; dark: boolean }> = [];
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -118,13 +144,7 @@ export function SpecTargets({ className }: SpecProps) {
         }
     }
     return (
-        <svg
-            viewBox="0 0 44 28"
-            width={44}
-            height={28}
-            aria-hidden
-            className={className}
-        >
+        <svg viewBox="0 0 44 28" width={44} height={28} aria-hidden className={className}>
             <g transform="translate(2,2)">
                 {cells.map(({ r, c, dark }) => {
                     const isAccent = r === 1 && c === 4;
@@ -132,7 +152,10 @@ export function SpecTargets({ className }: SpecProps) {
                         return (
                             <rect
                                 key={`${r}-${c}`}
-                                x={c * cw} y={r * ch} width={cw} height={ch}
+                                x={c * cw}
+                                y={r * ch}
+                                width={cw}
+                                height={ch}
                                 className={
                                     dark
                                         ? "fill-fg/85 transition-colors duration-300 group-hover:fill-signal group-focus-visible:fill-signal"
@@ -142,16 +165,16 @@ export function SpecTargets({ className }: SpecProps) {
                         );
                     }
                     return dark ? (
-                        <rect
-                            key={`${r}-${c}`}
-                            x={c * cw} y={r * ch} width={cw} height={ch}
-                            className="fill-fg/85"
-                        />
+                        <rect key={`${r}-${c}`} x={c * cw} y={r * ch} width={cw} height={ch} className="fill-fg/85" />
                     ) : null;
                 })}
                 <rect
-                    x="0" y="0" width={cols * cw} height={rows * ch}
-                    fill="none" strokeWidth="0.8"
+                    x="0"
+                    y="0"
+                    width={cols * cw}
+                    height={rows * ch}
+                    fill="none"
+                    strokeWidth="0.8"
                     className="stroke-fg-muted/55 transition-colors duration-300 group-hover:stroke-signal group-focus-visible:stroke-signal"
                 />
             </g>

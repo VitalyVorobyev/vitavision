@@ -69,16 +69,18 @@ export default function AtlasCatalogView({
                         <div className="flex items-baseline justify-between mb-1">
                             <h1 className="text-[22px] font-bold -tracking-[0.4px]">
                                 Atlas{" "}
-                                <span className="text-fg-muted font-normal text-[15px] ml-1.5">
-                                    {facets.total}
-                                </span>
+                                <span className="text-fg-muted font-normal text-[15px] ml-1.5">{facets.total}</span>
                             </h1>
 
                             {/* Right cluster */}
                             <div className="flex items-center gap-2.5 text-xs text-fg-muted">
                                 {/* Search */}
                                 <div className="relative w-[200px]">
-                                    <Search size={13} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
+                                    <Search
+                                        size={13}
+                                        className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted"
+                                        aria-hidden="true"
+                                    />
                                     <Input
                                         type="search"
                                         aria-label="Search the Atlas"
@@ -89,10 +91,7 @@ export default function AtlasCatalogView({
                                     />
                                 </div>
 
-                                <AtlasViewTabs
-                                    view={filters.view}
-                                    onChange={setView}
-                                />
+                                <AtlasViewTabs view={filters.view} onChange={setView} />
                             </div>
                         </div>
 
@@ -115,12 +114,12 @@ export default function AtlasCatalogView({
                         {/* Results */}
                         {filters.query.trim() !== "" && <PeoplePapersMatches query={filters.query} />}
                         {showRecentlyAdded && (
-                            <RecentlyAddedSection entries={recentEntries} layout={filters.view === "list" ? "list" : "grid"} />
+                            <RecentlyAddedSection
+                                entries={recentEntries}
+                                layout={filters.view === "list" ? "list" : "grid"}
+                            />
                         )}
-                        <UnifiedResults
-                            groups={unifiedGroups}
-                            layout={filters.view === "list" ? "list" : "grid"}
-                        />
+                        <UnifiedResults groups={unifiedGroups} layout={filters.view === "list" ? "list" : "grid"} />
                     </main>
                 </div>
             </div>
@@ -131,17 +130,12 @@ export default function AtlasCatalogView({
 
     return (
         <div className="w-full min-w-0 max-w-[640px] mx-auto px-4 py-5 space-y-4">
-            <SeoHead
-                title="Atlas"
-                description="Practical computer vision atlas — algorithms, models, and concepts."
-            />
+            <SeoHead title="Atlas" description="Practical computer vision atlas — algorithms, models, and concepts." />
 
             {/* Title row */}
             <div className="flex items-baseline justify-between">
                 <h1 className="text-[22px] font-bold -tracking-[0.5px]">Atlas</h1>
-                <span className="text-xs text-fg-muted">
-                    {facets.total} entries
-                </span>
+                <span className="text-xs text-fg-muted">{facets.total} entries</span>
             </div>
 
             <AtlasViewTabs view={filters.view} onChange={setView} compact />
@@ -154,10 +148,10 @@ export default function AtlasCatalogView({
             >
                 {(
                     [
-                        ["all",       "All"],
+                        ["all", "All"],
                         ["algorithm", "Algos"],
-                        ["model",     "Models"],
-                        ["concept",   "Concepts"],
+                        ["model", "Models"],
+                        ["concept", "Concepts"],
                     ] as const
                 ).map(([key, label]) => {
                     const active = filters.kind === key;
@@ -169,9 +163,7 @@ export default function AtlasCatalogView({
                             aria-checked={active}
                             onClick={() => setKind(key)}
                             className={`py-[7px] rounded-[5px] text-center text-[12px] transition-colors ${
-                                active
-                                    ? "bg-line text-fg font-semibold"
-                                    : "text-fg-muted"
+                                active ? "bg-line text-fg font-semibold" : "text-fg-muted"
                             }`}
                         >
                             {label}
@@ -199,22 +191,14 @@ export default function AtlasCatalogView({
             </button>
 
             {/* Active tag chips */}
-            <ActiveTagChips
-                tags={filters.tags}
-                onRemove={toggleTag}
-                onClearAll={() => setTags([])}
-            />
+            <ActiveTagChips tags={filters.tags} onRemove={toggleTag} onClearAll={() => setTags([])} />
 
             {/* Card sections */}
             {filters.query.trim() !== "" && <PeoplePapersMatches query={filters.query} />}
             {showRecentlyAdded && (
                 <RecentlyAddedSection entries={recentEntries} layout={filters.view === "grid" ? "grid" : "list"} />
             )}
-            <UnifiedResults
-                groups={unifiedGroups}
-                layout={filters.view === "grid" ? "grid" : "list"}
-                isMobile={true}
-            />
+            <UnifiedResults groups={unifiedGroups} layout={filters.view === "grid" ? "grid" : "list"} isMobile={true} />
 
             {/* Filter sheet (mobile) */}
             <AlgorithmsFilterSheet

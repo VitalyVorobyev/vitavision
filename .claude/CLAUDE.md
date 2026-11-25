@@ -34,12 +34,13 @@ For local dev setup see `README.dev.md`.
 bun run dev       # Dev server at http://localhost:5173
 bun run build     # Type-check + Vite production build
 bun run lint      # Oxlint
+bun run format    # oxfmt (write); format:check in CI
 ```
 
 ### Verification Checklist
 After any code change, run **all** of the following before committing:
 1. `bun run build` — type-check + production build
-2. `bun run lint` — Oxlint
+2. `bun run lint` — Oxlint; `bun run format:check` — oxfmt (run `bun run format` to fix)
 3. `npx vitest run` — unit tests
 4. `bun run scripts/test-wasm-schemas.ts` — WASM integration tests (when touching algorithm configs)
 5. `bun run ds:validate` — design-system boundary (when touching a component exported from `.design-sync/ds-entry.tsx` or a `.design-sync/previews/` file; it also checks that the entry, `config.json` and the previews agree)

@@ -18,7 +18,9 @@ function page(overrides: Partial<ScholarlyPageInput> & { slug: string; title: st
     return { kind: "algorithm", ...overrides };
 }
 
-function narrative(overrides: Partial<ScholarlyNarrativeInput> & { slug: string; title: string }): ScholarlyNarrativeInput {
+function narrative(
+    overrides: Partial<ScholarlyNarrativeInput> & { slug: string; title: string },
+): ScholarlyNarrativeInput {
     return { pageSlugs: [], paperIds: [], ...overrides };
 }
 
@@ -47,7 +49,12 @@ describe("buildScholarlyIndex — pages", () => {
                     slug: "c-page",
                     title: "Citer",
                     sources: {
-                        references: ["paper:p2", "repo:https://example.com/x@1234567", "doc:docs/readme.md", "p3-unregistered"],
+                        references: [
+                            "paper:p2",
+                            "repo:https://example.com/x@1234567",
+                            "doc:docs/readme.md",
+                            "p3-unregistered",
+                        ],
                     },
                 }),
                 page({ slug: "empty-page", title: "Empty", sources: undefined }),
@@ -221,7 +228,11 @@ describe("buildScholarlyIndex — network", () => {
     function fourAuthorInput(): BuildScholarlyIndexInput {
         return {
             pages: [],
-            papers: [paper({ id: "pOld", year: 1990 }), paper({ id: "pNew", year: 2000 }), paper({ id: "pSolo", year: 2010 })],
+            papers: [
+                paper({ id: "pOld", year: 1990 }),
+                paper({ id: "pNew", year: 2000 }),
+                paper({ id: "pSolo", year: 2010 }),
+            ],
             authorsIndex: {
                 authors: {
                     a: { name: "A", papers: ["pOld", "pNew"] },

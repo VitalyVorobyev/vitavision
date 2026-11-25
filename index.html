@@ -1,12 +1,14 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vv-favicon-dark.svg" />
-    <link rel="alternate" type="application/rss+xml" title="VitaVision RSS" href="/rss.xml" />
-    <link rel="alternate" type="application/atom+xml" title="VitaVision Atom" href="/atom.xml" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vv-favicon-dark.svg" />
+        <link rel="alternate" type="application/rss+xml" title="VitaVision RSS" href="/rss.xml" />
+        <link rel="alternate" type="application/atom+xml" title="VitaVision Atom" href="/atom.xml" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="
       default-src 'self';
       script-src 'self' 'sha256-vA82SeF7VkGUyQOz0hC4qt0kapZwaKakpW9TsTVusWg=' 'wasm-unsafe-eval' https://*.clerk.accounts.dev https://clerk.vitavision.dev https://challenges.cloudflare.com;
       style-src 'self' 'unsafe-inline';
@@ -17,9 +19,10 @@
       frame-src 'self' https://*.clerk.accounts.dev https://clerk.vitavision.dev https://challenges.cloudflare.com;
       object-src 'none';
       base-uri 'self';
-    " />
-    <title>VitaVision</title>
-    <!--
+    "
+        />
+        <title>VitaVision</title>
+        <!--
       Theme before first paint: @vitavision/ui's no-flash script (its README), kept in
       agreement with ui's theme.ts, under the site's storage key "theme"
       (src/lib/theme.ts). "system", or no stored choice, follows the OS. It also picks the
@@ -27,26 +30,26 @@
       keeps following the OS. Any change to the script's text changes its sha256, which
       the CSP meta above and public/_headers must list.
     -->
-    <script>
-      (function () {
-        var dark = false;
-        try {
-          var stored = localStorage.getItem("theme");
-          dark =
-            stored === "dark" ||
-            ((stored === null || stored === "system") &&
-              window.matchMedia("(prefers-color-scheme: dark)").matches);
-        } catch (_) {
-          // Storage unavailable: fall through to the light palette defined on :root.
-        }
-        if (dark) document.documentElement.classList.add("dark");
-        var icon = document.querySelector('link[rel="icon"]');
-        if (icon) icon.href = dark ? "/vv-favicon-light.svg" : "/vv-favicon-dark.svg";
-      })();
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+        <script>
+            (function () {
+                var dark = false;
+                try {
+                    var stored = localStorage.getItem("theme");
+                    dark =
+                        stored === "dark" ||
+                        ((stored === null || stored === "system") &&
+                            window.matchMedia("(prefers-color-scheme: dark)").matches);
+                } catch (_) {
+                    // Storage unavailable: fall through to the light palette defined on :root.
+                }
+                if (dark) document.documentElement.classList.add("dark");
+                var icon = document.querySelector('link[rel="icon"]');
+                if (icon) icon.href = dark ? "/vv-favicon-light.svg" : "/vv-favicon-dark.svg";
+            })();
+        </script>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.tsx"></script>
+    </body>
 </html>

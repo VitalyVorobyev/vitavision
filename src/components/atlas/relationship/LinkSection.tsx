@@ -37,10 +37,14 @@ export default function LinkSection({
                             className="flex items-center justify-between gap-2 text-[13px] py-1.5 text-fg no-underline hover:text-fg transition-colors"
                         >
                             <span className="inline-flex items-center gap-1.5 truncate">
-                                <span aria-hidden="true" className="flex-shrink-0">{icon}</span>
+                                <span aria-hidden="true" className="flex-shrink-0">
+                                    {icon}
+                                </span>
                                 <span className="truncate">{title}</span>
                             </span>
-                            <span aria-hidden="true" className="text-fg-muted text-[11px] flex-shrink-0">↗</span>
+                            <span aria-hidden="true" className="text-fg-muted text-[11px] flex-shrink-0">
+                                ↗
+                            </span>
                         </Link>
                     </li>
                 ))}

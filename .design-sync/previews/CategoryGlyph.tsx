@@ -1,4 +1,4 @@
-import { CategoryGlyph } from 'vitcv';
+import { CategoryGlyph } from "vitcv";
 
 const TILE = "w-16 h-16 rounded-panel border border-line overflow-hidden";
 

@@ -29,9 +29,7 @@ export default function ConceptPost() {
 
     // Resolve content synchronously from SSR context (postbuild prerender).
     // On the client useStaticContent() returns null, so the async loader runs instead.
-    const syncHtml = slug
-        ? staticContent?.conceptHtmlBySlug?.[slug] ?? null
-        : null;
+    const syncHtml = slug ? (staticContent?.conceptHtmlBySlug?.[slug] ?? null) : null;
 
     // Async loading state — reset when slug changes (render-time state reset pattern).
     const [trackedSlug, setTrackedSlug] = useState(slug);
@@ -47,7 +45,7 @@ export default function ConceptPost() {
     // download the draft HTML chunk even when the UI renders NotFound.
     const isDraftBlocked = Boolean(page?.frontmatter.draft || page?.frontmatter.dev) && !isAdmin;
 
-    const html = isDraftBlocked ? null : syncHtml ?? asyncHtml;
+    const html = isDraftBlocked ? null : (syncHtml ?? asyncHtml);
     const loadFailed = !isDraftBlocked && html === null && (!slug || !(slug in conceptHtmlLoaders) || asyncFailed);
 
     useMermaid(articleRef, [html]);
@@ -63,24 +61,23 @@ export default function ConceptPost() {
 
         let cancelled = false;
         loader()
-            .then((mod) => { if (!cancelled) setAsyncHtml(mod.html); })
-            .catch(() => { if (!cancelled) setAsyncFailed(true); });
-        return () => { cancelled = true; };
+            .then((mod) => {
+                if (!cancelled) setAsyncHtml(mod.html);
+            })
+            .catch(() => {
+                if (!cancelled) setAsyncFailed(true);
+            });
+        return () => {
+            cancelled = true;
+        };
     }, [slug, syncHtml, isDraftBlocked]);
 
     if (!page) {
         return (
             <div className="max-w-[800px] mx-auto py-16 px-4 text-center space-y-4">
-                <h1 className="text-4xl font-bold tracking-tight">
-                    Concept not found
-                </h1>
-                <p className="text-fg-muted">
-                    The concept page you're looking for doesn't exist.
-                </p>
-                <Link
-                    to="/atlas"
-                    className="inline-block text-signal underline hover:text-signal/80"
-                >
+                <h1 className="text-4xl font-bold tracking-tight">Concept not found</h1>
+                <p className="text-fg-muted">The concept page you're looking for doesn't exist.</p>
+                <Link to="/atlas" className="inline-block text-signal underline hover:text-signal/80">
                     Back to atlas
                 </Link>
             </div>
@@ -105,9 +102,7 @@ export default function ConceptPost() {
                 url={`/atlas/${slug}`}
             />
             <Helmet>
-                <script type="application/ld+json">
-                    {JSON.stringify(jsonLd)}
-                </script>
+                <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
             </Helmet>
             <div className="min-w-0">
                 <AtlasPageHeader
@@ -121,9 +116,7 @@ export default function ConceptPost() {
 
                 {html === null ? (
                     loadFailed ? (
-                        <div className="py-10 text-sm text-fg-muted">
-                            Concept content failed to load.
-                        </div>
+                        <div className="py-10 text-sm text-fg-muted">Concept content failed to load.</div>
                     ) : (
                         <LoadingIndicator />
                     )

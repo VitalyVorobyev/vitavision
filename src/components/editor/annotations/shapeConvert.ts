@@ -27,7 +27,13 @@ export function bboxToShape(bbox: BBoxGeometry): RotatedShape {
 /** The bbox geometry of an edited shape: the corner the rotation is about, the size, and degrees. */
 export function shapeToBbox(shape: RotatedShape): BBoxGeometry {
     const corner = shapeCorner(shape);
-    return { x: corner.x, y: corner.y, width: shape.width, height: shape.height, rotation: shape.rotation * RAD_TO_DEG };
+    return {
+        x: corner.x,
+        y: corner.y,
+        width: shape.width,
+        height: shape.height,
+        rotation: shape.rotation * RAD_TO_DEG,
+    };
 }
 
 /** The shape an ellipse draws as: its full axes `2·radius`, turned about its centre. */
@@ -72,5 +78,12 @@ export interface EllipseItem {
 
 /** The ellipse item of an ellipse feature (degrees to radians, about the centre). */
 export function ellipseItem(id: string, ellipse: EllipseGeometry): EllipseItem {
-    return { id, x: ellipse.x, y: ellipse.y, rx: ellipse.radiusX, ry: ellipse.radiusY, angle: ellipse.rotation * DEG_TO_RAD };
+    return {
+        id,
+        x: ellipse.x,
+        y: ellipse.y,
+        rx: ellipse.radiusX,
+        ry: ellipse.radiusY,
+        angle: ellipse.rotation * DEG_TO_RAD,
+    };
 }

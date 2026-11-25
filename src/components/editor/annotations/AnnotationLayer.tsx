@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { DraftShape, ShapeEditor, StageSurface, useStageHitTest, type StageDrag, type StagePress } from "@vitavision/stage2d";
+import {
+    DraftShape,
+    ShapeEditor,
+    StageSurface,
+    useStageHitTest,
+    type StageDrag,
+    type StagePress,
+} from "@vitavision/stage2d";
 
 import type { Feature, ToolType } from "../../../store/editor/useEditorStore";
 import type { DrawingController } from "../hooks/useDrawing";
@@ -79,9 +86,13 @@ export default function AnnotationLayer({
     const [edit, setEdit] = useState<{ id: string; shape: ReturnType<typeof bboxToShape> } | null>(null);
 
     const selected = selectedId === null ? null : (featureById.get(selectedId) ?? null);
-    const editable = tool === "SELECT" && selected !== null && isMovable(selected) && (selected.type === "bbox" || selected.type === "ellipse")
-        ? selected
-        : null;
+    const editable =
+        tool === "SELECT" &&
+        selected !== null &&
+        isMovable(selected) &&
+        (selected.type === "bbox" || selected.type === "ellipse")
+            ? selected
+            : null;
 
     const beginSelect = (press: Press): Gesture => {
         const hit = hitTest(press.point, press.radius);

@@ -9,11 +9,11 @@ import { domainLabels } from "../../algorithms/domainLabels.ts";
 import { EntryIcon } from "../EntryIcon.tsx";
 
 export interface NeighborCardProps {
-    pos:       PositionedNode;
+    pos: PositionedNode;
     isHovered: boolean;
-    isDimmed:  boolean;
-    onClick:   (slug: string) => void;
-    onHover:   (slug: string | null) => void;
+    isDimmed: boolean;
+    onClick: (slug: string) => void;
+    onHover: (slug: string | null) => void;
 }
 
 export function NeighborCard({ pos, isHovered, isDimmed, onClick, onHover }: NeighborCardProps) {
@@ -42,15 +42,13 @@ export function NeighborCard({ pos, isHovered, isDimmed, onClick, onHover }: Nei
             onMouseLeave={() => onHover(null)}
             onPointerDown={handlePointerDown}
             className={`absolute group rounded-control border bg-surface px-2.5 py-1.5 flex flex-col text-left transition-all overflow-hidden ${
-                isHovered
-                    ? "border-line-strong shadow-[0_6px_18px_-8px_rgba(15,23,42,0.22)]"
-                    : "border-line"
+                isHovered ? "border-line-strong shadow-[0_6px_18px_-8px_rgba(15,23,42,0.22)]" : "border-line"
             }`}
             style={{
-                left:    pos.x,
-                top:     pos.y,
-                width:   GG.nodeW,
-                height:  GG.nodeH,
+                left: pos.x,
+                top: pos.y,
+                width: GG.nodeW,
+                height: GG.nodeH,
                 opacity: isDimmed ? 0.4 : 1,
                 touchAction: "none",
             }}
@@ -61,9 +59,7 @@ export function NeighborCard({ pos, isHovered, isDimmed, onClick, onHover }: Nei
                 <span className="text-[11.5px] font-semibold text-fg truncate -tracking-[0.1px] flex-1 min-w-0">
                     {shortTitle(node.title)}
                 </span>
-                <span className="font-mono text-[9.5px] text-fg-muted tabular-nums shrink-0">
-                    {year ?? ""}
-                </span>
+                <span className="font-mono text-[9.5px] text-fg-muted tabular-nums shrink-0">{year ?? ""}</span>
             </div>
             <div className="flex items-center gap-1.5 mt-1 min-w-0">
                 {(() => {
@@ -71,9 +67,7 @@ export function NeighborCard({ pos, isHovered, isDimmed, onClick, onHover }: Nei
                     const nDomain = nfm?.domain as string | undefined;
                     const nDomainLabel = nDomain ? domainLabels[nDomain as keyof typeof domainLabels] : undefined;
                     return nDomainLabel ? (
-                        <span className="text-[9.5px] text-fg-muted truncate">
-                            {nDomainLabel}
-                        </span>
+                        <span className="text-[9.5px] text-fg-muted truncate">{nDomainLabel}</span>
                     ) : null;
                 })()}
                 <span className="ml-auto inline-flex items-center gap-1 shrink-0">

@@ -52,7 +52,9 @@ async function fetchEntry(entry: PaperEntry): Promise<boolean> {
         const ar5ivUrl = `https://ar5iv.labs.arxiv.org/html/${entry.arxiv}`;
         const result = await spawnAndWait(["curl", "-fLsS", "-o", htmlPath, ar5ivUrl]);
         if (!result.ok) {
-            console.log(`[warn] ${entry.id}: ar5iv html fetch failed (non-fatal)${result.stderr ? ": " + result.stderr : ""}`);
+            console.log(
+                `[warn] ${entry.id}: ar5iv html fetch failed (non-fatal)${result.stderr ? ": " + result.stderr : ""}`,
+            );
         }
     }
 
@@ -82,7 +84,8 @@ async function main(): Promise<void> {
 
     for (const entry of targets) {
         const success = await fetchEntry(entry);
-        if (success) ok++; else fail++;
+        if (success) ok++;
+        else fail++;
     }
 
     const total = ok + fail;

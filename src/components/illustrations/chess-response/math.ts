@@ -1,8 +1,4 @@
-import {
-    createGrid,
-    createLocalMeanSamples,
-    createRingSamples,
-} from "./patterns";
+import { createGrid, createLocalMeanSamples, createRingSamples } from "./patterns";
 import type {
     ChessResponseComputation,
     ChessResponseControls,
@@ -20,9 +16,7 @@ function oppositeSample(samples: ChessResponsePoint[], index: number): ChessResp
     return samples[(index + 8) % samples.length]!;
 }
 
-export function computeChessResponse(
-    controls: ChessResponseControls,
-): ChessResponseComputation {
+export function computeChessResponse(controls: ChessResponseControls): ChessResponseComputation {
     const grid = createGrid(controls);
     const samples = createRingSamples(controls);
     const localMeanSamples = createLocalMeanSamples(controls);
@@ -77,9 +71,7 @@ export function computeChessResponse(
     };
 }
 
-export function describePatternResponse(
-    controls: ChessResponseControls,
-): string {
+export function describePatternResponse(controls: ChessResponseControls): string {
     switch (controls.pattern) {
         case "corner":
             return "Corner samples form the expected two-cycle structure, so SR stays dominant while DR and MR remain comparatively small.";

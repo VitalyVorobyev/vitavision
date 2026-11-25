@@ -9,9 +9,7 @@ import { bareAuthorId, bareOrcid, userAgent, withAuth } from "./lib/openalex.ts"
 
 const INDEX_PATH = PAPERS_INDEX_PATH;
 
-const SKIP_WORDS = new Set([
-    "the", "a", "an", "on", "of", "for", "in", "to", "by", "and", "with", "from",
-]);
+const SKIP_WORDS = new Set(["the", "a", "an", "on", "of", "for", "in", "to", "by", "and", "with", "from"]);
 
 const OPENALEX_BASE = "https://api.openalex.org";
 
@@ -84,7 +82,10 @@ function firstContentWord(title: string): string {
         .split(/\s+/)
         .filter((w) => w.length > 0);
     const word = words.find((w) => !SKIP_WORDS.has(w)) ?? words[0] ?? "unknown";
-    return word.replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+    return word
+        .replace(/[^a-z0-9]/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
 }
 
 function toAsciiSlug(s: string): string {
@@ -114,10 +115,7 @@ function lastNameSlug(name: string): string {
 }
 
 function buildCandidateId(authorships: OAAuthorship[], year: number, title: string): string {
-    const firstLast =
-        authorships.length > 0
-            ? lastNameSlug(authorships[0].author.display_name)
-            : "unknown";
+    const firstLast = authorships.length > 0 ? lastNameSlug(authorships[0].author.display_name) : "unknown";
     const keyword = firstContentWord(title);
     return `${firstLast}${year}-${keyword}`;
 }
@@ -274,7 +272,7 @@ async function main(): Promise<void> {
         if (kind === "arxiv") {
             process.stderr.write(
                 `papers:fetch-meta — could not retrieve arXiv:${value} via OpenAlex DOI lookup. ` +
-                "Try providing a DOI directly (doi:<doi>).\n"
+                    "Try providing a DOI directly (doi:<doi>).\n",
             );
         }
         throw err;
@@ -348,14 +346,13 @@ async function main(): Promise<void> {
         const suggestions = newAuthors.map((a) => {
             const id = bareAuthorId(a.author.id!);
             const name = a.author.display_name.replace(/"/g, '\\"');
-            const orcidLine = a.author.orcid
-                ? `\n  orcid: "${bareOrcid(a.author.orcid)}"`
-                : "";
+            const orcidLine = a.author.orcid ? `\n  orcid: "${bareOrcid(a.author.orcid)}"` : "";
             return `- id: ${id}\n  name: "${name}"${orcidLine}`;
         });
         process.stdout.write(
             "\n# New authors not yet in docs/papers/authors.yaml — suggested stanzas:\n" +
-            suggestions.join("\n") + "\n"
+                suggestions.join("\n") +
+                "\n",
         );
     }
 }

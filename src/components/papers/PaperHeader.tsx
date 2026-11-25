@@ -21,10 +21,7 @@ export default function PaperHeader({ paper, authorsIndex, primarySlug }: PaperH
 
     return (
         <header className="flex flex-col gap-4">
-            <nav
-                aria-label="Breadcrumb"
-                className="flex items-center gap-2 font-mono text-[12px] text-fg-muted"
-            >
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono text-[12px] text-fg-muted">
                 <Link to="/atlas" className="hover:text-fg transition-colors">
                     Atlas
                 </Link>

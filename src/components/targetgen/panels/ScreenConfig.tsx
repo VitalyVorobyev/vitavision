@@ -23,8 +23,8 @@ export function MediumSwitch({ medium, dispatch }: MediumProps) {
                     as="group"
                     annotation={
                         <InfoHint label="About medium">
-                            Print makes a vector page (SVG, PNG, DXF) at a physical size. Screen makes an
-                            anti-aliased, pixel-native PNG to show 1:1 on a monitor.
+                            Print makes a vector page (SVG, PNG, DXF) at a physical size. Screen makes an anti-aliased,
+                            pixel-native PNG to show 1:1 on a monitor.
                         </InfoHint>
                     }
                 >
@@ -58,9 +58,8 @@ export default function ScreenConfig({ screen, dispatch }: ScreenProps) {
                     as="group"
                     annotation={
                         <InfoHint label="About width">
-                            Native horizontal resolution of the display in pixels. Prefilled from this browser
-                            (screen width × device pixel ratio); correct it if you will show the target on
-                            another display.
+                            Native horizontal resolution of the display in pixels. Prefilled from this browser (screen
+                            width × device pixel ratio); correct it if you will show the target on another display.
                         </InfoHint>
                     }
                 >
@@ -75,7 +74,9 @@ export default function ScreenConfig({ screen, dispatch }: ScreenProps) {
                 <Field
                     label="Height"
                     as="group"
-                    annotation={<InfoHint label="About height">Native vertical resolution of the display in pixels.</InfoHint>}
+                    annotation={
+                        <InfoHint label="About height">Native vertical resolution of the display in pixels.</InfoHint>
+                    }
                 >
                     <NumberInput
                         unit="px"
@@ -90,16 +91,18 @@ export default function ScreenConfig({ screen, dispatch }: ScreenProps) {
                     as="group"
                     annotation={
                         <InfoHint label="About pixel pitch">
-                            Physical distance between pixel centres: the panel&rsquo;s active width in mm divided by
-                            its horizontal pixel count. It is on the display&rsquo;s spec sheet; the browser cannot
-                            know it, so 0.25 mm is only a placeholder. A wrong pitch scales every metric size.
+                            Physical distance between pixel centres: the panel&rsquo;s active width in mm divided by its
+                            horizontal pixel count. It is on the display&rsquo;s spec sheet; the browser cannot know it,
+                            so 0.25 mm is only a placeholder. A wrong pitch scales every metric size.
                         </InfoHint>
                     }
                 >
                     <NumberInput
                         unit="mm"
                         aria-label="Pixel pitch"
-                        {...numberInputProps(screen.pixelPitchMm, (v) => update({ pixelPitchMm: v ?? screen.pixelPitchMm }))}
+                        {...numberInputProps(screen.pixelPitchMm, (v) =>
+                            update({ pixelPitchMm: v ?? screen.pixelPitchMm }),
+                        )}
                         min={0.01}
                         step={0.001}
                     />
@@ -109,8 +112,8 @@ export default function ScreenConfig({ screen, dispatch }: ScreenProps) {
                     as="group"
                     annotation={
                         <InfoHint label="About margin">
-                            Minimum white border around the board, in pixels. Leave blank for the library default
-                            (1 px for chessboards, ChArUco and PuzzleBoard; ring grids pick their own).
+                            Minimum white border around the board, in pixels. Leave blank for the library default (1 px
+                            for chessboards, ChArUco and PuzzleBoard; ring grids pick their own).
                         </InfoHint>
                     }
                 >
@@ -124,8 +127,8 @@ export default function ScreenConfig({ screen, dispatch }: ScreenProps) {
                     />
                 </Field>
                 <Callout tone="info" className="text-xs">
-                    Show the PNG at 100 % (one image pixel per screen pixel) on this display. Any scaling
-                    blurs the pattern and invalidates the sizes reported in the sidecar.
+                    Show the PNG at 100 % (one image pixel per screen pixel) on this display. Any scaling blurs the
+                    pattern and invalidates the sizes reported in the sidecar.
                 </Callout>
             </div>
         </Section>

@@ -2,7 +2,13 @@ import EntryCard from "./EntryCard.tsx";
 import { catalogGridClass } from "./catalogGridClass.ts";
 import type { UnifiedEntry } from "../../lib/atlas/unifiedGroups.ts";
 
-export default function RecentlyAddedSection({ entries, layout }: { entries: UnifiedEntry[]; layout: "grid" | "list" }) {
+export default function RecentlyAddedSection({
+    entries,
+    layout,
+}: {
+    entries: UnifiedEntry[];
+    layout: "grid" | "list";
+}) {
     const gridClass = catalogGridClass(layout);
     return (
         <section className="mb-6 pb-5 border-b border-line/40">

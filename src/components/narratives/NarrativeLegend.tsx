@@ -16,7 +16,12 @@ interface NarrativeLegendProps {
     hasQuestionNodes?: boolean;
 }
 
-export default function NarrativeLegend({ edgeTypes, areas, variant = "overlay", hasQuestionNodes = false }: NarrativeLegendProps) {
+export default function NarrativeLegend({
+    edgeTypes,
+    areas,
+    variant = "overlay",
+    hasQuestionNodes = false,
+}: NarrativeLegendProps) {
     if (edgeTypes.length === 0 && areas.length === 0 && !hasQuestionNodes) return null;
 
     const areaIds = areas.map((a) => a.id);
@@ -42,7 +47,10 @@ export default function NarrativeLegend({ edgeTypes, areas, variant = "overlay",
                         <span key={t} className="inline-flex items-center gap-1.5">
                             <svg width="18" height="6" aria-hidden="true" className="shrink-0">
                                 <line
-                                    x1="0" y1="3" x2="18" y2="3"
+                                    x1="0"
+                                    y1="3"
+                                    x2="18"
+                                    y2="3"
                                     stroke={narrativeEdgeColor(t)}
                                     strokeWidth="1.6"
                                     strokeDasharray={NARRATIVE_EDGE_DASH[t]}

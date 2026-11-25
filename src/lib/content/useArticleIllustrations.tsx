@@ -28,10 +28,7 @@ function parseNumber(value: string | undefined, fallback: number): number {
     return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-export function useArticleIllustrations(
-    ref: RefObject<HTMLElement | null>,
-    deps: unknown[],
-): void {
+export function useArticleIllustrations(ref: RefObject<HTMLElement | null>, deps: unknown[]): void {
     useEffect(() => {
         const element = ref.current;
         if (!element) return;
@@ -73,9 +70,9 @@ export function useArticleIllustrations(
                             <DelaunayVoronoiInlineIllustration
                                 showLegend={parseBoolean(host.dataset.vvLegend, false)}
                                 initialLayers={{
-                                    grid:          parseBoolean(host.dataset.vvGrid, true),
-                                    delaunay:      parseBoolean(host.dataset.vvDelaunay, true),
-                                    voronoi:       parseBoolean(host.dataset.vvVoronoi, false),
+                                    grid: parseBoolean(host.dataset.vvGrid, true),
+                                    delaunay: parseBoolean(host.dataset.vvDelaunay, true),
+                                    voronoi: parseBoolean(host.dataset.vvVoronoi, false),
                                     circumcircles: parseBoolean(host.dataset.vvCircumcircles, false),
                                 }}
                             />

@@ -26,9 +26,10 @@ export function isRecentlyAdded(dateStr: string, now: Date = new Date()): boolea
  * capped at RECENT_SECTION_MAX. Generic so it preserves the caller's entry shape
  * (including any discriminator like `kind`).
  */
-export function selectRecentlyAdded<
-    T extends { frontmatter: { date: string; title: string } },
->(entries: T[], now: Date = new Date()): T[] {
+export function selectRecentlyAdded<T extends { frontmatter: { date: string; title: string } }>(
+    entries: T[],
+    now: Date = new Date(),
+): T[] {
     return entries
         .filter((e) => isRecentlyAdded(e.frontmatter.date, now))
         .sort((a, b) => {

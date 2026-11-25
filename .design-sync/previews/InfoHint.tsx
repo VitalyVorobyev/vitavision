@@ -1,4 +1,4 @@
-import { InfoHint, Field, NumberInput } from 'vitcv';
+import { InfoHint, Field, NumberInput } from "vitcv";
 
 export const Default = () => <InfoHint>Squares are measured edge to edge on the printed sheet.</InfoHint>;
 
@@ -18,7 +18,9 @@ export const InFieldAnnotation = () => (
         <Field
             label="Quiet zone"
             as="group"
-            annotation={<InfoHint label="About the quiet zone">White margin the detector needs around the pattern.</InfoHint>}
+            annotation={
+                <InfoHint label="About the quiet zone">White margin the detector needs around the pattern.</InfoHint>
+            }
         >
             <NumberInput aria-label="Quiet zone" value="5" onChange={() => {}} unit="mm" />
         </Field>

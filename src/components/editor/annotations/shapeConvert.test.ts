@@ -73,11 +73,17 @@ describe("ellipse <-> shape", () => {
 
 describe("shapeRing", () => {
     it("lists the corners of an unrotated rectangle clockwise from the top-left", () => {
-        close(shapeRing(bboxToShape({ x: 10, y: 20, width: 40, height: 20, rotation: 0 })), [10, 20, 50, 20, 50, 40, 10, 40]);
+        close(
+            shapeRing(bboxToShape({ x: 10, y: 20, width: 40, height: 20, rotation: 0 })),
+            [10, 20, 50, 20, 50, 40, 10, 40],
+        );
     });
 
     it("follows the rotation about the corner", () => {
         // 90 degrees clockwise about (10, 20): the top-left stays, the top-right goes straight down.
-        close(shapeRing(bboxToShape({ x: 10, y: 20, width: 40, height: 20, rotation: 90 })), [10, 20, 10, 60, -10, 60, -10, 20]);
+        close(
+            shapeRing(bboxToShape({ x: 10, y: 20, width: 40, height: 20, rotation: 90 })),
+            [10, 20, 10, 60, -10, 60, -10, 20],
+        );
     });
 });

@@ -18,12 +18,7 @@ function Glyph({ domain }: { domain: Domain | undefined }) {
 
     if (domain === "features") {
         return (
-            <svg
-                viewBox="0 0 64 64"
-                fill="none"
-                className={className}
-                aria-hidden="true"
-            >
+            <svg viewBox="0 0 64 64" fill="none" className={className} aria-hidden="true">
                 <path d="M8 32 H56" stroke={stroke} strokeWidth="2.5" strokeLinecap="round" />
                 <path d="M32 8 V56" stroke={stroke} strokeWidth="2.5" strokeLinecap="round" />
                 <circle cx="32" cy="32" r="4" fill={stroke} />
@@ -33,11 +28,7 @@ function Glyph({ domain }: { domain: Domain | undefined }) {
 
     if (domain === "targets") {
         return (
-            <svg
-                viewBox="0 0 64 64"
-                className={className}
-                aria-hidden="true"
-            >
+            <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
                 {[0, 1, 2].map((r) =>
                     [0, 1, 2].map((c) => (
                         <rect
@@ -58,12 +49,7 @@ function Glyph({ domain }: { domain: Domain | undefined }) {
 
     if (domain === "geometry") {
         return (
-            <svg
-                viewBox="0 0 64 64"
-                fill="none"
-                className={className}
-                aria-hidden="true"
-            >
+            <svg viewBox="0 0 64 64" fill="none" className={className} aria-hidden="true">
                 <circle cx="32" cy="32" r="22" stroke={stroke} strokeWidth="1.5" />
                 <circle cx="32" cy="32" r="14" stroke={stroke} strokeWidth="1.5" />
                 <circle cx="32" cy="32" r="6" stroke={stroke} strokeWidth="1.5" />
@@ -74,7 +60,10 @@ function Glyph({ domain }: { domain: Domain | undefined }) {
 
     // calibration and all other domains
     return (
-        <span className="text-[clamp(1.5rem,60%,3rem)] font-serif italic text-fg-muted/40 select-none leading-none" aria-hidden="true">
+        <span
+            className="text-[clamp(1.5rem,60%,3rem)] font-serif italic text-fg-muted/40 select-none leading-none"
+            aria-hidden="true"
+        >
             ƒ
         </span>
     );

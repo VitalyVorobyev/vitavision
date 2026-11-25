@@ -1,4 +1,4 @@
-import { AIDisclosure } from 'vitcv';
+import { AIDisclosure } from "vitcv";
 
 export const Standalone = () => (
     <div style={{ width: 320 }}>

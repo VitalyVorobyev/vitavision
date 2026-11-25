@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { AlgorithmsSidebar } from 'vitcv';
+import { useState } from "react";
+import { AlgorithmsSidebar } from "vitcv";
 
 const FACETS = {
     kinds: { all: 52, algorithm: 33, model: 8, concept: 11 },

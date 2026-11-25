@@ -23,15 +23,9 @@ describe("BlogPost", () => {
             </HelmetProvider>,
         );
 
-        expect(
-            screen.getByRole("heading", { name: "Introducing Vitavision" }),
-        ).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Introducing Vitavision" })).toBeInTheDocument();
 
-        expect(
-            await screen.findByText(/Vitavision is a place for practical computer vision/i),
-        ).toBeInTheDocument();
-        expect(
-            screen.queryByText("Post content failed to load."),
-        ).not.toBeInTheDocument();
+        expect(await screen.findByText(/Vitavision is a place for practical computer vision/i)).toBeInTheDocument();
+        expect(screen.queryByText("Post content failed to load.")).not.toBeInTheDocument();
     });
 });

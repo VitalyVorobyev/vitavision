@@ -43,14 +43,7 @@ export default function RelationshipSidebar({
             {SECTION_ORDER.map((label) => {
                 const items = result.grouped.get(label) ?? [];
                 if (items.length === 0) return null;
-                return (
-                    <TypedRelationSection
-                        key={label}
-                        heading={label}
-                        items={items}
-                        defaultOpen={sectionsOpen}
-                    />
-                );
+                return <TypedRelationSection key={label} heading={label} items={items} defaultOpen={sectionsOpen} />;
             })}
             <SidebarSection
                 heading="Used by"

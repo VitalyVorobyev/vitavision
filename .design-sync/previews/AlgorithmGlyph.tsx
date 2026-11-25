@@ -1,4 +1,4 @@
-import { AlgorithmGlyph } from 'vitcv';
+import { AlgorithmGlyph } from "vitcv";
 
 const TILE = "w-16 h-16 rounded-panel border border-line overflow-hidden";
 

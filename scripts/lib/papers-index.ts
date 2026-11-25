@@ -186,9 +186,7 @@ export function sourceKeyMap(entries: RawIndexEntry[], errors: string[]): Map<st
 
         // Defensive rule: paper ids must not start with reserved prefixes.
         if (kind === "paper" && (id.startsWith("repo:") || id.startsWith("doc:"))) {
-            errors.push(
-                `[index.yaml] entry id "${id}" must not start with reserved prefix "repo:" or "doc:"`,
-            );
+            errors.push(`[index.yaml] entry id "${id}" must not start with reserved prefix "repo:" or "doc:"`);
             continue;
         }
 
@@ -197,18 +195,14 @@ export function sourceKeyMap(entries: RawIndexEntry[], errors: string[]): Map<st
             key = `paper:${id}`;
         } else if (kind === "repo") {
             if (!e.repo || !e.commit) {
-                errors.push(
-                    `[index.yaml] entry id "${id}" (kind: repo) must have "repo" and "commit" fields`,
-                );
+                errors.push(`[index.yaml] entry id "${id}" (kind: repo) must have "repo" and "commit" fields`);
                 continue;
             }
             key = `repo:${e.repo}@${e.commit}`;
         } else {
             // doc
             if (!e.path) {
-                errors.push(
-                    `[index.yaml] entry id "${id}" (kind: doc) must have a "path" field`,
-                );
+                errors.push(`[index.yaml] entry id "${id}" (kind: doc) must have a "path" field`);
                 continue;
             }
             key = `doc:${e.path}`;

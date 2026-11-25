@@ -3,7 +3,7 @@
 
 export interface LaneLabelProps {
     side: "W" | "E" | "N" | "S";
-    top:  number;
+    top: number;
     left: number;
 }
 
@@ -18,16 +18,16 @@ export function LaneLabel({ side, top, left }: LaneLabelProps) {
     return (
         <div
             style={{
-                position:      "absolute",
+                position: "absolute",
                 top,
                 left,
-                font:          "500 9.5px var(--font-mono)",
+                font: "500 9.5px var(--font-mono)",
                 letterSpacing: "0.18em",
                 textTransform: "uppercase" as const,
-                color:         "var(--fg-muted)",
-                whiteSpace:    "nowrap",
+                color: "var(--fg-muted)",
+                whiteSpace: "nowrap",
                 pointerEvents: "none",
-                transform:     side === "W" ? "rotate(-90deg)" : side === "E" ? "rotate(90deg)" : undefined,
+                transform: side === "W" ? "rotate(-90deg)" : side === "E" ? "rotate(90deg)" : undefined,
             }}
         >
             {text}

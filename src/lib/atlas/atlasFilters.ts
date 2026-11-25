@@ -1,8 +1,4 @@
-import type {
-    AlgorithmIndexEntry,
-    ModelIndexEntry,
-    ConceptIndexEntry,
-} from "../content/schema.ts";
+import type { AlgorithmIndexEntry, ModelIndexEntry, ConceptIndexEntry } from "../content/schema.ts";
 import { taskOrder } from "../content/taskLabels.ts";
 
 // ── Public types ────────────────────────────────────────────────────────────
@@ -36,7 +32,7 @@ export interface AlgorithmsFilters {
     query: string;
     view: AlgorithmsView;
     sort: AlgorithmsSort;
-    problem: string;      // "all" | Task slug
+    problem: string; // "all" | Task slug
     /** People-view-only: directory table vs. network graph. Ignored by every
      *  other view and dropped from the URL when `view` isn't "people". */
     mode: PeopleMode;
@@ -46,22 +42,22 @@ export interface AlgorithmsFilters {
 }
 
 export interface FacetCounts {
-    kinds:      Record<AlgorithmsKind, number>;
-    problems:   Record<string, number>;   // per-task faceted count
-    total:      number;                   // count after ALL filters
+    kinds: Record<AlgorithmsKind, number>;
+    problems: Record<string, number>; // per-task faceted count
+    total: number; // count after ALL filters
 }
 
 // ── Defaults ────────────────────────────────────────────────────────────────
 
 export const DEFAULTS: AlgorithmsFilters = {
-    kind:       "all",
-    tags:       [],
-    query:      "",
-    view:       "grid",
-    sort:       "recent",
-    problem:    "all",
-    mode:       "directory",
-    person:     undefined,
+    kind: "all",
+    tags: [],
+    query: "",
+    view: "grid",
+    sort: "recent",
+    problem: "all",
+    mode: "directory",
+    person: undefined,
 };
 
 // ── Pure filter helpers ──────────────────────────────────────────────────────
@@ -104,10 +100,7 @@ function matchesProblem(tasks: readonly string[] | undefined, problem: string): 
 }
 
 /** Sort a mutable copy of an array. */
-function applySort<T extends { frontmatter: { title: string; date: string } }>(
-    items: T[],
-    sort: AlgorithmsSort,
-): T[] {
+function applySort<T extends { frontmatter: { title: string; date: string } }>(items: T[], sort: AlgorithmsSort): T[] {
     return [...items].sort((a, b) => {
         if (sort === "az") {
             return a.frontmatter.title.localeCompare(b.frontmatter.title, undefined, { sensitivity: "base" });
@@ -195,10 +188,7 @@ function countWith<T extends FilterableEntry>(
     const { tags = [], query = "", searchMatchedSlugs = null } = partial;
     return items.filter((e) => {
         const fm = e.frontmatter;
-        return (
-            matchesTags(fm.tags, tags) &&
-            matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
-        );
+        return matchesTags(fm.tags, tags) && matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs);
     }).length;
 }
 
@@ -211,10 +201,7 @@ function addProblemCounts<T extends FilterableEntry>(
 ): void {
     const candidateItems = items.filter((e) => {
         const fm = e.frontmatter;
-        return (
-            matchesTags(fm.tags, tags) &&
-            matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs)
-        );
+        return matchesTags(fm.tags, tags) && matchesSearch(e.slug, fm.title, fm.summary, query, searchMatchedSlugs);
     });
     for (const task of taskOrder) {
         const n = candidateItems.filter((e) => e.frontmatter.tasks?.includes(task)).length;
@@ -241,9 +228,9 @@ export function computeFacets(
 
     // ── Kind counts (apply tags + query only) ────────────────────────────────
     const kindsAlgorithm = countWith(algorithms, sqParams);
-    const kindsModel     = countWith(models, sqParams);
-    const kindsConcept   = countWith(concepts, sqParams);
-    const kindsAll       = kindsAlgorithm + kindsModel + kindsConcept;
+    const kindsModel = countWith(models, sqParams);
+    const kindsConcept = countWith(concepts, sqParams);
+    const kindsAll = kindsAlgorithm + kindsModel + kindsConcept;
 
     // ── Problem counts ───────────────────────────────────────────────────────
     // Counts reflect kind/tag/search filters but ignore the active problem.
@@ -262,10 +249,10 @@ export function computeFacets(
         kind === "all"
             ? kindsAll
             : kind === "algorithm"
-                ? kindsAlgorithm
-                : kind === "model"
-                    ? kindsModel
-                    : kindsConcept;
+              ? kindsAlgorithm
+              : kind === "model"
+                ? kindsModel
+                : kindsConcept;
 
     return {
         kinds: { all: kindsAll, algorithm: kindsAlgorithm, model: kindsModel, concept: kindsConcept },
@@ -280,10 +267,13 @@ export function parseFiltersFromParams(params: URLSearchParams): AlgorithmsFilte
     const rawKind = params.get("kind");
     // Backwards-compat: "classical" → "algorithm", "models" (plural) → "model"
     const kind: AlgorithmsKind =
-        rawKind === "model" || rawKind === "models" ? "model" :
-        rawKind === "concept" ? "concept" :
-        rawKind === "algorithm" || rawKind === "classical" ? "algorithm" :
-        "all";
+        rawKind === "model" || rawKind === "models"
+            ? "model"
+            : rawKind === "concept"
+              ? "concept"
+              : rawKind === "algorithm" || rawKind === "classical"
+                ? "algorithm"
+                : "all";
     const tagsRaw = params.get("tags");
     const tags = tagsRaw ? tagsRaw.split(",").filter(Boolean) : [];
     const query = params.get("q") ?? "";
@@ -297,9 +287,7 @@ export function parseFiltersFromParams(params: URLSearchParams): AlgorithmsFilte
     // would otherwise blank the whole catalog (matchesProblem excludes all).
     const rawProblem = params.get("problem");
     const problem =
-        rawProblem !== null && (taskOrder as readonly string[]).includes(rawProblem)
-            ? rawProblem
-            : DEFAULTS.problem;
+        rawProblem !== null && (taskOrder as readonly string[]).includes(rawProblem) ? rawProblem : DEFAULTS.problem;
     // `mode`/`person` are People-view-only, but harmless to parse regardless
     // of `view` — buildParams is what enforces "dropped when not People".
     const rawMode = params.get("mode");
@@ -351,17 +339,17 @@ const FILTER_PARAM_KEYS = ["kind", "tags", "q", "view", "sort", "problem", "mode
 export function buildParams(filters: AlgorithmsFilters, current?: URLSearchParams): URLSearchParams {
     const p = new URLSearchParams(current);
     for (const key of FILTER_PARAM_KEYS) p.delete(key);
-    if (filters.kind    !== DEFAULTS.kind)       p.set("kind",  filters.kind);
-    if (filters.tags.length > 0)                 p.set("tags", filters.tags.join(","));
-    if (filters.query   !== DEFAULTS.query)      p.set("q",    filters.query);
-    if (filters.view    !== DEFAULTS.view)        p.set("view", filters.view);
-    if (filters.sort    !== DEFAULTS.sort)        p.set("sort", filters.sort);
-    if (filters.problem !== DEFAULTS.problem)    p.set("problem", filters.problem);
+    if (filters.kind !== DEFAULTS.kind) p.set("kind", filters.kind);
+    if (filters.tags.length > 0) p.set("tags", filters.tags.join(","));
+    if (filters.query !== DEFAULTS.query) p.set("q", filters.query);
+    if (filters.view !== DEFAULTS.view) p.set("view", filters.view);
+    if (filters.sort !== DEFAULTS.sort) p.set("sort", filters.sort);
+    if (filters.problem !== DEFAULTS.problem) p.set("problem", filters.problem);
     // `mode`/`person` are People-only — always dropped when leaving that view,
     // regardless of what the caller passed in `filters`.
     if (filters.view === "people") {
-        if (filters.mode   !== DEFAULTS.mode) p.set("mode", filters.mode);
-        if (filters.person)                   p.set("person", filters.person);
+        if (filters.mode !== DEFAULTS.mode) p.set("mode", filters.mode);
+        if (filters.person) p.set("person", filters.person);
     }
     return p;
 }

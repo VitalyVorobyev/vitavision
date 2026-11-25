@@ -48,11 +48,7 @@ export default function PaperAtlasImpact({ primaryPages, citingPages, pages, isD
         <section className="flex flex-col gap-3.5">
             <h2 className={labelSectionClass()}>In the Atlas</h2>
 
-            {isEmpty && (
-                <p className="m-0 text-[13.5px] text-fg-muted">
-                    No Atlas page is built on this paper yet.
-                </p>
-            )}
+            {isEmpty && <p className="m-0 text-[13.5px] text-fg-muted">No Atlas page is built on this paper yet.</p>}
 
             {primaryPages.map((slug) => {
                 const node = contentGraph.nodes[slug];
@@ -74,9 +70,7 @@ export default function PaperAtlasImpact({ primaryPages, citingPages, pages, isD
                             <ArrowRight size={14} className="shrink-0 text-signal" aria-hidden="true" />
                         </div>
                         {node.summary && (
-                            <p className="m-0 text-[14px] leading-[1.5] text-fg/85">
-                                {firstSentence(node.summary)}
-                            </p>
+                            <p className="m-0 text-[14px] leading-[1.5] text-fg/85">{firstSentence(node.summary)}</p>
                         )}
                     </Link>
                 );

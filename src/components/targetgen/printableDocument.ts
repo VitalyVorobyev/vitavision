@@ -314,7 +314,7 @@ export function toPrintableDocument(target: TargetConfig, page: PageConfig): Pri
         case "ringgrid":
             throw new Error(
                 "toPrintableDocument: ring grid is not a printable kind in @vitavision/calib-targets " +
-                "— it renders via @vitavision/ringgrid's own renderer instead (see ringgridTarget.ts).",
+                    "— it renders via @vitavision/ringgrid's own renderer instead (see ringgridTarget.ts).",
             );
         default: {
             const exhaustive: never = target;

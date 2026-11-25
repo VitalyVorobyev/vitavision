@@ -9,16 +9,17 @@ interface Props {
 }
 
 export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
-    const update = (partial: Partial<MarkerBoardConfig>) =>
-        dispatch({ type: "UPDATE_CONFIG", partial });
+    const update = (partial: Partial<MarkerBoardConfig>) => dispatch({ type: "UPDATE_CONFIG", partial });
 
     const totalRows = config.innerRows + 1;
     const totalCols = config.innerCols + 1;
 
     const updateCircleCell = (idx: number, field: "i" | "j", value: number) => {
-        const next = config.circles.map((c, n) =>
-            n === idx ? { cell: { ...c.cell, [field]: value } } : c,
-        ) as [CircleSpec, CircleSpec, CircleSpec];
+        const next = config.circles.map((c, n) => (n === idx ? { cell: { ...c.cell, [field]: value } } : c)) as [
+            CircleSpec,
+            CircleSpec,
+            CircleSpec,
+        ];
         update({ circles: next });
     };
 
@@ -27,8 +28,7 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
     };
 
     /** Polarity label for display: derived from square color. */
-    const polarityLabel = (c: CircleSpec) =>
-        (c.cell.i + c.cell.j) % 2 === 0 ? "white" : "black";
+    const polarityLabel = (c: CircleSpec) => ((c.cell.i + c.cell.j) % 2 === 0 ? "white" : "black");
 
     return (
         <>
@@ -63,7 +63,9 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
                     <Field
                         label="Square size"
                         as="group"
-                        annotation={<InfoHint label="About square size">Physical size of each square in millimeters</InfoHint>}
+                        annotation={
+                            <InfoHint label="About square size">Physical size of each square in millimeters</InfoHint>
+                        }
                     >
                         <NumberInput
                             unit="mm"
@@ -77,11 +79,15 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
                     <Field
                         label="Circle diameter"
                         as="group"
-                        annotation={<InfoHint label="About circle diameter">Circle diameter relative to square size</InfoHint>}
+                        annotation={
+                            <InfoHint label="About circle diameter">Circle diameter relative to square size</InfoHint>
+                        }
                     >
                         <NumberInput
                             aria-label="Circle diameter"
-                            {...numberInputProps(config.circleDiameterRel, (v) => update({ circleDiameterRel: v ?? 0.5 }))}
+                            {...numberInputProps(config.circleDiameterRel, (v) =>
+                                update({ circleDiameterRel: v ?? 0.5 }),
+                            )}
                             min={0.1}
                             max={0.99}
                             step={0.05}
@@ -94,7 +100,8 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
                 <div className={fieldGridClass()}>
                     <div className="col-span-full space-y-2">
                         <p className="text-[10px] text-fg-muted">
-                            Click a square on the preview to move the nearest circle there. Polarity is automatic (contrasts with square color).
+                            Click a square on the preview to move the nearest circle there. Polarity is automatic
+                            (contrasts with square color).
                         </p>
                         {config.circles.map((circ, idx) => (
                             // oxlint-disable-next-line react/no-array-index-key -- rows are edited in place by index; a value-derived key would remount the inputs and drop focus while typing

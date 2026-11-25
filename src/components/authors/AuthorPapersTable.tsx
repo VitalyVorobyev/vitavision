@@ -10,10 +10,7 @@ const noPageTagClass =
 function PageTag({ row }: { row: AuthorPaperRow }) {
     if (row.primaryTags.length === 0) {
         return (
-            <span
-                className={noPageTagClass}
-                style={{ color: "var(--fg-muted)", borderColor: "var(--line-strong)" }}
-            >
+            <span className={noPageTagClass} style={{ color: "var(--fg-muted)", borderColor: "var(--line-strong)" }}>
                 No page yet
             </span>
         );

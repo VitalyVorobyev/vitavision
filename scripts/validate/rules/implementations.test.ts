@@ -44,7 +44,8 @@ describe("implementationsRule", () => {
         expect(implementationsRule(ctx)).toEqual([
             {
                 level: "error",
-                message: "[m.md] model page is not draft but has no implementations[] entry (and noPublicImpl is not set)",
+                message:
+                    "[m.md] model page is not draft but has no implementations[] entry (and noPublicImpl is not set)",
             },
         ]);
     });

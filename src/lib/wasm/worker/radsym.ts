@@ -2,12 +2,7 @@ import { generateId } from "./util";
 import { getRadsymModule } from "./modules";
 
 /** Adapt extract_proposals output (stride 3: x, y, score) to RadsymResult. */
-export function adaptRadsymProposalResult(
-    raw: Float32Array,
-    width: number,
-    height: number,
-    runtimeMs: number,
-) {
+export function adaptRadsymProposalResult(raw: Float32Array, width: number, height: number, runtimeMs: number) {
     const stride = 3;
     const circles = [];
 
@@ -67,12 +62,7 @@ async function createProcessor(request: RadsymRequest) {
     return mod.RadSymProcessor.with_config_json(JSON.stringify(request.config ?? {}));
 }
 
-export async function handleRadsym(
-    pixels: Uint8Array,
-    width: number,
-    height: number,
-    config: Record<string, unknown>,
-) {
+export async function handleRadsym(pixels: Uint8Array, width: number, height: number, config: Record<string, unknown>) {
     const request = config as RadsymRequest;
     const processor = await createProcessor(request);
     try {

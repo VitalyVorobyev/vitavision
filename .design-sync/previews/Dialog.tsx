@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Dialog, Button, Field, NumberInput } from 'vitcv';
+import { useState } from "react";
+import { Dialog, Button, Field, NumberInput } from "vitcv";
 
 // Dialog is a modal portalled to <body> with a dimmed backdrop, and it is controlled, so a
 // card can show the open state directly. There is deliberately one story: a second open
@@ -8,7 +8,9 @@ export const Open = () => {
     const [open, setOpen] = useState(true);
     return (
         <>
-            <Button variant="secondary" onClick={() => setOpen(true)}>Export…</Button>
+            <Button variant="secondary" onClick={() => setOpen(true)}>
+                Export…
+            </Button>
             <Dialog
                 open={open}
                 onOpenChange={setOpen}
@@ -16,8 +18,12 @@ export const Open = () => {
                 description="Choose the raster resolution for the PNG. The SVG is always vector."
                 footer={
                     <>
-                        <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
-                        <Button variant="primary" onClick={() => setOpen(false)}>Export</Button>
+                        <Button variant="ghost" onClick={() => setOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button variant="primary" onClick={() => setOpen(false)}>
+                            Export
+                        </Button>
                     </>
                 }
             >

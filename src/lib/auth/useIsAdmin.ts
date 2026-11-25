@@ -1,7 +1,7 @@
-import { useUser } from '@clerk/clerk-react';
+import { useUser } from "@clerk/clerk-react";
 
 export function useIsAdmin(): boolean {
     const { user, isLoaded } = useUser();
     if (!isLoaded || !user) return false;
-    return user.publicMetadata?.role === 'admin';
+    return user.publicMetadata?.role === "admin";
 }

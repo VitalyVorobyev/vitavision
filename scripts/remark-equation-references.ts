@@ -49,11 +49,7 @@ function createAnchorId(label: string, usedIds: Set<string>): string {
     return candidate;
 }
 
-function annotateEquation(
-    node: MathNode,
-    number: number,
-    anchorId: string,
-): void {
+function annotateEquation(node: MathNode, number: number, anchorId: string): void {
     node.data ??= {};
 
     const currentProperties = (node.data.hProperties as Record<string, unknown> | undefined) ?? {};
@@ -89,10 +85,7 @@ function syncMathSource(node: MathNode): void {
     }
 }
 
-function rewriteEquationReferences(
-    value: string,
-    references: Map<string, EquationReference>,
-): Content[] | null {
+function rewriteEquationReferences(value: string, references: Map<string, EquationReference>): Content[] | null {
     const refPattern = /\\(eqref|ref)\{([^{}]+)\}/g;
     const nodes: Content[] = [];
     let lastIndex = 0;
@@ -117,9 +110,7 @@ function rewriteEquationReferences(
                 children: [
                     {
                         type: "text",
-                        value: command === "eqref"
-                            ? `(${reference.number})`
-                            : `${reference.number}`,
+                        value: command === "eqref" ? `(${reference.number})` : `${reference.number}`,
                     },
                 ],
             });
@@ -139,10 +130,7 @@ function rewriteEquationReferences(
     return nodes;
 }
 
-function replaceRefsInTree(
-    node: Root | Parent,
-    references: Map<string, EquationReference>,
-): void {
+function replaceRefsInTree(node: Root | Parent, references: Map<string, EquationReference>): void {
     for (let index = 0; index < node.children.length; index += 1) {
         const child = node.children[index];
         if (child === undefined) continue;

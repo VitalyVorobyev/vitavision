@@ -1,12 +1,7 @@
 import { mapTargetBundle, mergeConfig, type TargetBundle, type RinggridScreenBundle } from "./util";
 import { getRinggridModule } from "./modules";
 
-export function adaptRinggridResult(
-    jsonStr: string,
-    width: number,
-    height: number,
-    runtimeMs: number,
-) {
+export function adaptRinggridResult(jsonStr: string, width: number, height: number, runtimeMs: number) {
     const raw = JSON.parse(jsonStr) as Record<string, unknown>;
     const detectedMarkers = (raw.detected_markers as Array<Record<string, unknown>> | undefined) ?? [];
 
@@ -32,26 +27,32 @@ export function adaptRinggridResult(
                 b: ellipseOuter.b,
                 angle: ellipseOuter.angle,
             },
-            ellipse_inner: ellipseInner ? {
-                cx: ellipseInner.cx,
-                cy: ellipseInner.cy,
-                a: ellipseInner.a,
-                b: ellipseInner.b,
-                angle: ellipseInner.angle,
-            } : { cx: center[0], cy: center[1], a: 0, b: 0, angle: 0 },
-            decode: decode ? {
-                best_id: decode.best_id as number,
-                best_rotation: decode.best_rotation as number,
-                best_dist: decode.best_dist as number,
-                margin: decode.margin as number,
-                decode_confidence: decode.confidence as number,
-            } : null,
-            fit: fit ? {
-                rms_residual_outer: (fit.rms_residual_outer as number) ?? null,
-                rms_residual_inner: (fit.rms_residual_inner as number) ?? null,
-                ransac_inlier_ratio_outer: (fit.ransac_inlier_ratio_outer as number) ?? null,
-                ransac_inlier_ratio_inner: (fit.ransac_inlier_ratio_inner as number) ?? null,
-            } : null,
+            ellipse_inner: ellipseInner
+                ? {
+                      cx: ellipseInner.cx,
+                      cy: ellipseInner.cy,
+                      a: ellipseInner.a,
+                      b: ellipseInner.b,
+                      angle: ellipseInner.angle,
+                  }
+                : { cx: center[0], cy: center[1], a: 0, b: 0, angle: 0 },
+            decode: decode
+                ? {
+                      best_id: decode.best_id as number,
+                      best_rotation: decode.best_rotation as number,
+                      best_dist: decode.best_dist as number,
+                      margin: decode.margin as number,
+                      decode_confidence: decode.confidence as number,
+                  }
+                : null,
+            fit: fit
+                ? {
+                      rms_residual_outer: (fit.rms_residual_outer as number) ?? null,
+                      rms_residual_inner: (fit.rms_residual_inner as number) ?? null,
+                      ransac_inlier_ratio_outer: (fit.ransac_inlier_ratio_outer as number) ?? null,
+                      ransac_inlier_ratio_inner: (fit.ransac_inlier_ratio_inner as number) ?? null,
+                  }
+                : null,
             board_xy_mm: boardXy ? { x: boardXy[0], y: boardXy[1] } : null,
         };
     });
@@ -88,7 +89,9 @@ export async function handleRinggrid(
 ) {
     const mod = await getRinggridModule();
 
-    const board = (config.board as Record<string, unknown> | undefined) ?? (JSON.parse(mod.default_board_json()) as Record<string, unknown>);
+    const board =
+        (config.board as Record<string, unknown> | undefined) ??
+        (JSON.parse(mod.default_board_json()) as Record<string, unknown>);
     const boardJson = JSON.stringify(board);
     const defaults = JSON.parse(mod.default_config_json(boardJson)) as Record<string, unknown>;
     const detectConfig = mergeConfig(defaults, (config.config as Record<string, unknown> | undefined) ?? {});
@@ -151,7 +154,10 @@ export function renderRinggridScreenWith(
     return { png: bundle.png_bytes, json: bundle.json_text, metadata: bundle.metadata };
 }
 
-export async function handleRenderRinggridScreenTarget(targetJson: string, optionsJson: string): Promise<RinggridScreenBundle> {
+export async function handleRenderRinggridScreenTarget(
+    targetJson: string,
+    optionsJson: string,
+): Promise<RinggridScreenBundle> {
     const mod = await getRinggridModule();
     return renderRinggridScreenWith(mod, targetJson, optionsJson);
 }

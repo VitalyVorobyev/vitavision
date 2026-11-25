@@ -19,8 +19,7 @@ interface Props {
 }
 
 export default function PaperConfig({ page, dispatch }: Props) {
-    const update = (partial: Partial<PageConfig>) =>
-        dispatch({ type: "UPDATE_PAGE", partial });
+    const update = (partial: Partial<PageConfig>) => dispatch({ type: "UPDATE_PAGE", partial });
 
     return (
         <Section title="Page">
@@ -28,7 +27,11 @@ export default function PaperConfig({ page, dispatch }: Props) {
                 <Field
                     label="Size"
                     as="group"
-                    annotation={<InfoHint label="About size">Paper size for the printed target: A4 is 210 × 297 mm, Letter 8.5 × 11 in.</InfoHint>}
+                    annotation={
+                        <InfoHint label="About size">
+                            Paper size for the printed target: A4 is 210 × 297 mm, Letter 8.5 × 11 in.
+                        </InfoHint>
+                    }
                 >
                     <SegmentedControl
                         aria-label="Size"
@@ -70,7 +73,9 @@ export default function PaperConfig({ page, dispatch }: Props) {
                 <Field
                     label="Orientation"
                     as="group"
-                    annotation={<InfoHint label="About orientation">Portrait (tall) or landscape (wide) page layout</InfoHint>}
+                    annotation={
+                        <InfoHint label="About orientation">Portrait (tall) or landscape (wide) page layout</InfoHint>
+                    }
                 >
                     <SegmentedControl
                         aria-label="Orientation"

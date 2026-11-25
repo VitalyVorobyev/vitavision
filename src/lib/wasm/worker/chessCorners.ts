@@ -1,12 +1,7 @@
 import { generateId } from "./util";
 import { getChessModule } from "./modules";
 
-export function adaptChessCornersResult(
-    raw: Float32Array,
-    width: number,
-    height: number,
-    runtimeMs: number,
-) {
+export function adaptChessCornersResult(raw: Float32Array, width: number, height: number, runtimeMs: number) {
     // chess-corners 1.x narrowed the per-corner stride from 9 to 7: `contrast`
     // and `fit_rms` were removed along with the response-fit prefilter that
     // produced them. Nothing in the type-checker sees this — the detector
@@ -46,11 +41,16 @@ export function adaptChessCornersResult(
         corners.push({ x, y, response, axis0_angle, axis0_fit_std_error, axis1_angle, axis1_fit_std_error });
     }
 
-    type AxisOut = { angle_rad: number; angle_deg: number; fit_std_error_rad: number; direction: { dx: number; dy: number } };
+    type AxisOut = {
+        angle_rad: number;
+        angle_deg: number;
+        fit_std_error_rad: number;
+        direction: { dx: number; dy: number };
+    };
 
     const makeAxis = (angle: number, fitStdError: number): AxisOut => ({
         angle_rad: angle,
-        angle_deg: angle * 180 / Math.PI,
+        angle_deg: (angle * 180) / Math.PI,
         fit_std_error_rad: fitStdError,
         direction: { dx: Math.cos(angle), dy: Math.sin(angle) },
     });
@@ -68,7 +68,10 @@ export function adaptChessCornersResult(
             x_norm: c.x / width,
             y_norm: c.y / height,
             response: c.response,
-            axes: [makeAxis(c.axis0_angle, c.axis0_fit_std_error), makeAxis(c.axis1_angle, c.axis1_fit_std_error)] as [AxisOut, AxisOut],
+            axes: [makeAxis(c.axis0_angle, c.axis0_fit_std_error), makeAxis(c.axis1_angle, c.axis1_fit_std_error)] as [
+                AxisOut,
+                AxisOut,
+            ],
             confidence,
             confidence_level: confidenceLevel,
             _index: idx,

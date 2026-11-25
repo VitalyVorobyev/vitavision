@@ -53,7 +53,9 @@ export function buildNoteStatus(
         })
         .sort((a, b) =>
             a.version !== b.version
-                ? a.version === "v1" ? -1 : 1
+                ? a.version === "v1"
+                    ? -1
+                    : 1
                 : b.degree - a.degree || a.noteId.localeCompare(b.noteId),
         );
 }

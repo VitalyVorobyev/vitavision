@@ -31,70 +31,89 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("../modules", () => ({
-    getChessModule: () => Promise.resolve({
-        DetectorConfig: {
-            fromJson: (json: string) => {
-                mocks.chess.fromJson(json);
-                return { free: mocks.chess.cfgFree };
+    getChessModule: () =>
+        Promise.resolve({
+            DetectorConfig: {
+                fromJson: (json: string) => {
+                    mocks.chess.fromJson(json);
+                    return { free: mocks.chess.cfgFree };
+                },
             },
-        },
-        ChessDetector: {
-            withConfig: (cfg: unknown) => {
-                mocks.chess.withConfig(cfg);
-                return { detect_rgba: () => new Float32Array(0), free: mocks.chess.detectorFree };
+            ChessDetector: {
+                withConfig: (cfg: unknown) => {
+                    mocks.chess.withConfig(cfg);
+                    return { detect_rgba: () => new Float32Array(0), free: mocks.chess.detectorFree };
+                },
             },
-        },
-    }),
-    getRadsymModule: () => Promise.resolve({
-        RadSymProcessor: {
-            with_config_json: (json: string) => {
-                mocks.radsym.withConfigJson(json);
-                return {
-                    extract_proposals: (...args: unknown[]) => {
-                        mocks.radsym.extract(...args);
-                        return new Float32Array(0);
-                    },
-                    response_heatmap: (...args: unknown[]) => {
-                        mocks.radsym.heatmap(...args);
-                        return new Uint8Array(0);
-                    },
-                    free: mocks.radsym.free,
-                };
+        }),
+    getRadsymModule: () =>
+        Promise.resolve({
+            RadSymProcessor: {
+                with_config_json: (json: string) => {
+                    mocks.radsym.withConfigJson(json);
+                    return {
+                        extract_proposals: (...args: unknown[]) => {
+                            mocks.radsym.extract(...args);
+                            return new Float32Array(0);
+                        },
+                        response_heatmap: (...args: unknown[]) => {
+                            mocks.radsym.heatmap(...args);
+                            return new Uint8Array(0);
+                        },
+                        free: mocks.radsym.free,
+                    };
+                },
             },
-        },
-    }),
-    getRinggridModule: () => Promise.resolve({
-        default_board_json: () => JSON.stringify({ schema: "ringgrid.target.v6", lattice: { kind: "hex", rows: 15 } }),
-        default_config_json: (board: string) => JSON.stringify({ derived_from: (JSON.parse(board) as { lattice: unknown }).lattice, marker_scale: { diameter_min_px: 14, diameter_max_px: 66 } }),
-        RinggridDetector: {
-            with_config: (board: string, config: string) => {
-                mocks.ringgrid.withConfig(board, config);
-                return { detect_adaptive_rgba: () => JSON.stringify({ detected_markers: [] }), free: mocks.ringgrid.free };
+        }),
+    getRinggridModule: () =>
+        Promise.resolve({
+            default_board_json: () =>
+                JSON.stringify({ schema: "ringgrid.target.v6", lattice: { kind: "hex", rows: 15 } }),
+            default_config_json: (board: string) =>
+                JSON.stringify({
+                    derived_from: (JSON.parse(board) as { lattice: unknown }).lattice,
+                    marker_scale: { diameter_min_px: 14, diameter_max_px: 66 },
+                }),
+            RinggridDetector: {
+                with_config: (board: string, config: string) => {
+                    mocks.ringgrid.withConfig(board, config);
+                    return {
+                        detect_adaptive_rgba: () => JSON.stringify({ detected_markers: [] }),
+                        free: mocks.ringgrid.free,
+                    };
+                },
             },
-        },
-    }),
-    getCalibModule: () => Promise.resolve({
-        rgba_to_gray: () => new Uint8Array(1),
-        default_chess_config: () => ({ threshold: 15, refiner: null, strategy: { chess: { ring: "canonical", center_of_mass: { radius: 2 } } } }),
-        default_chessboard_params: () => ({ min_labeled_corners: 8, max_components: 3, min_corner_strength: 33 }),
-        default_marker_board_params: () => ({ board: { rows: 6, cols: 8, circles: [] }, circle_score: { patch_size: 64 } }),
-        default_charuco_params: (...args: unknown[]) => {
-            mocks.calib.defaultCharucoParams(...args);
-            return { px_per_square: 60, inset_frac: 0.06, board: {} };
-        },
-        detect_chessboard: (...args: unknown[]) => {
-            mocks.calib.detectChessboard(...args);
-            return null;
-        },
-        detect_charuco: (...args: unknown[]) => {
-            mocks.calib.detectCharuco(...args);
-            return mocks.calib.charucoResult();
-        },
-        diagnose_marker_board: (...args: unknown[]) => {
-            mocks.calib.diagnoseMarkerBoard(...args);
-            return { result: null };
-        },
-    }),
+        }),
+    getCalibModule: () =>
+        Promise.resolve({
+            rgba_to_gray: () => new Uint8Array(1),
+            default_chess_config: () => ({
+                threshold: 15,
+                refiner: null,
+                strategy: { chess: { ring: "canonical", center_of_mass: { radius: 2 } } },
+            }),
+            default_chessboard_params: () => ({ min_labeled_corners: 8, max_components: 3, min_corner_strength: 33 }),
+            default_marker_board_params: () => ({
+                board: { rows: 6, cols: 8, circles: [] },
+                circle_score: { patch_size: 64 },
+            }),
+            default_charuco_params: (...args: unknown[]) => {
+                mocks.calib.defaultCharucoParams(...args);
+                return { px_per_square: 60, inset_frac: 0.06, board: {} };
+            },
+            detect_chessboard: (...args: unknown[]) => {
+                mocks.calib.detectChessboard(...args);
+                return null;
+            },
+            detect_charuco: (...args: unknown[]) => {
+                mocks.calib.detectCharuco(...args);
+                return mocks.calib.charucoResult();
+            },
+            diagnose_marker_board: (...args: unknown[]) => {
+                mocks.calib.diagnoseMarkerBoard(...args);
+                return { result: null };
+            },
+        }),
 }));
 
 const pixels = new Uint8Array(4);
@@ -103,7 +122,11 @@ beforeEach(() => vi.clearAllMocks());
 
 describe("handleChessCorners", () => {
     it("builds the detector config from the stored document and frees it afterwards", async () => {
-        const config = { threshold: 40, upscale: { fixed: 2 }, multiscale: { pyramid: { levels: 4, min_size: 128, refinement_radius: 3 } } };
+        const config = {
+            threshold: 40,
+            upscale: { fixed: 2 },
+            multiscale: { pyramid: { levels: 4, min_size: 128, refinement_radius: 3 } },
+        };
         await handleChessCorners(pixels, 1, 1, config);
         expect(JSON.parse(mocks.chess.fromJson.mock.calls[0]![0] as string)).toEqual(config);
         expect(mocks.chess.cfgFree).toHaveBeenCalledTimes(1);
@@ -171,15 +194,29 @@ describe("handleCalibTarget", () => {
         await handleCalibTarget("chessboard", pixels, 1, 1, config);
         const [, , , chess, params] = mocks.calib.detectChessboard.mock.calls[0] as unknown[];
         // `strategy` is `chess | radon`, `refiner` is `null | saddle_point`: each is replaced, never merged.
-        expect(chess).toEqual({ threshold: 20, refiner: { saddle_point: { radius: 3 } }, strategy: { radon: { ray_radius: 4 } } });
+        expect(chess).toEqual({
+            threshold: 20,
+            refiner: { saddle_point: { radius: 3 } },
+            strategy: { radon: { ray_radius: 4 } },
+        });
         expect(params).toEqual({ min_labeled_corners: 8, max_components: 3, min_corner_strength: 15 });
     });
 
     it("charuco: asks for the defaults of the configured board, and carries the front-end in the params", async () => {
-        const config = { board: { rows: 6, cols: 9, cell_size: 4.8, marker_size_rel: 0.7, dictionary: "DICT_5X5_250" }, px_per_square: 40, inset_frac: 0.1 };
+        const config = {
+            board: { rows: 6, cols: 9, cell_size: 4.8, marker_size_rel: 0.7, dictionary: "DICT_5X5_250" },
+            px_per_square: 40,
+            inset_frac: 0.1,
+        };
         await handleCalibTarget("charuco", pixels, 1, 1, config);
         expect(mocks.calib.defaultCharucoParams).toHaveBeenCalledWith(6, 9, 0.7, "DICT_5X5_250");
-        const [, , , chess, params] = mocks.calib.detectCharuco.mock.calls[0] as [unknown, unknown, unknown, unknown, Record<string, unknown>];
+        const [, , , chess, params] = mocks.calib.detectCharuco.mock.calls[0] as [
+            unknown,
+            unknown,
+            unknown,
+            unknown,
+            Record<string, unknown>,
+        ];
         expect(chess).toBeNull();
         expect(params.px_per_square).toBe(40);
         // The library defaults for this board underneath, the edit on top.
@@ -200,9 +237,18 @@ describe("handleCalibTarget", () => {
     });
 
     it("markerboard: merges over the library defaults and sends no separate front-end", async () => {
-        const config = { board: { rows: 22, cols: 22, circles: [{ cell: { i: 1, j: 2 }, polarity: "white" }] }, circle_score: { patch_size: 32 } };
+        const config = {
+            board: { rows: 22, cols: 22, circles: [{ cell: { i: 1, j: 2 }, polarity: "white" }] },
+            circle_score: { patch_size: 32 },
+        };
         await handleCalibTarget("markerboard", pixels, 1, 1, config);
-        const [, , , chess, params] = mocks.calib.diagnoseMarkerBoard.mock.calls[0] as [unknown, unknown, unknown, unknown, Record<string, unknown>];
+        const [, , , chess, params] = mocks.calib.diagnoseMarkerBoard.mock.calls[0] as [
+            unknown,
+            unknown,
+            unknown,
+            unknown,
+            Record<string, unknown>,
+        ];
         expect(chess).toBeNull();
         expect(params).toEqual(config);
     });

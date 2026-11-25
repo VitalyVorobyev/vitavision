@@ -1,8 +1,6 @@
-import { Eyebrow } from 'vitcv';
+import { Eyebrow } from "vitcv";
 
-export const Default = () => (
-    <Eyebrow>Camera calibration</Eyebrow>
-);
+export const Default = () => <Eyebrow>Camera calibration</Eyebrow>;
 
 export const AbovePanelHeading = () => (
     <div>

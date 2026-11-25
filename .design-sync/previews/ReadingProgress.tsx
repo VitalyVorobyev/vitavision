@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { ReadingProgress } from 'vitcv';
+import { useEffect, useRef } from "react";
+import { ReadingProgress } from "vitcv";
 
 // ReadingProgress computes its bar width from a real scroll event: it reads
 // articleRef.current.getBoundingClientRect() and window.scrollY, and only

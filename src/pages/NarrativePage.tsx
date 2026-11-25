@@ -35,7 +35,7 @@ export default function NarrativePage() {
 
     // Resolve the essay synchronously from the SSR/prerender snapshot when
     // available; the graph itself always arrives via the async loader.
-    const syncHtml = slug ? staticContent?.narrativeHtmlBySlug?.[slug] ?? null : null;
+    const syncHtml = slug ? (staticContent?.narrativeHtmlBySlug?.[slug] ?? null) : null;
 
     const [trackedSlug, setTrackedSlug] = useState(slug);
     const [mod, setMod] = useState<GeneratedNarrativeModule | null>(null);
@@ -54,12 +54,18 @@ export default function NarrativePage() {
         if (!loader) return;
         let cancelled = false;
         loader()
-            .then((m) => { if (!cancelled) setMod(m); })
-            .catch(() => { if (!cancelled) setLoadFailed(true); });
-        return () => { cancelled = true; };
+            .then((m) => {
+                if (!cancelled) setMod(m);
+            })
+            .catch(() => {
+                if (!cancelled) setLoadFailed(true);
+            });
+        return () => {
+            cancelled = true;
+        };
     }, [slug, isDraftBlocked]);
 
-    const html = isDraftBlocked ? null : mod?.html ?? syncHtml;
+    const html = isDraftBlocked ? null : (mod?.html ?? syncHtml);
 
     useMermaid(articleRef, [html]);
     useArticleIllustrations(articleRef, [html]);
@@ -86,9 +92,7 @@ export default function NarrativePage() {
         const firstLens = narrative?.lenses[0];
         if (!narrative || !firstLens) return "";
         const requested = searchParams.get("lens");
-        return narrative.lenses.some((l) => l.id === requested)
-            ? (requested as string)
-            : firstLens.id;
+        return narrative.lenses.some((l) => l.id === requested) ? (requested as string) : firstLens.id;
     }, [narrative, searchParams]);
 
     const stepIndex = useMemo(() => {
@@ -112,10 +116,7 @@ export default function NarrativePage() {
         [setParam],
     );
 
-    const setSelected = useCallback(
-        (id: string | null) => setParam({ node: id }),
-        [setParam],
-    );
+    const setSelected = useCallback((id: string | null) => setParam({ node: id }), [setParam]);
 
     // ← / → step through the walkthrough while it is active.
     useEffect(() => {
@@ -136,14 +137,11 @@ export default function NarrativePage() {
         return () => window.removeEventListener("keydown", onKey);
     }, [stepIndex, steps.length, setStep]);
 
-    const nodesById = useMemo(
-        () => new Map((narrative?.nodes ?? []).map((n) => [n.id, n])),
-        [narrative],
-    );
+    const nodesById = useMemo(() => new Map((narrative?.nodes ?? []).map((n) => [n.id, n])), [narrative]);
 
-    const focusIds = stepIndex === null ? null : steps[stepIndex]?.focus ?? null;
+    const focusIds = stepIndex === null ? null : (steps[stepIndex]?.focus ?? null);
     const firstStepFocusIds = steps[0]?.focus ?? null;
-    const selectedNode = selectedId ? nodesById.get(selectedId) ?? null : null;
+    const selectedNode = selectedId ? (nodesById.get(selectedId) ?? null) : null;
     const walkthrough = mod?.walkthrough ?? "focus";
     const revealedIds = useMemo(
         () => (stepIndex === null ? null : steps.slice(0, stepIndex + 1).flatMap((s) => s.focus)),
@@ -163,10 +161,7 @@ export default function NarrativePage() {
 
             {/* Header */}
             <header className="mb-6 space-y-3">
-                <Link
-                    to="/atlas?view=narratives"
-                    className="text-sm text-fg-muted transition-colors hover:text-fg"
-                >
+                <Link to="/atlas?view=narratives" className="text-sm text-fg-muted transition-colors hover:text-fg">
                     &larr; Back to narratives
                 </Link>
                 <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold leading-[1.2] tracking-[-0.03em]">
@@ -187,16 +182,14 @@ export default function NarrativePage() {
                     {entry.title}
                 </h1>
                 {entry.tagline && (
-                    <p className="m-0 max-w-[68ch] text-[15px] leading-relaxed text-fg-muted">
-                        {entry.tagline}
-                    </p>
+                    <p className="m-0 max-w-[68ch] text-[15px] leading-relaxed text-fg-muted">{entry.tagline}</p>
                 )}
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-fg-muted">
                     <time>{entry.date}</time>
                     <span aria-hidden="true">·</span>
                     <span>
-                        {entry.stats.nodes} stop{entry.stats.nodes === 1 ? "" : "s"} ·{" "}
-                        {entry.stats.steps} chapter{entry.stats.steps === 1 ? "" : "s"}
+                        {entry.stats.nodes} stop{entry.stats.nodes === 1 ? "" : "s"} · {entry.stats.steps} chapter
+                        {entry.stats.steps === 1 ? "" : "s"}
                     </span>
                 </div>
                 <div className="border-t border-line" />
@@ -206,9 +199,7 @@ export default function NarrativePage() {
             {narrative === null ? (
                 <div className="flex items-center justify-center rounded-xl border border-line py-20">
                     {loadFailed ? (
-                        <span className="text-[13px] text-fg-muted">
-                            The constellation failed to load.
-                        </span>
+                        <span className="text-[13px] text-fg-muted">The constellation failed to load.</span>
                     ) : (
                         <Spinner />
                     )}
@@ -221,9 +212,7 @@ export default function NarrativePage() {
                             activeId={lensId}
                             onChange={(id) => setParam({ lens: id })}
                         />
-                        <span className="text-[10.5px] text-fg-muted">
-                            drag to pan · wheel to zoom · click a node
-                        </span>
+                        <span className="text-[10.5px] text-fg-muted">drag to pan · wheel to zoom · click a node</span>
                     </div>
                     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
                         <div className="h-[min(70vh,640px)] min-h-[420px]">
@@ -259,20 +248,14 @@ export default function NarrativePage() {
                     </div>
                 </section>
             ) : (
-                <MobileNarrativeView
-                    narrative={narrative}
-                    steps={steps}
-                    chapters={mod?.chapters ?? {}}
-                />
+                <MobileNarrativeView narrative={narrative} steps={steps} chapters={mod?.chapters ?? {}} />
             )}
 
             {/* Full essay */}
             <div className="mt-10 border-t border-line pt-8">
                 {html === null ? (
                     loadFailed ? (
-                        <div className="py-10 text-sm text-fg-muted">
-                            Narrative content failed to load.
-                        </div>
+                        <div className="py-10 text-sm text-fg-muted">Narrative content failed to load.</div>
                     ) : (
                         <LoadingIndicator />
                     )

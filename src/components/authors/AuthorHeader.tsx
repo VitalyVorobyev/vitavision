@@ -29,9 +29,7 @@ export default function AuthorHeader({ id, name, orcid, summary }: AuthorHeaderP
             </nav>
 
             <div className="flex flex-wrap items-center gap-3">
-                <h1 className="m-0 text-[clamp(1.75rem,4.5vw,2.5rem)] font-bold tracking-[-0.4px] text-fg">
-                    {name}
-                </h1>
+                <h1 className="m-0 text-[clamp(1.75rem,4.5vw,2.5rem)] font-bold tracking-[-0.4px] text-fg">{name}</h1>
                 <div className="flex flex-wrap items-center gap-2">
                     {orcid && (
                         <a

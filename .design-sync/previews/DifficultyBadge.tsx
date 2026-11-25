@@ -1,4 +1,4 @@
-import { DifficultyBadge } from 'vitcv';
+import { DifficultyBadge } from "vitcv";
 
 export const Levels = () => (
     <div className="flex flex-wrap items-center gap-4">

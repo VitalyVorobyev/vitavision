@@ -20,23 +20,19 @@ describe("resolveAuthorIds", () => {
     it("skips display authors OpenAlex dropped instead of shifting the rest", () => {
         // MAGSAC: 3 display authors, only 2 ids — a positional zip would credit
         // "J. Noskova" to Matas.
-        expect(
-            resolveAuthorIds(["D. Barath", "J. Matas", "J. Noskova"], ["A1", "A2"], authorsById),
-        ).toEqual(["A1", "A2", undefined]);
+        expect(resolveAuthorIds(["D. Barath", "J. Matas", "J. Noskova"], ["A1", "A2"], authorsById)).toEqual([
+            "A1",
+            "A2",
+            undefined,
+        ]);
     });
 
     it("matches German transliterations across the two spellings", () => {
-        expect(resolveAuthorIds(["P. Fürsattel", "C. Riess"], ["A3", "A4"], authorsById)).toEqual([
-            "A3",
-            "A4",
-        ]);
+        expect(resolveAuthorIds(["P. Fürsattel", "C. Riess"], ["A3", "A4"], authorsById)).toEqual(["A3", "A4"]);
     });
 
     it("disambiguates a repeated surname by first initial and never reuses an id", () => {
-        expect(resolveAuthorIds(["Z. Zhang", "X. Zhang"], ["A6", "A7"], authorsById)).toEqual([
-            "A7",
-            "A6",
-        ]);
+        expect(resolveAuthorIds(["Z. Zhang", "X. Zhang"], ["A6", "A7"], authorsById)).toEqual(["A7", "A6"]);
     });
 
     it("returns all-undefined when the paper has no author ids", () => {

@@ -14,12 +14,8 @@ function formatNumber(value: number): string {
     return normalized.toFixed(4);
 }
 
-
 function colorGroups(color: number): string[] {
-    const groups = [
-        "8", "0",
-        "62", String(color),
-    ];
+    const groups = ["8", "0", "62", String(color)];
 
     if (color === DXF_BLACK_ACI) {
         groups.push("420", String(DXF_TRUE_BLACK));
@@ -30,23 +26,26 @@ function colorGroups(color: number): string[] {
     return groups;
 }
 
-export function dxfLine(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    color = DXF_BLACK_ACI,
-): string {
+export function dxfLine(x1: number, y1: number, x2: number, y2: number, color = DXF_BLACK_ACI): string {
     return [
-        "0", "LINE",
-        "100", "AcDbEntity",
+        "0",
+        "LINE",
+        "100",
+        "AcDbEntity",
         ...colorGroups(color),
-        "100", "AcDbLine",
-        "10", formatNumber(x1),
-        "20", formatNumber(y1),
-        "30", "0.0",
-        "11", formatNumber(x2),
-        "21", formatNumber(y2),
-        "31", "0.0",
+        "100",
+        "AcDbLine",
+        "10",
+        formatNumber(x1),
+        "20",
+        formatNumber(y1),
+        "30",
+        "0.0",
+        "11",
+        formatNumber(x2),
+        "21",
+        formatNumber(y2),
+        "31",
+        "0.0",
     ].join("\n");
 }

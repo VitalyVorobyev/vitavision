@@ -1,7 +1,7 @@
-import { useAuth, useUser } from '@clerk/clerk-react';
-import { Navigate, useLocation } from 'react-router';
-import type { ReactNode } from 'react';
-import NotFound from '../../pages/NotFound';
+import { useAuth, useUser } from "@clerk/clerk-react";
+import { Navigate, useLocation } from "react-router";
+import type { ReactNode } from "react";
+import NotFound from "../../pages/NotFound";
 
 export function RequireAdmin({ children }: { children: ReactNode }) {
     const { isLoaded: authLoaded, isSignedIn } = useAuth();
@@ -18,7 +18,7 @@ export function RequireAdmin({ children }: { children: ReactNode }) {
     if (!isSignedIn) {
         return <Navigate to="/sign-in" replace state={{ from: location }} />;
     }
-    if (user?.publicMetadata?.role !== 'admin') {
+    if (user?.publicMetadata?.role !== "admin") {
         return <NotFound />;
     }
     return <>{children}</>;

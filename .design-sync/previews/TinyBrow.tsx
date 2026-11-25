@@ -1,8 +1,6 @@
-import { TinyBrow } from 'vitcv';
+import { TinyBrow } from "vitcv";
 
-export const Default = () => (
-    <TinyBrow>Reprojection error</TinyBrow>
-);
+export const Default = () => <TinyBrow>Reprojection error</TinyBrow>;
 
 export const Row = () => (
     <div className="flex items-center gap-4">

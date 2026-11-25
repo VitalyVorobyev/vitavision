@@ -16,7 +16,13 @@ const toSummary = (result: RadsymResult): AlgorithmSummaryEntry[] => [
 
 const toDiagnostics = (result: RadsymResult): DiagnosticEntry[] => {
     if (result.summary.count === 0) {
-        return [{ level: "warning", message: "No proposals found", detail: "Try widening the radius range or lowering the gradient threshold." }];
+        return [
+            {
+                level: "warning",
+                message: "No proposals found",
+                detail: "Try widening the radius range or lowering the gradient threshold.",
+            },
+        ];
     }
     return [];
 };

@@ -99,10 +99,16 @@ export function buildAtlasAuthorPages(
 }
 
 /** Resolves a page's `sources.primary` paper id to display metadata, or `undefined` when unresolvable. */
-export type ResolvePrimary = (fm: { sources?: { primary?: string } }) => { authors?: string[]; venue?: string } | undefined;
+export type ResolvePrimary = (fm: {
+    sources?: { primary?: string };
+}) => { authors?: string[]; venue?: string } | undefined;
 
 /** Projects one atlas entry into a search-index entry. */
-export function toAtlasSearchEntry(entry: AtlasEntry, kind: AtlasEntryKind, resolvePrimary: ResolvePrimary): SearchEntry {
+export function toAtlasSearchEntry(
+    entry: AtlasEntry,
+    kind: AtlasEntryKind,
+    resolvePrimary: ResolvePrimary,
+): SearchEntry {
     return {
         slug: entry.slug,
         type: kind,

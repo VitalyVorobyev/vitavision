@@ -53,15 +53,16 @@ describe("linksRule", () => {
         expect(linksRule(ctx)).toEqual([
             { level: "error", message: "[a.md] broken link: /atlas/ghost (atlas slug not found)" },
             { level: "error", message: "[a.md] unknown path prefix: /some/random/path" },
-            { level: "warning", message: '[a.md] broken link: /atlas/b#nope (anchor "#nope" not found on atlas page "b")' },
+            {
+                level: "warning",
+                message: '[a.md] broken link: /atlas/b#nope (anchor "#nope" not found on atlas page "b")',
+            },
         ]);
     });
 
     it("resolves a valid /papers/<id> link and flags an unknown one", () => {
         const ctx = createTestContext({
-            algorithms: [
-                algo("a.md", "See [paper](/papers/bennett2013-chess) and [ghost](/papers/does-not-exist)."),
-            ],
+            algorithms: [algo("a.md", "See [paper](/papers/bennett2013-chess) and [ghost](/papers/does-not-exist).")],
             indexEntries: [{ id: "bennett2013-chess", year: 2013, title: "ChESS" }],
         });
         expect(linksRule(ctx)).toEqual([
@@ -81,7 +82,12 @@ describe("linksRule", () => {
 
     it("skips code-fenced and inline-code links, and ignores same-page anchors", () => {
         const ctx = createTestContext({
-            algorithms: [algo("a.md", "```\n[fake](/atlas/ghost)\n```\ninline `[x](/atlas/ghost)` code, and [same page](#section)")],
+            algorithms: [
+                algo(
+                    "a.md",
+                    "```\n[fake](/atlas/ghost)\n```\ninline `[x](/atlas/ghost)` code, and [same page](#section)",
+                ),
+            ],
         });
         expect(linksRule(ctx)).toEqual([]);
     });

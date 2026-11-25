@@ -58,20 +58,28 @@ const COLORMAP_OPTIONS: ChoiceOption<HeatmapColormap>[] = [
 
 export default function ResultsPanel() {
     const {
-        lastAlgorithmResult, setPanelMode,
-        heatmapData, heatmapVisible, setHeatmapVisible, heatmapOpacity, setHeatmapOpacity,
-        heatmapColormap, setHeatmapColormap,
-    } = useEditorStore(useShallow((s) => ({
-        lastAlgorithmResult: s.lastAlgorithmResult,
-        setPanelMode: s.setPanelMode,
-        heatmapData: s.heatmapData,
-        heatmapVisible: s.heatmapVisible,
-        setHeatmapVisible: s.setHeatmapVisible,
-        heatmapOpacity: s.heatmapOpacity,
-        setHeatmapOpacity: s.setHeatmapOpacity,
-        heatmapColormap: s.heatmapColormap,
-        setHeatmapColormap: s.setHeatmapColormap,
-    })));
+        lastAlgorithmResult,
+        setPanelMode,
+        heatmapData,
+        heatmapVisible,
+        setHeatmapVisible,
+        heatmapOpacity,
+        setHeatmapOpacity,
+        heatmapColormap,
+        setHeatmapColormap,
+    } = useEditorStore(
+        useShallow((s) => ({
+            lastAlgorithmResult: s.lastAlgorithmResult,
+            setPanelMode: s.setPanelMode,
+            heatmapData: s.heatmapData,
+            heatmapVisible: s.heatmapVisible,
+            setHeatmapVisible: s.setHeatmapVisible,
+            heatmapOpacity: s.heatmapOpacity,
+            setHeatmapOpacity: s.setHeatmapOpacity,
+            heatmapColormap: s.heatmapColormap,
+            setHeatmapColormap: s.setHeatmapColormap,
+        })),
+    );
 
     const algo = useMemo(() => {
         if (!lastAlgorithmResult) return null;
@@ -102,9 +110,7 @@ export default function ResultsPanel() {
             </Button>
 
             {/* Diagnostics */}
-            {diagnosticEntries.length > 0 && (
-                <DiagnosticsList entries={diagnosticEntries} />
-            )}
+            {diagnosticEntries.length > 0 && <DiagnosticsList entries={diagnosticEntries} />}
 
             {/* Run Summary */}
             {lastAlgorithmResult && (
@@ -116,11 +122,7 @@ export default function ResultsPanel() {
             {/* Heatmap overlay controls (radsym only) */}
             {lastAlgorithmResult?.algorithmId === "radsym" && heatmapData && (
                 <Panel title="FRST Heatmap" bodyClassName="flex flex-col gap-2.5">
-                    <Switch
-                        label="Show heatmap"
-                        checked={heatmapVisible}
-                        onCheckedChange={setHeatmapVisible}
-                    />
+                    <Switch label="Show heatmap" checked={heatmapVisible} onCheckedChange={setHeatmapVisible} />
                     {heatmapVisible && (
                         <>
                             <Field label="Opacity" as="group">
@@ -131,7 +133,11 @@ export default function ResultsPanel() {
                                     min={0}
                                     max={1}
                                     step={0.05}
-                                    readout={<span className="inline-block w-8 text-right">{Math.round(heatmapOpacity * 100)}%</span>}
+                                    readout={
+                                        <span className="inline-block w-8 text-right">
+                                            {Math.round(heatmapOpacity * 100)}%
+                                        </span>
+                                    }
                                 />
                             </Field>
                             <Field label="Colormap">

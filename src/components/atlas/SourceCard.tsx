@@ -24,9 +24,7 @@ export function SourceCard({ primary }: SourceCardProps) {
     return (
         <div className="rounded-panel border border-line bg-raised/40 p-3 flex flex-col gap-1.5">
             {/* Eyebrow */}
-            <span className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
-                Source
-            </span>
+            <span className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-fg-muted">Source</span>
 
             {/* Title — wraps; capped at 3 lines */}
             <Link

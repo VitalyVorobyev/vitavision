@@ -6,7 +6,11 @@ import type { TargetConfig } from "./types";
 // `periods.ts` reaches the WASM worker; the table itself is checked against the
 // real module in scripts/test-target-generators.ts.
 vi.mock("./puzzlepole/periods", () => ({
-    loadPuzzlepolePeriods: vi.fn().mockResolvedValue([[12, 73], [12, 118], [24, 75]]),
+    loadPuzzlepolePeriods: vi.fn().mockResolvedValue([
+        [12, 73],
+        [12, 118],
+        [24, 75],
+    ]),
 }));
 
 const pole = (over: Partial<typeof DEFAULT_PUZZLEPOLE>): TargetConfig => ({

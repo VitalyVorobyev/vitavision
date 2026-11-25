@@ -23,8 +23,8 @@ export interface ViewportBounds {
 }
 
 export interface ViewportState {
-    x:     number;
-    y:     number;
+    x: number;
+    y: number;
     scale: number;
 }
 
@@ -58,9 +58,9 @@ export interface UseViewportResult {
     viewportRef: React.RefObject<HTMLDivElement | null>;
     /** Attach to the transformed content plane inside the viewport, so background clicks (pan) can be told apart from card clicks. */
     planeRef: React.RefObject<HTMLDivElement | null>;
-    view:    ViewportState;
+    view: ViewportState;
     animate: boolean;
-    vp:      { w: number; h: number };
+    vp: { w: number; h: number };
     fitView: (animated: boolean) => void;
     /**
      * Animate/jump the viewport to frame an arbitrary sub-box of the content
@@ -72,9 +72,9 @@ export interface UseViewportResult {
      */
     fitBounds: (b: ViewportBounds, animated: boolean, maxScale?: number, minScale?: number) => void;
     zoomAroundCenter: (factor: number) => void;
-    onPointerDown:   (e: React.PointerEvent<HTMLDivElement>) => void;
-    onPointerMove:   (e: React.PointerEvent<HTMLDivElement>) => void;
-    onPointerUp:     (e: React.PointerEvent<HTMLDivElement>) => void;
+    onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => void;
+    onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => void;
+    onPointerUp: (e: React.PointerEvent<HTMLDivElement>) => void;
     onPointerCancel: (e: React.PointerEvent<HTMLDivElement>) => void;
 }
 
@@ -93,11 +93,11 @@ export function useViewport({
     onPanStart,
 }: UseViewportOptions): UseViewportResult {
     const viewportRef = useRef<HTMLDivElement>(null);
-    const planeRef    = useRef<HTMLDivElement>(null);
+    const planeRef = useRef<HTMLDivElement>(null);
 
-    const [view,    setView]    = useState<ViewportState>({ x: 0, y: 0, scale: 1 });
+    const [view, setView] = useState<ViewportState>({ x: 0, y: 0, scale: 1 });
     const [animate, setAnimate] = useState(false);
-    const [vp,      setVp]      = useState<{ w: number; h: number }>({ w: 0, h: 0 });
+    const [vp, setVp] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
 
     // Track viewport size via ResizeObserver
     useEffect(() => {
@@ -115,25 +115,33 @@ export function useViewport({
 
     // ── fitView ────────────────────────────────────────────────────────────────
 
-    const fitBounds = useCallback((b: ViewportBounds, animated: boolean, maxScale?: number, minScale?: number) => {
-        if (vp.w === 0 || vp.h === 0) return;
+    const fitBounds = useCallback(
+        (b: ViewportBounds, animated: boolean, maxScale?: number, minScale?: number) => {
+            if (vp.w === 0 || vp.h === 0) return;
 
-        const minX = b.minX - fitPadding, minY = b.minY - fitPadding;
-        const maxX = b.maxX + fitPadding, maxY = b.maxY + fitPadding;
-        const bboxW = maxX - minX;
-        const bboxH = maxY - minY;
+            const minX = b.minX - fitPadding,
+                minY = b.minY - fitPadding;
+            const maxX = b.maxX + fitPadding,
+                maxY = b.maxY + fitPadding;
+            const bboxW = maxX - minX;
+            const bboxH = maxY - minY;
 
-        const scale = clamp(Math.min(vp.w / bboxW, vp.h / bboxH), minScale ?? fitScaleMin, maxScale ?? fitScaleMax);
-        const x = (vp.w - bboxW * scale) / 2 - minX * scale;
-        const y = (vp.h - bboxH * scale) / 2 - minY * scale;
+            const scale = clamp(Math.min(vp.w / bboxW, vp.h / bboxH), minScale ?? fitScaleMin, maxScale ?? fitScaleMax);
+            const x = (vp.w - bboxW * scale) / 2 - minX * scale;
+            const y = (vp.h - bboxH * scale) / 2 - minY * scale;
 
-        setAnimate(animated);
-        setView({ x, y, scale });
-    }, [vp, fitPadding, fitScaleMin, fitScaleMax]);
+            setAnimate(animated);
+            setView({ x, y, scale });
+        },
+        [vp, fitPadding, fitScaleMin, fitScaleMax],
+    );
 
-    const fitView = useCallback((animated: boolean) => {
-        if (bounds) fitBounds(bounds, animated);
-    }, [bounds, fitBounds]);
+    const fitView = useCallback(
+        (animated: boolean) => {
+            if (bounds) fitBounds(bounds, animated);
+        },
+        [bounds, fitBounds],
+    );
 
     // Auto-fit on refocus / bounds change / viewport resize
     const prevKeyRef = useRef<unknown>(refitKey);
@@ -142,13 +150,15 @@ export function useViewport({
         const didNavigate = prevKeyRef.current !== refitKey;
         prevKeyRef.current = refitKey;
         fitView(didNavigate);
-    // oxlint-disable-next-line react/exhaustive-deps -- fitView is rebuilt whenever vp/bounds change (both listed); listing it would refit on unrelated option changes
+        // oxlint-disable-next-line react/exhaustive-deps -- fitView is rebuilt whenever vp/bounds change (both listed); listing it would refit on unrelated option changes
     }, [refitKey, bounds, vp.w, vp.h]);
 
     // ── Non-passive wheel listener for zoom-to-cursor ─────────────────────────
 
     const viewRef = useRef(view);
-    useEffect(() => { viewRef.current = view; }, [view]);
+    useEffect(() => {
+        viewRef.current = view;
+    }, [view]);
 
     useEffect(() => {
         const el = viewportRef.current;
@@ -176,23 +186,26 @@ export function useViewport({
 
     const panStateRef = useRef<{ startX: number; startY: number; startVx: number; startVy: number } | null>(null);
 
-    const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-        // Only pan when clicking on the viewport background or the plane itself (not cards)
-        const t = e.target as HTMLElement;
-        const isBackground = t === viewportRef.current || t === planeRef.current;
-        if (!isBackground) return;
+    const onPointerDown = useCallback(
+        (e: React.PointerEvent<HTMLDivElement>) => {
+            // Only pan when clicking on the viewport background or the plane itself (not cards)
+            const t = e.target as HTMLElement;
+            const isBackground = t === viewportRef.current || t === planeRef.current;
+            if (!isBackground) return;
 
-        onPanStart?.();
+            onPanStart?.();
 
-        e.currentTarget.setPointerCapture(e.pointerId);
-        setAnimate(false);
-        panStateRef.current = {
-            startX:  e.clientX,
-            startY:  e.clientY,
-            startVx: viewRef.current.x,
-            startVy: viewRef.current.y,
-        };
-    }, [onPanStart]);
+            e.currentTarget.setPointerCapture(e.pointerId);
+            setAnimate(false);
+            panStateRef.current = {
+                startX: e.clientX,
+                startY: e.clientY,
+                startVx: viewRef.current.x,
+                startVy: viewRef.current.y,
+            };
+        },
+        [onPanStart],
+    );
 
     const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         if (!panStateRef.current) return;
@@ -211,18 +224,21 @@ export function useViewport({
 
     // ── Zoom controls helper ───────────────────────────────────────────────────
 
-    const zoomAroundCenter = useCallback((factor: number) => {
-        const el = viewportRef.current;
-        if (!el) return;
-        const v = viewRef.current;
-        const cx = el.clientWidth  / 2;
-        const cy = el.clientHeight / 2;
-        const newScale = clamp(v.scale * factor, zoomScaleMin, zoomScaleMax);
-        const gx = (cx - v.x) / v.scale;
-        const gy = (cy - v.y) / v.scale;
-        setAnimate(true);
-        setView({ x: cx - gx * newScale, y: cy - gy * newScale, scale: newScale });
-    }, [zoomScaleMin, zoomScaleMax]);
+    const zoomAroundCenter = useCallback(
+        (factor: number) => {
+            const el = viewportRef.current;
+            if (!el) return;
+            const v = viewRef.current;
+            const cx = el.clientWidth / 2;
+            const cy = el.clientHeight / 2;
+            const newScale = clamp(v.scale * factor, zoomScaleMin, zoomScaleMax);
+            const gx = (cx - v.x) / v.scale;
+            const gy = (cy - v.y) / v.scale;
+            setAnimate(true);
+            setView({ x: cx - gx * newScale, y: cy - gy * newScale, scale: newScale });
+        },
+        [zoomScaleMin, zoomScaleMax],
+    );
 
     return {
         viewportRef,

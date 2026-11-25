@@ -4,10 +4,7 @@ import { decodeImageUrl } from "../../../lib/wasm/imageDecoder";
 
 import type { AlgorithmDefinition, AlgorithmRunResult, AlgorithmSummaryEntry } from "./types";
 
-export type AlgorithmRunStage =
-    | "idle"
-    | "decoding-image"
-    | "processing";
+export type AlgorithmRunStage = "idle" | "decoding-image" | "processing";
 
 const buildRunId = (): string => {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {

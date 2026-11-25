@@ -36,9 +36,7 @@ function renderExplorer(focusSlug: string) {
 describe("GraphExplorer (desktop canvas)", () => {
     it("renders the focused entry as the center card", () => {
         renderExplorer("fpn");
-        expect(
-            screen.getByRole("link", { name: "Open Feature Pyramid Network (FPN)" }),
-        ).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "Open Feature Pyramid Network (FPN)" })).toBeInTheDocument();
     });
 
     it("recenters on a neighbor card click, then returns via Ctrl+[", () => {
@@ -48,17 +46,11 @@ describe("GraphExplorer (desktop canvas)", () => {
         const neighbor = screen.getByRole("button", { name: /Mask R-CNN/ });
         fireEvent.click(neighbor);
 
-        expect(
-            screen.getByRole("link", { name: "Open Mask R-CNN" }),
-        ).toBeInTheDocument();
-        expect(
-            screen.queryByRole("link", { name: "Open Feature Pyramid Network (FPN)" }),
-        ).toBeNull();
+        expect(screen.getByRole("link", { name: "Open Mask R-CNN" })).toBeInTheDocument();
+        expect(screen.queryByRole("link", { name: "Open Feature Pyramid Network (FPN)" })).toBeNull();
 
         fireEvent.keyDown(window, { key: "[", ctrlKey: true });
 
-        expect(
-            screen.getByRole("link", { name: "Open Feature Pyramid Network (FPN)" }),
-        ).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "Open Feature Pyramid Network (FPN)" })).toBeInTheDocument();
     });
 });

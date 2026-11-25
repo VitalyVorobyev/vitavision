@@ -104,7 +104,15 @@ export const sanitizeSchema = {
             "data-vv-circumcircles",
             "data-vv-legend",
         ],
-        span: [...(defaultSchema.attributes?.span ?? []), "className", "style", "aria-label", "ariaLabel", "aria-hidden", "ariaHidden"],
+        span: [
+            ...(defaultSchema.attributes?.span ?? []),
+            "className",
+            "style",
+            "aria-label",
+            "ariaLabel",
+            "aria-hidden",
+            "ariaHidden",
+        ],
         code: [...(defaultSchema.attributes?.code ?? []), "className", "style"],
         pre: [...(defaultSchema.attributes?.pre ?? []), "className", "style", "tabindex", "tabIndex"],
         math: ["xmlns", "display"],
@@ -140,7 +148,10 @@ export async function createShikiHighlighter() {
     });
 }
 
-export async function renderMarkdown(content: string, highlighter: Awaited<ReturnType<typeof createShikiHighlighter>>): Promise<string> {
+export async function renderMarkdown(
+    content: string,
+    highlighter: Awaited<ReturnType<typeof createShikiHighlighter>>,
+): Promise<string> {
     const result = await unified()
         .use(remarkParse)
         .use(remarkGfm)
@@ -174,10 +185,7 @@ export async function renderMarkdown(content: string, highlighter: Awaited<Retur
             // Custom Shiki transformer — runs AFTER sanitize to avoid style stripping
             return (tree: HastRoot) => {
                 visit(tree, "element", (node: Element) => {
-                    if (
-                        node.tagName === "pre" &&
-                        (node.children?.[0] as Element)?.tagName === "code"
-                    ) {
+                    if (node.tagName === "pre" && (node.children?.[0] as Element)?.tagName === "code") {
                         const codeNode = node.children[0] as Element;
                         const classNames = codeNode.properties?.className as string[] | undefined;
                         const className = classNames?.[0] ?? "";
@@ -188,9 +196,7 @@ export async function renderMarkdown(content: string, highlighter: Awaited<Retur
                         if (lang === "mermaid") return;
 
                         // Get raw text from code node
-                        const rawCode = codeNode.children
-                            ?.map((c) => ("value" in c ? c.value : ""))
-                            .join("");
+                        const rawCode = codeNode.children?.map((c) => ("value" in c ? c.value : "")).join("");
 
                         if (!rawCode || !lang) return;
 

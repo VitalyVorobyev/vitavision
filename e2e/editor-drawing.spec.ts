@@ -182,7 +182,9 @@ function moved(type: string, vector: number[]): number[] {
 function expectGeometry(actual: number[], expected: number[], tolerance: number, label: string): void {
     expect(actual, `${label}: vector length`).toHaveLength(expected.length);
     expected.forEach((want, i) => {
-        expect(Math.abs((actual[i] as number) - want), `${label}[${i}]: ${actual[i]} vs ${want}`).toBeLessThanOrEqual(tolerance);
+        expect(Math.abs((actual[i] as number) - want), `${label}[${i}]: ${actual[i]} vs ${want}`).toBeLessThanOrEqual(
+            tolerance,
+        );
     });
 }
 
@@ -215,7 +217,12 @@ test.describe("editor manual tools", () => {
                 await dragBetween(page, from, { x: from.x + MOVE[0], y: from.y + MOVE[1] });
                 const features = await exportFeatures(page);
                 expect(features).toHaveLength(1);
-                expectGeometry(geometry(features[0] as ExportedFeature), moved(scenario.type, scenario.expected), MOVE_TOLERANCE, "moved geometry");
+                expectGeometry(
+                    geometry(features[0] as ExportedFeature),
+                    moved(scenario.type, scenario.expected),
+                    MOVE_TOLERANCE,
+                    "moved geometry",
+                );
             });
 
             await test.step("delete from the panel", async () => {

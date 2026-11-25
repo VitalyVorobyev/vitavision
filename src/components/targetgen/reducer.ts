@@ -18,11 +18,7 @@ export function defaultCircles(innerRows: number, innerCols: number): [CircleSpe
     const ci = Math.floor((totalRows - 1) / 2);
     const cj = Math.floor((totalCols - 1) / 2);
 
-    return [
-        { cell: { i: ci, j: cj } },
-        { cell: { i: ci + 1, j: cj } },
-        { cell: { i: ci + 1, j: cj + 1 } },
-    ];
+    return [{ cell: { i: ci, j: cj } }, { cell: { i: ci + 1, j: cj } }, { cell: { i: ci + 1, j: cj + 1 } }];
 }
 
 const DEFAULT_CHESSBOARD: ChessboardConfig = {

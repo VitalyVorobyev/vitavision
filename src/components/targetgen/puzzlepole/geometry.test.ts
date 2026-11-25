@@ -13,19 +13,32 @@ import { PUZZLEPOLE_PRESETS } from "../presets";
 
 // A slice of the real `puzzlepole_periods()` table (calib-targets 0.15.1);
 // scripts/test-target-generators.ts checks the app against the full live one.
-const PERIODS: PuzzlepolePeriod[] = [[12, 73], [12, 118], [18, 7], [24, 75], [24, 242]];
+const PERIODS: PuzzlepolePeriod[] = [
+    [12, 73],
+    [12, 118],
+    [18, 7],
+    [24, 75],
+    [24, 242],
+];
 
 describe("puzzlepole geometry", () => {
     it("measures the printed strip as axial columns by circumference + 2 rows", () => {
         // Measured on 0.15.1: 24 x 8 at 10 mm -> 80 x 260 mm; 12 x 5 at 20 mm -> 100 x 280 mm.
-        expect(puzzlepoleBoardSizeMm({ circumferenceSquares: 24, startRow: 75, axialSquares: 8, squareSizeMm: 10 }))
-            .toEqual({ widthMm: 80, heightMm: 260 });
-        expect(puzzlepoleBoardSizeMm({ circumferenceSquares: 12, startRow: 73, axialSquares: 5, squareSizeMm: 20 }))
-            .toEqual({ widthMm: 100, heightMm: 280 });
+        expect(
+            puzzlepoleBoardSizeMm({ circumferenceSquares: 24, startRow: 75, axialSquares: 8, squareSizeMm: 10 }),
+        ).toEqual({ widthMm: 80, heightMm: 260 });
+        expect(
+            puzzlepoleBoardSizeMm({ circumferenceSquares: 12, startRow: 73, axialSquares: 5, squareSizeMm: 20 }),
+        ).toEqual({ widthMm: 100, heightMm: 280 });
     });
 
     it("derives the cylinder diameter from the circumference", () => {
-        const d = puzzlepoleCylinderDiameterMm({ circumferenceSquares: 24, startRow: 75, axialSquares: 8, squareSizeMm: 10 });
+        const d = puzzlepoleCylinderDiameterMm({
+            circumferenceSquares: 24,
+            startRow: 75,
+            axialSquares: 8,
+            squareSizeMm: 10,
+        });
         expect(d).toBeCloseTo(240 / Math.PI, 6);
     });
 
@@ -54,7 +67,9 @@ describe("puzzlepole geometry", () => {
 
     it("rejects axial extents the library refuses (< 4, > 500, fractional)", () => {
         for (const axialSquares of [3, 501, 4.5]) {
-            expect(puzzlepoleConfigErrors({ ...DEFAULT_PUZZLEPOLE, axialSquares }, PERIODS)[0]).toMatch(/Axial squares/);
+            expect(puzzlepoleConfigErrors({ ...DEFAULT_PUZZLEPOLE, axialSquares }, PERIODS)[0]).toMatch(
+                /Axial squares/,
+            );
         }
         expect(puzzlepoleConfigErrors({ ...DEFAULT_PUZZLEPOLE, axialSquares: 4 }, PERIODS)).toEqual([]);
         expect(puzzlepoleConfigErrors({ ...DEFAULT_PUZZLEPOLE, axialSquares: 500 }, PERIODS)).toEqual([]);

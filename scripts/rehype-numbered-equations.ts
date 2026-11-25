@@ -2,10 +2,7 @@ import type { Element, Root } from "hast";
 import type { Plugin } from "unified";
 import { visit } from "unist-util-visit";
 
-function getStringProperty(
-    properties: Element["properties"] | undefined,
-    key: string,
-): string | undefined {
+function getStringProperty(properties: Element["properties"] | undefined, key: string): string | undefined {
     const value = properties?.[key];
 
     if (typeof value === "string") return value;
@@ -20,8 +17,9 @@ const rehypeNumberedEquations: Plugin<[], Root> = () => {
             if (!parent || index === undefined || node.tagName !== "pre") return;
 
             const anchorId = getStringProperty(node.properties, "id");
-            const equationNumber = getStringProperty(node.properties, "dataEquationNumber")
-                ?? getStringProperty(node.properties, "data-equation-number");
+            const equationNumber =
+                getStringProperty(node.properties, "dataEquationNumber") ??
+                getStringProperty(node.properties, "data-equation-number");
 
             if (!anchorId || !equationNumber) return;
 

@@ -30,7 +30,6 @@
     "ZoomControls": "src/components/shared/ZoomControls.tsx",
     "CanvasControlsHint": "src/components/shared/CanvasControlsHint.tsx",
 
-
     "DifficultyBadge": "src/components/blog/DifficultyBadge.tsx",
     "TagFilter": "src/components/blog/TagFilter.tsx",
     "TableOfContents": "src/components/blog/TableOfContents.tsx",

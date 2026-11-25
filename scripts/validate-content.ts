@@ -23,16 +23,18 @@ if (import.meta.main) {
     const includeDrafts = process.env.INCLUDE_DRAFTS === "true";
     console.log(`content:validate — checking content (includeDrafts=${includeDrafts})...\n`);
 
-    validateContent().then((errors) => {
-        if (errors.length > 0) {
-            for (const err of errors) {
-                console.error(`  ERROR ${err}`);
+    validateContent()
+        .then((errors) => {
+            if (errors.length > 0) {
+                for (const err of errors) {
+                    console.error(`  ERROR ${err}`);
+                }
+                console.error(`\ncontent:validate — ${errors.length} error(s) found`);
+                process.exit(1);
             }
-            console.error(`\ncontent:validate — ${errors.length} error(s) found`);
+        })
+        .catch((err) => {
+            console.error("content:validate failed:", err);
             process.exit(1);
-        }
-    }).catch((err) => {
-        console.error("content:validate failed:", err);
-        process.exit(1);
-    });
+        });
 }

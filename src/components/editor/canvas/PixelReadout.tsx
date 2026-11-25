@@ -31,7 +31,8 @@ export default function PixelReadout({ imageSrc, imageWidth, imageHeight, suppre
             className="absolute top-4 left-4 z-20 bg-ground/90 border border-line backdrop-blur-sm p-2 rounded-control shadow-xs text-xs font-mono flex items-center space-x-4 pointer-events-none"
         >
             <div>
-                <span className="text-fg-muted">X:</span> {hoverPixel.x.toFixed(2)} <span className="text-fg-muted">Y:</span> {hoverPixel.y.toFixed(2)}
+                <span className="text-fg-muted">X:</span> {hoverPixel.x.toFixed(2)}{" "}
+                <span className="text-fg-muted">Y:</span> {hoverPixel.y.toFixed(2)}
             </div>
             <div className="flex items-center space-x-2">
                 <span className="text-fg-muted">|</span>

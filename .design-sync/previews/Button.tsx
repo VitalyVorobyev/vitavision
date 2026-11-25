@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Button } from 'vitcv';
+import { useState } from "react";
+import { Button } from "vitcv";
 
 export const Variants = () => (
     <div className="flex flex-wrap items-center gap-2">
@@ -12,16 +12,26 @@ export const Variants = () => (
 
 export const Sizes = () => (
     <div className="flex items-center gap-2">
-        <Button variant="primary" size="md">Comfortable</Button>
-        <Button variant="primary" size="sm">Compact</Button>
+        <Button variant="primary" size="md">
+            Comfortable
+        </Button>
+        <Button variant="primary" size="sm">
+            Compact
+        </Button>
     </div>
 );
 
 export const States = () => (
     <div className="flex flex-wrap items-center gap-2">
-        <Button variant="primary" loading>Detecting</Button>
-        <Button variant="secondary" disabled>Download SVG</Button>
-        <Button variant="secondary" aria-pressed>Pressed</Button>
+        <Button variant="primary" loading>
+            Detecting
+        </Button>
+        <Button variant="secondary" disabled>
+            Download SVG
+        </Button>
+        <Button variant="secondary" aria-pressed>
+            Pressed
+        </Button>
     </div>
 );
 
@@ -53,8 +63,12 @@ export const InToolbar = () => {
         >
             <span className="font-mono text-xs text-fg-muted">{runs} runs</span>
             <div className="flex gap-2">
-                <Button variant="ghost" onClick={() => setRuns(0)}>Reset</Button>
-                <Button variant="primary" onClick={() => setRuns((n) => n + 1)}>Run</Button>
+                <Button variant="ghost" onClick={() => setRuns(0)}>
+                    Reset
+                </Button>
+                <Button variant="primary" onClick={() => setRuns((n) => n + 1)}>
+                    Run
+                </Button>
             </div>
         </div>
     );

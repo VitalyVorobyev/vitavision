@@ -25,7 +25,10 @@ function TileCard({ label, children }: { label: string; children: React.ReactNod
                 <span
                     aria-hidden
                     className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
-                    style={{ background: "radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--signal) 14%, transparent), transparent 60%)" }}
+                    style={{
+                        background:
+                            "radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--signal) 14%, transparent), transparent 60%)",
+                    }}
                 />
                 <div className="relative flex h-10 items-center">{children}</div>
                 <div className="relative mt-auto flex items-end justify-between pt-3">
@@ -47,7 +50,10 @@ function TileCard({ label, children }: { label: string; children: React.ReactNod
 // to it lets a reviewer actually inspect the stacked-line glyph.
 function DetailCrop({ children }: { children: React.ReactNode }) {
     return (
-        <div style={{ width: 192, height: 128 }} className="overflow-hidden rounded-control border border-line bg-ground p-2">
+        <div
+            style={{ width: 192, height: 128 }}
+            className="overflow-hidden rounded-control border border-line bg-ground p-2"
+        >
             <div style={{ transform: "scale(4)", transformOrigin: "top left" }}>{children}</div>
         </div>
     );

@@ -271,9 +271,7 @@ export interface PuzzleBoardSpec {
     origin_col: number;
 }
 
-export type PuzzleBoardSearchMode =
-    | { kind: "full" }
-    | { kind: "fixed_board" };
+export type PuzzleBoardSearchMode = { kind: "full" } | { kind: "fixed_board" };
 
 export interface PuzzleBoardDecodeConfig {
     min_window: number;

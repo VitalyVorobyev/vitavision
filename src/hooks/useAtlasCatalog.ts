@@ -29,29 +29,21 @@ export interface UseAtlasCatalogReturn {
  */
 export default function useAtlasCatalog(filters: AlgorithmsFilters, isAdmin: boolean): UseAtlasCatalogReturn {
     // ── MiniSearch: derive slug set from query (client-side only) ───────────
-    const searchMatchedSlugs = useMemo<Set<string> | null>(
-        () => searchSlugs(filters.query),
-        [filters.query],
-    );
+    const searchMatchedSlugs = useMemo<Set<string> | null>(() => searchSlugs(filters.query), [filters.query]);
 
     // ── Visible items (draft-gated) ──────────────────────────────────────────
-    const visibleAlgorithms = useMemo(
-        () => algorithmPages.filter((p) => isAdmin || !p.frontmatter.draft),
-        [isAdmin],
-    );
-    const visibleModels = useMemo(
-        () => modelPages.filter((p) => isAdmin || !p.frontmatter.draft),
-        [isAdmin],
-    );
-    const visibleConcepts = useMemo(
-        () => conceptPages.filter((p) => isAdmin || !p.frontmatter.draft),
-        [isAdmin],
-    );
+    const visibleAlgorithms = useMemo(() => algorithmPages.filter((p) => isAdmin || !p.frontmatter.draft), [isAdmin]);
+    const visibleModels = useMemo(() => modelPages.filter((p) => isAdmin || !p.frontmatter.draft), [isAdmin]);
+    const visibleConcepts = useMemo(() => conceptPages.filter((p) => isAdmin || !p.frontmatter.draft), [isAdmin]);
 
     const recentEntries = useMemo<UnifiedEntry[]>(
         () =>
             selectRecentlyAdded<UnifiedEntry>([
-                ...visibleAlgorithms.map((e) => ({ kind: "algorithm" as const, slug: e.slug, frontmatter: e.frontmatter })),
+                ...visibleAlgorithms.map((e) => ({
+                    kind: "algorithm" as const,
+                    slug: e.slug,
+                    frontmatter: e.frontmatter,
+                })),
                 ...visibleModels.map((e) => ({ kind: "model" as const, slug: e.slug, frontmatter: e.frontmatter })),
                 ...visibleConcepts.map((e) => ({ kind: "concept" as const, slug: e.slug, frontmatter: e.frontmatter })),
             ]),

@@ -8,7 +8,12 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-reac
 
 const NAV_ITEMS = [
     { to: "/blog", label: "Blog", active: (pathname: string) => pathname.startsWith("/blog") },
-    { to: "/atlas", label: "Atlas", active: (pathname: string) => pathname.startsWith("/atlas") || pathname.startsWith("/algorithms") || pathname.startsWith("/concepts") },
+    {
+        to: "/atlas",
+        label: "Atlas",
+        active: (pathname: string) =>
+            pathname.startsWith("/atlas") || pathname.startsWith("/algorithms") || pathname.startsWith("/concepts"),
+    },
     { to: "/demos", label: "Demos", active: (pathname: string) => pathname.startsWith("/demos") },
     { to: "/editor", label: "Editor", active: (pathname: string) => pathname.startsWith("/editor") },
     { to: "/tools/target-generator", label: "Targets", active: (pathname: string) => pathname.startsWith("/tools") },
@@ -16,12 +21,7 @@ const NAV_ITEMS = [
 ] as const;
 
 function NavDivider() {
-    return (
-        <span
-            className="h-4 w-px bg-line opacity-60"
-            aria-hidden="true"
-        />
-    );
+    return <span className="h-4 w-px bg-line opacity-60" aria-hidden="true" />;
 }
 
 function NavLinkItem({
@@ -39,9 +39,7 @@ function NavLinkItem({
         <Link
             to={to}
             onClick={onClick}
-            className={`transition-colors hover:text-fg ${
-                active ? "text-fg" : "text-fg-muted"
-            }`}
+            className={`transition-colors hover:text-fg ${active ? "text-fg" : "text-fg-muted"}`}
         >
             {label}
         </Link>
@@ -91,12 +89,7 @@ export default function Navbar() {
 
                 <div className="hidden items-center space-x-4 text-sm font-medium md:flex">
                     {navItems.map((item) => (
-                        <NavLinkItem
-                            key={item.to}
-                            to={item.to}
-                            label={item.label}
-                            active={item.active}
-                        />
+                        <NavLinkItem key={item.to} to={item.to} label={item.label} active={item.active} />
                     ))}
                     <NavDivider />
                     <ThemeToggle storageKey={THEME_STORAGE_KEY} />
@@ -150,9 +143,7 @@ export default function Navbar() {
                                 <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-fg-muted/70">
                                     Navigation
                                 </div>
-                                <div className="mt-1 text-sm text-fg-muted">
-                                    Vitavision sections
-                                </div>
+                                <div className="mt-1 text-sm text-fg-muted">Vitavision sections</div>
                             </div>
                             <button
                                 ref={closeButtonRef}

@@ -36,7 +36,10 @@ describe("checkEdges", () => {
         const ctx = createTestContext({});
         const fm: NarrativeFrontmatterShape = { edges: [{ from: "n1", to: "n2", type: "evolution" }] };
         const nodeIds = new Set(["n1", "n2"]);
-        const nodeYear = new Map([["n1", 2020], ["n2", 2010]]);
+        const nodeYear = new Map([
+            ["n1", 2020],
+            ["n2", 2010],
+        ]);
         expect(checkEdges("narr.md", fm, nodeIds, nodeYear, new Map(), ctx)).toEqual([
             { level: "error", message: "[narr.md] evolution edge n1 → n2 violates chronology (2020 > 2010)" },
         ]);
@@ -51,7 +54,10 @@ describe("checkEdges", () => {
         });
         const fm: NarrativeFrontmatterShape = { edges: [{ from: "n1", to: "n2", type: "contrast" }] };
         const nodeIds = new Set(["n1", "n2"]);
-        const nodeSlug = new Map([["n1", "a"], ["n2", "b"]]);
+        const nodeSlug = new Map([
+            ["n1", "a"],
+            ["n2", "b"],
+        ]);
         expect(checkEdges("narr.md", fm, nodeIds, new Map(), nodeSlug, ctx)).toEqual([
             {
                 level: "warning",
@@ -69,11 +75,15 @@ describe("checkEdges", () => {
         });
         const fm: NarrativeFrontmatterShape = { edges: [{ from: "n1", to: "n2", type: "evolution" }] };
         const nodeIds = new Set(["n1", "n2"]);
-        const nodeSlug = new Map([["n1", "a"], ["n2", "b"]]);
+        const nodeSlug = new Map([
+            ["n1", "a"],
+            ["n2", "b"],
+        ]);
         expect(checkEdges("narr.md", fm, nodeIds, new Map(), nodeSlug, ctx)).toEqual([
             {
                 level: "warning",
-                message: '[narr.md] evolution edge n1 → n2 runs against Atlas lineage direction (Atlas: "b" feeds_into "a")',
+                message:
+                    '[narr.md] evolution edge n1 → n2 runs against Atlas lineage direction (Atlas: "b" feeds_into "a")',
             },
         ]);
     });

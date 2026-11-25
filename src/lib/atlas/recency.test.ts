@@ -82,9 +82,7 @@ describe("selectRecentlyAdded", () => {
         const entries = Array.from({ length: 10 }, (_, i) => ({
             frontmatter: {
                 // dates: 2026-06-27, 2026-06-26, ..., 2026-06-18
-                date: new Date(NOW.getTime() - i * 24 * 60 * 60 * 1000)
-                    .toISOString()
-                    .slice(0, 10),
+                date: new Date(NOW.getTime() - i * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
                 title: `Entry ${String(i).padStart(2, "0")}`,
             },
         }));

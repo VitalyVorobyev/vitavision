@@ -8,7 +8,7 @@ import { contentGraph } from "../../generated/content-graph.ts";
 export interface TrailState {
     history: string[];
     current: string;
-    future:  string[];
+    future: string[];
 }
 
 export type TrailAction =
@@ -27,7 +27,7 @@ function back(state: TrailState): TrailState {
     return {
         history: state.history.slice(0, -1),
         current: prev,
-        future:  [state.current, ...state.future],
+        future: [state.current, ...state.future],
     };
 }
 
@@ -37,7 +37,7 @@ function forward(state: TrailState): TrailState {
     return {
         history: [...state.history, state.current],
         current: next,
-        future:  state.future.slice(1),
+        future: state.future.slice(1),
     };
 }
 
@@ -67,30 +67,34 @@ function jump(state: TrailState, index: number): TrailState {
     return {
         history: before,
         current: target,
-        future:  [...popped, state.current, ...state.future],
+        future: [...popped, state.current, ...state.future],
     };
 }
 
 export function trailReducer(state: TrailState, action: TrailAction): TrailState {
     switch (action.type) {
-        case "back":     return back(state);
-        case "forward":  return forward(state);
-        case "navigate": return navigate(state, action.slug);
-        case "jump":     return jump(state, action.index);
+        case "back":
+            return back(state);
+        case "forward":
+            return forward(state);
+        case "navigate":
+            return navigate(state, action.slug);
+        case "jump":
+            return jump(state, action.index);
     }
 }
 
 // ── useGraphTrail ────────────────────────────────────────────────────────────
 
 export interface UseGraphTrailResult {
-    history:       string[];
-    current:       string;
-    future:        string[];
-    hover:         string | null;
-    setHover:      (slug: string | null) => void;
-    back:          () => void;
-    forward:       () => void;
-    navigate:      (slug: string) => void;
+    history: string[];
+    current: string;
+    future: string[];
+    hover: string | null;
+    setHover: (slug: string | null) => void;
+    back: () => void;
+    forward: () => void;
+    navigate: (slug: string) => void;
     jumpToHistory: (i: number) => void;
 }
 
@@ -115,11 +119,14 @@ export function useGraphTrail(initialSlug: string | null): UseGraphTrailResult {
         setHover(null);
     }, [future.length]);
 
-    const navigateFn = useCallback((slug: string) => {
-        if (!(slug in contentGraph.nodes) || slug === currentSlug) return;
-        dispatch({ type: "navigate", slug });
-        setHover(null);
-    }, [currentSlug]);
+    const navigateFn = useCallback(
+        (slug: string) => {
+            if (!(slug in contentGraph.nodes) || slug === currentSlug) return;
+            dispatch({ type: "navigate", slug });
+            setHover(null);
+        },
+        [currentSlug],
+    );
 
     const jumpToHistory = useCallback((i: number) => {
         dispatch({ type: "jump", index: i });
@@ -128,30 +135,40 @@ export function useGraphTrail(initialSlug: string | null): UseGraphTrailResult {
 
     // Keep stable refs so the keydown handler can reach the latest callbacks
     // without resubscribing the listener on every navigation.
-    const backRef    = useRef(backFn);
+    const backRef = useRef(backFn);
     const forwardRef = useRef(forwardFn);
-    useEffect(() => { backRef.current    = backFn;    }, [backFn]);
-    useEffect(() => { forwardRef.current = forwardFn; }, [forwardFn]);
+    useEffect(() => {
+        backRef.current = backFn;
+    }, [backFn]);
+    useEffect(() => {
+        forwardRef.current = forwardFn;
+    }, [forwardFn]);
 
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             const meta = e.metaKey || e.ctrlKey;
             if (!meta) return;
-            if (e.key === "[") { e.preventDefault(); backRef.current();    }
-            if (e.key === "]") { e.preventDefault(); forwardRef.current(); }
+            if (e.key === "[") {
+                e.preventDefault();
+                backRef.current();
+            }
+            if (e.key === "]") {
+                e.preventDefault();
+                forwardRef.current();
+            }
         };
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
     }, []);
 
     return {
-        history:  state.history,
-        current:  state.current,
-        future:   state.future,
+        history: state.history,
+        current: state.current,
+        future: state.future,
         hover,
         setHover,
-        back:     backFn,
-        forward:  forwardFn,
+        back: backFn,
+        forward: forwardFn,
         navigate: navigateFn,
         jumpToHistory,
     };

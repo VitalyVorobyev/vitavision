@@ -3,7 +3,15 @@
   "extends": ["./node_modules/@vitavision/config-oxlint/oxlintrc.json"],
   "options": { "reportUnusedDisableDirectives": "error" },
   // ds-bundle/ and .ds-sync/ hold generated /design-sync output (gitignored).
-  "ignorePatterns": ["dist/**", ".venv/**", "py/**", "ds-bundle/**", ".ds-sync/**", "e2e/.screens/**", "test-results/**"],
+  "ignorePatterns": [
+    "dist/**",
+    ".venv/**",
+    "py/**",
+    "ds-bundle/**",
+    ".ds-sync/**",
+    "e2e/.screens/**",
+    "test-results/**"
+  ],
   "overrides": [
     {
       // Build scripts, root config files and the design-sync previews sit outside the tsc
@@ -41,7 +49,10 @@
       "files": ["**/*.{ts,tsx}"],
       "env": { "browser": true },
       "rules": {
-        "no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
+        "no-unused-vars": [
+          "error",
+          { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }
+        ],
         "react/only-export-components": ["error", { "allowConstantExport": true }]
       }
     },

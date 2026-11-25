@@ -23,7 +23,6 @@ export default function About() {
             />
             {/* Two-column on md+, stacked on mobile */}
             <div className="flex flex-col md:flex-row gap-10 md:gap-14 items-start">
-
                 {/* Photo */}
                 <figure className="w-full flex flex-col items-center md:items-start md:w-auto shrink-0">
                     <img
@@ -39,29 +38,23 @@ export default function About() {
 
                 {/* Text column */}
                 <div className="flex flex-col gap-6 min-w-0">
-
                     {/* Name + role */}
                     <div>
-                        <h1 className="text-3xl font-semibold tracking-tight text-fg">
-                            Vitaly Vorobyev (PhD)
-                        </h1>
-                        <p className="mt-1 text-fg-muted font-medium">
-                            Team Lead · Computer Vision · QUISS GmbH
-                        </p>
+                        <h1 className="text-3xl font-semibold tracking-tight text-fg">Vitaly Vorobyev (PhD)</h1>
+                        <p className="mt-1 text-fg-muted font-medium">Team Lead · Computer Vision · QUISS GmbH</p>
                     </div>
 
                     {/* Bio */}
                     <div className="space-y-4 text-fg-muted leading-7">
                         <p>
-                            I build computer vision systems for industrial inspection. My path started
-                            in particle physics research at the Budker Institute in Novosibirsk, where
-                            I spent over a decade on detectors, data analysis, and simulation. That
-                            background shaped how I think about measurement, uncertainty, and precision.
+                            I build computer vision systems for industrial inspection. My path started in particle
+                            physics research at the Budker Institute in Novosibirsk, where I spent over a decade on
+                            detectors, data analysis, and simulation. That background shaped how I think about
+                            measurement, uncertainty, and precision.
                         </p>
                         <p>
-                            Today I lead a team at QUISS GmbH working on machine-vision algorithms and products.
-                            I also built vitavision — this tool — to explore and
-                            prototype CV ideas directly in the browser.
+                            Today I lead a team at QUISS GmbH working on machine-vision algorithms and products. I also
+                            built vitavision — this tool — to explore and prototype CV ideas directly in the browser.
                         </p>
                     </div>
 
@@ -84,9 +77,7 @@ export default function About() {
                                 <span className="text-fg text-sm font-medium">
                                     {role} · {place}
                                 </span>
-                                <span className="text-fg-subtle text-xs sm:ml-auto shrink-0">
-                                    {period}
-                                </span>
+                                <span className="text-fg-subtle text-xs sm:ml-auto shrink-0">{period}</span>
                             </li>
                         ))}
                     </ul>

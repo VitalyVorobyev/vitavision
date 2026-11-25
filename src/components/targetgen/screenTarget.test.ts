@@ -38,7 +38,10 @@ describe("toScreenTargetSpec", () => {
             square_size_mm: cb.squareSizeMm,
         });
         const pb: TargetConfig = { targetType: "puzzleboard", config: DEFAULT_PUZZLEBOARD };
-        expect(toScreenTargetSpec(pb)).toMatchObject({ kind: "puzzle_board", square_size_mm: DEFAULT_PUZZLEBOARD.cellSizeMm });
+        expect(toScreenTargetSpec(pb)).toMatchObject({
+            kind: "puzzle_board",
+            square_size_mm: DEFAULT_PUZZLEBOARD.cellSizeMm,
+        });
     });
 
     it.each(["markerboard", "puzzlepole", "ringgrid"] as const)("throws for %s", (t) => {
@@ -49,7 +52,9 @@ describe("toScreenTargetSpec", () => {
 
 describe("isScreenSupported", () => {
     it("supports chessboard, charuco, puzzleboard and ring grid only", () => {
-        expect(["chessboard", "charuco", "puzzleboard", "ringgrid"].every((t) => isScreenSupported(t as never))).toBe(true);
+        expect(["chessboard", "charuco", "puzzleboard", "ringgrid"].every((t) => isScreenSupported(t as never))).toBe(
+            true,
+        );
         expect(isScreenSupported("markerboard")).toBe(false);
         expect(isScreenSupported("puzzlepole")).toBe(false);
     });
@@ -79,7 +84,13 @@ describe("sidecars", () => {
                 target: { kind: "chessboard", square_size_mm: 20.0385 },
             }),
         );
-        expect(g).toEqual({ kind: "grid", squareSizePx: 73, squareSizeMm: 20.0385, requestedSquareSizeMm: 20, boardOriginPx: [522, 211] });
+        expect(g).toEqual({
+            kind: "grid",
+            squareSizePx: 73,
+            squareSizeMm: 20.0385,
+            requestedSquareSizeMm: 20,
+            boardOriginPx: [522, 211],
+        });
     });
 
     it("maps ringgrid metadata and keeps both metadata and the fitted spec in the sidecar", () => {
@@ -93,8 +104,17 @@ describe("sidecars", () => {
             drawn_marker_diameter_px: 48,
             code_band_width_px: null,
         };
-        expect(geometryFromRinggridMetadata(metadata)).toMatchObject({ kind: "ringgrid", rows: 22, columns: 34, markerCount: 737, codeBandWidthPx: null });
-        const side = JSON.parse(buildRinggridSidecar(metadata, '{"schema":"ringgrid.target.v6"}')) as Record<string, unknown>;
+        expect(geometryFromRinggridMetadata(metadata)).toMatchObject({
+            kind: "ringgrid",
+            rows: 22,
+            columns: 34,
+            markerCount: 737,
+            codeBandWidthPx: null,
+        });
+        const side = JSON.parse(buildRinggridSidecar(metadata, '{"schema":"ringgrid.target.v6"}')) as Record<
+            string,
+            unknown
+        >;
         expect(side.metadata).toEqual(metadata);
         expect(side.target).toEqual({ schema: "ringgrid.target.v6" });
         expect(side.schema).toBe("vitavision.screen-target.ringgrid.v1");
@@ -104,7 +124,9 @@ describe("sidecars", () => {
 describe("screenDownloadBase", () => {
     it("names files <name>-screen-<w>x<h>", () => {
         expect(screenDownloadBase(INITIAL_STATE.target, screen)).toBe("vitavision_chessboard_7x10-screen-1920x1080");
-        expect(screenDownloadBase({ targetType: "ringgrid", config: DEFAULT_RINGGRID }, screen)).toBe("vitavision_ringgrid-screen-1920x1080");
+        expect(screenDownloadBase({ targetType: "ringgrid", config: DEFAULT_RINGGRID }, screen)).toBe(
+            "vitavision_ringgrid-screen-1920x1080",
+        );
     });
 });
 

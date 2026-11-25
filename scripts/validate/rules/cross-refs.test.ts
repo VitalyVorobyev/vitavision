@@ -49,7 +49,10 @@ describe("crossRefsRule", () => {
         expect(crossRefsRule(ctx)).toEqual([
             { level: "error", message: "[a.md] broken relatedPosts reference: ghost-post (blog slug not found)" },
             { level: "error", message: "[a.md] broken relatedDemos reference: ghost-demo (demo slug not found)" },
-            { level: "error", message: "[2020-01-01-p1.md] broken relatedAlgorithms reference: ghost-algo (atlas slug not found)" },
+            {
+                level: "error",
+                message: "[2020-01-01-p1.md] broken relatedAlgorithms reference: ghost-algo (atlas slug not found)",
+            },
         ]);
     });
 });

@@ -18,14 +18,7 @@
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-import {
-    forceCollide,
-    forceLink,
-    forceManyBody,
-    forceSimulation,
-    forceX,
-    forceY,
-} from "d3-force";
+import { forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY } from "d3-force";
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3-force";
 
 import type {
@@ -162,7 +155,11 @@ export function buildScholarlyIndex(input: BuildScholarlyIndexInput): ScholarlyI
     // ---- narrative refs: direct paper-node hits first, then page-reachable ----
     const narrativesSorted = [...narratives].sort((a, b) => a.title.localeCompare(b.title));
 
-    function narrativeRefsForPaper(paperId: string, primarySet: Set<string>, citingSet: Set<string>): ScholarlyNarrativeRef[] {
+    function narrativeRefsForPaper(
+        paperId: string,
+        primarySet: Set<string>,
+        citingSet: Set<string>,
+    ): ScholarlyNarrativeRef[] {
         const direct: ScholarlyNarrativeRef[] = [];
         const viaPage: ScholarlyNarrativeRef[] = [];
         for (const n of narrativesSorted) {
@@ -352,14 +349,8 @@ export function layoutNetwork(
                 .strength(0.6),
         )
         .force("charge", forceManyBody<SimNode>().strength(-16))
-        .force(
-            "x",
-            forceX<SimNode>((d) => GROUP_ANCHORS[groupOf(d.id)][0]).strength(0.06),
-        )
-        .force(
-            "y",
-            forceY<SimNode>((d) => GROUP_ANCHORS[groupOf(d.id)][1]).strength(0.06),
-        )
+        .force("x", forceX<SimNode>((d) => GROUP_ANCHORS[groupOf(d.id)][0]).strength(0.06))
+        .force("y", forceY<SimNode>((d) => GROUP_ANCHORS[groupOf(d.id)][1]).strength(0.06))
         .force(
             "collide",
             forceCollide<SimNode>((d) => 2.5 + Math.sqrt(pageCountOf(d.id)) * 1.6),

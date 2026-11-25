@@ -89,8 +89,14 @@ export const ui: UiSchema = {
             widget: "segmented",
             enumLabels: { base: "Baseline (893)", extended: "Extended (2180)" },
         },
-        "config.marker_scale.diameter_min_px": { label: "Min diameter", hint: "Minimum expected marker diameter in pixels." },
-        "config.marker_scale.diameter_max_px": { label: "Max diameter", hint: "Maximum expected marker diameter in pixels." },
+        "config.marker_scale.diameter_min_px": {
+            label: "Min diameter",
+            hint: "Minimum expected marker diameter in pixels.",
+        },
+        "config.marker_scale.diameter_max_px": {
+            label: "Max diameter",
+            hint: "Maximum expected marker diameter in pixels.",
+        },
         "config.advanced": {
             label: "Detection stages",
             hint: "Per-stage tuning knobs of the detector, each starting at the library's value.",

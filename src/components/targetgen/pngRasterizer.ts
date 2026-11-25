@@ -3,10 +3,7 @@ import { PRINT_COLORS } from "./printColors";
 /**
  * Rasterizes an SVG string (with mm units) to a PNG Blob via an offscreen canvas.
  */
-export async function rasterizeSvgToPng(
-    svg: string,
-    dpi = 300,
-): Promise<Blob> {
+export async function rasterizeSvgToPng(svg: string, dpi = 300): Promise<Blob> {
     // Extract mm dimensions from the SVG
     const wMatch = svg.match(/width="([\d.]+)mm"/);
     const hMatch = svg.match(/height="([\d.]+)mm"/);
@@ -39,10 +36,7 @@ export async function rasterizeSvgToPng(
         ctx.drawImage(img, 0, 0, widthPx, heightPx);
 
         return await new Promise<Blob>((resolve, reject) => {
-            canvas.toBlob(
-                (b) => (b ? resolve(b) : reject(new Error("Canvas toBlob failed"))),
-                "image/png",
-            );
+            canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Canvas toBlob failed"))), "image/png");
         });
     } finally {
         URL.revokeObjectURL(url);

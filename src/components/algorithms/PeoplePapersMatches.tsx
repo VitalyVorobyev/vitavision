@@ -10,9 +10,7 @@ interface PeoplePapersMatchesProps {
 
 function SectionLabel({ children }: { children: string }) {
     return (
-        <h2 className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
-            {children}
-        </h2>
+        <h2 className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.14em] text-fg-muted">{children}</h2>
     );
 }
 
@@ -53,9 +51,7 @@ export default function PeoplePapersMatches({ query }: PeoplePapersMatchesProps)
                                     <span className="min-w-0 truncate text-[13.5px] font-semibold text-fg">
                                         {p.title}
                                     </span>
-                                    <span className="shrink-0 font-mono text-[11.5px] text-fg-muted">
-                                        {p.summary}
-                                    </span>
+                                    <span className="shrink-0 font-mono text-[11.5px] text-fg-muted">{p.summary}</span>
                                 </Link>
                             </li>
                         ))}

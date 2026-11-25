@@ -57,7 +57,11 @@ export function PersonCombobox({ scholarly, authorsIdx, onSelect }: PersonCombob
     return (
         <div className="relative w-full sm:w-64">
             <div className="relative">
-                <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
+                <Search
+                    size={14}
+                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted"
+                    aria-hidden="true"
+                />
                 <Input
                     ref={inputRef}
                     type="search"

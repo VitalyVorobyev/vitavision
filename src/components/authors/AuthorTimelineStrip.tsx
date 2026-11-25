@@ -80,14 +80,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
                                 strokeWidth={1}
                             />
                         )}
-                        <text
-                            x={p.x}
-                            y={p.labelY}
-                            textAnchor={anchor}
-                            fontSize={12}
-                            fontWeight={600}
-                            fill="var(--fg)"
-                        >
+                        <text x={p.x} y={p.labelY} textAnchor={anchor} fontSize={12} fontWeight={600} fill="var(--fg)">
                             {entry.label}
                         </text>
                         <circle

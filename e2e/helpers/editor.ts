@@ -52,7 +52,8 @@ export async function exportFeatures(page: Page): Promise<ExportedFeature[]> {
     const chunks: Buffer[] = [];
     for await (const chunk of stream) chunks.push(chunk as Buffer);
     const parsed = JSON.parse(Buffer.concat(chunks).toString("utf8")) as { version?: unknown; features?: unknown };
-    if (parsed.version !== FEATURE_FILE_VERSION) throw new Error(`feature export is version ${String(parsed.version)}, expected ${FEATURE_FILE_VERSION}`);
+    if (parsed.version !== FEATURE_FILE_VERSION)
+        throw new Error(`feature export is version ${String(parsed.version)}, expected ${FEATURE_FILE_VERSION}`);
     if (!Array.isArray(parsed.features)) throw new Error("feature export has no features array");
     return parsed.features as ExportedFeature[];
 }
@@ -100,7 +101,10 @@ export async function readPixelReadout(page: Page): Promise<{ x: number; y: numb
 }
 
 /** Open the collapsible annotation tool group, then pick a tool. */
-export async function pickTool(page: Page, tool: "select" | "point" | "line" | "polyline" | "polygon" | "bbox" | "ellipse"): Promise<void> {
+export async function pickTool(
+    page: Page,
+    tool: "select" | "point" | "line" | "polyline" | "polygon" | "bbox" | "ellipse",
+): Promise<void> {
     const target = page.getByTestId(`tool-${tool}`);
     if (tool !== "select") {
         const expander = page.getByRole("button", { name: "Annotation tools" });

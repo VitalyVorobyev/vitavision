@@ -94,7 +94,12 @@ describe("computeUnifiedGroups", () => {
         );
         // domainOrder = [..., "features", ..., "calibration", ...] — features before calibration.
         expect(groups.map((g) => g.id)).toEqual(["features", "calibration"]);
-        expect(groups.find((g) => g.id === "features")?.entries.map((e) => e.slug).sort()).toEqual(["harris", "orb"]);
+        expect(
+            groups
+                .find((g) => g.id === "features")
+                ?.entries.map((e) => e.slug)
+                .sort(),
+        ).toEqual(["harris", "orb"]);
     });
 
     it("drops entries with no domain entirely — 'unknown' bucket isn't in domainOrder so never surfaces", () => {
@@ -113,10 +118,7 @@ describe("computeUnifiedGroups", () => {
 
     it("sorts entries within a domain group by depth-then-date (date desc, title asc, since these slugs have no known depth)", () => {
         const groups = computeUnifiedGroups(
-            [
-                algo("older", "Zebra", "2026-01-01", "features"),
-                algo("newer", "Alpha", "2026-06-01", "features"),
-            ],
+            [algo("older", "Zebra", "2026-01-01", "features"), algo("newer", "Alpha", "2026-06-01", "features")],
             [],
             [],
             "algorithm",

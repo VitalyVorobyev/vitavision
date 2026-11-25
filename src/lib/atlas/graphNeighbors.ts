@@ -7,14 +7,14 @@ export type AtlasIndexEntry = AlgorithmIndexEntry | ModelIndexEntry | ConceptInd
 export interface Neighbors {
     focus: AtlasIndexEntry;
     kind: "algorithm" | "model" | "concept";
-    prerequisites:          string[];
-    extended_from:          string[];
-    compared_with:          string[];
-    extended_by:            string[];
-    feeds_into:             string[];
-    learned_by:             string[];
-    used_by:                string[];
-    fed_by:                 string[];
+    prerequisites: string[];
+    extended_from: string[];
+    compared_with: string[];
+    extended_by: string[];
+    feeds_into: string[];
+    learned_by: string[];
+    used_by: string[];
+    fed_by: string[];
     learned_alternative_of: string[];
 }
 
@@ -25,12 +25,15 @@ export interface Neighbors {
 export function shortTitle(title: string): string {
     // Split on colon or en-dash
     const colonIdx = title.indexOf(":");
-    const dashIdx  = title.indexOf("–"); // en-dash
+    const dashIdx = title.indexOf("–"); // en-dash
     const splitIdx =
-        colonIdx >= 0 && dashIdx >= 0 ? Math.min(colonIdx, dashIdx) :
-        colonIdx >= 0                  ? colonIdx :
-        dashIdx  >= 0                  ? dashIdx  :
-        -1;
+        colonIdx >= 0 && dashIdx >= 0
+            ? Math.min(colonIdx, dashIdx)
+            : colonIdx >= 0
+              ? colonIdx
+              : dashIdx >= 0
+                ? dashIdx
+                : -1;
 
     if (splitIdx > 0) {
         return title.slice(0, splitIdx).trim();
@@ -89,39 +92,36 @@ export function getNeighbors(slug: string): Neighbors | null {
     return null;
 }
 
-function _buildNeighbors(
-    slug: string,
-    focus: AtlasIndexEntry,
-    kind: "algorithm" | "model" | "concept",
-): Neighbors {
+function _buildNeighbors(slug: string, focus: AtlasIndexEntry, kind: "algorithm" | "model" | "concept"): Neighbors {
     const forward = contentGraph.forward[slug] ?? { prerequisites: [], failureModes: [], relations: [] };
     const reverse = contentGraph.reverse[slug] ?? {
-        usedBy: [], affects: [], generalises: [], extending: [], fedBy: [], hasLearnedAlternative: [],
+        usedBy: [],
+        affects: [],
+        generalises: [],
+        extending: [],
+        fedBy: [],
+        hasLearnedAlternative: [],
     };
 
     // --- raw buckets (before dedup) ---
     const rawPrerequisites = forward.prerequisites;
 
-    const rawExtendedFrom = [
-        ...reverse.extending.map((r) => r.slug),
-        ...reverse.generalises.map((r) => r.slug),
-    ];
+    const rawExtendedFrom = [...reverse.extending.map((r) => r.slug), ...reverse.generalises.map((r) => r.slug)];
 
     const rawExtendedBy = forward.relations
         .filter((r) => r.type === "extended_by" || r.type === "generalized_by")
         .map((r) => r.target);
 
     const rawComparedWith = forward.relations
-        .filter((r) =>
-            r.type === "compared_with" ||
-            r.type === "alternative_formulation_of" ||
-            r.type === "parallel_foundation_with",
+        .filter(
+            (r) =>
+                r.type === "compared_with" ||
+                r.type === "alternative_formulation_of" ||
+                r.type === "parallel_foundation_with",
         )
         .map((r) => r.target);
 
-    const rawFeedsInto = forward.relations
-        .filter((r) => r.type === "feeds_into")
-        .map((r) => r.target);
+    const rawFeedsInto = forward.relations.filter((r) => r.type === "feeds_into").map((r) => r.target);
 
     const rawLearnedBy = reverse.hasLearnedAlternative.map((r) => r.slug);
 
@@ -136,15 +136,15 @@ function _buildNeighbors(
     // --- filter to known nodes ---
     const known = (slugs: string[]) => slugs.filter((s) => s in contentGraph.nodes);
 
-    const filteredLearnedBy             = known(rawLearnedBy);
-    const filteredLearnedAlternativeOf  = known(rawLearnedAlternativeOf);
-    const filteredExtendedBy            = known(rawExtendedBy);
-    const filteredExtendedFrom          = known(rawExtendedFrom);
-    const filteredPrereqs               = known(rawPrerequisites);
-    const filteredUsedBy                = known(rawUsedBy);
-    const filteredFeedsInto             = known(rawFeedsInto);
-    const filteredFedBy                 = known(rawFedBy);
-    const filteredComparedWith          = known(rawComparedWith);
+    const filteredLearnedBy = known(rawLearnedBy);
+    const filteredLearnedAlternativeOf = known(rawLearnedAlternativeOf);
+    const filteredExtendedBy = known(rawExtendedBy);
+    const filteredExtendedFrom = known(rawExtendedFrom);
+    const filteredPrereqs = known(rawPrerequisites);
+    const filteredUsedBy = known(rawUsedBy);
+    const filteredFeedsInto = known(rawFeedsInto);
+    const filteredFedBy = known(rawFedBy);
+    const filteredComparedWith = known(rawComparedWith);
 
     // --- cross-bucket deduplication ---
     // Priority (highest first): learned_by > learned_alternative_of > extended_by >
@@ -161,15 +161,15 @@ function _buildNeighbors(
         return result;
     };
 
-    const learned_by             = dedup(filteredLearnedBy);
+    const learned_by = dedup(filteredLearnedBy);
     const learned_alternative_of = dedup(filteredLearnedAlternativeOf);
-    const extended_by            = dedup(filteredExtendedBy);
-    const extended_from          = dedup(filteredExtendedFrom);
-    const prerequisites          = dedup(filteredPrereqs);
-    const used_by                = dedup(filteredUsedBy);
-    const feeds_into             = dedup(filteredFeedsInto);
-    const fed_by                 = dedup(filteredFedBy);
-    const compared_with          = dedup(filteredComparedWith);
+    const extended_by = dedup(filteredExtendedBy);
+    const extended_from = dedup(filteredExtendedFrom);
+    const prerequisites = dedup(filteredPrereqs);
+    const used_by = dedup(filteredUsedBy);
+    const feeds_into = dedup(filteredFeedsInto);
+    const fed_by = dedup(filteredFedBy);
+    const compared_with = dedup(filteredComparedWith);
 
     return {
         focus,

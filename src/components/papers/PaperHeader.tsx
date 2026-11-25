@@ -21,10 +21,7 @@ export default function PaperHeader({ paper, authorsIndex, primarySlug }: PaperH
 
     return (
         <header className="flex flex-col gap-4">
-            <nav
-                aria-label="Breadcrumb"
-                className="flex items-center gap-2 font-mono text-[12px] text-fg-muted"
-            >
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono text-[12px] text-fg-muted">
                 <Link to="/atlas" className="hover:text-fg transition-colors">
                     Atlas
                 </Link>
@@ -53,7 +50,7 @@ export default function PaperHeader({ paper, authorsIndex, primarySlug }: PaperH
                         const id = authorIds[i];
                         const name = id ? (authorsIndex.authors[id]?.name ?? display) : display;
                         return (
-                            // eslint-disable-next-line @eslint-react/no-array-index-key -- author names can repeat; authors are positional and parallel to authorIds
+                            // oxlint-disable-next-line react/no-array-index-key -- author names can repeat; authors are positional and parallel to authorIds
                             <Fragment key={`${display}-${i}`}>
                                 {id ? (
                                     <Link

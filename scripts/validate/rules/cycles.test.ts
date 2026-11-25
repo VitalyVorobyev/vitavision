@@ -22,13 +22,8 @@ describe("cyclesRule", () => {
 
     it("flags a prerequisite cycle", () => {
         const ctx = createTestContext({
-            algorithms: [
-                algo("a.md", { prerequisites: ["b"] }),
-                algo("b.md", { prerequisites: ["a"] }),
-            ],
+            algorithms: [algo("a.md", { prerequisites: ["b"] }), algo("b.md", { prerequisites: ["a"] })],
         });
-        expect(cyclesRule(ctx)).toEqual([
-            { level: "error", message: "[prerequisite cycle] a → b → a" },
-        ]);
+        expect(cyclesRule(ctx)).toEqual([{ level: "error", message: "[prerequisite cycle] a → b → a" }]);
     });
 });

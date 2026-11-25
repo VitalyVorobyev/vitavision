@@ -112,7 +112,8 @@ export function buildRelationDisplay(slug: string, options: RelationDisplayOptio
             rel.target === supersededBy &&
             rel.type === "generalized_by" &&
             rel.confidence === "high"
-        ) continue;
+        )
+            continue;
         display.push({
             label: FORWARD_LABEL[rel.type],
             target: rel.target,

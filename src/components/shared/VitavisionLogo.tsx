@@ -10,16 +10,13 @@ interface VitavisionLogoProps {
 
 /* ─── SVG geometry extracted from vitavision-logo_v2_opt.svg ─── */
 
-const V_OUTER = "m102.8 113.4 15.6-27.6h34.7l-40 71s-.6 1.3-3.3 4.7c-1.6 2-4.3 3-7 3q-4.2 0-7-2.9c-1.6-1.7-4-6.2-4-6.2L52.4 85.8H87z";
+const V_OUTER =
+    "m102.8 113.4 15.6-27.6h34.7l-40 71s-.6 1.3-3.3 4.7c-1.6 2-4.3 3-7 3q-4.2 0-7-2.9c-1.6-1.7-4-6.2-4-6.2L52.4 85.8H87z";
 const V_INNER = "m102.6 112.3 28.2-15.1-28 49.5-28-49.5Z";
 
 /* ─── Component ─── */
 
-export default function VitavisionLogo({
-    variant = "full",
-    animate = false,
-    className,
-}: VitavisionLogoProps) {
+export default function VitavisionLogo({ variant = "full", animate = false, className }: VitavisionLogoProps) {
     // "mark" thickens strokes for legibility at small sizes (e.g. navbar h-9).
     const strokeWidth = variant === "mark" ? 5.4 : 4.2;
 
@@ -72,7 +69,9 @@ export default function VitavisionLogo({
                 {/* PUPIL_HALO — fades in once the inner V is nearly complete */}
                 {animate ? (
                     <motion.circle
-                        cx={102.7} cy={112} r={11.8}
+                        cx={102.7}
+                        cy={112}
+                        r={11.8}
                         fill="var(--ground)"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -85,7 +84,9 @@ export default function VitavisionLogo({
                 {/* PUPIL_CORE — brand dot resolves last with a spring pop */}
                 {animate ? (
                     <motion.circle
-                        cx={102.6} cy={112} r={8.1}
+                        cx={102.6}
+                        cy={112}
+                        r={8.1}
                         fill="var(--vv-brand-mark)"
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}

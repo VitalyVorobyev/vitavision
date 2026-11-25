@@ -1,4 +1,4 @@
-import { SourceCard } from 'vitcv';
+import { SourceCard } from "vitcv";
 
 export const ZhangPlanarCalibration = () => (
     <div className="w-[260px]">

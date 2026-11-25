@@ -16,18 +16,24 @@ describe("migrateFeaturesV1", () => {
     });
 
     it("shifts every vertex of a line, polyline and polygon", () => {
-        expect(migrateOne({ ...base, id: "l", type: "line", points: [1, 2, 3, 4] })).toMatchObject({ points: [0.5, 1.5, 2.5, 3.5] });
+        expect(migrateOne({ ...base, id: "l", type: "line", points: [1, 2, 3, 4] })).toMatchObject({
+            points: [0.5, 1.5, 2.5, 3.5],
+        });
         expect(migrateOne({ ...base, id: "pl", type: "polyline", points: [1, 2, 3, 4, 5, 6] })).toMatchObject({
             points: [0.5, 1.5, 2.5, 3.5, 4.5, 5.5],
         });
-        expect(migrateOne({ ...base, id: "pg", type: "polygon", points: [0, 0, 4, 0, 4, 4], closed: true })).toMatchObject({
+        expect(
+            migrateOne({ ...base, id: "pg", type: "polygon", points: [0, 0, 4, 0, 4, 4], closed: true }),
+        ).toMatchObject({
             points: [-0.5, -0.5, 3.5, -0.5, 3.5, 3.5],
             closed: true,
         });
     });
 
     it("shifts a bbox's corner and keeps its size and rotation", () => {
-        expect(migrateOne({ ...base, id: "b", type: "bbox", x: 100, y: 50, width: 30, height: 20, rotation: 15 })).toMatchObject({
+        expect(
+            migrateOne({ ...base, id: "b", type: "bbox", x: 100, y: 50, width: 30, height: 20, rotation: 15 }),
+        ).toMatchObject({
             x: 99.5,
             y: 49.5,
             width: 30,
@@ -37,7 +43,9 @@ describe("migrateFeaturesV1", () => {
     });
 
     it("shifts an ellipse's centre and keeps its radii and rotation", () => {
-        expect(migrateOne({ ...base, id: "e", type: "ellipse", x: 100, y: 50, radiusX: 30, radiusY: 20, rotation: -40 })).toMatchObject({
+        expect(
+            migrateOne({ ...base, id: "e", type: "ellipse", x: 100, y: 50, radiusX: 30, radiusY: 20, rotation: -40 }),
+        ).toMatchObject({
             x: 99.5,
             y: 49.5,
             radiusX: 30,
@@ -47,7 +55,10 @@ describe("migrateFeaturesV1", () => {
     });
 
     it("shifts a directed point and keeps its axes", () => {
-        const axes: [{ dx: number; dy: number }, { dx: number; dy: number }] = [{ dx: 1, dy: 0 }, { dx: 0, dy: 1 }];
+        const axes: [{ dx: number; dy: number }, { dx: number; dy: number }] = [
+            { dx: 1, dy: 0 },
+            { dx: 0, dy: 1 },
+        ];
         const migrated = migrateOne({ ...base, id: "d", type: "directed_point", x: 7, y: 9, axes, score: 0.5 });
         expect(migrated).toMatchObject({ x: 6.5, y: 8.5, axes, score: 0.5 });
     });
@@ -117,7 +128,13 @@ describe("migrateFeaturesV1", () => {
             masterId: 7,
             targetPosMm: { x: 12, y: 18 },
         });
-        expect(migrated).toMatchObject({ x: 32.5, y: 43.5, gridIndex: { i: 2, j: 3 }, masterId: 7, targetPosMm: { x: 12, y: 18 } });
+        expect(migrated).toMatchObject({
+            x: 32.5,
+            y: 43.5,
+            gridIndex: { i: 2, j: 3 },
+            masterId: 7,
+            targetPosMm: { x: 12, y: 18 },
+        });
     });
 
     it("leaves board millimetres in meta alone and does not mutate its input", () => {

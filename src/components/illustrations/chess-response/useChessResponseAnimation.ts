@@ -6,11 +6,7 @@ interface UseChessResponseAnimationOptions {
     onTick: (updater: (current: number) => number) => void;
 }
 
-export default function useChessResponseAnimation({
-    playing,
-    speed,
-    onTick,
-}: UseChessResponseAnimationOptions): void {
+export default function useChessResponseAnimation({ playing, speed, onTick }: UseChessResponseAnimationOptions): void {
     const speedRef = useRef(speed);
     const onTickRef = useRef(onTick);
 
@@ -31,9 +27,7 @@ export default function useChessResponseAnimation({
         const step = (timestamp: number) => {
             const deltaSeconds = (timestamp - previous) / 1000;
             previous = timestamp;
-            onTickRef.current(
-                (current) => (current + deltaSeconds * 18 * speedRef.current) % 360,
-            );
+            onTickRef.current((current) => (current + deltaSeconds * 18 * speedRef.current) % 360);
             frameId = window.requestAnimationFrame(step);
         };
 

@@ -32,17 +32,11 @@ function LineageColumn({ label, accentClass, entries }: LineageColumnProps) {
                     to={`/papers/${entry.id}`}
                     className="grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 border-t border-line py-[7px] no-underline transition-colors hover:bg-line/60"
                 >
-                    <span className="pt-0.5 font-mono text-[12px] tabular-nums text-fg-muted">
-                        {entry.year}
-                    </span>
+                    <span className="pt-0.5 font-mono text-[12px] tabular-nums text-fg-muted">{entry.year}</span>
                     <span className="flex flex-col gap-px min-w-0">
-                        <span className="line-clamp-2 font-serif text-[15px] leading-[1.3] text-fg">
-                            {entry.title}
-                        </span>
+                        <span className="line-clamp-2 font-serif text-[15px] leading-[1.3] text-fg">{entry.title}</span>
                         {entry.authors.length > 0 && (
-                            <span className="truncate text-[12px] text-fg-muted">
-                                {shortAuthorList(entry.authors)}
-                            </span>
+                            <span className="truncate text-[12px] text-fg-muted">{shortAuthorList(entry.authors)}</span>
                         )}
                     </span>
                 </Link>

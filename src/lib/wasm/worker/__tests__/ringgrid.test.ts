@@ -22,7 +22,12 @@ describe("adaptRinggridResult", () => {
                     ellipse_outer: { cx: 12, cy: 34, a: 20, b: 19, angle: 0.1 },
                     ellipse_inner: { cx: 12, cy: 34, a: 10, b: 9, angle: 0.1 },
                     decode: { best_id: 7, best_rotation: 1, best_dist: 2, margin: 3, confidence: 0.95 },
-                    fit: { rms_residual_outer: 0.1, rms_residual_inner: 0.2, ransac_inlier_ratio_outer: 0.9, ransac_inlier_ratio_inner: 0.8 },
+                    fit: {
+                        rms_residual_outer: 0.1,
+                        rms_residual_inner: 0.2,
+                        ransac_inlier_ratio_outer: 0.9,
+                        ransac_inlier_ratio_inner: 0.8,
+                    },
                     board_xy_mm: [5, 6],
                 },
             ],
@@ -33,7 +38,12 @@ describe("adaptRinggridResult", () => {
         expect(m.id).toBe(7); // no top-level id: falls back to the legacy decode.best_id
         expect(m.center).toEqual({ x: 12, y: 34 });
         expect(m.decode).toEqual({ best_id: 7, best_rotation: 1, best_dist: 2, margin: 3, decode_confidence: 0.95 });
-        expect(m.fit).toEqual({ rms_residual_outer: 0.1, rms_residual_inner: 0.2, ransac_inlier_ratio_outer: 0.9, ransac_inlier_ratio_inner: 0.8 });
+        expect(m.fit).toEqual({
+            rms_residual_outer: 0.1,
+            rms_residual_inner: 0.2,
+            ransac_inlier_ratio_outer: 0.9,
+            ransac_inlier_ratio_inner: 0.8,
+        });
         expect(m.board_xy_mm).toEqual({ x: 5, y: 6 });
         expect(result.summary.runtime_ms).toBe(9);
     });
@@ -41,8 +51,14 @@ describe("adaptRinggridResult", () => {
     it("takes the top-level id ringgrid actually emits (0.13 and 0.18 alike)", () => {
         const raw = {
             detected_markers: [
-                { id: 169, grid_coord: [-2, 5], center: [626.4, 327.3], confidence: 0.42, board_xy_mm: [97, 144],
-                  ellipse_outer: { cx: 626.4, cy: 327.3, a: 22, b: 21, angle: 0.6 } },
+                {
+                    id: 169,
+                    grid_coord: [-2, 5],
+                    center: [626.4, 327.3],
+                    confidence: 0.42,
+                    board_xy_mm: [97, 144],
+                    ellipse_outer: { cx: 626.4, cy: 327.3, a: 22, b: 21, angle: 0.6 },
+                },
             ],
         };
         const m = adaptRinggridResult(JSON.stringify(raw), 10, 10, 1).markers[0]!;
@@ -53,7 +69,13 @@ describe("adaptRinggridResult", () => {
     it("defaults id to null and decode/fit/board_xy_mm to null when absent", () => {
         const raw = {
             detected_markers: [
-                { center: [1, 2], ellipse_outer: { cx: 1, cy: 2, a: 1, b: 1, angle: 0 }, decode: null, fit: null, board_xy_mm: null },
+                {
+                    center: [1, 2],
+                    ellipse_outer: { cx: 1, cy: 2, a: 1, b: 1, angle: 0 },
+                    decode: null,
+                    fit: null,
+                    board_xy_mm: null,
+                },
             ],
         };
         const result = adaptRinggridResult(JSON.stringify(raw), 10, 10, 1);
@@ -66,9 +88,7 @@ describe("adaptRinggridResult", () => {
 
     it("falls back ellipse_inner to a degenerate ellipse at the center when absent", () => {
         const raw = {
-            detected_markers: [
-                { center: [3, 4], ellipse_outer: { cx: 3, cy: 4, a: 5, b: 5, angle: 0 } },
-            ],
+            detected_markers: [{ center: [3, 4], ellipse_outer: { cx: 3, cy: 4, a: 5, b: 5, angle: 0 } }],
         };
         const result = adaptRinggridResult(JSON.stringify(raw), 10, 10, 1);
         expect(result.markers[0]!.ellipse_inner).toEqual({ cx: 3, cy: 4, a: 0, b: 0, angle: 0 });

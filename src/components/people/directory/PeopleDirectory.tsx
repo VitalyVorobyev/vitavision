@@ -71,7 +71,10 @@ export default function PeopleDirectory({
 
     const domainFiltered = useMemo(() => {
         if (searching || !selectedDomain) return [];
-        return sortPeopleRows(rows.filter((r) => r.mainDomain === selectedDomain), sort);
+        return sortPeopleRows(
+            rows.filter((r) => r.mainDomain === selectedDomain),
+            sort,
+        );
     }, [rows, sort, selectedDomain, searching]);
 
     const groups = useMemo(() => {
@@ -123,9 +126,7 @@ export default function PeopleDirectory({
                 <section className="flex flex-col gap-2">
                     <h2 className="text-[17px] font-bold text-fg">
                         {chips.find((c) => c.domain === selectedDomain)?.label ?? selectedDomain}{" "}
-                        <span className="font-mono text-[13px] font-normal text-fg-muted">
-                            {domainFiltered.length}
-                        </span>
+                        <span className="font-mono text-[13px] font-normal text-fg-muted">{domainFiltered.length}</span>
                     </h2>
                     <div className="rounded-panel border border-line bg-surface">
                         {domainFiltered.map((row, i) => (

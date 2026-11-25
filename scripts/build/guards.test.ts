@@ -5,7 +5,7 @@ describe("checkEmptyDivGuard", () => {
     it("passes silently when no page contains an empty div", () => {
         expect(() =>
             checkEmptyDivGuard([
-                { slug: "a", html: "<div class=\"vv-block\">content</div>" },
+                { slug: "a", html: '<div class="vv-block">content</div>' },
                 { slug: "b", html: "<p>text</p>" },
             ]),
         ).not.toThrow();

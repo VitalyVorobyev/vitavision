@@ -1,11 +1,6 @@
 import type { UiGroup } from "@vitavision/forms";
 
-import {
-    boardUi,
-    chessDetectorPaths,
-    chessboardKnobPaths,
-    chessboardTuningPath,
-} from "../chessDetectorUi";
+import { boardUi, chessDetectorPaths, chessboardKnobPaths, chessboardTuningPath } from "../chessDetectorUi";
 import { schema } from "./schema";
 
 const groups: UiGroup[] = [
@@ -50,7 +45,11 @@ export const { hiddenPaths, ui } = boardUi({
     fields: {
         "board.rows": { label: "Rows", hint: "Number of rows of squares on the PuzzleBoard." },
         "board.cols": { label: "Cols", hint: "Number of columns of squares on the PuzzleBoard." },
-        "board.cell_size": { label: "Cell size", unit: "mm", hint: "Physical size of one board square in millimeters." },
+        "board.cell_size": {
+            label: "Cell size",
+            unit: "mm",
+            hint: "Physical size of one board square in millimeters.",
+        },
         "board.origin_row": {
             label: "Origin row",
             hint: "Row offset of the board origin within the master pattern grid.",

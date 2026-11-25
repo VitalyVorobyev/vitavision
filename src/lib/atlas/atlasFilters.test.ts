@@ -172,16 +172,18 @@ describe("view resolution: URL beats stored view beats default", () => {
 
 describe("filterAlgorithms / filterModels / filterConcepts", () => {
     const algorithms = [
-        algo("harris", "Harris corner detector", { date: "2026-01-01", tags: ["classical", "keypoint-detection"], tasks: ["corner-detection"] }),
+        algo("harris", "Harris corner detector", {
+            date: "2026-01-01",
+            tags: ["classical", "keypoint-detection"],
+            tasks: ["corner-detection"],
+        }),
         algo("shi-tomasi", "Shi-Tomasi", { date: "2026-02-01", tags: ["classical"], tasks: ["corner-detection"] }),
         algo("ransac", "RANSAC", { date: "2026-03-01", tags: ["robust-estimation"] }),
     ];
     const models = [
         model("superpoint", "SuperPoint", { date: "2026-01-15", tags: ["deep-learning"], tasks: ["corner-detection"] }),
     ];
-    const concepts = [
-        concept("epipolar-geometry", "Epipolar geometry", { date: "2026-01-10", tags: ["classical"] }),
-    ];
+    const concepts = [concept("epipolar-geometry", "Epipolar geometry", { date: "2026-01-10", tags: ["classical"] })];
 
     it("filters algorithms by tag", () => {
         const result = filterAlgorithms(algorithms, baseFilters({ tags: ["keypoint-detection"] }));
@@ -194,11 +196,7 @@ describe("filterAlgorithms / filterModels / filterConcepts", () => {
     });
 
     it("filters by search-matched slugs when a query is present", () => {
-        const result = filterAlgorithms(
-            algorithms,
-            baseFilters({ query: "corner" }),
-            new Set(["harris"]),
-        );
+        const result = filterAlgorithms(algorithms, baseFilters({ query: "corner" }), new Set(["harris"]));
         expect(result.map((e) => e.slug)).toEqual(["harris"]);
     });
 
@@ -240,12 +238,8 @@ describe("computeFacets", () => {
         algo("harris", "Harris", { tags: ["classical"], tasks: ["corner-detection"] }),
         algo("ransac", "RANSAC", { tags: ["robust-estimation"] }),
     ];
-    const models = [
-        model("superpoint", "SuperPoint", { tags: ["deep-learning"], tasks: ["corner-detection"] }),
-    ];
-    const concepts = [
-        concept("epipolar-geometry", "Epipolar geometry", { tags: ["classical"] }),
-    ];
+    const models = [model("superpoint", "SuperPoint", { tags: ["deep-learning"], tasks: ["corner-detection"] })];
+    const concepts = [concept("epipolar-geometry", "Epipolar geometry", { tags: ["classical"] })];
 
     it("computes kind counts applying only tags + query (not the active kind/problem)", () => {
         const facets = computeFacets(algorithms, models, concepts, baseFilters({ kind: "model" }));

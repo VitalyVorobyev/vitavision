@@ -1,22 +1,31 @@
-import { DemoCover } from 'vitcv';
+import { DemoCover } from "vitcv";
 
 export const ChessResponseCover = () => (
     <div className="flex flex-col gap-1.5">
-        <DemoCover slug="chess-response" className="w-80 aspect-video rounded-panel overflow-hidden border border-line" />
+        <DemoCover
+            slug="chess-response"
+            className="w-80 aspect-video rounded-panel overflow-hidden border border-line"
+        />
         <span className="text-[11px] text-fg-muted font-mono">chess-response</span>
     </div>
 );
 
 export const DelaunayVoronoiCover = () => (
     <div className="flex flex-col gap-1.5">
-        <DemoCover slug="delaunay-voronoi" className="w-80 aspect-video rounded-panel overflow-hidden border border-line" />
+        <DemoCover
+            slug="delaunay-voronoi"
+            className="w-80 aspect-video rounded-panel overflow-hidden border border-line"
+        />
         <span className="text-[11px] text-fg-muted font-mono">delaunay-voronoi</span>
     </div>
 );
 
 export const UnknownSlugFallback = () => (
     <div className="flex flex-col gap-1.5">
-        <DemoCover slug="ransac-line-fit" className="w-80 aspect-video rounded-panel overflow-hidden border border-line" />
+        <DemoCover
+            slug="ransac-line-fit"
+            className="w-80 aspect-video rounded-panel overflow-hidden border border-line"
+        />
         <span className="text-[11px] text-fg-muted font-mono">ransac-line-fit (falls back to DemoThumbnail)</span>
     </div>
 );

@@ -36,24 +36,24 @@ export default function NodeInspector({ node, areas, onClose }: NodeInspectorPro
                     style={{ background: areaColor(areaIds, node.area) }}
                 />
                 <span className="truncate">{areaLabel}</span>
-                <span aria-hidden="true" className="text-fg-muted/60">·</span>
+                <span aria-hidden="true" className="text-fg-muted/60">
+                    ·
+                </span>
                 <span>{node.kind === "paper" ? "Paper" : node.kind === "question" ? "Question" : node.pageKind}</span>
                 {"year" in node && node.year != null && (
                     <>
-                        <span aria-hidden="true" className="text-fg-muted/60">·</span>
+                        <span aria-hidden="true" className="text-fg-muted/60">
+                            ·
+                        </span>
                         <span className="font-mono normal-case tracking-normal">{node.year}</span>
                     </>
                 )}
             </div>
 
-            <p className="m-0 mt-1.5 text-[14px] font-semibold leading-snug text-fg">
-                {node.title}
-            </p>
+            <p className="m-0 mt-1.5 text-[14px] font-semibold leading-snug text-fg">{node.title}</p>
 
             {node.kind === "paper" && node.authorsShort && (
-                <p className="m-0 mt-1 font-mono text-[11px] leading-snug text-fg-muted">
-                    {node.authorsShort}
-                </p>
+                <p className="m-0 mt-1 font-mono text-[11px] leading-snug text-fg-muted">{node.authorsShort}</p>
             )}
 
             {node.role && (
@@ -62,13 +62,9 @@ export default function NodeInspector({ node, areas, onClose }: NodeInspectorPro
                 </p>
             )}
 
-            {node.takeaway && (
-                <p className="m-0 mt-2 text-[12.5px] leading-[1.55] text-fg">{node.takeaway}</p>
-            )}
+            {node.takeaway && <p className="m-0 mt-2 text-[12.5px] leading-[1.55] text-fg">{node.takeaway}</p>}
 
-            {node.remark && (
-                <p className="m-0 mt-2 text-[11.5px] italic leading-snug text-fg-muted">{node.remark}</p>
-            )}
+            {node.remark && <p className="m-0 mt-2 text-[11.5px] italic leading-snug text-fg-muted">{node.remark}</p>}
 
             {node.kind === "page" && (
                 <Link

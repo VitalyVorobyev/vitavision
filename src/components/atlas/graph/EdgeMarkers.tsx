@@ -3,13 +3,13 @@
 // GraphExplorer's EdgesLayer and NarrativeCanvas.
 
 export interface EdgeMarkerSpec {
-    key:   string;
+    key: string;
     color: string;
 }
 
 export interface EdgeMarkersProps {
     idPrefix: string;
-    markers:  EdgeMarkerSpec[];
+    markers: EdgeMarkerSpec[];
 }
 
 export function EdgeMarkers({ idPrefix, markers }: EdgeMarkersProps) {

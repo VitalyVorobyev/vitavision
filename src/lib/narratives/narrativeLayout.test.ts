@@ -21,9 +21,9 @@ describe("NARRATIVE_EDGE_REL", () => {
     it("uses the agreed token per edge type", () => {
         expect(NARRATIVE_EDGE_REL).toEqual({
             prerequisite: "prerequisites",
-            evolution:    "extended_by",
-            bridge:       "feeds_into",
-            contrast:     "compared_with",
+            evolution: "extended_by",
+            bridge: "feeds_into",
+            contrast: "compared_with",
         });
     });
 });
@@ -44,7 +44,7 @@ describe("scaleLensCoords", () => {
     });
 
     it("is translation-invariant: only coordinate differences matter", () => {
-        const origin  = scaleLensCoords({ a: [0, 0], b: [1, 1] });
+        const origin = scaleLensCoords({ a: [0, 0], b: [1, 1] });
         const shifted = scaleLensCoords({ a: [10, -4], b: [11, -3] });
         expect(shifted.positions).toEqual(origin.positions);
         expect(shifted.width).toBe(origin.width);
@@ -126,8 +126,14 @@ describe("yearRulerTicks", () => {
 
 describe("narrativeYearRange", () => {
     const page = (id: string, year?: number): NarrativeNode => ({
-        id, kind: "page", slug: id, title: id, pageKind: "concept",
-        path: `/atlas/${id}`, area: "a", ...(year !== undefined ? { year } : {}),
+        id,
+        kind: "page",
+        slug: id,
+        title: id,
+        pageKind: "concept",
+        path: `/atlas/${id}`,
+        area: "a",
+        ...(year !== undefined ? { year } : {}),
     });
 
     it("returns null when no node carries a year", () => {
@@ -135,14 +141,12 @@ describe("narrativeYearRange", () => {
     });
 
     it("ignores year-less nodes", () => {
-        expect(narrativeYearRange([page("x", 2017), page("y"), page("z", 2023)]))
-            .toEqual({ min: 2017, max: 2023 });
+        expect(narrativeYearRange([page("x", 2017), page("y"), page("z", 2023)])).toEqual({ min: 2017, max: 2023 });
     });
 
     it("ignores question nodes, which carry no year", () => {
         const question: NarrativeNode = { id: "q", kind: "question", title: "Q?", area: "a" };
-        expect(narrativeYearRange([page("x", 2017), question, page("z", 2023)]))
-            .toEqual({ min: 2017, max: 2023 });
+        expect(narrativeYearRange([page("x", 2017), question, page("z", 2023)])).toEqual({ min: 2017, max: 2023 });
         expect(narrativeYearRange([question])).toBeNull();
     });
 });

@@ -36,7 +36,9 @@ describe("circumcircle", () => {
 
     it("equilateral triangle: all three vertices are on the circle", () => {
         const s = Math.sqrt(3) / 2;
-        const a = { x: 0, y: 0 }, b = { x: 1, y: 0 }, c = { x: 0.5, y: s };
+        const a = { x: 0, y: 0 },
+            b = { x: 1, y: 0 },
+            c = { x: 0.5, y: s };
         const { cx, cy, r } = circumcircle(a, b, c);
         expect(Math.hypot(a.x - cx, a.y - cy)).toBeCloseTo(r, 9);
         expect(Math.hypot(b.x - cx, b.y - cy)).toBeCloseTo(r, 9);
@@ -45,7 +47,9 @@ describe("circumcircle", () => {
 });
 
 describe("pointInTriangle", () => {
-    const a = { x: 0, y: 0 }, b = { x: 4, y: 0 }, c = { x: 0, y: 4 };
+    const a = { x: 0, y: 0 },
+        b = { x: 4, y: 0 },
+        c = { x: 0, y: 4 };
 
     it("centroid is inside the triangle", () => {
         const centroid = { x: (0 + 4 + 0) / 3, y: (0 + 0 + 4) / 3 };

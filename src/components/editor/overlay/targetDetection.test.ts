@@ -4,7 +4,13 @@ import type { PuzzleBoardDetectResult } from "../../../lib/types";
 import type { Feature } from "../../../store/editor/useEditorStore";
 import { chessCornersAlgorithm } from "../algorithms/chessCorners/adapter";
 import { chessboardAlgorithm } from "../algorithms/calibrationTargets/chessboardAdapter";
-import { detectionGroups, detectionKindOf, hasLatticeOverlay, isDetectionFeature, toTargetDetection } from "./targetDetection";
+import {
+    detectionGroups,
+    detectionKindOf,
+    hasLatticeOverlay,
+    isDetectionFeature,
+    toTargetDetection,
+} from "./targetDetection";
 
 const algo = { source: "algorithm" as const, readonly: true };
 
@@ -35,7 +41,10 @@ describe("toTargetDetection: chess-corners", () => {
             algorithmId: "chess-corners",
             x: 426.5,
             y: 369.25,
-            axes: [{ dx: 1, dy: 0 }, { dx: 0, dy: 1 }],
+            axes: [
+                { dx: 1, dy: 0 },
+                { dx: 0, dy: 1 },
+            ],
             score: 0.8,
         };
         const detection = toTargetDetection("chess-corners", [feature]);
@@ -53,8 +62,22 @@ describe("toTargetDetection: chess-corners", () => {
                 storage_mode: "local",
                 image_width: 100,
                 image_height: 100,
-                frame: { name: "image_px_center", origin: "top_left", x_axis: "right", y_axis: "down", units: "pixels" },
-                summary: { count: 1, response_min: 1, response_max: 1, response_mean: 1, confidence_min: 1, confidence_max: 1, runtime_ms: 1 },
+                frame: {
+                    name: "image_px_center",
+                    origin: "top_left",
+                    x_axis: "right",
+                    y_axis: "down",
+                    units: "pixels",
+                },
+                summary: {
+                    count: 1,
+                    response_min: 1,
+                    response_max: 1,
+                    response_mean: 1,
+                    confidence_min: 1,
+                    confidence_max: 1,
+                    runtime_ms: 1,
+                },
                 corners: [
                     {
                         id: "a",
@@ -109,9 +132,38 @@ describe("toTargetDetection: boards", () => {
                 algorithm: "chessboard",
                 image_width: 10,
                 image_height: 10,
-                frame: { name: "image_px_center", origin: "top_left", x_axis: "right", y_axis: "down", units: "pixels" },
-                summary: { corner_count: 1, marker_count: null, circle_candidate_count: null, circle_match_count: null, alignment_inliers: null, alignment_runner_up_inliers: null, runtime_ms: 1 },
-                detection: { kind: "chessboard", corners: [{ id: "x", x: 5.5, y: 6.5, x_norm: 0, y_norm: 0, score: 1, grid: { i: 2, j: 3 }, corner_id: 7, target_position: null }] },
+                frame: {
+                    name: "image_px_center",
+                    origin: "top_left",
+                    x_axis: "right",
+                    y_axis: "down",
+                    units: "pixels",
+                },
+                summary: {
+                    corner_count: 1,
+                    marker_count: null,
+                    circle_candidate_count: null,
+                    circle_match_count: null,
+                    alignment_inliers: null,
+                    alignment_runner_up_inliers: null,
+                    runtime_ms: 1,
+                },
+                detection: {
+                    kind: "chessboard",
+                    corners: [
+                        {
+                            id: "x",
+                            x: 5.5,
+                            y: 6.5,
+                            x_norm: 0,
+                            y_norm: 0,
+                            score: 1,
+                            grid: { i: 2, j: 3 },
+                            corner_id: 7,
+                            target_position: null,
+                        },
+                    ],
+                },
                 markers: null,
                 alignment: null,
                 circle_candidates: null,
@@ -119,7 +171,9 @@ describe("toTargetDetection: boards", () => {
             },
             "run",
         );
-        expect(toTargetDetection("chessboard", features).corners).toMatchObject([{ id: "x", x: 5.5, y: 6.5, i: 2, j: 3 }]);
+        expect(toTargetDetection("chessboard", features).corners).toMatchObject([
+            { id: "x", x: 5.5, y: 6.5, i: 2, j: 3 },
+        ]);
     });
 
     it("charuco: markers keep their four corners and are labelled by marker id", () => {
@@ -135,7 +189,9 @@ describe("toTargetDetection: boards", () => {
         };
         const detection = toTargetDetection("charuco", [corner("a", 1, 2, 0, 0), marker]);
         expect(detection.kind).toBe("charuco");
-        expect(detection.markers).toEqual([{ id: "charuco-marker-4", corners: [0, 0, 10, 0, 10, 10, 0, 10], label: "4" }]);
+        expect(detection.markers).toEqual([
+            { id: "charuco-marker-4", corners: [0, 0, 10, 0, 10, 10, 0, 10], label: "4" },
+        ]);
         expect(detection.corners).toHaveLength(1);
     });
 
@@ -172,9 +228,16 @@ describe("toTargetDetection: boards", () => {
             alignment: { transform: { a: 1, b: 0, c: 0, d: 1 }, translation: [0, 0] },
             observed_edges: [{ row: 0, col: 0, orientation: "horizontal", bit: 1, confidence: 0.5 }],
         } as unknown as PuzzleBoardDetectResult;
-        const detection = toTargetDetection("puzzleboard", [labeled("p0", 10, 20, 0, 0), labeled("p1", 30, 20, 1, 0)], result);
+        const detection = toTargetDetection(
+            "puzzleboard",
+            [labeled("p0", 10, 20, 0, 0), labeled("p1", 30, 20, 1, 0)],
+            result,
+        );
         expect(detection.kind).toBe("puzzleboard");
-        expect(detection.corners).toMatchObject([{ id: "p0", i: 0, j: 0 }, { id: "p1", i: 1, j: 0 }]);
+        expect(detection.corners).toMatchObject([
+            { id: "p0", i: 0, j: 0 },
+            { id: "p1", i: 1, j: 0 },
+        ]);
         expect(detection.edgeBits).toHaveLength(1);
         expect(detection.edgeBits?.[0]).toMatchObject({ x: 20, y: 20, radius: 5, bit: 1, confidence: 0.5 });
     });
@@ -212,17 +275,29 @@ describe("toTargetDetection: ringgrid and radsym", () => {
     });
 
     it("radsym: proposals are loose corners with their score", () => {
-        const proposal: Feature = { ...algo, id: "r1", type: "point", algorithmId: "radsym", x: 395, y: 338, meta: { kind: "radsym_proposal", score: 0.7 } };
+        const proposal: Feature = {
+            ...algo,
+            id: "r1",
+            type: "point",
+            algorithmId: "radsym",
+            x: 395,
+            y: 338,
+            meta: { kind: "radsym_proposal", score: 0.7 },
+        };
         const detection = toTargetDetection("radsym", [proposal]);
         expect(detection.kind).toBe("corners");
-        expect(detection.corners).toEqual([{ id: "r1", x: 395, y: 338, score: 0.7, i: undefined, j: undefined, label: undefined }]);
+        expect(detection.corners).toEqual([
+            { id: "r1", x: 395, y: 338, score: 0.7, i: undefined, j: undefined, label: undefined },
+        ]);
     });
 });
 
 describe("toTargetDetection: features read from a file", () => {
     it("draws a bare circle as a ring of its radius", () => {
         const circle: Feature = { id: "c", type: "circle", source: "manual", x: 5, y: 6, radius: 7 };
-        expect(toTargetDetection(null, [circle]).rings).toEqual([{ id: "c", x: 5, y: 6, outer: { rx: 7, ry: 7, angle: 0 } }]);
+        expect(toTargetDetection(null, [circle]).rings).toEqual([
+            { id: "c", x: 5, y: 6, outer: { rx: 7, ry: 7, angle: 0 } },
+        ]);
     });
 
     it("ignores hand-drawn annotations", () => {
@@ -233,8 +308,26 @@ describe("toTargetDetection: features read from a file", () => {
 
 describe("detectionGroups", () => {
     const manualPoint: Feature = { id: "m", type: "point", source: "manual", x: 1, y: 1 };
-    const detected = (id: string, algorithmId: string): Feature => ({ ...algo, id, type: "point", algorithmId, x: 1, y: 1 });
-    const imported: Feature = { id: "i", type: "directed_point", source: "manual", x: 1, y: 1, axes: [{ dx: 1, dy: 0 }, { dx: 0, dy: 1 }], score: 1 };
+    const detected = (id: string, algorithmId: string): Feature => ({
+        ...algo,
+        id,
+        type: "point",
+        algorithmId,
+        x: 1,
+        y: 1,
+    });
+    const imported: Feature = {
+        id: "i",
+        type: "directed_point",
+        source: "manual",
+        x: 1,
+        y: 1,
+        axes: [
+            { dx: 1, dy: 0 },
+            { dx: 0, dy: 1 },
+        ],
+        score: 1,
+    };
 
     it("tells annotations from detections", () => {
         expect(isDetectionFeature(manualPoint)).toBe(false);

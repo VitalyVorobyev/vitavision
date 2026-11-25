@@ -8,11 +8,7 @@ export interface PixelInfo {
     b: number;
 }
 
-export function usePixelSampler(
-    imageSrc: string | null,
-    imageWidth: number,
-    imageHeight: number,
-) {
+export function usePixelSampler(imageSrc: string | null, imageWidth: number, imageHeight: number) {
     const hiddenCanvasRef = useRef<HTMLCanvasElement | null>(null);
     const [hoverPixel, setHoverPixel] = useState<PixelInfo | null>(null);
 
@@ -45,7 +41,13 @@ export function usePixelSampler(
      * so the pixel under `x` is the nearest integer, and the image spans `[-0.5, width - 0.5)`.
      */
     const sampleAt = (pos: { x: number; y: number }) => {
-        if (hiddenCanvasRef.current && pos.x >= -0.5 && pos.x < imageWidth - 0.5 && pos.y >= -0.5 && pos.y < imageHeight - 0.5) {
+        if (
+            hiddenCanvasRef.current &&
+            pos.x >= -0.5 &&
+            pos.x < imageWidth - 0.5 &&
+            pos.y >= -0.5 &&
+            pos.y < imageHeight - 0.5
+        ) {
             const ctx = hiddenCanvasRef.current.getContext("2d");
             if (ctx) {
                 const px = Math.round(pos.x);

@@ -32,28 +32,20 @@ function applyContrast(unitValue: number, contrast: number): number {
     return clamp(0.5 + (unitValue - 0.5) * contrast, 0, 1);
 }
 
-function sampleIntensityAt(
-    x: number,
-    y: number,
-    controls: ChessResponseControls,
-): number {
+function sampleIntensityAt(x: number, y: number, controls: ChessResponseControls): number {
     const rotated = rotatePoint(x, y, controls.rotationDeg);
     const softness = softnessFromBlur(controls.blur);
 
     let unitValue = 0.5;
     switch (controls.pattern) {
         case "corner":
-            unitValue =
-                0.5 +
-                0.5 * Math.tanh(rotated.x / softness) * Math.tanh(rotated.y / softness);
+            unitValue = 0.5 + 0.5 * Math.tanh(rotated.x / softness) * Math.tanh(rotated.y / softness);
             break;
         case "edge":
             unitValue = 0.5 + 0.5 * Math.tanh(rotated.x / softness);
             break;
         case "stripe":
-            unitValue =
-                0.5 +
-                0.5 * Math.tanh((STRIPE_HALF_WIDTH - Math.abs(rotated.x)) / softness);
+            unitValue = 0.5 + 0.5 * Math.tanh((STRIPE_HALF_WIDTH - Math.abs(rotated.x)) / softness);
             break;
     }
 
@@ -86,15 +78,27 @@ export function createGrid(controls: ChessResponseControls): ChessResponseGridCe
 // that keeps the ring visually uniform and matches how digital-circle detectors
 // rasterize a radius-6 ring.
 const RING_OFFSETS: readonly [number, number][] = [
-    [0, -5], [2, -5], [4, -4], [5, -2],
-    [5, 0], [5, 2], [4, 4], [2, 5],
-    [0, 5], [-2, 5], [-4, 4], [-5, 2],
-    [-5, 0], [-5, -2], [-4, -4], [-2, -5],
+    [0, -5],
+    [2, -5],
+    [4, -4],
+    [5, -2],
+    [5, 0],
+    [5, 2],
+    [4, 4],
+    [2, 5],
+    [0, 5],
+    [-2, 5],
+    [-4, 4],
+    [-5, 2],
+    [-5, 0],
+    [-5, -2],
+    [-4, -4],
+    [-2, -5],
 ];
 
 export function createRingSamples(controls: ChessResponseControls): ChessResponsePoint[] {
     return RING_OFFSETS.map(([x, y], index) => {
-        const angleRad = (-Math.PI / 2) + (index * 2 * Math.PI) / CHESS_RESPONSE_SAMPLE_COUNT;
+        const angleRad = -Math.PI / 2 + (index * 2 * Math.PI) / CHESS_RESPONSE_SAMPLE_COUNT;
         return {
             index,
             label: `I${index}`,
@@ -106,9 +110,7 @@ export function createRingSamples(controls: ChessResponseControls): ChessRespons
     });
 }
 
-export function createLocalMeanSamples(
-    controls: ChessResponseControls,
-): ChessResponseLocalMeanSample[] {
+export function createLocalMeanSamples(controls: ChessResponseControls): ChessResponseLocalMeanSample[] {
     return CHESS_RESPONSE_LOCAL_MEAN_OFFSETS.map(({ x, y }, index) => ({
         id: `M${index}`,
         x,
@@ -116,4 +118,3 @@ export function createLocalMeanSamples(
         intensity: sampleIntensityAt(x, y, controls),
     }));
 }
-

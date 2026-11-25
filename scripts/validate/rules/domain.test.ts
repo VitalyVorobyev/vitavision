@@ -28,8 +28,6 @@ describe("domainRule", () => {
 
     it("flags a non-draft page with no domain", () => {
         const ctx = createTestContext({ algorithms: [algo("a.md")] });
-        expect(domainRule(ctx)).toEqual([
-            { level: "error", message: "[a.md] non-draft page must set domain" },
-        ]);
+        expect(domainRule(ctx)).toEqual([{ level: "error", message: "[a.md] non-draft page must set domain" }]);
     });
 });

@@ -15,14 +15,21 @@ function fromBase64Url(b64: string): string {
     return atob(padded);
 }
 
-const VALID_SAMPLE_IDS = new Set<SampleId>(["chessboard", "charuco", "markerboard", "ringgrid", "puzzleboard", "upload"]);
+const VALID_SAMPLE_IDS = new Set<SampleId>([
+    "chessboard",
+    "charuco",
+    "markerboard",
+    "ringgrid",
+    "puzzleboard",
+    "upload",
+]);
 
 function parseSampleId(value: string | null): SampleId | null {
     if (value === null) {
         return null;
     }
 
-    return VALID_SAMPLE_IDS.has(value as SampleId) ? value as SampleId : null;
+    return VALID_SAMPLE_IDS.has(value as SampleId) ? (value as SampleId) : null;
 }
 
 /* ── public interface ────────────────────────────────────────── */
@@ -42,9 +49,8 @@ export function readDeepLink(searchParams: URLSearchParams): DeepLinkState {
     const configParam = searchParams.get("config");
     const sampleParam = parseSampleId(searchParams.get("sample"));
 
-    const algorithmId = algoParam && ALGORITHM_MANIFEST.some((e) => e.id === algoParam)
-        ? algoParam
-        : DEFAULT_ALGORITHM_ID;
+    const algorithmId =
+        algoParam && ALGORITHM_MANIFEST.some((e) => e.id === algoParam) ? algoParam : DEFAULT_ALGORITHM_ID;
 
     let config: unknown = null;
     if (configParam) {
@@ -65,13 +71,17 @@ export function readDeepLink(searchParams: URLSearchParams): DeepLinkState {
 function sameJson(a: unknown, b: unknown): boolean {
     if (a === b) return true;
     if (Array.isArray(a) || Array.isArray(b)) {
-        return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((item, i) => sameJson(item, b[i]));
+        return (
+            Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((item, i) => sameJson(item, b[i]))
+        );
     }
     if (a === null || b === null || typeof a !== "object" || typeof b !== "object") return false;
     const aKeys = Object.keys(a);
     const bRecord = b as Record<string, unknown>;
-    return aKeys.length === Object.keys(bRecord).length
-        && aKeys.every((key) => key in bRecord && sameJson((a as Record<string, unknown>)[key], bRecord[key]));
+    return (
+        aKeys.length === Object.keys(bRecord).length &&
+        aKeys.every((key) => key in bRecord && sameJson((a as Record<string, unknown>)[key], bRecord[key]))
+    );
 }
 
 /**
@@ -110,7 +120,7 @@ export function buildDeepLinkSearch(
  */
 export function useDeepLinkSync() {
     const [searchParams] = useSearchParams();
-    // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- read once on mount
+    // oxlint-disable-next-line react/exhaustive-deps -- read once on mount
     const initialState = useMemo(() => readDeepLink(searchParams), []);
 
     const syncToUrl = useCallback((algorithmId: string, config: unknown, defaultConfig?: unknown) => {

@@ -4,13 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { Tooltip } from "@vitavision/ui";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import VitavisionLogo from "../components/shared/VitavisionLogo";
-import {
-    SpecBlog,
-    SpecAlgorithms,
-    SpecEditor,
-    SpecTargets,
-    type SpecProps,
-} from "../components/home/specimens";
+import { SpecBlog, SpecAlgorithms, SpecEditor, SpecTargets, type SpecProps } from "../components/home/specimens";
 
 type Tile = {
     label: string;
@@ -29,7 +23,8 @@ const tiles: Tile[] = [
     {
         label: "Atlas",
         href: "/algorithms",
-        tooltip: "Browse the practical CV atlas — algorithms, deep-learning models, and concepts with prerequisites, comparisons, and source-grounded references",
+        tooltip:
+            "Browse the practical CV atlas — algorithms, deep-learning models, and concepts with prerequisites, comparisons, and source-grounded references",
         Spec: SpecAlgorithms,
     },
     {
@@ -50,11 +45,7 @@ export default function Home() {
     return (
         <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-6 text-center sm:gap-8 sm:px-6">
             <SeoHead />
-            <VitavisionLogo
-                variant="full"
-                animate
-                className="h-16 w-auto text-fg sm:h-20 md:h-24"
-            />
+            <VitavisionLogo variant="full" animate className="h-16 w-auto text-fg sm:h-20 md:h-24" />
             <motion.h1
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -97,9 +88,7 @@ export default function Home() {
                                     <Spec />
                                 </div>
                                 <div className="relative mt-auto flex items-end justify-between pt-3">
-                                    <span className="text-[13px] font-semibold tracking-tight text-fg">
-                                        {label}
-                                    </span>
+                                    <span className="text-[13px] font-semibold tracking-tight text-fg">{label}</span>
                                     <ArrowRight
                                         size={14}
                                         strokeWidth={2}

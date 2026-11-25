@@ -47,7 +47,10 @@ export default function PapersList({ rows, query, filter, sort }: PapersListProp
 
     const searchResults = useMemo(() => {
         if (!searching) return [];
-        return sortPaperRows(base.filter((r) => matchesPaperSearch(r, needle)), sort);
+        return sortPaperRows(
+            base.filter((r) => matchesPaperSearch(r, needle)),
+            sort,
+        );
     }, [base, needle, searching, sort]);
 
     const groups = useMemo(() => {
@@ -71,9 +74,7 @@ export default function PapersList({ rows, query, filter, sort }: PapersListProp
             {searching && (
                 <div className="rounded-panel border border-line bg-surface">
                     {searchResults.length === 0 ? (
-                        <p className="px-4 py-8 text-center text-[13px] text-fg-muted">
-                            No paper matches “{query}”.
-                        </p>
+                        <p className="px-4 py-8 text-center text-[13px] text-fg-muted">No paper matches “{query}”.</p>
                     ) : (
                         searchResults.map((row, i) => (
                             <PaperListRow key={row.id} row={row} maxCitedBy={maxCitedBy} bordered={i > 0} />

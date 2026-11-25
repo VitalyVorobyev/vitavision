@@ -17,15 +17,15 @@ export type GraphRelKey =
 
 /** relation key → `--graph-rel-*` custom property name (without `var()`). */
 export const GRAPH_REL_COLOR_VAR: Record<GraphRelKey, string> = {
-    prerequisites:          "--graph-rel-prereq",
-    extended_from:          "--graph-rel-extend",
-    compared_with:          "--graph-rel-compare",
-    extended_by:            "--graph-rel-extend",
-    feeds_into:              "--graph-rel-flow",
-    learned_by:              "--graph-rel-learn",
-    used_by:                 "--graph-rel-flow",
-    fed_by:                  "--graph-rel-flow",
-    learned_alternative_of:  "--graph-rel-learn",
+    prerequisites: "--graph-rel-prereq",
+    extended_from: "--graph-rel-extend",
+    compared_with: "--graph-rel-compare",
+    extended_by: "--graph-rel-extend",
+    feeds_into: "--graph-rel-flow",
+    learned_by: "--graph-rel-learn",
+    used_by: "--graph-rel-flow",
+    fed_by: "--graph-rel-flow",
+    learned_alternative_of: "--graph-rel-learn",
 };
 
 /** Resolved `var(--graph-rel-*)` color string for a relation key. */
@@ -38,8 +38,8 @@ export type GraphKind = "algorithm" | "model" | "concept";
 /** entry kind → `--graph-kind-accent-*` custom property name. */
 const GRAPH_KIND_ACCENT_VAR: Record<GraphKind, string> = {
     algorithm: "--graph-kind-accent-algorithm",
-    model:     "--graph-kind-accent-model",
-    concept:   "--graph-kind-accent-concept",
+    model: "--graph-kind-accent-model",
+    concept: "--graph-kind-accent-concept",
 };
 
 /** Resolved `var(--graph-kind-accent-*)` color string for an entry kind. */

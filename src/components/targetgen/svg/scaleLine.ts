@@ -4,11 +4,7 @@ import { PRINT_COLORS } from "../printColors";
  * Minimal reference bar (scale line) rendered at the bottom of the page.
  * Returns SVG elements as a string, or empty string if insufficient space.
  */
-export function renderScaleLine(
-    pageW: number,
-    pageH: number,
-    marginMm: number,
-): string {
+export function renderScaleLine(pageW: number, pageH: number, marginMm: number): string {
     // Pick a "nice" bar length based on page width
     const available = pageW - 2 * marginMm;
     const candidates = [100, 50, 20, 10];

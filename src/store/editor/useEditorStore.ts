@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import type { StageView } from '@vitavision/stage2d';
+import { create } from "zustand";
+import type { StageView } from "@vitavision/stage2d";
 import type {
     SampleId,
     Feature,
@@ -9,9 +9,9 @@ import type {
     OverlayVisibilityKey,
     OverlayToggles,
     RunHistoryEntry,
-} from './editorTypes';
-import { normalizeFeature, normalizeImportedFeatures, isReadonlyFeature } from './features';
-import { SAMPLE_GALLERY_IMAGES } from './galleryImages';
+} from "./editorTypes";
+import { normalizeFeature, normalizeImportedFeatures, isReadonlyFeature } from "./features";
+import { SAMPLE_GALLERY_IMAGES } from "./galleryImages";
 
 // Re-export everything that used to live directly in this file so existing
 // importers (types and helpers alike) keep working unchanged.
@@ -46,7 +46,7 @@ export type {
     OverlayToggles,
     RunSummaryEntry,
     RunHistoryEntry,
-} from './editorTypes';
+} from "./editorTypes";
 export { normalizeImportedFeatures, isReadonlyFeature };
 
 const DEFAULT_OVERLAY_TOGGLES: OverlayToggles = {
@@ -122,87 +122,94 @@ interface EditorState {
 export const useEditorStore = create<EditorState>((set) => ({
     imageSrc: null,
     imageName: null,
-    imageSampleId: 'upload',
+    imageSampleId: "upload",
     imageWidth: 0,
     imageHeight: 0,
 
-    activeTool: 'SELECT',
+    activeTool: "SELECT",
     toolVersion: 0,
     selectedFeatureId: null,
     features: [],
 
     view: null,
 
-    setImage: (src, width, height, name, sampleId) => set({
-        view: null,
-        imageSrc: src,
-        imageName: name ?? null,
-        imageSampleId: sampleId ?? 'upload',
-        imageWidth: width,
-        imageHeight: height,
-        features: [],
-        selectedFeatureId: null,
-        lastAlgorithmResult: null,
-        runHistory: [],
-        overlayVisibility: { features: true, algorithmOverlay: true },
-        featureGroupVisibility: {},
-        overlayToggles: DEFAULT_OVERLAY_TOGGLES,
-        panelMode: 'configure',
-        heatmapData: null,
-        heatmapVisible: true,
-        heatmapOpacity: 0.5,
-        heatmapColormap: 'magma',
-    }),
-    setActiveTool: (tool) => set((state) => ({
-        activeTool: tool,
-        toolVersion: state.toolVersion + 1,
-        selectedFeatureId: null,
-    })),
+    setImage: (src, width, height, name, sampleId) =>
+        set({
+            view: null,
+            imageSrc: src,
+            imageName: name ?? null,
+            imageSampleId: sampleId ?? "upload",
+            imageWidth: width,
+            imageHeight: height,
+            features: [],
+            selectedFeatureId: null,
+            lastAlgorithmResult: null,
+            runHistory: [],
+            overlayVisibility: { features: true, algorithmOverlay: true },
+            featureGroupVisibility: {},
+            overlayToggles: DEFAULT_OVERLAY_TOGGLES,
+            panelMode: "configure",
+            heatmapData: null,
+            heatmapVisible: true,
+            heatmapOpacity: 0.5,
+            heatmapColormap: "magma",
+        }),
+    setActiveTool: (tool) =>
+        set((state) => ({
+            activeTool: tool,
+            toolVersion: state.toolVersion + 1,
+            selectedFeatureId: null,
+        })),
     setSelectedFeatureId: (id) => set({ selectedFeatureId: id }),
 
     addFeature: (f) => set((state) => ({ features: [...state.features, normalizeFeature(f)] })),
 
-    updateFeature: (id, partial) => set((state) => ({
-        features: state.features.map((feature) => {
-            if (feature.id !== id || isReadonlyFeature(feature)) {
-                return feature;
-            }
-            return normalizeFeature({ ...feature, ...partial } as Feature);
-        }),
-    })),
+    updateFeature: (id, partial) =>
+        set((state) => ({
+            features: state.features.map((feature) => {
+                if (feature.id !== id || isReadonlyFeature(feature)) {
+                    return feature;
+                }
+                return normalizeFeature({ ...feature, ...partial } as Feature);
+            }),
+        })),
 
-    deleteFeature: (id) => set((state) => {
-        const feature = state.features.find((candidate) => candidate.id === id);
-        if (!feature || isReadonlyFeature(feature)) {
-            return state;
-        }
-        return {
-            features: state.features.filter((candidate) => candidate.id !== id),
-            selectedFeatureId: state.selectedFeatureId === id ? null : state.selectedFeatureId,
-        };
-    }),
+    deleteFeature: (id) =>
+        set((state) => {
+            const feature = state.features.find((candidate) => candidate.id === id);
+            if (!feature || isReadonlyFeature(feature)) {
+                return state;
+            }
+            return {
+                features: state.features.filter((candidate) => candidate.id !== id),
+                selectedFeatureId: state.selectedFeatureId === id ? null : state.selectedFeatureId,
+            };
+        }),
 
     setFeatures: (features) => set({ features: features.map(normalizeFeature) }),
 
-    replaceAlgorithmFeatures: (algorithmId, features) => set((state) => {
-        const retained = state.features.filter((feature) => !(
-            feature.source === 'algorithm' && feature.algorithmId === algorithmId
-        ));
-        const incoming = features.map((feature) => normalizeFeature({
-            ...feature,
-            source: 'algorithm',
-            algorithmId,
-            readonly: true,
-        }));
-        const selectedStillExists = state.selectedFeatureId !== null && (
-            retained.some((feature) => feature.id === state.selectedFeatureId)
-            || incoming.some((feature) => feature.id === state.selectedFeatureId)
-        );
-        return {
-            features: [...retained, ...incoming],
-            selectedFeatureId: selectedStillExists ? state.selectedFeatureId : null,
-        };
-    }),
+    replaceAlgorithmFeatures: (algorithmId, features) =>
+        set((state) => {
+            const retained = state.features.filter(
+                (feature) => !(feature.source === "algorithm" && feature.algorithmId === algorithmId),
+            );
+            const incoming = features.map((feature) =>
+                normalizeFeature({
+                    ...feature,
+                    source: "algorithm",
+                    algorithmId,
+                    readonly: true,
+                }),
+            );
+            const selectedStillExists =
+                state.selectedFeatureId !== null &&
+                (retained.some((feature) => feature.id === state.selectedFeatureId) ||
+                    incoming.some((feature) => feature.id === state.selectedFeatureId));
+            return {
+                features: [...retained, ...incoming],
+                selectedFeatureId: selectedStillExists ? state.selectedFeatureId : null,
+            };
+        }),
 
     setView: (view) => set({ view }),
 
@@ -211,8 +218,8 @@ export const useEditorStore = create<EditorState>((set) => ({
     setGalleryMode: (mode) => set({ galleryMode: mode }),
     addGalleryImage: (img) => set((state) => ({ galleryImages: [...state.galleryImages, img] })),
 
-    panelMode: 'configure',
-    selectedAlgorithmId: 'chess-corners',
+    panelMode: "configure",
+    selectedAlgorithmId: "chess-corners",
     lastAlgorithmResult: null,
     runHistory: [],
     overlayVisibility: { features: true, algorithmOverlay: true },
@@ -221,42 +228,48 @@ export const useEditorStore = create<EditorState>((set) => ({
 
     setPanelMode: (mode) => set({ panelMode: mode }),
     setSelectedAlgorithmId: (id) => set({ selectedAlgorithmId: id }),
-    setLastAlgorithmResult: (algorithmId, result) => set({
-        lastAlgorithmResult: { algorithmId, result },
-    }),
-    addRunToHistory: (entry) => set((state) => ({
-        runHistory: [entry, ...state.runHistory].slice(0, MAX_RUN_HISTORY),
-    })),
+    setLastAlgorithmResult: (algorithmId, result) =>
+        set({
+            lastAlgorithmResult: { algorithmId, result },
+        }),
+    addRunToHistory: (entry) =>
+        set((state) => ({
+            runHistory: [entry, ...state.runHistory].slice(0, MAX_RUN_HISTORY),
+        })),
     clearRunHistory: () => set({ runHistory: [] }),
-    clearFeatures: () => set({
-        features: [],
-        selectedFeatureId: null,
-        lastAlgorithmResult: null,
-        runHistory: [],
-        overlayVisibility: { features: true, algorithmOverlay: true },
-        featureGroupVisibility: {},
-        overlayToggles: DEFAULT_OVERLAY_TOGGLES,
-        panelMode: 'configure',
-        heatmapData: null,
-        heatmapVisible: true,
-        heatmapOpacity: 0.5,
-        heatmapColormap: 'magma',
-    }),
-    setFeatureGroupVisibility: (key, visible) => set((state) => ({
-        featureGroupVisibility: { ...state.featureGroupVisibility, [key]: visible },
-    })),
+    clearFeatures: () =>
+        set({
+            features: [],
+            selectedFeatureId: null,
+            lastAlgorithmResult: null,
+            runHistory: [],
+            overlayVisibility: { features: true, algorithmOverlay: true },
+            featureGroupVisibility: {},
+            overlayToggles: DEFAULT_OVERLAY_TOGGLES,
+            panelMode: "configure",
+            heatmapData: null,
+            heatmapVisible: true,
+            heatmapOpacity: 0.5,
+            heatmapColormap: "magma",
+        }),
+    setFeatureGroupVisibility: (key, visible) =>
+        set((state) => ({
+            featureGroupVisibility: { ...state.featureGroupVisibility, [key]: visible },
+        })),
     resetFeatureGroupVisibility: () => set({ featureGroupVisibility: {} }),
-    setOverlayVisibility: (key, visible) => set((state) => ({
-        overlayVisibility: { ...state.overlayVisibility, [key]: visible },
-    })),
-    setOverlayToggle: (key, value) => set((state) => ({
-        overlayToggles: { ...state.overlayToggles, [key]: value },
-    })),
+    setOverlayVisibility: (key, visible) =>
+        set((state) => ({
+            overlayVisibility: { ...state.overlayVisibility, [key]: visible },
+        })),
+    setOverlayToggle: (key, value) =>
+        set((state) => ({
+            overlayToggles: { ...state.overlayToggles, [key]: value },
+        })),
 
     heatmapData: null,
     heatmapVisible: true,
     heatmapOpacity: 0.5,
-    heatmapColormap: 'magma',
+    heatmapColormap: "magma",
     setHeatmapData: (data) => set({ heatmapData: data }),
     setHeatmapVisible: (visible) => set({ heatmapVisible: visible }),
     setHeatmapOpacity: (opacity) => set({ heatmapOpacity: opacity }),

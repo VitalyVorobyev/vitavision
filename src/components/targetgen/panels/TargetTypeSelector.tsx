@@ -110,40 +110,28 @@ export default function TargetTypeSelector({
 
     return (
         <div className="flex flex-col gap-2 p-3">
-            <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted px-1">
-                Target Type
-            </h2>
+            <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted px-1">Target Type</h2>
             <div className={layout === "grid" ? "grid grid-cols-2 gap-2" : "flex flex-col gap-2"}>
                 {TARGET_TYPES.map((t) => {
                     const unavailable = medium === "screen" && !isScreenSupported(t.id);
                     return (
-                    <Button
-                        key={t.id}
-                        variant="secondary"
-                        aria-pressed={selected === t.id}
-                        disabled={unavailable}
-                        onClick={() =>
-                            dispatch({ type: "SET_TARGET_TYPE", targetType: t.id })
-                        }
-                        className={cn(
-                            "h-auto min-h-[7.25rem] flex-col gap-1.5 whitespace-normal p-3 text-center",
-                            selected === t.id ? "bg-signal/5 ring-signal" : "text-fg-muted",
-                        )}
-                    >
-                        <span
-                            className={
-                                selected === t.id
-                                    ? "text-signal"
-                                    : "text-fg-muted"
-                            }
+                        <Button
+                            key={t.id}
+                            variant="secondary"
+                            aria-pressed={selected === t.id}
+                            disabled={unavailable}
+                            onClick={() => dispatch({ type: "SET_TARGET_TYPE", targetType: t.id })}
+                            className={cn(
+                                "h-auto min-h-[7.25rem] flex-col gap-1.5 whitespace-normal p-3 text-center",
+                                selected === t.id ? "bg-signal/5 ring-signal" : "text-fg-muted",
+                            )}
                         >
-                            {t.icon}
-                        </span>
-                        <span className="text-xs font-medium">{t.label}</span>
-                        <span className="text-[10px] leading-tight text-fg-muted">
-                            {unavailable ? "Print only — not available as a screen target" : t.description}
-                        </span>
-                    </Button>
+                            <span className={selected === t.id ? "text-signal" : "text-fg-muted"}>{t.icon}</span>
+                            <span className="text-xs font-medium">{t.label}</span>
+                            <span className="text-[10px] leading-tight text-fg-muted">
+                                {unavailable ? "Print only — not available as a screen target" : t.description}
+                            </span>
+                        </Button>
                     );
                 })}
             </div>
@@ -170,19 +158,12 @@ export default function TargetTypeSelector({
                             }
                         }}
                     />
-                    <p className="text-[10px] text-fg-muted mt-1 px-1">
-                        Select a preset to auto-fill config
-                    </p>
+                    <p className="text-[10px] text-fg-muted mt-1 px-1">Select a preset to auto-fill config</p>
                 </div>
             )}
 
             {/* Import config */}
-            <Button
-                size="sm"
-                className="mt-1"
-                onClick={() => fileRef.current?.click()}
-                icon={<Upload />}
-            >
+            <Button size="sm" className="mt-1" onClick={() => fileRef.current?.click()} icon={<Upload />}>
                 Import Config
             </Button>
             <input

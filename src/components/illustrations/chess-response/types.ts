@@ -71,4 +71,3 @@ export interface ChessResponseControls {
     blur: number;
     contrast: number;
 }
-

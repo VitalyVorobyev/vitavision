@@ -39,7 +39,16 @@ describe("validateScreenConfig", () => {
     it("reports a ChArUco board that needs more markers than the dictionary has", () => {
         const charuco: TargetConfig = {
             targetType: "charuco",
-            config: { ...(defaultConfigForType("charuco") as never as { rows: number }), rows: 12, cols: 10, squareSizeMm: 10, markerSizeRel: 0.75, dictionary: "DICT_4X4_50", borderBits: 1, innerSquareRel: 0 },
+            config: {
+                ...(defaultConfigForType("charuco") as never as { rows: number }),
+                rows: 12,
+                cols: 10,
+                squareSizeMm: 10,
+                markerSizeRel: 0.75,
+                dictionary: "DICT_4X4_50",
+                borderBits: 1,
+                innerSquareRel: 0,
+            },
         };
         expect(validateScreenConfig(charuco, screen).errors[0]).toMatch(/requires 60 markers.*DICT_4X4_50 only has 50/);
     });
@@ -47,7 +56,13 @@ describe("validateScreenConfig", () => {
 
 describe("screenGeometryWarnings", () => {
     it("warns about tiny squares and markers only", () => {
-        const grid = (px: number) => ({ kind: "grid" as const, squareSizePx: px, squareSizeMm: 1, requestedSquareSizeMm: 1, boardOriginPx: [0, 0] as [number, number] });
+        const grid = (px: number) => ({
+            kind: "grid" as const,
+            squareSizePx: px,
+            squareSizeMm: 1,
+            requestedSquareSizeMm: 1,
+            boardOriginPx: [0, 0] as [number, number],
+        });
         expect(screenGeometryWarnings(grid(73))).toEqual([]);
         expect(screenGeometryWarnings(grid(8))[0]).toMatch(/8 px wide/);
     });

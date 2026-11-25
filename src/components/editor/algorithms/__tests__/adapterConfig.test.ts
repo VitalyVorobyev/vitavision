@@ -45,7 +45,12 @@ describe("the stored config is the WASM document", () => {
 
     it("radsym attaches its config to the result, for the heatmap overlay", async () => {
         const [radsym] = (await loadAllAlgorithms()).filter((a) => a.id === "radsym");
-        const result = (await radsym!.runWasm!({ pixels: new Uint8Array(4), width: 1, height: 1, config: radsym!.initialConfig })) as Record<string, unknown>;
+        const result = (await radsym!.runWasm!({
+            pixels: new Uint8Array(4),
+            width: 1,
+            height: 1,
+            config: radsym!.initialConfig,
+        })) as Record<string, unknown>;
         expect(result._heatmapConfig).toBe(radsym!.initialConfig);
     });
 });

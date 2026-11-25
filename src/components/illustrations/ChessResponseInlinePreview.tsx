@@ -41,73 +41,73 @@ export default function ChessResponseInlinePreview({
 
     return (
         <DensityProvider value="compact">
-        <section className="not-prose my-6 flex flex-col sm:flex-row items-stretch gap-4 rounded-2xl border border-line bg-[linear-gradient(180deg,var(--surface),var(--ground))] p-4">
-            {/* Mini SVG */}
-            <div className="w-full sm:w-auto sm:max-w-[12rem] shrink-0">
-                <ChessResponseSvg
-                    patternLabel={pattern}
-                    rotationDeg={rotationDeg}
-                    computation={response}
-                    showSampleLabels={false}
-                    showSrPairs={true}
-                    showDrPairs={false}
-                    showMrRegions={false}
-                />
-            </div>
-
-            {/* Right column */}
-            <div className="flex flex-col justify-between gap-3 min-w-0">
-                <div className="space-y-3">
-                    <div className="text-xs font-mono uppercase tracking-[0.18em] text-fg-muted">
-                        ChESS response
-                    </div>
-
-                    {/* Pattern switcher */}
-                    <SegmentedControl
-                        aria-label="Pattern"
-                        value={pattern}
-                        options={PATTERN_OPTIONS}
-                        onValueChange={(next) => {
-                            const p = toPattern(next);
-                            if (p) setPattern(p);
-                        }}
+            <section className="not-prose my-6 flex flex-col sm:flex-row items-stretch gap-4 rounded-2xl border border-line bg-[linear-gradient(180deg,var(--surface),var(--ground))] p-4">
+                {/* Mini SVG */}
+                <div className="w-full sm:w-auto sm:max-w-[12rem] shrink-0">
+                    <ChessResponseSvg
+                        patternLabel={pattern}
+                        rotationDeg={rotationDeg}
+                        computation={response}
+                        showSampleLabels={false}
+                        showSrPairs={true}
+                        showDrPairs={false}
+                        showMrRegions={false}
                     />
+                </div>
 
-                    {/* R metric pill */}
-                    <div
-                        className={cn(
-                            "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-mono",
-                            response.response > 0
-                                ? "border-normal/30 bg-normal/10 text-normal"
-                                : "border-warn/30 bg-warn/10 text-warn",
-                        )}
-                    >
-                        <span className="text-fg-muted">R =</span>
-                        <span className="font-semibold">{formatValue(response.response)}</span>
+                {/* Right column */}
+                <div className="flex flex-col justify-between gap-3 min-w-0">
+                    <div className="space-y-3">
+                        <div className="text-xs font-mono uppercase tracking-[0.18em] text-fg-muted">
+                            ChESS response
+                        </div>
+
+                        {/* Pattern switcher */}
+                        <SegmentedControl
+                            aria-label="Pattern"
+                            value={pattern}
+                            options={PATTERN_OPTIONS}
+                            onValueChange={(next) => {
+                                const p = toPattern(next);
+                                if (p) setPattern(p);
+                            }}
+                        />
+
+                        {/* R metric pill */}
+                        <div
+                            className={cn(
+                                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-mono",
+                                response.response > 0
+                                    ? "border-normal/30 bg-normal/10 text-normal"
+                                    : "border-warn/30 bg-warn/10 text-warn",
+                            )}
+                        >
+                            <span className="text-fg-muted">R =</span>
+                            <span className="font-semibold">{formatValue(response.response)}</span>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        {/* Play/pause */}
+                        <Button
+                            aria-label={playing ? "Pause rotation" : "Play rotation"}
+                            onClick={() => setPlaying((p) => !p)}
+                            icon={playing ? <Pause /> : <Play />}
+                        >
+                            {playing ? "Pause" : "Play"}
+                        </Button>
+
+                        {/* Link to full demo (plain <a> so it works inside createRoot subtrees
+                         that don't inherit the outer React Router context) */}
+                        <a
+                            href="/demos/chess-response"
+                            className="text-xs text-fg-muted hover:text-fg transition-colors"
+                        >
+                            Open full demo &rarr;
+                        </a>
                     </div>
                 </div>
-
-                <div className="flex items-center gap-3">
-                    {/* Play/pause */}
-                    <Button
-                        aria-label={playing ? "Pause rotation" : "Play rotation"}
-                        onClick={() => setPlaying((p) => !p)}
-                        icon={playing ? <Pause /> : <Play />}
-                    >
-                        {playing ? "Pause" : "Play"}
-                    </Button>
-
-                    {/* Link to full demo (plain <a> so it works inside createRoot subtrees
-                         that don't inherit the outer React Router context) */}
-                    <a
-                        href="/demos/chess-response"
-                        className="text-xs text-fg-muted hover:text-fg transition-colors"
-                    >
-                        Open full demo &rarr;
-                    </a>
-                </div>
-            </div>
-        </section>
+            </section>
         </DensityProvider>
     );
 }

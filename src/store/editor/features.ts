@@ -1,9 +1,9 @@
-import { featureSchema } from './featureSchema';
-import type { Feature, FeatureSource } from './editorTypes';
+import { featureSchema } from "./featureSchema";
+import type { Feature, FeatureSource } from "./editorTypes";
 
 export const normalizeFeature = (feature: Feature): Feature => {
-    const source: FeatureSource = feature.source === 'algorithm' ? 'algorithm' : 'manual';
-    const readonly = feature.readonly ?? source === 'algorithm';
+    const source: FeatureSource = feature.source === "algorithm" ? "algorithm" : "manual";
+    const readonly = feature.readonly ?? source === "algorithm";
     return {
         ...feature,
         source,

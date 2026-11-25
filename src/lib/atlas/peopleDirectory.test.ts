@@ -67,7 +67,14 @@ const AUTHORS = authorsIndex({
 });
 
 const PAPERS: PapersById = {
-    p1: { id: "p1", title: "Deep Residual Learning for Image Recognition", authors: ["Kaiming He"], year: 2016, venue: "CVPR", url: "" },
+    p1: {
+        id: "p1",
+        title: "Deep Residual Learning for Image Recognition",
+        authors: ["Kaiming He"],
+        year: 2016,
+        venue: "CVPR",
+        url: "",
+    },
     p2: { id: "p2", title: "Mask R-CNN", authors: ["Kaiming He"], year: 2017, venue: "ICCV", url: "" },
     p3: { id: "p3", title: "Fast R-CNN", authors: ["Ross Girshick"], year: 2015, venue: "ICCV", url: "" },
     p4: { id: "p4", title: "An Unrelated Paper", authors: ["Ghost Author"], year: 2020, venue: "Workshop", url: "" },

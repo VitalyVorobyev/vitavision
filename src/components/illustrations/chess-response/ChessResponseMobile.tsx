@@ -2,13 +2,7 @@ import { Pause, Play } from "lucide-react";
 import { Button, SegmentedControl, Slider, ToggleChip } from "@vitavision/ui";
 import ChessResponseSvg from "./ChessResponseSvg";
 import { formatValue } from "./readoutHelpers";
-import {
-    MetricCell,
-    Panel,
-    PanelFlat,
-    Pill,
-    TinyBrow,
-} from "../_shared/primitives";
+import { MetricCell, Panel, PanelFlat, Pill, TinyBrow } from "../_shared/primitives";
 import type { ChessDemoProps } from "./ChessDemoProps";
 import { PATTERN_OPTIONS, toPattern } from "./patternOptions";
 import { CHESS_DR_COLOR, CHESS_MR_COLOR, CHESS_PHASE_COLORS } from "../_shared/dataColors";
@@ -175,7 +169,11 @@ export default function ChessResponseMobile({
                     <ToggleChip checked={showSampleLabels} onCheckedChange={onShowSampleLabelsChange}>
                         Samples
                     </ToggleChip>
-                    <ToggleChip checked={showSrPairs} onCheckedChange={onShowSrPairsChange} swatch={CHESS_PHASE_COLORS[1]}>
+                    <ToggleChip
+                        checked={showSrPairs}
+                        onCheckedChange={onShowSrPairsChange}
+                        swatch={CHESS_PHASE_COLORS[1]}
+                    >
                         SR
                     </ToggleChip>
                     <ToggleChip checked={showDrPairs} onCheckedChange={onShowDrPairsChange} swatch={CHESS_DR_COLOR}>

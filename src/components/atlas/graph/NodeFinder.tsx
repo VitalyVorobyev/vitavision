@@ -11,22 +11,22 @@ import { Search } from "lucide-react";
 import { Input } from "@vitavision/ui";
 
 export interface NodeFinderItem {
-    id:        string;
-    title:     string;
+    id: string;
+    title: string;
     subtitle?: string;
-    icon?:     ReactNode;
+    icon?: ReactNode;
 }
 
 export interface NodeFinderProps {
     /** Given a non-empty query, return the (already filtered/capped) result list. */
-    search:       (query: string) => NodeFinderItem[];
-    onSelect:     (id: string) => void;
+    search: (query: string) => NodeFinderItem[];
+    onSelect: (id: string) => void;
     placeholder?: string;
 }
 
 export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }: NodeFinderProps) {
-    const [query,          setQuery]          = useState("");
-    const [open,           setOpen]           = useState(false);
+    const [query, setQuery] = useState("");
+    const [open, setOpen] = useState(false);
     const [highlightIndex, setHighlightIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -77,14 +77,22 @@ export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }:
         <div className="absolute top-3 left-3 z-20 w-64">
             {/* Input */}
             <div className="relative">
-                <Search size={13} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
+                <Search
+                    size={13}
+                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted"
+                    aria-hidden="true"
+                />
                 <Input
                     ref={inputRef}
                     type="search"
                     aria-label={placeholder}
                     placeholder={placeholder}
                     value={query}
-                    onChange={(e) => { setQuery(e.target.value); setOpen(true); setHighlightIndex(0); }}
+                    onChange={(e) => {
+                        setQuery(e.target.value);
+                        setOpen(true);
+                        setHighlightIndex(0);
+                    }}
                     onFocus={() => setOpen(true)}
                     onBlur={() => setTimeout(() => setOpen(false), 120)}
                     onKeyDown={handleKeyDown}
@@ -101,7 +109,10 @@ export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }:
                             <button
                                 key={item.id}
                                 type="button"
-                                onMouseDown={(e) => { e.preventDefault(); pick(item.id); }}
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    pick(item.id);
+                                }}
                                 onMouseEnter={() => setHighlightIndex(idx)}
                                 className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-left transition-colors ${
                                     isHighlighted ? "bg-line/60" : "hover:bg-line/60"

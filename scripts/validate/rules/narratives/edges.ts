@@ -25,7 +25,10 @@ export function checkEdges(
         const fromKnown = nodeIds.has(edge.from);
         const toKnown = nodeIds.has(edge.to);
         if (!fromKnown) {
-            diagnostics.push({ level: "error", message: `[${file}] edge references unknown node "${edge.from}" (from)` });
+            diagnostics.push({
+                level: "error",
+                message: `[${file}] edge references unknown node "${edge.from}" (from)`,
+            });
         }
         if (!toKnown) {
             diagnostics.push({ level: "error", message: `[${file}] edge references unknown node "${edge.to}" (to)` });

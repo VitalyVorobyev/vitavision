@@ -30,9 +30,7 @@ interface RepoEntry {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-async function spawnCapture(
-    cmd: string[],
-): Promise<{ ok: boolean; stdout: string; stderr: string }> {
+async function spawnCapture(cmd: string[]): Promise<{ ok: boolean; stdout: string; stderr: string }> {
     const proc = Bun.spawn(cmd, { stdout: "pipe", stderr: "pipe" });
     const exitCode = await proc.exited;
     const stdoutText = await new Response(proc.stdout).text();
@@ -75,11 +73,7 @@ async function fetchGitHubApi(path: string): Promise<Record<string, unknown> | n
 }
 
 /** Verify commit pin via git ls-remote (best-effort, non-fatal). */
-async function verifyCommitPin(
-    id: string,
-    repoUrl: string,
-    commit: string,
-): Promise<void> {
+async function verifyCommitPin(id: string, repoUrl: string, commit: string): Promise<void> {
     const result = await spawnCapture(["git", "ls-remote", repoUrl]);
     if (!result.ok) {
         // ls-remote failed entirely — likely network; don't block
@@ -88,9 +82,7 @@ async function verifyCommitPin(
     }
     const found = result.stdout.split("\n").some((line) => line.startsWith(commit));
     if (!found) {
-        console.log(
-            `[warn] ${id}: commit pin ${commit} not found in ls-remote (may still exist as detached commit)`,
-        );
+        console.log(`[warn] ${id}: commit pin ${commit} not found in ls-remote (may still exist as detached commit)`);
     }
 }
 
@@ -234,9 +226,7 @@ async function main(): Promise<void> {
     }) as Array<Record<string, unknown>>;
 
     // Filter to kind: repo entries
-    const repoEntries = allEntries
-        .filter((e) => e.kind === "repo")
-        .map((e) => e as unknown as RepoEntry);
+    const repoEntries = allEntries.filter((e) => e.kind === "repo").map((e) => e as unknown as RepoEntry);
 
     if (repoEntries.length === 0) {
         console.log("no repo entries found");
@@ -244,9 +234,7 @@ async function main(): Promise<void> {
         return;
     }
 
-    const targets = filterId
-        ? repoEntries.filter((e) => e.id === filterId)
-        : repoEntries;
+    const targets = filterId ? repoEntries.filter((e) => e.id === filterId) : repoEntries;
 
     if (filterId && targets.length === 0) {
         process.stderr.write(`sources:fetch-repo — id not found: ${filterId}\n`);

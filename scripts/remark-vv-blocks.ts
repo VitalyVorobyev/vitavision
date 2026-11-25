@@ -59,11 +59,7 @@ interface MdastNodeWithHast extends Parent {
 
 function isDirectiveNode(node: unknown): node is DirectiveNode {
     const n = node as { type?: string };
-    return (
-        n.type === "containerDirective" ||
-        n.type === "leafDirective" ||
-        n.type === "textDirective"
-    );
+    return n.type === "containerDirective" || n.type === "leafDirective" || n.type === "textDirective";
 }
 
 /**
@@ -88,13 +84,8 @@ function createHastMappedNode(
 /**
  * Create a text-only hast-mapped node (e.g. for title/label divs).
  */
-function createTextDiv(
-    className: string[],
-    text: string,
-): MdastNodeWithHast {
-    return createHastMappedNode("div", { className }, [
-        { type: "text", value: text } as PhrasingContent,
-    ]);
+function createTextDiv(className: string[], text: string): MdastNodeWithHast {
+    return createHastMappedNode("div", { className }, [{ type: "text", value: text } as PhrasingContent]);
 }
 
 /** Minimal shape shared by mdast nodes we need to walk for plain-text extraction. */
@@ -126,9 +117,10 @@ function getPlainText(nodes: ValueOrParentNode[]): string {
  * Extract ::input[...] and ::output[...] leaf-directive metadata rows from algorithm block children.
  * Children are preserved as-is so inline math and other inline markdown render in the meta value.
  */
-function extractAlgorithmMeta(
-    children: Parent["children"],
-): { meta: Array<{ key: string; children: Parent["children"] }>; remaining: Parent["children"] } {
+function extractAlgorithmMeta(children: Parent["children"]): {
+    meta: Array<{ key: string; children: Parent["children"] }>;
+    remaining: Parent["children"];
+} {
     const meta: Array<{ key: string; children: Parent["children"] }> = [];
     const remaining: Parent["children"] = [];
 
@@ -173,8 +165,9 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             // *nodes* (not a stringified concatenation) so inline formatting — most
             // importantly remark-math's `inlineMath` nodes — survives into the hast
             // tree and gets rendered downstream (e.g. by rehype-katex).
-            const labelChild = (node.children as Array<{ data?: { directiveLabel?: boolean }; children?: Parent["children"] }>)
-                .find((c) => c.data?.directiveLabel);
+            const labelChild = (
+                node.children as Array<{ data?: { directiveLabel?: boolean }; children?: Parent["children"] }>
+            ).find((c) => c.data?.directiveLabel);
             const labelChildren = labelChild?.children ?? [];
             const hasLabel = getPlainText(labelChildren as unknown as ValueOrParentNode[]).trim().length > 0;
 
@@ -190,12 +183,18 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             const newChildren: Parent["children"] = [];
 
             // Title div
-            newChildren.push(createTextDiv(["vv-block__title"], BLOCK_TITLES[kind] ?? kind) as unknown as Parent["children"][0]);
+            newChildren.push(
+                createTextDiv(["vv-block__title"], BLOCK_TITLES[kind] ?? kind) as unknown as Parent["children"][0],
+            );
 
             // Label div (optional)
             if (hasLabel) {
                 newChildren.push(
-                    createHastMappedNode("div", { className: ["vv-block__label"] }, labelChildren) as unknown as Parent["children"][0],
+                    createHastMappedNode(
+                        "div",
+                        { className: ["vv-block__label"] },
+                        labelChildren,
+                    ) as unknown as Parent["children"][0],
                 );
             }
 
@@ -222,24 +221,38 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
                             ) as unknown as PhrasingContent,
                         ]),
                     ) as unknown as Parent["children"];
-                    newChildren.push(createHastMappedNode("div", { className: ["vv-block__meta"] }, metaItems) as unknown as Parent["children"][0]);
+                    newChildren.push(
+                        createHastMappedNode(
+                            "div",
+                            { className: ["vv-block__meta"] },
+                            metaItems,
+                        ) as unknown as Parent["children"][0],
+                    );
                 }
             }
 
             // For proof blocks, append QED marker to body content
             if (kind === "proof") {
                 bodyContent.push(
-                    createHastMappedNode("span", {
-                        className: ["vv-proof-qed"],
-                        "aria-label": "end of proof",
-                    }, [
-                        { type: "text", value: "\u220E" } as PhrasingContent,
-                    ]) as unknown as Parent["children"][0],
+                    createHastMappedNode(
+                        "span",
+                        {
+                            className: ["vv-proof-qed"],
+                            "aria-label": "end of proof",
+                        },
+                        [{ type: "text", value: "\u220E" } as PhrasingContent],
+                    ) as unknown as Parent["children"][0],
                 );
             }
 
             // Body wrapper
-            newChildren.push(createHastMappedNode("div", { className: ["vv-block__body"] }, bodyContent) as unknown as Parent["children"][0]);
+            newChildren.push(
+                createHastMappedNode(
+                    "div",
+                    { className: ["vv-block__body"] },
+                    bodyContent,
+                ) as unknown as Parent["children"][0],
+            );
 
             // Replace children
             node.children = newChildren as unknown as typeof node.children;

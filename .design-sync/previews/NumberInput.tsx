@@ -1,16 +1,19 @@
-import { useState } from 'react';
-import { NumberInput, Field } from 'vitcv';
+import { useState } from "react";
+import { NumberInput, Field } from "vitcv";
 
 // Always controlled with text (`value` is a string): that is what the DOM holds while the
 // user types "1." or "-". The app converts at the seam with `numberInputProps`
 // (src/lib/fieldBindings.ts).
-function Bound({ initial, ...rest }: {
+function Bound({
+    initial,
+    ...rest
+}: {
     initial: string;
     unit?: string;
     min?: number;
     step?: number;
     disabled?: boolean;
-    'aria-label'?: string;
+    "aria-label"?: string;
 }) {
     const [v, setV] = useState(initial);
     return <NumberInput value={v} onChange={(e) => setV(e.target.value)} {...rest} />;

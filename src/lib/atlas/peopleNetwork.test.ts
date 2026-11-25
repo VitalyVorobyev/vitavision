@@ -95,8 +95,22 @@ describe("searchPeople", () => {
     };
     const scholarly = {
         authors: {
-            A1: { firstYear: 2015, lastYear: 2021, pageCount: 22, primaryPages: [], domains: [], group: "representation" as const },
-            A2: { firstYear: 2014, lastYear: 2017, pageCount: 10, primaryPages: [], domains: [], group: "recognition" as const },
+            A1: {
+                firstYear: 2015,
+                lastYear: 2021,
+                pageCount: 22,
+                primaryPages: [],
+                domains: [],
+                group: "representation" as const,
+            },
+            A2: {
+                firstYear: 2014,
+                lastYear: 2017,
+                pageCount: 10,
+                primaryPages: [],
+                domains: [],
+                group: "recognition" as const,
+            },
         },
     };
 
@@ -250,7 +264,10 @@ describe("layoutLabels", () => {
     });
 
     it("drops a candidate whose only anchors fall outside the canvas", () => {
-        const placed = layoutLabels([{ id: "a", x: 998, y: 998, radius: 5, text: "Way Too Long A Name Here", fontSize: 14 }], canvas);
+        const placed = layoutLabels(
+            [{ id: "a", x: 998, y: 998, radius: 5, text: "Way Too Long A Name Here", fontSize: 14 }],
+            canvas,
+        );
         expect(placed).toHaveLength(0);
     });
 
@@ -266,7 +283,11 @@ describe("layoutLabels", () => {
     it("respects reserved overlay boxes", () => {
         const reserved: [number, number, number, number][] = [[0, 0, 300, 300]];
         // Only anchor that would fit (right of node) lands inside the reserved box.
-        const placed = layoutLabels([{ id: "a", x: 100, y: 100, radius: 5, text: "Ada", fontSize: 12 }], canvas, reserved);
+        const placed = layoutLabels(
+            [{ id: "a", x: 100, y: 100, radius: 5, text: "Ada", fontSize: 12 }],
+            canvas,
+            reserved,
+        );
         expect(placed).toHaveLength(0);
     });
 
@@ -334,11 +355,20 @@ describe("layoutLabels", () => {
         ];
         expect(ties).toHaveLength(42);
 
-        const nodes: ScholarlyNetworkNode[] = [{ id: focusId, x: 0, y: 0 }, ...ties.map((t) => ({ id: t.id, x: 0, y: 0 }))];
+        const nodes: ScholarlyNetworkNode[] = [
+            { id: focusId, x: 0, y: 0 },
+            ...ties.map((t) => ({ id: t.id, x: 0, y: 0 })),
+        ];
         const positions = computeFocusPositions(nodes, ties, focusId);
         const people = [
             { id: focusId, name: "Focus Person", pageCount: 14, x: 0, y: 0 },
-            ...ties.map((t, i) => ({ id: t.id, name: `Co Author Number ${i}`, pageCount: 5, x: positions.get(t.id)!.x, y: positions.get(t.id)!.y })),
+            ...ties.map((t, i) => ({
+                id: t.id,
+                name: `Co Author Number ${i}`,
+                pageCount: 5,
+                x: positions.get(t.id)!.x,
+                y: positions.get(t.id)!.y,
+            })),
         ];
 
         const halfExtent = focusHalfExtent(ties);
@@ -392,7 +422,13 @@ function expectNoPairwiseOverlap(placed: { x: number; y: number; text: string; f
 }
 
 describe("selectOverviewLabelCandidates", () => {
-    const people = Array.from({ length: 25 }, (_, i) => ({ id: `p${i}`, name: `Person ${i}`, pageCount: 25 - i, x: i, y: i }));
+    const people = Array.from({ length: 25 }, (_, i) => ({
+        id: `p${i}`,
+        name: `Person ${i}`,
+        pageCount: 25 - i,
+        x: i,
+        y: i,
+    }));
 
     it("returns nothing for labelMode 'none'", () => {
         expect(selectOverviewLabelCandidates(people, "none")).toHaveLength(0);
@@ -429,7 +465,10 @@ describe("selectFocusLabelCandidates", () => {
 
     it("always includes the focus node and every tie as mandatory (under the budget)", () => {
         const { candidates } = selectFocusLabelCandidates(people, "focus", ties, "none");
-        const mandatoryIds = candidates.filter((c) => c.mandatory).map((c) => c.id).sort();
+        const mandatoryIds = candidates
+            .filter((c) => c.mandatory)
+            .map((c) => c.id)
+            .sort();
         expect(mandatoryIds).toEqual(["focus", "tie-a", "tie-b"]);
     });
 
@@ -466,7 +505,10 @@ describe("splitFocusTieLabels", () => {
     });
 
     it("fills remaining budget with single-paper ties spread evenly across the ring, not a bunched prefix", () => {
-        const strong = [{ id: "a", shared: 3 }, { id: "b", shared: 2 }];
+        const strong = [
+            { id: "a", shared: 3 },
+            { id: "b", shared: 2 },
+        ];
         const weak = Array.from({ length: 20 }, (_, i) => ({ id: `w${i}`, shared: 1 }));
         const { labelled, unlabelled } = splitFocusTieLabels([...strong, ...weak], 16);
         // budget 16, -1 for the focus node's own label, -2 for the strong pair = 13 weak slots.
@@ -481,7 +523,10 @@ describe("splitFocusTieLabels", () => {
     });
 
     it("leaves nobody unlabelled when the total is small", () => {
-        const ties = [{ id: "a", shared: 1 }, { id: "b", shared: 1 }];
+        const ties = [
+            { id: "a", shared: 1 },
+            { id: "b", shared: 1 },
+        ];
         const { unlabelled } = splitFocusTieLabels(ties, 16);
         expect(unlabelled).toHaveLength(0);
     });
@@ -503,7 +548,10 @@ describe("ringRadiusScale", () => {
 
 describe("computeRingLayout", () => {
     it("gives a high-degree focus (42 ties) visibly bigger rings than a low-degree one (2 ties)", () => {
-        const fewTies = [{ id: "a", shared: 1 }, { id: "b", shared: 1 }];
+        const fewTies = [
+            { id: "a", shared: 1 },
+            { id: "b", shared: 1 },
+        ];
         const manyTies = Array.from({ length: 42 }, (_, i) => ({ id: `t${i}`, shared: 1 }));
         const fewRadius = computeRingLayout(fewTies).get("a")!.radius;
         const manyRadius = computeRingLayout(manyTies).get("t0")!.radius;
@@ -524,7 +572,10 @@ describe("computeRingLayout", () => {
     });
 
     it("lays out each tier independently — a single strong tie doesn't affect a full weak ring's spacing", () => {
-        const ties = [{ id: "strong", shared: 3 }, ...Array.from({ length: 8 }, (_, i) => ({ id: `w${i}`, shared: 1 }))];
+        const ties = [
+            { id: "strong", shared: 3 },
+            ...Array.from({ length: 8 }, (_, i) => ({ id: `w${i}`, shared: 1 })),
+        ];
         const ring = computeRingLayout(ties);
         const weakAngles = Array.from({ length: 8 }, (_, i) => ring.get(`w${i}`)!.angle);
         expect(new Set(weakAngles.map((a) => a.toFixed(3))).size).toBe(8);
@@ -533,7 +584,10 @@ describe("computeRingLayout", () => {
 
 describe("focusHalfExtent", () => {
     it("grows for a high-degree focus so the camera fit follows the larger ring extent", () => {
-        const fewTies = [{ id: "a", shared: 1 }, { id: "b", shared: 1 }];
+        const fewTies = [
+            { id: "a", shared: 1 },
+            { id: "b", shared: 1 },
+        ];
         const manyTies = Array.from({ length: 42 }, (_, i) => ({ id: `t${i}`, shared: 1 }));
         expect(focusHalfExtent(manyTies)).toBeGreaterThan(focusHalfExtent(fewTies));
     });

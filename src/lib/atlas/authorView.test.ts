@@ -25,15 +25,41 @@ const author: ScholarlyAuthor = {
 };
 
 const papers: PapersById = {
-    p1: { id: "p1", title: "Deep Residual Learning for Image Recognition", authors: ["He", "Zhang"], year: 2016, venue: "CVPR", url: "https://x" },
+    p1: {
+        id: "p1",
+        title: "Deep Residual Learning for Image Recognition",
+        authors: ["He", "Zhang"],
+        year: 2016,
+        venue: "CVPR",
+        url: "https://x",
+    },
     p2: { id: "p2", title: "Mask R-CNN", authors: ["He", "Gkioxari"], year: 2017, venue: "ICCV", url: "https://x" },
     p3: { id: "p3", title: "Group Normalization", authors: ["Wu", "He"], year: 2018, venue: "ECCV", url: "https://x" },
-    p4: { id: "p4", title: "Focal Loss: for Dense Object Detection", authors: ["Lin"], year: 2017, venue: "ICCV", url: "https://x" },
+    p4: {
+        id: "p4",
+        title: "Focal Loss: for Dense Object Detection",
+        authors: ["Lin"],
+        year: 2017,
+        venue: "ICCV",
+        url: "https://x",
+    },
 };
 
 const scholarlyPapers: Record<string, ScholarlyPaper> = {
-    p1: { primaryPages: ["resnet"], citingPages: ["fpn"], cites: [], citedBy: [], narratives: [{ slug: "n1", title: "Narrative One", via: "page" }] },
-    p2: { primaryPages: ["mask-rcnn"], citingPages: [], cites: [], citedBy: [], narratives: [{ slug: "n2", title: "Narrative Two", via: "page" }] },
+    p1: {
+        primaryPages: ["resnet"],
+        citingPages: ["fpn"],
+        cites: [],
+        citedBy: [],
+        narratives: [{ slug: "n1", title: "Narrative One", via: "page" }],
+    },
+    p2: {
+        primaryPages: ["mask-rcnn"],
+        citingPages: [],
+        cites: [],
+        citedBy: [],
+        narratives: [{ slug: "n2", title: "Narrative Two", via: "page" }],
+    },
     p3: { primaryPages: [], citingPages: ["fpn"], cites: [], citedBy: [], narratives: [] },
     p4: { primaryPages: [], citingPages: [], cites: [], citedBy: [], narratives: [] },
 };
@@ -56,7 +82,12 @@ describe("buildAuthorSummary", () => {
     });
 
     it("uses singular forms for count-1 fields", () => {
-        const one: ScholarlyAuthor = { ...author, pageCount: 1, primaryPages: ["resnet"], domains: [{ domain: "features", count: 1 }] };
+        const one: ScholarlyAuthor = {
+            ...author,
+            pageCount: 1,
+            primaryPages: ["resnet"],
+            domains: [{ domain: "features", count: 1 }],
+        };
         const s = buildAuthorSummary(one, 1, 1);
         expect(s.first).toBe("1 paper in the Atlas registry, 2015–2021.");
         expect(s.second!.bold).toBe("1 Atlas page");
@@ -214,7 +245,10 @@ describe("buildCoAuthorRows", () => {
     });
 
     it("drops shared paper ids unknown to PapersById", () => {
-        const rows = buildCoAuthorRows([{ id: "A2", name: "Jian Sun", shared: 1, sharedPaperIds: ["unknown"] }], papers);
+        const rows = buildCoAuthorRows(
+            [{ id: "A2", name: "Jian Sun", shared: 1, sharedPaperIds: ["unknown"] }],
+            papers,
+        );
         expect(rows[0]?.sharedPapers).toEqual([]);
     });
 });

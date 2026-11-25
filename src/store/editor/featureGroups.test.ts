@@ -50,7 +50,10 @@ describe("buildFeatureGroups", () => {
 
         expect(ringMarkers.key).toBe("algo:ringgrid_decoded");
         expect(ringMarkers.features.map((feature) => feature.id)).toEqual([
-            "marker-top-left", "marker-bottom", "marker-mid", "marker-top-right",
+            "marker-top-left",
+            "marker-bottom",
+            "marker-mid",
+            "marker-top-right",
         ]);
     });
 
@@ -65,9 +68,7 @@ describe("buildFeatureGroups", () => {
         ];
 
         const group = buildFeatureGroups(features)[0]!;
-        expect(group.features.map((f) => f.id)).toEqual([
-            "r0c0", "r0c1", "r1c0", "r1c1",
-        ]);
+        expect(group.features.map((f) => f.id)).toEqual(["r0c0", "r0c1", "r1c0", "r1c1"]);
     });
 
     it("places markers without board coords after those with board coords", () => {

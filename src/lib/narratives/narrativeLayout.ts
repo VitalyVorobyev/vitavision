@@ -33,16 +33,16 @@ const GAP_Y = 72;
  */
 export const NARRATIVE_EDGE_REL: Record<NarrativeEdgeType, GraphRelKey> = {
     prerequisite: "prerequisites",
-    evolution:    "extended_by",
-    bridge:       "feeds_into",
-    contrast:     "compared_with",
+    evolution: "extended_by",
+    bridge: "feeds_into",
+    contrast: "compared_with",
 };
 
 export const NARRATIVE_EDGE_LABEL: Record<NarrativeEdgeType, string> = {
     prerequisite: "Prerequisite",
-    evolution:    "Evolution",
-    bridge:       "Bridge",
-    contrast:     "Contrast",
+    evolution: "Evolution",
+    bridge: "Bridge",
+    contrast: "Contrast",
 };
 
 /**
@@ -52,9 +52,9 @@ export const NARRATIVE_EDGE_LABEL: Record<NarrativeEdgeType, string> = {
  */
 export const NARRATIVE_EDGE_DASH: Record<NarrativeEdgeType, string | undefined> = {
     prerequisite: undefined,
-    evolution:    undefined,
-    bridge:       "5 4",
-    contrast:     "1.5 4",
+    evolution: undefined,
+    bridge: "5 4",
+    contrast: "1.5 4",
 };
 
 /** Resolved `var(--graph-rel-*)` colour for a narrative edge type. */
@@ -82,7 +82,7 @@ export interface NarrativeLayout {
     /** Node id → top-left corner of its chip, in content pixels. */
     positions: Record<string, { x: number; y: number }>;
     /** Full content extent including the chip's own width/height. */
-    width:  number;
+    width: number;
     height: number;
 }
 
@@ -148,7 +148,7 @@ export function scaleLensCoords(coords: Record<string, [number, number]>): Narra
 
     return {
         positions,
-        width:  Math.max(...ids.map((id) => at(id).x)) + NARRATIVE_NODE_W,
+        width: Math.max(...ids.map((id) => at(id).x)) + NARRATIVE_NODE_W,
         height: Math.max(...ids.map((id) => at(id).y)) + NARRATIVE_NODE_H,
     };
 }

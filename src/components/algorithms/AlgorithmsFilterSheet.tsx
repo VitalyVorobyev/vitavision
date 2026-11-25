@@ -80,31 +80,26 @@ export default function AlgorithmsFilterSheet({
     }, [open, onClose]);
 
     // Focus trap
-    const handleKeyDown = useCallback(
-        (e: React.KeyboardEvent) => {
-            if (e.key !== "Tab" || !sheetRef.current) return;
-            const focusable = Array.from(
-                sheetRef.current.querySelectorAll<HTMLElement>(
-                    'button, input, [tabindex]:not([tabindex="-1"])',
-                ),
-            ).filter((el) => !el.hasAttribute("disabled"));
-            const first = focusable[0];
-            const last = focusable[focusable.length - 1];
-            if (!first || !last) return;
-            if (e.shiftKey) {
-                if (document.activeElement === first) {
-                    e.preventDefault();
-                    last.focus();
-                }
-            } else {
-                if (document.activeElement === last) {
-                    e.preventDefault();
-                    first.focus();
-                }
+    const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key !== "Tab" || !sheetRef.current) return;
+        const focusable = Array.from(
+            sheetRef.current.querySelectorAll<HTMLElement>('button, input, [tabindex]:not([tabindex="-1"])'),
+        ).filter((el) => !el.hasAttribute("disabled"));
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (!first || !last) return;
+        if (e.shiftKey) {
+            if (document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
             }
-        },
-        [],
-    );
+        } else {
+            if (document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    }, []);
 
     const content = (
         <AnimatePresence>
@@ -150,9 +145,7 @@ export default function AlgorithmsFilterSheet({
 
                         {/* Header */}
                         <div className="flex items-center justify-between px-[18px] pt-2.5 pb-3.5 border-b border-line/80">
-                            <span className="text-[17px] font-semibold text-fg">
-                                Filters
-                            </span>
+                            <span className="text-[17px] font-semibold text-fg">Filters</span>
                             <div className="flex items-center gap-3">
                                 <div
                                     role="radiogroup"
@@ -173,9 +166,7 @@ export default function AlgorithmsFilterSheet({
                                             aria-label={label}
                                             onClick={() => onLayoutChange(key)}
                                             className={`grid h-9 w-9 place-items-center rounded transition-colors ${
-                                                layout === key
-                                                    ? "bg-line text-fg"
-                                                    : "text-fg-muted"
+                                                layout === key ? "bg-line text-fg" : "text-fg-muted"
                                             }`}
                                         >
                                             <Icon size={15} />
@@ -198,17 +189,13 @@ export default function AlgorithmsFilterSheet({
                             <div className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-fg-muted mt-3.5 mb-2">
                                 Type
                             </div>
-                            <div
-                                role="radiogroup"
-                                aria-label="Type"
-                                className="grid grid-cols-2 gap-2 mt-2"
-                            >
+                            <div role="radiogroup" aria-label="Type" className="grid grid-cols-2 gap-2 mt-2">
                                 {(
                                     [
-                                        ["all",       "All"],
+                                        ["all", "All"],
                                         ["algorithm", "Algorithms"],
-                                        ["model",     "Models"],
-                                        ["concept",   "Concepts"],
+                                        ["model", "Models"],
+                                        ["concept", "Concepts"],
                                     ] as const
                                 ).map(([key, label]) => {
                                     const active = filters.kind === key;
@@ -226,12 +213,8 @@ export default function AlgorithmsFilterSheet({
                                                     : "border border-line bg-surface text-fg/80"
                                             }`}
                                         >
-                                            <span className="text-[13px]">
-                                                {label}
-                                            </span>
-                                            <span className="text-[11px] text-fg-muted font-normal">
-                                                {count}
-                                            </span>
+                                            <span className="text-[13px]">{label}</span>
+                                            <span className="text-[11px] text-fg-muted font-normal">{count}</span>
                                         </button>
                                     );
                                 })}
@@ -241,11 +224,7 @@ export default function AlgorithmsFilterSheet({
                             <div className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-fg-muted mt-5 mb-2">
                                 Problem
                             </div>
-                            <div
-                                role="radiogroup"
-                                aria-label="Problem"
-                                className="flex flex-col gap-0.5"
-                            >
+                            <div role="radiogroup" aria-label="Problem" className="flex flex-col gap-0.5">
                                 {/* All problems row */}
                                 <button
                                     type="button"
@@ -281,7 +260,9 @@ export default function AlgorithmsFilterSheet({
                                                 }`}
                                             >
                                                 <span className="truncate">{taskLabel(task)}</span>
-                                                <span className={`text-[11px] font-normal ml-2 shrink-0 ${active ? "text-signal" : "text-fg-muted"}`}>
+                                                <span
+                                                    className={`text-[11px] font-normal ml-2 shrink-0 ${active ? "text-signal" : "text-fg-muted"}`}
+                                                >
                                                     {facets.problems[task]}
                                                 </span>
                                             </button>

@@ -1,16 +1,13 @@
 import { useEffect, type RefObject } from "react";
 
-export function useArticleImageZoom(
-    ref: RefObject<HTMLElement | null>,
-    deps: unknown[],
-): void {
+export function useArticleImageZoom(ref: RefObject<HTMLElement | null>, deps: unknown[]): void {
     useEffect(() => {
         const root = ref.current;
         if (!root) return;
 
-        const imgs = Array.from(
-            root.querySelectorAll<HTMLImageElement>("img"),
-        ).filter((img) => !img.closest("[data-vv-illustration]"));
+        const imgs = Array.from(root.querySelectorAll<HTMLImageElement>("img")).filter(
+            (img) => !img.closest("[data-vv-illustration]"),
+        );
 
         if (imgs.length === 0) return;
 
@@ -79,6 +76,6 @@ export function useArticleImageZoom(
             });
             pendingRemovals.clear();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- caller-supplied `deps` array is the intentional re-run trigger (article HTML changes)
+        // oxlint-disable-next-line react/exhaustive-deps -- caller-supplied `deps` array is the intentional re-run trigger (article HTML changes)
     }, deps);
 }

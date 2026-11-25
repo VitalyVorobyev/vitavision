@@ -18,7 +18,9 @@ export default function SupersededBy({ successor, variant }: { successor: string
                     className="flex items-center justify-between gap-2 text-[14px] font-semibold text-ink-amber no-underline hover:underline"
                 >
                     <span className="truncate">{node.title}</span>
-                    <span aria-hidden="true" className="text-ink-amber/70 text-[11px] flex-shrink-0">↗</span>
+                    <span aria-hidden="true" className="text-ink-amber/70 text-[11px] flex-shrink-0">
+                        ↗
+                    </span>
                 </Link>
             </div>
         );
@@ -26,13 +28,8 @@ export default function SupersededBy({ successor, variant }: { successor: string
 
     return (
         <div className="rounded-control border border-ink-amber/40 bg-ink-amber/10 px-4 py-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-amber mb-1.5">
-                Superseded by
-            </h3>
-            <Link
-                to={node.path}
-                className="text-base font-semibold text-ink-amber no-underline hover:underline"
-            >
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-amber mb-1.5">Superseded by</h3>
+            <Link to={node.path} className="text-base font-semibold text-ink-amber no-underline hover:underline">
                 {node.title}
             </Link>
         </div>

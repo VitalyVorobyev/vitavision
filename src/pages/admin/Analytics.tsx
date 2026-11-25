@@ -7,9 +7,7 @@ export default function AdminAnalytics() {
 
             <div className="rounded-xl border border-line p-8 text-center space-y-2">
                 <p className="font-semibold">Analytics coming soon</p>
-                <p className="text-sm text-fg-muted">
-                    This will be wired to Cloudflare Web Analytics.
-                </p>
+                <p className="text-sm text-fg-muted">This will be wired to Cloudflare Web Analytics.</p>
             </div>
         </div>
     );

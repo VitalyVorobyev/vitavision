@@ -41,22 +41,22 @@ export async function validateContent(options?: ValidateContentOptions): Promise
     const ctx = buildValidationContext(options ?? {});
 
     const all: Diagnostic[] = [...ctx.loaderDiagnostics];
-    all.push(...slugsRule(ctx));                 // Rule 1: slug resolution
-    all.push(...cyclesRule(ctx));                 // Rule 2: prerequisite cycles
-    all.push(...sourcesRule(ctx));                // Rule 3: source-id existence
-    all.push(...(await canonicalRule(ctx)));      // Rule 4: canonical quality gates
-    all.push(...historicalRule(ctx));             // Rule 4b: typed relations + historical quality gates
-    all.push(...chronologyRule(ctx));             // Rule 9: feeds_into / lineage chronology
-    all.push(...implementationsRule(ctx));        // Rule 5 + 6: model implementations / noPublicImpl
-    all.push(...domainRule(ctx));                 // Rule 7: domain required
-    all.push(...tagsRule(ctx));                   // Rule 8: tags.yaml drift
-    all.push(...proseRefsRule(ctx));              // Rule 10: prose references (warning only)
-    all.push(...(await narrativesRule(ctx)));     // Rule 11: narratives
-    all.push(...schemasRule(ctx));                // Rule 12: blog/demo frontmatter schemas
-    all.push(...imagesRule(ctx));                 // Rule 13: image references (all kinds)
-    all.push(...linksRule(ctx));                  // Rule 14: internal links (all kinds)
-    all.push(...crossRefsRule(ctx));              // Rule 15: relatedPosts/relatedDemos/relatedAlgorithms
-    all.push(...authorsRule(ctx));                // Rule 16: author registry integrity
+    all.push(...slugsRule(ctx)); // Rule 1: slug resolution
+    all.push(...cyclesRule(ctx)); // Rule 2: prerequisite cycles
+    all.push(...sourcesRule(ctx)); // Rule 3: source-id existence
+    all.push(...(await canonicalRule(ctx))); // Rule 4: canonical quality gates
+    all.push(...historicalRule(ctx)); // Rule 4b: typed relations + historical quality gates
+    all.push(...chronologyRule(ctx)); // Rule 9: feeds_into / lineage chronology
+    all.push(...implementationsRule(ctx)); // Rule 5 + 6: model implementations / noPublicImpl
+    all.push(...domainRule(ctx)); // Rule 7: domain required
+    all.push(...tagsRule(ctx)); // Rule 8: tags.yaml drift
+    all.push(...proseRefsRule(ctx)); // Rule 10: prose references (warning only)
+    all.push(...(await narrativesRule(ctx))); // Rule 11: narratives
+    all.push(...schemasRule(ctx)); // Rule 12: blog/demo frontmatter schemas
+    all.push(...imagesRule(ctx)); // Rule 13: image references (all kinds)
+    all.push(...linksRule(ctx)); // Rule 14: internal links (all kinds)
+    all.push(...crossRefsRule(ctx)); // Rule 15: relatedPosts/relatedDemos/relatedAlgorithms
+    all.push(...authorsRule(ctx)); // Rule 16: author registry integrity
 
     const errors = all.filter((d) => d.level === "error").map((d) => d.message);
     const warnings = all.filter((d) => d.level === "warning").map((d) => d.message);

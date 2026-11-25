@@ -14,10 +14,7 @@ const ENTITY_TYPES: ReadonlySet<SearchRecord["type"]> = new Set(["author", "pape
  *  here at the MiniSearch term-processing level (indexing AND querying, since
  *  `processTerm` is shared between both by default) rather than per-caller. */
 function foldTerm(term: string): string {
-    return term
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[̀-ͯ]/g, "");
+    return term.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
 
 let _instance: MiniSearch<SearchRecord> | null = null;

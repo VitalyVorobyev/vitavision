@@ -90,7 +90,11 @@ export default function AuthorContribution({ groups, isDesktop }: AuthorContribu
             ) : (
                 <div className="flex flex-col gap-2">
                     {groups.map((group, i) => (
-                        <details key={group.domain} open={i === 0} className="rounded-panel border border-line bg-surface px-3.5">
+                        <details
+                            key={group.domain}
+                            open={i === 0}
+                            className="rounded-panel border border-line bg-surface px-3.5"
+                        >
                             <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between text-[14.5px] font-semibold text-fg">
                                 {group.label}
                                 <span className="font-mono text-[12px] font-normal text-fg-muted">

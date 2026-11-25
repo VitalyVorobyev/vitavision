@@ -20,26 +20,16 @@ interface StoryRailProps {
  * Guided-walkthrough rail: navigation-only stepper on top, the active step's
  * chapter prose below it, then a compact block for the nodes that step focuses.
  */
-export default function StoryRail({
-    steps,
-    index,
-    chapters,
-    nodesById,
-    areas,
-    onStep,
-    onSelectNode,
-}: StoryRailProps) {
+export default function StoryRail({ steps, index, chapters, nodesById, areas, onStep, onSelectNode }: StoryRailProps) {
     if (steps.length === 0) return null;
 
     if (index === null) {
         return (
             <div className="rounded-panel border border-line bg-surface p-3.5">
-                <h2 className="m-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
-                    Walkthrough
-                </h2>
+                <h2 className="m-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted">Walkthrough</h2>
                 <p className="m-0 mt-1.5 text-[12.5px] leading-[1.55] text-fg-muted">
-                    {steps.length} stops through the constellation. Each one dims the map to the
-                    nodes it is about and pulls up that chapter.
+                    {steps.length} stops through the constellation. Each one dims the map to the nodes it is about and
+                    pulls up that chapter.
                 </p>
                 <Button variant="primary" className="mt-3" onClick={() => onStep(0)}>
                     Start the walkthrough
@@ -97,26 +87,20 @@ export default function StoryRail({
             </div>
 
             <div className="max-h-[46vh] overflow-y-auto p-3.5">
-                <h2 className="m-0 text-[14px] font-semibold leading-snug -tracking-[0.2px] text-fg">
-                    {step.title}
-                </h2>
+                <h2 className="m-0 text-[14px] font-semibold leading-snug -tracking-[0.2px] text-fg">{step.title}</h2>
 
-                {step.claim && (
-                    <p className="m-0 mt-1.5 text-[14px] leading-[1.5] text-fg-muted">{step.claim}</p>
-                )}
+                {step.claim && <p className="m-0 mt-1.5 text-[14px] leading-[1.5] text-fg-muted">{step.claim}</p>}
 
                 {chapter ? (
                     // The chapter slice repeats its own <h2>; the rail's heading above
                     // is the navigational one, so the slice's is hidden here.
                     <div
                         className={`${proseClasses} mt-2 !max-w-none !text-[13.5px] !leading-[1.65] [&>h2]:hidden`}
-                        // eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- chapter HTML is a slice of the build-time rehype-sanitize output (scripts/content-build.ts sliceChapters); no runtime user content
+                        // oxlint-disable-next-line react/no-danger -- chapter HTML is a slice of the build-time rehype-sanitize output (scripts/content-build.ts sliceChapters); no runtime user content
                         dangerouslySetInnerHTML={{ __html: chapter }}
                     />
                 ) : (
-                    <p className="m-0 mt-2 text-[12.5px] text-fg-muted">
-                        This step has no chapter text.
-                    </p>
+                    <p className="m-0 mt-2 text-[12.5px] text-fg-muted">This step has no chapter text.</p>
                 )}
 
                 <h3 className="mb-1.5 mt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
@@ -138,9 +122,7 @@ export default function StoryRail({
                                     className="h-2 w-2 shrink-0 rounded-full"
                                     style={{ background: areaColor(areaIds, node.area) }}
                                 />
-                                <span className="min-w-0 flex-1 truncate text-[12px] text-fg">
-                                    {node.title}
-                                </span>
+                                <span className="min-w-0 flex-1 truncate text-[12px] text-fg">{node.title}</span>
                                 <span className="shrink-0 font-mono text-[9.5px] tabular-nums text-fg-muted">
                                     {("year" in node ? node.year : undefined) ?? ""}
                                 </span>

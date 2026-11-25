@@ -1,8 +1,4 @@
-export type Matrix3 = [
-    number, number, number,
-    number, number, number,
-    number, number, number,
-];
+export type Matrix3 = [number, number, number, number, number, number, number, number, number];
 
 type Vec2 = { x: number; y: number };
 
@@ -16,7 +12,10 @@ function solve8(A: number[][], b: number[]): number[] | null {
         let pivot = -1;
         let maxVal = 0;
         for (let row = col; row < n; row++) {
-            if (Math.abs(M[row]![col]!) > maxVal) { maxVal = Math.abs(M[row]![col]!); pivot = row; }
+            if (Math.abs(M[row]![col]!) > maxVal) {
+                maxVal = Math.abs(M[row]![col]!);
+                pivot = row;
+            }
         }
         if (pivot < 0 || maxVal < 1e-12) return null;
         [M[col], M[pivot]] = [M[pivot]!, M[col]!];

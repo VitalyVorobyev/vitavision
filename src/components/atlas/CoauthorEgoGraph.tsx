@@ -102,13 +102,7 @@ export function CoauthorEgoGraph({ subjectName, coAuthors }: CoauthorEgoGraphPro
                     style={{ cursor: "pointer" }}
                 >
                     <circle cx={x} cy={y} r={radius} fill="var(--surface)" stroke={ringColor} strokeWidth={1.6} />
-                    <text
-                        x={x}
-                        y={y + radius + 13}
-                        textAnchor="middle"
-                        fontSize={11.5}
-                        style={{ fill: "var(--fg)" }}
-                    >
+                    <text x={x} y={y + radius + 13} textAnchor="middle" fontSize={11.5} style={{ fill: "var(--fg)" }}>
                         {shortLabel(co.name)}
                     </text>
                 </g>
@@ -127,13 +121,7 @@ export function CoauthorEgoGraph({ subjectName, coAuthors }: CoauthorEgoGraphPro
             </text>
 
             {overflow > 0 && (
-                <text
-                    x={CENTER}
-                    y={SIZE - 6}
-                    textAnchor="middle"
-                    fontSize={11}
-                    style={{ fill: "var(--fg-muted)" }}
-                >
+                <text x={CENTER} y={SIZE - 6} textAnchor="middle" fontSize={11} style={{ fill: "var(--fg-muted)" }}>
                     +{overflow} more
                 </text>
             )}

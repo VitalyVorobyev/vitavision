@@ -40,14 +40,13 @@ describe("historicalRule", () => {
 
     it("flags a historical page with no generalized_by/high relation", () => {
         const ctx = createTestContext({
-            algorithms: [
-                algo("a.md", { quality: "historical", sources: { primary: "known-paper" } }),
-            ],
+            algorithms: [algo("a.md", { quality: "historical", sources: { primary: "known-paper" } })],
         });
         expect(historicalRule(ctx)).toEqual([
             {
                 level: "error",
-                message: '[a.md] quality: "historical" requires at least one relations[] entry with type: "generalized_by" and confidence: "high"',
+                message:
+                    '[a.md] quality: "historical" requires at least one relations[] entry with type: "generalized_by" and confidence: "high"',
             },
         ]);
     });

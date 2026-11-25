@@ -24,7 +24,8 @@ export type DragTool = "LINE" | "BBOX" | "ELLIPSE";
 /** The click-per-vertex tools. */
 export type VertexTool = "POLYLINE" | "POLYGON";
 
-export const isDragTool = (tool: ToolType): tool is DragTool => tool === "LINE" || tool === "BBOX" || tool === "ELLIPSE";
+export const isDragTool = (tool: ToolType): tool is DragTool =>
+    tool === "LINE" || tool === "BBOX" || tool === "ELLIPSE";
 export const isVertexTool = (tool: ToolType): tool is VertexTool => tool === "POLYLINE" || tool === "POLYGON";
 
 /** The feature a press-drag-release from `from` to `to` makes, or `null` when it was too small. */
@@ -119,7 +120,9 @@ export function movedGeometry(feature: Feature, delta: Point2): Partial<Feature>
         case "ellipse":
             return { x: feature.x + delta.x, y: feature.y + delta.y };
         case "line":
-            return { points: feature.points.map((v, i) => v + (i % 2 === 0 ? delta.x : delta.y)) as typeof feature.points };
+            return {
+                points: feature.points.map((v, i) => v + (i % 2 === 0 ? delta.x : delta.y)) as typeof feature.points,
+            };
         case "polyline":
         case "polygon":
             return { points: feature.points.map((v, i) => v + (i % 2 === 0 ? delta.x : delta.y)) };

@@ -124,8 +124,8 @@ export function promptFeatureImport({
     onLoaded: (features: Feature[]) => void;
 }) {
     if (
-        currentFeatureCount > 0
-        && !window.confirm("Replace the current features with a JSON import? This will clear the current results view.")
+        currentFeatureCount > 0 &&
+        !window.confirm("Replace the current features with a JSON import? This will clear the current results view.")
     ) {
         return;
     }

@@ -34,11 +34,7 @@ describe("buildDeepLinkSearch", () => {
     });
 
     it("preserves the current sample parameter when updating algo and config", () => {
-        const search = buildDeepLinkSearch(
-            "?sample=markerboard",
-            "charuco",
-            { threshold: 0.2 },
-        );
+        const search = buildDeepLinkSearch("?sample=markerboard", "charuco", { threshold: 0.2 });
         const params = new URLSearchParams(search);
 
         expect(params.get("sample")).toBe("markerboard");
@@ -47,11 +43,7 @@ describe("buildDeepLinkSearch", () => {
     });
 
     it("drops stale config when the next config cannot be serialized", () => {
-        const search = buildDeepLinkSearch(
-            "?sample=chessboard&config=stale",
-            "chess-corners",
-            { self: globalThis },
-        );
+        const search = buildDeepLinkSearch("?sample=chessboard&config=stale", "chess-corners", { self: globalThis });
         const params = new URLSearchParams(search);
 
         expect(params.get("sample")).toBe("chessboard");

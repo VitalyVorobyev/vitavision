@@ -59,9 +59,9 @@ function spliceScaleLineEntities(dxf: string, entities: string[], anchor: string
     if (idx === -1) {
         throw new Error(
             "generateDxf: expected the library-rendered DXF document to end with " +
-            `${JSON.stringify(anchor)} so the scale-line entities could be spliced in before ENDSEC, ` +
-            "but that terminator was not found. The renderer may have changed its DXF output format " +
-            "— do not silently drop the scale line.",
+                `${JSON.stringify(anchor)} so the scale-line entities could be spliced in before ENDSEC, ` +
+                "but that terminator was not found. The renderer may have changed its DXF output format " +
+                "— do not silently drop the scale line.",
         );
     }
     return dxf.slice(0, idx) + entities.join("\n") + "\n" + dxf.slice(idx);

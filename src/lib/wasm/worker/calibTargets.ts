@@ -1,4 +1,18 @@
-import { generateId, toPoint, toPointOrNull, toPointArray, toPointArrayOrNull, gridFromWasm, alignmentFromWasm, mergeConfig, unwrapMaps, mapTargetBundle, type TargetBundle, type RawTargetBundle, type ScreenBundle } from "./util";
+import {
+    generateId,
+    toPoint,
+    toPointOrNull,
+    toPointArray,
+    toPointArrayOrNull,
+    gridFromWasm,
+    alignmentFromWasm,
+    mergeConfig,
+    unwrapMaps,
+    mapTargetBundle,
+    type TargetBundle,
+    type RawTargetBundle,
+    type ScreenBundle,
+} from "./util";
 import { getCalibModule } from "./modules";
 
 export function adaptCalibTargetResult(
@@ -154,13 +168,16 @@ export function adaptCalibTargetResult(
 /** Shape of `diagnose_marker_board` after `unwrapMaps`. */
 export interface MarkerBoardDiagnosis {
     result?: { corners: unknown[]; alignment: unknown } | null | undefined;
-    diagnostics?: {
-        circle_candidates: unknown[];
-        circle_matches: unknown[];
-        alignment_inliers: number;
-        alignment_runner_up_inliers: number;
-        alignment_ambiguous: boolean;
-    } | null | undefined;
+    diagnostics?:
+        | {
+              circle_candidates: unknown[];
+              circle_matches: unknown[];
+              alignment_inliers: number;
+              alignment_runner_up_inliers: number;
+              alignment_ambiguous: boolean;
+          }
+        | null
+        | undefined;
 }
 
 /**
@@ -237,11 +254,18 @@ export async function handleCalibTarget(
     let result: unknown;
 
     if (algorithm === "chessboard") {
-        const chess = mergeConfig(mod.default_chess_config() as Record<string, unknown>, asRecord(config.chess ?? {}, "chessboard config.chess"));
-        const params = mergeConfig(mod.default_chessboard_params() as Record<string, unknown>, asRecord(config.params ?? {}, "chessboard config.params"));
-        const raw = mod.detect_chessboard(width, height, gray, chess, params) as
-            | { corners: unknown[]; cell_size: number | null }
-            | null;
+        const chess = mergeConfig(
+            mod.default_chess_config() as Record<string, unknown>,
+            asRecord(config.chess ?? {}, "chessboard config.chess"),
+        );
+        const params = mergeConfig(
+            mod.default_chessboard_params() as Record<string, unknown>,
+            asRecord(config.params ?? {}, "chessboard config.params"),
+        );
+        const raw = mod.detect_chessboard(width, height, gray, chess, params) as {
+            corners: unknown[];
+            cell_size: number | null;
+        } | null;
         // 0.10.1 flattened ChessboardDetectionResult to { corners, cell_size } —
         // the `target`/`detection` wrapper is gone entirely. Re-wrap into the
         // internal { detection: { kind, corners } } shape adaptCalibTargetResult

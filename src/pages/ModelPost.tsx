@@ -31,9 +31,7 @@ export default function ModelPost() {
 
     // Resolve content synchronously from SSR context (postbuild prerender).
     // On the client useStaticContent() returns null, so the async loader runs instead.
-    const syncHtml = slug
-        ? staticContent?.modelHtmlBySlug?.[slug] ?? null
-        : null;
+    const syncHtml = slug ? (staticContent?.modelHtmlBySlug?.[slug] ?? null) : null;
 
     // Async loading state — reset when slug changes (render-time state reset pattern).
     const [trackedSlug, setTrackedSlug] = useState(slug);
@@ -49,7 +47,7 @@ export default function ModelPost() {
     // download the draft HTML chunk even when the UI renders NotFound.
     const isDraftBlocked = Boolean(page?.frontmatter.draft || page?.frontmatter.dev) && !isAdmin;
 
-    const html = isDraftBlocked ? null : syncHtml ?? asyncHtml;
+    const html = isDraftBlocked ? null : (syncHtml ?? asyncHtml);
     const loadFailed = !isDraftBlocked && html === null && (!slug || !(slug in modelHtmlLoaders) || asyncFailed);
 
     useMermaid(articleRef, [html]);
@@ -65,24 +63,23 @@ export default function ModelPost() {
 
         let cancelled = false;
         loader()
-            .then((mod) => { if (!cancelled) setAsyncHtml(mod.html); })
-            .catch(() => { if (!cancelled) setAsyncFailed(true); });
-        return () => { cancelled = true; };
+            .then((mod) => {
+                if (!cancelled) setAsyncHtml(mod.html);
+            })
+            .catch(() => {
+                if (!cancelled) setAsyncFailed(true);
+            });
+        return () => {
+            cancelled = true;
+        };
     }, [slug, syncHtml, isDraftBlocked]);
 
     if (!page) {
         return (
             <div className="max-w-[800px] mx-auto py-16 px-4 text-center space-y-4">
-                <h1 className="text-4xl font-bold tracking-tight">
-                    Model not found
-                </h1>
-                <p className="text-fg-muted">
-                    The model page you're looking for doesn't exist.
-                </p>
-                <Link
-                    to="/atlas?kind=model"
-                    className="inline-block text-signal underline hover:text-signal/80"
-                >
+                <h1 className="text-4xl font-bold tracking-tight">Model not found</h1>
+                <p className="text-fg-muted">The model page you're looking for doesn't exist.</p>
+                <Link to="/atlas?kind=model" className="inline-block text-signal underline hover:text-signal/80">
                     Back to atlas
                 </Link>
             </div>
@@ -99,10 +96,10 @@ export default function ModelPost() {
 
     const hasModelBadges = Boolean(
         frontmatter.quality ||
-            frontmatter.noPublicImpl ||
-            frontmatter.arch_family ||
-            frontmatter.params ||
-            frontmatter.flops,
+        frontmatter.noPublicImpl ||
+        frontmatter.arch_family ||
+        frontmatter.params ||
+        frontmatter.flops,
     );
     const modelBadges = hasModelBadges ? (
         <>
@@ -140,9 +137,7 @@ export default function ModelPost() {
                 url={`/atlas/${slug}`}
             />
             <Helmet>
-                <script type="application/ld+json">
-                    {JSON.stringify(jsonLd)}
-                </script>
+                <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
             </Helmet>
             <div className="min-w-0">
                 <AtlasPageHeader
@@ -160,9 +155,7 @@ export default function ModelPost() {
 
                 {html === null ? (
                     loadFailed ? (
-                        <div className="py-10 text-sm text-fg-muted">
-                            Model content failed to load.
-                        </div>
+                        <div className="py-10 text-sm text-fg-muted">Model content failed to load.</div>
                     ) : (
                         <LoadingIndicator />
                     )
@@ -173,7 +166,7 @@ export default function ModelPost() {
                             data-atlas-slug={resolvedSlug}
                             data-atlas-kind="model"
                             className={proseClasses}
-                            // eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- html is build-time rehype-sanitize/shiki/katex output from scripts/content-build.ts (static content/ markdown), never runtime user input
+                            // oxlint-disable-next-line react/no-danger -- html is build-time rehype-sanitize/shiki/katex output from scripts/content-build.ts (static content/ markdown), never runtime user input
                             dangerouslySetInnerHTML={{ __html: html }}
                         />
                     </ErrorBoundary>

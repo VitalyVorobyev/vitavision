@@ -66,7 +66,7 @@ async function main(): Promise<void> {
     if (!parsed) {
         process.stderr.write(
             `impls:fetch — only GitHub repos are supported (got: ${sources.repo}). ` +
-            `URL must match https://github.com/<owner>/<repo>\n`
+                `URL must match https://github.com/<owner>/<repo>\n`,
         );
         process.exit(1);
     }

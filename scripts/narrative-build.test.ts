@@ -97,8 +97,7 @@ describe("normalizeCoordsToUnitSquare", () => {
 describe("sliceChapters", () => {
     it("slices from each h2 heading (inclusive) up to the next h2 (exclusive)", () => {
         const html =
-            '<p>intro</p><h2 id="alpha">Alpha</h2><p>alpha body</p>' +
-            '<h2 id="beta">Beta</h2><p>beta body</p>';
+            '<p>intro</p><h2 id="alpha">Alpha</h2><p>alpha body</p>' + '<h2 id="beta">Beta</h2><p>beta body</p>';
         const chapters = sliceChapters(html);
         expect(Object.keys(chapters)).toEqual(["alpha", "beta"]);
         expect(chapters.alpha).toBe('<h2 id="alpha">Alpha</h2><p>alpha body</p>');
@@ -199,18 +198,23 @@ describe("buildNarrativeIndexEntry", () => {
             areas: [{ id: "a", label: "A" }],
             nodes: [
                 { id: "pg", kind: "page", slug: "pg", title: "Pg", pageKind: "concept", path: "/atlas/pg", area: "a" },
-                { id: "pp", kind: "paper", paperId: "pp", title: "Pp", authorsShort: "", year: 2020, url: "", debt: true, area: "a" },
+                {
+                    id: "pp",
+                    kind: "paper",
+                    paperId: "pp",
+                    title: "Pp",
+                    authorsShort: "",
+                    year: 2020,
+                    url: "",
+                    debt: true,
+                    area: "a",
+                },
                 { id: "q", kind: "question", title: "Open question?", area: "a" },
             ],
             edges: [],
             lenses: [{ id: "overview", title: "Overview", coords: { pg: [0, 0], pp: [1, 0], q: [2, 0] } }],
         };
-        const entry = buildNarrativeIndexEntry(
-            "slug",
-            { title: "T", summary: "S", date: "2024-01-01" },
-            resolved,
-            2,
-        );
+        const entry = buildNarrativeIndexEntry("slug", { title: "T", summary: "S", date: "2024-01-01" }, resolved, 2);
         expect(entry.stats.debt).toBe(1);
         expect(entry.stats.nodes).toBe(3);
     });

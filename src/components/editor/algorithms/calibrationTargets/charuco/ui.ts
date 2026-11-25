@@ -38,12 +38,7 @@ const groups: UiGroup[] = [
         id: "advanced",
         title: "Advanced",
         collapsible: true,
-        fields: [
-            "inset_frac",
-            "min_marker_inliers",
-            chessboardTuningPath("chessboard"),
-            "advanced",
-        ],
+        fields: ["inset_frac", "min_marker_inliers", chessboardTuningPath("chessboard"), "advanced"],
     },
 ];
 

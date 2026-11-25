@@ -1,4 +1,4 @@
-import { VitavisionLogo } from 'vitcv';
+import { VitavisionLogo } from "vitcv";
 
 export const NavbarMark = () => (
     <nav className="flex h-16 items-center border-b border-line bg-ground/80 px-4">

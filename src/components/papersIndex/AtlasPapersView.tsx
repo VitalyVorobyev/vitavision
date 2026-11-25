@@ -55,10 +55,7 @@ export default function AtlasPapersView({ isDesktop, view, setView, query, setQu
 
     return (
         <div className="flex flex-1 flex-col">
-            <SeoHead
-                title="Papers"
-                description="Every paper the VitaVision computer vision atlas is built on."
-            />
+            <SeoHead title="Papers" description="Every paper the VitaVision computer vision atlas is built on." />
             <main className={`${containerClass} flex flex-col gap-5`}>
                 <div className={isDesktop ? "flex items-end justify-between gap-4" : "flex flex-col gap-3"}>
                     <div className="flex flex-col gap-1.5">
@@ -70,7 +67,11 @@ export default function AtlasPapersView({ isDesktop, view, setView, query, setQu
 
                 <div className={`flex gap-3 ${isDesktop ? "items-center justify-between" : "flex-col"}`}>
                     <div className="relative w-full sm:w-[380px]">
-                        <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
+                        <Search
+                            size={16}
+                            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-fg-muted"
+                            aria-hidden="true"
+                        />
                         <Input
                             type="search"
                             aria-label="Search papers"

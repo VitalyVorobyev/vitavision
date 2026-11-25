@@ -26,13 +26,13 @@ export const RINGGRID_DEFAULT_CONFIG: ConfigDocument = {
     circle_refinement: "ProjectiveCenter",
     self_undistort: {
         enable: false,
-        lambda_range: [-8e-07, 8e-07],
+        lambda_range: [-8e-7, 8e-7],
         max_evals: 40,
         min_markers: 6,
         improvement_threshold: 0.01,
         min_abs_improvement: 0.0001,
         trim_fraction: 0.1,
-        min_lambda_abs: 5e-09,
+        min_lambda_abs: 5e-9,
         reject_range_edge: true,
         range_edge_margin_frac: 0.02,
         validation_min_markers: 24,
@@ -95,7 +95,7 @@ export const RINGGRID_DEFAULT_CONFIG: ConfigDocument = {
             ratio_penalty_weight: 1,
             max_correction_shift_px: null,
             max_selected_residual: 0.25,
-            min_eig_separation: 1e-06,
+            min_eig_separation: 1e-6,
         },
         completion: {
             enable: true,
@@ -140,7 +140,12 @@ export const RINGGRID_DEFAULT_CONFIG: ConfigDocument = {
             refine_halfwidth_px: 2.5,
             size_gate_tolerance: 0.25,
         },
-        photometric: { estimate_print_radii: true, max_center_shift_px: null, max_iterations: 30, saturation_level: 250 },
+        photometric: {
+            estimate_print_radii: true,
+            max_center_shift_px: null,
+            max_iterations: 30,
+            saturation_level: 250,
+        },
         proposal_downscale: "off",
     },
 };
@@ -152,6 +157,9 @@ export const RINGGRID_DEFAULT_CONFIG: ConfigDocument = {
 export const initialConfig: ConfigDocument = {
     // The library leaves `codebook_profile` out of a target that uses the baseline codebook; the
     // form needs the value to show which profile is chosen.
-    board: { ...RINGGRID_DEFAULT_BOARD, coding: { ...(RINGGRID_DEFAULT_BOARD.coding as ConfigDocument), codebook_profile: "base" } },
+    board: {
+        ...RINGGRID_DEFAULT_BOARD,
+        coding: { ...(RINGGRID_DEFAULT_BOARD.coding as ConfigDocument), codebook_profile: "base" },
+    },
     config: RINGGRID_DEFAULT_CONFIG,
 };

@@ -1,43 +1,43 @@
-import { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useParams } from 'react-router';
-import Home from './pages/Home';
-import NotFound from './pages/NotFound';
-import Navbar from './components/layout/Navbar';
-import Footer from './components/layout/Footer';
-import LoadingIndicator from './components/shared/LoadingIndicator';
-import ScrollToTop from './components/layout/ScrollToTop';
-import './index.css';
+import { lazy, Suspense } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useParams } from "react-router";
+import Home from "./pages/Home";
+import NotFound from "./pages/NotFound";
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
+import LoadingIndicator from "./components/shared/LoadingIndicator";
+import ScrollToTop from "./components/layout/ScrollToTop";
+import "./index.css";
 
-import { Toaster, TooltipProvider } from '@vitavision/ui';
-import { HelmetProvider } from 'react-helmet-async';
-import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
-import { PapersProvider } from './lib/atlas/papersIndex.tsx';
-import { AuthorsProvider } from './lib/atlas/authorsIndex.tsx';
-import { ScholarlyProvider } from './lib/atlas/scholarlyIndex.tsx';
-import { type StaticContentContextValue } from './lib/content/ssr-content.tsx';
-import { StaticContentProvider } from './lib/content/StaticContentProvider.tsx';
+import { Toaster, TooltipProvider } from "@vitavision/ui";
+import { HelmetProvider } from "react-helmet-async";
+import { ClerkProvider, SignIn, AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
+import { PapersProvider } from "./lib/atlas/papersIndex.tsx";
+import { AuthorsProvider } from "./lib/atlas/authorsIndex.tsx";
+import { ScholarlyProvider } from "./lib/atlas/scholarlyIndex.tsx";
+import { type StaticContentContextValue } from "./lib/content/ssr-content.tsx";
+import { StaticContentProvider } from "./lib/content/StaticContentProvider.tsx";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 if (!PUBLISHABLE_KEY) {
-    throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY environment variable. Add it to .env.local.');
+    throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable. Add it to .env.local.");
 }
 
-const Blog = lazy(() => import('./pages/Blog'));
-const BlogPost = lazy(() => import('./pages/BlogPost'));
-const AlgorithmIndex = lazy(() => import('./pages/AlgorithmIndex'));
-const AtlasPost = lazy(() => import('./pages/AtlasPost'));
-const NarrativePage = lazy(() => import('./pages/NarrativePage'));
-const AuthorPage = lazy(() => import('./pages/AuthorPage'));
-const PaperPage = lazy(() => import('./pages/PaperPage'));
-const DemoIndex = lazy(() => import('./pages/DemoIndex'));
-const DemoPage = lazy(() => import('./pages/DemoPage'));
-const Editor = lazy(() => import('./pages/Editor'));
-const TargetGenerator = lazy(() => import('./pages/TargetGenerator'));
-const About = lazy(() => import('./pages/About'));
-const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
-const AdminDrafts = lazy(() => import('./pages/admin/Drafts'));
-const AdminUsers = lazy(() => import('./pages/admin/Users'));
-const AdminAnalytics = lazy(() => import('./pages/admin/Analytics'));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const AlgorithmIndex = lazy(() => import("./pages/AlgorithmIndex"));
+const AtlasPost = lazy(() => import("./pages/AtlasPost"));
+const NarrativePage = lazy(() => import("./pages/NarrativePage"));
+const AuthorPage = lazy(() => import("./pages/AuthorPage"));
+const PaperPage = lazy(() => import("./pages/PaperPage"));
+const DemoIndex = lazy(() => import("./pages/DemoIndex"));
+const DemoPage = lazy(() => import("./pages/DemoPage"));
+const Editor = lazy(() => import("./pages/Editor"));
+const TargetGenerator = lazy(() => import("./pages/TargetGenerator"));
+const About = lazy(() => import("./pages/About"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminDrafts = lazy(() => import("./pages/admin/Drafts"));
+const AdminUsers = lazy(() => import("./pages/admin/Users"));
+const AdminAnalytics = lazy(() => import("./pages/admin/Analytics"));
 
 function LegacyAtlasRedirect() {
     const { slug } = useParams<{ slug: string }>();
@@ -46,7 +46,7 @@ function LegacyAtlasRedirect() {
 
 function AppLayout() {
     const { pathname } = useLocation();
-    const isEditor = pathname === '/editor' || pathname.startsWith('/tools/');
+    const isEditor = pathname === "/editor" || pathname.startsWith("/tools/");
 
     return (
         <div className="min-h-screen flex flex-col font-sans bg-ground text-fg">
@@ -116,13 +116,13 @@ function App({ ssrSnapshot = {} }: { ssrSnapshot?: StaticContentContextValue }) 
                     {/* ui's ThemeToggle, Tooltip and InfoHint throw without it. */}
                     <TooltipProvider>
                         <PapersProvider>
-                        <AuthorsProvider>
-                        <ScholarlyProvider>
-                            <Router>
-                                <AppLayout />
-                            </Router>
-                        </ScholarlyProvider>
-                        </AuthorsProvider>
+                            <AuthorsProvider>
+                                <ScholarlyProvider>
+                                    <Router>
+                                        <AppLayout />
+                                    </Router>
+                                </ScholarlyProvider>
+                            </AuthorsProvider>
                         </PapersProvider>
                         <Toaster />
                     </TooltipProvider>

@@ -22,19 +22,19 @@ export type { AlgorithmsKind, AlgorithmsView, AlgorithmsSort, AlgorithmsFilters,
 
 export interface UseAlgorithmsFiltersReturn {
     filters: AlgorithmsFilters;
-    setKind:       (kind: AlgorithmsKind) => void;
-    toggleTag:     (tag: string) => void;
-    setTags:       (tags: string[]) => void;
-    setQuery:      (q: string) => void;
-    setView:       (view: AlgorithmsView) => void;
-    setSort:       (sort: AlgorithmsSort) => void;
-    setProblem:    (problem: string) => void;
+    setKind: (kind: AlgorithmsKind) => void;
+    toggleTag: (tag: string) => void;
+    setTags: (tags: string[]) => void;
+    setQuery: (q: string) => void;
+    setView: (view: AlgorithmsView) => void;
+    setSort: (sort: AlgorithmsSort) => void;
+    setProblem: (problem: string) => void;
     /** People-view-only: Directory vs. Network. */
-    setMode:       (mode: PeopleMode) => void;
+    setMode: (mode: PeopleMode) => void;
     /** People-view-only: the focused author id in Network mode; `undefined` clears focus. */
     setPersonFocus: (id: string | undefined) => void;
     /** Resets tags, query, sort, problem — keeps kind and view. */
-    reset:         () => void;
+    reset: () => void;
 }
 
 export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
@@ -49,7 +49,7 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
     // it) keeps its identity until the URL or the stored view actually changes.
     const filters = useMemo(
         () => parseFiltersFromParams(searchParams),
-        // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- storedViewNonce is a recompute trigger
+        // oxlint-disable-next-line react/exhaustive-deps -- storedViewNonce is a recompute trigger
         [searchParams, storedViewNonce],
     );
 
@@ -70,23 +70,15 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
 
     const toggleTag = useCallback(
         (tag: string) => {
-            const next = filters.tags.includes(tag)
-                ? filters.tags.filter((t) => t !== tag)
-                : [...filters.tags, tag];
+            const next = filters.tags.includes(tag) ? filters.tags.filter((t) => t !== tag) : [...filters.tags, tag];
             update({ ...filters, tags: next });
         },
         [filters, update],
     );
 
-    const setTags = useCallback(
-        (tags: string[]) => update({ ...filters, tags }),
-        [filters, update],
-    );
+    const setTags = useCallback((tags: string[]) => update({ ...filters, tags }), [filters, update]);
 
-    const setQuery = useCallback(
-        (q: string) => update({ ...filters, query: q }),
-        [filters, update],
-    );
+    const setQuery = useCallback((q: string) => update({ ...filters, query: q }), [filters, update]);
 
     const setView = useCallback(
         (view: AlgorithmsView) => {
@@ -97,20 +89,11 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
         [filters, update],
     );
 
-    const setSort = useCallback(
-        (sort: AlgorithmsSort) => update({ ...filters, sort }),
-        [filters, update],
-    );
+    const setSort = useCallback((sort: AlgorithmsSort) => update({ ...filters, sort }), [filters, update]);
 
-    const setProblem = useCallback(
-        (problem: string) => update({ ...filters, problem }),
-        [filters, update],
-    );
+    const setProblem = useCallback((problem: string) => update({ ...filters, problem }), [filters, update]);
 
-    const setMode = useCallback(
-        (mode: PeopleMode) => update({ ...filters, mode }),
-        [filters, update],
-    );
+    const setMode = useCallback((mode: PeopleMode) => update({ ...filters, mode }), [filters, update]);
 
     const setPersonFocus = useCallback(
         (id: string | undefined) => update({ ...filters, person: id }),

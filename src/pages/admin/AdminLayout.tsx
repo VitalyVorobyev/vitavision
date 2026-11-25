@@ -10,9 +10,7 @@ const navLinks = [
 function AdminSidebar() {
     return (
         <aside className="w-48 shrink-0 border-r border-line pr-6">
-            <p className="text-xs uppercase tracking-widest text-fg-muted font-mono mb-4">
-                Admin
-            </p>
+            <p className="text-xs uppercase tracking-widest text-fg-muted font-mono mb-4">Admin</p>
             <nav className="flex flex-col gap-1">
                 {navLinks.map(({ to, label }) => (
                     <NavLink
@@ -21,9 +19,7 @@ function AdminSidebar() {
                         className={({ isActive }) =>
                             [
                                 "rounded-control px-3 py-2 text-sm font-medium transition-colors",
-                                isActive
-                                    ? "bg-signal/10 text-fg"
-                                    : "text-fg-muted hover:text-fg hover:bg-line/60",
+                                isActive ? "bg-signal/10 text-fg" : "text-fg-muted hover:text-fg hover:bg-line/60",
                             ].join(" ")
                         }
                     >

@@ -25,7 +25,10 @@ function checkSingleSourceRef(
 
     if (kind === "paper") {
         if (!ctx.sourceIndex.has(key)) {
-            diagnostics.push({ level: "error", message: `[${file}] ${field} "${value}" not found in docs/papers/index.yaml` });
+            diagnostics.push({
+                level: "error",
+                message: `[${file}] ${field} "${value}" not found in docs/papers/index.yaml`,
+            });
         }
     } else if (kind === "repo") {
         if (!REPO_REF_RE.test(value)) {
@@ -36,7 +39,10 @@ function checkSingleSourceRef(
             return;
         }
         if (!ctx.sourceIndex.has(key)) {
-            diagnostics.push({ level: "error", message: `[${file}] ${field} "${value}" not found in docs/papers/index.yaml` });
+            diagnostics.push({
+                level: "error",
+                message: `[${file}] ${field} "${value}" not found in docs/papers/index.yaml`,
+            });
         }
     } else {
         // doc

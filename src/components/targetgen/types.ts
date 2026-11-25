@@ -117,23 +117,23 @@ export interface ScreenSettings {
  */
 export type ScreenGeometry =
     | {
-        kind: "grid";
-        squareSizePx: number;
-        /** Realised square size (`target.square_size_mm` in the sidecar). */
-        squareSizeMm: number;
-        requestedSquareSizeMm: number;
-        boardOriginPx: [number, number];
-    }
+          kind: "grid";
+          squareSizePx: number;
+          /** Realised square size (`target.square_size_mm` in the sidecar). */
+          squareSizeMm: number;
+          requestedSquareSizeMm: number;
+          boardOriginPx: [number, number];
+      }
     | {
-        kind: "ringgrid";
-        rows: number;
-        columns: number;
-        markerCount: number;
-        drawnMarkerDiameterPx: number;
-        drawnMarkerDiameterMm: number;
-        codeBandWidthPx: number | null;
-        boardOriginPx: [number, number];
-    };
+          kind: "ringgrid";
+          rows: number;
+          columns: number;
+          markerCount: number;
+          drawnMarkerDiameterPx: number;
+          drawnMarkerDiameterMm: number;
+          codeBandWidthPx: number | null;
+          boardOriginPx: [number, number];
+      };
 
 export interface ScreenRenderResult {
     /** 8-bit grayscale PNG at exactly `widthPx` x `heightPx`. */

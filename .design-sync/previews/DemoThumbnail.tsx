@@ -1,4 +1,4 @@
-import { DemoThumbnail } from 'vitcv';
+import { DemoThumbnail } from "vitcv";
 
 export const Default = () => (
     <div className="w-80 rounded-panel overflow-hidden border border-line">

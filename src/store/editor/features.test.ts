@@ -18,16 +18,34 @@ import type {
 const point: PointFeature = { id: "p1", type: "point", source: "manual", x: 1, y: 2 };
 const line: LineFeature = { id: "l1", type: "line", source: "manual", points: [0, 0, 1, 1] };
 const polyline: PolylineFeature = { id: "pl1", type: "polyline", source: "manual", points: [0, 0, 1, 1, 2, 2] };
-const polygon: PolygonFeature = { id: "pg1", type: "polygon", source: "manual", points: [0, 0, 1, 0, 1, 1], closed: true };
+const polygon: PolygonFeature = {
+    id: "pg1",
+    type: "polygon",
+    source: "manual",
+    points: [0, 0, 1, 0, 1, 1],
+    closed: true,
+};
 const bbox: BBoxFeature = { id: "b1", type: "bbox", source: "manual", x: 0, y: 0, width: 10, height: 10, rotation: 0 };
-const ellipse: EllipseFeature = { id: "e1", type: "ellipse", source: "manual", x: 0, y: 0, radiusX: 5, radiusY: 3, rotation: 0 };
+const ellipse: EllipseFeature = {
+    id: "e1",
+    type: "ellipse",
+    source: "manual",
+    x: 0,
+    y: 0,
+    radiusX: 5,
+    radiusY: 3,
+    rotation: 0,
+};
 const directedPoint: DirectedPointFeature = {
     id: "dp1",
     type: "directed_point",
     source: "algorithm",
     x: 1,
     y: 1,
-    axes: [{ dx: 1, dy: 0 }, { dx: 0, dy: 1 }],
+    axes: [
+        { dx: 1, dy: 0 },
+        { dx: 0, dy: 1 },
+    ],
     score: 0.9,
 };
 const ringMarker: RingMarkerFeature = {

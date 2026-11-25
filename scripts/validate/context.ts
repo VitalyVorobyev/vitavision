@@ -25,7 +25,15 @@ import { PAPERS_INDEX_PATH } from "../lib/paths.ts";
 import { loadIndexEntries, paperYears as papersIndexYears, sourceKeyMap } from "../lib/papers-index.ts";
 import type { RawIndexEntry } from "../lib/papers-index.ts";
 import { parseSourceRef } from "../lib/source-ref.ts";
-import { loadMarkdownDir, algoSlug, modelSlug, conceptSlug, narrativeSlug, blogSlug, demoSlug } from "../lib/content-kinds.ts";
+import {
+    loadMarkdownDir,
+    algoSlug,
+    modelSlug,
+    conceptSlug,
+    narrativeSlug,
+    blogSlug,
+    demoSlug,
+} from "../lib/content-kinds.ts";
 import type { MarkdownDirEntry } from "../lib/content-kinds.ts";
 import { loadAuthorsYaml } from "../lib/authors.ts";
 import type { AuthorRecord } from "../lib/authors.ts";
@@ -104,7 +112,7 @@ function parseEntries(
         try {
             const parsed = schemaFn(e.data);
             // Treat dev:true pages like drafts for validation purposes.
-            const isDraft = !!(e.data.draft) || !!(e.data.dev);
+            const isDraft = !!e.data.draft || !!e.data.dev;
             out.push({ ...e, frontmatter: parsed, isDraft });
         } catch (err) {
             diagnostics.push({
@@ -196,8 +204,11 @@ function buildContextCore(input: RawContextInput): ValidationContext {
     const allGraphEntries: ContentEntry[] = allEntries.map((e) =>
         entryToContentEntry(
             e,
-            (algoEntries.includes(e) ? "algorithm" :
-                modelEntries.includes(e) ? "model" : "concept") as ContentEntry["type"],
+            (algoEntries.includes(e)
+                ? "algorithm"
+                : modelEntries.includes(e)
+                  ? "model"
+                  : "concept") as ContentEntry["type"],
         ),
     );
 
@@ -245,12 +256,54 @@ function buildContextCore(input: RawContextInput): ValidationContext {
 
     // ── images/links/cross-refs: one normalized body list across all kinds ──
     const bodyEntries: BodyEntry[] = [
-        ...algoEntries.map((e): BodyEntry => ({ kind: "algorithm", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
-        ...modelEntries.map((e): BodyEntry => ({ kind: "model", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
-        ...conceptEntries.map((e): BodyEntry => ({ kind: "concept", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
-        ...narrativeEntries.map((e): BodyEntry => ({ kind: "narrative", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
-        ...blogEntries.map((e): BodyEntry => ({ kind: "blog", file: e.file, slug: e.slug, content: e.content, data: e.data, isDraft: !!(e.data.draft) })),
-        ...demoEntries.map((e): BodyEntry => ({ kind: "demo", file: e.file, slug: e.slug, content: e.content, data: e.data, isDraft: !!(e.data.draft) })),
+        ...algoEntries.map((e): BodyEntry => ({
+            kind: "algorithm",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.frontmatter,
+            isDraft: e.isDraft,
+        })),
+        ...modelEntries.map((e): BodyEntry => ({
+            kind: "model",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.frontmatter,
+            isDraft: e.isDraft,
+        })),
+        ...conceptEntries.map((e): BodyEntry => ({
+            kind: "concept",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.frontmatter,
+            isDraft: e.isDraft,
+        })),
+        ...narrativeEntries.map((e): BodyEntry => ({
+            kind: "narrative",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.frontmatter,
+            isDraft: e.isDraft,
+        })),
+        ...blogEntries.map((e): BodyEntry => ({
+            kind: "blog",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.data,
+            isDraft: !!e.data.draft,
+        })),
+        ...demoEntries.map((e): BodyEntry => ({
+            kind: "demo",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.data,
+            isDraft: !!e.data.draft,
+        })),
     ];
 
     const imageSet = new Set(input.imagePaths);
@@ -293,7 +346,7 @@ function buildContextCore(input: RawContextInput): ValidationContext {
 // ── Disk loader ──────────────────────────────────────────────────────────────
 
 export function buildValidationContext(options: ValidateContentOptions = {}): ValidationContext {
-    const includeDrafts = options.includeDrafts ?? (process.env.INCLUDE_DRAFTS === "true");
+    const includeDrafts = options.includeDrafts ?? process.env.INCLUDE_DRAFTS === "true";
 
     const algorithms = loadMarkdownDir(join(CONTENT_DIR, "algorithms"), algoSlug);
     const models = loadMarkdownDir(join(CONTENT_DIR, "models"), modelSlug);

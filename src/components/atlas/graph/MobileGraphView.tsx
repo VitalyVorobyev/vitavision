@@ -18,7 +18,7 @@ import { EntryIcon } from "../EntryIcon.tsx";
 // ── MobileNeighborRow ─────────────────────────────────────────────────────────
 
 interface MobileNeighborRowProps {
-    slug:    string;
+    slug: string;
     onClick: (slug: string) => void;
 }
 
@@ -46,11 +46,22 @@ function MobileNeighborRow({ slug, onClick }: MobileNeighborRowProps) {
                 <div className="text-[10.5px] text-fg-muted uppercase tracking-[0.06em] truncate mt-0.5">
                     {rowDomainLabel ?? KIND_LABEL[kind]}
                     {year != null && (
-                        <> · <span className="font-mono normal-case tracking-normal">{year}</span></>
+                        <>
+                            {" "}
+                            · <span className="font-mono normal-case tracking-normal">{year}</span>
+                        </>
                     )}
                 </div>
             </div>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-fg-muted shrink-0">
+            <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="text-fg-muted shrink-0"
+            >
                 <polyline points="9 18 15 12 9 6" />
             </svg>
         </button>
@@ -60,9 +71,9 @@ function MobileNeighborRow({ slug, onClick }: MobileNeighborRowProps) {
 // ── MobileGraphView ────────────────────────────────────────────────────────────
 
 export interface MobileGraphViewProps {
-    history:   string[];
-    current:   string;
-    onBack:    () => void;
+    history: string[];
+    current: string;
+    onBack: () => void;
     onNavigate: (slug: string) => void;
 }
 
@@ -85,7 +96,9 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
     const tasks = (fm as { tasks?: string[] }).tasks ?? [];
     const year = (fm as { year?: number }).year;
     const heroDomain = fm.domain as string | undefined;
-    const heroDomainLabel = heroDomain ? (domainLabels[heroDomain as keyof typeof domainLabels] ?? undefined) : undefined;
+    const heroDomainLabel = heroDomain
+        ? (domainLabels[heroDomain as keyof typeof domainLabels] ?? undefined)
+        : undefined;
     const heroTags = (fm.tags as string[] | undefined) ?? [];
 
     let citationText: string | null = null;
@@ -93,7 +106,7 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
         const firstAuthor = paper.authors?.[0] ?? "";
         const surname = firstAuthor.includes(",")
             ? (firstAuthor.split(",")[0] ?? firstAuthor).trim()
-            : firstAuthor.split(" ").at(-1) ?? firstAuthor;
+            : (firstAuthor.split(" ").at(-1) ?? firstAuthor);
         const parts = [surname, paper.venue, paper.year].filter(Boolean).join(" · ");
         citationText = parts || null;
     } else if (primarySourceId && !primarySourceId.startsWith("repo:") && !primarySourceId.startsWith("doc:")) {
@@ -104,7 +117,7 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
 
     // Trail — capped at 3 visible + +N earlier
     const TRAIL_MAX = 3;
-    const hidden  = Math.max(0, history.length - TRAIL_MAX);
+    const hidden = Math.max(0, history.length - TRAIL_MAX);
     const visible = history.slice(-TRAIL_MAX);
 
     const nodeTitle = (slug: string): string => {
@@ -122,24 +135,35 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                         onClick={onBack}
                         disabled={history.length === 0}
                         className={`w-7 h-7 grid place-items-center rounded shrink-0 ${
-                            history.length > 0
-                                ? "text-fg active:bg-raised"
-                                : "text-fg-muted/60"
+                            history.length > 0 ? "text-fg active:bg-raised" : "text-fg-muted/60"
                         }`}
                     >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
                             <polyline points="15 18 9 12 15 6" />
                         </svg>
                     </button>
-                    <span className="font-mono uppercase tracking-wider text-[9px] text-fg-muted/60 mr-1 shrink-0">Trail</span>
+                    <span className="font-mono uppercase tracking-wider text-[9px] text-fg-muted/60 mr-1 shrink-0">
+                        Trail
+                    </span>
                     {hidden > 0 && (
                         <>
-                            <span className="text-[10px] font-mono text-fg-muted/60 whitespace-nowrap">+{hidden} earlier</span>
+                            <span className="text-[10px] font-mono text-fg-muted/60 whitespace-nowrap">
+                                +{hidden} earlier
+                            </span>
                             <span className="text-fg-muted/60">·</span>
                         </>
                     )}
                     {visible.map((s, i) => (
-                        // eslint-disable-next-line @eslint-react/no-array-index-key -- the trail may revisit a slug, so slug alone is not unique; the list is append-only display
+                        // oxlint-disable-next-line react/no-array-index-key -- the trail may revisit a slug, so slug alone is not unique; the list is append-only display
                         <span key={`m-${s}-${i}`} className="contents">
                             <span className="text-fg whitespace-nowrap">{nodeTitle(s)}</span>
                             <span className="text-fg-muted/60">›</span>
@@ -151,7 +175,11 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
 
             {/* Focused entry hero card */}
             <div className="rounded-xl border-2 border-line-strong bg-surface p-4 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.18)] relative overflow-hidden">
-                <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ background: KIND_ACCENT[kind] }} />
+                <span
+                    aria-hidden
+                    className="absolute inset-y-0 left-0 w-[3px]"
+                    style={{ background: KIND_ACCENT[kind] }}
+                />
                 <div className="flex items-start gap-3">
                     <EntryIcon slug={current} kind={kind} size={44} />
                     <div className="min-w-0 flex-1">
@@ -160,7 +188,10 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                             <span className="text-fg-muted/60">·</span>
                             <span>{KIND_LABEL[kind]}</span>
                             {year != null && (
-                                <><span className="text-fg-muted/60">·</span><span className="font-mono normal-case tracking-normal">{year}</span></>
+                                <>
+                                    <span className="text-fg-muted/60">·</span>
+                                    <span className="font-mono normal-case tracking-normal">{year}</span>
+                                </>
                             )}
                         </div>
                         <div className="text-[16px] font-semibold leading-tight text-fg -tracking-[0.2px] mt-0.5">
@@ -168,12 +199,20 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                         </div>
                     </div>
                 </div>
-                <p className="text-[12.5px] text-fg leading-[1.5] mt-3">
-                    {bodyText}
-                </p>
+                <p className="text-[12.5px] text-fg leading-[1.5] mt-3">{bodyText}</p>
                 {citationText && (
                     <div className="flex items-center gap-1.5 mt-2 text-[10.5px] text-fg-muted">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                        <svg
+                            width="11"
+                            height="11"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="shrink-0"
+                        >
                             <path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z" />
                             <path d="M4 12h12" />
                         </svg>
@@ -193,7 +232,10 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                         <div className="text-[9.5px] uppercase tracking-[0.12em] text-fg-muted mb-1">Problems</div>
                         <div className="flex flex-wrap gap-1.5">
                             {tasks.slice(0, 3).map((t) => (
-                                <span key={t} className="inline-flex items-center h-[20px] px-2 rounded-[3px] border border-signal/40 bg-signal/10 text-[10.5px] text-signal">
+                                <span
+                                    key={t}
+                                    className="inline-flex items-center h-[20px] px-2 rounded-[3px] border border-signal/40 bg-signal/10 text-[10.5px] text-signal"
+                                >
                                     {taskLabel(t)}
                                 </span>
                             ))}
@@ -205,11 +247,7 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                         <div className="text-[9.5px] uppercase tracking-[0.12em] text-fg-muted mb-1">Tags</div>
                         <div className="flex flex-wrap gap-1.5">
                             {heroTags.map((t) => (
-                                <TagBadge
-                                    key={t}
-                                    tag={t}
-                                    to={`/atlas?tags=${encodeURIComponent(t)}`}
-                                />
+                                <TagBadge key={t} tag={t} to={`/atlas?tags=${encodeURIComponent(t)}`} />
                             ))}
                         </div>
                     </div>
@@ -250,8 +288,8 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
             })}
 
             <p className="mt-6 mb-2 px-1 text-[10.5px] text-fg-muted leading-snug">
-                The visual graph from desktop is reshaped into a list here. Same data, same
-                navigation — tap any entry to recenter, back arrow in the trail to backtrack.
+                The visual graph from desktop is reshaped into a list here. Same data, same navigation — tap any entry
+                to recenter, back arrow in the trail to backtrack.
             </p>
         </div>
     );

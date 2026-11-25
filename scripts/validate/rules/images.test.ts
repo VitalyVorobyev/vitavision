@@ -37,9 +37,16 @@ describe("imagesRule", () => {
             images: [],
         });
         expect(imagesRule(ctx)).toEqual([
-            { level: "error", message: "[a.md] image not found: images/foo/missing.png (expected at content/images/foo/missing.png)" },
+            {
+                level: "error",
+                message: "[a.md] image not found: images/foo/missing.png (expected at content/images/foo/missing.png)",
+            },
             { level: "warning", message: "[a.md] image at offset 0 has empty alt text" },
-            { level: "error", message: "[c.md] unsupported relative image path: ../../images/escaped.png (use ./images/... or images/...)" },
+            {
+                level: "error",
+                message:
+                    "[c.md] unsupported relative image path: ../../images/escaped.png (use ./images/... or images/...)",
+            },
         ]);
     });
 });

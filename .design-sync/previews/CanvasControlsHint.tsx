@@ -1,4 +1,4 @@
-import { CanvasControlsHint } from 'vitcv';
+import { CanvasControlsHint } from "vitcv";
 
 export const EditorCanvasHints = () => (
     <div className="relative rounded-panel border border-line bg-raised" style={{ width: 320, height: 160 }}>
@@ -11,9 +11,6 @@ export const EditorCanvasHints = () => (
 
 export const TargetGeneratorHints = () => (
     <div className="relative rounded-panel border border-line bg-raised" style={{ width: 320, height: 160 }}>
-        <CanvasControlsHint
-            lines={["Right drag pans", "Wheel zooms"]}
-            className="bottom-3 right-3 max-w-52"
-        />
+        <CanvasControlsHint lines={["Right drag pans", "Wheel zooms"]} className="bottom-3 right-3 max-w-52" />
     </div>
 );

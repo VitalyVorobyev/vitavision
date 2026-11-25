@@ -118,9 +118,7 @@ async function scan(entry: string) {
             // forbidden tree. Once the tree is pulled in, its own internal files match
             // the prefix too, and reporting those would bury one root cause under a
             // pile of consequences.
-            const crossings = [...(importers.get(file) ?? [])]
-                .filter((f) => !inForbiddenTree(f))
-                .sort();
+            const crossings = [...(importers.get(file) ?? [])].filter((f) => !inForbiddenTree(f)).sort();
             if (crossings.length === 0 && !importers.has(file)) {
                 violations.push({ file: path, detail: `${path} is the entry graph root`, why });
             }
@@ -158,26 +156,31 @@ const config = JSON.parse(readFileSync(join(REPO, ".design-sync", "config.json")
 const mapped = new Set(Object.keys(config.componentSrcMap));
 const inconsistencies: string[] = [];
 for (const name of components) {
-    if (!mapped.has(name)) inconsistencies.push(`${name} is exported from ds-entry.tsx but has no componentSrcMap entry in config.json`);
+    if (!mapped.has(name))
+        inconsistencies.push(`${name} is exported from ds-entry.tsx but has no componentSrcMap entry in config.json`);
     if (!existsSync(join(REPO, ".design-sync", "previews", `${name}.tsx`))) {
         inconsistencies.push(`${name} is exported from ds-entry.tsx but has no .design-sync/previews/${name}.tsx`);
     }
 }
 for (const name of mapped) {
-    if (!components.includes(name)) inconsistencies.push(`componentSrcMap lists ${name}, which ds-entry.tsx does not export`);
+    if (!components.includes(name))
+        inconsistencies.push(`componentSrcMap lists ${name}, which ds-entry.tsx does not export`);
 }
 
 // Previews are bundled by the converter too, and they import from src/ directly (reducers,
 // presets, fixtures), so they can break independently of the entry.
 const previewsDir = join(REPO, ".design-sync", "previews");
-for (const file of readdirSync(previewsDir).filter((f) => f.endsWith(".tsx")).sort()) {
+for (const file of readdirSync(previewsDir)
+    .filter((f) => f.endsWith(".tsx"))
+    .sort()) {
     try {
         const preview = await scan(join(previewsDir, file));
         for (const v of preview.violations) {
             violations.push({ ...v, detail: `${v.detail} (via previews/${file})` });
         }
     } catch (error) {
-        const message = error instanceof Error ? error.message.split("\n")[1]?.trim() ?? error.message : String(error);
+        const message =
+            error instanceof Error ? (error.message.split("\n")[1]?.trim() ?? error.message) : String(error);
         inconsistencies.push(`previews/${file} does not bundle: ${message}`);
     }
 }

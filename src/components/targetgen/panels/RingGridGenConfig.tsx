@@ -13,8 +13,7 @@ const PROFILE_OPTIONS: ChoiceOption<RingGridProfile>[] = [
 ];
 
 export default function RingGridGenConfig({ config, dispatch }: Props) {
-    const update = (partial: Partial<RingGridConfig>) =>
-        dispatch({ type: "UPDATE_CONFIG", partial });
+    const update = (partial: Partial<RingGridConfig>) => dispatch({ type: "UPDATE_CONFIG", partial });
 
     return (
         <>
@@ -36,7 +35,9 @@ export default function RingGridGenConfig({ config, dispatch }: Props) {
                     <Field
                         label="Long row cols"
                         as="group"
-                        annotation={<InfoHint label="About long row cols">Number of columns in the longest row</InfoHint>}
+                        annotation={
+                            <InfoHint label="About long row cols">Number of columns in the longest row</InfoHint>
+                        }
                     >
                         <NumberInput
                             aria-label="Long row cols"
@@ -63,7 +64,11 @@ export default function RingGridGenConfig({ config, dispatch }: Props) {
                     <Field
                         label="Codebook profile"
                         as="group"
-                        annotation={<InfoHint label="About codebook profile">Baseline: 893 markers (min cyclic Hamming dist 2). Extended: 2180 markers (min dist 1).</InfoHint>}
+                        annotation={
+                            <InfoHint label="About codebook profile">
+                                Baseline: 893 markers (min cyclic Hamming dist 2). Extended: 2180 markers (min dist 1).
+                            </InfoHint>
+                        }
                     >
                         <Select
                             aria-label="Codebook profile"
@@ -77,12 +82,16 @@ export default function RingGridGenConfig({ config, dispatch }: Props) {
                     <Field
                         label="Outer radius"
                         as="group"
-                        annotation={<InfoHint label="About outer radius">Outer ring center radius in millimeters</InfoHint>}
+                        annotation={
+                            <InfoHint label="About outer radius">Outer ring center radius in millimeters</InfoHint>
+                        }
                     >
                         <NumberInput
                             unit="mm"
                             aria-label="Outer radius"
-                            {...numberInputProps(config.markerOuterRadiusMm, (v) => update({ markerOuterRadiusMm: v ?? 5.6 }))}
+                            {...numberInputProps(config.markerOuterRadiusMm, (v) =>
+                                update({ markerOuterRadiusMm: v ?? 5.6 }),
+                            )}
                             min={0.5}
                             max={25}
                             step={0.1}
@@ -91,12 +100,16 @@ export default function RingGridGenConfig({ config, dispatch }: Props) {
                     <Field
                         label="Inner radius"
                         as="group"
-                        annotation={<InfoHint label="About inner radius">Inner ring center radius in millimeters</InfoHint>}
+                        annotation={
+                            <InfoHint label="About inner radius">Inner ring center radius in millimeters</InfoHint>
+                        }
                     >
                         <NumberInput
                             unit="mm"
                             aria-label="Inner radius"
-                            {...numberInputProps(config.markerInnerRadiusMm, (v) => update({ markerInnerRadiusMm: v ?? 3.2 }))}
+                            {...numberInputProps(config.markerInnerRadiusMm, (v) =>
+                                update({ markerInnerRadiusMm: v ?? 3.2 }),
+                            )}
                             min={0.5}
                             max={25}
                             step={0.1}
@@ -110,7 +123,9 @@ export default function RingGridGenConfig({ config, dispatch }: Props) {
                         <NumberInput
                             unit="mm"
                             aria-label="Ring width"
-                            {...numberInputProps(config.markerRingWidthMm, (v) => update({ markerRingWidthMm: v ?? 0.8 }))}
+                            {...numberInputProps(config.markerRingWidthMm, (v) =>
+                                update({ markerRingWidthMm: v ?? 0.8 }),
+                            )}
                             min={0.1}
                             max={5}
                             step={0.05}

@@ -12,7 +12,7 @@ function deaccent(s: string): string {
  */
 export function authorSortKey(name: string): string {
     const parts = name.trim().split(/\s+/);
-    const surname = parts.length > 1 ? parts[parts.length - 1] : parts[0] ?? "";
+    const surname = parts.length > 1 ? parts[parts.length - 1] : (parts[0] ?? "");
     const rest = parts.slice(0, -1).join(" ");
     return deaccent(`${surname} ${rest}`).trim().toLowerCase();
 }

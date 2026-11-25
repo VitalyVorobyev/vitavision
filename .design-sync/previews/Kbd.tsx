@@ -1,4 +1,4 @@
-import { Kbd } from 'vitcv';
+import { Kbd } from "vitcv";
 
 export const Keys = () => (
     <div className="flex flex-wrap items-center gap-2">

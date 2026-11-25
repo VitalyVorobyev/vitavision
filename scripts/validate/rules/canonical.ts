@@ -31,12 +31,15 @@ export async function canonicalRule(ctx: ValidationContext): Promise<Diagnostic[
         }
 
         // Algorithm/model must have sources.primary
-        const isAlgoOrModel = ctx.algoFiltered.some((a) => a.slug === e.slug) ||
-            ctx.modelFiltered.some((m) => m.slug === e.slug);
+        const isAlgoOrModel =
+            ctx.algoFiltered.some((a) => a.slug === e.slug) || ctx.modelFiltered.some((m) => m.slug === e.slug);
         if (isAlgoOrModel) {
             const src = e.frontmatter.sources as { primary?: string } | undefined;
             if (!src?.primary) {
-                diagnostics.push({ level: "error", message: `[${e.file}] quality: "canonical" algorithm/model must have sources.primary` });
+                diagnostics.push({
+                    level: "error",
+                    message: `[${e.file}] quality: "canonical" algorithm/model must have sources.primary`,
+                });
             }
         }
 
@@ -47,12 +50,9 @@ export async function canonicalRule(ctx: ValidationContext): Promise<Diagnostic[
         const prereqs = e.frontmatter.prerequisites as string[] | undefined;
         const relations = e.frontmatter.relations as Array<unknown> | undefined;
         const isConcept = ctx.conceptFiltered.some((c) => c.slug === e.slug);
-        const hasDerivedIncoming = isConcept &&
-            ctx.allGraphEntries.some((g) => g.prerequisites?.includes(e.slug));
+        const hasDerivedIncoming = isConcept && ctx.allGraphEntries.some((g) => g.prerequisites?.includes(e.slug));
         const hasRelationship =
-            (prereqs && prereqs.length > 0) ||
-            (relations && relations.length > 0) ||
-            hasDerivedIncoming;
+            (prereqs && prereqs.length > 0) || (relations && relations.length > 0) || hasDerivedIncoming;
         if (!hasRelationship) {
             diagnostics.push({
                 level: "error",
@@ -63,7 +63,10 @@ export async function canonicalRule(ctx: ValidationContext): Promise<Diagnostic[
         // Rendered HTML must not contain TODO (case-insensitive)
         const html = await renderMarkdownPlain(e.content);
         if (/TODO/i.test(html)) {
-            diagnostics.push({ level: "error", message: `[${e.file}] quality: "canonical" but rendered HTML contains TODO` });
+            diagnostics.push({
+                level: "error",
+                message: `[${e.file}] quality: "canonical" but rendered HTML contains TODO`,
+            });
         }
     }
 

@@ -19,104 +19,116 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  /* Editorial body text only (lab-ui visual-language §7): the sans and mono families are
+    /* Editorial body text only (lab-ui visual-language §7): the sans and mono families are
      ui's `--font-sans` / `--font-mono`. */
-  --font-serif: "Source Serif 4 Variable", Georgia, serif;
+    --font-serif: "Source Serif 4 Variable", Georgia, serif;
 }
 
 @theme inline {
-  /* The brand mark's cyan (logo pupil, wordmark dot): identity, not an accent. */
-  --color-brand-mark: var(--vv-brand-mark);
+    /* The brand mark's cyan (logo pupil, wordmark dot): identity, not an accent. */
+    --color-brand-mark: var(--vv-brand-mark);
 
-  --color-article-body: var(--article-body);
-  --color-article-heading: var(--article-heading);
-  --color-article-link: var(--article-link);
+    --color-article-body: var(--article-body);
+    --color-article-heading: var(--article-heading);
+    --color-article-link: var(--article-link);
 
-  /* Editorial inks (category and status labels): `text-ink-amber`, `bg-ink-amber/10`. */
-  --color-ink-blue: var(--ink-blue);
-  --color-ink-amber: var(--ink-amber);
-  --color-ink-green: var(--ink-green);
-  --color-ink-violet: var(--ink-violet);
-  --color-ink-slate: var(--ink-slate);
+    /* Editorial inks (category and status labels): `text-ink-amber`, `bg-ink-amber/10`. */
+    --color-ink-blue: var(--ink-blue);
+    --color-ink-amber: var(--ink-amber);
+    --color-ink-green: var(--ink-green);
+    --color-ink-violet: var(--ink-violet);
+    --color-ink-slate: var(--ink-slate);
 
-  --color-difficulty-beginner: var(--difficulty-beginner);
-  --color-difficulty-intermediate: var(--difficulty-intermediate);
-  --color-difficulty-advanced: var(--difficulty-advanced);
+    --color-difficulty-beginner: var(--difficulty-beginner);
+    --color-difficulty-intermediate: var(--difficulty-intermediate);
+    --color-difficulty-advanced: var(--difficulty-advanced);
 
-  --color-orcid-green: var(--orcid-green);
+    --color-orcid-green: var(--orcid-green);
 
-  --color-lineage-out: var(--lineage-out);
-  --color-lineage-in: var(--lineage-in);
+    --color-lineage-out: var(--lineage-out);
+    --color-lineage-in: var(--lineage-in);
 
-  --color-graph-icon-tint-algorithm: var(--graph-icon-tint-algorithm);
-  --color-graph-icon-tint-model: var(--graph-icon-tint-model);
-  --color-graph-icon-tint-concept: var(--graph-icon-tint-concept);
-  --color-graph-icon-bg-algorithm: var(--graph-icon-bg-algorithm);
-  --color-graph-icon-bg-model: var(--graph-icon-bg-model);
-  --color-graph-icon-bg-concept: var(--graph-icon-bg-concept);
-  --color-graph-icon-border-algorithm: var(--graph-icon-border-algorithm);
-  --color-graph-icon-border-model: var(--graph-icon-border-model);
-  --color-graph-icon-border-concept: var(--graph-icon-border-concept);
+    --color-graph-icon-tint-algorithm: var(--graph-icon-tint-algorithm);
+    --color-graph-icon-tint-model: var(--graph-icon-tint-model);
+    --color-graph-icon-tint-concept: var(--graph-icon-tint-concept);
+    --color-graph-icon-bg-algorithm: var(--graph-icon-bg-algorithm);
+    --color-graph-icon-bg-model: var(--graph-icon-bg-model);
+    --color-graph-icon-bg-concept: var(--graph-icon-bg-concept);
+    --color-graph-icon-border-algorithm: var(--graph-icon-border-algorithm);
+    --color-graph-icon-border-model: var(--graph-icon-border-model);
+    --color-graph-icon-border-concept: var(--graph-icon-border-concept);
 }
 
 @layer base {
-  /* A bare `border` draws a hairline, not Tailwind's `currentColor`. */
-  *, ::after, ::before, ::backdrop, ::file-selector-button {
-    border-color: var(--line);
-  }
+    /* A bare `border` draws a hairline, not Tailwind's `currentColor`. */
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--line);
+    }
 
-  html, body {
-    /* Hard cap: never allow horizontal scroll at the page level. Any element
+    html,
+    body {
+        /* Hard cap: never allow horizontal scroll at the page level. Any element
        that overflows scrolls inside its own scroll container instead. */
-    overflow-x: clip;
-  }
+        overflow-x: clip;
+    }
 
-  body {
-    background-color: var(--ground);
-    color: var(--fg);
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
+    body {
+        background-color: var(--ground);
+        color: var(--fg);
+        font-feature-settings:
+            "rlig" 1,
+            "calt" 1;
+    }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight font-semibold;
-    /* Reduced tracking for a tighter, engineered feel */
-    letter-spacing: -0.02em;
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply tracking-tight font-semibold;
+        /* Reduced tracking for a tighter, engineered feel */
+        letter-spacing: -0.02em;
+    }
 
-  /*
+    /*
    * Editorial text keeps Source Serif's own figures. ui sets `tabular-nums` on <body> for
    * readouts and tables; in running serif prose that spaces every digit to one width. The
    * font's default is restored on the prose containers and any serif run, and inherited
    * from there — `code`/`pre` inside keep ui's own tabular, slashed-zero rule.
    */
-  .prose,
-  .font-serif {
-    font-variant-numeric: normal;
-  }
+    .prose,
+    .font-serif {
+        font-variant-numeric: normal;
+    }
 
-  ::selection {
-    background-color: color-mix(in oklab, var(--signal) 15%, transparent);
-    color: var(--fg);
-  }
+    ::selection {
+        background-color: color-mix(in oklab, var(--signal) 15%, transparent);
+        color: var(--fg);
+    }
 
-  /* Mermaid diagram containers */
-  .mermaid-diagram {
-    @apply my-8 rounded-control border border-line bg-surface p-4 overflow-x-auto;
-  }
+    /* Mermaid diagram containers */
+    .mermaid-diagram {
+        @apply my-8 rounded-control border border-line bg-surface p-4 overflow-x-auto;
+    }
 
-  .mermaid-diagram svg {
-    max-width: 100%;
-    height: auto;
-  }
+    .mermaid-diagram svg {
+        max-width: 100%;
+        height: auto;
+    }
 
-  /*
+    /*
    * Mermaid measures a label in a detached container, where its <p> has the line-height
    * mermaid set (1.5). In the article the same <p> picks up the prose line-height (1.75), so
    * a wrapped label is taller than the box mermaid sized for it and its last line is clipped.
    * Tailwind's utilities layer (`prose-p:leading-[1.75]`) outranks this base layer, hence
    * the `!important`.
    */
-  .mermaid-diagram :is(.nodeLabel, .edgeLabel) p {
-    line-height: inherit !important;
-  }
+    .mermaid-diagram :is(.nodeLabel, .edgeLabel) p {
+        line-height: inherit !important;
+    }
 }

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { AtlasViewTabs } from 'vitcv';
+import { useState } from "react";
+import { AtlasViewTabs } from "vitcv";
 
 // `view` is the Atlas view key: "grid" and "list" both light the Catalog tab; the other
 // four keys are "graph", "narratives", "people" and "papers". The real type is

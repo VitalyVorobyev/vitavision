@@ -18,9 +18,7 @@ import type { Domain } from "../content/schema.ts";
 export const NOT_YET_CITED_DOMAIN = "__not-yet-cited__";
 
 export function domainLabel(domain: string): string {
-    return domain === NOT_YET_CITED_DOMAIN
-        ? "Not yet cited"
-        : (domainLabels[domain as Domain] ?? domain);
+    return domain === NOT_YET_CITED_DOMAIN ? "Not yet cited" : (domainLabels[domain as Domain] ?? domain);
 }
 
 export interface PeopleRow {
@@ -91,7 +89,8 @@ function comparePeopleRows(sort: PeopleSort): (a: PeopleRow, b: PeopleRow) => nu
         case "name":
             return (a, b) => a.sortKey.localeCompare(b.sortKey) || a.id.localeCompare(b.id);
         case "earliest":
-            return (a, b) => a.firstYear - b.firstYear || a.sortKey.localeCompare(b.sortKey) || a.id.localeCompare(b.id);
+            return (a, b) =>
+                a.firstYear - b.firstYear || a.sortKey.localeCompare(b.sortKey) || a.id.localeCompare(b.id);
         case "reach":
         default:
             return (a, b) =>
@@ -116,11 +115,7 @@ export function normalizeSearchText(s: string): string {
 /** Every registry paper title credited to an author, for the "name or a
  *  paper title" search — titles come from the papers index, not the
  *  scholarly/authors indexes, so this needs `papersById` too. */
-export function paperTitlesForAuthor(
-    authorId: string,
-    authorsIndex: AuthorsIndex,
-    papersById: PapersById,
-): string[] {
+export function paperTitlesForAuthor(authorId: string, authorsIndex: AuthorsIndex, papersById: PapersById): string[] {
     const ref = authorsIndex.authors[authorId];
     if (!ref) return [];
     return ref.papers.map((p) => papersById[p]?.title).filter((t): t is string => Boolean(t));

@@ -34,7 +34,7 @@ export default function RelationshipPanel({
     const [sectionsOpen] = useState<boolean>(() =>
         typeof window !== "undefined" && typeof window.matchMedia === "function"
             ? window.matchMedia("(min-width: 1024px)").matches
-            : true
+            : true,
     );
 
     // Narratives that feature this page (drafts already excluded by the build).
@@ -49,23 +49,27 @@ export default function RelationshipPanel({
     const result = buildRelationDisplay(slug, { supersededBy, showDrafts: isAdmin });
 
     // ── Resolve blog post + demo links ───────────────────────────────────────
-    const resolvedPosts = (relatedPosts ?? []).map((s) => {
-        const entry = blogPosts.find((p) => p.slug === s);
-        if (!entry) {
-            console.warn(`[RelationshipPanel] blog post slug "${s}" not found in content-index`);
-            return null;
-        }
-        return { slug: s, title: entry.frontmatter.title, href: `/blog/${s}` };
-    }).filter((x): x is { slug: string; title: string; href: string } => x !== null);
+    const resolvedPosts = (relatedPosts ?? [])
+        .map((s) => {
+            const entry = blogPosts.find((p) => p.slug === s);
+            if (!entry) {
+                console.warn(`[RelationshipPanel] blog post slug "${s}" not found in content-index`);
+                return null;
+            }
+            return { slug: s, title: entry.frontmatter.title, href: `/blog/${s}` };
+        })
+        .filter((x): x is { slug: string; title: string; href: string } => x !== null);
 
-    const resolvedDemos = (relatedDemos ?? []).map((s) => {
-        const entry = demoPages.find((p) => p.slug === s);
-        if (!entry) {
-            console.warn(`[RelationshipPanel] demo slug "${s}" not found in content-index`);
-            return null;
-        }
-        return { slug: s, title: entry.frontmatter.title, href: `/demos/${s}` };
-    }).filter((x): x is { slug: string; title: string; href: string } => x !== null);
+    const resolvedDemos = (relatedDemos ?? [])
+        .map((s) => {
+            const entry = demoPages.find((p) => p.slug === s);
+            if (!entry) {
+                console.warn(`[RelationshipPanel] demo slug "${s}" not found in content-index`);
+                return null;
+            }
+            return { slug: s, title: entry.frontmatter.title, href: `/demos/${s}` };
+        })
+        .filter((x): x is { slug: string; title: string; href: string } => x !== null);
 
     if (variant === "sidebar") {
         return (

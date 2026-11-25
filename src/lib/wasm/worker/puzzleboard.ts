@@ -31,7 +31,14 @@ export function adaptPuzzleboardResult(
             },
             detection: { kind: "puzzleboard" as const, corners: [] },
             alignment: { transform: { a: 1, b: 0, c: 0, d: 1 }, translation: [0, 0] as [number, number] },
-            decode: { edges_observed: 0, edges_matched: 0, mean_confidence: 0, bit_error_rate: 0, master_origin_row: 0, master_origin_col: 0 },
+            decode: {
+                edges_observed: 0,
+                edges_matched: 0,
+                mean_confidence: 0,
+                bit_error_rate: 0,
+                master_origin_row: 0,
+                master_origin_col: 0,
+            },
             observed_edges: [],
         };
     }
@@ -137,9 +144,7 @@ export async function handlePuzzleboard(
     // populates diagnostics. We use the diagnostics variant for observed_edges
     // and re-raise ourselves, so a failed decode stays a surfaced error rather
     // than a quiet empty-but-successful result.
-    const withDiag = unwrapMaps(
-        mod.diagnose_puzzleboard(width, height, gray, null, merged),
-    ) as {
+    const withDiag = unwrapMaps(mod.diagnose_puzzleboard(width, height, gray, null, merged)) as {
         result?: { corners: unknown[]; alignment: unknown; decode: unknown } | null;
         diagnostics?: { observed_edges?: unknown[] };
     };

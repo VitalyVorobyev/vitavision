@@ -80,7 +80,14 @@ export function deepMerge(target: Record<string, unknown>, source: Record<string
     for (const key of Object.keys(source)) {
         const sv = source[key];
         const tv = target[key];
-        if (sv !== null && typeof sv === "object" && !Array.isArray(sv) && tv !== null && typeof tv === "object" && !Array.isArray(tv)) {
+        if (
+            sv !== null &&
+            typeof sv === "object" &&
+            !Array.isArray(sv) &&
+            tv !== null &&
+            typeof tv === "object" &&
+            !Array.isArray(tv)
+        ) {
             out[key] = deepMerge(tv as Record<string, unknown>, sv as Record<string, unknown>);
         } else {
             out[key] = sv;
@@ -103,7 +110,14 @@ export function mergeConfig(target: Record<string, unknown>, source: Record<stri
     for (const key of Object.keys(source)) {
         const sv = source[key];
         const tv = target[key];
-        if (sv !== null && typeof sv === "object" && !Array.isArray(sv) && tv !== null && typeof tv === "object" && !Array.isArray(tv)) {
+        if (
+            sv !== null &&
+            typeof sv === "object" &&
+            !Array.isArray(sv) &&
+            tv !== null &&
+            typeof tv === "object" &&
+            !Array.isArray(tv)
+        ) {
             const sk = Object.keys(sv);
             const tk = Object.keys(tv);
             const swapsVariant = sk.length === 1 && tk.length === 1 && sk[0] !== tk[0];

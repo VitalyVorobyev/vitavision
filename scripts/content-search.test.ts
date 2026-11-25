@@ -56,7 +56,7 @@ describe("buildAuthorSearchRecords", () => {
         ]);
     });
 
-    it("uses the singular \"1 paper\" for a single-paper author", () => {
+    it('uses the singular "1 paper" for a single-paper author', () => {
         const authors: AuthorSearchEntry[] = [{ id: "A1", name: "Solo Author", papers: ["p1"] }];
         expect(buildAuthorSearchRecords(authors)[0].summary).toBe("1 paper");
     });
@@ -134,13 +134,21 @@ describe("buildPaperSearchRecords", () => {
 
     it("appends the year when venue is bare", () => {
         const papers: PaperSearchEntry[] = [
-            { id: "lowe2004-sift", title: "Distinctive Image Features from Scale-Invariant Keypoints", authors: [], venue: "IJCV", year: 2004 },
+            {
+                id: "lowe2004-sift",
+                title: "Distinctive Image Features from Scale-Invariant Keypoints",
+                authors: [],
+                venue: "IJCV",
+                year: 2004,
+            },
         ];
         expect(buildPaperSearchRecords(papers)[0].summary).toBe("IJCV 2004");
     });
 
     it("omits authors/venue fields when empty", () => {
-        const papers: PaperSearchEntry[] = [{ id: "anon2020-nickname", title: "T", authors: [], venue: "", year: 2020 }];
+        const papers: PaperSearchEntry[] = [
+            { id: "anon2020-nickname", title: "T", authors: [], venue: "", year: 2020 },
+        ];
         const [record] = buildPaperSearchRecords(papers);
         expect(record.authors).toBeUndefined();
         expect(record.venue).toBeUndefined();

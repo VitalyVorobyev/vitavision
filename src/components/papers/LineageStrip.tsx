@@ -104,14 +104,30 @@ export default function LineageStrip({ paperYear, cites, citedBy }: LineageStrip
 
                 {/* Built-upon-by dots (filled, above the axis) */}
                 {layout.citedBy.map((p) => (
-                    <circle key={p.id} cx={p.x} cy={p.y} r={5} fill="var(--lineage-out)" stroke="var(--lineage-out)" strokeWidth={1.5}>
+                    <circle
+                        key={p.id}
+                        cx={p.x}
+                        cy={p.y}
+                        r={5}
+                        fill="var(--lineage-out)"
+                        stroke="var(--lineage-out)"
+                        strokeWidth={1.5}
+                    >
                         <title>{titleById.get(p.id) ?? p.id}</title>
                     </circle>
                 ))}
 
                 {/* Builds-on dots (hollow, below the axis) */}
                 {layout.cites.map((p) => (
-                    <circle key={p.id} cx={p.x} cy={p.y} r={5} fill="var(--surface)" stroke="var(--lineage-in)" strokeWidth={1.5}>
+                    <circle
+                        key={p.id}
+                        cx={p.x}
+                        cy={p.y}
+                        r={5}
+                        fill="var(--surface)"
+                        stroke="var(--lineage-in)"
+                        strokeWidth={1.5}
+                    >
                         <title>{titleById.get(p.id) ?? p.id}</title>
                     </circle>
                 ))}

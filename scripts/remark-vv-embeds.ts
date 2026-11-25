@@ -48,13 +48,18 @@ function extractDirectiveLabel(node: DirectiveNode): string | undefined {
         }>
     ).find((child) => child.data?.directiveLabel);
 
-    return labelChild?.children?.map((child) => child.value ?? "").join("").trim() || undefined;
+    return (
+        labelChild?.children
+            ?.map((child) => child.value ?? "")
+            .join("")
+            .trim() || undefined
+    );
 }
 
 const SUPPORTED_ILLUSTRATIONS = new Set(["chess-response", "delaunay-voronoi"]);
 
 const FALLBACK_TEXT: Record<string, string> = {
-    "chess-response":   "Interactive illustration loads here. Enable JavaScript to inspect the ChESS response terms.",
+    "chess-response": "Interactive illustration loads here. Enable JavaScript to inspect the ChESS response terms.",
     "delaunay-voronoi": "Interactive illustration loads here. Enable JavaScript to drag corners and edit grid nodes.",
 };
 
@@ -85,11 +90,11 @@ const remarkVvEmbeds: Plugin<[], Root> = () => {
                 });
             } else if (illustration === "delaunay-voronoi") {
                 Object.assign(baseProps, {
-                    ...(attributes.grid          ? { "data-vv-grid":          attributes.grid          } : {}),
-                    ...(attributes.delaunay      ? { "data-vv-delaunay":      attributes.delaunay      } : {}),
-                    ...(attributes.voronoi       ? { "data-vv-voronoi":       attributes.voronoi       } : {}),
+                    ...(attributes.grid ? { "data-vv-grid": attributes.grid } : {}),
+                    ...(attributes.delaunay ? { "data-vv-delaunay": attributes.delaunay } : {}),
+                    ...(attributes.voronoi ? { "data-vv-voronoi": attributes.voronoi } : {}),
                     ...(attributes.circumcircles ? { "data-vv-circumcircles": attributes.circumcircles } : {}),
-                    ...(attributes.legend        ? { "data-vv-legend":        attributes.legend        } : {}),
+                    ...(attributes.legend ? { "data-vv-legend": attributes.legend } : {}),
                 });
             }
             data.hProperties = baseProps;

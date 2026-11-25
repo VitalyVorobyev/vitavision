@@ -17,7 +17,7 @@ import { loadPuzzlepolePeriods } from "./puzzlepole/periods";
 
 /** Number of markers a ChArUco board requires (one per white square). */
 function charucoMarkerCount(c: CharucoConfig): number {
-    return Math.floor(c.rows * c.cols / 2);
+    return Math.floor((c.rows * c.cols) / 2);
 }
 
 /** Extract pool size from dictionary name, e.g. "DICT_4X4_250" -> 250. */
@@ -40,7 +40,7 @@ function charucoConfigErrors(c: CharucoConfig): string[] {
     if (poolSize !== null && needed > poolSize) {
         errors.push(
             `Board requires ${needed} markers but dictionary ${c.dictionary} only has ${poolSize}. ` +
-            `Use a larger dictionary or reduce board dimensions.`,
+                `Use a larger dictionary or reduce board dimensions.`,
         );
     }
     return errors;
@@ -63,7 +63,10 @@ export function validateScreenConfig(target: TargetConfig, screen: ScreenSetting
         errors.push(screenUnsupportedMessage(target.targetType));
     }
 
-    for (const [label, v] of [["Width", screen.widthPx], ["Height", screen.heightPx]] as const) {
+    for (const [label, v] of [
+        ["Width", screen.widthPx],
+        ["Height", screen.heightPx],
+    ] as const) {
         if (!Number.isInteger(v) || v < 1 || v > MAX_SCREEN_PX) {
             errors.push(`${label} must be a whole number of pixels between 1 and ${MAX_SCREEN_PX}.`);
         }
@@ -87,15 +90,14 @@ export function screenGeometryWarnings(geometry: ScreenGeometry): string[] {
         return [`Squares are only ${geometry.squareSizePx} px wide — corner detection may be unreliable at that size.`];
     }
     if (geometry.kind === "ringgrid" && geometry.drawnMarkerDiameterPx < 24) {
-        return [`Markers are only ${geometry.drawnMarkerDiameterPx.toFixed(0)} px across — detection may be unreliable at that size.`];
+        return [
+            `Markers are only ${geometry.drawnMarkerDiameterPx.toFixed(0)} px across — detection may be unreliable at that size.`,
+        ];
     }
     return [];
 }
 
-export async function validateConfig(
-    target: TargetConfig,
-    page: PageConfig,
-): Promise<ValidationResult> {
+export async function validateConfig(target: TargetConfig, page: PageConfig): Promise<ValidationResult> {
     const errors: string[] = [];
     const warnings: string[] = [];
     const dims = resolvePageDimensions(page);
@@ -139,7 +141,7 @@ export async function validateConfig(
             if (c.circles.length !== 3) {
                 errors.push(
                     `Marker board requires exactly 3 circles, got ${String(c.circles.length)}. ` +
-                    `The @vitavision/calib-targets library fixes this count (MarkerCircleSpec is a [T; 3] array).`,
+                        `The @vitavision/calib-targets library fixes this count (MarkerCircleSpec is a [T; 3] array).`,
                 );
             }
             const seen = new Set<string>();
@@ -185,7 +187,9 @@ export async function validateConfig(
             try {
                 errors.push(...puzzlepoleConfigErrors(c, await loadPuzzlepolePeriods()));
             } catch (e) {
-                errors.push(`Could not read the supported PuzzlePole periods: ${e instanceof Error ? e.message : String(e)}`);
+                errors.push(
+                    `Could not read the supported PuzzlePole periods: ${e instanceof Error ? e.message : String(e)}`,
+                );
             }
             ({ widthMm: boardW, heightMm: boardH } = puzzlepoleBoardSizeMm(c));
             if (c.squareSizeMm < 5) smallFeatureWarning = true;
@@ -224,10 +228,7 @@ export async function validateConfig(
  * as a validation ERROR (with the library's own message) rather than this
  * file re-deriving marker counts and hard-coded pool sizes in TypeScript.
  */
-async function validateRingGrid(
-    c: RingGridConfig,
-    errors: string[],
-): Promise<[number, number]> {
+async function validateRingGrid(c: RingGridConfig, errors: string[]): Promise<[number, number]> {
     if (c.rows < 1) errors.push("Rows must be at least 1.");
     if (c.longRowCols < 1) errors.push("Long row columns must be at least 1.");
     if (c.rows > 1 && c.longRowCols < 2) {
@@ -263,9 +264,7 @@ async function validateRingGrid(
         const [boardW, boardH] = await ringgridBoardSizeMmWasm(targetJson, optionsJson);
         return [boardW, boardH];
     } catch (e) {
-        errors.push(
-            `Ring grid target is invalid: ${e instanceof Error ? e.message : String(e)}`,
-        );
+        errors.push(`Ring grid target is invalid: ${e instanceof Error ? e.message : String(e)}`);
         // No footprint to report — 0x0 keeps the "does it fit the page"
         // check below from also firing a redundant/misleading error.
         return [0, 0];

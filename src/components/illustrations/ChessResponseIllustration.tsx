@@ -8,10 +8,7 @@ import ChessResponseInlinePreview from "./ChessResponseInlinePreview";
 import { PHASE_COLORS, formatValue } from "./chess-response/readoutHelpers";
 import { PATTERN_OPTIONS, toPattern } from "./chess-response/patternOptions";
 import { CHESS_DR_COLOR, CHESS_MR_COLOR } from "./_shared/dataColors";
-import type {
-    ChessResponsePattern,
-    ChessResponsePreset,
-} from "./chess-response/types";
+import type { ChessResponsePattern, ChessResponsePreset } from "./chess-response/types";
 import type { deriveChessResponse as DeriveChessResponse } from "./chess-response/deriveChessResponse";
 
 // ---------------------------------------------------------------------------
@@ -97,88 +94,98 @@ function ArticleControls({
 }: ArticleControlsProps) {
     return (
         <DensityProvider value="compact">
-        <div className="space-y-4">
-            <div className="space-y-2.5">
-                <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">
-                    Pattern
+            <div className="space-y-4">
+                <div className="space-y-2.5">
+                    <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">Pattern</div>
+                    <SegmentedControl
+                        aria-label="Pattern"
+                        value={pattern}
+                        options={PATTERN_OPTIONS}
+                        onValueChange={(next) => {
+                            const p = toPattern(next);
+                            if (p) onPatternChange(p);
+                        }}
+                    />
                 </div>
-                <SegmentedControl
-                    aria-label="Pattern"
-                    value={pattern}
-                    options={PATTERN_OPTIONS}
-                    onValueChange={(next) => {
-                        const p = toPattern(next);
-                        if (p) onPatternChange(p);
-                    }}
-                />
-            </div>
 
-            <div className="space-y-2.5">
-                <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">
-                    Animation
+                <div className="space-y-2.5">
+                    <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">Animation</div>
+                    <div className="flex items-center gap-3">
+                        <Button
+                            aria-label={playing ? "Pause rotation" : "Play rotation"}
+                            onClick={() => onPlayingChange(!playing)}
+                            icon={playing ? <Pause /> : <Play />}
+                        >
+                            {playing ? "Pause" : "Play"}
+                        </Button>
+                    </div>
+                    <RangeRow
+                        label="Speed"
+                        value={speed}
+                        min={0.25}
+                        max={4}
+                        step={0.25}
+                        onChange={onSpeedChange}
+                        formatter={(v) => `${v.toFixed(2)}×`}
+                    />
                 </div>
-                <div className="flex items-center gap-3">
-                    <Button
-                        aria-label={playing ? "Pause rotation" : "Play rotation"}
-                        onClick={() => onPlayingChange(!playing)}
-                        icon={playing ? <Pause /> : <Play />}
-                    >
-                        {playing ? "Pause" : "Play"}
-                    </Button>
-                </div>
-                <RangeRow
-                    label="Speed"
-                    value={speed}
-                    min={0.25}
-                    max={4}
-                    step={0.25}
-                    onChange={onSpeedChange}
-                    formatter={(v) => `${v.toFixed(2)}×`}
-                />
-            </div>
 
-            <div className="space-y-4 rounded-2xl border border-line/80 bg-raised/25 px-4 py-4">
-                <RangeRow
-                    label="Rotation"
-                    value={rotationDeg}
-                    min={0}
-                    max={360}
-                    step={0.5}
-                    onChange={onRotationChange}
-                    formatter={(v) => `${v.toFixed(1)}°`}
-                />
-                <RangeRow
-                    label="Blur"
-                    value={blur}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    onChange={onBlurChange}
-                    formatter={(v) => v.toFixed(2)}
-                />
-                <RangeRow
-                    label="Contrast"
-                    value={contrast}
-                    min={0.65}
-                    max={1.35}
-                    step={0.01}
-                    onChange={onContrastChange}
-                    formatter={(v) => v.toFixed(2)}
-                />
-            </div>
+                <div className="space-y-4 rounded-2xl border border-line/80 bg-raised/25 px-4 py-4">
+                    <RangeRow
+                        label="Rotation"
+                        value={rotationDeg}
+                        min={0}
+                        max={360}
+                        step={0.5}
+                        onChange={onRotationChange}
+                        formatter={(v) => `${v.toFixed(1)}°`}
+                    />
+                    <RangeRow
+                        label="Blur"
+                        value={blur}
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        onChange={onBlurChange}
+                        formatter={(v) => v.toFixed(2)}
+                    />
+                    <RangeRow
+                        label="Contrast"
+                        value={contrast}
+                        min={0.65}
+                        max={1.35}
+                        step={0.01}
+                        onChange={onContrastChange}
+                        formatter={(v) => v.toFixed(2)}
+                    />
+                </div>
 
-            <div className="space-y-2">
-                <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">
-                    Overlays
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                    <ToggleChip checked={showSampleLabels} onCheckedChange={onShowSampleLabelsChange}>Sample labels</ToggleChip>
-                    <ToggleChip checked={showSrPairs} onCheckedChange={onShowSrPairsChange} swatch={PHASE_COLORS[1]}>SR pairs</ToggleChip>
-                    <ToggleChip checked={showDrPairs} onCheckedChange={onShowDrPairsChange} swatch={CHESS_DR_COLOR}>DR pairs</ToggleChip>
-                    <ToggleChip checked={showMrRegions} onCheckedChange={onShowMrRegionsChange} swatch={CHESS_MR_COLOR}>MR regions</ToggleChip>
+                <div className="space-y-2">
+                    <div className="text-[11px] font-mono uppercase tracking-[0.22em] text-fg-muted">Overlays</div>
+                    <div className="flex flex-wrap gap-1.5">
+                        <ToggleChip checked={showSampleLabels} onCheckedChange={onShowSampleLabelsChange}>
+                            Sample labels
+                        </ToggleChip>
+                        <ToggleChip
+                            checked={showSrPairs}
+                            onCheckedChange={onShowSrPairsChange}
+                            swatch={PHASE_COLORS[1]}
+                        >
+                            SR pairs
+                        </ToggleChip>
+                        <ToggleChip checked={showDrPairs} onCheckedChange={onShowDrPairsChange} swatch={CHESS_DR_COLOR}>
+                            DR pairs
+                        </ToggleChip>
+                        <ToggleChip
+                            checked={showMrRegions}
+                            onCheckedChange={onShowMrRegionsChange}
+                            swatch={CHESS_MR_COLOR}
+                        >
+                            MR regions
+                        </ToggleChip>
+                    </div>
                 </div>
             </div>
-        </div>
         </DensityProvider>
     );
 }
@@ -186,15 +193,7 @@ function ArticleControls({
 // ---------------------------------------------------------------------------
 // Inline Readouts (replaces deleted ChessResponseReadouts.tsx)
 // ---------------------------------------------------------------------------
-function MetricChip({
-    label,
-    value,
-    accentClassName,
-}: {
-    label: string;
-    value: string;
-    accentClassName?: string;
-}) {
+function MetricChip({ label, value, accentClassName }: { label: string; value: string; accentClassName?: string }) {
     return (
         <div
             className={cn(
@@ -202,9 +201,7 @@ function MetricChip({
                 accentClassName,
             )}
         >
-            <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-fg-muted leading-none">
-                {label}
-            </div>
+            <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-fg-muted leading-none">{label}</div>
             <div className="mt-1 font-mono text-sm font-semibold tracking-tight text-fg leading-none truncate">
                 {value}
             </div>
@@ -231,9 +228,7 @@ function ArticleReadouts({ response }: { response: ReturnType<typeof DeriveChess
             </div>
 
             <section className="space-y-1.5">
-                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted">
-                    Sum Response
-                </div>
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted">Sum Response</div>
                 <div className="grid grid-cols-2 gap-1.5">
                     {response.srTerms.map((term) => (
                         <div
@@ -250,9 +245,7 @@ function ArticleReadouts({ response }: { response: ReturnType<typeof DeriveChess
                                 >
                                     φ{term.phase}
                                 </span>
-                                <span className="font-mono text-xs text-fg">
-                                    {formatValue(term.value)}
-                                </span>
+                                <span className="font-mono text-xs text-fg">{formatValue(term.value)}</span>
                             </div>
                             <div className="mt-1 font-mono text-[10px] leading-4 text-fg-muted truncate">
                                 |(I{term.pairA[0]}+I{term.pairA[1]})−(I{term.pairB[0]}+I{term.pairB[1]})|
@@ -263,9 +256,7 @@ function ArticleReadouts({ response }: { response: ReturnType<typeof DeriveChess
             </section>
 
             <section className="space-y-1.5">
-                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted">
-                    Diff Response
-                </div>
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted">Diff Response</div>
                 <div className="grid grid-cols-2 gap-1.5">
                     {response.drTerms.map((term) => (
                         <div
@@ -275,18 +266,14 @@ function ArticleReadouts({ response }: { response: ReturnType<typeof DeriveChess
                             <span className="font-mono text-[10px] text-fg-muted">
                                 Δ{term.index} |I{term.pair[0]}−I{term.pair[1]}|
                             </span>
-                            <span className="font-mono text-xs text-fg">
-                                {formatValue(term.value)}
-                            </span>
+                            <span className="font-mono text-xs text-fg">{formatValue(term.value)}</span>
                         </div>
                     ))}
                 </div>
             </section>
 
             <section className="space-y-1.5">
-                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted">
-                    Mean Response
-                </div>
+                <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted">Mean Response</div>
                 <div className="rounded-control border border-line/80 bg-ground/80 divide-y divide-line/60">
                     <div className="flex items-center justify-between px-2 py-1.5">
                         <span className="font-mono text-[10px] text-fg-muted">local mean (center patch)</span>
@@ -464,9 +451,7 @@ function ArticleLayout({
                         </span>
                     </div>
 
-                    <p className="text-sm leading-6 text-fg-muted">
-                        {response.explanation}
-                    </p>
+                    <p className="text-sm leading-6 text-fg-muted">{response.explanation}</p>
                 </div>
 
                 <aside className="border-t border-line/80 px-4 py-4 sm:px-5 sm:py-5 xl:border-l xl:border-t-0">

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { TagFilter } from 'vitcv';
+import { useState } from "react";
+import { TagFilter } from "vitcv";
 
 const CORE_TAGS = ["calibration", "corner-detection", "distortion-models", "wasm", "hand-eye"];
 

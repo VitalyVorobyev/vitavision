@@ -24,7 +24,7 @@ export function userAgent(scriptName: string): string {
     if (!email) {
         process.stderr.write(
             `${scriptName} — OPENALEX_EMAIL not set; using default address. ` +
-            "Set OPENALEX_EMAIL=you@example.com to join the polite pool for higher rate limits.\n"
+                "Set OPENALEX_EMAIL=you@example.com to join the polite pool for higher rate limits.\n",
         );
         return "vitavision/0.1 (mailto:vitavision@example.invalid)";
     }

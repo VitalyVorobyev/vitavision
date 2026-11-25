@@ -1,8 +1,7 @@
 import { Helmet } from "react-helmet-async";
 
 const SITE_NAME = "VitaVision";
-const DEFAULT_DESCRIPTION =
-    "Computer vision algorithms, interactive tools, and technical deep dives.";
+const DEFAULT_DESCRIPTION = "Computer vision algorithms, interactive tools, and technical deep dives.";
 
 interface SeoHeadProps {
     title?: string | undefined;

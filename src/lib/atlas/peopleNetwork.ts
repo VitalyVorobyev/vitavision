@@ -79,10 +79,7 @@ const OVERVIEW_LABEL_COUNT = 20;
 
 /** Lowercase, diacritic-stripped comparison key (accent-insensitive matching). */
 function normalizeSearchText(s: string): string {
-    return s
-        .normalize("NFD")
-        .replace(/[̀-ͯ]/g, "")
-        .toLowerCase();
+    return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 }
 
 export function matchesQuery(name: string, query: string): boolean {
@@ -266,11 +263,7 @@ export function computeFocusPositions(
 }
 
 /** Content-space box the camera should fit around a focused person (before ring padding). */
-export function focusBounds(
-    nodes: ScholarlyNetworkNode[],
-    focusId: string,
-    halfExtent = 220,
-): ViewportBounds | null {
+export function focusBounds(nodes: ScholarlyNetworkNode[], focusId: string, halfExtent = 220): ViewportBounds | null {
     const focusNode = nodes.find((n) => n.id === focusId);
     if (!focusNode) return null;
     return {
@@ -404,7 +397,8 @@ export function layoutLabels(
     const boxes: Box[] = [...reserved];
     const placed: PlacedLabel[] = [];
 
-    const inCanvas = (box: Box) => box[0] >= canvas.minX && box[2] <= canvas.maxX && box[1] >= canvas.minY && box[3] <= canvas.maxY;
+    const inCanvas = (box: Box) =>
+        box[0] >= canvas.minX && box[2] <= canvas.maxX && box[1] >= canvas.minY && box[3] <= canvas.maxY;
 
     for (const c of candidates) {
         const w = textWidth(c.text, px(c.fontSize));
@@ -448,7 +442,14 @@ export function layoutLabels(
         }
 
         if (chosen) {
-            placed.push({ id: c.id, x: chosen.x, y: chosen.y, text: c.text, fontSize: c.fontSize, mandatory: !!c.mandatory });
+            placed.push({
+                id: c.id,
+                x: chosen.x,
+                y: chosen.y,
+                text: c.text,
+                fontSize: c.fontSize,
+                mandatory: !!c.mandatory,
+            });
         }
     }
 
@@ -457,7 +458,12 @@ export function layoutLabels(
     return placed;
 }
 
-function clampAnchorToCanvas(a: { x: number; y: number }, w: number, h: number, canvas: ViewportBounds): { x: number; y: number } {
+function clampAnchorToCanvas(
+    a: { x: number; y: number },
+    w: number,
+    h: number,
+    canvas: ViewportBounds,
+): { x: number; y: number } {
     let x = a.x;
     let y = a.y;
     if (x - 2 < canvas.minX) x = canvas.minX + 2;
@@ -639,7 +645,11 @@ export function splitFocusTieLabels(
     const weakLabelled =
         remaining > 0 && weak.length > 0
             ? Array.from(
-                  new Set(Array.from({ length: Math.min(remaining, weak.length) }, (_, k) => Math.floor((k * weak.length) / Math.min(remaining, weak.length)))),
+                  new Set(
+                      Array.from({ length: Math.min(remaining, weak.length) }, (_, k) =>
+                          Math.floor((k * weak.length) / Math.min(remaining, weak.length)),
+                      ),
+                  ),
               ).flatMap((i) => {
                   const t = weak[i];
                   return t ? [t] : []; // indices are < weak.length by construction

@@ -37,10 +37,12 @@ const OVERLAY_LAYERS: { key: OverlayVisibilityKey; label: string }[] = [
 const TOOL_BUTTON = "size-11 px-0";
 
 function OverlayVisibilityPopover({ horizontal }: { horizontal: boolean }) {
-    const { overlayVisibility, setOverlayVisibility } = useEditorStore(useShallow((s) => ({
-        overlayVisibility: s.overlayVisibility,
-        setOverlayVisibility: s.setOverlayVisibility,
-    })));
+    const { overlayVisibility, setOverlayVisibility } = useEditorStore(
+        useShallow((s) => ({
+            overlayVisibility: s.overlayVisibility,
+            setOverlayVisibility: s.setOverlayVisibility,
+        })),
+    );
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
@@ -77,9 +79,7 @@ function OverlayVisibilityPopover({ horizontal }: { horizontal: boolean }) {
             {open && (
                 <div
                     className={`absolute z-50 flex w-44 flex-col gap-1 rounded-panel border border-line bg-overlay p-1.5 shadow-lg ${
-                        horizontal
-                            ? "bottom-full right-0 mb-2"
-                            : "left-full top-0 ml-2"
+                        horizontal ? "bottom-full right-0 mb-2" : "left-full top-0 ml-2"
                     }`}
                 >
                     {OVERLAY_LAYERS.map(({ key, label }) => (
@@ -112,8 +112,8 @@ function EditorPhoneNotice() {
                 </div>
                 <h1 className="mt-5 text-2xl font-semibold tracking-tight">Editor works best on a larger screen</h1>
                 <p className="mt-3 text-sm leading-6 text-fg-muted">
-                    The editor stays desktop-first because image review, algorithm tuning, and manual annotation
-                    become cramped on phone-sized screens. Open it on a tablet or desktop for the full workflow.
+                    The editor stays desktop-first because image review, algorithm tuning, and manual annotation become
+                    cramped on phone-sized screens. Open it on a tablet or desktop for the full workflow.
                 </p>
                 <div className="mt-6">
                     <ButtonLink asChild icon={<ArrowLeft />}>
@@ -126,25 +126,19 @@ function EditorPhoneNotice() {
 }
 
 export default function Editor() {
-    const {
-        activeTool,
-        setActiveTool,
-        galleryMode,
-        setGalleryMode,
-        galleryImages,
-        setImage,
-        setFeatures,
-        imageSrc,
-    } = useEditorStore(useShallow((s) => ({
-        activeTool: s.activeTool,
-        setActiveTool: s.setActiveTool,
-        galleryMode: s.galleryMode,
-        setGalleryMode: s.setGalleryMode,
-        galleryImages: s.galleryImages,
-        setImage: s.setImage,
-        setFeatures: s.setFeatures,
-        imageSrc: s.imageSrc,
-    })));
+    const { activeTool, setActiveTool, galleryMode, setGalleryMode, galleryImages, setImage, setFeatures, imageSrc } =
+        useEditorStore(
+            useShallow((s) => ({
+                activeTool: s.activeTool,
+                setActiveTool: s.setActiveTool,
+                galleryMode: s.galleryMode,
+                setGalleryMode: s.setGalleryMode,
+                galleryImages: s.galleryImages,
+                setImage: s.setImage,
+                setFeatures: s.setFeatures,
+                imageSrc: s.imageSrc,
+            })),
+        );
     const [annotationToolsOpen, setAnnotationToolsOpen] = useState(false);
     const [searchParams] = useSearchParams();
     const deepLinkAppliedRef = useRef(false);
@@ -166,7 +160,13 @@ export default function Editor() {
             useEditorStore.setState({
                 galleryImages: state.galleryImages.filter((img) => !img.src.startsWith("blob:")),
                 ...(state.imageSrc?.startsWith("blob:")
-                    ? { imageSrc: null, imageName: null, imageWidth: 0, imageHeight: 0, imageSampleId: "upload" as const }
+                    ? {
+                          imageSrc: null,
+                          imageName: null,
+                          imageWidth: 0,
+                          imageHeight: 0,
+                          imageSampleId: "upload" as const,
+                      }
                     : {}),
             });
         };
@@ -268,10 +268,13 @@ export default function Editor() {
             <OverlayVisibilityPopover horizontal={horizontalToolbar} />
 
             <div className={horizontalToolbar ? "flex items-center" : "flex-1 overflow-y-auto px-2 py-4"}>
-                <div className={horizontalToolbar
-                    ? "flex items-center gap-1 px-1"
-                    : "w-full overflow-hidden rounded-panel border border-line bg-surface"
-                }>
+                <div
+                    className={
+                        horizontalToolbar
+                            ? "flex items-center gap-1 px-1"
+                            : "w-full overflow-hidden rounded-panel border border-line bg-surface"
+                    }
+                >
                     <Tooltip content={annotationToolsOpen ? "Collapse tools" : "Annotation tools"}>
                         <Button
                             variant="ghost"
@@ -279,9 +282,10 @@ export default function Editor() {
                             aria-label={annotationToolsOpen ? "Collapse tools" : "Annotation tools"}
                             aria-expanded={annotationToolsOpen}
                             aria-controls={annotationToolsPanelId}
-                            className={horizontalToolbar
-                                ? TOOL_BUTTON
-                                : "h-auto min-h-[58px] w-full flex-col rounded-none px-2 py-3"
+                            className={
+                                horizontalToolbar
+                                    ? TOOL_BUTTON
+                                    : "h-auto min-h-[58px] w-full flex-col rounded-none px-2 py-3"
                             }
                         >
                             {horizontalToolbar ? (
@@ -306,23 +310,29 @@ export default function Editor() {
                     <div
                         id={annotationToolsPanelId}
                         aria-hidden={!annotationToolsOpen}
-                        className={horizontalToolbar
-                            ? `overflow-hidden transition-[max-width,opacity] duration-200 ease-out motion-reduce:transition-none ${
-                                annotationToolsOpen ? "max-w-[24rem] opacity-100" : "pointer-events-none max-w-0 opacity-0"
-                            }`
-                            : `w-full overflow-hidden transition-[max-height,opacity] duration-200 ease-out motion-reduce:transition-none ${
-                                annotationToolsOpen ? "max-h-[24rem] opacity-100" : "pointer-events-none max-h-0 opacity-0"
-                            }`
+                        className={
+                            horizontalToolbar
+                                ? `overflow-hidden transition-[max-width,opacity] duration-200 ease-out motion-reduce:transition-none ${
+                                      annotationToolsOpen
+                                          ? "max-w-[24rem] opacity-100"
+                                          : "pointer-events-none max-w-0 opacity-0"
+                                  }`
+                                : `w-full overflow-hidden transition-[max-height,opacity] duration-200 ease-out motion-reduce:transition-none ${
+                                      annotationToolsOpen
+                                          ? "max-h-[24rem] opacity-100"
+                                          : "pointer-events-none max-h-0 opacity-0"
+                                  }`
                         }
                     >
                         <div
-                            className={horizontalToolbar
-                                ? `flex gap-1 pl-1 transition-transform duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${
-                                    annotationToolsOpen ? "translate-x-0" : "-translate-x-2"
-                                }`
-                                : `flex flex-col items-center gap-2 px-2 pb-2 transition-transform duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${
-                                    annotationToolsOpen ? "translate-y-0" : "-translate-y-2"
-                                }`
+                            className={
+                                horizontalToolbar
+                                    ? `flex gap-1 pl-1 transition-transform duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${
+                                          annotationToolsOpen ? "translate-x-0" : "-translate-x-2"
+                                      }`
+                                    : `flex flex-col items-center gap-2 px-2 pb-2 transition-transform duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${
+                                          annotationToolsOpen ? "translate-y-0" : "-translate-y-2"
+                                      }`
                             }
                         >
                             {manualTools.map((tool) => (
@@ -353,7 +363,9 @@ export default function Editor() {
         // The previous base64 encoded invalid path data (underscores as spaces +
         // a stray non-printable byte), so the pattern never rendered. Fixed here.
         <div className="relative flex-1 overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZTVlN2ViIi8+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjQiIGhlaWdodD0iNCIgZmlsbD0iI2U1ZTdlYiIvPjwvc3ZnPg==')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiMxODE4MTgiLz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMjgyODI4Ii8+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjQiIGhlaWdodD0iNCIgZmlsbD0iIzI4MjgyOCIvPjwvc3ZnPg==')]">
-            <ErrorBoundary><CanvasWorkspace /></ErrorBoundary>
+            <ErrorBoundary>
+                <CanvasWorkspace />
+            </ErrorBoundary>
             <TouchFeatureNav />
         </div>
     );
@@ -366,9 +378,7 @@ export default function Editor() {
                     description="Interactive image annotation editor with computer vision algorithm runner."
                 />
                 <div className="flex min-w-0 flex-1 flex-col">
-                    <div className="min-h-0 flex-1 flex flex-col">
-                        {canvasArea}
-                    </div>
+                    <div className="min-h-0 flex-1 flex flex-col">{canvasArea}</div>
                     <div className="flex h-12 items-center gap-1 overflow-x-auto border-t border-line bg-surface px-2">
                         {toolbarContent}
                     </div>
@@ -383,14 +393,10 @@ export default function Editor() {
                     title="Editor"
                     description="Interactive image annotation editor with computer vision algorithm runner."
                 />
-                <div className="min-h-0 flex-1 flex flex-col">
-                    {canvasArea}
-                </div>
+                <div className="min-h-0 flex-1 flex flex-col">{canvasArea}</div>
 
                 <div className="border-t border-line bg-surface">
-                    <div className="flex h-16 items-center gap-1 overflow-x-auto px-2">
-                        {toolbarContent}
-                    </div>
+                    <div className="flex h-16 items-center gap-1 overflow-x-auto px-2">{toolbarContent}</div>
                     <div className="h-[20rem] border-t border-line bg-ground">
                         <EditorRightPanel variant="touch" />
                     </div>

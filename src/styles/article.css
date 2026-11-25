@@ -274,7 +274,9 @@
     line-height: 1;
 }
 
-.vv-block--emph .vv-block__title { display: none; }
+.vv-block--emph .vv-block__title {
+    display: none;
+}
 
 .vv-block--emph .vv-block__body {
     font-family: var(--font-serif);
@@ -297,12 +299,25 @@
    Muted palette aligned with the vv-block hue anchors above.
    Unknown color name → plain <span> (no class applied, no style).
    -------------------------------------------------------------------------- */
-.vv-color { padding: 0 .1em; border-radius: 2px; }
-.vv-color--blue   { color: var(--vv-color-blue); }
-.vv-color--amber  { color: var(--vv-color-amber); }
-.vv-color--green  { color: var(--vv-color-green); }
-.vv-color--violet { color: var(--vv-color-violet); }
-.vv-color--muted  { color: var(--fg-muted); }
+.vv-color {
+    padding: 0 0.1em;
+    border-radius: 2px;
+}
+.vv-color--blue {
+    color: var(--vv-color-blue);
+}
+.vv-color--amber {
+    color: var(--vv-color-amber);
+}
+.vv-color--green {
+    color: var(--vv-color-green);
+}
+.vv-color--violet {
+    color: var(--vv-color-violet);
+}
+.vv-color--muted {
+    color: var(--fg-muted);
+}
 
 /* --------------------------------------------------------------------------
    Mobile overflow guard
@@ -444,7 +459,9 @@ article .katex {
    Image zoom (Medium-style click-to-expand)
    -------------------------------------------------------------------------- */
 article img {
-    transition: transform 250ms ease, box-shadow 250ms ease;
+    transition:
+        transform 250ms ease,
+        box-shadow 250ms ease;
 }
 
 article img.vv-zoom-active {

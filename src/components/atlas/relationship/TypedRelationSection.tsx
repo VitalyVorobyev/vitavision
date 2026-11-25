@@ -24,26 +24,30 @@ export default function TypedRelationSection({
     if (resolved.length === 0) return null;
 
     return (
-        <CollapsibleSection heading={heading} count={resolved.length} open={open} onToggle={setOpen} className="mb-[18px] group">
+        <CollapsibleSection
+            heading={heading}
+            count={resolved.length}
+            open={open}
+            onToggle={setOpen}
+            className="mb-[18px] group"
+        >
             <ul className="m-0 p-0 list-none space-y-2.5">
                 {resolved.map(({ rel, node }, i) => (
-                    // eslint-disable-next-line @eslint-react/no-array-index-key -- a symmetric relation authored on both pages can yield the same label+target twice, so no field is provably unique; the list is static
-                    <li key={`${rel.label}:${rel.target}:${i}`} className="border-b border-dashed border-fg/10 last:border-b-0 pb-2 last:pb-0">
+                    <li
+                        // oxlint-disable-next-line react/no-array-index-key -- a symmetric relation authored on both pages can yield the same label+target twice, so no field is provably unique; the list is static
+                        key={`${rel.label}:${rel.target}:${i}`}
+                        className="border-b border-dashed border-fg/10 last:border-b-0 pb-2 last:pb-0"
+                    >
                         {rel.confidence !== "high" && (
                             <div className="text-[10px] font-mono uppercase tracking-[0.1em] text-fg-muted/70 mb-0.5">
                                 {rel.confidence}
                             </div>
                         )}
-                        <Link
-                            to={node.path}
-                            className="block text-[13px] text-fg hover:text-fg/80 no-underline"
-                        >
+                        <Link to={node.path} className="block text-[13px] text-fg hover:text-fg/80 no-underline">
                             {node.title}
                         </Link>
                         {rel.caution && (
-                            <p className="m-0 mt-1 text-[11.5px] text-fg-muted italic leading-snug">
-                                {rel.caution}
-                            </p>
+                            <p className="m-0 mt-1 text-[11.5px] text-fg-muted italic leading-snug">{rel.caution}</p>
                         )}
                     </li>
                 ))}

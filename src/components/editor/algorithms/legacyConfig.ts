@@ -41,7 +41,16 @@ const SIGNATURE_KEYS: Record<string, string[]> = {
     charuco: ["cellSize", "markerSizeRel", "pxPerSquare", "chessMinCornerStrength", "borderBits", "minMarkerInliers"],
     markerboard: ["boardRows", "boardCols", "circleDiameterRel", "circleScorePatchSize", "matchMinOffsetInliers"],
     ringgrid: ["longRowCols", "pitchMm", "markerOuterRadiusMm", "diameterMinPx", "profile"],
-    radsym: ["minRadius", "maxRadius", "gradientThreshold", "smoothingFactor", "nmsRadius", "nmsThreshold", "maxDetections", "gradientOperator"],
+    radsym: [
+        "minRadius",
+        "maxRadius",
+        "gradientThreshold",
+        "smoothingFactor",
+        "nmsRadius",
+        "nmsThreshold",
+        "maxDetections",
+        "gradientOperator",
+    ],
     puzzleboard: ["boardRows", "boardCols", "originRow", "decodeMinWindow", "chessMinCornerStrength"],
 };
 
@@ -58,12 +67,9 @@ export function isLegacyConfig(algorithmId: string, config: unknown): boolean {
 
 // ── Reading a flat config ───────────────────────────────────────────────────
 
-const num = (flat: Flat, key: string): number | undefined =>
-    typeof flat[key] === "number" ? flat[key] : undefined;
-const bool = (flat: Flat, key: string): boolean | undefined =>
-    typeof flat[key] === "boolean" ? flat[key] : undefined;
-const str = (flat: Flat, key: string): string | undefined =>
-    typeof flat[key] === "string" ? flat[key] : undefined;
+const num = (flat: Flat, key: string): number | undefined => (typeof flat[key] === "number" ? flat[key] : undefined);
+const bool = (flat: Flat, key: string): boolean | undefined => (typeof flat[key] === "boolean" ? flat[key] : undefined);
+const str = (flat: Flat, key: string): string | undefined => (typeof flat[key] === "string" ? flat[key] : undefined);
 
 /** An object holding only the entries whose value is defined: an absent field is not overridden. */
 const defined = (entries: Record<string, unknown>): Record<string, unknown> =>
@@ -89,20 +95,23 @@ function fromChessCorners(flat: Flat): ConfigDocument {
     const upscale = num(flat, "upscaleFactor");
     const refiner = str(flat, "refiner");
     const broad = bool(flat, "broadMode");
-    return apply(chessCornersInitial, defined({
-        threshold: num(flat, "threshold"),
-        upscale: upscale === undefined ? undefined : upscale >= 2 ? { fixed: upscale } : "disabled",
-        multiscale: defined({
-            pyramid: defined({ levels: num(flat, "pyramidLevels"), min_size: num(flat, "pyramidMinSize") }),
-        }),
-        detection: defined({ nms_radius: num(flat, "nmsRadius"), min_cluster_size: num(flat, "minClusterSize") }),
-        refiner: refiner === "saddle_point" ? SADDLE_POINT_REFINER : undefined,
-        strategy: {
-            chess: defined({
-                ring: broad === undefined ? undefined : broad ? "broad" : "canonical",
+    return apply(
+        chessCornersInitial,
+        defined({
+            threshold: num(flat, "threshold"),
+            upscale: upscale === undefined ? undefined : upscale >= 2 ? { fixed: upscale } : "disabled",
+            multiscale: defined({
+                pyramid: defined({ levels: num(flat, "pyramidLevels"), min_size: num(flat, "pyramidMinSize") }),
             }),
-        },
-    }));
+            detection: defined({ nms_radius: num(flat, "nmsRadius"), min_cluster_size: num(flat, "minClusterSize") }),
+            refiner: refiner === "saddle_point" ? SADDLE_POINT_REFINER : undefined,
+            strategy: {
+                chess: defined({
+                    ring: broad === undefined ? undefined : broad ? "broad" : "canonical",
+                }),
+            },
+        }),
+    );
 }
 
 function fromChessboard(flat: Flat): ConfigDocument {
@@ -214,7 +223,11 @@ function fromRinggrid(flat: Flat): ConfigDocument {
     const board = ringgridInitial.board as ConfigDocument;
     return {
         board: apply(board, {
-            lattice: defined({ rows: num(flat, "rows"), long_row_cols: num(flat, "longRowCols"), pitch_mm: num(flat, "pitchMm") }),
+            lattice: defined({
+                rows: num(flat, "rows"),
+                long_row_cols: num(flat, "longRowCols"),
+                pitch_mm: num(flat, "pitchMm"),
+            }),
             marker: defined({
                 outer_radius_mm: num(flat, "markerOuterRadiusMm"),
                 inner_radius_mm: num(flat, "markerInnerRadiusMm"),
@@ -227,7 +240,10 @@ function fromRinggrid(flat: Flat): ConfigDocument {
             }),
         }),
         config: apply(ringgridInitial.config as ConfigDocument, {
-            marker_scale: defined({ diameter_min_px: num(flat, "diameterMinPx"), diameter_max_px: num(flat, "diameterMaxPx") }),
+            marker_scale: defined({
+                diameter_min_px: num(flat, "diameterMinPx"),
+                diameter_max_px: num(flat, "diameterMaxPx"),
+            }),
             self_undistort: defined({ enable: bool(flat, "enableSelfUndistort") }),
             advanced: {
                 proposal: defined({ grad_threshold: num(flat, "gradThreshold") }),
@@ -248,23 +264,26 @@ function fromRadsym(flat: Flat): ConfigDocument {
     const max = num(flat, "maxRadius");
     const lowest = Math.min(min ?? max ?? 0, max ?? min ?? 0);
     const highest = Math.max(min ?? max ?? 0, max ?? min ?? 0);
-    const detect = apply(radsymInitial.config as ConfigDocument, defined({
-        radii: min === undefined && max === undefined ? undefined : radiusRange(lowest, highest),
-        polarity: capitalize(str(flat, "polarity")),
-        gradient_operator: capitalize(str(flat, "gradientOperator")),
-        advanced: {
-            frst: defined({
-                alpha: num(flat, "alpha"),
-                gradient_threshold: num(flat, "gradientThreshold"),
-                smoothing_factor: num(flat, "smoothingFactor"),
-            }),
-            nms: defined({
-                radius: num(flat, "nmsRadius"),
-                threshold: num(flat, "nmsThreshold"),
-                max_detections: num(flat, "maxDetections"),
-            }),
-        },
-    }));
+    const detect = apply(
+        radsymInitial.config as ConfigDocument,
+        defined({
+            radii: min === undefined && max === undefined ? undefined : radiusRange(lowest, highest),
+            polarity: capitalize(str(flat, "polarity")),
+            gradient_operator: capitalize(str(flat, "gradientOperator")),
+            advanced: {
+                frst: defined({
+                    alpha: num(flat, "alpha"),
+                    gradient_threshold: num(flat, "gradientThreshold"),
+                    smoothing_factor: num(flat, "smoothingFactor"),
+                }),
+                nms: defined({
+                    radius: num(flat, "nmsRadius"),
+                    threshold: num(flat, "nmsThreshold"),
+                    max_detections: num(flat, "maxDetections"),
+                }),
+            },
+        }),
+    );
     return { algorithm: str(flat, "algorithm") ?? "frst", config: detect };
 }
 

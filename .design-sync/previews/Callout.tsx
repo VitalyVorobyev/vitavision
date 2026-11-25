@@ -1,4 +1,4 @@
-import { Callout, Button } from 'vitcv';
+import { Callout, Button } from "vitcv";
 
 export const Tones = () => (
     <div className="flex flex-col gap-2" style={{ width: 380 }}>
@@ -24,8 +24,12 @@ export const WithActions = () => (
             title="Detector failed"
             actions={
                 <>
-                    <Button variant="secondary" size="sm">Try another algorithm</Button>
-                    <Button variant="ghost" size="sm">Dismiss</Button>
+                    <Button variant="secondary" size="sm">
+                        Try another algorithm
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                        Dismiss
+                    </Button>
                 </>
             }
         >

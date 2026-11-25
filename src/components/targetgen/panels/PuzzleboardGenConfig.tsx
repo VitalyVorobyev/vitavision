@@ -8,8 +8,7 @@ interface Props {
 }
 
 export default function PuzzleboardGenConfig({ config, dispatch }: Props) {
-    const update = (partial: Partial<PuzzleboardConfig>) =>
-        dispatch({ type: "UPDATE_CONFIG", partial });
+    const update = (partial: Partial<PuzzleboardConfig>) => dispatch({ type: "UPDATE_CONFIG", partial });
 
     return (
         <>
@@ -18,7 +17,11 @@ export default function PuzzleboardGenConfig({ config, dispatch }: Props) {
                     <Field
                         label="Rows"
                         as="group"
-                        annotation={<InfoHint label="About rows">Number of square rows on the board (max 501 — the master pattern's period)</InfoHint>}
+                        annotation={
+                            <InfoHint label="About rows">
+                                Number of square rows on the board (max 501 — the master pattern's period)
+                            </InfoHint>
+                        }
                     >
                         <NumberInput
                             aria-label="Rows"
@@ -31,7 +34,11 @@ export default function PuzzleboardGenConfig({ config, dispatch }: Props) {
                     <Field
                         label="Cols"
                         as="group"
-                        annotation={<InfoHint label="About cols">Number of square columns on the board (max 501 — the master pattern's period)</InfoHint>}
+                        annotation={
+                            <InfoHint label="About cols">
+                                Number of square columns on the board (max 501 — the master pattern's period)
+                            </InfoHint>
+                        }
                     >
                         <NumberInput
                             aria-label="Cols"
@@ -44,7 +51,9 @@ export default function PuzzleboardGenConfig({ config, dispatch }: Props) {
                     <Field
                         label="Cell size"
                         as="group"
-                        annotation={<InfoHint label="About cell size">Side length of each square cell in millimeters</InfoHint>}
+                        annotation={
+                            <InfoHint label="About cell size">Side length of each square cell in millimeters</InfoHint>
+                        }
                     >
                         <NumberInput
                             unit="mm"

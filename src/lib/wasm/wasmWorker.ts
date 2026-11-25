@@ -12,9 +12,19 @@
 
 import type { CommandRequest, DetectionRequest, WorkerCommand, WorkerRequest, WorkerResponse } from "./worker/protocol";
 import { handleChessCorners } from "./worker/chessCorners";
-import { handleCalibTarget, handleRenderTargetBundle, handlePuzzlepolePeriods, handleRenderScreenTarget } from "./worker/calibTargets";
+import {
+    handleCalibTarget,
+    handleRenderTargetBundle,
+    handlePuzzlepolePeriods,
+    handleRenderScreenTarget,
+} from "./worker/calibTargets";
 import { handlePuzzleboard, handlePuzzleboardGenPng } from "./worker/puzzleboard";
-import { handleRinggrid, handleRenderRinggridBundle, handleRinggridPageSize, handleRenderRinggridScreenTarget } from "./worker/ringgrid";
+import {
+    handleRinggrid,
+    handleRenderRinggridBundle,
+    handleRinggridPageSize,
+    handleRenderRinggridScreenTarget,
+} from "./worker/ringgrid";
 import { handleRadsym, handleRadsymHeatmap } from "./worker/radsym";
 
 export type { AlgorithmType, WorkerCommand, WorkerRequest, WorkerResponse } from "./worker/protocol";
@@ -37,7 +47,12 @@ interface Dispatched {
 
 const commandTable: Record<WorkerCommand, (req: CommandRequest) => Promise<Dispatched>> = {
     "radsym-heatmap": async (req) => {
-        const heatmap = await handleRadsymHeatmap(req.pixels, req.width, req.height, req.config as Record<string, unknown>);
+        const heatmap = await handleRadsymHeatmap(
+            req.pixels,
+            req.width,
+            req.height,
+            req.config as Record<string, unknown>,
+        );
         return { result: heatmap, transfer: [heatmap.rgba.buffer] };
     },
     "puzzleboard-gen-png": async (req) => {
@@ -84,9 +99,10 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
         // A request carries `algorithm` iff it is a detection request; a
         // missing `command` on that shape is equivalent to "detect". Commands
         // never carry `algorithm` (see worker/protocol.ts).
-        const { result, transfer } = "algorithm" in req
-            ? { result: await runDetection(req), transfer: undefined }
-            : await commandTable[req.command](req);
+        const { result, transfer } =
+            "algorithm" in req
+                ? { result: await runDetection(req), transfer: undefined }
+                : await commandTable[req.command](req);
         (self as unknown as Worker).postMessage({ id, result } satisfies WorkerResponse, transfer ?? []);
     } catch (err) {
         const message = err instanceof Error ? err.message : String(err);

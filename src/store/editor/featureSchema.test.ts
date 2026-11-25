@@ -258,10 +258,7 @@ describe("featuresArraySchema", () => {
     });
 
     it("rejects if any element is invalid", () => {
-        const result = featuresArraySchema.safeParse([
-            { type: "point", x: 1, y: 2 },
-            { type: "invalid" },
-        ]);
+        const result = featuresArraySchema.safeParse([{ type: "point", x: 1, y: 2 }, { type: "invalid" }]);
         expect(result.success).toBe(false);
     });
 });

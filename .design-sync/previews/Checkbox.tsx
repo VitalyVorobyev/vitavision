@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Checkbox } from 'vitcv';
+import { useState } from "react";
+import { Checkbox } from "vitcv";
 
 export const Labelled = () => {
     const [on, setOn] = useState(true);
@@ -22,14 +22,8 @@ export const WithDescription = () => {
 
 // A partial selection over a set: a click resolves it to checked.
 export const Indeterminate = () => {
-    const [state, setState] = useState<boolean | 'indeterminate'>('indeterminate');
-    return (
-        <Checkbox
-            checked={state}
-            onCheckedChange={setState}
-            label="Select all corners (12 of 42)"
-        />
-    );
+    const [state, setState] = useState<boolean | "indeterminate">("indeterminate");
+    return <Checkbox checked={state} onCheckedChange={setState} label="Select all corners (12 of 42)" />;
 };
 
 export const Disabled = () => (

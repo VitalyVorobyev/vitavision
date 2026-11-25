@@ -2,7 +2,8 @@ import { Link } from "react-router";
 import { PaperPageTag, NoPageTag } from "./PaperPageTag.tsx";
 import type { PaperRow } from "../../lib/atlas/papersDirectory.ts";
 
-const COLUMNS = "grid grid-cols-[40px_minmax(0,1fr)] sm:grid-cols-[48px_minmax(0,1fr)_240px_110px] items-center gap-3 sm:gap-4 px-4 sm:px-5";
+const COLUMNS =
+    "grid grid-cols-[40px_minmax(0,1fr)] sm:grid-cols-[48px_minmax(0,1fr)_240px_110px] items-center gap-3 sm:gap-4 px-4 sm:px-5";
 
 export { COLUMNS as PAPER_ROW_COLUMNS };
 

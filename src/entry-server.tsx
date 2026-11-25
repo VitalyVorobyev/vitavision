@@ -28,8 +28,7 @@ import type { ScholarlyIndex } from "./generated/scholarly-index.ts";
 // In SSR there is no active session, so <SignedOut> renders and <SignedIn> is empty — correct for static HTML.
 // The placeholder key must pass Clerk's format validation (third segment base64-decodes to
 // a `.`-containing hostname ending in `$`). `clerk.example.com$` encoded → pk_test_Y2xlcmsuZXhhbXBsZS5jb20k.
-const SSR_PUBLISHABLE_KEY =
-    process.env.VITE_CLERK_PUBLISHABLE_KEY ?? "pk_test_Y2xlcmsuZXhhbXBsZS5jb20k";
+const SSR_PUBLISHABLE_KEY = process.env.VITE_CLERK_PUBLISHABLE_KEY ?? "pk_test_Y2xlcmsuZXhhbXBsZS5jb20k";
 
 export function render(
     url: string,
@@ -40,49 +39,59 @@ export function render(
 ): string {
     return renderToString(
         <ClerkProvider publishableKey={SSR_PUBLISHABLE_KEY}>
-        <StaticContentProvider value={staticContent}>
-        <PapersProvider initial={papers}>
-        <AuthorsProvider initial={authors}>
-        <ScholarlyProvider {...(scholarly !== undefined && { initial: scholarly })}>
-            {/* No theme provider: the theme is the `dark` class that the inline script in
+            <StaticContentProvider value={staticContent}>
+                <PapersProvider initial={papers}>
+                    <AuthorsProvider initial={authors}>
+                        <ScholarlyProvider {...(scholarly !== undefined && { initial: scholarly })}>
+                            {/* No theme provider: the theme is the `dark` class that the inline script in
                 index.html paints from the stored choice ("system" when there is none) before
                 the first paint, so the prerendered markup is the same for both themes.
                 TooltipProvider: ui's ThemeToggle (in Navbar) throws without it. */}
-            <TooltipProvider>
-                <MemoryRouter initialEntries={[url]}>
-                    <div className="min-h-screen flex flex-col font-sans bg-ground text-fg">
-                        <Navbar />
-                        <main className="flex-1">
-                            <Routes>
-                                <Route path="/blog" element={<Blog />} />
-                                <Route path="/blog/:slug" element={<BlogPost />} />
-                                <Route path="/atlas" element={<AlgorithmIndex />} />
-                                {/* Static segment must be matched before the /atlas/:slug catch-all. */}
-                                <Route path="/atlas/narratives/:slug" element={<NarrativePage />} />
-                                <Route path="/atlas/:slug" element={<AtlasPost />} />
-                                <Route path="/authors" element={<Navigate to="/atlas?view=people" replace />} />
-                                <Route path="/authors/:id" element={<AuthorPage />} />
-                                <Route path="/papers/:id" element={<PaperPage />} />
-                                <Route path="/demos" element={<DemoIndex />} />
-                                <Route path="/demos/:slug" element={<DemoPage />} />
-                                <Route path="/tools/target-generator" element={
-                                    <div className="max-w-3xl mx-auto px-6 py-16 text-center">
-                                        <h1 className="text-3xl font-bold tracking-tight mb-4">Calibration Target Generator</h1>
-                                        <p className="text-fg-muted">
-                                            Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.
-                                        </p>
+                            <TooltipProvider>
+                                <MemoryRouter initialEntries={[url]}>
+                                    <div className="min-h-screen flex flex-col font-sans bg-ground text-fg">
+                                        <Navbar />
+                                        <main className="flex-1">
+                                            <Routes>
+                                                <Route path="/blog" element={<Blog />} />
+                                                <Route path="/blog/:slug" element={<BlogPost />} />
+                                                <Route path="/atlas" element={<AlgorithmIndex />} />
+                                                {/* Static segment must be matched before the /atlas/:slug catch-all. */}
+                                                <Route path="/atlas/narratives/:slug" element={<NarrativePage />} />
+                                                <Route path="/atlas/:slug" element={<AtlasPost />} />
+                                                <Route
+                                                    path="/authors"
+                                                    element={<Navigate to="/atlas?view=people" replace />}
+                                                />
+                                                <Route path="/authors/:id" element={<AuthorPage />} />
+                                                <Route path="/papers/:id" element={<PaperPage />} />
+                                                <Route path="/demos" element={<DemoIndex />} />
+                                                <Route path="/demos/:slug" element={<DemoPage />} />
+                                                <Route
+                                                    path="/tools/target-generator"
+                                                    element={
+                                                        <div className="max-w-3xl mx-auto px-6 py-16 text-center">
+                                                            <h1 className="text-3xl font-bold tracking-tight mb-4">
+                                                                Calibration Target Generator
+                                                            </h1>
+                                                            <p className="text-fg-muted">
+                                                                Generate calibration targets — chessboard, ChArUco,
+                                                                marker board, ring grid — with SVG, PNG, DXF, and ZIP
+                                                                downloads.
+                                                            </p>
+                                                        </div>
+                                                    }
+                                                />
+                                            </Routes>
+                                        </main>
+                                        <Footer />
                                     </div>
-                                } />
-                            </Routes>
-                        </main>
-                        <Footer />
-                    </div>
-                </MemoryRouter>
-            </TooltipProvider>
-        </ScholarlyProvider>
-        </AuthorsProvider>
-        </PapersProvider>
-        </StaticContentProvider>
+                                </MemoryRouter>
+                            </TooltipProvider>
+                        </ScholarlyProvider>
+                    </AuthorsProvider>
+                </PapersProvider>
+            </StaticContentProvider>
         </ClerkProvider>,
     );
 }

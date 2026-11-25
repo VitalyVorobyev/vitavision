@@ -1,17 +1,11 @@
-import { ZoomControls } from 'vitcv';
+import { ZoomControls } from "vitcv";
 
 const noop = () => {};
 
 export const Default = () => (
     <div className="relative rounded-panel border border-line bg-raised" style={{ width: 320, height: 160 }}>
         <div className="absolute top-3 right-3">
-            <ZoomControls
-                onZoomIn={noop}
-                onZoomOut={noop}
-                onFit={noop}
-                onActual={noop}
-                zoomPercent={142}
-            />
+            <ZoomControls onZoomIn={noop} onZoomOut={noop} onFit={noop} onActual={noop} zoomPercent={142} />
         </div>
     </div>
 );

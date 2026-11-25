@@ -11,11 +11,7 @@ export default function TagFilter({ tags, selected, onSelect }: TagFilterProps) 
 
     return (
         <div className="flex flex-wrap gap-2">
-            <TagBadge
-                tag="All"
-                active={selected === null}
-                onClick={() => onSelect(null)}
-            />
+            <TagBadge tag="All" active={selected === null} onClick={() => onSelect(null)} />
             {tags.map((tag) => (
                 <TagBadge
                     key={tag}

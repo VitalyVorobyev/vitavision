@@ -159,10 +159,16 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
                 extraLimit,
                 tieBudget,
             );
-            return { labels: layoutLabels(candidates, canvas, reserved, contentPerScreenPx), unlabelledTies: unlabelled };
+            return {
+                labels: layoutLabels(candidates, canvas, reserved, contentPerScreenPx),
+                unlabelledTies: unlabelled,
+            };
         }
         const candidates = selectOverviewLabelCandidates(labelPeople, labelMode);
-        return { labels: layoutLabels(candidates, canvas, reserved, contentPerScreenPx), unlabelledTies: [] as CoauthorTie[] };
+        return {
+            labels: layoutLabels(candidates, canvas, reserved, contentPerScreenPx),
+            unlabelledTies: [] as CoauthorTie[],
+        };
     }, [labelPeople, activeFocusId, ties, labelMode, cameraBounds, contentPerScreenPx, isPhone]);
 
     // Hover (mouse) / tap-reveal (touch, first tap) shows an unlabelled tie's

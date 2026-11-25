@@ -21,8 +21,18 @@ describe("adaptPuzzleboardResult", () => {
 
     it("applies the +0.5px pixel-center-to-pixel-corner offset to corner coordinates", () => {
         const raw = {
-            detection: { kind: "puzzleboard", corners: [{ position: [10, 20], grid: { u: 1, v: 2 }, score: 0.9, id: 5 }] },
-            decode: { edges_observed: 1, edges_matched: 1, mean_confidence: 1, bit_error_rate: 0, master_origin_row: 0, master_origin_col: 0 },
+            detection: {
+                kind: "puzzleboard",
+                corners: [{ position: [10, 20], grid: { u: 1, v: 2 }, score: 0.9, id: 5 }],
+            },
+            decode: {
+                edges_observed: 1,
+                edges_matched: 1,
+                mean_confidence: 1,
+                bit_error_rate: 0,
+                master_origin_row: 0,
+                master_origin_col: 0,
+            },
             observed_edges: [],
         };
         const result = adaptPuzzleboardResult(raw, 3, 100, 100, {});
@@ -50,8 +60,21 @@ describe("adaptPuzzleboardResult", () => {
     it("converts the alignment matrix and passes through decode/observed_edges", () => {
         const raw = {
             detection: { kind: "puzzleboard", corners: [] },
-            alignment: { matrix: [[0, 1], [1, 0]], translation: [5, 6] },
-            decode: { edges_observed: 10, edges_matched: 9, mean_confidence: 0.8, bit_error_rate: 0.1, master_origin_row: 2, master_origin_col: 3 },
+            alignment: {
+                matrix: [
+                    [0, 1],
+                    [1, 0],
+                ],
+                translation: [5, 6],
+            },
+            decode: {
+                edges_observed: 10,
+                edges_matched: 9,
+                mean_confidence: 0.8,
+                bit_error_rate: 0.1,
+                master_origin_row: 2,
+                master_origin_col: 3,
+            },
             observed_edges: [{ row: 1, col: 2, orientation: "horizontal", bit: 1, confidence: 0.7 }],
         };
         const result = adaptPuzzleboardResult(raw, 4, 10, 10, {});

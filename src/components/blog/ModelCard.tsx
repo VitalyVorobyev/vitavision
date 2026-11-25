@@ -25,7 +25,12 @@ function CompactCard({ entry }: { entry: ModelIndexEntry }) {
     return (
         <div className="relative flex flex-col gap-2 min-h-[112px] rounded-panel border border-line bg-surface p-3 hover:border-fg/20 transition-colors group">
             <div className="flex items-start gap-2.5">
-                <EntryIcon slug={slug} kind="model" size={30} {...(fm.coverImage !== undefined && { coverImage: fm.coverImage })} />
+                <EntryIcon
+                    slug={slug}
+                    kind="model"
+                    size={30}
+                    {...(fm.coverImage !== undefined && { coverImage: fm.coverImage })}
+                />
                 <div className="min-w-0 flex-1">
                     <CardBadges draft={fm.draft} date={fm.date} />
                     {/* Stretched-link title — ::after covers the whole card */}
@@ -57,7 +62,12 @@ function HorizontalCard({ entry }: { entry: ModelIndexEntry }) {
     const { slug, frontmatter: fm } = entry;
     return (
         <div className="relative flex items-start gap-3 rounded-[10px] border border-line bg-surface p-3.5 group transition-colors hover:border-fg/20">
-            <EntryIcon slug={slug} kind="model" size={30} {...(fm.coverImage !== undefined && { coverImage: fm.coverImage })} />
+            <EntryIcon
+                slug={slug}
+                kind="model"
+                size={30}
+                {...(fm.coverImage !== undefined && { coverImage: fm.coverImage })}
+            />
             <div className="min-w-0 flex-1">
                 <div className="flex items-start gap-1.5">
                     <div className="min-w-0 flex-1">
@@ -87,10 +97,7 @@ function HorizontalCard({ entry }: { entry: ModelIndexEntry }) {
 
 // ── Public export ─────────────────────────────────────────────────────────────
 
-export default function ModelCard({
-    entry,
-    variant = "compact",
-}: ModelCardProps) {
+export default function ModelCard({ entry, variant = "compact" }: ModelCardProps) {
     if (variant === "horizontal") return <HorizontalCard entry={entry} />;
     return <CompactCard entry={entry} />;
 }

@@ -34,13 +34,13 @@ function mockChessCornersResult(cornerCount: number): ChessCornersResult {
             axes: [
                 {
                     angle_rad: axis0Angle,
-                    angle_deg: axis0Angle * 180 / Math.PI,
+                    angle_deg: (axis0Angle * 180) / Math.PI,
                     fit_std_error_rad: 0.05,
                     direction: { dx: Math.cos(axis0Angle), dy: Math.sin(axis0Angle) },
                 },
                 {
                     angle_rad: axis1Angle,
-                    angle_deg: axis1Angle * 180 / Math.PI,
+                    angle_deg: (axis1Angle * 180) / Math.PI,
                     fit_std_error_rad: 0.06,
                     direction: { dx: Math.cos(axis1Angle), dy: Math.sin(axis1Angle) },
                 },
@@ -184,20 +184,33 @@ function mockCalibTargetResult(
             runtime_ms: 150.3,
         },
         detection: { kind, corners },
-        markers: algorithm === "charuco"
-            ? [{
-                id: 0,
-                grid_cell: { gx: 0, gy: 0 },
-                rotation: 0,
-                hamming: 0,
-                score: 0.95,
-                border_score: 0.9,
-                code: 42,
-                inverted: false,
-                corners_rect: [{ x: 10, y: 10 }, { x: 50, y: 10 }, { x: 50, y: 50 }, { x: 10, y: 50 }],
-                corners_img: [{ x: 12, y: 12 }, { x: 48, y: 11 }, { x: 49, y: 49 }, { x: 11, y: 48 }],
-            }]
-            : null,
+        markers:
+            algorithm === "charuco"
+                ? [
+                      {
+                          id: 0,
+                          grid_cell: { gx: 0, gy: 0 },
+                          rotation: 0,
+                          hamming: 0,
+                          score: 0.95,
+                          border_score: 0.9,
+                          code: 42,
+                          inverted: false,
+                          corners_rect: [
+                              { x: 10, y: 10 },
+                              { x: 50, y: 10 },
+                              { x: 50, y: 50 },
+                              { x: 10, y: 50 },
+                          ],
+                          corners_img: [
+                              { x: 12, y: 12 },
+                              { x: 48, y: 11 },
+                              { x: 49, y: 49 },
+                              { x: 11, y: 48 },
+                          ],
+                      },
+                  ]
+                : null,
         alignment: null,
         circle_candidates: null,
         circle_matches: null,

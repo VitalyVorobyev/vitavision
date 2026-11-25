@@ -19,13 +19,7 @@ export default function RelationshipBlock({ result, supersededBy }: Relationship
             {SECTION_ORDER.map((label) => {
                 const items = result.grouped.get(label) ?? [];
                 if (items.length === 0) return null;
-                return (
-                    <TypedBucket
-                        key={label}
-                        heading={label}
-                        items={items}
-                    />
-                );
+                return <TypedBucket key={label} heading={label} items={items} />;
             })}
             <BlockSection heading="Used by" slugs={result.usedBy} />
             <BlockSection heading="Failure modes" slugs={result.failureModes} />

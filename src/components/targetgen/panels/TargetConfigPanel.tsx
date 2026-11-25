@@ -31,7 +31,13 @@ interface Props {
 
 const ALL_SECTIONS: TargetConfigSection[] = ["pattern", "page", "validation", "downloads"];
 
-export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECTIONS, generateDxf, puzzlepolePeriods }: Props) {
+export default function TargetConfigPanel({
+    state,
+    dispatch,
+    sections = ALL_SECTIONS,
+    generateDxf,
+    puzzlepolePeriods,
+}: Props) {
     const { target, validation } = state;
     const visibleSections = new Set(sections);
 
@@ -49,10 +55,10 @@ export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECT
             )}
             {visibleSections.has("pattern") && target.targetType === "ringgrid" && state.medium === "screen" && (
                 <Callout tone="info" title="Fitted to the display" className="text-xs">
-                    In Screen mode the library fits the number of rows and columns to fill the display, so
-                    those two fields only seed the template and do not determine the output. The pitch and
-                    marker proportions still apply; the marker size comes from the radii and ring width. The
-                    realised grid is reported on the Export step.
+                    In Screen mode the library fits the number of rows and columns to fill the display, so those two
+                    fields only seed the template and do not determine the output. The pitch and marker proportions
+                    still apply; the marker size comes from the radii and ring width. The realised grid is reported on
+                    the Export step.
                 </Callout>
             )}
             {visibleSections.has("pattern") && target.targetType === "ringgrid" && (
@@ -85,14 +91,18 @@ export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECT
             {visibleSections.has("validation") && validation.errors.length > 0 && (
                 <Callout tone="error" className="text-xs">
                     <ul className="flex flex-col gap-1">
-                        {validation.errors.map((e) => <li key={e}>{e}</li>)}
+                        {validation.errors.map((e) => (
+                            <li key={e}>{e}</li>
+                        ))}
                     </ul>
                 </Callout>
             )}
             {visibleSections.has("validation") && validation.warnings.length > 0 && (
                 <Callout tone="warning" className="text-xs">
                     <ul className="flex flex-col gap-1">
-                        {validation.warnings.map((w) => <li key={w}>{w}</li>)}
+                        {validation.warnings.map((w) => (
+                            <li key={w}>{w}</li>
+                        ))}
                     </ul>
                 </Callout>
             )}
@@ -102,9 +112,7 @@ export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECT
             )}
 
             {/* Download bar */}
-            {visibleSections.has("downloads") && (
-                <DownloadBar state={state} generateDxf={generateDxf} />
-            )}
+            {visibleSections.has("downloads") && <DownloadBar state={state} generateDxf={generateDxf} />}
         </div>
     );
 }

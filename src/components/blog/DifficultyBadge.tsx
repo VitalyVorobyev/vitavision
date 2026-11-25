@@ -1,15 +1,17 @@
-interface Props { level: "beginner" | "intermediate" | "advanced"; }
+interface Props {
+    level: "beginner" | "intermediate" | "advanced";
+}
 
 const DOT_COLOR: Record<Props["level"], string> = {
-    beginner:     "bg-difficulty-beginner",
+    beginner: "bg-difficulty-beginner",
     intermediate: "bg-difficulty-intermediate",
-    advanced:     "bg-difficulty-advanced",
+    advanced: "bg-difficulty-advanced",
 };
 
 const LABEL: Record<Props["level"], string> = {
-    beginner:     "Beginner",
+    beginner: "Beginner",
     intermediate: "Intermediate",
-    advanced:     "Advanced",
+    advanced: "Advanced",
 };
 
 export default function DifficultyBadge({ level }: Props) {

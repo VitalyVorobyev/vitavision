@@ -37,7 +37,6 @@ export default function TableOfContents({ articleRef, deps }: TableOfContentsPro
                     break;
                 }
             }
-            // eslint-disable-next-line @eslint-react/set-state-in-effect -- active heading is derived from live scroll positions of the rendered DOM
             setActiveId(nextActive);
         };
 
@@ -73,20 +72,12 @@ export default function TableOfContents({ articleRef, deps }: TableOfContentsPro
 
     return (
         <nav aria-label="Table of contents">
-            <p className="text-xs uppercase tracking-wider text-fg-muted font-sans font-medium mb-3">
-                Contents
-            </p>
+            <p className="text-xs uppercase tracking-wider text-fg-muted font-sans font-medium mb-3">Contents</p>
             <ol className="space-y-0.5">
                 {headings.map(({ id, text, level }) => {
                     const isActive = id === activeId;
-                    const baseClasses =
-                        "block font-sans leading-snug py-1 border-l-2 transition-colors";
-                    const levelClasses =
-                        level === 1
-                            ? "text-sm pl-3"
-                            : level === 2
-                                ? "text-sm pl-6"
-                                : "text-xs pl-9";
+                    const baseClasses = "block font-sans leading-snug py-1 border-l-2 transition-colors";
+                    const levelClasses = level === 1 ? "text-sm pl-3" : level === 2 ? "text-sm pl-6" : "text-xs pl-9";
                     const stateClasses = isActive
                         ? "text-article-heading font-medium border-signal"
                         : "text-fg-muted border-transparent hover:text-fg";

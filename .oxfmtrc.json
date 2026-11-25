@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 120,
+  "tabWidth": 4,
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "**/*.md",
+    "**/*.mdx",
+    "content/**",
+    "docs/**",
+    "src/generated/**",
+    "public/**",
+    "py/**",
+    "dist/**",
+    "bun.lock"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.json", "**/*.jsonc", "**/*.yml", "**/*.yaml"],
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
+}

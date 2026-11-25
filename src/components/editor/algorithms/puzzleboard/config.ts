@@ -47,7 +47,8 @@ export const presets: AlgorithmPreset[] = [
     },
     {
         label: "Fixed board (fast)",
-        description: "Restrict decode to the configured rows × cols at origin (fastest; requires correct origin_row/col)",
+        description:
+            "Restrict decode to the configured rows × cols at origin (fastest; requires correct origin_row/col)",
         config: mergeConfig(initialConfig, { decode: { search_mode: { kind: "fixed_board" } } }),
     },
 ];

@@ -109,7 +109,13 @@ const scholarly: ScholarlyIndex = {
             citedBy: ["he2016-resnet"],
             narratives: [],
         },
-        "simonyan2014-vgg": { primaryPages: [], citingPages: [], cites: [], citedBy: ["he2016-resnet"], narratives: [] },
+        "simonyan2014-vgg": {
+            primaryPages: [],
+            citingPages: [],
+            cites: [],
+            citedBy: ["he2016-resnet"],
+            narratives: [],
+        },
         "he2017-maskrcnn": { primaryPages: [], citingPages: [], cites: [], citedBy: [], narratives: [] },
         ...Object.fromEntries(
             citedByIds.map((id) => [
@@ -119,8 +125,22 @@ const scholarly: ScholarlyIndex = {
         ),
     },
     authors: {
-        he: { firstYear: 2016, lastYear: 2017, pageCount: 1, primaryPages: ["resnet"], domains: [{ domain: "features", count: 1 }], group: "features" },
-        zhang: { firstYear: 2016, lastYear: 2016, pageCount: 1, primaryPages: ["resnet"], domains: [{ domain: "features", count: 1 }], group: "features" },
+        he: {
+            firstYear: 2016,
+            lastYear: 2017,
+            pageCount: 1,
+            primaryPages: ["resnet"],
+            domains: [{ domain: "features", count: 1 }],
+            group: "features",
+        },
+        zhang: {
+            firstYear: 2016,
+            lastYear: 2016,
+            pageCount: 1,
+            primaryPages: ["resnet"],
+            domains: [{ domain: "features", count: 1 }],
+            group: "features",
+        },
     },
     coauthorPapers: {},
     network: { nodes: [], edges: [], bounds: { minX: 0, minY: 0, maxX: 0, maxY: 0 } },
@@ -191,7 +211,9 @@ describe("PaperPage", () => {
     it("renders the 'builds on' list with a short author list", () => {
         renderAt("/papers/he2016-resnet");
 
-        const link = screen.getByRole("link", { name: /ImageNet Classification with Deep Convolutional Neural Networks/ });
+        const link = screen.getByRole("link", {
+            name: /ImageNet Classification with Deep Convolutional Neural Networks/,
+        });
         expect(link).toHaveAttribute("href", "/papers/krizhevsky2012-alexnet");
         expect(screen.getByText("Krizhevsky, Sutskever, Hinton")).toBeInTheDocument();
     });

@@ -16,7 +16,11 @@ export type TargetGeneratorStep = "target" | "pattern" | "page" | "export";
 
 const STEPS: { key: TargetGeneratorStep; label: string; description: string }[] = [
     { key: "target", label: "Target", description: "Choose target type or import a saved configuration" },
-    { key: "pattern", label: "Pattern", description: "Apply a preset, then adjust board geometry and target-specific settings" },
+    {
+        key: "pattern",
+        label: "Pattern",
+        description: "Apply a preset, then adjust board geometry and target-specific settings",
+    },
     { key: "page", label: "Page", description: "Choose print or screen, then set the paper or the display" },
     { key: "export", label: "Export", description: "Review validation and download files" },
 ];
@@ -45,9 +49,7 @@ function WizardStepCard({
                 <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
                 <p className="mt-1 text-sm text-fg-muted">{description}</p>
             </div>
-            <div className="p-1 sm:p-2">
-                {children}
-            </div>
+            <div className="p-1 sm:p-2">{children}</div>
         </section>
     );
 }
@@ -60,9 +62,10 @@ function PresetRow({
     dispatch: React.Dispatch<TargetGeneratorAction>;
 }) {
     const presets = presetsForType(state.target.targetType);
-    const activePresetId = presets.find((preset) =>
-        JSON.stringify(preset.target) === JSON.stringify(state.target)
-        && JSON.stringify(preset.page) === JSON.stringify(state.page),
+    const activePresetId = presets.find(
+        (preset) =>
+            JSON.stringify(preset.target) === JSON.stringify(state.target) &&
+            JSON.stringify(preset.page) === JSON.stringify(state.page),
     )?.id;
     const activePreset = presets.find((preset) => preset.id === activePresetId) ?? null;
 
@@ -77,11 +80,13 @@ function PresetRow({
                     return (
                         <Button
                             key={preset.id}
-                            onClick={() => dispatch({
-                                type: "LOAD_PRESET",
-                                target: preset.target,
-                                page: preset.page,
-                            })}
+                            onClick={() =>
+                                dispatch({
+                                    type: "LOAD_PRESET",
+                                    target: preset.target,
+                                    page: preset.page,
+                                })
+                            }
                             className={cn("h-10 min-w-0", active ? "bg-signal/10 ring-signal" : "text-fg-muted")}
                             aria-pressed={active}
                             title={preset.label}
@@ -129,9 +134,10 @@ export default function TargetGeneratorWizard({
             return `${TARGET_LABELS[state.target.targetType]} • Screen • ${widthPx} x ${heightPx} px • ${pixelPitchMm} mm pitch`;
         }
         const orientation = state.page.orientation === "portrait" ? "Portrait" : "Landscape";
-        const page = state.page.sizeKind === "custom"
-            ? `${state.page.customWidthMm} x ${state.page.customHeightMm} mm`
-            : state.page.sizeKind.toUpperCase();
+        const page =
+            state.page.sizeKind === "custom"
+                ? `${state.page.customWidthMm} x ${state.page.customHeightMm} mm`
+                : state.page.sizeKind.toUpperCase();
         return `${TARGET_LABELS[state.target.targetType]} • ${page} • ${orientation}`;
     }, [state.medium, state.screen, state.page, state.target.targetType]);
 
@@ -182,12 +188,16 @@ export default function TargetGeneratorWizard({
                 <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-fg-muted sm:mt-3">
                     <span>{summaryLine}</span>
                     {(errorCount > 0 || warningCount > 0) && (
-                        <span className={cn(
-                            "inline-flex items-center gap-1 rounded-full px-2 py-1",
-                            errorCount > 0 ? "bg-defect/10 text-defect" : "bg-warn/10 text-warn",
-                        )}>
+                        <span
+                            className={cn(
+                                "inline-flex items-center gap-1 rounded-full px-2 py-1",
+                                errorCount > 0 ? "bg-defect/10 text-defect" : "bg-warn/10 text-warn",
+                            )}
+                        >
                             <TriangleAlert size={12} />
-                            {errorCount > 0 ? `${errorCount} error${errorCount > 1 ? "s" : ""}` : `${warningCount} warning${warningCount > 1 ? "s" : ""}`}
+                            {errorCount > 0
+                                ? `${errorCount} error${errorCount > 1 ? "s" : ""}`
+                                : `${warningCount} warning${warningCount > 1 ? "s" : ""}`}
                         </span>
                     )}
                 </div>
@@ -230,24 +240,24 @@ export default function TargetGeneratorWizard({
                     {activeStep === "page" && (
                         <WizardStepCard
                             title={state.medium === "screen" ? "Display settings" : "Page settings"}
-                            description={state.medium === "screen"
-                                ? "Describe the monitor the target will be shown on: native resolution and pixel pitch."
-                                : "Define paper dimensions, orientation, margins, and export resolution."}
+                            description={
+                                state.medium === "screen"
+                                    ? "Describe the monitor the target will be shown on: native resolution and pixel pitch."
+                                    : "Define paper dimensions, orientation, margins, and export resolution."
+                            }
                         >
-                            <TargetConfigPanel
-                                state={state}
-                                dispatch={dispatch}
-                                sections={["page"]}
-                            />
+                            <TargetConfigPanel state={state} dispatch={dispatch} sections={["page"]} />
                         </WizardStepCard>
                     )}
 
                     {activeStep === "export" && (
                         <WizardStepCard
                             title="Review and export"
-                            description={state.medium === "screen"
-                                ? "Check the realised geometry, then download the PNG and its JSON sidecar."
-                                : "Check validation messages, then download the target in the required file format."}
+                            description={
+                                state.medium === "screen"
+                                    ? "Check the realised geometry, then download the PNG and its JSON sidecar."
+                                    : "Check validation messages, then download the target in the required file format."
+                            }
                         >
                             <TargetConfigPanel
                                 state={state}
@@ -289,7 +299,9 @@ export default function TargetGeneratorWizard({
                             Live Preview
                         </div>
                         <div className="mt-1 text-sm text-fg-muted">
-                            {state.medium === "screen" ? "The rendered screen PNG" : "Current board, page, and printable area"}
+                            {state.medium === "screen"
+                                ? "The rendered screen PNG"
+                                : "Current board, page, and printable area"}
                         </div>
                     </div>
                     <Button size="md" onClick={() => setPreviewOpen((open) => !open)} aria-expanded={previewOpen}>

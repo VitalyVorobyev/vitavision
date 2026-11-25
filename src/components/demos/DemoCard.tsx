@@ -28,14 +28,8 @@ export default function DemoCard({ slug, frontmatter }: DemoCardProps) {
                 <DemoCover slug={slug} className="w-full aspect-video" />
             )}
             <div className="p-5 space-y-2">
-                <h2 className="text-xl font-semibold group-hover:underline">
-                    {frontmatter.title}
-                </h2>
-                {frontmatter.summary && (
-                    <p className="text-fg-muted text-sm line-clamp-2">
-                        {frontmatter.summary}
-                    </p>
-                )}
+                <h2 className="text-xl font-semibold group-hover:underline">{frontmatter.title}</h2>
+                {frontmatter.summary && <p className="text-fg-muted text-sm line-clamp-2">{frontmatter.summary}</p>}
                 <div className="flex flex-wrap gap-1.5 pt-1">
                     {frontmatter.tags.map((tag) => (
                         <TagBadge key={tag} tag={tag} />

@@ -33,13 +33,14 @@ For local dev setup see `README.dev.md`.
 ```bash
 bun run dev       # Dev server at http://localhost:5173
 bun run build     # Type-check + Vite production build
-bun run lint      # ESLint
+bun run lint      # Oxlint
+bun run format    # oxfmt (write); format:check in CI
 ```
 
 ### Verification Checklist
 After any code change, run **all** of the following before committing:
 1. `bun run build` — type-check + production build
-2. `bun run lint` — ESLint
+2. `bun run lint` — Oxlint; `bun run format:check` — oxfmt (run `bun run format` to fix)
 3. `npx vitest run` — unit tests
 4. `bun run scripts/test-wasm-schemas.ts` — WASM integration tests (when touching algorithm configs)
 5. `bun run ds:validate` — design-system boundary (when touching a component exported from `.design-sync/ds-entry.tsx` or a `.design-sync/previews/` file; it also checks that the entry, `config.json` and the previews agree)
@@ -211,7 +212,7 @@ Static computer vision web app: image annotation editor + WASM algorithm runner.
 ### Tech Stack
 - **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS v4 + react-router
 - **UI system**: `@vitavision/ui` — design tokens (`@vitavision/ui/styles.css`: `ground` / `surface` / `raised` / `overlay` / `line` / `fg*` / `signal` + verdicts `normal` / `defect` / `warn`), the theme controller, IBM Plex fonts, and every interactive control (`Button`, `Field` + `NumberInput`, `Select`, `SegmentedControl`, `Checkbox`, `Switch`, `Dialog`, `Callout`, `Tooltip` / `InfoHint`, `toast()` …). It is built in the separate **lab-ui** monorepo (`~/vision/lab-ui`; `docs/plan/PLAN.md` and `docs/visual-language.md` are the source of truth for UI, and its Storybook specifies each component). Use the ui component rather than hand-rolling a control; editorial pages keep their own markup (Source Serif 4, `src/styles/editorial-tokens.css`).
-- **Toolchain**: `@vitavision/config-ts` (strict compiler options, incl. `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`) and `@vitavision/config-eslint` (type-aware lint plus the `tokensOnly(['src/**'])` rule, gate G5.1: no raw Tailwind palette classes or hex literals in `src/`; colour data lives in the modules allowlisted with a reason in `eslint.config.js`)
+- **Toolchain**: `@vitavision/config-ts` (strict compiler options, incl. `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`) and `@vitavision/config-oxlint` (type-aware Oxlint via `oxlint-tsgolint` plus the `vitavision/tokens-only` rule on `src/**`, gate G5.1: no raw Tailwind palette classes or hex literals in `src/`; colour data lives in the modules allowlisted with a reason in `.oxlintrc.json`)
 - **State**: Zustand (`src/store/editor/useEditorStore.ts`)
 - **Canvas**: react-konva (colours from `useCanvasTokens()`, since canvas cannot resolve `var(--x)`)
 - **CV Processing**: WASM npm packages executed in Web Workers

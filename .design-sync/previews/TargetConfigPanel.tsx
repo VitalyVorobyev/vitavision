@@ -1,10 +1,7 @@
 import { useReducer } from "react";
 import { TargetConfigPanel } from "vitcv";
 import { targetGeneratorReducer } from "../../src/components/targetgen/reducer";
-import {
-    CHARUCO_PRESETS,
-    PUZZLEPOLE_PRESETS,
-} from "../../src/components/targetgen/presets";
+import { CHARUCO_PRESETS, PUZZLEPOLE_PRESETS } from "../../src/components/targetgen/presets";
 import type { TargetGeneratorState, ChessboardConfig } from "../../src/components/targetgen/types";
 import {
     A4_LANDSCAPE,
@@ -108,7 +105,9 @@ export const ValidationBlockedExport = () => {
     // Oversized board on a standard A4 sheet: the fit check fails, which greys out
     // DownloadBar's buttons and shows the error callout.
     const oversized: ChessboardConfig = { innerRows: 9, innerCols: 13, squareSizeMm: 50, innerSquareRel: 0 };
-    const [state, dispatch] = usePanelState(settledState({ targetType: "chessboard", config: oversized }, A4_LANDSCAPE));
+    const [state, dispatch] = usePanelState(
+        settledState({ targetType: "chessboard", config: oversized }, A4_LANDSCAPE),
+    );
     return (
         <Rail>
             <TargetConfigPanel state={state} dispatch={dispatch} sections={["validation", "downloads"]} />
@@ -130,7 +129,9 @@ export const ScreenDisplaySettings = () => {
 
 export const ScreenChessboardExport = () => {
     const config: ChessboardConfig = { innerRows: 8, innerCols: 11, squareSizeMm: 20, innerSquareRel: 0 };
-    const [state, dispatch] = usePanelState(settledScreenState({ targetType: "chessboard", config }, SCREEN_GRID_RESULT));
+    const [state, dispatch] = usePanelState(
+        settledScreenState({ targetType: "chessboard", config }, SCREEN_GRID_RESULT),
+    );
     return (
         <Rail>
             <TargetConfigPanel state={state} dispatch={dispatch} sections={["validation", "downloads"]} />
@@ -143,7 +144,15 @@ export const ScreenRingGridExport = () => {
         settledScreenState(
             {
                 targetType: "ringgrid",
-                config: { rows: 15, longRowCols: 14, pitchMm: 8.0, markerOuterRadiusMm: 5.6, markerInnerRadiusMm: 3.2, markerRingWidthMm: 0.8, profile: "baseline" },
+                config: {
+                    rows: 15,
+                    longRowCols: 14,
+                    pitchMm: 8.0,
+                    markerOuterRadiusMm: 5.6,
+                    markerInnerRadiusMm: 3.2,
+                    markerRingWidthMm: 0.8,
+                    profile: "baseline",
+                },
             },
             SCREEN_RINGGRID_RESULT,
         ),

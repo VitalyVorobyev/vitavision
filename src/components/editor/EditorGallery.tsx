@@ -6,19 +6,15 @@ import { Button, toast } from "@vitavision/ui";
 import { v4 as uuidv4 } from "uuid";
 
 export default function EditorGallery() {
-    const {
-        galleryImages,
-        addGalleryImage,
-        setImage,
-        setGalleryMode,
-        setFeatures,
-    } = useEditorStore(useShallow((s) => ({
-        galleryImages: s.galleryImages,
-        addGalleryImage: s.addGalleryImage,
-        setImage: s.setImage,
-        setGalleryMode: s.setGalleryMode,
-        setFeatures: s.setFeatures,
-    })));
+    const { galleryImages, addGalleryImage, setImage, setGalleryMode, setFeatures } = useEditorStore(
+        useShallow((s) => ({
+            galleryImages: s.galleryImages,
+            addGalleryImage: s.addGalleryImage,
+            setImage: s.setImage,
+            setGalleryMode: s.setGalleryMode,
+            setFeatures: s.setFeatures,
+        })),
+    );
 
     const handleFileUpload = () => {
         const input = document.createElement("input");
@@ -36,7 +32,7 @@ export default function EditorGallery() {
                 id: uuidv4(),
                 src: url,
                 name: file.name,
-                sampleId: 'upload',
+                sampleId: "upload",
             });
         };
         input.click();

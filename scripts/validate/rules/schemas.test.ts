@@ -37,7 +37,8 @@ describe("schemasRule", () => {
         expect(schemasRule(ctx)).toEqual([
             {
                 level: "error",
-                message: "[2020-01-01-post.md] blog frontmatter: title — Invalid input: expected string, received undefined",
+                message:
+                    "[2020-01-01-post.md] blog frontmatter: title — Invalid input: expected string, received undefined",
             },
             {
                 level: "error",
@@ -53,7 +54,8 @@ describe("schemasRule", () => {
         expect(schemasRule(ctx)).toEqual([
             {
                 level: "error",
-                message: '[thing.md] demo frontmatter: category — Invalid option: expected one of "interactive-figure"|"tool"|"playground"',
+                message:
+                    '[thing.md] demo frontmatter: category — Invalid option: expected one of "interactive-figure"|"tool"|"playground"',
             },
         ]);
     });

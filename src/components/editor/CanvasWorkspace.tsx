@@ -44,29 +44,31 @@ export default function CanvasWorkspace() {
         heatmapData,
         heatmapVisible,
         heatmapOpacity,
-    } = useEditorStore(useShallow((s) => ({
-        imageSrc: s.imageSrc,
-        imageName: s.imageName,
-        imageWidth: s.imageWidth,
-        imageHeight: s.imageHeight,
-        view: s.view,
-        setView: s.setView,
-        setImage: s.setImage,
-        activeTool: s.activeTool,
-        toolVersion: s.toolVersion,
-        features: s.features,
-        addFeature: s.addFeature,
-        updateFeature: s.updateFeature,
-        selectedFeatureId: s.selectedFeatureId,
-        setSelectedFeatureId: s.setSelectedFeatureId,
-        lastAlgorithmResult: s.lastAlgorithmResult,
-        featureGroupVisibility: s.featureGroupVisibility,
-        overlayVisibility: s.overlayVisibility,
-        overlayToggles: s.overlayToggles,
-        heatmapData: s.heatmapData,
-        heatmapVisible: s.heatmapVisible,
-        heatmapOpacity: s.heatmapOpacity,
-    })));
+    } = useEditorStore(
+        useShallow((s) => ({
+            imageSrc: s.imageSrc,
+            imageName: s.imageName,
+            imageWidth: s.imageWidth,
+            imageHeight: s.imageHeight,
+            view: s.view,
+            setView: s.setView,
+            setImage: s.setImage,
+            activeTool: s.activeTool,
+            toolVersion: s.toolVersion,
+            features: s.features,
+            addFeature: s.addFeature,
+            updateFeature: s.updateFeature,
+            selectedFeatureId: s.selectedFeatureId,
+            setSelectedFeatureId: s.setSelectedFeatureId,
+            lastAlgorithmResult: s.lastAlgorithmResult,
+            featureGroupVisibility: s.featureGroupVisibility,
+            overlayVisibility: s.overlayVisibility,
+            overlayToggles: s.overlayToggles,
+            heatmapData: s.heatmapData,
+            heatmapVisible: s.heatmapVisible,
+            heatmapOpacity: s.heatmapOpacity,
+        })),
+    );
 
     const containerRef = useRef<HTMLDivElement>(null);
     const stageRef = useRef<StageHandle>(null);
@@ -83,7 +85,10 @@ export default function CanvasWorkspace() {
 
     const featureById = useMemo(() => new Map(features.map((feature) => [feature.id, feature])), [features]);
     const visible = useMemo(
-        () => (overlayVisibility.features ? features.filter((feature) => isFeatureVisible(feature, featureGroupVisibility)) : []),
+        () =>
+            overlayVisibility.features
+                ? features.filter((feature) => isFeatureVisible(feature, featureGroupVisibility))
+                : [],
         [features, featureGroupVisibility, overlayVisibility.features],
     );
     const annotations = useMemo(() => visible.filter((feature) => !isDetectionFeature(feature)), [visible]);
@@ -109,12 +114,17 @@ export default function CanvasWorkspace() {
             setTooltip(null);
             return;
         }
-        setTooltip({ feature, left: client.x - box.left + TOOLTIP_OFFSET_PX, top: client.y - box.top + TOOLTIP_OFFSET_PX });
+        setTooltip({
+            feature,
+            left: client.x - box.left + TOOLTIP_OFFSET_PX,
+            top: client.y - box.top + TOOLTIP_OFFSET_PX,
+        });
     }, []);
 
     // The mouse hovers a corner: show its numbers beside the pointer. A touch has no hover, so a tap shows them (see `onTap`).
     const onOverlayHover = useCallback(
-        (hit: TargetHit | null) => tooltipAt(hit ? (featureById.get(String(hit.id)) ?? null) : null, pointerRef.current),
+        (hit: TargetHit | null) =>
+            tooltipAt(hit ? (featureById.get(String(hit.id)) ?? null) : null, pointerRef.current),
         [featureById, tooltipAt],
     );
 
@@ -155,17 +165,17 @@ export default function CanvasWorkspace() {
     const drawsShapes = activeTool === "POLYLINE" || activeTool === "POLYGON";
     const controlHints = isTouchPrimary
         ? [
-            activeTool === "SELECT" ? "Tap selects or edits" : "Tap uses the active tool",
-            activeTool === "SELECT" ? "Drag pans the canvas" : "Two fingers pan",
-            "Pinch zooms",
-            ...(drawsShapes ? ["Use Finish shape to complete the outline"] : []),
-        ]
+              activeTool === "SELECT" ? "Tap selects or edits" : "Tap uses the active tool",
+              activeTool === "SELECT" ? "Drag pans the canvas" : "Two fingers pan",
+              "Pinch zooms",
+              ...(drawsShapes ? ["Use Finish shape to complete the outline"] : []),
+          ]
         : [
-            activeTool === "SELECT" ? "Left click selects or edits" : "Left click uses the active tool",
-            "Right drag pans",
-            "Wheel zooms",
-            ...(drawsShapes ? ["Double click finishes the shape"] : []),
-        ];
+              activeTool === "SELECT" ? "Left click selects or edits" : "Left click uses the active tool",
+              "Right drag pans",
+              "Wheel zooms",
+              ...(drawsShapes ? ["Double click finishes the shape"] : []),
+          ];
 
     return (
         <div
@@ -179,7 +189,18 @@ export default function CanvasWorkspace() {
         >
             {!imageSrc && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-fg-muted/40">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="36"
+                        height="36"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-fg-muted/40"
+                    >
                         <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
                         <circle cx="9" cy="9" r="2" />
                         <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />

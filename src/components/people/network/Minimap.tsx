@@ -54,9 +54,22 @@ export function Minimap({ nodes, groupOf, bounds, view, vp, dimId }: MinimapProp
     return (
         <div className="absolute left-3 top-3 hidden md:flex flex-col gap-1 rounded-control border border-line bg-surface/95 backdrop-blur px-2 py-1.5 shadow-sm">
             <span className="text-[9px] uppercase tracking-wide text-fg-muted">Whole network</span>
-            <svg width={MW} height={MH} viewBox={`0 0 ${MW} ${MH}`} role="img" aria-label="Overview of the whole co-author network">
+            <svg
+                width={MW}
+                height={MH}
+                viewBox={`0 0 ${MW} ${MH}`}
+                role="img"
+                aria-label="Overview of the whole co-author network"
+            >
                 {dots.map((d) => (
-                    <circle key={d.id} cx={d.x} cy={d.y} r={1.2} style={{ fill: d.color }} fillOpacity={d.dim ? 0.35 : 0.9} />
+                    <circle
+                        key={d.id}
+                        cx={d.x}
+                        cy={d.y}
+                        r={1.2}
+                        style={{ fill: d.color }}
+                        fillOpacity={d.dim ? 0.35 : 0.9}
+                    />
                 ))}
                 <rect
                     x={Math.max(PAD, rectTL.x)}

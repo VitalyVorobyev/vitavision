@@ -8,10 +8,7 @@ import { useIsDark } from "../lib/theme.ts";
  * Re-renders when the dark/light theme changes.
  * Mermaid is dynamically imported so it never runs during SSR.
  */
-export function useMermaid(
-    ref: RefObject<HTMLElement | null>,
-    deps: unknown[],
-): void {
+export function useMermaid(ref: RefObject<HTMLElement | null>, deps: unknown[]): void {
     const theme = useIsDark() ? "dark" : "light";
 
     useEffect(() => {
@@ -81,6 +78,6 @@ export function useMermaid(
         return () => {
             cancelled = true;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- caller-supplied `deps` array (spread) is the intentional re-run trigger, plus theme
+        // oxlint-disable-next-line react/exhaustive-deps -- caller-supplied `deps` array (spread) is the intentional re-run trigger, plus theme
     }, [...deps, theme]);
 }

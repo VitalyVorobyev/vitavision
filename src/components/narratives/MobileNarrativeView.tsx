@@ -36,8 +36,8 @@ export default function MobileNarrativeView({ narrative, steps, chapters }: Mobi
             </div>
 
             <p className="mt-3 px-1 text-[10.5px] leading-snug text-fg-muted">
-                The constellation map from desktop is reshaped into a reading list here — same
-                stops, same order. Tap any node to see what it contributes.
+                The constellation map from desktop is reshaped into a reading list here — same stops, same order. Tap
+                any node to see what it contributes.
             </p>
 
             {steps.map((step, i) => {
@@ -60,7 +60,7 @@ export default function MobileNarrativeView({ narrative, steps, chapters }: Mobi
                         {chapter && (
                             <div
                                 className={`${proseClasses} !max-w-none !text-[14.5px] !leading-[1.7] [&>h2]:hidden`}
-                                // eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- chapter HTML is a slice of the build-time rehype-sanitize output (scripts/content-build.ts sliceChapters); no runtime user content
+                                // oxlint-disable-next-line react/no-danger -- chapter HTML is a slice of the build-time rehype-sanitize output (scripts/content-build.ts sliceChapters); no runtime user content
                                 dangerouslySetInnerHTML={{ __html: chapter }}
                             />
                         )}
@@ -122,13 +122,9 @@ function MobileNodeCard({ node, areaIds }: { node: NarrativeNode; areaIds: strin
 
             {open && (
                 <div className="border-t border-line px-3 py-2.5">
-                    {node.takeaway && (
-                        <p className="m-0 text-[12.5px] leading-[1.55] text-fg">{node.takeaway}</p>
-                    )}
+                    {node.takeaway && <p className="m-0 text-[12.5px] leading-[1.55] text-fg">{node.takeaway}</p>}
                     {node.remark && (
-                        <p className="m-0 mt-1.5 text-[11.5px] italic leading-snug text-fg-muted">
-                            {node.remark}
-                        </p>
+                        <p className="m-0 mt-1.5 text-[11.5px] italic leading-snug text-fg-muted">{node.remark}</p>
                     )}
                     {node.kind === "page" && (
                         <ButtonLink variant="primary" asChild className="mt-2.5 h-9 w-full no-underline">

@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { Select, Field } from 'vitcv';
+import { useState } from "react";
+import { Select, Field } from "vitcv";
 
 const DICTS = [
-    { value: 'DICT_4X4_250', label: 'DICT_4X4_250', note: '250 markers' },
-    { value: 'DICT_5X5_250', label: 'DICT_5X5_250', note: '250 markers' },
-    { value: 'DICT_6X6_250', label: 'DICT_6X6_250', note: '250 markers' },
-    { value: 'DICT_APRILTAG_36h11', label: 'AprilTag 36h11', note: 'not available', disabled: true },
+    { value: "DICT_4X4_250", label: "DICT_4X4_250", note: "250 markers" },
+    { value: "DICT_5X5_250", label: "DICT_5X5_250", note: "250 markers" },
+    { value: "DICT_6X6_250", label: "DICT_6X6_250", note: "250 markers" },
+    { value: "DICT_APRILTAG_36h11", label: "AprilTag 36h11", note: "not available", disabled: true },
 ];
 
 export const Unset = () => {
-    const [value, setValue] = useState('');
+    const [value, setValue] = useState("");
     return (
         <div style={{ width: 240 }}>
             <Select
@@ -24,7 +24,7 @@ export const Unset = () => {
 };
 
 export const Chosen = () => {
-    const [value, setValue] = useState('DICT_4X4_250');
+    const [value, setValue] = useState("DICT_4X4_250");
     return (
         <div style={{ width: 240 }}>
             <Select aria-label="ArUco dictionary" value={value} onValueChange={setValue} options={DICTS} />
@@ -34,7 +34,7 @@ export const Chosen = () => {
 
 // `unsetLabel` adds a leading entry that returns the field to `""`.
 export const WithUnsetEntry = () => {
-    const [value, setValue] = useState('');
+    const [value, setValue] = useState("");
     return (
         <div style={{ width: 240 }}>
             <Select
@@ -50,7 +50,7 @@ export const WithUnsetEntry = () => {
 };
 
 export const InField = () => {
-    const [value, setValue] = useState('DICT_5X5_250');
+    const [value, setValue] = useState("DICT_5X5_250");
     return (
         <div style={{ width: 260 }}>
             <Field label="Dictionary" description="Marker family printed on the board.">

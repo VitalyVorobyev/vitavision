@@ -69,8 +69,10 @@ function summarise(sample: string, features: ExportedFeature[]): AlgorithmFixtur
 
 function expectNear(actual: number | undefined, expected: number, label: string): void {
     expect(actual, label).toBeDefined();
-    expect(Math.abs((actual ?? Number.NaN) - expected), `${label}: ${actual} vs ${expected} (tolerance ${TOLERANCE})`)
-        .toBeLessThanOrEqual(TOLERANCE);
+    expect(
+        Math.abs((actual ?? Number.NaN) - expected),
+        `${label}: ${actual} vs ${expected} (tolerance ${TOLERANCE})`,
+    ).toBeLessThanOrEqual(TOLERANCE);
 }
 
 function readFixture(): Fixture {
@@ -95,7 +97,9 @@ test.describe("editor algorithm runs", () => {
                 // Keep registry order so the committed diff stays reviewable.
                 const merged = { ...readFixture(), [algo]: actual };
                 const ordered = Object.fromEntries(
-                    Object.keys(ALGORITHM_SAMPLES).filter((id) => id in merged).map((id) => [id, merged[id]]),
+                    Object.keys(ALGORITHM_SAMPLES)
+                        .filter((id) => id in merged)
+                        .map((id) => [id, merged[id]]),
                 );
                 writeFileSync(FIXTURE_PATH, `${JSON.stringify(ordered, null, 2)}\n`);
                 return;

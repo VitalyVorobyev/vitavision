@@ -64,17 +64,11 @@ function getFeatureGroupLabel(key: string): string {
     return TYPE_LABELS[value] ?? value;
 }
 
-export function isFeatureGroupVisible(
-    key: string,
-    visibility: Record<string, boolean>,
-): boolean {
+export function isFeatureGroupVisible(key: string, visibility: Record<string, boolean>): boolean {
     return visibility[key] ?? true;
 }
 
-export function isFeatureVisible(
-    feature: Feature,
-    visibility: Record<string, boolean>,
-): boolean {
+export function isFeatureVisible(feature: Feature, visibility: Record<string, boolean>): boolean {
     return isFeatureGroupVisible(getFeatureGroupKey(feature), visibility);
 }
 

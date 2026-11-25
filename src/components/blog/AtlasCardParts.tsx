@@ -52,11 +52,21 @@ export function GraphChip({ slug }: { slug: string }) {
             aria-label="Open in graph explorer"
             onClick={(e) => e.stopPropagation()}
         >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+            >
                 <circle cx="12" cy="12" r="3" />
-                <circle cx="5"  cy="5"  r="1.6" />
-                <circle cx="19" cy="5"  r="1.6" />
-                <circle cx="5"  cy="19" r="1.6" />
+                <circle cx="5" cy="5" r="1.6" />
+                <circle cx="19" cy="5" r="1.6" />
+                <circle cx="5" cy="19" r="1.6" />
                 <circle cx="19" cy="19" r="1.6" />
                 <line x1="7" y1="6.5" x2="10" y2="10" />
                 <line x1="17" y1="6.5" x2="14" y2="10" />
@@ -71,19 +81,23 @@ export function GraphChip({ slug }: { slug: string }) {
  * `KIND · PROBLEM · YEAR` meta row. Renders the `·` separator only between
  * present items; renders nothing when all three are absent.
  */
-export function CardMeta({ kind, label, year }: { kind?: "algorithm" | "model" | "concept"; label?: string | undefined; year?: number | undefined }) {
+export function CardMeta({
+    kind,
+    label,
+    year,
+}: {
+    kind?: "algorithm" | "model" | "concept";
+    label?: string | undefined;
+    year?: number | undefined;
+}) {
     if (!kind && !label && year === undefined) return null;
     return (
         <div className="flex items-center gap-1.5 mt-1 text-[10.5px] text-fg-muted uppercase tracking-[0.06em]">
-            {kind && (
-                <span className={KIND_TEXT_CLASSES[kind]}>{KIND_LABEL[kind]}</span>
-            )}
+            {kind && <span className={KIND_TEXT_CLASSES[kind]}>{KIND_LABEL[kind]}</span>}
             {kind && (label || year !== undefined) && <span className="text-fg-muted/60">·</span>}
             {label && <span className="truncate">{label}</span>}
             {label && year !== undefined && <span className="text-fg-muted/60">·</span>}
-            {year !== undefined && (
-                <span className="font-mono tabular-nums normal-case tracking-normal">{year}</span>
-            )}
+            {year !== undefined && <span className="font-mono tabular-nums normal-case tracking-normal">{year}</span>}
         </div>
     );
 }
@@ -100,9 +114,11 @@ export function RelationLine({ slug }: { slug: string }) {
 
     const { extended_by, compared_with } = neighbors;
     const [label, targetSlugs] =
-        extended_by.length > 0 ? (["extended by", extended_by] as const)
-        : compared_with.length > 0 ? (["compared with", compared_with] as const)
-        : (["", [] as string[]] as const);
+        extended_by.length > 0
+            ? (["extended by", extended_by] as const)
+            : compared_with.length > 0
+              ? (["compared with", compared_with] as const)
+              : (["", [] as string[]] as const);
 
     if (targetSlugs.length === 0) return null;
 
@@ -125,15 +141,11 @@ export function RelationLine({ slug }: { slug: string }) {
                             >
                                 {shortTitle(title)}
                             </Link>
-                            {i < shown.length - 1 && (
-                                <span className="text-fg-muted/50">·</span>
-                            )}
+                            {i < shown.length - 1 && <span className="text-fg-muted/50">·</span>}
                         </span>
                     );
                 })}
-                {extra > 0 && (
-                    <span className="text-fg-muted/70 shrink-0">+{extra}</span>
-                )}
+                {extra > 0 && <span className="text-fg-muted/70 shrink-0">+{extra}</span>}
             </span>
         </div>
     );

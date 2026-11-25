@@ -1,7 +1,14 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from "node:fs";
 import { join } from "node:path";
 import { Feed } from "feed";
-import { blogPosts, algorithmPages, demoPages, modelPages, conceptPages, narrativePages } from "../src/generated/content-index.ts";
+import {
+    blogPosts,
+    algorithmPages,
+    demoPages,
+    modelPages,
+    conceptPages,
+    narrativePages,
+} from "../src/generated/content-index.ts";
 import { blogHtmlLoaders } from "../src/generated/blog-loaders.ts";
 import { algorithmHtmlLoaders } from "../src/generated/algorithm-loaders.ts";
 import { demoHtmlLoaders } from "../src/generated/demo-loaders.ts";
@@ -84,10 +91,7 @@ function writePage(
     extraHead?: string,
 ): void {
     const html = render(url, staticContent, papers, authors, scholarly);
-    let page = template.replace(
-        '<div id="root"></div>',
-        `<div id="root">${html}</div>`,
-    );
+    let page = template.replace('<div id="root"></div>', `<div id="root">${html}</div>`);
     // Replace the generic <title> and inject SEO tags
     let headTags = buildHeadTags(meta);
     if (extraHead) headTags += `\n    ${extraHead}`;
@@ -97,9 +101,7 @@ function writePage(
     writeFileSync(join(dir, "index.html"), page, "utf-8");
 }
 
-async function loadHtmlMap(
-    loaders: Record<string, () => Promise<{ html: string }>>,
-): Promise<Record<string, string>> {
+async function loadHtmlMap(loaders: Record<string, () => Promise<{ html: string }>>): Promise<Record<string, string>> {
     const entries = await Promise.all(
         Object.entries(loaders).map(async ([slug, load]) => {
             const mod = await load();
@@ -129,9 +131,7 @@ async function main(): Promise<void> {
     // content build ran with INCLUDE_DRAFTS) never reach dist/.
     const publishedNarratives = narrativePages.filter((n) => !n.draft);
     const publishedNarrativeLoaders = Object.fromEntries(
-        publishedNarratives
-            .filter((n) => n.slug in narrativeLoaders)
-            .map((n) => [n.slug, narrativeLoaders[n.slug]]),
+        publishedNarratives.filter((n) => n.slug in narrativeLoaders).map((n) => [n.slug, narrativeLoaders[n.slug]]),
     );
     const staticContent: StaticContentContextValue = {
         blogHtmlBySlug: await loadHtmlMap(blogHtmlLoaders),
@@ -163,65 +163,121 @@ async function main(): Promise<void> {
     let count = 0;
 
     // Blog index
-    writePage(template, "/blog", "blog", {
-        title: "Blog",
-        description:
-            "Articles on computer vision algorithms, calibration, and building intelligent systems.",
-    }, staticContent, papers, authors, scholarly);
+    writePage(
+        template,
+        "/blog",
+        "blog",
+        {
+            title: "Blog",
+            description: "Articles on computer vision algorithms, calibration, and building intelligent systems.",
+        },
+        staticContent,
+        papers,
+        authors,
+        scholarly,
+    );
     count++;
 
     // Individual blog posts
     for (const post of blogPosts) {
         const { frontmatter } = post;
         const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildBlogJsonLd(frontmatter, post.slug))}</script>`;
-        writePage(template, `/blog/${post.slug}`, `blog/${post.slug}`, {
-            title: frontmatter.title,
-            description: frontmatter.summary,
-            ogType: "article",
-            ogImage: frontmatter.coverImage,
-            url: `/blog/${post.slug}`,
-        }, staticContent, papers, authors, scholarly, jsonLd);
+        writePage(
+            template,
+            `/blog/${post.slug}`,
+            `blog/${post.slug}`,
+            {
+                title: frontmatter.title,
+                description: frontmatter.summary,
+                ogType: "article",
+                ogImage: frontmatter.coverImage,
+                url: `/blog/${post.slug}`,
+            },
+            staticContent,
+            papers,
+            authors,
+            scholarly,
+            jsonLd,
+        );
         count++;
     }
 
     // Atlas index
-    writePage(template, "/atlas", "atlas", {
-        title: "Atlas",
-        description: "Computer vision atlas — algorithms, models, and concepts.",
-    }, staticContent, papers, authors, scholarly);
+    writePage(
+        template,
+        "/atlas",
+        "atlas",
+        {
+            title: "Atlas",
+            description: "Computer vision atlas — algorithms, models, and concepts.",
+        },
+        staticContent,
+        papers,
+        authors,
+        scholarly,
+    );
     count++;
 
     // Individual algorithm pages
     for (const page of algorithmPages) {
         const { frontmatter } = page;
         const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildAlgorithmJsonLd(frontmatter, page.slug))}</script>`;
-        writePage(template, `/atlas/${page.slug}`, `atlas/${page.slug}`, {
-            title: frontmatter.title,
-            description: frontmatter.summary,
-            ogType: "article",
-            ogImage: frontmatter.coverImage,
-            url: `/atlas/${page.slug}`,
-        }, staticContent, papers, authors, scholarly, jsonLd);
+        writePage(
+            template,
+            `/atlas/${page.slug}`,
+            `atlas/${page.slug}`,
+            {
+                title: frontmatter.title,
+                description: frontmatter.summary,
+                ogType: "article",
+                ogImage: frontmatter.coverImage,
+                url: `/atlas/${page.slug}`,
+            },
+            staticContent,
+            papers,
+            authors,
+            scholarly,
+            jsonLd,
+        );
         count++;
     }
 
     // Demo index
-    writePage(template, "/demos", "demos", {
-        title: "Demos",
-        description: "Interactive demos of computer vision algorithms.",
-    }, staticContent, papers, authors, scholarly);
+    writePage(
+        template,
+        "/demos",
+        "demos",
+        {
+            title: "Demos",
+            description: "Interactive demos of computer vision algorithms.",
+        },
+        staticContent,
+        papers,
+        authors,
+        scholarly,
+    );
     count++;
 
     // Individual demo pages
     for (const demo of demoPages) {
         const { frontmatter } = demo;
         const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildDemoJsonLd(frontmatter, demo.slug))}</script>`;
-        writePage(template, `/demos/${demo.slug}`, `demos/${demo.slug}`, {
-            title: frontmatter.title,
-            description: frontmatter.summary,
-            ogType: "article",
-            url: `/demos/${demo.slug}`,
-        }, staticContent, papers, authors, scholarly, jsonLd);
+        writePage(
+            template,
+            `/demos/${demo.slug}`,
+            `demos/${demo.slug}`,
+            {
+                title: frontmatter.title,
+                description: frontmatter.summary,
+                ogType: "article",
+                url: `/demos/${demo.slug}`,
+            },
+            staticContent,
+            papers,
+            authors,
+            scholarly,
+            jsonLd,
+        );
         count++;
     }
 
@@ -229,13 +285,23 @@ async function main(): Promise<void> {
     for (const model of modelPages) {
         const { frontmatter } = model;
         const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildModelJsonLd(frontmatter, model.slug))}</script>`;
-        writePage(template, `/atlas/${model.slug}`, `atlas/${model.slug}`, {
-            title: frontmatter.title,
-            description: frontmatter.summary,
-            ogType: "article",
-            ogImage: frontmatter.coverImage,
-            url: `/atlas/${model.slug}`,
-        }, staticContent, papers, authors, scholarly, jsonLd);
+        writePage(
+            template,
+            `/atlas/${model.slug}`,
+            `atlas/${model.slug}`,
+            {
+                title: frontmatter.title,
+                description: frontmatter.summary,
+                ogType: "article",
+                ogImage: frontmatter.coverImage,
+                url: `/atlas/${model.slug}`,
+            },
+            staticContent,
+            papers,
+            authors,
+            scholarly,
+            jsonLd,
+        );
         count++;
     }
 
@@ -243,24 +309,43 @@ async function main(): Promise<void> {
     for (const page of conceptPages) {
         const { frontmatter } = page;
         const jsonLd = `<script type="application/ld+json">${JSON.stringify(buildConceptJsonLd(frontmatter, page.slug))}</script>`;
-        writePage(template, `/atlas/${page.slug}`, `atlas/${page.slug}`, {
-            title: frontmatter.title,
-            description: frontmatter.summary,
-            ogType: "article",
-            ogImage: frontmatter.coverImage,
-            url: `/atlas/${page.slug}`,
-        }, staticContent, papers, authors, scholarly, jsonLd);
+        writePage(
+            template,
+            `/atlas/${page.slug}`,
+            `atlas/${page.slug}`,
+            {
+                title: frontmatter.title,
+                description: frontmatter.summary,
+                ogType: "article",
+                ogImage: frontmatter.coverImage,
+                url: `/atlas/${page.slug}`,
+            },
+            staticContent,
+            papers,
+            authors,
+            scholarly,
+            jsonLd,
+        );
         count++;
     }
 
     // Individual narrative pages (no RSS/Atom entry — narratives are not a feed kind)
     for (const narrative of publishedNarratives) {
-        writePage(template, `/atlas/narratives/${narrative.slug}`, `atlas/narratives/${narrative.slug}`, {
-            title: narrative.title,
-            description: narrative.summary,
-            ogType: "article",
-            url: `/atlas/narratives/${narrative.slug}`,
-        }, staticContent, papers, authors, scholarly);
+        writePage(
+            template,
+            `/atlas/narratives/${narrative.slug}`,
+            `atlas/narratives/${narrative.slug}`,
+            {
+                title: narrative.title,
+                description: narrative.summary,
+                ogType: "article",
+                url: `/atlas/narratives/${narrative.slug}`,
+            },
+            staticContent,
+            papers,
+            authors,
+            scholarly,
+        );
         count++;
     }
 
@@ -275,12 +360,21 @@ async function main(): Promise<void> {
     for (const authorId of authorIds) {
         const author = authors.authors[authorId];
         const pageCount = scholarly?.authors[authorId]?.pageCount ?? 0;
-        writePage(template, `/authors/${authorId}`, `authors/${authorId}`, {
-            title: author.name,
-            description: authorSeoDescription(author.name, author.papers.length, pageCount),
-            ogType: "profile",
-            url: `/authors/${authorId}`,
-        }, staticContent, papers, authors, scholarly);
+        writePage(
+            template,
+            `/authors/${authorId}`,
+            `authors/${authorId}`,
+            {
+                title: author.name,
+                description: authorSeoDescription(author.name, author.papers.length, pageCount),
+                ogType: "profile",
+                url: `/authors/${authorId}`,
+            },
+            staticContent,
+            papers,
+            authors,
+            scholarly,
+        );
         count++;
     }
 
@@ -290,25 +384,46 @@ async function main(): Promise<void> {
     for (const paperId of paperIds) {
         const paper = papers[paperId];
         const primaryCount = scholarly?.papers[paperId]?.primaryPages.length ?? 0;
-        writePage(template, `/papers/${paperId}`, `papers/${paperId}`, {
-            title: paper.title,
-            description: paperSeoDescription(paper, primaryCount),
-            ogType: "article",
-            url: `/papers/${paperId}`,
-        }, staticContent, papers, authors, scholarly);
+        writePage(
+            template,
+            `/papers/${paperId}`,
+            `papers/${paperId}`,
+            {
+                title: paper.title,
+                description: paperSeoDescription(paper, primaryCount),
+                ogType: "article",
+                url: `/papers/${paperId}`,
+            },
+            staticContent,
+            papers,
+            authors,
+            scholarly,
+        );
         count++;
     }
 
     // Target generator
-    writePage(template, "/tools/target-generator", "tools/target-generator", {
-        title: "Target Generator",
-        description: "Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.",
-    }, staticContent, papers, authors, scholarly);
+    writePage(
+        template,
+        "/tools/target-generator",
+        "tools/target-generator",
+        {
+            title: "Target Generator",
+            description:
+                "Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.",
+        },
+        staticContent,
+        papers,
+        authors,
+        scholarly,
+    );
     count++;
 
     // Generate sitemap
     const sitemapPaths = [
-        "/", "/blog", ...blogPosts.map((p) => `/blog/${p.slug}`),
+        "/",
+        "/blog",
+        ...blogPosts.map((p) => `/blog/${p.slug}`),
         "/atlas",
         ...algorithmPages.map((p) => `/atlas/${p.slug}`),
         ...modelPages.map((m) => `/atlas/${m.slug}`),
@@ -316,7 +431,8 @@ async function main(): Promise<void> {
         ...publishedNarratives.map((n) => `/atlas/narratives/${n.slug}`),
         ...authorIds.map((a) => `/authors/${a}`),
         ...paperIds.map((p) => `/papers/${p}`),
-        "/demos", ...demoPages.map((d) => `/demos/${d.slug}`),
+        "/demos",
+        ...demoPages.map((d) => `/demos/${d.slug}`),
         "/tools/target-generator",
     ];
     writeFileSync(join(DIST, "sitemap.xml"), buildSitemap(sitemapPaths), "utf-8");
@@ -343,11 +459,12 @@ async function main(): Promise<void> {
     ].sort(comparePublicationDateDesc);
 
     for (const entry of feedEntries) {
-        const path = entry.kind === "blog"
-            ? `/blog/${entry.slug}`
-            : entry.kind === "demo"
-                ? `/demos/${entry.slug}`
-                : `/atlas/${entry.slug}`;
+        const path =
+            entry.kind === "blog"
+                ? `/blog/${entry.slug}`
+                : entry.kind === "demo"
+                  ? `/demos/${entry.slug}`
+                  : `/atlas/${entry.slug}`;
         const { frontmatter } = entry;
         feed.addItem({
             title: formatFeedTitle(entry.kind, frontmatter.title),
@@ -387,14 +504,11 @@ import { execSync } from "node:child_process";
 
 const distDir = join(import.meta.dir, "..", "dist");
 try {
-    const result = execSync(
-        `grep -rlE "docs/(research|atlas-vault)/" ${distDir} || true`,
-        { encoding: "utf-8" },
-    ).trim();
+    const result = execSync(`grep -rlE "docs/(research|atlas-vault)/" ${distDir} || true`, {
+        encoding: "utf-8",
+    }).trim();
     if (result) {
-        throw new Error(
-            `Public build leaks unpublished-docs paths: ${result.split("\n").join(", ")}`,
-        );
+        throw new Error(`Public build leaks unpublished-docs paths: ${result.split("\n").join(", ")}`);
     }
 } catch (err) {
     if (err instanceof Error && err.message.startsWith("Public build leaks")) throw err;

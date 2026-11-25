@@ -139,8 +139,8 @@ export function parseArgs(argv: string[]): ParsedArgs {
     if (!dryRun && !write) {
         process.stderr.write(
             "papers:backfill-authors — refusing to run without --dry-run or --write.\n" +
-            "Usage: bun run scripts/papers-backfill-authors.ts --dry-run [--only <paper-id>]\n" +
-            "       bun run scripts/papers-backfill-authors.ts --write [--only <paper-id>]\n"
+                "Usage: bun run scripts/papers-backfill-authors.ts --dry-run [--only <paper-id>]\n" +
+                "       bun run scripts/papers-backfill-authors.ts --write [--only <paper-id>]\n",
         );
         process.exit(1);
     }
@@ -183,10 +183,7 @@ function findAuthorsLineIndex(lines: string[], entryId: string): number | null {
  * `mergedInto`; ids not already on file are appended. Sorted by name, same
  * as the original from-scratch formatter.
  */
-export function mergeAuthorIdentities(
-    existing: AuthorRecord[],
-    incoming: Map<string, AuthorIdentity>,
-): AuthorRecord[] {
+export function mergeAuthorIdentities(existing: AuthorRecord[], incoming: Map<string, AuthorIdentity>): AuthorRecord[] {
     const byId = new Map(existing.map((r) => [r.id, r]));
     for (const [id, identity] of incoming) {
         if (byId.has(id)) continue; // existing row wins — do not overwrite name/orcid/mergedInto
@@ -222,12 +219,9 @@ function formatDiffHunk(entry: PaperEntry, authorsLineIndex: number, lines: stri
     const insertLine = `  authorIds: [${entry.authorIds!.join(", ")}]`;
     const before = lines[authorsLineIndex];
     const after = authorsLineIndex + 1 < lines.length ? lines[authorsLineIndex + 1] : "";
-    return [
-        `@@ ${entry.id} @@`,
-        `   ${before}`,
-        `+  ${insertLine.trimStart()}`,
-        after ? `   ${after}` : "",
-    ].filter((l) => l !== "").join("\n");
+    return [`@@ ${entry.id} @@`, `   ${before}`, `+  ${insertLine.trimStart()}`, after ? `   ${after}` : ""]
+        .filter((l) => l !== "")
+        .join("\n");
 }
 
 async function main(): Promise<void> {
@@ -240,12 +234,12 @@ async function main(): Promise<void> {
         .filter((e) => !only || e.id === only);
     if (only && candidates.length === 0) {
         process.stderr.write(
-            `papers:backfill-authors — --only ${only} matched no candidate (already has authorIds, is a repo/doc entry, or does not exist).\n`
+            `papers:backfill-authors — --only ${only} matched no candidate (already has authorIds, is a repo/doc entry, or does not exist).\n`,
         );
     }
     process.stderr.write(
         `Loaded ${entries.length} index entries; ${candidates.length} candidates for author backfill` +
-        `${only ? ` (--only ${only})` : ""}.\n`
+            `${only ? ` (--only ${only})` : ""}.\n`,
     );
 
     const identities = new Map<string, AuthorIdentity>();
@@ -275,7 +269,7 @@ async function main(): Promise<void> {
             // first match per entry so downstream output stays 1:1.
             if (matchedDoiEntryIds.has(entry.id)) {
                 process.stderr.write(
-                    `NOTE: duplicate OpenAlex work for DOI ${workDoi} (entry ${entry.id}); keeping first match, ignoring "${w.title}".\n`
+                    `NOTE: duplicate OpenAlex work for DOI ${workDoi} (entry ${entry.id}); keeping first match, ignoring "${w.title}".\n`,
                 );
                 continue;
             }
@@ -301,7 +295,7 @@ async function main(): Promise<void> {
         }
         if (normalizeTitle(top.title) !== normalizeTitle(entry.title)) {
             process.stderr.write(
-                `UNRESOLVED (title mismatch): ${entry.id} — expected "${entry.title}", top result "${top.title}"\n`
+                `UNRESOLVED (title mismatch): ${entry.id} — expected "${entry.title}", top result "${top.title}"\n`,
             );
             unresolvedIds.push(entry.id);
             continue;
@@ -378,7 +372,7 @@ async function main(): Promise<void> {
         const idx = findAuthorsLineIndex(lines, r.entry.id);
         if (idx === null) {
             process.stderr.write(
-                `WARNING: could not locate 'authors:' line for ${r.entry.id}; skipping this entry's authorIds insertion.\n`
+                `WARNING: could not locate 'authors:' line for ${r.entry.id}; skipping this entry's authorIds insertion.\n`,
             );
             continue;
         }
@@ -408,7 +402,7 @@ async function main(): Promise<void> {
         } else {
             process.stderr.write(
                 `SANITY CHECK FAILED: entry count changed (${entries.length} -> ` +
-                `${Array.isArray(reparsed) ? reparsed.length : "not-an-array"}).\n`
+                    `${Array.isArray(reparsed) ? reparsed.length : "not-an-array"}).\n`,
             );
         }
     } catch (err) {
@@ -428,8 +422,8 @@ async function main(): Promise<void> {
 
     process.stderr.write(
         `Wrote ${insertions.length} authorIds insertions to ${INDEX_PATH}\n` +
-        `Wrote ${mergedAuthors.length} author identities to ${AUTHORS_PATH} ` +
-        `(${existingAuthors.length} existing + ${mergedAuthors.length - existingAuthors.length} new)\n`
+            `Wrote ${mergedAuthors.length} author identities to ${AUTHORS_PATH} ` +
+            `(${existingAuthors.length} existing + ${mergedAuthors.length - existingAuthors.length} new)\n`,
     );
     process.stdout.write(summary + "\n");
 }

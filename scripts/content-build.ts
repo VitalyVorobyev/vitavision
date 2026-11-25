@@ -47,14 +47,14 @@ import { buildScholarlyIndex, emitScholarlyIndex } from "./build/scholarly.ts";
 import type { ScholarlyPageInput, ScholarlyPaperInput, ScholarlyNarrativeInput } from "./build/scholarly.ts";
 
 import { buildContentGraph, emitContentGraph } from "./content-graph.ts";
-import { buildAuthorSearchRecords, buildPaperSearchRecords, buildSearchRecords, emitContentSearch } from "./content-search.ts";
-import type { SearchEntry } from "./content-search.ts";
 import {
-    resolveNarrative,
-    sliceChapters,
-    buildNarrativeRefs,
-    emitNarrativeRefs,
-} from "./narrative-build.ts";
+    buildAuthorSearchRecords,
+    buildPaperSearchRecords,
+    buildSearchRecords,
+    emitContentSearch,
+} from "./content-search.ts";
+import type { SearchEntry } from "./content-search.ts";
+import { resolveNarrative, sliceChapters, buildNarrativeRefs, emitNarrativeRefs } from "./narrative-build.ts";
 import type { PaperLookup } from "./narrative-build.ts";
 import { emitAuthorsIndex } from "./authors-build.ts";
 
@@ -83,7 +83,12 @@ function loadPapersRegistry(): { papers: PaperRefRecord[]; citesById: Map<string
 async function main(): Promise<void> {
     const highlighter = await createShikiHighlighter();
 
-    const rawBlogPosts = await processDirectory(join(CONTENT_DIR, "blog"), blogFrontmatterSchema, blogSlug, highlighter);
+    const rawBlogPosts = await processDirectory(
+        join(CONTENT_DIR, "blog"),
+        blogFrontmatterSchema,
+        blogSlug,
+        highlighter,
+    );
 
     const includeDrafts = process.env.INCLUDE_DRAFTS === "true";
     const notDev = (e: { frontmatter: { dev?: boolean } }) => !e.frontmatter.dev;
@@ -91,25 +96,50 @@ async function main(): Promise<void> {
     // Serialize dates, filter drafts, and sort by date descending
     const blogPosts = serializeFilterSort<BlogEntry>(rawBlogPosts, includeDrafts, byDateDesc);
 
-    const rawAlgorithmPages = await processDirectory(join(CONTENT_DIR, "algorithms"), algorithmFrontmatterSchema, algoSlug, highlighter);
+    const rawAlgorithmPages = await processDirectory(
+        join(CONTENT_DIR, "algorithms"),
+        algorithmFrontmatterSchema,
+        algoSlug,
+        highlighter,
+    );
 
     // algorithmPages: routable set (used for per-slug HTML loaders). Dev pages stay here.
     const algorithmPages = serializeFilterSort<AlgorithmEntry>(rawAlgorithmPages, includeDrafts, byTitleAsc);
     // algorithmPublished: published index/graph/search set — excludes dev: true pages.
     const algorithmPublished = algorithmPages.filter(notDev);
 
-    const rawDemoPages = await processDirectory(join(CONTENT_DIR, "demos"), demoFrontmatterSchema, demoSlug, highlighter);
+    const rawDemoPages = await processDirectory(
+        join(CONTENT_DIR, "demos"),
+        demoFrontmatterSchema,
+        demoSlug,
+        highlighter,
+    );
     const demoPages = serializeFilterSort<DemoEntry>(rawDemoPages, includeDrafts, byTitleAsc);
 
-    const rawModelPages = await processDirectory(join(CONTENT_DIR, "models"), modelFrontmatterSchema, modelSlug, highlighter);
+    const rawModelPages = await processDirectory(
+        join(CONTENT_DIR, "models"),
+        modelFrontmatterSchema,
+        modelSlug,
+        highlighter,
+    );
     const modelPages = serializeFilterSort<ModelEntry>(rawModelPages, includeDrafts, byTitleAsc);
     const modelPublished = modelPages.filter(notDev);
 
-    const rawConceptPages = await processDirectory(join(CONTENT_DIR, "concepts"), conceptFrontmatterSchema, conceptSlug, highlighter);
+    const rawConceptPages = await processDirectory(
+        join(CONTENT_DIR, "concepts"),
+        conceptFrontmatterSchema,
+        conceptSlug,
+        highlighter,
+    );
     const conceptPages = serializeFilterSort<ConceptEntry>(rawConceptPages, includeDrafts, byTitleAsc);
     const conceptPublished = conceptPages.filter(notDev);
 
-    const rawNarrativePages = await processDirectory(join(CONTENT_DIR, "narratives"), narrativeFrontmatterSchema, narrativeSlug, highlighter);
+    const rawNarrativePages = await processDirectory(
+        join(CONTENT_DIR, "narratives"),
+        narrativeFrontmatterSchema,
+        narrativeSlug,
+        highlighter,
+    );
 
     // Serialize + draft-filter now; graph resolution (page/paper lookups, the
     // generated timeline lens) happens below once atlas years are known.
@@ -117,7 +147,9 @@ async function main(): Promise<void> {
         .map((e) => ({
             slug: e.slug,
             html: e.html,
-            frontmatter: serializeNarrativeFrontmatter<NarrativeFrontmatterSerialized>(e.frontmatter as Record<string, unknown>),
+            frontmatter: serializeNarrativeFrontmatter<NarrativeFrontmatterSerialized>(
+                e.frontmatter as Record<string, unknown>,
+            ),
         }))
         .filter((e) => includeDrafts || !e.frontmatter.draft)
         .sort(byTitleAsc);
@@ -197,7 +229,9 @@ async function main(): Promise<void> {
     // standalone module — not part of content-graph.ts (narratives are
     // deliberately not content-graph nodes).
     emitNarrativeRefs(
-        buildNarrativeRefs(publishedNarratives.map((e) => ({ slug: e.slug, title: e.frontmatter.title, narrative: e.narrative }))),
+        buildNarrativeRefs(
+            publishedNarratives.map((e) => ({ slug: e.slug, title: e.frontmatter.title, narrative: e.narrative })),
+        ),
         GENERATED_DIR,
     );
 
@@ -217,7 +251,10 @@ async function main(): Promise<void> {
     // consumed lazily by the paper page, author page, and People/Papers Atlas
     // views. Pure builder over published-only inputs — see scripts/build/scholarly.ts.
     const toScholarlyPageInput = (
-        entries: { slug: string; frontmatter: { title: string; domain?: string; sources?: { primary?: string; references?: string[] } } }[],
+        entries: {
+            slug: string;
+            frontmatter: { title: string; domain?: string; sources?: { primary?: string; references?: string[] } };
+        }[],
         kind: "algorithm" | "model" | "concept",
     ): ScholarlyPageInput[] =>
         entries.map((e) => ({
@@ -241,12 +278,8 @@ async function main(): Promise<void> {
     const scholarlyNarratives: ScholarlyNarrativeInput[] = publishedNarratives.map((e) => ({
         slug: e.slug,
         title: e.frontmatter.title,
-        pageSlugs: e.narrative.nodes
-            .filter((n): n is NarrativePageNode => n.kind === "page")
-            .map((n) => n.slug),
-        paperIds: e.narrative.nodes
-            .filter((n): n is NarrativePaperNode => n.kind === "paper")
-            .map((n) => n.paperId),
+        pageSlugs: e.narrative.nodes.filter((n): n is NarrativePageNode => n.kind === "page").map((n) => n.slug),
+        paperIds: e.narrative.nodes.filter((n): n is NarrativePaperNode => n.kind === "paper").map((n) => n.paperId),
     }));
     emitScholarlyIndex(
         buildScholarlyIndex({

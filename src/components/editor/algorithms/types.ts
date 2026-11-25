@@ -44,18 +44,9 @@ export interface AlgorithmDefinition {
     ConfigComponent: ComponentType<AlgorithmConfigFormProps<unknown>>;
     executionModes?: ["wasm"];
     /** Server-side stub — always throws. Kept for interface compatibility. */
-    run: (args: {
-        key: string;
-        storageMode: string;
-        config: unknown;
-    }) => Promise<unknown>;
+    run: (args: { key: string; storageMode: string; config: unknown }) => Promise<unknown>;
     /** Client-side WASM execution path. Called with decoded image pixels. */
-    runWasm?: (args: {
-        pixels: Uint8Array;
-        width: number;
-        height: number;
-        config: unknown;
-    }) => Promise<unknown>;
+    runWasm?: (args: { pixels: Uint8Array; width: number; height: number; config: unknown }) => Promise<unknown>;
     toFeatures: (result: unknown, runId: string) => Feature[];
     summary: (result: unknown) => AlgorithmSummaryEntry[];
     diagnostics?: (result: unknown) => DiagnosticEntry[];

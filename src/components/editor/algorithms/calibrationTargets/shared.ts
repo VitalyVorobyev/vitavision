@@ -8,10 +8,7 @@ import { DETECTION_COLORS } from "../../../../store/editor/featureColors";
 import type { ArUcoMarkerFeature, Feature } from "../../../../store/editor/useEditorStore";
 
 const averagePoint = (points: Array<{ x: number; y: number }>): { x: number; y: number } => {
-    const total = points.reduce(
-        (acc, point) => ({ x: acc.x + point.x, y: acc.y + point.y }),
-        { x: 0, y: 0 },
-    );
+    const total = points.reduce((acc, point) => ({ x: acc.x + point.x, y: acc.y + point.y }), { x: 0, y: 0 });
     return {
         x: total.x / points.length,
         y: total.y / points.length,
@@ -124,25 +121,27 @@ export const calibrationCircleMatchFeatures = (
         .flatMap((m) => {
             const candidate = candidates[m.matched_index!];
             if (!candidate) return [];
-            return [{
-                id: `${algorithmId}-circle-match-${m.expected.cell.i}-${m.expected.cell.j}`,
-                type: "point" as const,
-                source: "algorithm" as const,
-                algorithmId,
-                runId,
-                readonly: true,
-                x: candidate.center_img.x,
-                y: candidate.center_img.y,
-                color,
-                label: `(${m.expected.cell.i}, ${m.expected.cell.j})`,
-                meta: {
-                    kind: "circle_match",
-                    grid: m.expected.cell,
-                    polarity: m.expected.polarity,
-                    score: candidate.score,
-                    contrast: candidate.contrast,
-                    offsetCells: m.offset_cells,
+            return [
+                {
+                    id: `${algorithmId}-circle-match-${m.expected.cell.i}-${m.expected.cell.j}`,
+                    type: "point" as const,
+                    source: "algorithm" as const,
+                    algorithmId,
+                    runId,
+                    readonly: true,
+                    x: candidate.center_img.x,
+                    y: candidate.center_img.y,
+                    color,
+                    label: `(${m.expected.cell.i}, ${m.expected.cell.j})`,
+                    meta: {
+                        kind: "circle_match",
+                        grid: m.expected.cell,
+                        polarity: m.expected.polarity,
+                        score: candidate.score,
+                        contrast: candidate.contrast,
+                        offsetCells: m.offset_cells,
+                    },
                 },
-            }];
+            ];
         });
 };

@@ -17,7 +17,13 @@ const toSummary = (result: RinggridDetectResult): AlgorithmSummaryEntry[] => [
 
 const toDiagnostics = (result: RinggridDetectResult): DiagnosticEntry[] => {
     if (result.summary.marker_count === 0) {
-        return [{ level: "warning", message: "No markers detected", detail: "Check that the board parameters match the target in the image." }];
+        return [
+            {
+                level: "warning",
+                message: "No markers detected",
+                detail: "Check that the board parameters match the target in the image.",
+            },
+        ];
     }
     return [];
 };
@@ -52,9 +58,7 @@ const toFeatures = (result: RinggridDetectResult, runId: string): Feature[] => {
             score: marker.confidence,
             rotation: marker.decode?.best_rotation,
             hamming: marker.decode ? marker.decode.best_dist : undefined,
-            targetPosition: marker.board_xy_mm
-                ? { x: marker.board_xy_mm.x, y: marker.board_xy_mm.y }
-                : undefined,
+            targetPosition: marker.board_xy_mm ? { x: marker.board_xy_mm.x, y: marker.board_xy_mm.y } : undefined,
         },
     }));
 };

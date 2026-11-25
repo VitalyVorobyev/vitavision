@@ -35,17 +35,11 @@ export default function SourceStrip({ primary }: SourceStripProps) {
                 </span>
             </div>
             <div className="flex-1 min-w-0 px-3.5 py-2.5">
-                <div className="text-[13.5px] text-fg font-medium leading-[1.35] truncate">
-                    {paper.title}
-                </div>
+                <div className="text-[13.5px] text-fg font-medium leading-[1.35] truncate">{paper.title}</div>
                 {(hasAuthors || venueYear) && (
                     <div className="text-[11.5px] text-fg-muted font-mono mt-0.5 truncate">
                         {hasAuthors && (
-                            <AuthorByline
-                                paperId={paper.id}
-                                authors={paper.authors}
-                                linkClassName="relative z-10"
-                            />
+                            <AuthorByline paperId={paper.id} authors={paper.authors} linkClassName="relative z-10" />
                         )}
                         {hasAuthors && venueYear && " · "}
                         {venueYear}

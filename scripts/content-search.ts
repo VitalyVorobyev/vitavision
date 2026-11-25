@@ -165,7 +165,7 @@ export function emitContentSearch(records: SearchRecord[], outDir: string): void
         "export interface SearchRecord {",
         "    slug: string;",
         "    path: string;",
-        "    type: \"algorithm\" | \"model\" | \"concept\" | \"narrative\" | \"author\" | \"paper\";",
+        '    type: "algorithm" | "model" | "concept" | "narrative" | "author" | "paper";',
         "    title: string;",
         "    summary: string;",
         "    tags: string[];",

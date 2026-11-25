@@ -8,8 +8,7 @@ interface Props {
 }
 
 export default function ChessboardGenConfig({ config, dispatch }: Props) {
-    const update = (partial: Partial<ChessboardConfig>) =>
-        dispatch({ type: "UPDATE_CONFIG", partial });
+    const update = (partial: Partial<ChessboardConfig>) => dispatch({ type: "UPDATE_CONFIG", partial });
 
     return (
         <Section title="Chessboard">
@@ -43,7 +42,9 @@ export default function ChessboardGenConfig({ config, dispatch }: Props) {
                 <Field
                     label="Square size"
                     as="group"
-                    annotation={<InfoHint label="About square size">Physical size of each square in millimeters</InfoHint>}
+                    annotation={
+                        <InfoHint label="About square size">Physical size of each square in millimeters</InfoHint>
+                    }
                 >
                     <NumberInput
                         unit="mm"
@@ -57,7 +58,11 @@ export default function ChessboardGenConfig({ config, dispatch }: Props) {
                 <Field
                     label="Inner square"
                     as="group"
-                    annotation={<InfoHint label="About inner square">White square inside black squares (0 = off). For laser calibration targets.</InfoHint>}
+                    annotation={
+                        <InfoHint label="About inner square">
+                            White square inside black squares (0 = off). For laser calibration targets.
+                        </InfoHint>
+                    }
                 >
                     <NumberInput
                         aria-label="Inner square"

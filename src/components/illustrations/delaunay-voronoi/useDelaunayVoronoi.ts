@@ -112,9 +112,7 @@ function reducer(state: ViewState, action: Action): ViewState {
             if (inPoints) {
                 return {
                     ...state,
-                    points: state.points.map((p) =>
-                        p.id === action.id ? { ...p, x: action.x, y: action.y } : p,
-                    ),
+                    points: state.points.map((p) => (p.id === action.id ? { ...p, x: action.x, y: action.y } : p)),
                     history: pushHistory(state, dragTag),
                     dragTag,
                 };
@@ -180,8 +178,7 @@ function reducer(state: ViewState, action: Action): ViewState {
         case "TOGGLE_LAYER": {
             const next = !state.layers[action.layer];
             // Closing the grid layer also closes the popover.
-            const gridPopoverOpen =
-                action.layer === "grid" && !next ? false : state.gridPopoverOpen;
+            const gridPopoverOpen = action.layer === "grid" && !next ? false : state.gridPopoverOpen;
             return {
                 ...state,
                 layers: { ...state.layers, [action.layer]: next },
@@ -363,9 +360,7 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
     const [state, dispatch] = useReducer(reducer, undefined, makeInitialState);
 
     const allPoints = useMemo(() => {
-        const base = state.layers.grid
-            ? [...state.points, ...projectGridPoints(state.grid)]
-            : state.points;
+        const base = state.layers.grid ? [...state.points, ...projectGridPoints(state.grid)] : state.points;
         // Dedupe within ~1e-3 px tolerance — corners coincide with g-0-0/g-0-cols/g-rows-cols/g-rows-0
         // by construction, and overrides can land on existing grid nodes. Coincident points
         // confuse Delaunay and produce phantom slivers in stats.
@@ -380,7 +375,11 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
 
     const delaunay = useMemo(() => {
         if (allPoints.length < 3) return null;
-        return Delaunay.from(allPoints, (p) => p.x, (p) => p.y);
+        return Delaunay.from(
+            allPoints,
+            (p) => p.x,
+            (p) => p.y,
+        );
     }, [allPoints]);
 
     const voronoi = useMemo(() => {
@@ -400,8 +399,12 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
         const TRIANGLE_AREA_EPS = 1e-3;
         for (let i = 0; i < t.length; i += 3) {
             // t holds complete index triples (i + 2 < t.length) into the points Delaunay.from was given.
-            const ai = t[i]!, bi = t[i + 1]!, ci = t[i + 2]!;
-            const a = allPoints[ai]!, b = allPoints[bi]!, c = allPoints[ci]!;
+            const ai = t[i]!,
+                bi = t[i + 1]!,
+                ci = t[i + 2]!;
+            const a = allPoints[ai]!,
+                b = allPoints[bi]!,
+                c = allPoints[ci]!;
             if (triangleArea(a, b, c) <= TRIANGLE_AREA_EPS) continue;
             result.push({ ai, bi, ci });
         }
@@ -419,7 +422,11 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
             const [a, b, c] = triangleVertices(allPoints, triangle);
             const minRad = triangleMinAngle(a, b, c);
             if (Number.isFinite(minRad) && minRad < minAngle) minAngle = minRad;
-            for (const [u, v] of [[ai, bi], [bi, ci], [ci, ai]] as [number, number][]) {
+            for (const [u, v] of [
+                [ai, bi],
+                [bi, ci],
+                [ci, ai],
+            ] as [number, number][]) {
                 edgeSet.add(u < v ? `${u}-${v}` : `${v}-${u}`);
             }
         }
@@ -437,13 +444,22 @@ export function useDelaunayVoronoi(): DelaunayVoronoiState {
     const selectPoint = useCallback((id: string | null) => dispatch({ type: "SELECT_POINT", id }), []);
     const setHover = useCallback((hover: HoverTarget | null) => dispatch({ type: "SET_HOVER", hover }), []);
     const toggleLayer = useCallback((layer: keyof Layers) => dispatch({ type: "TOGGLE_LAYER", layer }), []);
-    const setGridDims = useCallback((rows?: number, cols?: number) => dispatch({ type: "SET_GRID_DIMS", rows, cols }), []);
-    const moveCorner = useCallback((index: 0 | 1 | 2 | 3, x: number, y: number) => dispatch({ type: "MOVE_CORNER", index, x, y }), []);
+    const setGridDims = useCallback(
+        (rows?: number, cols?: number) => dispatch({ type: "SET_GRID_DIMS", rows, cols }),
+        [],
+    );
+    const moveCorner = useCallback(
+        (index: 0 | 1 | 2 | 3, x: number, y: number) => dispatch({ type: "MOVE_CORNER", index, x, y }),
+        [],
+    );
     const resetGrid = useCallback(() => dispatch({ type: "RESET_GRID" }), []);
     const clearPoints = useCallback(() => dispatch({ type: "CLEAR_POINTS" }), []);
     const randomPoints = useCallback((count = 30) => dispatch({ type: "RANDOM_POINTS", count }), []);
     const setTool = useCallback((tool: ActiveTool) => dispatch({ type: "SET_TOOL", tool }), []);
-    const setPointer = useCallback((pointer: { x: number; y: number } | null) => dispatch({ type: "SET_POINTER", pointer }), []);
+    const setPointer = useCallback(
+        (pointer: { x: number; y: number } | null) => dispatch({ type: "SET_POINTER", pointer }),
+        [],
+    );
     const setGridPopoverOpen = useCallback((open: boolean) => dispatch({ type: "SET_GRID_POPOVER_OPEN", open }), []);
     const endDrag = useCallback(() => dispatch({ type: "END_DRAG" }), []);
     const undo = useCallback(() => dispatch({ type: "UNDO" }), []);

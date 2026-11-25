@@ -22,7 +22,9 @@ const UTIL_PATH = fileURLToPath(new URL("../src/lib/wasm/worker/util.ts", import
 const ADAPTERS_DIR = fileURLToPath(new URL("../src/components/editor/algorithms/", import.meta.url));
 const IMPORT_DEEP_MERGE = `const { deepMerge } = await import(${JSON.stringify(UTIL_PATH)});`;
 const IMPORT_DEEP_MERGE_AND_UNWRAP_MAPS = `const { deepMerge, unwrapMaps } = await import(${JSON.stringify(UTIL_PATH)});`;
-const SNAPSHOT_PATH = fileURLToPath(new URL("../src/components/editor/algorithms/__tests__/fixtures/legacy-snapshot.json", import.meta.url));
+const SNAPSHOT_PATH = fileURLToPath(
+    new URL("../src/components/editor/algorithms/__tests__/fixtures/legacy-snapshot.json", import.meta.url),
+);
 
 // Shared by the tests below: compare a stored config (or a snapshotted library default) with
 // the live one. Floats cross the WASM boundary as f32, so they are compared as f32.

@@ -7,22 +7,22 @@ import { shortTitle } from "../../../lib/atlas/graphNeighbors.ts";
 import { GG } from "../../../lib/atlas/graphLayout.ts";
 
 export interface TrailStripProps {
-    history:   string[];
-    current:   string;
-    future:    string[];
-    onBack:    () => void;
+    history: string[];
+    current: string;
+    future: string[];
+    onBack: () => void;
     onForward: () => void;
-    onJump:    (i: number) => void;
+    onJump: (i: number) => void;
 }
 
 export function TrailStrip({ history, current, future, onBack, onForward, onJump }: TrailStripProps) {
     const max = GG.trailMaxVisible;
 
-    const histHidden  = Math.max(0, history.length - max);
+    const histHidden = Math.max(0, history.length - max);
     const histVisible = history.slice(-max);
-    const histStart   = history.length - histVisible.length;
-    const futHidden   = Math.max(0, future.length - max);
-    const futVisible  = future.slice(0, max);
+    const histStart = history.length - histVisible.length;
+    const futHidden = Math.max(0, future.length - max);
+    const futVisible = future.slice(0, max);
 
     const nodeTitle = (slug: string): string => {
         const node = contentGraph.nodes[slug];
@@ -36,13 +36,20 @@ export function TrailStrip({ history, current, future, onBack, onForward, onJump
                 onClick={onBack}
                 disabled={history.length === 0}
                 className={`w-7 h-7 grid place-items-center rounded ${
-                    history.length > 0
-                        ? "text-fg hover:bg-line/60"
-                        : "text-fg-muted/60 cursor-default"
+                    history.length > 0 ? "text-fg hover:bg-line/60" : "text-fg-muted/60 cursor-default"
                 }`}
                 title="Back (⌘[)"
             >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
                     <polyline points="15 18 9 12 15 6" />
                 </svg>
             </button>
@@ -52,13 +59,20 @@ export function TrailStrip({ history, current, future, onBack, onForward, onJump
                 onClick={onForward}
                 disabled={future.length === 0}
                 className={`w-7 h-7 grid place-items-center rounded ${
-                    future.length > 0
-                        ? "text-fg hover:bg-line/60"
-                        : "text-fg-muted/60 cursor-default"
+                    future.length > 0 ? "text-fg hover:bg-line/60" : "text-fg-muted/60 cursor-default"
                 }`}
                 title="Forward (⌘])"
             >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
             </button>
@@ -71,7 +85,10 @@ export function TrailStrip({ history, current, future, onBack, onForward, onJump
             <div className="flex items-center gap-1.5 text-[12px] overflow-x-auto min-w-0">
                 {histHidden > 0 && (
                     <>
-                        <span className="text-[10.5px] font-mono text-fg-muted/60 whitespace-nowrap" title={`${histHidden} earlier`}>
+                        <span
+                            className="text-[10.5px] font-mono text-fg-muted/60 whitespace-nowrap"
+                            title={`${histHidden} earlier`}
+                        >
                             +{histHidden} earlier
                         </span>
                         <span className="text-fg-muted/60">·</span>
@@ -88,11 +105,9 @@ export function TrailStrip({ history, current, future, onBack, onForward, onJump
                         <span className="text-fg-muted/60">›</span>
                     </span>
                 ))}
-                <span className="text-fg font-semibold whitespace-nowrap text-[11.5px]">
-                    {nodeTitle(current)}
-                </span>
+                <span className="text-fg font-semibold whitespace-nowrap text-[11.5px]">{nodeTitle(current)}</span>
                 {futVisible.map((s, i) => (
-                    // eslint-disable-next-line @eslint-react/no-array-index-key -- the trail may revisit a slug, so slug alone is not unique; the list is append-only display
+                    // oxlint-disable-next-line react/no-array-index-key -- the trail may revisit a slug, so slug alone is not unique; the list is append-only display
                     <span key={`f-${s}-${i}`} className="contents">
                         <span className="text-fg-muted/60">›</span>
                         <span className="text-fg-muted/60 whitespace-nowrap text-[11.5px]">{nodeTitle(s)}</span>
@@ -101,7 +116,9 @@ export function TrailStrip({ history, current, future, onBack, onForward, onJump
                 {futHidden > 0 && (
                     <>
                         <span className="text-fg-muted/60">·</span>
-                        <span className="text-[10.5px] font-mono text-fg-muted/60 whitespace-nowrap">+{futHidden} later</span>
+                        <span className="text-[10.5px] font-mono text-fg-muted/60 whitespace-nowrap">
+                            +{futHidden} later
+                        </span>
                     </>
                 )}
             </div>

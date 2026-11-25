@@ -55,7 +55,8 @@ function buildItems(features: readonly Feature[], moving: MoveDraft | null, edit
                 items.lines.push({ id, points: translatePoints(feature.points, delta) });
                 break;
             case "polygon":
-                if (feature.closed) items.areas.push({ id, points: translatePoints(feature.points, delta), role: ROLE });
+                if (feature.closed)
+                    items.areas.push({ id, points: translatePoints(feature.points, delta), role: ROLE });
                 else items.lines.push({ id, points: translatePoints(feature.points, delta) });
                 break;
             case "bbox":
@@ -86,9 +87,15 @@ export default function AnnotationLayers({ features, selectedId, moving, editing
 
     return (
         <>
-            {ellipses.length > 0 && <EllipseSet items={ellipses} role={ROLE} selectedIds={selection} label="Ellipses" />}
-            {items.areas.length > 0 && <AreaSet items={items.areas} role={ROLE} selectedIds={selection} label="Regions" />}
-            {items.lines.length > 0 && <PolylineSet items={items.lines} stroke={overlayRole(ROLE)} selected={selection} label="Lines" />}
+            {ellipses.length > 0 && (
+                <EllipseSet items={ellipses} role={ROLE} selectedIds={selection} label="Ellipses" />
+            )}
+            {items.areas.length > 0 && (
+                <AreaSet items={items.areas} role={ROLE} selectedIds={selection} label="Regions" />
+            )}
+            {items.lines.length > 0 && (
+                <PolylineSet items={items.lines} stroke={overlayRole(ROLE)} selected={selection} label="Lines" />
+            )}
             {items.points.length > 0 && <PointSet items={items.points} selectedIds={selection} label="Points" />}
         </>
     );

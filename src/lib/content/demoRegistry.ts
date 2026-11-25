@@ -5,13 +5,9 @@ export interface DemoRegistryEntry {
     title: string;
 }
 
-const ChessResponseDemo = lazy(
-    () => import("../../components/illustrations/ChessResponseDemo"),
-) as ComponentType;
+const ChessResponseDemo = lazy(() => import("../../components/illustrations/ChessResponseDemo")) as ComponentType;
 
-const DelaunayVoronoiDemo = lazy(
-    () => import("../../components/illustrations/DelaunayVoronoiDemo"),
-) as ComponentType;
+const DelaunayVoronoiDemo = lazy(() => import("../../components/illustrations/DelaunayVoronoiDemo")) as ComponentType;
 
 export const demoRegistry: Record<string, DemoRegistryEntry> = {
     "chess-response": {

@@ -1,11 +1,9 @@
-import { PanelFlat, Eyebrow, Pill } from 'vitcv';
+import { PanelFlat, Eyebrow, Pill } from "vitcv";
 
 export const Default = () => (
     <PanelFlat className="p-4 w-64">
         <Eyebrow>Feature detector</Eyebrow>
-        <p className="mt-2 text-sm text-fg">
-            Harris corner response computed over the 3×3 structure tensor window.
-        </p>
+        <p className="mt-2 text-sm text-fg">Harris corner response computed over the 3×3 structure tensor window.</p>
     </PanelFlat>
 );
 

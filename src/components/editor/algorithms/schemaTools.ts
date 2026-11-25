@@ -1,4 +1,11 @@
-import { resolveSchema, shapeOf, type FieldUi, type JsonSchema, type SchemaShape, type UiGroup } from "@vitavision/forms";
+import {
+    resolveSchema,
+    shapeOf,
+    type FieldUi,
+    type JsonSchema,
+    type SchemaShape,
+    type UiGroup,
+} from "@vitavision/forms";
 
 /*
  * Small helpers that turn the JSON Schemas the WASM packages ship into what
@@ -40,7 +47,12 @@ function taggedVariantTargets(node: unknown, found: Set<string> = new Set()): Se
     } else if (node !== null && typeof node === "object") {
         const record = node as Record<string, unknown>;
         const ref = record.$ref;
-        if (typeof ref === "string" && REF.test(ref) && typeof record.properties === "object" && record.properties !== null) {
+        if (
+            typeof ref === "string" &&
+            REF.test(ref) &&
+            typeof record.properties === "object" &&
+            record.properties !== null
+        ) {
             found.add(ref.replace(REF, ""));
         }
         for (const [key, value] of Object.entries(record)) {
@@ -91,7 +103,10 @@ export function composeSchema(
             defs[`${key}_${name}`] = reprefix(tagged.has(name) ? inDeclarationOrder(def) : def, key) as JsonSchema;
         }
         defs[key] = reprefix(root, key) as JsonSchema;
-        properties[key] = { $ref: `#/$defs/${key}`, ...(part.description === undefined ? {} : { description: part.description }) };
+        properties[key] = {
+            $ref: `#/$defs/${key}`,
+            ...(part.description === undefined ? {} : { description: part.description }),
+        };
     }
     return {
         type: "object",

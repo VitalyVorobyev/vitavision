@@ -12,7 +12,6 @@ import useAlgorithmRunner, { stageLabel } from "../algorithms/useAlgorithmRunner
 import { useDeepLinkSync } from "../../../hooks/useEditorDeepLink";
 import { mergeConfig } from "../../../lib/wasm/worker/util";
 
-
 type ConfigEntry = { value: unknown; sampleId: SampleId };
 
 const resolveConfig = (
@@ -41,14 +40,7 @@ const focusOnMount = (node: HTMLElement | null) => node?.focus();
 const ALGORITHM_OPTIONS = ALGORITHM_MANIFEST.map((algo) => ({ value: algo.id, label: algo.title }));
 
 function AlgorithmPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
-    return (
-        <Select
-            aria-label="Algorithm"
-            value={value}
-            options={ALGORITHM_OPTIONS}
-            onValueChange={onChange}
-        />
-    );
+    return <Select aria-label="Algorithm" value={value} options={ALGORITHM_OPTIONS} onValueChange={onChange} />;
 }
 
 export default function ConfigurePanel() {
@@ -64,24 +56,25 @@ export default function ConfigurePanel() {
         setPanelMode,
         setLastAlgorithmResult,
         addRunToHistory,
-    } = useEditorStore(useShallow((s) => ({
-        imageSrc: s.imageSrc,
-        imageName: s.imageName,
-        imageSampleId: s.imageSampleId,
-        galleryImages: s.galleryImages,
-        selectedAlgorithmId: s.selectedAlgorithmId,
-        replaceAlgorithmFeatures: s.replaceAlgorithmFeatures,
-        setSelectedFeatureId: s.setSelectedFeatureId,
-        setSelectedAlgorithmId: s.setSelectedAlgorithmId,
-        setPanelMode: s.setPanelMode,
-        setLastAlgorithmResult: s.setLastAlgorithmResult,
-        addRunToHistory: s.addRunToHistory,
-    })));
+    } = useEditorStore(
+        useShallow((s) => ({
+            imageSrc: s.imageSrc,
+            imageName: s.imageName,
+            imageSampleId: s.imageSampleId,
+            galleryImages: s.galleryImages,
+            selectedAlgorithmId: s.selectedAlgorithmId,
+            replaceAlgorithmFeatures: s.replaceAlgorithmFeatures,
+            setSelectedFeatureId: s.setSelectedFeatureId,
+            setSelectedAlgorithmId: s.setSelectedAlgorithmId,
+            setPanelMode: s.setPanelMode,
+            setLastAlgorithmResult: s.setLastAlgorithmResult,
+            addRunToHistory: s.addRunToHistory,
+        })),
+    );
 
     const { initialState, syncToUrl } = useDeepLinkSync();
-    const configSampleId: SampleId = imageSrc === null && initialState.sampleId !== null
-        ? initialState.sampleId
-        : imageSampleId;
+    const configSampleId: SampleId =
+        imageSrc === null && initialState.sampleId !== null ? initialState.sampleId : imageSampleId;
 
     // didSeedFromUrl: run once per mount (useRef instead of module-level variable
     // so it resets if the user navigates away and returns — URL may have changed).
@@ -93,14 +86,19 @@ export default function ConfigurePanel() {
                 setSelectedAlgorithmId(initialState.algorithmId);
             }
         }
-    // Empty deps: intentional — we only want this to run once on mount.
-    // didSeedFromUrlRef is a ref (stable), and the initial* values from useDeepLinkSync
-    // are derived from URL search params at construction time and do not change.
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- run once on mount (see comment above)
+        // Empty deps: intentional — we only want this to run once on mount.
+        // didSeedFromUrlRef is a ref (stable), and the initial* values from useDeepLinkSync
+        // are derived from URL search params at construction time and do not change.
+    }, []); // oxlint-disable-line react/exhaustive-deps -- run once on mount (see comment above)
 
     const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>(() => {
         if (initialState.config !== null) {
-            return { [initialState.algorithmId]: { value: initialState.config, sampleId: initialState.sampleId ?? imageSampleId } };
+            return {
+                [initialState.algorithmId]: {
+                    value: initialState.config,
+                    sampleId: initialState.sampleId ?? imageSampleId,
+                },
+            };
         }
         return {};
     });
@@ -121,7 +119,9 @@ export default function ConfigurePanel() {
         void loadAlgorithm(selectedAlgorithmId).then(() => {
             if (!cancelled) bumpLoadTick();
         });
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, [selectedAlgorithmId]);
 
     const runner = useAlgorithmRunner();
@@ -137,18 +137,21 @@ export default function ConfigurePanel() {
         ? resolveConfig(configEntries, algorithm.id, configSampleId, algorithm.initialConfig, algorithm.sampleDefaults)
         : undefined;
 
-    const handleConfigChange = useCallback((next: unknown) => {
-        if (!algorithm) return;
-        setConfigEntries((current) => ({
-            ...current,
-            [algorithm.id]: { value: next, sampleId: configSampleId },
-        }));
-        syncToUrl(
-            algorithm.id,
-            next,
-            resolveConfig({}, algorithm.id, configSampleId, algorithm.initialConfig, algorithm.sampleDefaults),
-        );
-    }, [algorithm, configSampleId, syncToUrl]);
+    const handleConfigChange = useCallback(
+        (next: unknown) => {
+            if (!algorithm) return;
+            setConfigEntries((current) => ({
+                ...current,
+                [algorithm.id]: { value: next, sampleId: configSampleId },
+            }));
+            syncToUrl(
+                algorithm.id,
+                next,
+                resolveConfig({}, algorithm.id, configSampleId, algorithm.initialConfig, algorithm.sampleDefaults),
+            );
+        },
+        [algorithm, configSampleId, syncToUrl],
+    );
 
     const activeGalleryImage = useMemo(
         () => galleryImages.find((img) => img.sampleId === imageSampleId && imageSrc !== null) ?? null,
@@ -207,11 +210,16 @@ export default function ConfigurePanel() {
             });
             setPanelMode("results");
         } catch (err) {
-            toast({ title: `Failed to process algorithm results: ${err instanceof Error ? err.message : "unknown error"}`, tone: "error" });
+            toast({
+                title: `Failed to process algorithm results: ${err instanceof Error ? err.message : "unknown error"}`,
+                tone: "error",
+            });
         }
     };
 
-    const hasHint = activeGalleryImage !== null && imageSrc !== null &&
+    const hasHint =
+        activeGalleryImage !== null &&
+        imageSrc !== null &&
         (activeGalleryImage.description || (activeGalleryImage.recommendedAlgorithms?.length ?? 0) > 0);
 
     return (
@@ -223,11 +231,8 @@ export default function ConfigurePanel() {
                         Open an image from the gallery to get started.
                     </p>
                 </div>
-            ) : hasHint && (
-                <HintCard
-                    image={activeGalleryImage}
-                    onSelectAlgorithm={handleSelectAlgorithm}
-                />
+            ) : (
+                hasHint && <HintCard image={activeGalleryImage} onSelectAlgorithm={handleSelectAlgorithm} />
             )}
 
             {/* Section 2: Algorithm selector */}
@@ -252,10 +257,7 @@ export default function ConfigurePanel() {
             {/* Section 3: Presets (if available) */}
             {algorithm?.presets && algorithm.presets.length > 0 && (
                 <Panel title="Presets">
-                    <PresetPicker
-                        presets={algorithm.presets}
-                        onSelect={handleConfigChange}
-                    />
+                    <PresetPicker presets={algorithm.presets} onSelect={handleConfigChange} />
                 </Panel>
             )}
 
@@ -276,11 +278,7 @@ export default function ConfigurePanel() {
                 }
             >
                 {ConfigComponent && config !== undefined ? (
-                    <ConfigComponent
-                        config={config}
-                        onChange={handleConfigChange}
-                        disabled={runner.isRunning}
-                    />
+                    <ConfigComponent config={config} onChange={handleConfigChange} disabled={runner.isRunning} />
                 ) : (
                     <SkeletonRows rows={4} />
                 )}
@@ -304,11 +302,7 @@ export default function ConfigurePanel() {
                     {/* Focus lands on the form itself, not on its first field's help mark: a
                         tooltip opening with the dialog would cover the description, and the
                         first Escape would close the tooltip instead of the dialog. */}
-                    <div
-                        ref={focusOnMount}
-                        tabIndex={-1}
-                        className="mt-4 flex flex-col gap-3 pr-1 outline-none"
-                    >
+                    <div ref={focusOnMount} tabIndex={-1} className="mt-4 flex flex-col gap-3 pr-1 outline-none">
                         <ConfigComponent
                             config={config}
                             onChange={handleConfigChange}
@@ -331,22 +325,11 @@ export default function ConfigurePanel() {
 
 import type { AlgorithmPreset } from "../algorithms/types";
 
-function PresetPicker({
-    presets,
-    onSelect,
-}: {
-    presets: AlgorithmPreset[];
-    onSelect: (config: unknown) => void;
-}) {
+function PresetPicker({ presets, onSelect }: { presets: AlgorithmPreset[]; onSelect: (config: unknown) => void }) {
     return (
         <div className="flex flex-wrap gap-1.5">
             {presets.map((preset) => (
-                <Button
-                    key={preset.label}
-                    size="sm"
-                    onClick={() => onSelect(preset.config)}
-                    title={preset.description}
-                >
+                <Button key={preset.label} size="sm" onClick={() => onSelect(preset.config)} title={preset.description}>
                     {preset.label}
                 </Button>
             ))}
@@ -368,9 +351,7 @@ function HintCardInner({
     return (
         <div className="rounded-panel border border-line bg-surface p-3 space-y-2">
             <div className="flex items-start justify-between gap-2">
-                <p className="text-xs font-semibold text-fg leading-tight">
-                    {image.name}
-                </p>
+                <p className="text-xs font-semibold text-fg leading-tight">{image.name}</p>
                 <Button
                     variant="ghost"
                     size="sm"
@@ -380,11 +361,7 @@ function HintCardInner({
                     icon={<X />}
                 />
             </div>
-            {image.description && (
-                <p className="text-xs text-fg-muted leading-relaxed">
-                    {image.description}
-                </p>
-            )}
+            {image.description && <p className="text-xs text-fg-muted leading-relaxed">{image.description}</p>}
             {(image.recommendedAlgorithms?.length ?? 0) > 0 && (
                 <div className="flex flex-wrap gap-1 pt-0.5">
                     <span className="text-[10px] text-fg-muted self-center">Try:</span>
@@ -440,24 +417,18 @@ function RunSection({
                 {runner.isRunning ? "Running…" : "Run Algorithm"}
             </Button>
 
-            {runner.isRunning && (
-                <p className="text-[11px] text-center text-fg-muted">
-                    {stageLabel(runner.stage)}
-                </p>
-            )}
+            {runner.isRunning && <p className="text-[11px] text-center text-fg-muted">{stageLabel(runner.stage)}</p>}
 
             {!canRun && !runner.isRunning && (
                 <p className="text-[10px] text-center text-fg-muted">Load an image to run</p>
             )}
 
-            {!runner.isRunning && canRun && (
-                <p className="text-[10px] text-center text-fg-muted">
-                    Client-side (WASM)
-                </p>
-            )}
+            {!runner.isRunning && canRun && <p className="text-[10px] text-center text-fg-muted">Client-side (WASM)</p>}
 
             {runner.error && (
-                <Callout tone="error" className="text-xs">{runner.error}</Callout>
+                <Callout tone="error" className="text-xs">
+                    {runner.error}
+                </Callout>
             )}
 
             {runner.summary.length > 0 && (

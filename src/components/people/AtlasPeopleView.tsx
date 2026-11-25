@@ -68,10 +68,7 @@ export default function AtlasPeopleView({
     const [sort, setSort] = useState<PeopleSort>("reach");
     const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
 
-    const rows = useMemo(
-        () => (scholarly ? buildPeopleRows(scholarly, authorsIndex) : []),
-        [scholarly, authorsIndex],
-    );
+    const rows = useMemo(() => (scholarly ? buildPeopleRows(scholarly, authorsIndex) : []), [scholarly, authorsIndex]);
 
     const peopleCount = rows.length;
     const paperCount = Object.keys(papersById).length;
@@ -104,7 +101,11 @@ export default function AtlasPeopleView({
                 <div className={`flex gap-3 ${isDesktop ? "items-center justify-between" : "flex-col"}`}>
                     <div className={`flex gap-3 ${isDesktop ? "items-center" : "flex-col"}`}>
                         <div className="relative w-full sm:w-[320px]">
-                            <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
+                            <Search
+                                size={16}
+                                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-fg-muted"
+                                aria-hidden="true"
+                            />
                             <Input
                                 type="search"
                                 aria-label="Search people"
@@ -141,7 +142,9 @@ export default function AtlasPeopleView({
                 {mode === "directory" ? (
                     status !== "ready" ? (
                         <p className="py-10 text-center text-[13px] text-fg-muted">
-                            {status === "error" ? "Couldn't load the researcher register." : "Loading the researcher register…"}
+                            {status === "error"
+                                ? "Couldn't load the researcher register."
+                                : "Loading the researcher register…"}
                         </p>
                     ) : (
                         <PeopleDirectory

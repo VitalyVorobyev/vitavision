@@ -1,7 +1,7 @@
-import { ErrorBoundary } from 'vitcv';
+import { ErrorBoundary } from "vitcv";
 
 function Cracked() {
-    throw new Error('WASM module failed to decode the charuco board layout');
+    throw new Error("WASM module failed to decode the charuco board layout");
     return null;
 }
 

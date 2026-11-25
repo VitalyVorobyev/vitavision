@@ -33,10 +33,13 @@ const isObject = (v: unknown): v is Record<string, unknown> => v !== null && typ
 function subsetDiff(expected: unknown, actual: unknown, path = ""): string[] {
     if (isObject(expected)) {
         if (!isObject(actual)) return [`${path}: expected an object, got ${JSON.stringify(actual)}`];
-        return Object.entries(expected).flatMap(([key, value]) => subsetDiff(value, actual[key], path === "" ? key : `${path}.${key}`));
+        return Object.entries(expected).flatMap(([key, value]) =>
+            subsetDiff(value, actual[key], path === "" ? key : `${path}.${key}`),
+        );
     }
     if (Array.isArray(expected)) {
-        if (!Array.isArray(actual) || actual.length !== expected.length) return [`${path}: ${JSON.stringify(expected)} vs ${JSON.stringify(actual)}`];
+        if (!Array.isArray(actual) || actual.length !== expected.length)
+            return [`${path}: ${JSON.stringify(expected)} vs ${JSON.stringify(actual)}`];
         return expected.flatMap((value, index) => subsetDiff(value, actual[index], `${path}[${index}]`));
     }
     if (typeof expected === "number" && typeof actual === "number") {
@@ -63,7 +66,9 @@ function currentConfig(algo: AlgorithmDefinition, entry: Entry): unknown {
 /** Every leaf both documents have, with the same value (a key only one side has is not compared). */
 function commonDiff(a: unknown, b: unknown, path = ""): string[] {
     if (isObject(a) && isObject(b)) {
-        return Object.keys(a).filter((key) => key in b).flatMap((key) => commonDiff(a[key], b[key], path === "" ? key : `${path}.${key}`));
+        return Object.keys(a)
+            .filter((key) => key in b)
+            .flatMap((key) => commonDiff(a[key], b[key], path === "" ? key : `${path}.${key}`));
     }
     return subsetDiff(a, b, path);
 }
@@ -120,10 +125,7 @@ function expectSameWasmValues(id: string, config: unknown, oldWasmSnapshot: unkn
                 ...commonDiff(cfg.config, old.config, "config"),
             ];
         case "chessboard":
-            return [
-                ...subsetDiff(old.chess, cfg.chess, "chess"),
-                ...subsetDiff(old.params, cfg.params, "params"),
-            ];
+            return [...subsetDiff(old.chess, cfg.chess, "chess"), ...subsetDiff(old.params, cfg.params, "params")];
         default: {
             // charuco, markerboard, puzzleboard: the chess front-end rides in the params
             // document. The old worker passed it as the separate `chess_cfg` argument where it
@@ -174,19 +176,25 @@ describe("migrating a link that predates a field", () => {
 
     it("keeps the extended ring-grid codebook on the board, where the target now holds it", () => {
         const old = snapshot.algorithms.ringgrid[0]!.old;
-        const migrated = migrateLegacyConfig("ringgrid", { ...old, profile: "extended" }) as { board: { coding: Record<string, unknown> } };
+        const migrated = migrateLegacyConfig("ringgrid", { ...old, profile: "extended" }) as {
+            board: { coding: Record<string, unknown> };
+        };
         expect(migrated.board.coding.codebook_profile).toBe("extended");
     });
 
     it("turns a swapped radsym radius range into the range between them", () => {
         const old = snapshot.algorithms.radsym[0]!.old;
-        const migrated = migrateLegacyConfig("radsym", { ...old, minRadius: 8, maxRadius: 5 }) as { config: { radii: number[] } };
+        const migrated = migrateLegacyConfig("radsym", { ...old, minRadius: 8, maxRadius: 5 }) as {
+            config: { radii: number[] };
+        };
         expect(migrated.config.radii).toEqual([5, 6, 7, 8]);
     });
 
     it("does not touch the markerboard circles it cannot read", () => {
         const old = snapshot.algorithms.markerboard[0]!.old;
-        const migrated = migrateLegacyConfig("markerboard", { ...old, circles: "nope" }) as { board: { circles: unknown[] } };
+        const migrated = migrateLegacyConfig("markerboard", { ...old, circles: "nope" }) as {
+            board: { circles: unknown[] };
+        };
         expect(migrated.board.circles).toHaveLength(3);
     });
 });
@@ -204,20 +212,29 @@ describe("a document saved for the previous library generation", () => {
     const saddle = { det_margin: 0.001, max_offset: 1.5, min_abs_det: 0.0001, radius: 2 };
 
     it("chess-corners: the center-of-mass radius moves to strategy.chess.center_of_mass", () => {
-        const migrated = migrateLegacyConfig("chess-corners", oldChess({ center_of_mass: { radius: 3 } })) as Record<string, unknown>;
+        const migrated = migrateLegacyConfig("chess-corners", oldChess({ center_of_mass: { radius: 3 } })) as Record<
+            string,
+            unknown
+        >;
         expect(migrated.strategy).toEqual({ chess: { ring: "broad", center_of_mass: { radius: 3 } } });
         expect(migrated.threshold).toBe(12);
         expect("refiner" in migrated).toBe(false);
     });
 
     it("chess-corners: the saddle-point refiner becomes the optional image refiner", () => {
-        const migrated = migrateLegacyConfig("chess-corners", oldChess({ saddle_point: saddle })) as Record<string, unknown>;
+        const migrated = migrateLegacyConfig("chess-corners", oldChess({ saddle_point: saddle })) as Record<
+            string,
+            unknown
+        >;
         expect(migrated.refiner).toEqual({ saddle_point: saddle });
         expect(migrated.strategy).toEqual({ chess: { ring: "broad" } });
     });
 
     it("chess-corners: a Förstner refiner has no counterpart and falls back to the library default", () => {
-        const migrated = migrateLegacyConfig("chess-corners", oldChess({ forstner: { radius: 2 } })) as Record<string, unknown>;
+        const migrated = migrateLegacyConfig("chess-corners", oldChess({ forstner: { radius: 2 } })) as Record<
+            string,
+            unknown
+        >;
         expect(migrated.strategy).toEqual({ chess: { ring: "broad" } });
         expect(migrated.refiner).toBeUndefined();
     });
@@ -253,7 +270,13 @@ describe("a document saved for the previous library generation", () => {
             board: { name: "b" },
             config: {
                 advanced: {
-                    decode: { samples_per_sector: 5, max_decode_dist: 2, min_decode_confidence: 0.4, min_decode_margin: 1, n_radial_rings: 4 },
+                    decode: {
+                        samples_per_sector: 5,
+                        max_decode_dist: 2,
+                        min_decode_confidence: 0.4,
+                        min_decode_margin: 1,
+                        n_radial_rings: 4,
+                    },
                     edge_sample: { min_ring_depth: 0.08, n_rays: 48 },
                     id_correction: { confirm_by_consistency: true, seed_min_decode_confidence: 0.6, min_votes: 2 },
                     inner_as_outer_recovery: { min_ring_depth: 0.02, k_neighbors: 6 },
@@ -295,7 +318,10 @@ describe("a document saved for the previous library generation", () => {
 
     it("the flat refiner string maps to the image refiner, or to the default", () => {
         const base = snapshot.algorithms["chess-corners"][0]!.old;
-        const saddlePoint = migrateLegacyConfig("chess-corners", { ...base, refiner: "saddle_point" }) as Record<string, unknown>;
+        const saddlePoint = migrateLegacyConfig("chess-corners", { ...base, refiner: "saddle_point" }) as Record<
+            string,
+            unknown
+        >;
         expect(saddlePoint.refiner).toEqual({ saddle_point: saddle });
         for (const refiner of ["center_of_mass", "forstner"]) {
             const migrated = migrateLegacyConfig("chess-corners", { ...base, refiner }) as Record<string, unknown>;
@@ -304,22 +330,29 @@ describe("a document saved for the previous library generation", () => {
     });
 
     it("a deep link carrying such a document opens on the migrated config", () => {
-        const b64 = (value: unknown) => btoa(JSON.stringify(value)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-        const state = readDeepLink(new URLSearchParams({ algo: "chess-corners", config: b64(oldChess({ saddle_point: saddle })) }));
+        const b64 = (value: unknown) =>
+            btoa(JSON.stringify(value)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+        const state = readDeepLink(
+            new URLSearchParams({ algo: "chess-corners", config: b64(oldChess({ saddle_point: saddle })) }),
+        );
         expect((state.config as Record<string, unknown>).refiner).toEqual({ saddle_point: saddle });
     });
 });
 
 describe("an old ?config= deep link", () => {
-    const b64 = (value: unknown) => btoa(JSON.stringify(value)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    const b64 = (value: unknown) =>
+        btoa(JSON.stringify(value)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
-    it.each(Object.entries(snapshot.algorithms))("%s: opens on the settings the link was saved with", async (id, entries) => {
-        const algo = await loadAlgorithm(id);
-        const old = (entries as Entry[])[0]!.old;
-        const state = readDeepLink(new URLSearchParams({ algo: id, config: b64(old) }));
-        expect(state.algorithmId).toBe(id);
-        expect(state.config).toEqual(algo.initialConfig);
-    });
+    it.each(Object.entries(snapshot.algorithms))(
+        "%s: opens on the settings the link was saved with",
+        async (id, entries) => {
+            const algo = await loadAlgorithm(id);
+            const old = (entries as Entry[])[0]!.old;
+            const state = readDeepLink(new URLSearchParams({ algo: id, config: b64(old) }));
+            expect(state.algorithmId).toBe(id);
+            expect(state.config).toEqual(algo.initialConfig);
+        },
+    );
 
     it("a link written by the current editor round-trips untouched", async () => {
         const algo = await loadAlgorithm("charuco");

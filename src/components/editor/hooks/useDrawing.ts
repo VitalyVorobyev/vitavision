@@ -15,9 +15,7 @@ import {
 import type { Gesture, Press } from "../annotations/AnnotationLayer";
 
 /** The shape being drawn: a drag between two corners, or the vertices placed so far. */
-type Draft =
-    | { tool: DragTool; from: Point2; to: Point2 }
-    | { tool: VertexTool; points: number[] };
+type Draft = { tool: DragTool; from: Point2; to: Point2 } | { tool: VertexTool; points: number[] };
 
 const DRAG_KINDS = { LINE: "line", BBOX: "rect", ELLIPSE: "ellipse" } as const;
 
@@ -40,12 +38,19 @@ export interface DrawingController {
  * The draft belongs to one tool activation: switching tools (which bumps `toolVersion`) drops it,
  * without an effect, by ignoring a draft made under another version.
  */
-export function useDrawing(tool: ToolType, toolVersion: number, addFeature: (feature: Feature) => void): DrawingController {
+export function useDrawing(
+    tool: ToolType,
+    toolVersion: number,
+    addFeature: (feature: Feature) => void,
+): DrawingController {
     const [state, setState] = useState<{ version: number; draft: Draft | null }>({ version: toolVersion, draft: null });
     const [cursor, setCursor] = useState<Point2 | undefined>(undefined);
     const draft = state.version === toolVersion ? state.draft : null;
 
-    const setDraft = useCallback((next: Draft | null) => setState({ version: toolVersion, draft: next }), [toolVersion]);
+    const setDraft = useCallback(
+        (next: Draft | null) => setState({ version: toolVersion, draft: next }),
+        [toolVersion],
+    );
 
     const vertexTool = isVertexTool(tool) ? tool : null;
 
@@ -61,7 +66,11 @@ export function useDrawing(tool: ToolType, toolVersion: number, addFeature: (fea
     const begin = (press: Press): Gesture | null => {
         const at = press.point;
         if (tool === "POINT") {
-            return { onEnd: (_delta, moved) => { if (!moved) addFeature(featureFromPoint(at)); } };
+            return {
+                onEnd: (_delta, moved) => {
+                    if (!moved) addFeature(featureFromPoint(at));
+                },
+            };
         }
         if (isDragTool(tool)) {
             const to = (delta: Point2): Point2 => ({ x: at.x + delta.x, y: at.y + delta.y });

@@ -12,7 +12,7 @@
         "@vitavision/forms": "^0.8.3",
         "@vitavision/overlays": "^0.3.0",
         "@vitavision/radsym": "^0.4.2",
-        "@vitavision/ringgrid": "^0.13.2",
+        "@vitavision/ringgrid": "^0.17.0",
         "@vitavision/stage2d": "^0.15.0",
         "@vitavision/ui": "^0.14.1",
         "d3-delaunay": "^6.0.6",
@@ -590,7 +590,7 @@
 
     "@vitavision/radsym": ["@vitavision/radsym@0.4.2", "", {}, "sha512-5vAXm5R+3ptjNvf8HJnpEB9cKdQ4ZcRvcEegxqlN77XnsLgpAWjovapk92Kgz/jVLEMx8dsAFMmiqzDyl2XUgQ=="],
 
-    "@vitavision/ringgrid": ["@vitavision/ringgrid@0.13.2", "", {}, "sha512-eC8yWb4Y5padEpmcF8TlejgXJ0pxSsvnc/CKgNQjGqASmpMMJhMLuPJWV/yN6BnmKZvWYargi8/4jxXU2yWwjA=="],
+    "@vitavision/ringgrid": ["@vitavision/ringgrid@0.17.0", "", {}, "sha512-eMDyQ6BI5dV0nWU5z2Ne6GdJo0tN5isGyWYuMku5PadY/W4Tyn0xOuJmbgUw94eB0IHmX4dh3alnow+x/oEWLw=="],
 
     "@vitavision/stage2d": ["@vitavision/stage2d@0.15.0", "", { "dependencies": { "@vitavision/ui": "^0.14.1", "lucide-react": "^1.48.0" }, "peerDependencies": { "react": "^19.2.0", "react-dom": "^19.2.0" } }, "sha512-QFP7Komc6G2QK1Q0g80m5BiOKJo0WJJ+RuedTYCx/YO6v2dSMfIgsCYv7YgH53hfqVeZSZCDmuaD32Oleoe6Iw=="],
 

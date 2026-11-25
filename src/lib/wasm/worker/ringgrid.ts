@@ -19,7 +19,10 @@ export function adaptRinggridResult(
         const boardXy = m.board_xy_mm as number[] | null;
 
         return {
-            id: decode ? (decode.best_id as number) : 0,
+            // ringgrid reports the identified codeword as top-level `id` (null when the
+            // marker is not identified); it has never emitted a `decode` block, which
+            // is kept only as a fallback for older payloads.
+            id: typeof m.id === "number" ? m.id : decode ? (decode.best_id as number) : null,
             confidence: (m.confidence as number) ?? 0,
             center: { x: center[0], y: center[1] },
             ellipse_outer: {

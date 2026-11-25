@@ -30,7 +30,7 @@ describe("adaptRinggridResult", () => {
         const result = adaptRinggridResult(JSON.stringify(raw), 640, 480, 9);
         expect(result.markers).toHaveLength(1);
         const m = result.markers[0]!;
-        expect(m.id).toBe(7); // id comes from decode.best_id, not a top-level field
+        expect(m.id).toBe(7); // no top-level id: falls back to the legacy decode.best_id
         expect(m.center).toEqual({ x: 12, y: 34 });
         expect(m.decode).toEqual({ best_id: 7, best_rotation: 1, best_dist: 2, margin: 3, decode_confidence: 0.95 });
         expect(m.fit).toEqual({ rms_residual_outer: 0.1, rms_residual_inner: 0.2, ransac_inlier_ratio_outer: 0.9, ransac_inlier_ratio_inner: 0.8 });
@@ -38,7 +38,19 @@ describe("adaptRinggridResult", () => {
         expect(result.summary.runtime_ms).toBe(9);
     });
 
-    it("defaults id to 0 and decode/fit/board_xy_mm to null when absent", () => {
+    it("takes the top-level id ringgrid actually emits (0.13 and 0.18 alike)", () => {
+        const raw = {
+            detected_markers: [
+                { id: 169, grid_coord: [-2, 5], center: [626.4, 327.3], confidence: 0.42, board_xy_mm: [97, 144],
+                  ellipse_outer: { cx: 626.4, cy: 327.3, a: 22, b: 21, angle: 0.6 } },
+            ],
+        };
+        const m = adaptRinggridResult(JSON.stringify(raw), 10, 10, 1).markers[0]!;
+        expect(m.id).toBe(169);
+        expect(m.decode).toBeNull();
+    });
+
+    it("defaults id to null and decode/fit/board_xy_mm to null when absent", () => {
         const raw = {
             detected_markers: [
                 { center: [1, 2], ellipse_outer: { cx: 1, cy: 2, a: 1, b: 1, angle: 0 }, decode: null, fit: null, board_xy_mm: null },
@@ -46,7 +58,7 @@ describe("adaptRinggridResult", () => {
         };
         const result = adaptRinggridResult(JSON.stringify(raw), 10, 10, 1);
         const m = result.markers[0]!;
-        expect(m.id).toBe(0);
+        expect(m.id).toBeNull();
         expect(m.decode).toBeNull();
         expect(m.fit).toBeNull();
         expect(m.board_xy_mm).toBeNull();

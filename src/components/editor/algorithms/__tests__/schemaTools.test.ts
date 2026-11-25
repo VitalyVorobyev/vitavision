@@ -44,10 +44,12 @@ describe("readOnlyPaths", () => {
     it("finds the ring-grid fields the library derives from the board", () => {
         const paths = readOnlyPaths(asSchema(detectConfig));
         expect(paths).toContain("advanced.proposal.r_min");
-        expect(paths).toContain("advanced.decode.codebook_profile");
-        expect(paths).toContain("advanced.completion.roi_radius_px");
+        expect(paths).toContain("advanced.decode.code_band_ratio");
+        // ringgrid 0.18 no longer derives these two: they are gone from the detection config.
+        expect(paths).not.toContain("advanced.decode.codebook_profile");
+        expect(paths).not.toContain("advanced.completion.roi_radius_px");
         expect(paths).not.toContain("advanced.proposal.grad_threshold");
-        expect(paths).toHaveLength(10);
+        expect(paths).toHaveLength(8);
     });
 });
 

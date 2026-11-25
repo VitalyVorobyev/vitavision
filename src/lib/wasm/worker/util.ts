@@ -91,7 +91,7 @@ export function deepMerge(target: Record<string, unknown>, source: Record<string
 
 /**
  * `deepMerge` for config documents that contain serde externally-tagged enums
- * (`{ "forstner": {...} }` vs `{ "center_of_mass": {...} }`, `{ "pyramid": {...} }`
+ * (`{ "chess": {...} }` vs `{ "radon": {...} }`, `{ "pyramid": {...} }`
  * vs `"single_scale"`): the WASM deserializer accepts exactly one variant key, so
  * merging the default's variant key into an override that selects another variant
  * produces a two-key object and a "invalid length 2, expected 1" error. When both

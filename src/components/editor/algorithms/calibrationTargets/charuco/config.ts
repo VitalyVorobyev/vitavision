@@ -7,9 +7,9 @@ import { CHESSBOARD_DEFAULT_PARAMS } from "../chessboard/config";
  * The config is the package's `CharucoParams` document (`schemas/charuco_params.json`),
  * which carries its own ChESS front-end under `chess`.
  *
- * `scan.border_bits` and `scan.marker_size_rel` are left out: the detector derives them from
- * the board (`board.border_bits`, `board.marker_size_rel`) and the schema marks the first
- * `readOnly`. The worker takes them from `default_charuco_params(board)` underneath.
+ * calib-targets 0.18 removed the `scan` block: the detector reads the marker's size and
+ * border ring from `board` (`board.marker_size_rel`, `board.border_bits`), and the one scan
+ * knob left is the top-level `inset_frac`. `legacyConfig.ts` migrates a saved `scan` block.
  */
 
 /** The library defaults of `default_charuco_params(..)` that do not depend on the board. */
@@ -17,7 +17,7 @@ export const CHARUCO_DEFAULTS: ConfigDocument = {
     chess: CALIB_CHESS_DEFAULTS,
     px_per_square: 60,
     chessboard: CHESSBOARD_DEFAULT_PARAMS,
-    scan: { inset_frac: 0.06, min_border_score: 0.75, dedup_by_id: true, multi_threshold: true },
+    inset_frac: 0.06,
     min_marker_inliers: 1,
 };
 

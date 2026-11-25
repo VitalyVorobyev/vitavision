@@ -47,11 +47,12 @@ describe("mergeConfig", () => {
     });
 
     it("replaces an externally tagged variant instead of uniting the two variants' keys", () => {
-        const defaults = { refiner: { center_of_mass: { radius: 2 } }, ring: "canonical" };
-        const out = mergeConfig(defaults, { refiner: { forstner: { radius: 3 } } });
-        expect(out).toEqual({ refiner: { forstner: { radius: 3 } }, ring: "canonical" });
+        // The detector `strategy` is `{ chess: ... } | { radon: ... }` (an externally tagged enum).
+        const defaults = { strategy: { chess: { ring: "canonical" } }, threshold: 15 };
+        const out = mergeConfig(defaults, { strategy: { radon: { ray_radius: 4 } } });
+        expect(out).toEqual({ strategy: { radon: { ray_radius: 4 } }, threshold: 15 });
         // deepMerge would hand the WASM deserializer an object with two variant keys.
-        expect(Object.keys(deepMerge(defaults, { refiner: { forstner: { radius: 3 } } }).refiner as object)).toHaveLength(2);
+        expect(Object.keys(deepMerge(defaults, { strategy: { radon: { ray_radius: 4 } } }).strategy as object)).toHaveLength(2);
     });
 
     it("merges into the same variant, and replaces a unit variant with a payload one and back", () => {

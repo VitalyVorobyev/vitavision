@@ -25,6 +25,8 @@ const mocks = vi.hoisted(() => ({
         detectCharuco: vi.fn(),
         diagnoseMarkerBoard: vi.fn(),
         defaultCharucoParams: vi.fn(),
+        // What `detect_charuco` returns: calib-targets 0.18 returns null when no board is found.
+        charucoResult: vi.fn((): unknown => ({ corners: [], markers: [], alignment: null })),
     },
 }));
 
@@ -73,12 +75,12 @@ vi.mock("../modules", () => ({
     }),
     getCalibModule: () => Promise.resolve({
         rgba_to_gray: () => new Uint8Array(1),
-        default_chess_config: () => ({ threshold: 15, strategy: { chess: { ring: "canonical", refiner: { center_of_mass: { radius: 2 } } } } }),
+        default_chess_config: () => ({ threshold: 15, refiner: null, strategy: { chess: { ring: "canonical", center_of_mass: { radius: 2 } } } }),
         default_chessboard_params: () => ({ min_labeled_corners: 8, max_components: 3, min_corner_strength: 33 }),
         default_marker_board_params: () => ({ board: { rows: 6, cols: 8, circles: [] }, circle_score: { patch_size: 64 } }),
         default_charuco_params: (...args: unknown[]) => {
             mocks.calib.defaultCharucoParams(...args);
-            return { px_per_square: 60, scan: { border_bits: 1, marker_size_rel: 0.75, inset_frac: 0.06 }, board: {} };
+            return { px_per_square: 60, inset_frac: 0.06, board: {} };
         },
         detect_chessboard: (...args: unknown[]) => {
             mocks.calib.detectChessboard(...args);
@@ -86,7 +88,7 @@ vi.mock("../modules", () => ({
         },
         detect_charuco: (...args: unknown[]) => {
             mocks.calib.detectCharuco(...args);
-            return { corners: [], markers: [], alignment: null };
+            return mocks.calib.charucoResult();
         },
         diagnose_marker_board: (...args: unknown[]) => {
             mocks.calib.diagnoseMarkerBoard(...args);
@@ -161,23 +163,36 @@ describe("handleRinggrid", () => {
 });
 
 describe("handleCalibTarget", () => {
-    it("chessboard: completes { chess, params } and swaps a refiner variant instead of uniting two", async () => {
-        const config = { chess: { threshold: 20, strategy: { chess: { refiner: { forstner: { radius: 3 } } } } }, params: { min_corner_strength: 15 } };
+    it("chessboard: completes { chess, params } and swaps a tagged variant instead of uniting two", async () => {
+        const config = {
+            chess: { threshold: 20, refiner: { saddle_point: { radius: 3 } }, strategy: { radon: { ray_radius: 4 } } },
+            params: { min_corner_strength: 15 },
+        };
         await handleCalibTarget("chessboard", pixels, 1, 1, config);
         const [, , , chess, params] = mocks.calib.detectChessboard.mock.calls[0] as unknown[];
-        expect(chess).toEqual({ threshold: 20, strategy: { chess: { ring: "canonical", refiner: { forstner: { radius: 3 } } } } });
+        // `strategy` is `chess | radon`, `refiner` is `null | saddle_point`: each is replaced, never merged.
+        expect(chess).toEqual({ threshold: 20, refiner: { saddle_point: { radius: 3 } }, strategy: { radon: { ray_radius: 4 } } });
         expect(params).toEqual({ min_labeled_corners: 8, max_components: 3, min_corner_strength: 15 });
     });
 
     it("charuco: asks for the defaults of the configured board, and carries the front-end in the params", async () => {
-        const config = { board: { rows: 6, cols: 9, cell_size: 4.8, marker_size_rel: 0.7, dictionary: "DICT_5X5_250" }, px_per_square: 40, scan: { inset_frac: 0.1 } };
+        const config = { board: { rows: 6, cols: 9, cell_size: 4.8, marker_size_rel: 0.7, dictionary: "DICT_5X5_250" }, px_per_square: 40, inset_frac: 0.1 };
         await handleCalibTarget("charuco", pixels, 1, 1, config);
         expect(mocks.calib.defaultCharucoParams).toHaveBeenCalledWith(6, 9, 0.7, "DICT_5X5_250");
         const [, , , chess, params] = mocks.calib.detectCharuco.mock.calls[0] as [unknown, unknown, unknown, unknown, Record<string, unknown>];
         expect(chess).toBeNull();
         expect(params.px_per_square).toBe(40);
-        // The derived scan values come from the defaults for this board, the edit on top.
-        expect(params.scan).toEqual({ border_bits: 1, marker_size_rel: 0.75, inset_frac: 0.1 });
+        // The library defaults for this board underneath, the edit on top.
+        expect(params.inset_frac).toBe(0.1);
+    });
+
+    it("charuco: a board that is not found (null from the library) is an empty result, not an error", async () => {
+        mocks.calib.charucoResult.mockReturnValueOnce(null);
+        const board = { rows: 6, cols: 9, cell_size: 4.8, marker_size_rel: 0.7, dictionary: "DICT_5X5_250" };
+        const result = await handleCalibTarget("charuco", pixels, 1, 1, { board });
+        expect(result.summary.corner_count).toBe(0);
+        expect(result.detection.corners).toEqual([]);
+        expect(result.markers).toBeNull();
     });
 
     it("charuco: says what is missing when the config has no board", async () => {

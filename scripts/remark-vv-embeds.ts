@@ -29,7 +29,7 @@ function isDirectiveNode(node: unknown): node is DirectiveNode {
     );
 }
 
-function createParagraph(className: string, text: string): MdastNodeWithHast {
+function createParagraph(className: string[], text: string): MdastNodeWithHast {
     return {
         type: "paragraph",
         children: [{ type: "text", value: text } as PhrasingContent],
@@ -72,7 +72,7 @@ const remarkVvEmbeds: Plugin<[], Root> = () => {
             const data = node.data || (node.data = {});
             data.hName = "div";
             const baseProps: Properties = {
-                className: "vv-embed vv-embed--illustration",
+                className: ["vv-embed", "vv-embed--illustration"],
                 "data-vv-illustration": illustration,
             };
             if (illustration === "chess-response") {
@@ -96,7 +96,7 @@ const remarkVvEmbeds: Plugin<[], Root> = () => {
 
             node.children = [
                 createParagraph(
-                    "vv-embed__fallback",
+                    ["vv-embed__fallback"],
                     FALLBACK_TEXT[illustration] ?? "Interactive illustration loads here.",
                 ),
             ] as unknown as typeof node.children;

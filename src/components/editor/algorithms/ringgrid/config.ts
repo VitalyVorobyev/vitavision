@@ -6,7 +6,7 @@ import type { ConfigDocument } from "../types";
  * a detection config (`schemas/detect_config.json`).
  *
  * The detection config carries fields the library derives from the board when it loads one
- * (the marker radii in pixels, the codebook profile, ...). The schema marks them `readOnly`;
+ * (the marker radii in pixels, the code band ratio, ...). The schema marks them `readOnly`;
  * they are left out here and in the form, and the worker takes them from
  * `default_config_json(board)` underneath whatever the config says.
  */
@@ -39,6 +39,7 @@ export const RINGGRID_DEFAULT_CONFIG: ConfigDocument = {
         validation_abs_improvement_px: 0.05,
         validation_rel_improvement: 0.03,
     },
+    min_confidence: 0.03,
     require_complete_board: false,
     advanced: {
         outer_estimation: {
@@ -52,14 +53,11 @@ export const RINGGRID_DEFAULT_CONFIG: ConfigDocument = {
             refine_halfwidth_px: 1,
         },
         proposal: { grad_threshold: 0.05, min_vote_frac: 0.1, max_candidates: null, radius_step: 1 },
-        seed_proposals: { merge_radius_px: 3, seed_score: 1000000000000, max_seeds: 512 },
-        edge_sample: { n_rays: 48, r_step: 0.5, min_ring_depth: 0.08, min_rays_with_ring: 16 },
+        seed_proposals: { max_seeds: 512 },
+        edge_sample: { n_rays: 48, r_step: 0.5, min_ring_depth: 0.03, min_rays_with_ring: 16 },
         decode: {
-            samples_per_sector: 5,
+            samples_per_sector: 8,
             n_radial_rings: 3,
-            max_decode_dist: 3,
-            min_decode_confidence: 0.3,
-            min_decode_margin: 1,
             min_decode_contrast: 0.03,
             threshold_max_iters: 10,
             threshold_convergence_eps: 0.0001,
@@ -121,7 +119,6 @@ export const RINGGRID_DEFAULT_CONFIG: ConfigDocument = {
             consistency_min_neighbors: 1,
             consistency_min_support_edges: 1,
             consistency_max_contradiction_frac: 0.5,
-            confirm_by_consistency: true,
             soft_lock_exact_decode: true,
             min_votes: 2,
             min_votes_recover: 1,
@@ -132,7 +129,7 @@ export const RINGGRID_DEFAULT_CONFIG: ConfigDocument = {
             homography_min_inliers: 12,
             max_iters: 5,
             remove_unverified: false,
-            seed_min_decode_confidence: 0.7,
+            seed_min_confidence: 0.7,
         },
         inner_as_outer_recovery: {
             enable: true,
@@ -140,10 +137,10 @@ export const RINGGRID_DEFAULT_CONFIG: ConfigDocument = {
             k_neighbors: 6,
             min_theta_consistency: 0.18,
             min_theta_coverage: 0.4,
-            min_ring_depth: 0.02,
             refine_halfwidth_px: 2.5,
             size_gate_tolerance: 0.25,
         },
+        photometric: { estimate_print_radii: true, max_center_shift_px: null, max_iterations: 30, saturation_level: 250 },
         proposal_downscale: "off",
     },
 };

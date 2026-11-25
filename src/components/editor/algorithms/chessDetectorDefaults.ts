@@ -7,17 +7,20 @@ import type { ConfigDocument } from "./types";
  * `default_detector_config_json()` / `default_chess_config()`, so a library change that moves
  * a default fails there rather than being silently shadowed here.
  *
- * The two differ in one value: the standalone detector's absolute response floor is 30, the
- * one the board detectors run with is 15.
+ * The two differ in three values, all of them the library's own:
+ *
+ * - the standalone detector's absolute response floor is 30, the one the board detectors run
+ *   with is 15;
+ * - the board detectors' document states `refiner: null` (no image refiner) and
+ *   `on_refiner_reject: "keep_center_of_mass"`, where the standalone one leaves both out
+ *   (`Option::None` / `Drop` serialise as an absent key).
  */
 
 const detectorConfig = (threshold: number): ConfigDocument => ({
     strategy: {
         chess: {
             ring: "canonical",
-            refiner: {
-                center_of_mass: { radius: 2 },
-            },
+            center_of_mass: { radius: 2 },
         },
     },
     threshold,
@@ -26,10 +29,15 @@ const detectorConfig = (threshold: number): ConfigDocument => ({
     upscale: "disabled",
     orientation_method: "ring_fit",
     merge_radius: 3,
+    uncertainty: "off",
 });
 
 /** `default_detector_config_json()` of @vitavision/chess-corners. */
 export const CHESS_CORNERS_DEFAULTS: ConfigDocument = detectorConfig(30);
 
 /** `default_chess_config()` of @vitavision/calib-targets. */
-export const CALIB_CHESS_DEFAULTS: ConfigDocument = detectorConfig(15);
+export const CALIB_CHESS_DEFAULTS: ConfigDocument = {
+    ...detectorConfig(15),
+    strategy: { chess: { ring: "canonical", center_of_mass: { radius: 2 }, on_refiner_reject: "keep_center_of_mass" } },
+    refiner: null,
+};

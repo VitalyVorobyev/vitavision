@@ -38,8 +38,8 @@ function mockChessCornersResult(count: number): ChessCornersResult {
             y_norm: (60 + i * 15) / 480,
             response: 0.5,
             axes: [
-                { angle_rad: axis0Angle, angle_deg: 45, sigma_rad: 0.05, direction: { dx: Math.cos(axis0Angle), dy: Math.sin(axis0Angle) } },
-                { angle_rad: axis1Angle, angle_deg: 135, sigma_rad: 0.06, direction: { dx: Math.cos(axis1Angle), dy: Math.sin(axis1Angle) } },
+                { angle_rad: axis0Angle, angle_deg: 45, fit_std_error_rad: 0.05, direction: { dx: Math.cos(axis0Angle), dy: Math.sin(axis0Angle) } },
+                { angle_rad: axis1Angle, angle_deg: 135, fit_std_error_rad: 0.06, direction: { dx: Math.cos(axis1Angle), dy: Math.sin(axis1Angle) } },
             ],
             confidence: 0.8,
             confidence_level: "high" as const,
@@ -179,11 +179,11 @@ describe("chessCornersAlgorithm", () => {
             expect(f.axes[0].dx).toBeCloseTo(result.corners[0]!.axes[0].direction.dx, 5);
             expect(f.axes[0].dy).toBeCloseTo(result.corners[0]!.axes[0].direction.dy, 5);
             expect(f.axes[0].angleRad).toBeCloseTo(result.corners[0]!.axes[0].angle_rad, 5);
-            expect(f.axes[0].sigmaRad).toBeCloseTo(result.corners[0]!.axes[0].sigma_rad, 5);
+            expect(f.axes[0].sigmaRad).toBeCloseTo(result.corners[0]!.axes[0].fit_std_error_rad, 5);
             expect(f.axes[1].dx).toBeCloseTo(result.corners[0]!.axes[1].direction.dx, 5);
             expect(f.axes[1].dy).toBeCloseTo(result.corners[0]!.axes[1].direction.dy, 5);
             expect(f.axes[1].angleRad).toBeCloseTo(result.corners[0]!.axes[1].angle_rad, 5);
-            expect(f.axes[1].sigmaRad).toBeCloseTo(result.corners[0]!.axes[1].sigma_rad, 5);
+            expect(f.axes[1].sigmaRad).toBeCloseTo(result.corners[0]!.axes[1].fit_std_error_rad, 5);
         }
     });
 
@@ -396,15 +396,15 @@ describe("ringgridAlgorithm", () => {
         expect(features).toHaveLength(0);
     });
 
-    it("assigns ringgrid_decoded kind to decoded markers", () => {
+    it("assigns ringgrid_decoded kind to identified markers", () => {
         const result = mockRinggridResult(1);
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
         expect(features[0]!.meta?.kind).toBe("ringgrid_decoded");
     });
 
-    it("assigns ringgrid_proposal kind to undecoded markers", () => {
+    it("assigns ringgrid_proposal kind to unidentified markers", () => {
         const result = mockRinggridResult(1);
-        result.markers[0]!.decode = null;
+        result.markers[0]!.id = null;
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
         expect(features[0]!.meta?.kind).toBe("ringgrid_proposal");
     });

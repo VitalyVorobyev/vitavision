@@ -18,6 +18,7 @@ import { schema as puzzleboardSchema } from "../puzzleboard/schema";
 import { schema as ringgridSchema } from "../ringgrid/schema";
 import { schema as radsymSchema } from "../radsym/schema";
 import { loadAlgorithm } from "../registry";
+import { SADDLE_POINT_REFINER } from "../legacyConfig";
 import { readOnlyPaths, walkFields } from "../schemaTools";
 
 interface Case {
@@ -160,16 +161,18 @@ describe("editing", () => {
         expect(onChange.mock.calls[0]![0]).toEqual({ ...(algo.initialConfig as object), threshold: 45 });
     });
 
-    it("chess-corners: choosing a refiner swaps the whole variant", async () => {
+    it("chess-corners: the image refiner is an optional block that switches on to the saddle-point fit", async () => {
         const algo = await loadAlgorithm("chess-corners");
         const Form = algo.ConfigComponent;
         const onChange = vi.fn();
         const { container } = render(<Form config={algo.initialConfig} onChange={onChange} disabled={false} />);
         container.querySelectorAll("details").forEach((d) => d.setAttribute("open", ""));
-        fireEvent.click(screen.getByRole("combobox", { name: "Refiner" }));
-        fireEvent.click(await screen.findByRole("option", { name: "Förstner" }));
-        const next = onChange.mock.calls[0]![0] as { strategy: { chess: { refiner: Record<string, unknown> } } };
-        expect(Object.keys(next.strategy.chess.refiner)).toEqual(["forstner"]);
+        // Off by default: the library's own center-of-mass localizer is used, and its radius is offered.
+        expect(screen.getByRole("spinbutton", { name: "Center-of-mass radius" })).toHaveValue(2);
+        expect(screen.getByText("Image refiner")).toBeInTheDocument();
+        fireEvent.click(screen.getByRole("switch"));
+        const next = onChange.mock.calls[0]![0] as { refiner: Record<string, unknown> };
+        expect(next.refiner).toEqual(SADDLE_POINT_REFINER);
     });
 
     it("radsym: the radius range is edited as a minimum and a maximum", async () => {

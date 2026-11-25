@@ -32,7 +32,7 @@ const groups: UiGroup[] = [
         id: "chessboard",
         title: "Chessboard",
         collapsible: true,
-        fields: ["px_per_square", ...chessboardKnobPaths("chessboard")],
+        fields: chessboardKnobPaths("chessboard"),
     },
     { id: "corners", title: "Corner detector", collapsible: true, fields: chessDetectorPaths("chess") },
     {
@@ -97,6 +97,5 @@ export const { hiddenPaths, ui } = boardUi({
             label: "Decoder tuning",
             hint: "Soft-scorer and consensus tuning knobs of the decoder. Unstable: not covered by the library's semver, and best left off unless a specific image fails.",
         },
-        px_per_square: { label: "Pixels per square", hint: "Rectified cell size in pixels used for corner detection." },
     },
 });

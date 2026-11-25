@@ -44,6 +44,15 @@ const assertSame = (label, a, b) => {
     if (diff.length) throw new Error(label + ' differs from the live library value: ' + diff.slice(0, 6).join('; '));
 };
 const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+// every leaf of \`expected\` is in \`actual\` with the same value (floats as f32); extra keys in \`actual\` are fine
+const subsetDiff = (expected, actual, path = '') => {
+    if (isObj(expected)) {
+        if (!isObj(actual)) return [path + ': expected an object'];
+        return Object.entries(expected).flatMap(([k, v]) => subsetDiff(v, actual[k], path + '.' + k));
+    }
+    if (Array.isArray(expected)) return !Array.isArray(actual) || actual.length !== expected.length ? [path + ': array mismatch'] : expected.flatMap((v, i) => subsetDiff(v, actual[i], path + '[' + i + ']'));
+    return sameValue(expected, actual, path);
+};
 function deadKeys(sent, ref, path) {
     const out = [];
     if (Array.isArray(sent)) {
@@ -78,7 +87,7 @@ await mod.default();
 const A = ${JSON.stringify(ADAPTERS_DIR)};
 const { CHESS_CORNERS_DEFAULTS, CALIB_CHESS_DEFAULTS } = await import(A + 'chessDetectorDefaults.ts');
 const { chessCornersAlgorithm } = await import(A + 'chessCorners/adapter.ts');
-const { LEGACY_REFINERS } = await import(A + 'legacyConfig.ts');
+const { SADDLE_POINT_REFINER, migrateLibraryDocument } = await import(A + 'legacyConfig.ts');
 if (mod.Threshold !== undefined)
     throw new Error('Threshold enum is back — revisit the scalar-threshold migration');
 
@@ -108,25 +117,59 @@ const expected = { ...CHESS_CORNERS_DEFAULTS, multiscale: { pyramid: { ...preset
 assertSame('initialConfig', chessCornersAlgorithm.initialConfig, expected);
 console.log('PASS: initialConfig = library defaults + the chessMultiscale() pyramid at 4 levels');
 
-// 4. The tuning structs each refiner variant starts with (what switching the refiner in the
-// form seeds, and what an old deep link's "refiner" string stands for).
-for (const [name, make] of [
-    ['center_of_mass', () => mod.ChessRefiner.withCenterOfMass(new mod.CenterOfMassConfig())],
-    ['forstner', () => mod.ChessRefiner.withForstner(new mod.ForstnerConfig())],
-    ['saddle_point', () => mod.ChessRefiner.withSaddlePoint(new mod.SaddlePointConfig())],
-]) {
+// 4. chess-corners 2.0 replaced the ChessRefiner class (center_of_mass / forstner / saddle_point)
+// with ChESS's own center of mass (strategy.chess.center_of_mass) plus an OPTIONAL image refiner
+// (top-level \`refiner\`, saddle point only). Nothing in the type-checker sees a stale class here
+// (the document is plain JSON), and assigning a removed property on a wasm-bindgen wrapper
+// silently succeeds, so assert the exports and the property by presence, not by not-throwing.
+for (const gone of ['ChessRefiner', 'ForstnerConfig'])
+    if (gone in mod) throw new Error(gone + ' is back in the chess-corners exports -- revisit the refiner migration');
+for (const there of ['ImageRefiner', 'Uncertainty', 'OnRefinerReject'])
+    if (!(there in mod)) throw new Error(there + ' is missing from the chess-corners exports');
+{
     const cfg = mod.DetectorConfig.chessMultiscale();
-    cfg.strategy.chess.refiner = make();
-    assertSame('refiner ' + name, LEGACY_REFINERS[name], JSON.parse(cfg.toJson()).strategy.chess.refiner);
+    if ('refiner' in cfg.strategy.chess)
+        throw new Error('strategy.chess.refiner is back (it moved to DetectorConfig.refiner in 2.0)');
+    if (!('centerOfMass' in cfg.strategy.chess))
+        throw new Error('strategy.chess.centerOfMass is gone');
+    if (cfg.refiner !== undefined)
+        throw new Error('the default config has an image refiner: ' + cfg.refiner.kind);
+    // The tuning struct the image refiner starts with (what switching it on in the form seeds,
+    // and what an old deep link's flat "refiner": "saddle_point" stands for).
+    const withSaddle = cfg.withRefiner(mod.ImageRefiner.saddlePoint());
+    assertSame('image refiner saddle_point', SADDLE_POINT_REFINER, JSON.parse(withSaddle.toJson()).refiner);
+    withSaddle.free();
+    cfg.free();
 }
-console.log('PASS: the refiner variants start from the library tuning structs');
+console.log('PASS: ChessRefiner/ForstnerConfig are gone; the image refiner starts from the library saddle-point tuning');
+
+// chess-corners 2.x REJECTS an unknown key at any level (1.x dropped it), so a document in the
+// old shape must be migrated before it reaches fromJson -- and the migrated one must load.
+const oldShape = { strategy: { chess: { ring: 'canonical', refiner: { forstner: { radius: 2 } } } }, threshold: 30 };
+let rejected = '';
+try { mod.DetectorConfig.fromJson(JSON.stringify(oldShape)).free(); } catch (e) { rejected = String(e); }
+if (!rejected.includes('refiner'))
+    throw new Error('an unknown strategy.chess.refiner key was not rejected: ' + rejected);
+for (const refiner of [{ center_of_mass: { radius: 3 } }, { saddle_point: SADDLE_POINT_REFINER.saddle_point }]) {
+    const migrated = migrateLibraryDocument('chess-corners', { strategy: { chess: { ring: 'canonical', refiner } }, threshold: 30 });
+    const cfg = mod.DetectorConfig.fromJson(JSON.stringify(migrated));
+    const round = JSON.parse(cfg.toJson());
+    cfg.free();
+    if ('center_of_mass' in refiner && round.strategy.chess.center_of_mass.radius !== 3)
+        throw new Error('the migrated center-of-mass radius did not arrive: ' + JSON.stringify(round.strategy));
+    if ('saddle_point' in refiner) assertSame('migrated saddle_point refiner', SADDLE_POINT_REFINER, round.refiner);
+}
+console.log('PASS: an old-shape document is rejected by fromJson; its migration loads and keeps the refiner settings');
 
 // 5. Every library default is spelled out, so a field the library adds is noticed (the form
 // shows it from the schema; this tells the maintainer the stored configs do not carry it).
-assertSame('CALIB_CHESS_DEFAULTS vs chess_config (shape only)', Object.keys(CHESS_CORNERS_DEFAULTS).sort(), Object.keys(CALIB_CHESS_DEFAULTS).sort());
+// The board detectors' document states two more keys than the standalone one: refiner: null and
+// on_refiner_reject (see chessDetectorDefaults.ts); compare the rest by shape.
+assertSame('CALIB_CHESS_DEFAULTS vs chess_config (shape only)',
+    Object.keys(CHESS_CORNERS_DEFAULTS).sort(), Object.keys(CALIB_CHESS_DEFAULTS).filter((k) => k !== 'refiner').sort());
 
 // Stride guard. The detector hands back a bare Float32Array, so a stride the
-// type-checker cannot see (9 in 0.11, 7 in 1.x) would silently reinterpret
+// type-checker cannot see (9 in 0.11, 7 in 1.x and 2.x -- 2.0 only renamed sigma -> fitStdError) would silently reinterpret
 // axis angles as contrast and shear every corner. Pin it against a synthetic
 // board whose corner count and positions are known exactly.
 const W = 256, H = 256, SQ = 32;
@@ -139,7 +182,7 @@ for (let y = 0; y < H; y++) {
         rgba[i + 3] = 255;
     }
 }
-const STRIDE = 7; // x, y, response, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma
+const STRIDE = 7; // x, y, response, axis0_angle, axis0_fitStdError, axis1_angle, axis1_fitStdError
 const cfg = mod.DetectorConfig.chessMultiscale();
 const det = mod.ChessDetector.withConfig(cfg);
 cfg.free();
@@ -151,7 +194,7 @@ const count = raw.length / STRIDE;
 if (count !== 49)
     throw new Error('expected 49 interior corners on the synthetic board, got ' + count);
 // First corner sits at the first interior junction; with stride 7 the two
-// following floats are an angle in [-pi, pi] and a small sigma, not a
+// following floats are an angle in [-pi, pi] and a small fit std-error, not a
 // contrast/fit_rms pair. A stale stride of 9 fails both checks.
 const [x0, y0, r0, a0, s0] = raw;
 if (Math.abs(x0 - 31.5) > 1.5 || Math.abs(y0 - 31.5) > 1.5)
@@ -159,7 +202,7 @@ if (Math.abs(x0 - 31.5) > 1.5 || Math.abs(y0 - 31.5) > 1.5)
 if (!(r0 > 100))
     throw new Error('expected a strong response on a synthetic board, got ' + r0);
 if (!(Math.abs(a0) <= Math.PI + 1e-3) || !(s0 >= 0 && s0 < 1))
-    throw new Error('stride 7 misaligned: angle=' + a0 + ' sigma=' + s0);
+    throw new Error('stride 7 misaligned: angle=' + a0 + ' fitStdError=' + s0);
 console.log('PASS: detect_rgba stride is ' + STRIDE + ' (' + count + ' corners, first at ' + x0.toFixed(1) + ',' + y0.toFixed(1) + ')');
 
 // Threshold is an ABSOLUTE floor on the raw response now, not a 0-1 fraction.
@@ -196,6 +239,7 @@ const { RINGGRID_DEFAULT_BOARD, RINGGRID_DEFAULT_CONFIG } = await import(A + 'ri
 const { ringgridAlgorithm } = await import(A + 'ringgrid/adapter.ts');
 const { schema } = await import(A + 'ringgrid/schema.ts');
 const { readOnlyPaths } = await import(A + 'schemaTools.ts');
+const { migrateLibraryDocument } = await import(A + 'legacyConfig.ts');
 
 // 1. The board is a v6 target spec, and the stored default is the library's.
 const defBoard = JSON.parse(mod.default_board_json());
@@ -215,7 +259,9 @@ for (const path of derived) {
     for (const part of parts.slice(0, -1)) o = o[part];
     delete o[parts.at(-1)];
 }
-if (derived.length !== 10) throw new Error('expected 10 readOnly detection fields, got ' + derived.length + ': ' + derived.join(', '));
+// ringgrid 0.18 stopped deriving two of the ten fields (completion.roi_radius_px, decode.codebook_profile):
+// they are gone from the detection config altogether.
+if (derived.length !== 8) throw new Error('expected 8 readOnly detection fields, got ' + derived.length + ': ' + derived.join(', '));
 assertSame('RINGGRID_DEFAULT_CONFIG', RINGGRID_DEFAULT_CONFIG, stripped);
 console.log('PASS: RINGGRID_DEFAULT_CONFIG equals default_config_json(board) without its ' + derived.length + ' readOnly fields');
 
@@ -234,16 +280,22 @@ for (const [label, config] of storedConfigs(ringgridAlgorithm)) { build(config);
 console.log('PASS: ' + n + ' stored configs build a detector');
 
 // 4. Same config as before: the document the old adapter produced (default board merged with
-// the flat overrides, update_config on top; snapshotted before the change) is what the
-// stored configs load to now, field for field -- derived ones included.
+// the flat overrides, update_config on top; snapshotted before the change, against ringgrid 0.13)
+// is what the stored configs load to now. The snapshot is moved to the 0.18 keys first (keys the
+// library removed dropped, seed_min_decode_confidence renamed, the two values whose library default
+// changed -- decode.samples_per_sector 5 -> 8, edge_sample.min_ring_depth 0.08 -> 0.03 -- follow the
+// library), and the new config may carry more (min_confidence, photometric ...): every value the old
+// one had must be there unchanged.
 for (const entry of snapshot.algorithms.ringgrid) {
     const config = entry.kind === 'initial' ? ringgridAlgorithm.initialConfig : ringgridAlgorithm.sampleDefaults[entry.label];
+    const old = migrateLibraryDocument('ringgrid', entry.oldWasm);
     const boardNow = structuredClone(config.board);
     if (boardNow.coding.codebook_profile === 'base') delete boardNow.coding.codebook_profile; // the library leaves the baseline out
-    assertSame('ringgrid ' + entry.kind + ' ' + entry.label + ' board', boardNow, entry.oldWasm.board);
-    assertSame('ringgrid ' + entry.kind + ' ' + entry.label + ' detection config', build(config), entry.oldWasm.config);
+    assertSame('ringgrid ' + entry.kind + ' ' + entry.label + ' board', boardNow, old.board);
+    const diff = subsetDiff(old.config, build(config), 'config');
+    if (diff.length) throw new Error('ringgrid ' + entry.kind + ' ' + entry.label + ' detection config lost values the old adapter built: ' + diff.slice(0, 6).join('; '));
 }
-console.log('PASS: initialConfig and the sample default load to exactly the config the old adapter built');
+console.log('PASS: initialConfig and the sample default load to every value the old adapter built (moved to the 0.18 keys)');
 
 // 5. Derived fields really are re-derived: whatever a stored config says about them, the
 // detector ends up with the value for the board. (This is why the form can hide them.)
@@ -259,13 +311,19 @@ if (loadedLied.advanced.completion.roi_radius_px !== loadedTrue.advanced.complet
     throw new Error('advanced.completion.roi_radius_px was not re-derived from the board');
 console.log('PASS: readOnly fields are re-derived from the board on load');
 
-// 6. A board that is not the default one changes the derived fields -- and the extended
-// codebook a legacy link asked for lives on the board now, where the detector picks it up.
+// 6. The codebook profile lives on the board only. ringgrid 0.18 dropped
+// advanced.decode.codebook_profile from the detection config (it was derived from the board in
+// 0.13), so the key must not come back unnoticed; a board that asks for the extended codebook is
+// accepted, keeps the profile in its canonical form, and builds a detector. (Whether the extended
+// codebook then decodes differently is not asserted: no sample here is printed with it.)
+if ('codebook_profile' in liveConfig.advanced.decode)
+    throw new Error('advanced.decode.codebook_profile is back in the detection config -- revisit the board.coding migration');
 const ext = structuredClone(ringgridAlgorithm.initialConfig);
 ext.board.coding.codebook_profile = 'extended';
-if (build(ext).advanced.decode.codebook_profile !== 'extended')
-    throw new Error('board.coding.codebook_profile = extended did not reach the detector config');
-console.log('PASS: board.coding.codebook_profile reaches advanced.decode.codebook_profile');
+if (JSON.parse(mod.canonical_target_spec_json(JSON.stringify(ext.board))).coding.codebook_profile !== 'extended')
+    throw new Error('board.coding.codebook_profile = extended did not survive the target spec round trip');
+build(ext);
+console.log('PASS: board.coding.codebook_profile = extended is accepted by the library; the detection config no longer carries a profile');
 
 process.exit(0);
 `,
@@ -375,6 +433,28 @@ if (!rejectedZeroBorder)
     throw new Error('expected board.border_bits = 0 to be rejected; the form min=1 depends on it');
 console.log('PASS: board.border_bits = 0 is rejected (form min=1 is justified)');
 
+// calib-targets 0.18 removed the ScanDecodeConfig block: \`scan\` is a dead key now (dropped
+// silently, like any unknown one), and the one scan knob left is the top-level \`inset_frac\`.
+// Only an invalid payload (a string where a number belongs) tells a live key from a dead one.
+const isLiveCharucoKey = (key, bad) => {
+    const p = mod.default_charuco_params(5, 7, 0.75, 'DICT_4X4_50');
+    p[key] = bad;
+    try { mod.detect_charuco(32, 32, gray, null, p); return false; }
+    catch (e) { return String(e).includes('invalid type'); }
+};
+if (!isLiveCharucoKey('inset_frac', 'BAD'))
+    throw new Error('inset_frac is not a live charuco key (invalid payload was accepted)');
+if (isLiveCharucoKey('scan', 'BAD'))
+    throw new Error('charuco scan is live again -- revisit the 0.18 migration');
+if ('scan' in defaultCharucoParams)
+    throw new Error('default_charuco_params() has a scan block again');
+console.log('PASS: charuco inset_frac is live (default ' + defaultCharucoParams.inset_frac.toFixed(2) + '); the scan block is gone');
+
+// 0.18: a board that is not found is \`null\` (it used to throw "chessboard not detected").
+if (mod.detect_charuco(32, 32, gray, null, mod.default_charuco_params(5, 7, 0.75, 'DICT_4X4_50')) !== null)
+    throw new Error('expected null for a blank image');
+console.log('PASS: detect_charuco returns null on a miss (the worker turns it into an empty result)');
+
 const params = {
     px_per_square: 40,
     board: {
@@ -468,6 +548,9 @@ function circlesOfLength(n) {
 }
 function detectWithCircleCount(n) {
     const p = mod.default_marker_board_params();
+    // 0.18 checks the circle cells against the board (the default board is only 8x6 squares).
+    p.board.rows = 22;
+    p.board.cols = 22;
     p.board.circles = circlesOfLength(n);
     return mod.detect_marker_board(32, 32, gray, chessCfg, p);
 }
@@ -627,12 +710,8 @@ for (const [name, algo] of Object.entries(adapters)) {
     for (const [label, config] of storedConfigs(algo)) {
         const ref = reference(name, config);
         const dead = deadKeys(config, ref, '');
-        // charuco's scan.border_bits / scan.marker_size_rel are derived from the board: the
-        // stored configs leave them out and the worker takes them from the defaults.
         if (dead.length > 0)
             throw new Error(name + ' ' + label + ' states keys the library does not have (silently dropped): ' + dead.join(', '));
-        if (name === 'charuco' && ('border_bits' in (config.scan ?? {}) || 'marker_size_rel' in (config.scan ?? {})))
-            throw new Error('charuco ' + label + ' states a scan value the detector derives from the board');
         // Every non-board knob the config states must equal the library default or be a
         // deliberate departure; list them so a drift is a visible diff, not a silent override.
         checked++;
@@ -649,9 +728,8 @@ assertSame('CHESSBOARD_DEFAULT_PARAMS', CHESSBOARD_DEFAULT_PARAMS, mod.default_c
 const { CHARUCO_DEFAULTS } = await import(A + 'calibrationTargets/charuco/config.ts');
 const liveCharuco = mod.default_charuco_params(22, 22, 0.75, 'DICT_4X4_1000');
 {
-    const { board: _b, scan, ...rest } = liveCharuco;
-    const { border_bits: _bb, marker_size_rel: _ms, ...scanRest } = scan;
-    assertSame('CHARUCO_DEFAULTS', CHARUCO_DEFAULTS, { ...rest, scan: scanRest });
+    const { board: _b, ...rest } = liveCharuco;
+    assertSame('CHARUCO_DEFAULTS', CHARUCO_DEFAULTS, rest);
 }
 const { PUZZLEBOARD_DEFAULTS } = await import(A + 'puzzleboard/config.ts');
 {
@@ -680,19 +758,12 @@ const { mergeConfig } = await import(${JSON.stringify(UTIL_PATH)});
 const mod = await import('@vitavision/calib-targets');
 await mod.default();
 const A = ${JSON.stringify(ADAPTERS_DIR)};
+const { migrateLibraryDocument } = await import(A + 'legacyConfig.ts');
 const adapters = {
     chessboard: (await import(A + 'calibrationTargets/chessboardAdapter.ts')).chessboardAlgorithm,
     charuco: (await import(A + 'calibrationTargets/charucoAdapter.ts')).charucoAlgorithm,
     markerboard: (await import(A + 'calibrationTargets/markerboardAdapter.ts')).markerboardAlgorithm,
     puzzleboard: (await import(A + 'puzzleboard/adapter.ts')).puzzleboardAlgorithm,
-};
-const subsetDiff = (expected, actual, path = '') => {
-    if (isObj(expected)) {
-        if (!isObj(actual)) return [path + ': expected an object'];
-        return Object.entries(expected).flatMap(([k, v]) => subsetDiff(v, actual[k], path + '.' + k));
-    }
-    if (Array.isArray(expected)) return !Array.isArray(actual) || actual.length !== expected.length ? [path + ': array mismatch'] : expected.flatMap((v, i) => subsetDiff(v, actual[i], path + '[' + i + ']'));
-    return sameValue(expected, actual, path);
 };
 const complete = (name, c) => {
     if (name === 'chessboard') return { chess: mergeConfig(mod.default_chess_config(), c.chess), params: mergeConfig(mod.default_chessboard_params(), c.params) };
@@ -707,9 +778,12 @@ for (const [name, algo] of Object.entries(adapters)) {
         const now = complete(name, config);
         const old = entry.oldWasm;
         // the front-end: the old worker's chess_cfg argument overrode params.chess where it was given
-        const oldChess = old.chess ?? old.params.chess;
+        // (the snapshot is a document of the old libraries: moved to the current keys first --
+        // refiner out of strategy.chess, charuco scan -> inset_frac, puzzleboard px_per_square dropped)
+        const oldChess = migrateLibraryDocument('chess-corners', old.chess ?? old.params.chess);
         const nowChess = name === 'chessboard' ? now.chess : now.params.chess;
-        const { chess: _c, ...oldParams } = old.params;
+        const { chess: _c, ...oldParamsRaw } = old.params;
+        const oldParams = name === 'chessboard' ? oldParamsRaw : migrateLibraryDocument(name, oldParamsRaw);
         const diff = [
             ...subsetDiff(oldChess, nowChess, 'chess'),
             ...subsetDiff(name === 'chessboard' ? old.params : oldParams, name === 'chessboard' ? now.params : now.params, 'params'),
@@ -818,11 +892,14 @@ const params = mod.default_puzzleboard_params(10, 10);
 if (typeof params !== 'object' || params === null)
     throw new Error('default_puzzleboard_params returned non-object: ' + typeof params);
 const keys = Object.keys(params);
-for (const k of ['px_per_square', 'chessboard', 'board', 'decode']) {
+// 0.18 removed px_per_square from PuzzleBoardParams (the app no longer stores it).
+for (const k of ['chessboard', 'board', 'decode']) {
     if (!keys.includes(k))
         throw new Error('missing key: ' + k + ' in ' + JSON.stringify(keys));
 }
-console.log('PASS: default_puzzleboard_params(10,10) returns object with px_per_square, chessboard, board, decode');
+if ('px_per_square' in params)
+    throw new Error('px_per_square is back in default_puzzleboard_params -- revisit the 0.18 migration');
+console.log('PASS: default_puzzleboard_params(10,10) returns object with chessboard, board, decode (and no px_per_square)');
 if (params.board.rows !== 10 || params.board.cols !== 10)
     throw new Error('board rows/cols mismatch: ' + JSON.stringify(params.board));
 if (params.decode?.search_mode?.kind !== 'full')

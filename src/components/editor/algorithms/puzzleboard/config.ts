@@ -11,7 +11,6 @@ import { CHESSBOARD_DEFAULT_PARAMS } from "../calibrationTargets/chessboard/conf
 /** The library defaults of `default_puzzleboard_params(..)` that do not depend on the board. */
 export const PUZZLEBOARD_DEFAULTS: ConfigDocument = {
     chess: CALIB_CHESS_DEFAULTS,
-    px_per_square: 60,
     chessboard: CHESSBOARD_DEFAULT_PARAMS,
     decode: {
         min_window: 7,

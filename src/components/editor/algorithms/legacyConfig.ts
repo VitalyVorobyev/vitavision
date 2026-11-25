@@ -21,13 +21,22 @@ import type { ConfigDocument } from "./types";
  * Keys a flat config does not carry (a link saved before a field existed) take the
  * editor's current default, which is what the old adapters' deep-merge over the library
  * defaults amounted to for every field the editor ever had.
+ *
+ * A second, smaller migration covers links saved by the editor that already sent whole
+ * library documents, but for the previous generation of the libraries (chess-corners 1.x,
+ * calib-targets <= 0.15): the ChESS refiner moved out of `strategy.chess.refiner`, and the
+ * ChArUco `scan` block and PuzzleBoard `px_per_square` were removed, and ringgrid 0.18 dropped or
+ * renamed some detection-config keys (the editor stores whole documents, so a saved link carries them). chess-corners 2.x
+ * REJECTS an unknown key, so such a link would otherwise fail every run; calib-targets drops
+ * unknown keys silently, which would lose the setting without a word.
  */
 
 type Flat = Record<string, unknown>;
 
 /** Keys that exist in a flat config and in no current config document: any one gives it away. */
 const SIGNATURE_KEYS: Record<string, string[]> = {
-    "chess-corners": ["nmsRadius", "minClusterSize", "broadMode", "pyramidLevels", "pyramidMinSize", "upscaleFactor", "refiner"],
+    // The flat `refiner` was a string ("forstner"); the document's own `refiner` is an object or null.
+    "chess-corners": ["nmsRadius", "minClusterSize", "broadMode", "pyramidLevels", "pyramidMinSize", "upscaleFactor"],
     chessboard: ["minCornerStrength", "minLabeledCorners", "maxComponents"],
     charuco: ["cellSize", "markerSizeRel", "pxPerSquare", "chessMinCornerStrength", "borderBits", "minMarkerInliers"],
     markerboard: ["boardRows", "boardCols", "circleDiameterRel", "circleScorePatchSize", "matchMinOffsetInliers"],
@@ -42,7 +51,9 @@ const isRecord = (value: unknown): value is Flat =>
 /** Whether `config` is the flat shape an older editor saved for `algorithmId`. */
 export function isLegacyConfig(algorithmId: string, config: unknown): boolean {
     const signature = SIGNATURE_KEYS[algorithmId];
-    return signature !== undefined && isRecord(config) && signature.some((key) => key in config);
+    if (signature === undefined || !isRecord(config)) return false;
+    if (algorithmId === "chess-corners" && typeof config.refiner === "string") return true;
+    return signature.some((key) => key in config);
 }
 
 // ── Reading a flat config ───────────────────────────────────────────────────
@@ -64,11 +75,14 @@ const apply = (base: ConfigDocument, overrides: Record<string, unknown>): Config
 
 // ── Per algorithm ───────────────────────────────────────────────────────────
 
-/** The tuning struct each refiner variant starts with (`ForstnerConfig::default()` etc.). */
-export const LEGACY_REFINERS: Record<string, Record<string, unknown>> = {
-    center_of_mass: { center_of_mass: { radius: 2 } },
-    forstner: { forstner: { max_condition_number: 50, max_offset: 1.5, min_det: 0.001, min_trace: 25, radius: 2 } },
-    saddle_point: { saddle_point: { det_margin: 0.001, max_offset: 1.5, min_abs_det: 0.0001, radius: 2 } },
+/**
+ * What the flat `refiner: "saddle_point"` stands for now: the image refiner with the library's own
+ * tuning (`ImageRefiner.saddlePoint()`; checked against the live library by `test-wasm-schemas.ts`).
+ * The flat `"center_of_mass"` is the library default (no image refiner), and `"forstner"` has no
+ * counterpart any more (chess-corners 2.0 removed it), so both leave the default in place.
+ */
+export const SADDLE_POINT_REFINER: Record<string, unknown> = {
+    saddle_point: { det_margin: 0.001, max_offset: 1.5, min_abs_det: 0.0001, radius: 2 },
 };
 
 function fromChessCorners(flat: Flat): ConfigDocument {
@@ -82,10 +96,10 @@ function fromChessCorners(flat: Flat): ConfigDocument {
             pyramid: defined({ levels: num(flat, "pyramidLevels"), min_size: num(flat, "pyramidMinSize") }),
         }),
         detection: defined({ nms_radius: num(flat, "nmsRadius"), min_cluster_size: num(flat, "minClusterSize") }),
+        refiner: refiner === "saddle_point" ? SADDLE_POINT_REFINER : undefined,
         strategy: {
             chess: defined({
                 ring: broad === undefined ? undefined : broad ? "broad" : "canonical",
-                refiner: refiner === undefined ? undefined : LEGACY_REFINERS[refiner],
             }),
         },
     }));
@@ -121,12 +135,9 @@ function fromCharuco(flat: Flat): ConfigDocument {
             min_labeled_corners: num(flat, "chessMinLabeledCorners"),
             max_components: num(flat, "chessMaxComponents"),
         }),
-        scan: defined({
-            inset_frac: num(flat, "scanInsetFrac"),
-            min_border_score: num(flat, "scanMinBorderScore"),
-            dedup_by_id: bool(flat, "scanDedupById"),
-            multi_threshold: bool(flat, "scanMultiThreshold"),
-        }),
+        // calib-targets 0.18 removed the scan block; its inset fraction is the top-level `inset_frac`
+        // (same meaning, same 0.06 default). The border score, dedup and multi-threshold knobs are gone.
+        inset_frac: num(flat, "scanInsetFrac"),
         min_marker_inliers: num(flat, "minMarkerInliers"),
     });
 }
@@ -174,7 +185,6 @@ function fromPuzzleboard(flat: Flat): ConfigDocument {
     const searchMode = str(flat, "decodeSearchMode");
     const scoringMode = str(flat, "decodeScoringMode");
     return apply(puzzleboardInitial, {
-        px_per_square: num(flat, "pxPerSquare"),
         board: defined({
             rows: num(flat, "boardRows"),
             cols: num(flat, "boardCols"),
@@ -221,10 +231,8 @@ function fromRinggrid(flat: Flat): ConfigDocument {
             self_undistort: defined({ enable: bool(flat, "enableSelfUndistort") }),
             advanced: {
                 proposal: defined({ grad_threshold: num(flat, "gradThreshold") }),
-                decode: defined({
-                    max_decode_dist: num(flat, "maxDecodeDist"),
-                    min_decode_confidence: num(flat, "minDecodeConfidence"),
-                }),
+                // `maxDecodeDist` / `minDecodeConfidence` have no counterpart in ringgrid 0.18: the keys
+                // were removed from the detection config (`config.min_confidence` is a different gate).
                 completion: defined({ enable: bool(flat, "enableCompletion") }),
             },
         }),
@@ -260,6 +268,103 @@ function fromRadsym(flat: Flat): ConfigDocument {
     return { algorithm: str(flat, "algorithm") ?? "frst", config: detect };
 }
 
+// ── Documents written for the previous library generation ───────────────────
+
+/**
+ * A ChESS front-end document (`DetectorConfig`) in the chess-corners 1.x / calib-targets <= 0.15
+ * shape, in the current one. The refiner was a variant of `strategy.chess.refiner`:
+ *
+ * - `center_of_mass: { radius }` is now `strategy.chess.center_of_mass`;
+ * - `saddle_point: { ... }` is the optional top-level image refiner, `refiner: { saddle_point }`
+ *   (the center of mass it replaced keeps the library default);
+ * - `forstner` was removed upstream and has no counterpart: the library default applies.
+ *
+ * Returns the same object when there is nothing to migrate.
+ */
+function migrateChessDocument(chess: unknown): unknown {
+    if (!isRecord(chess) || !isRecord(chess.strategy) || !isRecord(chess.strategy.chess)) return chess;
+    const { refiner: old, ...strategyChess } = chess.strategy.chess;
+    if (old === undefined) return chess;
+    const migrated: Flat = { ...chess, strategy: { ...chess.strategy, chess: strategyChess } };
+    if (isRecord(old)) {
+        if (isRecord(old.center_of_mass)) {
+            strategyChess.center_of_mass = old.center_of_mass;
+        } else if (isRecord(old.saddle_point) && migrated.refiner === undefined) {
+            migrated.refiner = { saddle_point: old.saddle_point };
+        }
+    }
+    return migrated;
+}
+
+/**
+ * A ringgrid detection config in the 0.13 shape, in the 0.18 one: keys the library removed are
+ * dropped, `seed_min_decode_confidence` is `seed_min_confidence` now, and the two tuning values
+ * whose LIBRARY DEFAULT changed (`decode.samples_per_sector` 5 -> 8, `edge_sample.min_ring_depth`
+ * 0.08 -> 0.03) are moved to the new default when the saved document still holds the old one
+ * (the editor saved whole documents, so an untouched default would otherwise pin the old value).
+ * Returns the same object when there is nothing to migrate.
+ */
+function migrateRinggridDetectConfig(detect: unknown): unknown {
+    if (!isRecord(detect) || !isRecord(detect.advanced)) return detect;
+    const next = structuredClone(detect) as { advanced: Record<string, Record<string, unknown> | undefined> };
+    const drop = (block: string, keys: string[]) => {
+        for (const key of keys) delete next.advanced[block]?.[key];
+    };
+    drop("completion", ["roi_radius_px"]);
+    drop("decode", ["codebook_profile", "max_decode_dist", "min_decode_confidence", "min_decode_margin"]);
+    drop("id_correction", ["confirm_by_consistency"]);
+    drop("inner_as_outer_recovery", ["min_ring_depth"]);
+    drop("seed_proposals", ["merge_radius_px", "seed_score"]);
+    const idCorrection = next.advanced.id_correction;
+    if (idCorrection !== undefined && "seed_min_decode_confidence" in idCorrection) {
+        idCorrection.seed_min_confidence ??= idCorrection.seed_min_decode_confidence;
+        delete idCorrection.seed_min_decode_confidence;
+    }
+    const decode = next.advanced.decode;
+    if (decode?.samples_per_sector === 5) decode.samples_per_sector = 8;
+    const edgeSample = next.advanced.edge_sample;
+    if (edgeSample?.min_ring_depth === 0.08) edgeSample.min_ring_depth = 0.03;
+    return JSON.stringify(next) === JSON.stringify(detect) ? detect : next;
+}
+
+/** `doc` with `key` replaced by its migrated value (unchanged, same object, when nothing moved). */
+function withMigrated(doc: Flat, key: string, migrate: (value: unknown) => unknown): Flat {
+    const next = migrate(doc[key]);
+    return next === doc[key] ? doc : { ...doc, [key]: next };
+}
+
+/**
+ * A current-shape document written before the libraries' last generation, in the current
+ * shape. Anything else (including a config that needs nothing) comes back as the same object.
+ */
+export function migrateLibraryDocument(algorithmId: string, config: unknown): unknown {
+    if (!isRecord(config)) return config;
+    switch (algorithmId) {
+        case "chess-corners":
+            return migrateChessDocument(config);
+        case "chessboard":
+        case "markerboard":
+            return withMigrated(config, "chess", migrateChessDocument);
+        case "charuco": {
+            const doc = withMigrated(config, "chess", migrateChessDocument);
+            if (!("scan" in doc)) return doc;
+            const { scan, ...rest } = doc;
+            const inset = isRecord(scan) ? num(scan, "inset_frac") : undefined;
+            return inset !== undefined && rest.inset_frac === undefined ? { ...rest, inset_frac: inset } : rest;
+        }
+        case "ringgrid":
+            return withMigrated(config, "config", migrateRinggridDetectConfig);
+        case "puzzleboard": {
+            const doc = withMigrated(config, "chess", migrateChessDocument);
+            if (!("px_per_square" in doc)) return doc;
+            const { px_per_square: _removed, ...rest } = doc;
+            return rest;
+        }
+        default:
+            return config;
+    }
+}
+
 const CONVERTERS: Record<string, (flat: Flat) => ConfigDocument> = {
     "chess-corners": fromChessCorners,
     chessboard: fromChessboard,
@@ -271,11 +376,12 @@ const CONVERTERS: Record<string, (flat: Flat) => ConfigDocument> = {
 };
 
 /**
- * The current config document for a flat config saved by an older editor. A config that is
- * not in the flat shape (or an algorithm with no old shape) comes back unchanged.
+ * The current config document for a config saved by an older editor: a flat one is rebuilt, and a
+ * document written for the previous library generation is moved to the current keys. A config
+ * that needs neither comes back as the same object.
  */
 export function migrateLegacyConfig(algorithmId: string, config: unknown): unknown {
     const convert = CONVERTERS[algorithmId];
-    if (convert === undefined || !isRecord(config) || !isLegacyConfig(algorithmId, config)) return config;
-    return convert(config);
+    if (convert !== undefined && isRecord(config) && isLegacyConfig(algorithmId, config)) return convert(config);
+    return migrateLibraryDocument(algorithmId, config);
 }

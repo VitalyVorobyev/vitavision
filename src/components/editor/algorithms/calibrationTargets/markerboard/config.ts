@@ -12,7 +12,7 @@ import { CHESSBOARD_DEFAULT_PARAMS } from "../chessboard/config";
  * two must agree about which is which, and the printable document converts on its side.)
  */
 
-/** `default_marker_board_params()` minus `board`, which has no meaningful default (a 6×8 placeholder). */
+/** `default_marker_board_params()` minus `board`, which has no meaningful default (an 8×6 placeholder). */
 export const MARKERBOARD_DEFAULTS: ConfigDocument = {
     chess: CALIB_CHESS_DEFAULTS,
     chessboard: CHESSBOARD_DEFAULT_PARAMS,
@@ -25,6 +25,8 @@ export const MARKERBOARD_DEFAULTS: ConfigDocument = {
         center_search_px: 2,
     },
     match_params: { max_candidates_per_polarity: 6, min_offset_inliers: 3 },
+    // calib-targets 0.18 spells the unset optional ROI out (`null`); 0.15 left the key out.
+    roi_cells: null,
 };
 
 /** The disk diameter default of `default_marker_board_params().board`. */

@@ -31,8 +31,9 @@ export function useHeadings(
             result.push({ id, text, level });
         });
 
+        // eslint-disable-next-line @eslint-react/set-state-in-effect -- headings are read from the rendered DOM, which only exists after commit
         setHeadings(result);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- caller-supplied `deps` array is the intentional re-run trigger; articleRef is a stable ref
     }, deps);
 
     return headings;

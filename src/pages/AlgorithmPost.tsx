@@ -143,6 +143,7 @@ export default function AlgorithmPost() {
                             data-atlas-slug={resolvedSlug}
                             data-atlas-kind="algorithm"
                             className={proseClasses}
+                            // eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- html is build-time rehype-sanitize/shiki/katex output from scripts/content-build.ts (static content/ markdown), never runtime user input
                             dangerouslySetInnerHTML={{ __html: html }}
                         />
                     </ErrorBoundary>

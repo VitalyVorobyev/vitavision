@@ -9,7 +9,7 @@ import { KIND_TEXT_CLASSES, KIND_LABEL } from "./cardText.ts";
 import { isRecentlyAdded } from "../../lib/atlas/recency.ts";
 
 /** Reader-visible warning that a page is an unpublished draft. */
-export function DraftBadge() {
+function DraftBadge() {
     return (
         <span className="inline-block text-[9px] font-bold tracking-wider uppercase bg-line text-fg px-1.5 py-px rounded-[3px] mr-1.5 align-[1px]">
             DRAFT
@@ -18,7 +18,7 @@ export function DraftBadge() {
 }
 
 /** Reader-visible accent that a page was added within the recency window. */
-export function NewBadge() {
+function NewBadge() {
     return (
         <span className="inline-block text-[9px] font-bold tracking-wider uppercase bg-signal/10 text-signal px-1.5 py-px rounded-[3px] mr-1.5 align-[1px]">
             NEW

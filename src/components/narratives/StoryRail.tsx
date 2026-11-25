@@ -110,6 +110,7 @@ export default function StoryRail({
                     // is the navigational one, so the slice's is hidden here.
                     <div
                         className={`${proseClasses} mt-2 !max-w-none !text-[13.5px] !leading-[1.65] [&>h2]:hidden`}
+                        // eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- chapter HTML is a slice of the build-time rehype-sanitize output (scripts/content-build.ts sliceChapters); no runtime user content
                         dangerouslySetInnerHTML={{ __html: chapter }}
                     />
                 ) : (

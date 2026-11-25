@@ -1,4 +1,4 @@
-export const RECENT_WINDOW_DAYS = 30;
+const RECENT_WINDOW_DAYS = 30;
 export const RECENT_SECTION_MAX = 8;
 
 const DAY_MS = 24 * 60 * 60 * 1000;

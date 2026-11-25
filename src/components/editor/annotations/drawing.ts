@@ -15,9 +15,9 @@ export interface Point2 {
 }
 
 /** A bbox or ellipse smaller than this on either side is a stray click, not a drawing (image pixels). */
-export const MIN_SHAPE_SIZE = 5;
+const MIN_SHAPE_SIZE = 5;
 /** A line shorter than this on both axes is a stray click (image pixels). */
-export const MIN_LINE_SPAN = 2;
+const MIN_LINE_SPAN = 2;
 
 /** The drag tools: a press, a drag and a release. */
 export type DragTool = "LINE" | "BBOX" | "ELLIPSE";

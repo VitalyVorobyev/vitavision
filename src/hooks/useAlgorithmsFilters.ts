@@ -7,23 +7,16 @@ import {
     type AlgorithmsFilters,
     type FacetCounts,
     type PeopleMode,
-    ATLAS_VIEW_STORAGE_KEY,
     DEFAULTS,
-    filterAlgorithms,
-    filterModels,
-    filterConcepts,
-    computeFacets,
     parseFiltersFromParams,
     buildParams,
     writeStoredView,
-    readStoredCatalogLayout,
 } from "../lib/atlas/atlasFilters.ts";
 
-// Re-exported for existing importers (AlgorithmIndex.tsx, AlgorithmsSidebar,
+// Types re-exported for existing importers (AlgorithmIndex.tsx, AlgorithmsSidebar,
 // AlgorithmsFilterSheet, AtlasViewTabs) — the pure filter/URL logic itself
 // lives in ../lib/atlas/atlasFilters.ts.
 export type { AlgorithmsKind, AlgorithmsView, AlgorithmsSort, AlgorithmsFilters, FacetCounts, PeopleMode };
-export { ATLAS_VIEW_STORAGE_KEY, filterAlgorithms, filterModels, filterConcepts, computeFacets, readStoredCatalogLayout };
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -56,7 +49,7 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
     // it) keeps its identity until the URL or the stored view actually changes.
     const filters = useMemo(
         () => parseFiltersFromParams(searchParams),
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- storedViewNonce is a recompute trigger
+        // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- storedViewNonce is a recompute trigger
         [searchParams, storedViewNonce],
     );
 

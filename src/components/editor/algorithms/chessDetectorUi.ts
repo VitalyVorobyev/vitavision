@@ -151,7 +151,7 @@ export const chessboardKnobPaths = (prefix: string): string[] => [
 export const chessboardTuningPath = (prefix: string): string => at(prefix, "advanced");
 
 /** Labels and hints for a `ChessboardParams` document at `prefix`. */
-export function chessboardFields(prefix: string): Record<string, FieldUi> {
+function chessboardFields(prefix: string): Record<string, FieldUi> {
     const entries: Array<[string, FieldUi]> = [
         [
             "min_corner_strength",

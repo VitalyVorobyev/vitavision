@@ -92,6 +92,7 @@ export function TrailStrip({ history, current, future, onBack, onForward, onJump
                     {nodeTitle(current)}
                 </span>
                 {futVisible.map((s, i) => (
+                    // eslint-disable-next-line @eslint-react/no-array-index-key -- the trail may revisit a slug, so slug alone is not unique; the list is append-only display
                     <span key={`f-${s}-${i}`} className="contents">
                         <span className="text-fg-muted/60">›</span>
                         <span className="text-fg-muted/60 whitespace-nowrap text-[11.5px]">{nodeTitle(s)}</span>

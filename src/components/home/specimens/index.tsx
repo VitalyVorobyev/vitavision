@@ -39,12 +39,12 @@ export function SpecAlgorithms({ className }: SpecProps) {
             aria-hidden
             className={className}
         >
-            {edges.map(([a, b], i) => {
+            {edges.map(([a, b]) => {
                 const from = nodes[a], to = nodes[b];
                 if (!from || !to) return null;
                 return (
                     <line
-                        key={i}
+                        key={`${a}-${b}`}
                         x1={from[0]} y1={from[1]}
                         x2={to[0]} y2={to[1]}
                         strokeWidth={1}
@@ -56,7 +56,7 @@ export function SpecAlgorithms({ className }: SpecProps) {
                 const isEntry = i === 0;
                 return (
                     <circle
-                        key={i}
+                        key={`${x}-${y}`}
                         cx={x} cy={y} r={2}
                         strokeWidth={1.2}
                         className={
@@ -91,9 +91,9 @@ export function SpecEditor({ className }: SpecProps) {
                 className="stroke-fg-muted/60 transition-colors duration-300 group-hover:stroke-signal group-focus-visible:stroke-signal"
             />
             <line x1="2" y1="20" x2="42" y2="18" strokeWidth="0.8" className="stroke-fg-muted/30" />
-            {pts.map(([x, y], i) => (
+            {pts.map(([x, y]) => (
                 <circle
-                    key={i}
+                    key={`${x}-${y}`}
                     cx={x} cy={y} r={1}
                     className="fill-fg/80 transition-colors duration-300 group-hover:fill-signal group-focus-visible:fill-signal"
                 />
@@ -126,12 +126,12 @@ export function SpecTargets({ className }: SpecProps) {
             className={className}
         >
             <g transform="translate(2,2)">
-                {cells.map(({ r, c, dark }, i) => {
+                {cells.map(({ r, c, dark }) => {
                     const isAccent = r === 1 && c === 4;
                     if (isAccent) {
                         return (
                             <rect
-                                key={i}
+                                key={`${r}-${c}`}
                                 x={c * cw} y={r * ch} width={cw} height={ch}
                                 className={
                                     dark
@@ -143,7 +143,7 @@ export function SpecTargets({ className }: SpecProps) {
                     }
                     return dark ? (
                         <rect
-                            key={i}
+                            key={`${r}-${c}`}
                             x={c * cw} y={r * ch} width={cw} height={ch}
                             className="fill-fg/85"
                         />

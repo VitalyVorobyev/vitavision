@@ -32,7 +32,7 @@ const TYPE_LABELS: Record<string, string> = {
     aruco_marker: "ArUco markers",
 };
 
-export const featureSwatch = (feature: Feature): string => {
+const featureSwatch = (feature: Feature): string => {
     if (feature.color) {
         return feature.color;
     }
@@ -55,7 +55,7 @@ export function getFeatureGroupKey(feature: Feature): string {
     return `type:${feature.type}`;
 }
 
-export function getFeatureGroupLabel(key: string): string {
+function getFeatureGroupLabel(key: string): string {
     // Keys are built by getFeatureGroupKey as `<prefix>:<value>`.
     const [prefix, value = ""] = key.split(":");
     if (prefix === "algo") {

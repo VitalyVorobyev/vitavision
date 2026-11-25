@@ -96,7 +96,7 @@ export default function ConfigurePanel() {
     // Empty deps: intentional — we only want this to run once on mount.
     // didSeedFromUrlRef is a ref (stable), and the initial* values from useDeepLinkSync
     // are derived from URL search params at construction time and do not change.
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- run once on mount (see comment above)
 
     const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>(() => {
         if (initialState.config !== null) {

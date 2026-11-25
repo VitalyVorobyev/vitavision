@@ -47,7 +47,7 @@ export type {
     RunSummaryEntry,
     RunHistoryEntry,
 } from './editorTypes';
-export { normalizeFeature, normalizeImportedFeatures, isReadonlyFeature };
+export { normalizeImportedFeatures, isReadonlyFeature };
 
 const DEFAULT_OVERLAY_TOGGLES: OverlayToggles = {
     edges: true,

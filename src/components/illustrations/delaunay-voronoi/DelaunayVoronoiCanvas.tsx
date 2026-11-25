@@ -258,6 +258,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                         if (!poly) return null;
                         return (
                             <polygon
+                                // eslint-disable-next-line @eslint-react/no-array-index-key -- cell i is the Voronoi cell of point i; the point index is its identity (points have no id)
                                 key={i}
                                 points={poly.map(([px, py]) => `${px},${py}`).join(" ")}
                                 fill="color-mix(in oklab, var(--signal) 8%, transparent)"
@@ -297,6 +298,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                         const r = Math.hypot(ux, uy);
                         return (
                             <circle
+                                // eslint-disable-next-line @eslint-react/no-array-index-key -- one circle per triangle, derived from the triangulation each render; the triangle index is its only identity
                                 key={i}
                                 cx={cx}
                                 cy={cy}

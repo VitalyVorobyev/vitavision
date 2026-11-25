@@ -97,6 +97,7 @@ export default function MarkerBoardGenConfig({ config, dispatch }: Props) {
                             Click a square on the preview to move the nearest circle there. Polarity is automatic (contrasts with square color).
                         </p>
                         {config.circles.map((circ, idx) => (
+                            // eslint-disable-next-line @eslint-react/no-array-index-key -- rows are edited in place by index; a value-derived key would remount the inputs and drop focus while typing
                             <div key={idx} className="flex items-center gap-2">
                                 <Field label="Row">
                                     <NumberInput

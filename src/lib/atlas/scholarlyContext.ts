@@ -14,7 +14,7 @@ export interface ScholarlyContextValue extends ScholarlyState {
     request: () => void;
 }
 
-export const EMPTY_SCHOLARLY_STATE: ScholarlyState = { index: null, status: "idle" };
+const EMPTY_SCHOLARLY_STATE: ScholarlyState = { index: null, status: "idle" };
 
 /** Internal context — consumed via the `useScholarlyIndex` hook. */
 export const ScholarlyContext = createContext<ScholarlyContextValue>({

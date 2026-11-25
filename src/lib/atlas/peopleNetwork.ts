@@ -73,12 +73,12 @@ export const LABEL_MODE_OPTIONS: { value: LabelMode; label: string }[] = [
     { value: "none", label: "None" },
 ];
 
-export const OVERVIEW_LABEL_COUNT = 20;
+const OVERVIEW_LABEL_COUNT = 20;
 
 // ── Search matching ──────────────────────────────────────────────────────────
 
 /** Lowercase, diacritic-stripped comparison key (accent-insensitive matching). */
-export function normalizeSearchText(s: string): string {
+function normalizeSearchText(s: string): string {
     return s
         .normalize("NFD")
         .replace(/[̀-ͯ]/g, "")
@@ -186,7 +186,7 @@ export interface FocusPosition {
 }
 
 /** Angle (radians) of the `i`th of `n` ring slots, used by `computeRingLayout`. */
-export function ringAngle(index: number, total: number): number {
+function ringAngle(index: number, total: number): number {
     return (index / Math.max(1, total)) * Math.PI * 2 - Math.PI / 2 + 0.2;
 }
 

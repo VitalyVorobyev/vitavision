@@ -10,7 +10,7 @@ import type { Feature } from "./editorTypes";
 export const FEATURE_FILE_VERSION = 2;
 
 /** What a version 1 coordinate adds to a version 2 one (corner-of-pixel-0 origin to centre-of-pixel-0 origin). */
-export const V1_TO_V2_SHIFT = -0.5;
+const V1_TO_V2_SHIFT = -0.5;
 
 const shift = (value: number): number => value + V1_TO_V2_SHIFT;
 
